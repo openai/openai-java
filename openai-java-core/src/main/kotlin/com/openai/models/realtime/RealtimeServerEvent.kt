@@ -2154,7 +2154,8 @@ private constructor(
     interface Visitor<out T> {
 
         /** Returned when a conversation is created. Emitted right after session creation. */
-        fun visitConversationCreated(conversationCreated: ConversationCreatedEvent): T
+        fun visitConversationCreated(conversationCreated: ConversationCreatedEvent): T =
+            unknown(JsonValue.from(conversationCreated))
 
         /**
          * Returned when a conversation item is created. There are several scenarios that produce
@@ -2167,14 +2168,16 @@ private constructor(
          * - The client has sent a `conversation.item.create` event to add a new Item to the
          *   Conversation.
          */
-        fun visitConversationItemCreated(conversationItemCreated: ConversationItemCreatedEvent): T
+        fun visitConversationItemCreated(conversationItemCreated: ConversationItemCreatedEvent): T =
+            unknown(JsonValue.from(conversationItemCreated))
 
         /**
          * Returned when an item in the conversation is deleted by the client with a
          * `conversation.item.delete` event. This event is used to synchronize the server's
          * understanding of the conversation history with the client's view.
          */
-        fun visitConversationItemDeleted(conversationItemDeleted: ConversationItemDeletedEvent): T
+        fun visitConversationItemDeleted(conversationItemDeleted: ConversationItemDeletedEvent): T =
+            unknown(JsonValue.from(conversationItemDeleted))
 
         /**
          * This event is the output of audio transcription for user audio written to the user audio
@@ -2189,7 +2192,7 @@ private constructor(
         fun visitConversationItemInputAudioTranscriptionCompleted(
             conversationItemInputAudioTranscriptionCompleted:
                 ConversationItemInputAudioTranscriptionCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(conversationItemInputAudioTranscriptionCompleted))
 
         /**
          * Returned when the text value of an input audio transcription content part is updated with
@@ -2198,7 +2201,7 @@ private constructor(
         fun visitConversationItemInputAudioTranscriptionDelta(
             conversationItemInputAudioTranscriptionDelta:
                 ConversationItemInputAudioTranscriptionDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(conversationItemInputAudioTranscriptionDelta))
 
         /**
          * Returned when input audio transcription is configured, and a transcription request for a
@@ -2208,7 +2211,7 @@ private constructor(
         fun visitConversationItemInputAudioTranscriptionFailed(
             conversationItemInputAudioTranscriptionFailed:
                 ConversationItemInputAudioTranscriptionFailedEvent
-        ): T
+        ): T = unknown(JsonValue.from(conversationItemInputAudioTranscriptionFailed))
 
         /**
          * Returned when a conversation item is retrieved with `conversation.item.retrieve`. This is
@@ -2216,7 +2219,9 @@ private constructor(
          * access to the post-processed audio data after noise cancellation and VAD. It includes the
          * full content of the Item, including audio data.
          */
-        fun visitConversationItemRetrieved(conversationItemRetrieved: ConversationItemRetrieved): T
+        fun visitConversationItemRetrieved(
+            conversationItemRetrieved: ConversationItemRetrieved
+        ): T = unknown(JsonValue.from(conversationItemRetrieved))
 
         /**
          * Returned when an earlier assistant audio message item is truncated by the client with a
@@ -2228,20 +2233,21 @@ private constructor(
          */
         fun visitConversationItemTruncated(
             conversationItemTruncated: ConversationItemTruncatedEvent
-        ): T
+        ): T = unknown(JsonValue.from(conversationItemTruncated))
 
         /**
          * Returned when an error occurs, which could be a client problem or a server problem. Most
          * errors are recoverable and the session will stay open, we recommend to implementors to
          * monitor and log error messages by default.
          */
-        fun visitError(error: RealtimeErrorEvent): T
+        fun visitError(error: RealtimeErrorEvent): T = unknown(JsonValue.from(error))
 
         /**
          * Returned when the input audio buffer is cleared by the client with a
          * `input_audio_buffer.clear` event.
          */
-        fun visitInputAudioBufferCleared(inputAudioBufferCleared: InputAudioBufferClearedEvent): T
+        fun visitInputAudioBufferCleared(inputAudioBufferCleared: InputAudioBufferClearedEvent): T =
+            unknown(JsonValue.from(inputAudioBufferCleared))
 
         /**
          * Returned when an input audio buffer is committed, either by the client or automatically
@@ -2250,7 +2256,7 @@ private constructor(
          */
         fun visitInputAudioBufferCommitted(
             inputAudioBufferCommitted: InputAudioBufferCommittedEvent
-        ): T
+        ): T = unknown(JsonValue.from(inputAudioBufferCommitted))
 
         /**
          * **SIP Only:** Returned when an DTMF event is received. A DTMF event is a message that
@@ -2260,7 +2266,7 @@ private constructor(
          */
         fun visitInputAudioBufferDtmfEventReceived(
             inputAudioBufferDtmfEventReceived: InputAudioBufferDtmfEventReceivedEvent
-        ): T
+        ): T = unknown(JsonValue.from(inputAudioBufferDtmfEventReceived))
 
         /**
          * Sent by the server when in `server_vad` mode to indicate that speech has been detected in
@@ -2276,7 +2282,7 @@ private constructor(
          */
         fun visitInputAudioBufferSpeechStarted(
             inputAudioBufferSpeechStarted: InputAudioBufferSpeechStartedEvent
-        ): T
+        ): T = unknown(JsonValue.from(inputAudioBufferSpeechStarted))
 
         /**
          * Returned in `server_vad` mode when the server detects the end of speech in the audio
@@ -2285,7 +2291,7 @@ private constructor(
          */
         fun visitInputAudioBufferSpeechStopped(
             inputAudioBufferSpeechStopped: InputAudioBufferSpeechStoppedEvent
-        ): T
+        ): T = unknown(JsonValue.from(inputAudioBufferSpeechStopped))
 
         /**
          * Emitted at the beginning of a Response to indicate the updated rate limits. When a
@@ -2293,21 +2299,24 @@ private constructor(
          * shown here reflect that reservation, which is then adjusted accordingly once the Response
          * is completed.
          */
-        fun visitRateLimitsUpdated(rateLimitsUpdated: RateLimitsUpdatedEvent): T
+        fun visitRateLimitsUpdated(rateLimitsUpdated: RateLimitsUpdatedEvent): T =
+            unknown(JsonValue.from(rateLimitsUpdated))
 
         /** Returned when the model-generated audio is updated. */
-        fun visitResponseOutputAudioDelta(responseOutputAudioDelta: ResponseAudioDeltaEvent): T
+        fun visitResponseOutputAudioDelta(responseOutputAudioDelta: ResponseAudioDeltaEvent): T =
+            unknown(JsonValue.from(responseOutputAudioDelta))
 
         /**
          * Returned when the model-generated audio is done. Also emitted when a Response is
          * interrupted, incomplete, or cancelled.
          */
-        fun visitResponseOutputAudioDone(responseOutputAudioDone: ResponseAudioDoneEvent): T
+        fun visitResponseOutputAudioDone(responseOutputAudioDone: ResponseAudioDoneEvent): T =
+            unknown(JsonValue.from(responseOutputAudioDone))
 
         /** Returned when the model-generated transcription of audio output is updated. */
         fun visitResponseOutputAudioTranscriptDelta(
             responseOutputAudioTranscriptDelta: ResponseAudioTranscriptDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseOutputAudioTranscriptDelta))
 
         /**
          * Returned when the model-generated transcription of audio output is done streaming. Also
@@ -2315,7 +2324,7 @@ private constructor(
          */
         fun visitResponseOutputAudioTranscriptDone(
             responseOutputAudioTranscriptDone: ResponseAudioTranscriptDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseOutputAudioTranscriptDone))
 
         /**
          * Returned when a new content part is added to an assistant message item during response
@@ -2323,19 +2332,21 @@ private constructor(
          */
         fun visitResponseContentPartAdded(
             responseContentPartAdded: ResponseContentPartAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseContentPartAdded))
 
         /**
          * Returned when a content part is done streaming in an assistant message item. Also emitted
          * when a Response is interrupted, incomplete, or cancelled.
          */
-        fun visitResponseContentPartDone(responseContentPartDone: ResponseContentPartDoneEvent): T
+        fun visitResponseContentPartDone(responseContentPartDone: ResponseContentPartDoneEvent): T =
+            unknown(JsonValue.from(responseContentPartDone))
 
         /**
          * Returned when a new Response is created. The first event of response creation, where the
          * response is in an initial state of `in_progress`.
          */
-        fun visitResponseCreated(responseCreated: ResponseCreatedEvent): T
+        fun visitResponseCreated(responseCreated: ResponseCreatedEvent): T =
+            unknown(JsonValue.from(responseCreated))
 
         /**
          * Returned when a Response is done streaming. Always emitted, no matter the final state.
@@ -2348,12 +2359,13 @@ private constructor(
          * A response will contain all output items that were generated during the response,
          * excluding any audio content.
          */
-        fun visitResponseDone(responseDone: ResponseDoneEvent): T
+        fun visitResponseDone(responseDone: ResponseDoneEvent): T =
+            unknown(JsonValue.from(responseDone))
 
         /** Returned when the model-generated function call arguments are updated. */
         fun visitResponseFunctionCallArgumentsDelta(
             responseFunctionCallArgumentsDelta: ResponseFunctionCallArgumentsDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseFunctionCallArgumentsDelta))
 
         /**
          * Returned when the model-generated function call arguments are done streaming. Also
@@ -2361,38 +2373,44 @@ private constructor(
          */
         fun visitResponseFunctionCallArgumentsDone(
             responseFunctionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseFunctionCallArgumentsDone))
 
         /** Returned when a new Item is created during Response generation. */
-        fun visitResponseOutputItemAdded(responseOutputItemAdded: ResponseOutputItemAddedEvent): T
+        fun visitResponseOutputItemAdded(responseOutputItemAdded: ResponseOutputItemAddedEvent): T =
+            unknown(JsonValue.from(responseOutputItemAdded))
 
         /**
          * Returned when an Item is done streaming. Also emitted when a Response is interrupted,
          * incomplete, or cancelled.
          */
-        fun visitResponseOutputItemDone(responseOutputItemDone: ResponseOutputItemDoneEvent): T
+        fun visitResponseOutputItemDone(responseOutputItemDone: ResponseOutputItemDoneEvent): T =
+            unknown(JsonValue.from(responseOutputItemDone))
 
         /** Returned when the text value of an "output_text" content part is updated. */
-        fun visitResponseOutputTextDelta(responseOutputTextDelta: ResponseTextDeltaEvent): T
+        fun visitResponseOutputTextDelta(responseOutputTextDelta: ResponseTextDeltaEvent): T =
+            unknown(JsonValue.from(responseOutputTextDelta))
 
         /**
          * Returned when the text value of an "output_text" content part is done streaming. Also
          * emitted when a Response is interrupted, incomplete, or cancelled.
          */
-        fun visitResponseOutputTextDone(responseOutputTextDone: ResponseTextDoneEvent): T
+        fun visitResponseOutputTextDone(responseOutputTextDone: ResponseTextDoneEvent): T =
+            unknown(JsonValue.from(responseOutputTextDone))
 
         /**
          * Returned when a Session is created. Emitted automatically when a new connection is
          * established as the first server event. This event will contain the default Session
          * configuration.
          */
-        fun visitSessionCreated(sessionCreated: SessionCreatedEvent): T
+        fun visitSessionCreated(sessionCreated: SessionCreatedEvent): T =
+            unknown(JsonValue.from(sessionCreated))
 
         /**
          * Returned when a session is updated with a `session.update` event, unless there is an
          * error.
          */
-        fun visitSessionUpdated(sessionUpdated: SessionUpdatedEvent): T
+        fun visitSessionUpdated(sessionUpdated: SessionUpdatedEvent): T =
+            unknown(JsonValue.from(sessionUpdated))
 
         /**
          * **WebRTC/SIP Only:** Emitted when the server begins streaming audio to the client. This
@@ -2400,7 +2418,8 @@ private constructor(
          * (`response.content_part.added`) to the response.
          * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
-        fun visitOutputAudioBufferStarted(outputAudioBufferStarted: OutputAudioBufferStarted): T
+        fun visitOutputAudioBufferStarted(outputAudioBufferStarted: OutputAudioBufferStarted): T =
+            unknown(JsonValue.from(outputAudioBufferStarted))
 
         /**
          * **WebRTC/SIP Only:** Emitted when the output audio buffer has been completely drained on
@@ -2408,7 +2427,8 @@ private constructor(
          * response data has been sent to the client (`response.done`).
          * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
-        fun visitOutputAudioBufferStopped(outputAudioBufferStopped: OutputAudioBufferStopped): T
+        fun visitOutputAudioBufferStopped(outputAudioBufferStopped: OutputAudioBufferStopped): T =
+            unknown(JsonValue.from(outputAudioBufferStopped))
 
         /**
          * **WebRTC/SIP Only:** Emitted when the output audio buffer is cleared. This happens either
@@ -2417,7 +2437,8 @@ private constructor(
          * current audio response.
          * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
-        fun visitOutputAudioBufferCleared(outputAudioBufferCleared: OutputAudioBufferCleared): T
+        fun visitOutputAudioBufferCleared(outputAudioBufferCleared: OutputAudioBufferCleared): T =
+            unknown(JsonValue.from(outputAudioBufferCleared))
 
         /**
          * Sent by the server when an Item is added to the default Conversation. This can happen in
@@ -2433,7 +2454,8 @@ private constructor(
          * Response) except for audio data, which can be retrieved separately with a
          * `conversation.item.retrieve` event if necessary.
          */
-        fun visitConversationItemAdded(conversationItemAdded: ConversationItemAdded): T
+        fun visitConversationItemAdded(conversationItemAdded: ConversationItemAdded): T =
+            unknown(JsonValue.from(conversationItemAdded))
 
         /**
          * Returned when a conversation item is finalized.
@@ -2441,7 +2463,8 @@ private constructor(
          * The event will include the full content of the Item except for audio data, which can be
          * retrieved separately with a `conversation.item.retrieve` event if needed.
          */
-        fun visitConversationItemDone(conversationItemDone: ConversationItemDone): T
+        fun visitConversationItemDone(conversationItemDone: ConversationItemDone): T =
+            unknown(JsonValue.from(conversationItemDone))
 
         /**
          * Returned when the Server VAD timeout is triggered for the input audio buffer. This is
@@ -2462,41 +2485,48 @@ private constructor(
          */
         fun visitInputAudioBufferTimeoutTriggered(
             inputAudioBufferTimeoutTriggered: InputAudioBufferTimeoutTriggered
-        ): T
+        ): T = unknown(JsonValue.from(inputAudioBufferTimeoutTriggered))
 
         /** Returned when an input audio transcription segment is identified for an item. */
         fun visitConversationItemInputAudioTranscriptionSegment(
             conversationItemInputAudioTranscriptionSegment:
                 ConversationItemInputAudioTranscriptionSegment
-        ): T
+        ): T = unknown(JsonValue.from(conversationItemInputAudioTranscriptionSegment))
 
         /** Returned when listing MCP tools is in progress for an item. */
-        fun visitMcpListToolsInProgress(mcpListToolsInProgress: McpListToolsInProgress): T
+        fun visitMcpListToolsInProgress(mcpListToolsInProgress: McpListToolsInProgress): T =
+            unknown(JsonValue.from(mcpListToolsInProgress))
 
         /** Returned when listing MCP tools has completed for an item. */
-        fun visitMcpListToolsCompleted(mcpListToolsCompleted: McpListToolsCompleted): T
+        fun visitMcpListToolsCompleted(mcpListToolsCompleted: McpListToolsCompleted): T =
+            unknown(JsonValue.from(mcpListToolsCompleted))
 
         /** Returned when listing MCP tools has failed for an item. */
-        fun visitMcpListToolsFailed(mcpListToolsFailed: McpListToolsFailed): T
+        fun visitMcpListToolsFailed(mcpListToolsFailed: McpListToolsFailed): T =
+            unknown(JsonValue.from(mcpListToolsFailed))
 
         /** Returned when MCP tool call arguments are updated during response generation. */
         fun visitResponseMcpCallArgumentsDelta(
             responseMcpCallArgumentsDelta: ResponseMcpCallArgumentsDelta
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpCallArgumentsDelta))
 
         /** Returned when MCP tool call arguments are finalized during response generation. */
         fun visitResponseMcpCallArgumentsDone(
             responseMcpCallArgumentsDone: ResponseMcpCallArgumentsDone
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpCallArgumentsDone))
 
         /** Returned when an MCP tool call has started and is in progress. */
-        fun visitResponseMcpCallInProgress(responseMcpCallInProgress: ResponseMcpCallInProgress): T
+        fun visitResponseMcpCallInProgress(
+            responseMcpCallInProgress: ResponseMcpCallInProgress
+        ): T = unknown(JsonValue.from(responseMcpCallInProgress))
 
         /** Returned when an MCP tool call has completed successfully. */
-        fun visitResponseMcpCallCompleted(responseMcpCallCompleted: ResponseMcpCallCompleted): T
+        fun visitResponseMcpCallCompleted(responseMcpCallCompleted: ResponseMcpCallCompleted): T =
+            unknown(JsonValue.from(responseMcpCallCompleted))
 
         /** Returned when an MCP tool call has failed. */
-        fun visitResponseMcpCallFailed(responseMcpCallFailed: ResponseMcpCallFailed): T
+        fun visitResponseMcpCallFailed(responseMcpCallFailed: ResponseMcpCallFailed): T =
+            unknown(JsonValue.from(responseMcpCallFailed))
 
         /**
          * Maps an unknown variant of [RealtimeServerEvent] to a value of type [T].
@@ -2505,6 +2535,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized events also reach this method when their visit method is not overridden. This
+         * allows existing visitors to handle event variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

@@ -1,5 +1,48 @@
 # Changelog
 
+## [4.66.1](https://github.com/openai/openai-java/compare/v4.66.0...v4.66.1) (2026-09-21)
+
+
+### Bug Fixes
+
+* **api:** restore legacy gpt-5.1-mini identifiers ([#1053](https://github.com/openai/openai-java/issues/1053)) ([f2cedb5](https://github.com/openai/openai-java/commit/f2cedb59de8cbbf585ebda888aeba021327ca82b))
+
+## [4.66.0](https://github.com/openai/openai-java/compare/v4.65.0...v4.66.0) (2026-09-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* **api:** Removed the unsupported `gpt-5.1-mini` model's `GPT_5_1_MINI` constants and corresponding `Known`/`Value` enum cases from `ChatModel`, `BetaResponse.Model`, `BetaResponsesClientEvent.ResponseCreate.Model`, beta `ResponseCreateParams.Model`, and both beta and stable `ResponseCompactParams.Model` types. Code referencing any of these members must select an available model and be recompiled. This removal is covered by the SDK's minor-version compatibility exception.
+
+### Features
+
+* **api:** add external storage configuration management ([#1032](https://github.com/openai/openai-java/issues/1032)) ([f26dbfd](https://github.com/openai/openai-java/commit/f26dbfd284948aede893744b9245aac9809de30b))
+* **api:** add safety case retrieval ([#1033](https://github.com/openai/openai-java/issues/1033)) ([4c27852](https://github.com/openai/openai-java/commit/4c27852e6563b9dbafec5703448110741d8f1efd))
+* **api:** add safety warning and deactivation webhook events ([#1031](https://github.com/openai/openai-java/issues/1031)) ([143c540](https://github.com/openai/openai-java/commit/143c5404c2f4782cb4bc9bce4364849e911c0d06))
+* **api:** add SIP media security to incoming call events ([#1030](https://github.com/openai/openai-java/issues/1030)) ([3565b44](https://github.com/openai/openai-java/commit/3565b4480be4644bb1103726c6134509a89151c9))
+* **api:** support environment variable vault credentials ([#1029](https://github.com/openai/openai-java/issues/1029)) ([683bfed](https://github.com/openai/openai-java/commit/683bfeda61783a4532597934e6953b2cdd9cea41))
+
+
+### Bug Fixes
+
+* **api:** correct model types and network policy docs ([#1024](https://github.com/openai/openai-java/issues/1024)) ([f8cce9a](https://github.com/openai/openai-java/commit/f8cce9a5e1376e793aedbaf6f94d2a0789d858bf))
+* close SSE responses at the terminal event ([#1027](https://github.com/openai/openai-java/issues/1027)) ([1441ba1](https://github.com/openai/openai-java/commit/1441ba1eb7ff1a6889afbbc480681f4fb031a811))
+* handle extreme retry dates and close retry responses ([#1026](https://github.com/openai/openai-java/issues/1026)) ([18e36f8](https://github.com/openai/openai-java/commit/18e36f8f4ebc487bcadbcb3fd9739ab5ba2cf540))
+* preserve explicit security-header removal ([#1036](https://github.com/openai/openai-java/issues/1036)) ([5ac7585](https://github.com/openai/openai-java/commit/5ac7585d7a6506b8b05d850d3c703a5ec8155680))
+* reject line breaks in multipart content types ([#1025](https://github.com/openai/openai-java/issues/1025)) ([c3352aa](https://github.com/openai/openai-java/commit/c3352aaaac5c6ff0fd9559c1d1bcf4d17a31c172))
+
+
+### Chores
+
+* **api:** document response management resources ([#1034](https://github.com/openai/openai-java/issues/1034)) ([a363812](https://github.com/openai/openai-java/commit/a363812216605acd7ee60a1f5ca986e4905e0195))
+
+
+### Build System
+
+* **deps:** bump actions/setup-java from 5.7.0 to 6.0.1 ([#1047](https://github.com/openai/openai-java/issues/1047)) ([205976b](https://github.com/openai/openai-java/commit/205976b58a99ff15b259a9cd8be571c92a2ac6dd))
+* **deps:** bump org.junit.jupiter:junit-jupiter in / ([#955](https://github.com/openai/openai-java/issues/955)) ([d2969f8](https://github.com/openai/openai-java/commit/d2969f8efd588e492d97ec41e892cd91e9906c59))
+* **deps:** bump org.yaml:snakeyaml in / ([#1046](https://github.com/openai/openai-java/issues/1046)) ([b338b2a](https://github.com/openai/openai-java/commit/b338b2aba2d99bf327dade65211c09deb7a626d1))
+
 ## [4.65.0](https://github.com/openai/openai-java/compare/v4.64.0...v4.65.0) (2026-09-18)
 
 

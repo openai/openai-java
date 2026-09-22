@@ -281,14 +281,27 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
                     .apply {
                         proxyAuthenticator?.let { auth ->
                             proxyAuthenticator { route, response ->
-                                auth
-                                    .authenticate(
-                                        route?.proxy ?: Proxy.NO_PROXY,
-                                        response.request.toHttpRequest(),
-                                        response.toHttpResponse(),
-                                    )
-                                    .getOrNull()
-                                    ?.toRequest(client = null)
+                                val proxy = route?.proxy ?: Proxy.NO_PROXY
+                                // A 407 inside an HTTPS tunnel comes from the origin, not the
+                                // proxy, even for an application CONNECT request. Proxy CONNECT
+                                // challenges have no TLS handshake attached to their response.
+                                if (
+                                    proxy.type() != Proxy.Type.HTTP ||
+                                        response.handshake != null ||
+                                        (response.request.url.isHttps &&
+                                            response.request.method != "CONNECT")
+                                ) {
+                                    null
+                                } else {
+                                    auth
+                                        .authenticate(
+                                            proxy,
+                                            response.request.toHttpRequest(),
+                                            response.toHttpResponse(),
+                                        )
+                                        .getOrNull()
+                                        ?.toRequest(client = null)
+                                }
                             }
                         }
 
