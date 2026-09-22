@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.67.0](https://github.com/openai/openai-java/compare/v4.66.1...v4.67.0) (2026-09-22)
+
+
+### Features
+
+* **api:** add session environment reset events ([#1055](https://github.com/openai/openai-java/issues/1055)) ([0956c64](https://github.com/openai/openai-java/commit/0956c641e7bff6e4aa9560af79d96be1eb813654))
+
+
+### Chores
+
+* **api:** clarify external storage deletion behavior ([#1057](https://github.com/openai/openai-java/issues/1057)) ([f511e47](https://github.com/openai/openai-java/commit/f511e47a06e6c3350132917f558cc7287f56fab0))
+
 ## [4.66.1](https://github.com/openai/openai-java/compare/v4.66.0...v4.66.1) (2026-09-21)
 
 
