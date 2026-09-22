@@ -8,15 +8,21 @@ import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.errors.OpenAIException
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.images.ImageEditParams
 import java.io.ByteArrayInputStream
+import java.io.FilterInputStream
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.QueueDispatcher
+import okhttp3.mockwebserver.RecordedRequest
 import okhttp3.tls.HandshakeCertificates
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -28,6 +34,77 @@ import org.junit.jupiter.api.parallel.Resources
 internal class X509WorkloadIdentityIntegrationTest {
 
     private val jsonMapper = ObjectMapper()
+
+    @Test
+    fun cancelledUploadDoesNotStartAfterCertificateTokenExchange() {
+        val identity = X509TestIdentity.create("cancelled upload identity")
+        val tokenStarted = CountDownLatch(1)
+        val releaseToken = CountDownLatch(1)
+        val closes = AtomicInteger()
+        val reads = AtomicInteger()
+        val stream =
+            object : FilterInputStream(byteArrayOf(1).inputStream()) {
+                override fun read(bytes: ByteArray, offset: Int, length: Int): Int {
+                    reads.incrementAndGet()
+                    return super.read(bytes, offset, length)
+                }
+
+                override fun close() {
+                    closes.incrementAndGet()
+                    super.close()
+                }
+            }
+        X509TestPeer(AUTH_HOST, identity.root.certificate).use { authPeer ->
+            X509TestPeer(API_HOST, identity.root.certificate).use { apiPeer ->
+                authPeer.server.dispatcher =
+                    object : QueueDispatcher() {
+                        override fun dispatch(request: RecordedRequest): MockResponse {
+                            if (request.method != "CONNECT") {
+                                tokenStarted.countDown()
+                                check(releaseToken.await(10, TimeUnit.SECONDS))
+                            }
+                            return super.dispatch(request)
+                        }
+                    }
+                authPeer.enqueue(tokenResponse(ACCESS_TOKEN))
+                apiPeer.enqueue(filesResponse())
+                apiPeer.server.enqueue(filesResponse())
+                val configuration =
+                    configuration(
+                            identity,
+                            listOf(authPeer.serverRootCertificate, apiPeer.serverRootCertificate),
+                        )
+                        .withTestProxies(authPeer.proxy, apiPeer.proxy)
+                val client =
+                    OpenAIOkHttpClientAsync.builder()
+                        .x509WorkloadIdentity(configuration)
+                        .maxRetries(0)
+                        .build()
+                try {
+                    val upload =
+                        client
+                            .images()
+                            .edit(ImageEditParams.builder().prompt("test").image(stream).build())
+                    assertThat(tokenStarted.await(10, TimeUnit.SECONDS)).isTrue()
+                    assertThat(upload.cancel(true)).isTrue()
+                    assertThat(closes.get()).isEqualTo(1)
+                    val control = client.files().list()
+                    releaseToken.countDown()
+                    control.get(10, TimeUnit.SECONDS)
+                    assertThat(apiPeer.server.takeRequest(5, TimeUnit.SECONDS)!!.method)
+                        .isEqualTo("CONNECT")
+                    assertThat(apiPeer.server.takeRequest(5, TimeUnit.SECONDS)!!.path)
+                        .isEqualTo("/v1/files")
+                    assertThat(apiPeer.server.takeRequest(1, TimeUnit.SECONDS)).isNull()
+                    assertThat(reads.get()).isZero()
+                    assertThat(closes.get()).isEqualTo(1)
+                } finally {
+                    releaseToken.countDown()
+                    client.close()
+                }
+            }
+        }
+    }
 
     @Test
     fun synchronousPublicClientExchangesLazilyAndCachesBearerOverRealMutualTls() {

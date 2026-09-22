@@ -269,7 +269,9 @@ private constructor(
 private class LoggingHttpRequestBody(
     private val method: HttpMethod,
     private val body: HttpRequestBody,
-) : HttpRequestBody {
+) : HttpRequestBody, MultipartTransportGuard {
+
+    override fun <T> beforeTransport(action: () -> T): T = body.beforeMultipartTransport(action)
 
     private val charset by lazy { parseCharset(body.contentType()) }
 

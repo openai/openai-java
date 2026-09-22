@@ -105,13 +105,17 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
         val call = newCall(request, requestOptions)
-
-        return try {
-            call.execute().toHttpResponse()
-        } catch (e: IOException) {
-            throw OpenAIIoException("Request failed", e)
-        } finally {
-            request.body?.close()
+        var response: HttpResponse? = null
+        try {
+            return request.body.use {
+                try {
+                    call.execute().toHttpResponse().also { response = it }
+                } catch (e: IOException) {
+                    throw OpenAIIoException("Request failed", e)
+                }
+            }
+        } catch (failure: Throwable) {
+            response.use { throw failure }
         }
     }
 
