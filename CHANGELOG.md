@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.68.0](https://github.com/openai/openai-java/compare/v4.67.0...v4.68.0) (2026-09-22)
+
+
+### Features
+
+* **api:** add GPT-6 Sol and Luna model identifiers ([#1060](https://github.com/openai/openai-java/issues/1060)) ([234b977](https://github.com/openai/openai-java/commit/234b97788fe9a828d8f7fc4dc6c5fc2d6e188a4d))
+
+
+### Bug Fixes
+
+* preserve streams through multipart upload unions ([#1059](https://github.com/openai/openai-java/issues/1059)) ([e3eb1d4](https://github.com/openai/openai-java/commit/e3eb1d4cbe3f10cc63f34068927ed9ce75d9ddc5))
+
 ## [4.67.0](https://github.com/openai/openai-java/compare/v4.66.1...v4.67.0) (2026-09-22)
 
 
