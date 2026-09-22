@@ -16,28 +16,28 @@ class SafetyServiceImpl internal constructor(private val clientOptions: ClientOp
         WithRawResponseImpl(clientOptions)
     }
 
-    private val alerts: AlertService by lazy { AlertServiceImpl(clientOptions) }
-
     private val cases: CaseService by lazy { CaseServiceImpl(clientOptions) }
+
+    private val alerts: AlertService by lazy { AlertServiceImpl(clientOptions) }
 
     override fun withRawResponse(): SafetyService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): SafetyService =
         SafetyServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun alerts(): AlertService = alerts
-
     override fun cases(): CaseService = cases
+
+    override fun alerts(): AlertService = alerts
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         SafetyService.WithRawResponse {
 
-        private val alerts: AlertService.WithRawResponse by lazy {
-            AlertServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
         private val cases: CaseService.WithRawResponse by lazy {
             CaseServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val alerts: AlertService.WithRawResponse by lazy {
+            AlertServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun withOptions(
@@ -47,8 +47,8 @@ class SafetyServiceImpl internal constructor(private val clientOptions: ClientOp
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        override fun alerts(): AlertService.WithRawResponse = alerts
-
         override fun cases(): CaseService.WithRawResponse = cases
+
+        override fun alerts(): AlertService.WithRawResponse = alerts
     }
 }

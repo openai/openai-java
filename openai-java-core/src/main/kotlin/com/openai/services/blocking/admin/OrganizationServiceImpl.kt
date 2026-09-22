@@ -38,10 +38,6 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
         WithRawResponseImpl(clientOptions)
     }
 
-    private val externalStorage: ExternalStorageService by lazy {
-        ExternalStorageServiceImpl(clientOptions)
-    }
-
     private val auditLogs: AuditLogService by lazy { AuditLogServiceImpl(clientOptions) }
 
     private val adminApiKeys: AdminApiKeyService by lazy { AdminApiKeyServiceImpl(clientOptions) }
@@ -60,6 +56,10 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
         DataRetentionServiceImpl(clientOptions)
     }
 
+    private val externalStorage: ExternalStorageService by lazy {
+        ExternalStorageServiceImpl(clientOptions)
+    }
+
     private val spendLimit: SpendLimitService by lazy { SpendLimitServiceImpl(clientOptions) }
 
     private val spendAlerts: SpendAlertService by lazy { SpendAlertServiceImpl(clientOptions) }
@@ -72,8 +72,6 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationService =
         OrganizationServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
-
-    override fun externalStorage(): ExternalStorageService = externalStorage
 
     /** List user actions and configuration changes within this organization. */
     override fun auditLogs(): AuditLogService = auditLogs
@@ -92,6 +90,8 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
 
     override fun dataRetention(): DataRetentionService = dataRetention
 
+    override fun externalStorage(): ExternalStorageService = externalStorage
+
     override fun spendLimit(): SpendLimitService = spendLimit
 
     override fun spendAlerts(): SpendAlertService = spendAlerts
@@ -102,10 +102,6 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         OrganizationService.WithRawResponse {
-
-        private val externalStorage: ExternalStorageService.WithRawResponse by lazy {
-            ExternalStorageServiceImpl.WithRawResponseImpl(clientOptions)
-        }
 
         private val auditLogs: AuditLogService.WithRawResponse by lazy {
             AuditLogServiceImpl.WithRawResponseImpl(clientOptions)
@@ -139,6 +135,10 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
             DataRetentionServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val externalStorage: ExternalStorageService.WithRawResponse by lazy {
+            ExternalStorageServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val spendLimit: SpendLimitService.WithRawResponse by lazy {
             SpendLimitServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -162,8 +162,6 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        override fun externalStorage(): ExternalStorageService.WithRawResponse = externalStorage
-
         /** List user actions and configuration changes within this organization. */
         override fun auditLogs(): AuditLogService.WithRawResponse = auditLogs
 
@@ -180,6 +178,8 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
         override fun roles(): RoleService.WithRawResponse = roles
 
         override fun dataRetention(): DataRetentionService.WithRawResponse = dataRetention
+
+        override fun externalStorage(): ExternalStorageService.WithRawResponse = externalStorage
 
         override fun spendLimit(): SpendLimitService.WithRawResponse = spendLimit
 
