@@ -124,7 +124,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -291,25 +291,29 @@ private constructor(
     interface Visitor<out T> {
 
         /** A text input to the model. */
-        fun visitInputText(inputText: BetaResponseInputText): T
+        fun visitInputText(inputText: BetaResponseInputText): T = unknown(JsonValue.from(inputText))
 
         /**
          * An image input to the model. Learn about
          * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
          */
-        fun visitInputImage(inputImage: BetaResponseInputImage): T
+        fun visitInputImage(inputImage: BetaResponseInputImage): T =
+            unknown(JsonValue.from(inputImage))
 
         /** A file input to the model. */
-        fun visitInputFile(inputFile: BetaResponseInputFile): T
+        fun visitInputFile(inputFile: BetaResponseInputFile): T = unknown(JsonValue.from(inputFile))
 
         /** A text output from the model. */
-        fun visitOutputText(outputText: BetaResponseOutputText): T
+        fun visitOutputText(outputText: BetaResponseOutputText): T =
+            unknown(JsonValue.from(outputText))
 
         /** A refusal from the model. */
-        fun visitOutputRefusal(outputRefusal: BetaResponseOutputRefusal): T
+        fun visitOutputRefusal(outputRefusal: BetaResponseOutputRefusal): T =
+            unknown(JsonValue.from(outputRefusal))
 
         /** Reasoning text from the model. */
-        fun visitReasoningText(reasoningText: ReasoningText): T
+        fun visitReasoningText(reasoningText: ReasoningText): T =
+            unknown(JsonValue.from(reasoningText))
 
         /**
          * Maps an unknown variant of [BetaResponseContent] to a value of type [T].
@@ -318,6 +322,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

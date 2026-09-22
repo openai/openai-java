@@ -102,7 +102,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -232,10 +232,10 @@ private constructor(
     interface Visitor<out T> {
 
         /** Rotate an OAuth credential for an HTTPS MCP destination. */
-        fun visitMcpOAuth(mcpOauth: McpOAuth): T
+        fun visitMcpOAuth(mcpOauth: McpOAuth): T = unknown(JsonValue.from(mcpOauth))
 
         /** Replace the bearer token for the credential's MCP server. */
-        fun visitStaticBearer(staticBearer: StaticBearer): T
+        fun visitStaticBearer(staticBearer: StaticBearer): T = unknown(JsonValue.from(staticBearer))
 
         /**
          * Replace the secret for an OpenAI-hosted environment credential. The environment variable
@@ -252,12 +252,14 @@ private constructor(
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
          *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
+         *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException(
-                "Unknown CredentialAuthRotateParam: ${redactSecretValue(json)}"
-            )
+            // Credential payloads, including future fields, must not enter default diagnostics.
+            throw OpenAIInvalidDataException("Unknown CredentialAuthRotateParam: [REDACTED]")
         }
     }
 

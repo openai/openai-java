@@ -172,7 +172,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -452,37 +452,41 @@ private constructor(
          */
         fun visitRealtimeConversationItemSystemMessage(
             realtimeConversationItemSystemMessage: RealtimeConversationItemSystemMessage
-        ): T
+        ): T = unknown(JsonValue.from(realtimeConversationItemSystemMessage))
 
         /** A user message item in a Realtime conversation. */
         fun visitRealtimeConversationItemUserMessage(
             realtimeConversationItemUserMessage: RealtimeConversationItemUserMessage
-        ): T
+        ): T = unknown(JsonValue.from(realtimeConversationItemUserMessage))
 
         /** An assistant message item in a Realtime conversation. */
         fun visitRealtimeConversationItemAssistantMessage(
             realtimeConversationItemAssistantMessage: RealtimeConversationItemAssistantMessage
-        ): T
+        ): T = unknown(JsonValue.from(realtimeConversationItemAssistantMessage))
 
         /** A function call item in a Realtime conversation. */
-        fun visitFunctionCall(functionCall: RealtimeConversationItemFunctionCall): T
+        fun visitFunctionCall(functionCall: RealtimeConversationItemFunctionCall): T =
+            unknown(JsonValue.from(functionCall))
 
         /** A function call output item in a Realtime conversation. */
         fun visitFunctionCallOutput(
             functionCallOutput: RealtimeConversationItemFunctionCallOutput
-        ): T
+        ): T = unknown(JsonValue.from(functionCallOutput))
 
         /** A Realtime item responding to an MCP approval request. */
-        fun visitMcpApprovalResponse(mcpApprovalResponse: RealtimeMcpApprovalResponse): T
+        fun visitMcpApprovalResponse(mcpApprovalResponse: RealtimeMcpApprovalResponse): T =
+            unknown(JsonValue.from(mcpApprovalResponse))
 
         /** A Realtime item listing tools available on an MCP server. */
-        fun visitMcpListTools(mcpListTools: RealtimeMcpListTools): T
+        fun visitMcpListTools(mcpListTools: RealtimeMcpListTools): T =
+            unknown(JsonValue.from(mcpListTools))
 
         /** A Realtime item representing an invocation of a tool on an MCP server. */
-        fun visitMcpCall(mcpCall: RealtimeMcpToolCall): T
+        fun visitMcpCall(mcpCall: RealtimeMcpToolCall): T = unknown(JsonValue.from(mcpCall))
 
         /** A Realtime item requesting human approval of a tool invocation. */
-        fun visitMcpApprovalRequest(mcpApprovalRequest: RealtimeMcpApprovalRequest): T
+        fun visitMcpApprovalRequest(mcpApprovalRequest: RealtimeMcpApprovalRequest): T =
+            unknown(JsonValue.from(mcpApprovalRequest))
 
         /**
          * Maps an unknown variant of [ConversationItem] to a value of type [T].
@@ -491,6 +495,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

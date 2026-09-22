@@ -110,7 +110,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -227,14 +227,16 @@ private constructor(
          * strategy. `disabled` will disable truncation and emit errors when the conversation
          * exceeds the input token limit.
          */
-        fun visitStrategy(strategy: RealtimeTruncationStrategy): T
+        fun visitStrategy(strategy: RealtimeTruncationStrategy): T =
+            unknown(JsonValue.from(strategy))
 
         /**
          * Retain a fraction of the conversation tokens when the conversation exceeds the input
          * token limit. This allows you to amortize truncations across multiple turns, which can
          * help improve cached token usage.
          */
-        fun visitRetentionRatio(retentionRatio: RealtimeTruncationRetentionRatio): T
+        fun visitRetentionRatio(retentionRatio: RealtimeTruncationRetentionRatio): T =
+            unknown(JsonValue.from(retentionRatio))
 
         /**
          * Maps an unknown variant of [RealtimeTruncation] to a value of type [T].
@@ -243,6 +245,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

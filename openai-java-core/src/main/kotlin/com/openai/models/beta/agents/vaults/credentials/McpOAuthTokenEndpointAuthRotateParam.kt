@@ -81,7 +81,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -188,10 +188,12 @@ private constructor(
     interface Visitor<out T> {
 
         /** Updates credentials sent using HTTP Basic authentication. */
-        fun visitClientSecretBasic(clientSecretBasic: ClientSecretBasic): T
+        fun visitClientSecretBasic(clientSecretBasic: ClientSecretBasic): T =
+            unknown(JsonValue.from(clientSecretBasic))
 
         /** Updates credentials sent in the token request body. */
-        fun visitClientSecretPost(clientSecretPost: ClientSecretPost): T
+        fun visitClientSecretPost(clientSecretPost: ClientSecretPost): T =
+            unknown(JsonValue.from(clientSecretPost))
 
         /**
          * Maps an unknown variant of [McpOAuthTokenEndpointAuthRotateParam] to a value of type [T].
@@ -201,10 +203,16 @@ private constructor(
          * SDK is on an older version than the API, then the API may respond with new variants that
          * the SDK is unaware of.
          *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
+         *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown McpOAuthTokenEndpointAuthRotateParam: $json")
+            // Credential payloads, including future fields, must not enter default diagnostics.
+            throw OpenAIInvalidDataException(
+                "Unknown McpOAuthTokenEndpointAuthRotateParam: [REDACTED]"
+            )
         }
     }
 

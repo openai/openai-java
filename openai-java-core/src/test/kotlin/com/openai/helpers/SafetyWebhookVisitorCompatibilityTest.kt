@@ -9,7 +9,6 @@ import com.openai.models.webhooks.UnwrapWebhookEvent
 import java.io.File
 import java.io.StringWriter
 import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.Modifier
 import java.net.URLClassLoader
 import java.nio.file.Files
 import java.nio.file.Path
@@ -43,10 +42,9 @@ internal class SafetyWebhookVisitorCompatibilityTest {
         val union = UnwrapWebhookEvent::class.java
         val visitor = union.declaredClasses.single { it.simpleName == "Visitor" }
         val newMethods = setOf("visitSafetyDeactivationIssued", "visitSafetyWarningIssued")
-        val oldMethods =
-            visitor.declaredMethods
-                .filter { Modifier.isAbstract(it.modifiers) && it.name !in newMethods }
-                .sortedBy { it.name }
+        val visitMethods = visitor.declaredMethods.filter { it.name.startsWith("visit") }
+        assertThat(visitMethods).allMatch { it.isDefault }
+        val oldMethods = visitMethods.filter { it.name !in newMethods }.sortedBy { it.name }
         assertThat(oldMethods.map { it.name })
             .containsExactlyInAnyOrder(
                 "visitBatchCancelled",

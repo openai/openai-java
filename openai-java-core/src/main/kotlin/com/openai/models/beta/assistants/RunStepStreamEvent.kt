@@ -184,7 +184,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -417,44 +417,51 @@ private constructor(
          * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
          * created.
          */
-        fun visitThreadRunStepCreated(threadRunStepCreated: ThreadRunStepCreated): T
+        fun visitThreadRunStepCreated(threadRunStepCreated: ThreadRunStepCreated): T =
+            unknown(JsonValue.from(threadRunStepCreated))
 
         /**
          * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
          * moves to an `in_progress` state.
          */
-        fun visitThreadRunStepInProgress(threadRunStepInProgress: ThreadRunStepInProgress): T
+        fun visitThreadRunStepInProgress(threadRunStepInProgress: ThreadRunStepInProgress): T =
+            unknown(JsonValue.from(threadRunStepInProgress))
 
         /**
          * Occurs when parts of a
          * [run step](https://developers.openai.com/api/docs/assistants/migration) are being
          * streamed.
          */
-        fun visitThreadRunStepDelta(threadRunStepDelta: ThreadRunStepDelta): T
+        fun visitThreadRunStepDelta(threadRunStepDelta: ThreadRunStepDelta): T =
+            unknown(JsonValue.from(threadRunStepDelta))
 
         /**
          * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
          * completed.
          */
-        fun visitThreadRunStepCompleted(threadRunStepCompleted: ThreadRunStepCompleted): T
+        fun visitThreadRunStepCompleted(threadRunStepCompleted: ThreadRunStepCompleted): T =
+            unknown(JsonValue.from(threadRunStepCompleted))
 
         /**
          * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
          * fails.
          */
-        fun visitThreadRunStepFailed(threadRunStepFailed: ThreadRunStepFailed): T
+        fun visitThreadRunStepFailed(threadRunStepFailed: ThreadRunStepFailed): T =
+            unknown(JsonValue.from(threadRunStepFailed))
 
         /**
          * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
          * cancelled.
          */
-        fun visitThreadRunStepCancelled(threadRunStepCancelled: ThreadRunStepCancelled): T
+        fun visitThreadRunStepCancelled(threadRunStepCancelled: ThreadRunStepCancelled): T =
+            unknown(JsonValue.from(threadRunStepCancelled))
 
         /**
          * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
          * expires.
          */
-        fun visitThreadRunStepExpired(threadRunStepExpired: ThreadRunStepExpired): T
+        fun visitThreadRunStepExpired(threadRunStepExpired: ThreadRunStepExpired): T =
+            unknown(JsonValue.from(threadRunStepExpired))
 
         /**
          * Maps an unknown variant of [RunStepStreamEvent] to a value of type [T].
@@ -463,6 +470,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

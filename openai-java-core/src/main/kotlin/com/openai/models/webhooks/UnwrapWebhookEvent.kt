@@ -304,7 +304,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -784,38 +784,46 @@ private constructor(
     interface Visitor<out T> {
 
         /** Sent when a batch API request has been cancelled. */
-        fun visitBatchCancelled(batchCancelled: BatchCancelledWebhookEvent): T
+        fun visitBatchCancelled(batchCancelled: BatchCancelledWebhookEvent): T =
+            unknown(JsonValue.from(batchCancelled))
 
         /** Sent when a batch API request has been completed. */
-        fun visitBatchCompleted(batchCompleted: BatchCompletedWebhookEvent): T
+        fun visitBatchCompleted(batchCompleted: BatchCompletedWebhookEvent): T =
+            unknown(JsonValue.from(batchCompleted))
 
         /** Sent when a batch API request has expired. */
-        fun visitBatchExpired(batchExpired: BatchExpiredWebhookEvent): T
+        fun visitBatchExpired(batchExpired: BatchExpiredWebhookEvent): T =
+            unknown(JsonValue.from(batchExpired))
 
         /** Sent when a batch API request has failed. */
-        fun visitBatchFailed(batchFailed: BatchFailedWebhookEvent): T
+        fun visitBatchFailed(batchFailed: BatchFailedWebhookEvent): T =
+            unknown(JsonValue.from(batchFailed))
 
         /** Sent when an eval run has been canceled. */
-        fun visitEvalRunCanceled(evalRunCanceled: EvalRunCanceledWebhookEvent): T
+        fun visitEvalRunCanceled(evalRunCanceled: EvalRunCanceledWebhookEvent): T =
+            unknown(JsonValue.from(evalRunCanceled))
 
         /** Sent when an eval run has failed. */
-        fun visitEvalRunFailed(evalRunFailed: EvalRunFailedWebhookEvent): T
+        fun visitEvalRunFailed(evalRunFailed: EvalRunFailedWebhookEvent): T =
+            unknown(JsonValue.from(evalRunFailed))
 
         /** Sent when an eval run has succeeded. */
-        fun visitEvalRunSucceeded(evalRunSucceeded: EvalRunSucceededWebhookEvent): T
+        fun visitEvalRunSucceeded(evalRunSucceeded: EvalRunSucceededWebhookEvent): T =
+            unknown(JsonValue.from(evalRunSucceeded))
 
         /** Sent when a fine-tuning job has been cancelled. */
         fun visitFineTuningJobCancelled(
             fineTuningJobCancelled: FineTuningJobCancelledWebhookEvent
-        ): T
+        ): T = unknown(JsonValue.from(fineTuningJobCancelled))
 
         /** Sent when a fine-tuning job has failed. */
-        fun visitFineTuningJobFailed(fineTuningJobFailed: FineTuningJobFailedWebhookEvent): T
+        fun visitFineTuningJobFailed(fineTuningJobFailed: FineTuningJobFailedWebhookEvent): T =
+            unknown(JsonValue.from(fineTuningJobFailed))
 
         /** Sent when a fine-tuning job has succeeded. */
         fun visitFineTuningJobSucceeded(
             fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent
-        ): T
+        ): T = unknown(JsonValue.from(fineTuningJobSucceeded))
 
         /**
          * Deprecated: use `live.transport.incoming`. Retained for existing subscriptions during
@@ -825,36 +833,45 @@ private constructor(
          * the runtime surface.
          */
         @Deprecated("deprecated")
-        fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent): T
+        fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent): T =
+            unknown(JsonValue.from(liveCallIncoming))
 
         /**
          * Sent when an incoming API SIP session is available for Live acceptance. The same pending
          * session can also emit `realtime.call.incoming`; the first successful Realtime or Live
          * accept endpoint selects the runtime surface.
          */
-        fun visitLiveTransportIncoming(liveTransportIncoming: LiveTransportIncomingWebhookEvent): T
+        fun visitLiveTransportIncoming(
+            liveTransportIncoming: LiveTransportIncomingWebhookEvent
+        ): T = unknown(JsonValue.from(liveTransportIncoming))
 
         /**
          * Sent when an incoming API SIP session is available for Realtime acceptance. The same
          * pending session can also emit `live.transport.incoming`; the first successful Realtime or
          * Live accept endpoint selects the runtime surface.
          */
-        fun visitRealtimeCallIncoming(realtimeCallIncoming: RealtimeCallIncomingWebhookEvent): T
+        fun visitRealtimeCallIncoming(realtimeCallIncoming: RealtimeCallIncomingWebhookEvent): T =
+            unknown(JsonValue.from(realtimeCallIncoming))
 
         /** Sent when a background response has been cancelled. */
-        fun visitResponseCancelled(responseCancelled: ResponseCancelledWebhookEvent): T
+        fun visitResponseCancelled(responseCancelled: ResponseCancelledWebhookEvent): T =
+            unknown(JsonValue.from(responseCancelled))
 
         /** Sent when a background response has been completed. */
-        fun visitResponseCompleted(responseCompleted: ResponseCompletedWebhookEvent): T
+        fun visitResponseCompleted(responseCompleted: ResponseCompletedWebhookEvent): T =
+            unknown(JsonValue.from(responseCompleted))
 
         /** Sent when a background response has failed. */
-        fun visitResponseFailed(responseFailed: ResponseFailedWebhookEvent): T
+        fun visitResponseFailed(responseFailed: ResponseFailedWebhookEvent): T =
+            unknown(JsonValue.from(responseFailed))
 
         /** Sent when a background response has been interrupted. */
-        fun visitResponseIncomplete(responseIncomplete: ResponseIncompleteWebhookEvent): T
+        fun visitResponseIncomplete(responseIncomplete: ResponseIncompleteWebhookEvent): T =
+            unknown(JsonValue.from(responseIncomplete))
 
         /** Sent when an approved safety alert is available for an API project. */
-        fun visitSafetyAlertCreated(safetyAlertCreated: SafetyAlertCreatedWebhookEvent): T
+        fun visitSafetyAlertCreated(safetyAlertCreated: SafetyAlertCreatedWebhookEvent): T =
+            unknown(JsonValue.from(safetyAlertCreated))
 
         /** Sent when a deactivation is issued for a safety identifier in your organization. */
         fun visitSafetyDeactivationIssued(
@@ -862,7 +879,9 @@ private constructor(
         ): T = unknown(JsonValue.from(safetyDeactivationIssued))
 
         /** Sent when an approved safety alert is available for an enterprise workspace. */
-        fun visitSafetyOrgAlertCreated(safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent): T
+        fun visitSafetyOrgAlertCreated(
+            safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent
+        ): T = unknown(JsonValue.from(safetyOrgAlertCreated))
 
         /** Sent when a warning is issued for a safety identifier in your organization. */
         fun visitSafetyWarningIssued(safetyWarningIssued: SafetyWarningIssuedWebhookEvent): T =
@@ -875,6 +894,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

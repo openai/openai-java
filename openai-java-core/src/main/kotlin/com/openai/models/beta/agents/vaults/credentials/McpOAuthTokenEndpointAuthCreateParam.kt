@@ -91,7 +91,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -217,13 +217,15 @@ private constructor(
     interface Visitor<out T> {
 
         /** Sends the client ID without a client secret. */
-        fun visitNone(none: JsonValue): T
+        fun visitNone(none: JsonValue): T = unknown(JsonValue.from(none))
 
         /** Sends the client ID and secret using HTTP Basic authentication. */
-        fun visitClientSecretBasic(clientSecretBasic: ClientSecretBasic): T
+        fun visitClientSecretBasic(clientSecretBasic: ClientSecretBasic): T =
+            unknown(JsonValue.from(clientSecretBasic))
 
         /** Sends the client ID and secret in the token request body. */
-        fun visitClientSecretPost(clientSecretPost: ClientSecretPost): T
+        fun visitClientSecretPost(clientSecretPost: ClientSecretPost): T =
+            unknown(JsonValue.from(clientSecretPost))
 
         /**
          * Maps an unknown variant of [McpOAuthTokenEndpointAuthCreateParam] to a value of type [T].
@@ -233,10 +235,16 @@ private constructor(
          * SDK is on an older version than the API, then the API may respond with new variants that
          * the SDK is unaware of.
          *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
+         *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown McpOAuthTokenEndpointAuthCreateParam: $json")
+            // Credential payloads, including future fields, must not enter default diagnostics.
+            throw OpenAIInvalidDataException(
+                "Unknown McpOAuthTokenEndpointAuthCreateParam: [REDACTED]"
+            )
         }
     }
 

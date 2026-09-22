@@ -75,7 +75,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -185,11 +185,12 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T
+        fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T =
+            unknown(JsonValue.from(codeInterpreter))
 
-        fun visitFileSearch(fileSearch: FileSearchTool): T
+        fun visitFileSearch(fileSearch: FileSearchTool): T = unknown(JsonValue.from(fileSearch))
 
-        fun visitFunction(function: FunctionTool): T
+        fun visitFunction(function: FunctionTool): T = unknown(JsonValue.from(function))
 
         /**
          * Maps an unknown variant of [AssistantTool] to a value of type [T].
@@ -197,6 +198,9 @@ private constructor(
          * An instance of [AssistantTool] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

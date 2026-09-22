@@ -152,7 +152,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -345,32 +345,37 @@ private constructor(
          * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
          * created.
          */
-        fun visitThreadMessageCreated(threadMessageCreated: ThreadMessageCreated): T
+        fun visitThreadMessageCreated(threadMessageCreated: ThreadMessageCreated): T =
+            unknown(JsonValue.from(threadMessageCreated))
 
         /**
          * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration)
          * moves to an `in_progress` state.
          */
-        fun visitThreadMessageInProgress(threadMessageInProgress: ThreadMessageInProgress): T
+        fun visitThreadMessageInProgress(threadMessageInProgress: ThreadMessageInProgress): T =
+            unknown(JsonValue.from(threadMessageInProgress))
 
         /**
          * Occurs when parts of a
          * [Message](https://developers.openai.com/api/docs/assistants/migration) are being
          * streamed.
          */
-        fun visitThreadMessageDelta(threadMessageDelta: ThreadMessageDelta): T
+        fun visitThreadMessageDelta(threadMessageDelta: ThreadMessageDelta): T =
+            unknown(JsonValue.from(threadMessageDelta))
 
         /**
          * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
          * completed.
          */
-        fun visitThreadMessageCompleted(threadMessageCompleted: ThreadMessageCompleted): T
+        fun visitThreadMessageCompleted(threadMessageCompleted: ThreadMessageCompleted): T =
+            unknown(JsonValue.from(threadMessageCompleted))
 
         /**
          * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) ends
          * before it is completed.
          */
-        fun visitThreadMessageIncomplete(threadMessageIncomplete: ThreadMessageIncomplete): T
+        fun visitThreadMessageIncomplete(threadMessageIncomplete: ThreadMessageIncomplete): T =
+            unknown(JsonValue.from(threadMessageIncomplete))
 
         /**
          * Maps an unknown variant of [MessageStreamEvent] to a value of type [T].
@@ -379,6 +384,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

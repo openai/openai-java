@@ -11,7 +11,6 @@ import com.openai.models.beta.agents.vaults.credentials.CredentialAuthRotatePara
 import java.io.File
 import java.io.StringWriter
 import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.Modifier
 import java.net.URLClassLoader
 import java.nio.file.Files
 import java.nio.file.Path
@@ -39,12 +38,10 @@ internal class EnvironmentCredentialVisitorCompatibilityTest {
                 CredentialAuthRotateParam::class.java,
             )[index]
         val visitor = union.declaredClasses.single { it.simpleName == "Visitor" }
+        val visitMethods = visitor.declaredMethods.filter { it.name.startsWith("visit") }
+        assertThat(visitMethods).allMatch { it.isDefault }
         val oldMethods =
-            visitor.declaredMethods
-                .filter {
-                    Modifier.isAbstract(it.modifiers) && it.name != "visitEnvironmentVariable"
-                }
-                .sortedBy { it.name }
+            visitMethods.filter { it.name != "visitEnvironmentVariable" }.sortedBy { it.name }
         assertThat(oldMethods.map { it.name })
             .containsExactlyInAnyOrder(
                 if (index == 0) "visitMcpO" else "visitMcpOAuth",
@@ -135,9 +132,13 @@ internal class EnvironmentCredentialVisitorCompatibilityTest {
                         }
                         .cause
                 assertThat(error).isInstanceOf(OpenAIInvalidDataException::class.java)
-                assertThat(error?.message)
-                    .doesNotContain("fake-secret")
-                    .contains("[REDACTED]", "future_field", "preserved")
+                if (index == 0) {
+                    assertThat(error?.message)
+                        .doesNotContain("fake-secret")
+                        .contains("[REDACTED]", "future_field", "preserved")
+                } else {
+                    assertThat(error?.message).isEqualTo("Unknown ${union.simpleName}: [REDACTED]")
+                }
                 assertThat(jsonMapper().readTree(jsonMapper().writeValueAsString(auth)))
                     .isEqualTo(expected)
             }
