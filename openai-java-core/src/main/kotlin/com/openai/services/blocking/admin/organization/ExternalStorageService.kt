@@ -93,7 +93,12 @@ interface ExternalStorageService {
     fun list(requestOptions: RequestOptions): ExternalStorageListPage =
         list(ExternalStorageListParams.none(), requestOptions)
 
-    /** Soft-delete one customer-managed external storage configuration. */
+    /**
+     * Disconnect a customer-managed external storage configuration. Removing the project's last
+     * configuration restores organization-default retention if customer-managed retention was
+     * active. Repeating a deletion also completes any interrupted retention update. Cloud storage
+     * is unchanged.
+     */
     fun delete(externalStorageId: String): ExternalStorageDeleted =
         delete(externalStorageId, ExternalStorageDeleteParams.none())
 

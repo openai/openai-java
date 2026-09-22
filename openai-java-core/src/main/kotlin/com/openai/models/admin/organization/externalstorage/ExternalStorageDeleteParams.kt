@@ -11,7 +11,11 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Soft-delete one customer-managed external storage configuration. */
+/**
+ * Disconnect a customer-managed external storage configuration. Removing the project's last
+ * configuration restores organization-default retention if customer-managed retention was active.
+ * Repeating a deletion also completes any interrupted retention update. Cloud storage is unchanged.
+ */
 class ExternalStorageDeleteParams
 private constructor(
     private val externalStorageId: String?,

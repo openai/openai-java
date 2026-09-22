@@ -32,8 +32,6 @@ interface OrganizationServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationServiceAsync
 
-    fun externalStorage(): ExternalStorageServiceAsync
-
     /** List user actions and configuration changes within this organization. */
     fun auditLogs(): AuditLogServiceAsync
 
@@ -50,6 +48,8 @@ interface OrganizationServiceAsync {
     fun roles(): RoleServiceAsync
 
     fun dataRetention(): DataRetentionServiceAsync
+
+    fun externalStorage(): ExternalStorageServiceAsync
 
     fun spendLimit(): SpendLimitServiceAsync
 
@@ -74,8 +74,6 @@ interface OrganizationServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): OrganizationServiceAsync.WithRawResponse
 
-        fun externalStorage(): ExternalStorageServiceAsync.WithRawResponse
-
         /** List user actions and configuration changes within this organization. */
         fun auditLogs(): AuditLogServiceAsync.WithRawResponse
 
@@ -92,6 +90,8 @@ interface OrganizationServiceAsync {
         fun roles(): RoleServiceAsync.WithRawResponse
 
         fun dataRetention(): DataRetentionServiceAsync.WithRawResponse
+
+        fun externalStorage(): ExternalStorageServiceAsync.WithRawResponse
 
         fun spendLimit(): SpendLimitServiceAsync.WithRawResponse
 
