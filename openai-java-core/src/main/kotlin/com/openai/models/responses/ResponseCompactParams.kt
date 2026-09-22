@@ -1245,6 +1245,10 @@ private constructor(
 
             @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
 
+            @JvmField val GPT_6_SOL = of("gpt-6-sol")
+
+            @JvmField val GPT_6_LUNA = of("gpt-6-luna")
+
             @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
             @JvmField val GPT_5_6_TERRA = of("gpt-5.6-terra")
@@ -1461,6 +1465,8 @@ private constructor(
         /** An enum containing [Model]'s known values. */
         enum class Known {
             GPT_6_ASTRA,
+            GPT_6_SOL,
+            GPT_6_LUNA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
@@ -1578,6 +1584,8 @@ private constructor(
          */
         enum class Value {
             GPT_6_ASTRA,
+            GPT_6_SOL,
+            GPT_6_LUNA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
@@ -1696,6 +1704,8 @@ private constructor(
         fun value(): Value =
             when (this) {
                 GPT_6_ASTRA -> Value.GPT_6_ASTRA
+                GPT_6_SOL -> Value.GPT_6_SOL
+                GPT_6_LUNA -> Value.GPT_6_LUNA
                 GPT_5_6_SOL -> Value.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
@@ -1815,6 +1825,8 @@ private constructor(
         fun known(): Known =
             when (this) {
                 GPT_6_ASTRA -> Known.GPT_6_ASTRA
+                GPT_6_SOL -> Known.GPT_6_SOL
+                GPT_6_LUNA -> Known.GPT_6_LUNA
                 GPT_5_6_SOL -> Known.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
