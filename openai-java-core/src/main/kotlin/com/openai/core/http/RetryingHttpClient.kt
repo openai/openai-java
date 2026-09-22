@@ -30,7 +30,50 @@ private constructor(
     private val idempotencyHeader: String?,
 ) : HttpClient {
 
-    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
+    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
+        try {
+            executeInternal(request, requestOptions)
+        } catch (failure: Throwable) {
+            request.body.closeMultipartOnFailure(failure)
+            throw failure
+        }
+
+    override fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<HttpResponse> =
+        try {
+            val response = executeAsyncInternal(request, requestOptions)
+            if (!request.body.isMultipartUpload()) {
+                response
+            } else {
+                val result = CompletableFuture<HttpResponse>()
+                response.whenComplete { received, failure ->
+                    if (failure != null) {
+                        request.body.closeMultipartOnFailure(failure)
+                        result.completeExceptionally(failure)
+                    } else if (!result.complete(received)) {
+                        received.close()
+                    }
+                }
+                result.whenComplete { _, failure ->
+                    if (result.isCancelled) {
+                        request.body.cancelMultipart(failure)
+                        // Nonrepeatable requests previously returned the transport future directly.
+                        if (!isRetryable(request)) response.cancel(true)
+                    }
+                }
+                result
+            }
+        } catch (failure: Throwable) {
+            request.body.closeMultipartOnFailure(failure)
+            throw failure
+        }
+
+    private fun executeInternal(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+    ): HttpResponse {
         var modifiedRequest = maybeAddIdempotencyHeader(request)
 
         // Don't send the current retry count in the headers if the caller set their own value.
@@ -74,7 +117,7 @@ private constructor(
         }
     }
 
-    override fun executeAsync(
+    private fun executeAsyncInternal(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> {
@@ -93,7 +136,10 @@ private constructor(
             val requestWithRetryCount =
                 if (shouldSendRetryCount) setRetryCountHeader(request, retries) else request
 
-            val responseFuture = httpClient.executeAsync(requestWithRetryCount, requestOptions)
+            val responseFuture =
+                request.body.beforeMultipartTransport {
+                    httpClient.executeAsync(requestWithRetryCount, requestOptions)
+                }
             if (!isRetryable(requestWithRetryCount)) {
                 return responseFuture
             }
