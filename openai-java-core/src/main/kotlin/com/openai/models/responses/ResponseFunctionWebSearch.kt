@@ -372,7 +372,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -482,13 +482,13 @@ private constructor(
         interface Visitor<out T> {
 
             /** Action type "search" - Performs a web search query. */
-            fun visitSearch(search: Search): T
+            fun visitSearch(search: Search): T = unknown(JsonValue.from(search))
 
             /** Action type "open_page" - Opens a specific URL from search results. */
-            fun visitOpenPage(openPage: OpenPage): T
+            fun visitOpenPage(openPage: OpenPage): T = unknown(JsonValue.from(openPage))
 
             /** Action type "find_in_page": Searches for a pattern within a loaded page. */
-            fun visitFindInPage(findInPage: FindInPage): T
+            fun visitFindInPage(findInPage: FindInPage): T = unknown(JsonValue.from(findInPage))
 
             /**
              * Maps an unknown variant of [Action] to a value of type [T].
@@ -497,6 +497,9 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

@@ -91,7 +91,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -205,13 +205,14 @@ private constructor(
          * associated with the assistant or the message. Generated when the assistant uses the
          * "file_search" tool to search files.
          */
-        fun visitFileCitation(fileCitation: FileCitationDeltaAnnotation): T
+        fun visitFileCitation(fileCitation: FileCitationDeltaAnnotation): T =
+            unknown(JsonValue.from(fileCitation))
 
         /**
          * A URL for the file that's generated when the assistant used the `code_interpreter` tool
          * to generate a file.
          */
-        fun visitFilePath(filePath: FilePathDeltaAnnotation): T
+        fun visitFilePath(filePath: FilePathDeltaAnnotation): T = unknown(JsonValue.from(filePath))
 
         /**
          * Maps an unknown variant of [AnnotationDelta] to a value of type [T].
@@ -220,6 +221,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

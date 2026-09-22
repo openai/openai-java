@@ -77,7 +77,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -181,13 +181,14 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        fun visitStatic(static_: StaticFileChunkingStrategyObject): T
+        fun visitStatic(static_: StaticFileChunkingStrategyObject): T =
+            unknown(JsonValue.from(static_))
 
         /**
          * This is returned when the chunking strategy is unknown. Typically, this is because the
          * file was indexed before the `chunking_strategy` concept was introduced in the API.
          */
-        fun visitOther(other: OtherFileChunkingStrategyObject): T
+        fun visitOther(other: OtherFileChunkingStrategyObject): T = unknown(JsonValue.from(other))
 
         /**
          * Maps an unknown variant of [FileChunkingStrategy] to a value of type [T].
@@ -196,6 +197,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

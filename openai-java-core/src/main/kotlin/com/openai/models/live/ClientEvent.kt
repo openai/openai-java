@@ -240,7 +240,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -558,67 +558,78 @@ private constructor(
          * Start a Live session on a primary WebSocket. Send this event before other commands and
          * wait for `session.started`.
          */
-        fun visitSessionStart(sessionStart: SessionStartEvent): T
+        fun visitSessionStart(sessionStart: SessionStartEvent): T =
+            unknown(JsonValue.from(sessionStart))
 
         /**
          * Update the delegation settings of an active Live session. The server acknowledges
          * accepted changes with `session.updated`.
          */
-        fun visitSessionUpdate(sessionUpdate: SessionUpdateEvent): T
+        fun visitSessionUpdate(sessionUpdate: SessionUpdateEvent): T =
+            unknown(JsonValue.from(sessionUpdate))
 
         /**
          * Send audio to a Live session over its primary WebSocket. WebRTC and SIP sessions send
          * audio over their media transport.
          */
-        fun visitSessionInputAudioAppend(sessionInputAudioAppend: InputAudioAppendEvent): T
+        fun visitSessionInputAudioAppend(sessionInputAudioAppend: InputAudioAppendEvent): T =
+            unknown(JsonValue.from(sessionInputAudioAppend))
 
         /**
          * Mute audio input to the Live model without closing the session. The server acknowledges
          * with `session.input_audio.muted`.
          */
-        fun visitSessionInputAudioMute(sessionInputAudioMute: InputAudioMuteEvent): T
+        fun visitSessionInputAudioMute(sessionInputAudioMute: InputAudioMuteEvent): T =
+            unknown(JsonValue.from(sessionInputAudioMute))
 
         /**
          * Resume audio input to a Live model after muting it. The server acknowledges with
          * `session.input_audio.unmuted`.
          */
-        fun visitSessionInputAudioUnmute(sessionInputAudioUnmute: InputAudioUnmuteEvent): T
+        fun visitSessionInputAudioUnmute(sessionInputAudioUnmute: InputAudioUnmuteEvent): T =
+            unknown(JsonValue.from(sessionInputAudioUnmute))
 
         /**
          * Append instructions to the Live conversation while it is running, optionally associating
          * them with an existing client delegation.
          */
-        fun visitSessionInstructionsAppend(sessionInstructionsAppend: InstructionsAppendEvent): T
+        fun visitSessionInstructionsAppend(sessionInstructionsAppend: InstructionsAppendEvent): T =
+            unknown(JsonValue.from(sessionInstructionsAppend))
 
         /**
          * Provide silent reasoning or progress context to the Live model, optionally for an
          * existing client delegation.
          */
-        fun visitSessionThinkingAppend(sessionThinkingAppend: ThinkingAppendEvent): T
+        fun visitSessionThinkingAppend(sessionThinkingAppend: ThinkingAppendEvent): T =
+            unknown(JsonValue.from(sessionThinkingAppend))
 
         /**
          * Provide context the Live model can communicate to the user, optionally for an existing
          * client delegation.
          */
-        fun visitSessionCommentaryAppend(sessionCommentaryAppend: CommentaryAppendEvent): T
+        fun visitSessionCommentaryAppend(sessionCommentaryAppend: CommentaryAppendEvent): T =
+            unknown(JsonValue.from(sessionCommentaryAppend))
 
         /**
          * Add an input item to the Live session’s Responses backend. Requires Responses delegation;
          * use `response.create` to request a response.
          */
-        fun visitResponseItemCreate(responseItemCreate: ResponseItemCreateEvent): T
+        fun visitResponseItemCreate(responseItemCreate: ResponseItemCreateEvent): T =
+            unknown(JsonValue.from(responseItemCreate))
 
         /**
          * Request a response from the Live session’s Responses backend, or continue a delegated
          * response waiting for tool results. Requires Responses delegation.
          */
-        fun visitResponseCreate(responseCreate: ResponseCreateEvent): T
+        fun visitResponseCreate(responseCreate: ResponseCreateEvent): T =
+            unknown(JsonValue.from(responseCreate))
 
         /**
          * Request that the Live session close. The terminal `session.closed` event contains the
          * close reason and final usage.
          */
-        fun visitSessionClose(sessionClose: SessionCloseEvent): T
+        fun visitSessionClose(sessionClose: SessionCloseEvent): T =
+            unknown(JsonValue.from(sessionClose))
 
         /**
          * Maps an unknown variant of [ClientEvent] to a value of type [T].
@@ -626,6 +637,9 @@ private constructor(
          * An instance of [ClientEvent] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

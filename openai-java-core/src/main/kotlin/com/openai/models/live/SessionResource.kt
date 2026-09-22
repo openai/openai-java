@@ -1217,7 +1217,8 @@ private constructor(
                  * ```
                  *
                  * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
-                 *   [visitor] and the current variant is unknown.
+                 *   [visitor] and the current variant is unknown or its visit method is not
+                 *   overridden.
                  */
                 fun <T> accept(visitor: Visitor<T>): T =
                     when {
@@ -1326,12 +1327,12 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitString(string: String): T
+                    fun visitString(string: String): T = unknown(JsonValue.from(string))
 
                     /** A built-in voice available for Live speech. */
-                    fun visitBuiltIn(builtIn: BuiltInVoice): T
+                    fun visitBuiltIn(builtIn: BuiltInVoice): T = unknown(JsonValue.from(builtIn))
 
-                    fun visitCustom(custom: CustomVoice): T
+                    fun visitCustom(custom: CustomVoice): T = unknown(JsonValue.from(custom))
 
                     /**
                      * Maps an unknown variant of [Voice] to a value of type [T].
@@ -1340,6 +1341,10 @@ private constructor(
                      * from data that doesn't match any known variant. For example, if the SDK is on
                      * an older version than the API, then the API may respond with new variants
                      * that the SDK is unaware of.
+                     *
+                     * Recognized variants also reach this method when their visit method is not
+                     * overridden. This allows existing visitors to handle variants added by newer
+                     * SDK versions.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -1501,7 +1506,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -1605,10 +1610,10 @@ private constructor(
              * Delegate tasks to your application. The Live session emits delegation events that
              * your backend handles.
              */
-            fun visitClient(client: ClientDelegation): T
+            fun visitClient(client: ClientDelegation): T = unknown(JsonValue.from(client))
 
             /** Delegate tasks to a Responses model managed by the Live session. */
-            fun visitResponses(responses: Responses): T
+            fun visitResponses(responses: Responses): T = unknown(JsonValue.from(responses))
 
             /**
              * Maps an unknown variant of [Delegation] to a value of type [T].
@@ -1617,6 +1622,9 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

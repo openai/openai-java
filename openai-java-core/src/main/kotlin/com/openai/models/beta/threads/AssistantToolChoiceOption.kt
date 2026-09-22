@@ -93,7 +93,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -206,12 +206,13 @@ private constructor(
          * means the model can pick between generating a message or calling one or more tools.
          * `required` means the model must call one or more tools before responding to the user.
          */
-        fun visitAuto(auto: Auto): T
+        fun visitAuto(auto: Auto): T = unknown(JsonValue.from(auto))
 
         /**
          * Specifies a tool the model should use. Use to force the model to call a specific tool.
          */
-        fun visitAssistantToolChoice(assistantToolChoice: AssistantToolChoice): T
+        fun visitAssistantToolChoice(assistantToolChoice: AssistantToolChoice): T =
+            unknown(JsonValue.from(assistantToolChoice))
 
         /**
          * Maps an unknown variant of [AssistantToolChoiceOption] to a value of type [T].
@@ -220,6 +221,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

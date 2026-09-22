@@ -148,7 +148,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -348,31 +348,31 @@ private constructor(
     interface Visitor<out T> {
 
         /** A click action. */
-        fun visitClick(click: Click): T
+        fun visitClick(click: Click): T = unknown(JsonValue.from(click))
 
         /** A double click action. */
-        fun visitDoubleClick(doubleClick: DoubleClick): T
+        fun visitDoubleClick(doubleClick: DoubleClick): T = unknown(JsonValue.from(doubleClick))
 
         /** A drag action. */
-        fun visitDrag(drag: Drag): T
+        fun visitDrag(drag: Drag): T = unknown(JsonValue.from(drag))
 
         /** A collection of keypresses the model would like to perform. */
-        fun visitKeypress(keypress: Keypress): T
+        fun visitKeypress(keypress: Keypress): T = unknown(JsonValue.from(keypress))
 
         /** A mouse move action. */
-        fun visitMove(move: Move): T
+        fun visitMove(move: Move): T = unknown(JsonValue.from(move))
 
         /** A screenshot action. */
-        fun visitScreenshot(screenshot: JsonValue): T
+        fun visitScreenshot(screenshot: JsonValue): T = unknown(JsonValue.from(screenshot))
 
         /** A scroll action. */
-        fun visitScroll(scroll: Scroll): T
+        fun visitScroll(scroll: Scroll): T = unknown(JsonValue.from(scroll))
 
         /** An action to type in text. */
-        fun visitType(type: Type): T
+        fun visitType(type: Type): T = unknown(JsonValue.from(type))
 
         /** A wait action. */
-        fun visitWait(wait: JsonValue): T
+        fun visitWait(wait: JsonValue): T = unknown(JsonValue.from(wait))
 
         /**
          * Maps an unknown variant of [ComputerAction] to a value of type [T].
@@ -381,6 +381,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

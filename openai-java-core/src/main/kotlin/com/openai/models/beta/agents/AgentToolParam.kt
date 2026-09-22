@@ -114,7 +114,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -268,19 +268,20 @@ private constructor(
     interface Visitor<out T> {
 
         /** A function defined by the application. */
-        fun visitFunction(function: Function): T
+        fun visitFunction(function: Function): T = unknown(JsonValue.from(function))
 
         /** Discovers deferred function tools and loads them into the model context. */
-        fun visitToolSearch(toolSearch: JsonValue): T
+        fun visitToolSearch(toolSearch: JsonValue): T = unknown(JsonValue.from(toolSearch))
 
         /** Enables calling tools from model-generated code. */
-        fun visitProgrammaticToolCalling(programmaticToolCalling: ProgrammaticToolCalling): T
+        fun visitProgrammaticToolCalling(programmaticToolCalling: ProgrammaticToolCalling): T =
+            unknown(JsonValue.from(programmaticToolCalling))
 
         /** Tools provided by a remote MCP server. */
-        fun visitMcp(mcp: Mcp): T
+        fun visitMcp(mcp: Mcp): T = unknown(JsonValue.from(mcp))
 
         /** Web search. */
-        fun visitWebSearch(webSearch: WebSearch): T
+        fun visitWebSearch(webSearch: WebSearch): T = unknown(JsonValue.from(webSearch))
 
         /**
          * Maps an unknown variant of [AgentToolParam] to a value of type [T].
@@ -289,6 +290,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

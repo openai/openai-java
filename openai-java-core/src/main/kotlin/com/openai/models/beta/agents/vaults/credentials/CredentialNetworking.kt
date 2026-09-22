@@ -99,7 +99,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -220,13 +220,13 @@ private constructor(
          * Requires `environment.network.access` to be `restricted`, with explicit
          * `allowed_domains`.
          */
-        fun visitUnrestricted(unrestricted: JsonValue): T
+        fun visitUnrestricted(unrestricted: JsonValue): T = unknown(JsonValue.from(unrestricted))
 
         /**
          * Allows substitution only for the listed hosts. The environment network policy must also
          * allow these hosts.
          */
-        fun visitLimited(limited: Limited): T
+        fun visitLimited(limited: Limited): T = unknown(JsonValue.from(limited))
 
         /**
          * Maps an unknown variant of [CredentialNetworking] to a value of type [T].
@@ -235,6 +235,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
