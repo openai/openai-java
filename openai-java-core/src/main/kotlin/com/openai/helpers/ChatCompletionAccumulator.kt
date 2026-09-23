@@ -86,7 +86,7 @@ class ChatCompletionAccumulator private constructor() {
      * The accumulated tool call function arguments that will be set on the function builders when
      * completed. The entries correspond to those in [toolCallFunctionBuilders].
      */
-    private val toolCallFunctionArgs = mutableMapOf<Long, MutableMap<Long, String>>()
+    private val toolCallFunctionArgs = mutableMapOf<Long, MutableMap<Long, StringBuilder>>()
 
     /**
      * The finished status of each of the `n` completions. When a chunk with a `finishReason` is
@@ -219,12 +219,18 @@ class ChatCompletionAccumulator private constructor() {
                 // chunks have been received, presumptively build the `ChatCompletion`. (One further
                 // usage chunk _might_ be notified.)
                 isFinished[index] = true
-                if (choiceBuilders.keys.all { isFinished[it] == true }) {
-                    chatCompletion = ensureChatCompletionBuilder().choices(buildChoices()).build()
-                }
             } else {
                 choiceBuilder.finishReason(JsonNull.of())
             }
+        }
+
+        if (
+            chunk.choices().any { it.finishReason().isPresent } &&
+                choiceBuilders.keys.all { isFinished[it] == true }
+        ) {
+            chatCompletion = chatCompletionBuilder.choices(buildChoices()).build()
+            // Release mutable storage only after the whole chunk and final build succeed.
+            toolCallFunctionArgs.clear()
         }
 
         return chunk
@@ -296,9 +302,11 @@ class ChatCompletionAccumulator private constructor() {
                 val messageToolCallFunctionArgs =
                     toolCallFunctionArgs.getOrPut(index) { mutableMapOf() }
 
-                messageToolCallFunctionArgs[deltaToolCall.index()] =
-                    (messageToolCallFunctionArgs[deltaToolCall.index()] ?: "") +
-                        (ensureFunction(deltaToolCall.function()).arguments().getOrNull() ?: "")
+                val fragment =
+                    ensureFunction(deltaToolCall.function()).arguments().getOrNull() ?: ""
+                messageToolCallFunctionArgs
+                    .getOrPut(deltaToolCall.index()) { StringBuilder() }
+                    .append(fragment)
             }
         }
 
@@ -348,7 +356,7 @@ class ChatCompletionAccumulator private constructor() {
         toolCallFunctionBuilders[index]
             ?.get(toolCallIndex)
             ?.arguments(
-                toolCallFunctionArgs[index]?.get(toolCallIndex)
+                toolCallFunctionArgs[index]?.get(toolCallIndex)?.toString()
                     ?: throw OpenAIInvalidDataException(
                         "Missing function arguments for index $index.$toolCallIndex."
                     )
