@@ -44,7 +44,7 @@ private constructor(
     /** Runs the agent without an execution environment. */
     fun none(): Optional<JsonValue> = Optional.ofNullable(none)
 
-    /** An OpenAI-hosted environment, optionally based on a reusable template. */
+    /** An existing OpenAI-hosted environment or new inline/template-based hosted configuration. */
     fun openaiHosted(): Optional<OpenAIHosted> = Optional.ofNullable(openaiHosted)
 
     /** An application-hosted environment configured inline. */
@@ -59,7 +59,7 @@ private constructor(
     /** Runs the agent without an execution environment. */
     fun asNone(): JsonValue = none.getOrThrow("none")
 
-    /** An OpenAI-hosted environment, optionally based on a reusable template. */
+    /** An existing OpenAI-hosted environment or new inline/template-based hosted configuration. */
     fun asOpenAIHosted(): OpenAIHosted = openaiHosted.getOrThrow("openaiHosted")
 
     /** An application-hosted environment configured inline. */
@@ -196,7 +196,9 @@ private constructor(
         /** Runs the agent without an execution environment. */
         @JvmStatic fun ofNone() = EnvironmentParam(none = JsonValue.from(mapOf("type" to "none")))
 
-        /** An OpenAI-hosted environment, optionally based on a reusable template. */
+        /**
+         * An existing OpenAI-hosted environment or new inline/template-based hosted configuration.
+         */
         @JvmStatic
         fun ofOpenAIHosted(openaiHosted: OpenAIHosted) =
             EnvironmentParam(openaiHosted = openaiHosted)
@@ -215,7 +217,9 @@ private constructor(
         /** Runs the agent without an execution environment. */
         fun visitNone(none: JsonValue): T
 
-        /** An OpenAI-hosted environment, optionally based on a reusable template. */
+        /**
+         * An existing OpenAI-hosted environment or new inline/template-based hosted configuration.
+         */
         fun visitOpenAIHosted(openaiHosted: OpenAIHosted): T
 
         /** An application-hosted environment configured inline. */
@@ -281,7 +285,7 @@ private constructor(
         }
     }
 
-    /** An OpenAI-hosted environment, optionally based on a reusable template. */
+    /** An existing OpenAI-hosted environment or new inline/template-based hosted configuration. */
     class OpenAIHosted
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -387,7 +391,8 @@ private constructor(
         fun files(): Optional<List<HostedEnvironmentFileParam>> = files.getOptional("files")
 
         /**
-         * Network access for an OpenAI-hosted environment.
+         * Network access policy for the environment. Defaults to disabled for GA requests and
+         * enabled for alpha/beta requests.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -395,7 +400,7 @@ private constructor(
         fun network(): Optional<Network> = network.getOptional("network")
 
         /**
-         * Packages to install in an OpenAI-hosted environment.
+         * Packages to install in the environment. Defaults to empty package lists.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -675,7 +680,10 @@ private constructor(
             fun addFile(inline: HostedEnvironmentFileParam.Inline) =
                 addFile(HostedEnvironmentFileParam.ofInline(inline))
 
-            /** Network access for an OpenAI-hosted environment. */
+            /**
+             * Network access policy for the environment. Defaults to disabled for GA requests and
+             * enabled for alpha/beta requests.
+             */
             fun network(network: Network?) = network(JsonField.ofNullable(network))
 
             /** Alias for calling [Builder.network] with `network.orElse(null)`. */
@@ -690,7 +698,7 @@ private constructor(
              */
             fun network(network: JsonField<Network>) = apply { this.network = network }
 
-            /** Packages to install in an OpenAI-hosted environment. */
+            /** Packages to install in the environment. Defaults to empty package lists. */
             fun packages(packages: Packages?) = packages(JsonField.ofNullable(packages))
 
             /** Alias for calling [Builder.packages] with `packages.orElse(null)`. */
@@ -1032,7 +1040,10 @@ private constructor(
             override fun toString() = "Env{additionalProperties=$additionalProperties}"
         }
 
-        /** Network access for an OpenAI-hosted environment. */
+        /**
+         * Network access policy for the environment. Defaults to disabled for GA requests and
+         * enabled for alpha/beta requests.
+         */
         class Network
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
@@ -1269,7 +1280,7 @@ private constructor(
 
                 companion object {
 
-                    /** Allows unrestricted network access, matching an omitted network policy. */
+                    /** Allows unrestricted network access. */
                     @JvmField val ENABLED = of("enabled")
 
                     /** Disables network access. */
@@ -1283,7 +1294,7 @@ private constructor(
 
                 /** An enum containing [Access]'s known values. */
                 enum class Known {
-                    /** Allows unrestricted network access, matching an omitted network policy. */
+                    /** Allows unrestricted network access. */
                     ENABLED,
                     /** Disables network access. */
                     DISABLED,
@@ -1301,7 +1312,7 @@ private constructor(
                  * - It was constructed with an arbitrary value using the [of] method.
                  */
                 enum class Value {
-                    /** Allows unrestricted network access, matching an omitted network policy. */
+                    /** Allows unrestricted network access. */
                     ENABLED,
                     /** Disables network access. */
                     DISABLED,
@@ -1431,7 +1442,7 @@ private constructor(
                 "Network{access=$access, allowedDomains=$allowedDomains, additionalProperties=$additionalProperties}"
         }
 
-        /** Packages to install in an OpenAI-hosted environment. */
+        /** Packages to install in the environment. Defaults to empty package lists. */
         class Packages
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(

@@ -24,6 +24,9 @@ internal class LiveTransportIncomingWebhookEventTest {
                                 .value("value")
                                 .build()
                         )
+                        .sipMediaSecurity(
+                            LiveTransportIncomingWebhookEvent.Data.SipMediaSecurity.RTP
+                        )
                         .build()
                 )
                 .object_(LiveTransportIncomingWebhookEvent.Object.EVENT)
@@ -41,6 +44,7 @@ internal class LiveTransportIncomingWebhookEventTest {
                             .value("value")
                             .build()
                     )
+                    .sipMediaSecurity(LiveTransportIncomingWebhookEvent.Data.SipMediaSecurity.RTP)
                     .build()
             )
         assertThat(liveTransportIncomingWebhookEvent.object_())
@@ -62,6 +66,9 @@ internal class LiveTransportIncomingWebhookEventTest {
                                 .name("name")
                                 .value("value")
                                 .build()
+                        )
+                        .sipMediaSecurity(
+                            LiveTransportIncomingWebhookEvent.Data.SipMediaSecurity.RTP
                         )
                         .build()
                 )

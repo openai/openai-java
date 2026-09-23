@@ -1,5 +1,22 @@
 # Contributing to OpenAI Java SDK
 
+## Contribution policy
+
+We welcome bug reports, feature requests, minimal reproductions, and root-cause
+analysis through [GitHub issues](https://github.com/openai/openai-java/issues).
+
+**Pull requests are limited to repository collaborators. We do not accept pull
+requests from non-collaborators**, including documentation or example changes.
+If you are not a collaborator, please open an issue instead of preparing a pull
+request. Include the affected version, expected and actual behavior, and a small,
+sanitized reproduction when applicable.
+
+Report suspected security vulnerabilities privately as described in
+[SECURITY.md](SECURITY.md), rather than in issues or pull requests.
+
+The development and pull request instructions below are for maintainers and
+repository collaborators.
+
 ## Setting up the environment
 
 This repository uses [Gradle](https://gradle.org/) with Kotlin DSL for building and dependency
@@ -114,14 +131,14 @@ Then in your project's `build.gradle.kts` or `pom.xml`, reference the locally pu
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java:4.64.0")
+implementation("com.openai:openai-java:4.69.0")
 ```
 
 ```xml
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.64.0</version>
+  <version>4.69.0</version>
 </dependency>
 ```
 

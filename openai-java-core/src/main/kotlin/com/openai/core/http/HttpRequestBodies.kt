@@ -5,13 +5,20 @@ package com.openai.core.http
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.node.JsonNodeType
+import com.fasterxml.jackson.databind.node.POJONode
 import com.openai.core.MultipartField
+import com.openai.core.multipartValueToTree
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.Collections
+import java.util.IdentityHashMap
 import java.util.UUID
+import java.util.concurrent.CancellationException
+import java.util.concurrent.CompletionException
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.jvm.optionals.getOrNull
 
 @JvmSynthetic
@@ -34,69 +41,91 @@ internal inline fun <reified T> json(jsonMapper: JsonMapper, value: T): HttpRequ
 internal fun multipartFormData(
     jsonMapper: JsonMapper,
     fields: Map<String, MultipartField<*>>,
-): HttpRequestBody =
-    MultipartBody.Builder()
-        .apply {
-            fields.forEach { (name, field) ->
-                val knownValue = field.value.asKnown().getOrNull()
-                val parts =
-                    if (knownValue is InputStream) {
-                        // Read directly from the `InputStream` instead of reading it all
-                        // into memory due to the `jsonMapper` serialization below.
-                        sequenceOf(name to knownValue)
-                    } else {
-                        val node = jsonMapper.valueToTree<JsonNode>(field.value)
-                        serializePart(name, node)
-                    }
-
-                parts.forEach { (name, bytes) ->
-                    val partBody =
-                        if (bytes is ByteArrayInputStream) {
-                            val byteArray = bytes.readBytes()
-
-                            object : HttpRequestBody {
-
-                                override fun writeTo(outputStream: OutputStream) {
-                                    outputStream.write(byteArray)
-                                }
-
-                                override fun contentType(): String = field.contentType
-
-                                override fun contentLength(): Long = byteArray.size.toLong()
-
-                                override fun repeatable(): Boolean = true
-
-                                override fun close() {}
-                            }
+): HttpRequestBody {
+    // Only newly retained union/list streams need restoration of the serializer's abort cleanup.
+    val retainedStreams = Collections.newSetFromMap(IdentityHashMap<InputStream, Boolean>())
+    val closeAttempts =
+        Collections.synchronizedSet(
+            Collections.newSetFromMap(IdentityHashMap<InputStream, Boolean>())
+        )
+    fun closeStream(stream: InputStream) {
+        if (closeAttempts.add(stream)) stream.close()
+    }
+    try {
+        return MultipartBody.Builder()
+            .apply {
+                fields.forEach { (name, field) ->
+                    val knownValue = field.value.asKnown().getOrNull()
+                    val parts =
+                        if (knownValue is InputStream) {
+                            // Read directly from the `InputStream` instead of reading it all
+                            // into memory due to the `jsonMapper` serialization below.
+                            sequenceOf(name to knownValue)
                         } else {
-                            object : HttpRequestBody {
-
-                                override fun writeTo(outputStream: OutputStream) {
-                                    bytes.copyTo(outputStream)
-                                }
-
-                                override fun contentType(): String = field.contentType
-
-                                override fun contentLength(): Long = -1L
-
-                                override fun repeatable(): Boolean = false
-
-                                override fun close() = bytes.close()
-                            }
+                            val node = jsonMapper.multipartValueToTree(field.value, retainedStreams)
+                            serializePart(name, node)
                         }
 
-                    addPart(
-                        MultipartBody.Part.create(
-                            name,
-                            field.filename().getOrNull(),
-                            field.contentType,
-                            partBody,
+                    parts.forEach { (name, bytes) ->
+                        val partBody =
+                            if (bytes is ByteArrayInputStream) {
+                                retainedStreams.remove(bytes)
+                                val byteArray = bytes.use { it.readBytes() }
+
+                                object : HttpRequestBody {
+
+                                    override fun writeTo(outputStream: OutputStream) {
+                                        outputStream.write(byteArray)
+                                    }
+
+                                    override fun contentType(): String = field.contentType
+
+                                    override fun contentLength(): Long = byteArray.size.toLong()
+
+                                    override fun repeatable(): Boolean = true
+
+                                    override fun close() {}
+                                }
+                            } else {
+                                object : HttpRequestBody {
+
+                                    override fun writeTo(outputStream: OutputStream) {
+                                        bytes.copyTo(outputStream)
+                                    }
+
+                                    override fun contentType(): String = field.contentType
+
+                                    override fun contentLength(): Long = -1L
+
+                                    override fun repeatable(): Boolean = false
+
+                                    override fun close() = closeStream(bytes)
+                                }
+                            }
+
+                        addPart(
+                            MultipartBody.Part.create(
+                                name,
+                                field.filename().getOrNull(),
+                                field.contentType,
+                                partBody,
+                            )
                         )
-                    )
+                    }
                 }
             }
+            .build(retainedStreams.toList(), ::closeStream)
+    } catch (failure: Throwable) {
+        retainedStreams.forEach { stream ->
+            try {
+                stream.close()
+            } catch (closeFailure: Throwable) {
+                if (closeFailure !== failure) failure.addSuppressed(closeFailure)
+            }
         }
-        .build()
+        throw failure
+    }
+}
 
 private fun serializePart(name: String, node: JsonNode): Sequence<Pair<String, InputStream>> =
     when (node.nodeType) {
@@ -112,12 +141,43 @@ private fun serializePart(name: String, node: JsonNode): Sequence<Pair<String, I
             node.fields().asSequence().flatMap { (key, value) ->
                 serializePart("$name[$key]", value)
             }
-        JsonNodeType.POJO,
+        JsonNodeType.POJO -> {
+            val stream =
+                (node as POJONode).pojo as? InputStream
+                    ?: throw OpenAIInvalidDataException("Unexpected multipart embedded value")
+            sequenceOf(name to stream)
+        }
         null -> throw OpenAIInvalidDataException("Unexpected JsonNode type: ${node.nodeType}")
     }
 
 private class MultipartBody
-private constructor(private val boundary: String, private val parts: List<Part>) : HttpRequestBody {
+private constructor(
+    private val boundary: String,
+    private val parts: List<Part>,
+    private val retainedStreams: List<InputStream>,
+    private val closeStream: (InputStream) -> Unit,
+) : HttpRequestBody, MultipartTransportGuard {
+    private val closed = AtomicBoolean()
+    private val cancellationLock = Any()
+    private var cancelled = false
+
+    override fun <T> beforeTransport(action: () -> T): T =
+        synchronized(cancellationLock) {
+            if (cancelled) throw CancellationException("Multipart upload was cancelled")
+            action()
+        }
+
+    fun cancel(failure: Throwable) =
+        synchronized(cancellationLock) {
+            cancelled = true
+            // Cancellation is terminal: no transport can take ownership of direct parts later.
+            try {
+                close()
+            } catch (closeFailure: Throwable) {
+                if (closeFailure !== failure) failure.addSuppressed(closeFailure)
+            }
+        }
+
     private val boundaryBytes: ByteArray = boundary.toByteArray()
     private val contentType = "multipart/form-data; boundary=$boundary"
 
@@ -181,8 +241,12 @@ private constructor(private val boundary: String, private val parts: List<Part>)
     override fun repeatable(): Boolean = parts.all { it.body.repeatable() }
 
     override fun close() {
-        parts.forEach { it.body.close() }
+        if (closed.compareAndSet(false, true)) {
+            AutoCloseable { closeRetained() }.use { closeAll(parts) { it.body.close() } }
+        }
     }
+
+    fun closeRetained() = closeAll(retainedStreams, closeStream)
 
     class Builder {
         private val boundary = UUID.randomUUID().toString()
@@ -190,7 +254,8 @@ private constructor(private val boundary: String, private val parts: List<Part>)
 
         fun addPart(part: Part) = apply { parts.add(part) }
 
-        fun build() = MultipartBody(boundary, parts.toImmutable())
+        fun build(retainedStreams: List<InputStream>, closeStream: (InputStream) -> Unit) =
+            MultipartBody(boundary, parts.toImmutable(), retainedStreams, closeStream)
     }
 
     class Part
@@ -238,4 +303,44 @@ private constructor(private val boundary: String, private val parts: List<Part>)
             append('"')
         }
     }
+}
+
+@JvmSynthetic internal fun HttpRequestBody?.isMultipartUpload(): Boolean = this is MultipartBody
+
+/**
+ * Serialize cancellation with a deferred transport handoff, including authentication and retries.
+ */
+@JvmSynthetic
+internal fun <T> HttpRequestBody?.beforeMultipartTransport(action: () -> T): T =
+    if (this is MultipartTransportGuard) beforeTransport(action) else action()
+
+@JvmSynthetic
+internal fun HttpRequestBody?.cancelMultipart(failure: Throwable) {
+    if (this is MultipartBody) cancel(failure)
+}
+
+/** Release multipart ownership when a request fails before or during transport handoff. */
+@JvmSynthetic
+internal fun HttpRequestBody?.closeMultipartOnFailure(failure: Throwable) {
+    if (this !is MultipartBody) return
+    val primary =
+        if (failure is CompletionException && failure.cause != null) failure.cause!! else failure
+    try {
+        closeRetained()
+    } catch (closeFailure: Throwable) {
+        if (closeFailure !== primary) primary.addSuppressed(closeFailure)
+    }
+}
+
+private inline fun <T> closeAll(items: Iterable<T>, close: (T) -> Unit) {
+    var failure: Throwable? = null
+    items.forEach { item ->
+        try {
+            close(item)
+        } catch (closeFailure: Throwable) {
+            if (failure == null) failure = closeFailure
+            else if (failure !== closeFailure) failure!!.addSuppressed(closeFailure)
+        }
+    }
+    failure?.let { throw it }
 }

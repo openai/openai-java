@@ -3553,6 +3553,10 @@ private constructor(
 
                 @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
 
+                @JvmField val GPT_6_SOL = of("gpt-6-sol")
+
+                @JvmField val GPT_6_LUNA = of("gpt-6-luna")
+
                 @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
                 @JvmField val GPT_5_6_TERRA = of("gpt-5.6-terra")
@@ -3590,6 +3594,8 @@ private constructor(
                 @JvmField val GPT_5_1_2025_11_13 = of("gpt-5.1-2025-11-13")
 
                 @JvmField val GPT_5_1_CODEX = of("gpt-5.1-codex")
+
+                @JvmField val GPT_5_1_MINI = of("gpt-5.1-mini")
 
                 @JvmField val GPT_5_1_CHAT_LATEST = of("gpt-5.1-chat-latest")
 
@@ -3729,8 +3735,6 @@ private constructor(
 
                 @JvmField val GPT_3_5_TURBO_16K_0613 = of("gpt-3.5-turbo-16k-0613")
 
-                @JvmField val GPT_5_1_MINI = of("gpt-5.1-mini")
-
                 @JvmField val O1_PRO = of("o1-pro")
 
                 @JvmField val O1_PRO_2025_03_19 = of("o1-pro-2025-03-19")
@@ -3771,12 +3775,16 @@ private constructor(
 
                 @JvmField val GPT_5_6_CYBER = of("gpt-5.6-cyber")
 
+                @JvmField val GPT_ROSALIND_RESEARCH = of("gpt-rosalind-research")
+
                 @JvmStatic fun of(value: String) = Model(JsonField.of(value))
             }
 
             /** An enum containing [Model]'s known values. */
             enum class Known {
                 GPT_6_ASTRA,
+                GPT_6_SOL,
+                GPT_6_LUNA,
                 GPT_5_6_SOL,
                 GPT_5_6_TERRA,
                 GPT_5_6_LUNA,
@@ -3796,6 +3804,7 @@ private constructor(
                 GPT_5_1,
                 GPT_5_1_2025_11_13,
                 GPT_5_1_CODEX,
+                GPT_5_1_MINI,
                 GPT_5_1_CHAT_LATEST,
                 GPT_5,
                 GPT_5_MINI,
@@ -3861,7 +3870,6 @@ private constructor(
                 GPT_3_5_TURBO_1106,
                 GPT_3_5_TURBO_0125,
                 GPT_3_5_TURBO_16K_0613,
-                GPT_5_1_MINI,
                 O1_PRO,
                 O1_PRO_2025_03_19,
                 O3_PRO,
@@ -3881,6 +3889,7 @@ private constructor(
                 GPT_DAYBREAK_BLUE_LATEST,
                 GPT_DAYBREAK_RED_LATEST,
                 GPT_5_6_CYBER,
+                GPT_ROSALIND_RESEARCH,
             }
 
             /**
@@ -3894,6 +3903,8 @@ private constructor(
              */
             enum class Value {
                 GPT_6_ASTRA,
+                GPT_6_SOL,
+                GPT_6_LUNA,
                 GPT_5_6_SOL,
                 GPT_5_6_TERRA,
                 GPT_5_6_LUNA,
@@ -3913,6 +3924,7 @@ private constructor(
                 GPT_5_1,
                 GPT_5_1_2025_11_13,
                 GPT_5_1_CODEX,
+                GPT_5_1_MINI,
                 GPT_5_1_CHAT_LATEST,
                 GPT_5,
                 GPT_5_MINI,
@@ -3978,7 +3990,6 @@ private constructor(
                 GPT_3_5_TURBO_1106,
                 GPT_3_5_TURBO_0125,
                 GPT_3_5_TURBO_16K_0613,
-                GPT_5_1_MINI,
                 O1_PRO,
                 O1_PRO_2025_03_19,
                 O3_PRO,
@@ -3998,6 +4009,7 @@ private constructor(
                 GPT_DAYBREAK_BLUE_LATEST,
                 GPT_DAYBREAK_RED_LATEST,
                 GPT_5_6_CYBER,
+                GPT_ROSALIND_RESEARCH,
                 /**
                  * An enum member indicating that [Model] was instantiated with an unknown value.
                  */
@@ -4014,6 +4026,8 @@ private constructor(
             fun value(): Value =
                 when (this) {
                     GPT_6_ASTRA -> Value.GPT_6_ASTRA
+                    GPT_6_SOL -> Value.GPT_6_SOL
+                    GPT_6_LUNA -> Value.GPT_6_LUNA
                     GPT_5_6_SOL -> Value.GPT_5_6_SOL
                     GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                     GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
@@ -4033,6 +4047,7 @@ private constructor(
                     GPT_5_1 -> Value.GPT_5_1
                     GPT_5_1_2025_11_13 -> Value.GPT_5_1_2025_11_13
                     GPT_5_1_CODEX -> Value.GPT_5_1_CODEX
+                    GPT_5_1_MINI -> Value.GPT_5_1_MINI
                     GPT_5_1_CHAT_LATEST -> Value.GPT_5_1_CHAT_LATEST
                     GPT_5 -> Value.GPT_5
                     GPT_5_MINI -> Value.GPT_5_MINI
@@ -4100,7 +4115,6 @@ private constructor(
                     GPT_3_5_TURBO_1106 -> Value.GPT_3_5_TURBO_1106
                     GPT_3_5_TURBO_0125 -> Value.GPT_3_5_TURBO_0125
                     GPT_3_5_TURBO_16K_0613 -> Value.GPT_3_5_TURBO_16K_0613
-                    GPT_5_1_MINI -> Value.GPT_5_1_MINI
                     O1_PRO -> Value.O1_PRO
                     O1_PRO_2025_03_19 -> Value.O1_PRO_2025_03_19
                     O3_PRO -> Value.O3_PRO
@@ -4120,6 +4134,7 @@ private constructor(
                     GPT_DAYBREAK_BLUE_LATEST -> Value.GPT_DAYBREAK_BLUE_LATEST
                     GPT_DAYBREAK_RED_LATEST -> Value.GPT_DAYBREAK_RED_LATEST
                     GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
+                    GPT_ROSALIND_RESEARCH -> Value.GPT_ROSALIND_RESEARCH
                     else -> Value._UNKNOWN
                 }
 
@@ -4135,6 +4150,8 @@ private constructor(
             fun known(): Known =
                 when (this) {
                     GPT_6_ASTRA -> Known.GPT_6_ASTRA
+                    GPT_6_SOL -> Known.GPT_6_SOL
+                    GPT_6_LUNA -> Known.GPT_6_LUNA
                     GPT_5_6_SOL -> Known.GPT_5_6_SOL
                     GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                     GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
@@ -4154,6 +4171,7 @@ private constructor(
                     GPT_5_1 -> Known.GPT_5_1
                     GPT_5_1_2025_11_13 -> Known.GPT_5_1_2025_11_13
                     GPT_5_1_CODEX -> Known.GPT_5_1_CODEX
+                    GPT_5_1_MINI -> Known.GPT_5_1_MINI
                     GPT_5_1_CHAT_LATEST -> Known.GPT_5_1_CHAT_LATEST
                     GPT_5 -> Known.GPT_5
                     GPT_5_MINI -> Known.GPT_5_MINI
@@ -4221,7 +4239,6 @@ private constructor(
                     GPT_3_5_TURBO_1106 -> Known.GPT_3_5_TURBO_1106
                     GPT_3_5_TURBO_0125 -> Known.GPT_3_5_TURBO_0125
                     GPT_3_5_TURBO_16K_0613 -> Known.GPT_3_5_TURBO_16K_0613
-                    GPT_5_1_MINI -> Known.GPT_5_1_MINI
                     O1_PRO -> Known.O1_PRO
                     O1_PRO_2025_03_19 -> Known.O1_PRO_2025_03_19
                     O3_PRO -> Known.O3_PRO
@@ -4241,6 +4258,7 @@ private constructor(
                     GPT_DAYBREAK_BLUE_LATEST -> Known.GPT_DAYBREAK_BLUE_LATEST
                     GPT_DAYBREAK_RED_LATEST -> Known.GPT_DAYBREAK_RED_LATEST
                     GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
+                    GPT_ROSALIND_RESEARCH -> Known.GPT_ROSALIND_RESEARCH
                     else -> throw OpenAIInvalidDataException("Unknown Model: $value")
                 }
 
@@ -5618,6 +5636,7 @@ private constructor(
         private constructor(
             private val comparisonResponseId: JsonField<String>,
             private val mode: JsonField<Mode>,
+            private val prewarm: JsonField<Boolean>,
             private val ttl: JsonField<Ttl>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
@@ -5628,8 +5647,11 @@ private constructor(
                 @ExcludeMissing
                 comparisonResponseId: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
+                @JsonProperty("prewarm")
+                @ExcludeMissing
+                prewarm: JsonField<Boolean> = JsonMissing.of(),
                 @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
-            ) : this(comparisonResponseId, mode, ttl, mutableMapOf())
+            ) : this(comparisonResponseId, mode, prewarm, ttl, mutableMapOf())
 
             /**
              * The ID of a response to compare when diagnosing prompt cache reuse. Supplying this
@@ -5653,6 +5675,15 @@ private constructor(
              *   the server responded with an unexpected value).
              */
             fun mode(): Optional<Mode> = mode.getOptional("mode")
+
+            /**
+             * Prepares the prompt cache without generating output. Defaults to `false`. When set to
+             * `true`, overrides the `generate` field to `false`.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun prewarm(): Optional<Boolean> = prewarm.getOptional("prewarm")
 
             /**
              * The minimum lifetime applied to every implicit and explicit cache breakpoint written
@@ -5680,6 +5711,13 @@ private constructor(
              * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
+
+            /**
+             * Returns the raw JSON value of [prewarm].
+             *
+             * Unlike [prewarm], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("prewarm") @ExcludeMissing fun _prewarm(): JsonField<Boolean> = prewarm
 
             /**
              * Returns the raw JSON value of [ttl].
@@ -5713,6 +5751,7 @@ private constructor(
 
                 private var comparisonResponseId: JsonField<String> = JsonMissing.of()
                 private var mode: JsonField<Mode> = JsonMissing.of()
+                private var prewarm: JsonField<Boolean> = JsonMissing.of()
                 private var ttl: JsonField<Ttl> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -5720,6 +5759,7 @@ private constructor(
                 internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
                     comparisonResponseId = promptCacheOptions.comparisonResponseId
                     mode = promptCacheOptions.mode
+                    prewarm = promptCacheOptions.prewarm
                     ttl = promptCacheOptions.ttl
                     additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
                 }
@@ -5769,6 +5809,21 @@ private constructor(
                 fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
 
                 /**
+                 * Prepares the prompt cache without generating output. Defaults to `false`. When
+                 * set to `true`, overrides the `generate` field to `false`.
+                 */
+                fun prewarm(prewarm: Boolean) = prewarm(JsonField.of(prewarm))
+
+                /**
+                 * Sets [Builder.prewarm] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.prewarm] with a well-typed [Boolean] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun prewarm(prewarm: JsonField<Boolean>) = apply { this.prewarm = prewarm }
+
+                /**
                  * The minimum lifetime applied to every implicit and explicit cache breakpoint
                  * written by the request. Defaults to `30m`, which is currently the only supported
                  * value. The backend may retain cache entries for longer.
@@ -5815,6 +5870,7 @@ private constructor(
                     PromptCacheOptions(
                         comparisonResponseId,
                         mode,
+                        prewarm,
                         ttl,
                         additionalProperties.toMutableMap(),
                     )
@@ -5839,6 +5895,7 @@ private constructor(
 
                 comparisonResponseId()
                 mode().ifPresent { it.validate() }
+                prewarm()
                 ttl().ifPresent { it.validate() }
                 validated = true
             }
@@ -5861,6 +5918,7 @@ private constructor(
             internal fun validity(): Int =
                 (if (comparisonResponseId.asKnown().isPresent) 1 else 0) +
                     (mode.asKnown().getOrNull()?.validity() ?: 0) +
+                    (if (prewarm.asKnown().isPresent) 1 else 0) +
                     (ttl.asKnown().getOrNull()?.validity() ?: 0)
 
             /**
@@ -6158,18 +6216,19 @@ private constructor(
                 return other is PromptCacheOptions &&
                     comparisonResponseId == other.comparisonResponseId &&
                     mode == other.mode &&
+                    prewarm == other.prewarm &&
                     ttl == other.ttl &&
                     additionalProperties == other.additionalProperties
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(comparisonResponseId, mode, ttl, additionalProperties)
+                Objects.hash(comparisonResponseId, mode, prewarm, ttl, additionalProperties)
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "PromptCacheOptions{comparisonResponseId=$comparisonResponseId, mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+                "PromptCacheOptions{comparisonResponseId=$comparisonResponseId, mode=$mode, prewarm=$prewarm, ttl=$ttl, additionalProperties=$additionalProperties}"
         }
 
         /**

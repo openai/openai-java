@@ -16,7 +16,7 @@ import java.util.Collections
 import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
 
-/** Metadata for a stored MCP server credential. Secret values are never returned. */
+/** Metadata for a stored credential. Secret values are never returned. */
 class Credential
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -50,7 +50,7 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
-     * The authentication method and non-secret configuration for the MCP server.
+     * The authentication method and non-secret configuration of the credential.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -209,7 +209,7 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** The authentication method and non-secret configuration for the MCP server. */
+        /** The authentication method and non-secret configuration of the credential. */
         fun auth(auth: CredentialAuth) = auth(JsonField.of(auth))
 
         /**
@@ -238,6 +238,13 @@ private constructor(
          */
         fun staticBearerAuth(mcpServerUrl: String) =
             auth(CredentialAuth.StaticBearer.builder().mcpServerUrl(mcpServerUrl).build())
+
+        /**
+         * Alias for calling [auth] with
+         * `CredentialAuth.ofEnvironmentVariable(environmentVariable)`.
+         */
+        fun auth(environmentVariable: CredentialAuth.EnvironmentVariable) =
+            auth(CredentialAuth.ofEnvironmentVariable(environmentVariable))
 
         /** The Unix timestamp, in seconds, when the credential was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))

@@ -72,7 +72,7 @@ private constructor(
     )
 
     /**
-     * An annotation that applies to a span of output text.
+     * The annotation object being added. (See annotation schema for details.)
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -240,7 +240,7 @@ private constructor(
                 responseOutputTextAnnotationAddedEvent.additionalProperties.toMutableMap()
         }
 
-        /** An annotation that applies to a span of output text. */
+        /** The annotation object being added. (See annotation schema for details.) */
         fun annotation(annotation: Annotation?) = annotation(JsonField.ofNullable(annotation))
 
         /** Alias for calling [Builder.annotation] with `annotation.orElse(null)`. */
@@ -451,7 +451,7 @@ private constructor(
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("response.output_text.annotation.added")) 1 else 0 }
 
-    /** An annotation that applies to a span of output text. */
+    /** The annotation object being added. (See annotation schema for details.) */
     @JsonDeserialize(using = Annotation.Deserializer::class)
     @JsonSerialize(using = Annotation.Serializer::class)
     class Annotation

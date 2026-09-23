@@ -7,6 +7,7 @@ import com.openai.services.async.admin.organization.AdminApiKeyServiceAsync
 import com.openai.services.async.admin.organization.AuditLogServiceAsync
 import com.openai.services.async.admin.organization.CertificateServiceAsync
 import com.openai.services.async.admin.organization.DataRetentionServiceAsync
+import com.openai.services.async.admin.organization.ExternalStorageServiceAsync
 import com.openai.services.async.admin.organization.GroupServiceAsync
 import com.openai.services.async.admin.organization.InviteServiceAsync
 import com.openai.services.async.admin.organization.ProjectServiceAsync
@@ -48,6 +49,8 @@ interface OrganizationServiceAsync {
 
     fun dataRetention(): DataRetentionServiceAsync
 
+    fun externalStorage(): ExternalStorageServiceAsync
+
     fun spendLimit(): SpendLimitServiceAsync
 
     fun spendAlerts(): SpendAlertServiceAsync
@@ -87,6 +90,8 @@ interface OrganizationServiceAsync {
         fun roles(): RoleServiceAsync.WithRawResponse
 
         fun dataRetention(): DataRetentionServiceAsync.WithRawResponse
+
+        fun externalStorage(): ExternalStorageServiceAsync.WithRawResponse
 
         fun spendLimit(): SpendLimitServiceAsync.WithRawResponse
 

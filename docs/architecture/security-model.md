@@ -18,10 +18,10 @@ webhook delivery are services outside this repository.
 
 | Component | Purpose and important flow | Evidence |
 | --- | --- | --- |
-| openai-java-core | Transport-neutral client, generated services and models, request construction, authentication headers, retry/logging wrappers, JSON/SSE parsing, and webhook verification. | CONTRIBUTING.md:48-55; openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt:57-140; openai-java-core/src/main/kotlin/com/openai/core/ClientOptions.kt:747-808 |
-| openai-java-client-okhttp | Default HTTP transport, caller-configurable proxy, redirects, timeouts, TLS, and hostname verification. | CONTRIBUTING.md:56-59; openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt:54-65; openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OkHttpClient.kt:180-242 |
-| openai-java | Umbrella artifact exposing core and OkHttp APIs without its own logic. | CONTRIBUTING.md:60-63; openai-java/build.gradle.kts:1-8 |
-| openai-java-bedrock | Optional Bedrock endpoint selection and bearer or AWS SigV4 authentication. | CONTRIBUTING.md:60-63; openai-java-bedrock/src/main/kotlin/com/openai/bedrock/BedrockAuth.kt:64-215 |
+| openai-java-core | Transport-neutral client, generated services and models, request construction, authentication headers, retry/logging wrappers, JSON/SSE parsing, and webhook verification. | CONTRIBUTING.md:69-72; openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt:57-140; openai-java-core/src/main/kotlin/com/openai/core/ClientOptions.kt:747-808 |
+| openai-java-client-okhttp | Default HTTP transport, caller-configurable proxy, redirects, timeouts, TLS, and hostname verification. | CONTRIBUTING.md:73-75; openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt:54-65; openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OkHttpClient.kt:180-242 |
+| openai-java | Umbrella artifact exposing core and OkHttp APIs without its own logic. | CONTRIBUTING.md:76-78; openai-java/build.gradle.kts:1-8 |
+| openai-java-bedrock | Optional Bedrock endpoint selection and bearer or AWS SigV4 authentication. | CONTRIBUTING.md:79-80; openai-java-bedrock/src/main/kotlin/com/openai/bedrock/BedrockAuth.kt:64-215 |
 | Build and release workflows | Unprivileged PR validation and separately gated main-only release/publish jobs. | .github/workflows/ci.yml:3-24; .github/workflows/create-releases.yml:3-25 |
 
 Most SDK sources are generated, but generated and hand-written tracked files are

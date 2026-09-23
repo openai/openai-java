@@ -173,7 +173,7 @@ private constructor(
     fun status(): Status = status.getRequired("status")
 
     /**
-     * Recorded token usage for a session or turn. Usage is best effort and may change.
+     * Best-effort token usage for the session, or null if unknown. Recorded usage may change.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -514,7 +514,9 @@ private constructor(
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
-        /** Recorded token usage for a session or turn. Usage is best effort and may change. */
+        /**
+         * Best-effort token usage for the session, or null if unknown. Recorded usage may change.
+         */
         fun usage(usage: TokenUsage?) = usage(JsonField.ofNullable(usage))
 
         /** Alias for calling [Builder.usage] with `usage.orElse(null)`. */

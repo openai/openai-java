@@ -4,6 +4,7 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.services.async.safety.AlertServiceAsync
+import com.openai.services.async.safety.CaseServiceAsync
 import java.util.function.Consumer
 
 interface SafetyServiceAsync {
@@ -20,6 +21,8 @@ interface SafetyServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SafetyServiceAsync
 
+    fun cases(): CaseServiceAsync
+
     fun alerts(): AlertServiceAsync
 
     /**
@@ -35,6 +38,8 @@ interface SafetyServiceAsync {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): SafetyServiceAsync.WithRawResponse
+
+        fun cases(): CaseServiceAsync.WithRawResponse
 
         fun alerts(): AlertServiceAsync.WithRawResponse
     }

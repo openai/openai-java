@@ -22,6 +22,7 @@ import com.openai.services.blocking.responses.InputItemService
 import com.openai.services.blocking.responses.InputTokenService
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 interface ResponseService {
 
     /**
@@ -36,8 +37,31 @@ interface ResponseService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService
 
+    /** Opens a managed Responses WebSocket. Close the returned connection when finished. */
+    @MustBeClosed
+    fun connect(): com.openai.core.http.ResponseConnection =
+        connect(com.openai.core.http.ResponseWebSocketOptions.defaults(), RequestOptions.none())
+
+    /** @see connect */
+    @MustBeClosed
+    fun connect(
+        options: com.openai.core.http.ResponseWebSocketOptions
+    ): com.openai.core.http.ResponseConnection = connect(options, RequestOptions.none())
+
+    /** @see connect */
+    @MustBeClosed
+    fun connect(
+        options: com.openai.core.http.ResponseWebSocketOptions,
+        requestOptions: RequestOptions,
+    ): com.openai.core.http.ResponseConnection =
+        throw UnsupportedOperationException(
+            "This service implementation does not support WebSockets"
+        )
+
+    /** Create and manage model responses. */
     fun inputItems(): InputItemService
 
+    /** Create and manage model responses. */
     fun inputTokens(): InputTokenService
 
     /**
@@ -300,8 +324,10 @@ interface ResponseService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService.WithRawResponse
 
+        /** Create and manage model responses. */
         fun inputItems(): InputItemService.WithRawResponse
 
+        /** Create and manage model responses. */
         fun inputTokens(): InputTokenService.WithRawResponse
 
         /**

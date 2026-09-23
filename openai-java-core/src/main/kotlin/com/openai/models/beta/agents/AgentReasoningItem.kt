@@ -53,7 +53,7 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
-     * The status of an agent output item.
+     * The status of the reasoning item.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -176,7 +176,7 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** The status of an agent output item. */
+        /** The status of the reasoning item. */
         fun status(status: AgentOutputItemStatus?) = status(JsonField.ofNullable(status))
 
         /** Alias for calling [Builder.status] with `status.orElse(null)`. */

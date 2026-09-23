@@ -27,13 +27,14 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Authentication credentials for an MCP server used by agent tools. */
+/** Authentication credentials for an MCP server or an OpenAI-hosted environment. */
 @JsonDeserialize(using = CredentialAuthCreateParam.Deserializer::class)
 @JsonSerialize(using = CredentialAuthCreateParam.Serializer::class)
 class CredentialAuthCreateParam
 private constructor(
     private val mcpOauth: McpOAuth? = null,
     private val staticBearer: StaticBearer? = null,
+    private val environmentVariable: EnvironmentVariable? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -43,15 +44,37 @@ private constructor(
     /** A bearer token for an MCP server, without automatic OAuth refresh. */
     fun staticBearer(): Optional<StaticBearer> = Optional.ofNullable(staticBearer)
 
+    /**
+     * An HTTP credential for OpenAI-hosted environments only. The sandbox receives an environment
+     * variable containing a placeholder, not the secret. Use the placeholder unchanged in outgoing
+     * requests. The egress proxy replaces the placeholder with the secret for allowed HTTPS
+     * destinations on ports 443 and 8443. Sandbox code cannot read the real secret or use it for
+     * local computation, such as signing a request.
+     */
+    fun environmentVariable(): Optional<EnvironmentVariable> =
+        Optional.ofNullable(environmentVariable)
+
     fun isMcpOAuth(): Boolean = mcpOauth != null
 
     fun isStaticBearer(): Boolean = staticBearer != null
+
+    fun isEnvironmentVariable(): Boolean = environmentVariable != null
 
     /** An OAuth credential for an HTTPS MCP destination. */
     fun asMcpOAuth(): McpOAuth = mcpOauth.getOrThrow("mcpOauth")
 
     /** A bearer token for an MCP server, without automatic OAuth refresh. */
     fun asStaticBearer(): StaticBearer = staticBearer.getOrThrow("staticBearer")
+
+    /**
+     * An HTTP credential for OpenAI-hosted environments only. The sandbox receives an environment
+     * variable containing a placeholder, not the secret. Use the placeholder unchanged in outgoing
+     * requests. The egress proxy replaces the placeholder with the secret for allowed HTTPS
+     * destinations on ports 443 and 8443. Sandbox code cannot read the real secret or use it for
+     * local computation, such as signing a request.
+     */
+    fun asEnvironmentVariable(): EnvironmentVariable =
+        environmentVariable.getOrThrow("environmentVariable")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -88,6 +111,7 @@ private constructor(
         when {
             mcpOauth != null -> visitor.visitMcpOAuth(mcpOauth)
             staticBearer != null -> visitor.visitStaticBearer(staticBearer)
+            environmentVariable != null -> visitor.visitEnvironmentVariable(environmentVariable)
             else -> visitor.unknown(_json)
         }
 
@@ -115,6 +139,10 @@ private constructor(
                 override fun visitStaticBearer(staticBearer: StaticBearer) {
                     staticBearer.validate()
                 }
+
+                override fun visitEnvironmentVariable(environmentVariable: EnvironmentVariable) {
+                    environmentVariable.validate()
+                }
             }
         )
         validated = true
@@ -141,6 +169,9 @@ private constructor(
 
                 override fun visitStaticBearer(staticBearer: StaticBearer) = staticBearer.validity()
 
+                override fun visitEnvironmentVariable(environmentVariable: EnvironmentVariable) =
+                    environmentVariable.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -152,16 +183,19 @@ private constructor(
 
         return other is CredentialAuthCreateParam &&
             mcpOauth == other.mcpOauth &&
-            staticBearer == other.staticBearer
+            staticBearer == other.staticBearer &&
+            environmentVariable == other.environmentVariable
     }
 
-    override fun hashCode(): Int = Objects.hash(mcpOauth, staticBearer)
+    override fun hashCode(): Int = Objects.hash(mcpOauth, staticBearer, environmentVariable)
 
     override fun toString(): String =
         when {
             mcpOauth != null -> "CredentialAuthCreateParam{mcpOauth=$mcpOauth}"
             staticBearer != null -> "CredentialAuthCreateParam{staticBearer=$staticBearer}"
-            _json != null -> "CredentialAuthCreateParam{_unknown=$_json}"
+            environmentVariable != null ->
+                "CredentialAuthCreateParam{environmentVariable=$environmentVariable}"
+            _json != null -> "CredentialAuthCreateParam{_unknown=${redactSecretValue(_json)}}"
             else -> throw IllegalStateException("Invalid CredentialAuthCreateParam")
         }
 
@@ -175,6 +209,26 @@ private constructor(
         @JvmStatic
         fun ofStaticBearer(staticBearer: StaticBearer) =
             CredentialAuthCreateParam(staticBearer = staticBearer)
+
+        /**
+         * An HTTP credential for OpenAI-hosted environments only. The sandbox receives an
+         * environment variable containing a placeholder, not the secret. Use the placeholder
+         * unchanged in outgoing requests. The egress proxy replaces the placeholder with the secret
+         * for allowed HTTPS destinations on ports 443 and 8443. Sandbox code cannot read the real
+         * secret or use it for local computation, such as signing a request.
+         */
+        @JvmStatic
+        fun ofEnvironmentVariable(environmentVariable: EnvironmentVariable) =
+            CredentialAuthCreateParam(environmentVariable = environmentVariable)
+
+        // Only diagnostic rendering uses this copy; raw JSON and custom visitors stay unchanged.
+        private fun redactSecretValue(json: JsonValue?): JsonValue? =
+            json
+                ?.asObject()
+                ?.getOrNull()
+                ?.takeIf { "secret_value" in it }
+                ?.let { JsonValue.from(it + ("secret_value" to JsonValue.from("[REDACTED]"))) }
+                ?: json
     }
 
     /**
@@ -190,6 +244,16 @@ private constructor(
         fun visitStaticBearer(staticBearer: StaticBearer): T
 
         /**
+         * An HTTP credential for OpenAI-hosted environments only. The sandbox receives an
+         * environment variable containing a placeholder, not the secret. Use the placeholder
+         * unchanged in outgoing requests. The egress proxy replaces the placeholder with the secret
+         * for allowed HTTPS destinations on ports 443 and 8443. Sandbox code cannot read the real
+         * secret or use it for local computation, such as signing a request.
+         */
+        fun visitEnvironmentVariable(environmentVariable: EnvironmentVariable): T =
+            unknown(JsonValue.from(environmentVariable))
+
+        /**
          * Maps an unknown variant of [CredentialAuthCreateParam] to a value of type [T].
          *
          * An instance of [CredentialAuthCreateParam] can contain an unknown variant if it was
@@ -200,7 +264,9 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown CredentialAuthCreateParam: $json")
+            throw OpenAIInvalidDataException(
+                "Unknown CredentialAuthCreateParam: ${redactSecretValue(json)}"
+            )
         }
     }
 
@@ -222,6 +288,11 @@ private constructor(
                         CredentialAuthCreateParam(staticBearer = it, _json = json)
                     } ?: CredentialAuthCreateParam(_json = json)
                 }
+                "environment_variable" -> {
+                    return tryDeserialize(node, jacksonTypeRef<EnvironmentVariable>())?.let {
+                        CredentialAuthCreateParam(environmentVariable = it, _json = json)
+                    } ?: CredentialAuthCreateParam(_json = json)
+                }
             }
 
             return CredentialAuthCreateParam(_json = json)
@@ -239,6 +310,8 @@ private constructor(
             when {
                 value.mcpOauth != null -> generator.writeObject(value.mcpOauth)
                 value.staticBearer != null -> generator.writeObject(value.staticBearer)
+                value.environmentVariable != null ->
+                    generator.writeObject(value.environmentVariable)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid CredentialAuthCreateParam")
             }
@@ -310,7 +383,7 @@ private constructor(
         fun expiresAt(): Optional<String> = expiresAt.getOptional("expires_at")
 
         /**
-         * Configuration for refreshing the access token of an MCP OAuth credential.
+         * Optional refresh configuration for an HTTPS OAuth token endpoint.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -453,7 +526,7 @@ private constructor(
              */
             fun expiresAt(expiresAt: JsonField<String>) = apply { this.expiresAt = expiresAt }
 
-            /** Configuration for refreshing the access token of an MCP OAuth credential. */
+            /** Optional refresh configuration for an HTTPS OAuth token endpoint. */
             fun refresh(refresh: Refresh?) = refresh(JsonField.ofNullable(refresh))
 
             /** Alias for calling [Builder.refresh] with `refresh.orElse(null)`. */
@@ -561,7 +634,7 @@ private constructor(
                 (if (expiresAt.asKnown().isPresent) 1 else 0) +
                 (refresh.asKnown().getOrNull()?.validity() ?: 0)
 
-        /** Configuration for refreshing the access token of an MCP OAuth credential. */
+        /** Optional refresh configuration for an HTTPS OAuth token endpoint. */
         class Refresh
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
@@ -1324,5 +1397,367 @@ private constructor(
 
         override fun toString() =
             "StaticBearer{token=$token, mcpServerUrl=$mcpServerUrl, type=$type, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * An HTTP credential for OpenAI-hosted environments only. The sandbox receives an environment
+     * variable containing a placeholder, not the secret. Use the placeholder unchanged in outgoing
+     * requests. The egress proxy replaces the placeholder with the secret for allowed HTTPS
+     * destinations on ports 443 and 8443. Sandbox code cannot read the real secret or use it for
+     * local computation, such as signing a request.
+     */
+    class EnvironmentVariable
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val networking: JsonField<CredentialNetworkingParam>,
+        private val secretName: JsonField<String>,
+        private val secretValue: JsonField<String>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("networking")
+            @ExcludeMissing
+            networking: JsonField<CredentialNetworkingParam> = JsonMissing.of(),
+            @JsonProperty("secret_name")
+            @ExcludeMissing
+            secretName: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("secret_value")
+            @ExcludeMissing
+            secretValue: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(networking, secretName, secretValue, type, mutableMapOf())
+
+        /**
+         * The destinations where the proxy can substitute this secret. The environment network
+         * policy must also allow them.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun networking(): CredentialNetworkingParam = networking.getRequired("networking")
+
+        /**
+         * The environment variable name that receives the placeholder, such as `SERVICE_API_KEY`.
+         * Use ASCII letters, digits, and underscores, starting with a letter or underscore. Names
+         * starting with `CODEX_` and managed proxy or certificate variable names are reserved.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun secretName(): String = secretName.getRequired("secret_name")
+
+        /**
+         * The write-only secret to store. Never returned in credential resources or supplied
+         * directly to sandbox code. Must be nonempty and must not contain carriage returns,
+         * newlines, or NUL bytes.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun secretValue(): String {
+            if (
+                secretValue.asUnknown().isPresent &&
+                    !secretValue.isMissing() &&
+                    !secretValue.isNull()
+            ) {
+                throw OpenAIInvalidDataException("`secret_value` is invalid, received [REDACTED]")
+            }
+            return secretValue.getRequired("secret_value")
+        }
+
+        /**
+         * The type of the object. Always `environment_variable`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("environment_variable")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * Returns the raw JSON value of [networking].
+         *
+         * Unlike [networking], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("networking")
+        @ExcludeMissing
+        fun _networking(): JsonField<CredentialNetworkingParam> = networking
+
+        /**
+         * Returns the raw JSON value of [secretName].
+         *
+         * Unlike [secretName], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("secret_name")
+        @ExcludeMissing
+        fun _secretName(): JsonField<String> = secretName
+
+        /**
+         * Returns the raw JSON value of [secretValue].
+         *
+         * Unlike [secretValue], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("secret_value")
+        @ExcludeMissing
+        fun _secretValue(): JsonField<String> = secretValue
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [EnvironmentVariable].
+             *
+             * The following fields are required:
+             * ```java
+             * .networking()
+             * .secretName()
+             * .secretValue()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [EnvironmentVariable]. */
+        class Builder internal constructor() {
+
+            private var networking: JsonField<CredentialNetworkingParam>? = null
+            private var secretName: JsonField<String>? = null
+            private var secretValue: JsonField<String>? = null
+            private var type: JsonValue = JsonValue.from("environment_variable")
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(environmentVariable: EnvironmentVariable) = apply {
+                networking = environmentVariable.networking
+                secretName = environmentVariable.secretName
+                secretValue = environmentVariable.secretValue
+                type = environmentVariable.type
+                additionalProperties = environmentVariable.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The destinations where the proxy can substitute this secret. The environment network
+             * policy must also allow them.
+             */
+            fun networking(networking: CredentialNetworkingParam) =
+                networking(JsonField.of(networking))
+
+            /**
+             * Sets [Builder.networking] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.networking] with a well-typed
+             * [CredentialNetworkingParam] value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
+             */
+            fun networking(networking: JsonField<CredentialNetworkingParam>) = apply {
+                this.networking = networking
+            }
+
+            /** Alias for calling [networking] with `CredentialNetworkingParam.ofUnrestricted()`. */
+            fun networkingUnrestricted() = networking(CredentialNetworkingParam.ofUnrestricted())
+
+            /**
+             * Alias for calling [networking] with `CredentialNetworkingParam.ofLimited(limited)`.
+             */
+            fun networking(limited: CredentialNetworkingParam.Limited) =
+                networking(CredentialNetworkingParam.ofLimited(limited))
+
+            /**
+             * Alias for calling [networking] with the following:
+             * ```java
+             * CredentialNetworkingParam.Limited.builder()
+             *     .allowedHosts(allowedHosts)
+             *     .build()
+             * ```
+             */
+            fun limitedNetworking(allowedHosts: List<String>) =
+                networking(
+                    CredentialNetworkingParam.Limited.builder().allowedHosts(allowedHosts).build()
+                )
+
+            /**
+             * The environment variable name that receives the placeholder, such as
+             * `SERVICE_API_KEY`. Use ASCII letters, digits, and underscores, starting with a letter
+             * or underscore. Names starting with `CODEX_` and managed proxy or certificate variable
+             * names are reserved.
+             */
+            fun secretName(secretName: String) = secretName(JsonField.of(secretName))
+
+            /**
+             * Sets [Builder.secretName] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.secretName] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun secretName(secretName: JsonField<String>) = apply { this.secretName = secretName }
+
+            /**
+             * The write-only secret to store. Never returned in credential resources or supplied
+             * directly to sandbox code. Must be nonempty and must not contain carriage returns,
+             * newlines, or NUL bytes.
+             */
+            fun secretValue(secretValue: String) = secretValue(JsonField.of(secretValue))
+
+            /**
+             * Sets [Builder.secretValue] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.secretValue] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun secretValue(secretValue: JsonField<String>) = apply {
+                this.secretValue = secretValue
+            }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("environment_variable")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [EnvironmentVariable].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .networking()
+             * .secretName()
+             * .secretValue()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): EnvironmentVariable =
+                EnvironmentVariable(
+                    checkRequired("networking", networking),
+                    checkRequired("secretName", secretName),
+                    checkRequired("secretValue", secretValue),
+                    type,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): EnvironmentVariable = apply {
+            if (validated) {
+                return@apply
+            }
+
+            networking().validate()
+            secretName()
+            secretValue()
+            _type().let {
+                if (it != JsonValue.from("environment_variable")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (networking.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (secretName.asKnown().isPresent) 1 else 0) +
+                (if (secretValue.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("environment_variable")) 1 else 0 }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is EnvironmentVariable &&
+                networking == other.networking &&
+                secretName == other.secretName &&
+                secretValue == other.secretValue &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(networking, secretName, secretValue, type, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString(): String {
+            val diagnosticProperties =
+                additionalProperties.mapValues { (key, value) ->
+                    if (key == "secret_value") JsonValue.from("[REDACTED]") else value
+                }
+            return "EnvironmentVariable{networking=$networking, secretName=$secretName, secretValue=[REDACTED], type=$type, additionalProperties=$diagnosticProperties}"
+        }
     }
 }

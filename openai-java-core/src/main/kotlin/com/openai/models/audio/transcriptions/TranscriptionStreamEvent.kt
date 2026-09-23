@@ -277,7 +277,8 @@ private constructor(
          * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
          * with `stream` set to `true` and `response_format` set to `diarized_json`.
          */
-        fun visitTranscriptTextSegment(transcriptTextSegment: TranscriptionTextSegmentEvent): T
+        fun visitTranscriptTextSegment(transcriptTextSegment: TranscriptionTextSegmentEvent): T =
+            unknown(JsonValue.from(transcriptTextSegment))
 
         /**
          * Emitted when there is an additional text delta. This is also the first event emitted when
@@ -285,7 +286,8 @@ private constructor(
          * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
          * with the `Stream` parameter set to `true`.
          */
-        fun visitTranscriptTextDelta(transcriptTextDelta: TranscriptionTextDeltaEvent): T
+        fun visitTranscriptTextDelta(transcriptTextDelta: TranscriptionTextDeltaEvent): T =
+            unknown(JsonValue.from(transcriptTextDelta))
 
         /**
          * Emitted when the transcription is complete. Contains the complete transcription text.
@@ -293,7 +295,8 @@ private constructor(
          * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
          * with the `Stream` parameter set to `true`.
          */
-        fun visitTranscriptTextDone(transcriptTextDone: TranscriptionTextDoneEvent): T
+        fun visitTranscriptTextDone(transcriptTextDone: TranscriptionTextDoneEvent): T =
+            unknown(JsonValue.from(transcriptTextDone))
 
         /**
          * Maps an unknown variant of [TranscriptionStreamEvent] to a value of type [T].
@@ -302,6 +305,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized events also reach this method when their visit method is not overridden. This
+         * allows existing visitors to handle event variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

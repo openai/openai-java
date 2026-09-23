@@ -5,6 +5,7 @@ package com.openai.core
 import com.openai.azure.addPathSegmentsForAzure
 import com.openai.azure.replaceBearerTokenForAzure
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.closeMultipartOnFailure
 import com.openai.errors.InvalidResourceIdException
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
@@ -16,26 +17,31 @@ internal fun HttpRequest.prepare(
     params: Params,
     security: SecurityOptions = SecurityOptions.all(),
 ): HttpRequest {
-    val routedRequest =
-        toBuilder()
-            // Include Azure deployment segments before validating the final resource path.
-            .pathSegments(listOf())
-            .addPathSegmentsForAzure(clientOptions, params.modelNameOrNull())
-            .addPathSegments(*pathSegments.toTypedArray())
+    try {
+        val routedRequest =
+            toBuilder()
+                // Include Azure deployment segments before validating the final resource path.
+                .pathSegments(listOf())
+                .addPathSegmentsForAzure(clientOptions, params.modelNameOrNull())
+                .addPathSegments(*pathSegments.toTypedArray())
+                .build()
+        if (routedRequest.pathSegments.any { it.isEmpty() || it == "." || it == ".." }) {
+            // Rejected requests never reach transport, which normally owns body cleanup.
+            routedRequest.body.use { throw InvalidResourceIdException() }
+        }
+        return routedRequest
+            .toBuilder()
+            .putAllQueryParams(clientOptions.queryParams)
+            .replaceAllQueryParams(params._queryParams())
+            .putAllHeaders(clientOptions.securityHeaders(security))
+            .putAllHeaders(clientOptions.headers)
+            .replaceBearerTokenForAzure(clientOptions)
+            .replaceAllHeaders(params._headers())
             .build()
-    if (routedRequest.pathSegments.any { it.isEmpty() || it == "." || it == ".." }) {
-        // Rejected requests never reach transport, which normally owns body cleanup.
-        routedRequest.body.use { throw InvalidResourceIdException() }
+    } catch (failure: Throwable) {
+        body.closeMultipartOnFailure(failure)
+        throw failure
     }
-    return routedRequest
-        .toBuilder()
-        .putAllQueryParams(clientOptions.queryParams)
-        .replaceAllQueryParams(params._queryParams())
-        .putAllHeaders(clientOptions.securityHeaders(security))
-        .putAllHeaders(clientOptions.headers)
-        .replaceBearerTokenForAzure(clientOptions)
-        .replaceAllHeaders(params._headers())
-        .build()
 }
 
 @JvmSynthetic
