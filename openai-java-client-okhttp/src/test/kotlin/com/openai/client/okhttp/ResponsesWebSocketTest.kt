@@ -4147,21 +4147,25 @@ class ResponsesWebSocketTest {
     }
 
     @Test
-    fun `explicit message limits disable compression before the native reader`() {
+    fun `all connections disable compression before the native reader`() {
         for (mode in
             listOf(
                 "bounded-compressed",
                 "bounded-plain",
                 "default-compressed",
+                "default-plain",
                 "bounded-unknown",
+                "default-unknown",
             )) {
-            val bounded = mode != "default-compressed"
-            val compressed = mode != "bounded-plain"
-            val rejected = bounded && compressed
+            val bounded = mode.startsWith("bounded-")
+            val compressed = !mode.endsWith("-plain")
+            val rejected = compressed
             val extension =
                 when (mode) {
-                    "bounded-plain" -> null
-                    "bounded-unknown" -> "unsupported-test-extension"
+                    "bounded-plain",
+                    "default-plain" -> null
+                    "bounded-unknown",
+                    "default-unknown" -> "unsupported-test-extension"
                     else -> "permessage-deflate"
                 }
             val text =
@@ -4230,9 +4234,7 @@ class ResponsesWebSocketTest {
                             )
                         if (rejected) {
                             assertThatThrownBy { opening.get(5, TimeUnit.SECONDS) }
-                                .hasRootCauseMessage(
-                                    "WebSocket extensions are disabled when maxMessageBytes is configured"
-                                )
+                                .hasRootCauseInstanceOf(java.io.IOException::class.java)
                             assertThat(delivered.get()).isZero()
                         } else {
                             opening.get(5, TimeUnit.SECONDS).use {
@@ -4241,8 +4243,7 @@ class ResponsesWebSocketTest {
                             }
                         }
                         peer.await()
-                        if (bounded) assertThat(offered.get()).isNull()
-                        else assertThat(offered.get()).contains("permessage-deflate")
+                        assertThat(offered.get()).isNull()
                     } finally {
                         client.close()
                     }
