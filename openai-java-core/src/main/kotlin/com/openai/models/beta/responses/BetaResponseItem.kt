@@ -434,7 +434,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -1091,60 +1091,74 @@ private constructor(
 
         fun visitBetaResponseInputMessageItem(
             betaResponseInputMessageItem: BetaResponseInputMessageItem
-        ): T
+        ): T = unknown(JsonValue.from(betaResponseInputMessageItem))
 
         /** An output message from the model. */
-        fun visitBetaResponseOutputMessage(betaResponseOutputMessage: BetaResponseOutputMessage): T
+        fun visitBetaResponseOutputMessage(
+            betaResponseOutputMessage: BetaResponseOutputMessage
+        ): T = unknown(JsonValue.from(betaResponseOutputMessage))
 
         /**
          * The results of a file search tool call. See the
          * [file search guide](https://developers.openai.com/api/docs/guides/tools-file-search) for
          * more information.
          */
-        fun visitFileSearchCall(fileSearchCall: BetaResponseFileSearchToolCall): T
+        fun visitFileSearchCall(fileSearchCall: BetaResponseFileSearchToolCall): T =
+            unknown(JsonValue.from(fileSearchCall))
 
         /**
          * A tool call to a computer use tool. See the
          * [computer use guide](https://developers.openai.com/api/docs/guides/tools-computer-use)
          * for more information.
          */
-        fun visitComputerCall(computerCall: BetaResponseComputerToolCall): T
+        fun visitComputerCall(computerCall: BetaResponseComputerToolCall): T =
+            unknown(JsonValue.from(computerCall))
 
-        fun visitComputerCallOutput(computerCallOutput: BetaResponseComputerToolCallOutputItem): T
+        fun visitComputerCallOutput(computerCallOutput: BetaResponseComputerToolCallOutputItem): T =
+            unknown(JsonValue.from(computerCallOutput))
 
         /**
          * The results of a web search tool call. See the
          * [web search guide](https://developers.openai.com/api/docs/guides/tools-web-search) for
          * more information.
          */
-        fun visitWebSearchCall(webSearchCall: BetaResponseFunctionWebSearch): T
+        fun visitWebSearchCall(webSearchCall: BetaResponseFunctionWebSearch): T =
+            unknown(JsonValue.from(webSearchCall))
 
         /**
          * A tool call to run a function. See the
          * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling)
          * for more information.
          */
-        fun visitFunctionCall(functionCall: BetaResponseFunctionToolCallItem): T
+        fun visitFunctionCall(functionCall: BetaResponseFunctionToolCallItem): T =
+            unknown(JsonValue.from(functionCall))
 
-        fun visitFunctionCallOutput(functionCallOutput: BetaResponseFunctionToolCallOutputItem): T
+        fun visitFunctionCallOutput(functionCallOutput: BetaResponseFunctionToolCallOutputItem): T =
+            unknown(JsonValue.from(functionCallOutput))
 
-        fun visitAgentMessage(agentMessage: AgentMessage): T
+        fun visitAgentMessage(agentMessage: AgentMessage): T = unknown(JsonValue.from(agentMessage))
 
-        fun visitMultiAgentCall(multiAgentCall: MultiAgentCall): T
+        fun visitMultiAgentCall(multiAgentCall: MultiAgentCall): T =
+            unknown(JsonValue.from(multiAgentCall))
 
-        fun visitMultiAgentCallOutput(multiAgentCallOutput: MultiAgentCallOutput): T
+        fun visitMultiAgentCallOutput(multiAgentCallOutput: MultiAgentCallOutput): T =
+            unknown(JsonValue.from(multiAgentCallOutput))
 
-        fun visitToolSearchCall(toolSearchCall: BetaResponseToolSearchCall): T
+        fun visitToolSearchCall(toolSearchCall: BetaResponseToolSearchCall): T =
+            unknown(JsonValue.from(toolSearchCall))
 
-        fun visitToolSearchOutput(toolSearchOutput: BetaResponseToolSearchOutputItem): T
+        fun visitToolSearchOutput(toolSearchOutput: BetaResponseToolSearchOutputItem): T =
+            unknown(JsonValue.from(toolSearchOutput))
 
-        fun visitAdditionalTools(additionalTools: AdditionalTools): T
+        fun visitAdditionalTools(additionalTools: AdditionalTools): T =
+            unknown(JsonValue.from(additionalTools))
 
         /**
          * A configuration update that applies to subsequent responses until it is replaced by
          * another configuration update.
          */
-        fun visitConfigurationUpdate(configurationUpdate: BetaResponseConfigurationUpdateItem): T
+        fun visitConfigurationUpdate(configurationUpdate: BetaResponseConfigurationUpdateItem): T =
+            unknown(JsonValue.from(configurationUpdate))
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
@@ -1152,59 +1166,76 @@ private constructor(
          * subsequent turns of a conversation if you are manually
          * [managing context](https://developers.openai.com/api/docs/guides/conversation-state).
          */
-        fun visitReasoning(reasoning: BetaResponseReasoningItem): T
+        fun visitReasoning(reasoning: BetaResponseReasoningItem): T =
+            unknown(JsonValue.from(reasoning))
 
-        fun visitProgram(program: Program): T
+        fun visitProgram(program: Program): T = unknown(JsonValue.from(program))
 
-        fun visitProgramOutput(programOutput: ProgramOutput): T
+        fun visitProgramOutput(programOutput: ProgramOutput): T =
+            unknown(JsonValue.from(programOutput))
 
         /**
          * A compaction item generated by the
          * [`v1/responses/compact` API](https://developers.openai.com/api/reference/resources/responses/methods/compact).
          */
-        fun visitCompaction(compaction: BetaResponseCompactionItem): T
+        fun visitCompaction(compaction: BetaResponseCompactionItem): T =
+            unknown(JsonValue.from(compaction))
 
         /** An image generation request made by the model. */
-        fun visitImageGenerationCall(imageGenerationCall: ImageGenerationCall): T
+        fun visitImageGenerationCall(imageGenerationCall: ImageGenerationCall): T =
+            unknown(JsonValue.from(imageGenerationCall))
 
         /** A tool call to run code. */
-        fun visitCodeInterpreterCall(codeInterpreterCall: BetaResponseCodeInterpreterToolCall): T
+        fun visitCodeInterpreterCall(codeInterpreterCall: BetaResponseCodeInterpreterToolCall): T =
+            unknown(JsonValue.from(codeInterpreterCall))
 
         /** A tool call to run a command on the local shell. */
-        fun visitLocalShellCall(localShellCall: LocalShellCall): T
+        fun visitLocalShellCall(localShellCall: LocalShellCall): T =
+            unknown(JsonValue.from(localShellCall))
 
         /** The output of a local shell tool call. */
-        fun visitLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput): T
+        fun visitLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput): T =
+            unknown(JsonValue.from(localShellCallOutput))
 
         /** A tool call that executes one or more shell commands in a managed environment. */
-        fun visitShellCall(shellCall: BetaResponseFunctionShellToolCall): T
+        fun visitShellCall(shellCall: BetaResponseFunctionShellToolCall): T =
+            unknown(JsonValue.from(shellCall))
 
         /** The output of a shell tool call that was emitted. */
-        fun visitShellCallOutput(shellCallOutput: BetaResponseFunctionShellToolCallOutput): T
+        fun visitShellCallOutput(shellCallOutput: BetaResponseFunctionShellToolCallOutput): T =
+            unknown(JsonValue.from(shellCallOutput))
 
         /** A tool call that applies file diffs by creating, deleting, or updating files. */
-        fun visitApplyPatchCall(applyPatchCall: BetaResponseApplyPatchToolCall): T
+        fun visitApplyPatchCall(applyPatchCall: BetaResponseApplyPatchToolCall): T =
+            unknown(JsonValue.from(applyPatchCall))
 
         /** The output emitted by an apply patch tool call. */
-        fun visitApplyPatchCallOutput(applyPatchCallOutput: BetaResponseApplyPatchToolCallOutput): T
+        fun visitApplyPatchCallOutput(
+            applyPatchCallOutput: BetaResponseApplyPatchToolCallOutput
+        ): T = unknown(JsonValue.from(applyPatchCallOutput))
 
         /** A list of tools available on an MCP server. */
-        fun visitMcpListTools(mcpListTools: McpListTools): T
+        fun visitMcpListTools(mcpListTools: McpListTools): T = unknown(JsonValue.from(mcpListTools))
 
         /** A request for human approval of a tool invocation. */
-        fun visitMcpApprovalRequest(mcpApprovalRequest: McpApprovalRequest): T
+        fun visitMcpApprovalRequest(mcpApprovalRequest: McpApprovalRequest): T =
+            unknown(JsonValue.from(mcpApprovalRequest))
 
         /** A response to an MCP approval request. */
-        fun visitMcpApprovalResponse(mcpApprovalResponse: McpApprovalResponse): T
+        fun visitMcpApprovalResponse(mcpApprovalResponse: McpApprovalResponse): T =
+            unknown(JsonValue.from(mcpApprovalResponse))
 
         /** An invocation of a tool on an MCP server. */
-        fun visitMcpCall(mcpCall: McpCall): T
+        fun visitMcpCall(mcpCall: McpCall): T = unknown(JsonValue.from(mcpCall))
 
         /** A call to a custom tool created by the model. */
-        fun visitCustomToolCall(customToolCall: BetaResponseCustomToolCallItem): T
+        fun visitCustomToolCall(customToolCall: BetaResponseCustomToolCallItem): T =
+            unknown(JsonValue.from(customToolCall))
 
         /** The output of a custom tool call from your code, being sent back to the model. */
-        fun visitCustomToolCallOutput(customToolCallOutput: BetaResponseCustomToolCallOutputItem): T
+        fun visitCustomToolCallOutput(
+            customToolCallOutput: BetaResponseCustomToolCallOutputItem
+        ): T = unknown(JsonValue.from(customToolCallOutput))
 
         /**
          * Maps an unknown variant of [BetaResponseItem] to a value of type [T].
@@ -1213,6 +1244,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
@@ -2109,7 +2143,7 @@ private constructor(
              * ```
              *
              * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
-             *   [visitor] and the current variant is unknown.
+             *   [visitor] and the current variant is unknown or its visit method is not overridden.
              */
             fun <T> accept(visitor: Visitor<T>): T =
                 when {
@@ -2351,40 +2385,49 @@ private constructor(
             interface Visitor<out T> {
 
                 /** A text input to the model. */
-                fun visitInputText(inputText: BetaResponseInputText): T
+                fun visitInputText(inputText: BetaResponseInputText): T =
+                    unknown(JsonValue.from(inputText))
 
                 /** A text output from the model. */
-                fun visitOutputText(outputText: BetaResponseOutputText): T
+                fun visitOutputText(outputText: BetaResponseOutputText): T =
+                    unknown(JsonValue.from(outputText))
 
                 /** A text content. */
-                fun visitText(text: Text): T
+                fun visitText(text: Text): T = unknown(JsonValue.from(text))
 
                 /** A summary text from the model. */
-                fun visitSummaryText(summaryText: SummaryText): T
+                fun visitSummaryText(summaryText: SummaryText): T =
+                    unknown(JsonValue.from(summaryText))
 
                 /** Reasoning text from the model. */
-                fun visitReasoningText(reasoningText: ReasoningText): T
+                fun visitReasoningText(reasoningText: ReasoningText): T =
+                    unknown(JsonValue.from(reasoningText))
 
                 /** A refusal from the model. */
-                fun visitRefusal(refusal: BetaResponseOutputRefusal): T
+                fun visitRefusal(refusal: BetaResponseOutputRefusal): T =
+                    unknown(JsonValue.from(refusal))
 
                 /**
                  * An image input to the model. Learn about
                  * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
                  */
-                fun visitInputImage(inputImage: BetaResponseInputImage): T
+                fun visitInputImage(inputImage: BetaResponseInputImage): T =
+                    unknown(JsonValue.from(inputImage))
 
                 /** A screenshot of a computer. */
-                fun visitComputerScreenshot(computerScreenshot: ComputerScreenshot): T
+                fun visitComputerScreenshot(computerScreenshot: ComputerScreenshot): T =
+                    unknown(JsonValue.from(computerScreenshot))
 
                 /** A file input to the model. */
-                fun visitInputFile(inputFile: BetaResponseInputFile): T
+                fun visitInputFile(inputFile: BetaResponseInputFile): T =
+                    unknown(JsonValue.from(inputFile))
 
                 /**
                  * Opaque encrypted content that Responses API decrypts inside trusted model
                  * execution.
                  */
-                fun visitEncrypted(encrypted: EncryptedContent): T
+                fun visitEncrypted(encrypted: EncryptedContent): T =
+                    unknown(JsonValue.from(encrypted))
 
                 /**
                  * Maps an unknown variant of [Content] to a value of type [T].
@@ -2393,6 +2436,10 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Recognized variants also reach this method when their visit method is not
+                 * overridden. This allows existing visitors to handle variants added by newer SDK
+                 * versions.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */

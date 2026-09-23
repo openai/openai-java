@@ -301,7 +301,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -402,9 +402,10 @@ private constructor(
              * A filter used to compare a specified attribute key to a given value using a defined
              * comparison operation.
              */
-            fun visitComparison(comparison: ComparisonFilter): T
+            fun visitComparison(comparison: ComparisonFilter): T =
+                unknown(JsonValue.from(comparison))
 
-            fun visitJsonValue(jsonValue: JsonValue): T
+            fun visitJsonValue(jsonValue: JsonValue): T = unknown(JsonValue.from(jsonValue))
 
             /**
              * Maps an unknown variant of [Filter] to a value of type [T].
@@ -413,6 +414,9 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

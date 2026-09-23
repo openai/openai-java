@@ -877,7 +877,7 @@ private constructor(
              * ```
              *
              * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
-             *   [visitor] and the current variant is unknown.
+             *   [visitor] and the current variant is unknown or its visit method is not overridden.
              */
             fun <T> accept(visitor: Visitor<T>): T =
                 when {
@@ -1220,39 +1220,39 @@ private constructor(
                 /** The aggregated completions usage details of the specific time bucket. */
                 fun visitOrganizationUsageCompletions(
                     organizationUsageCompletions: OrganizationUsageCompletionsResult
-                ): T
+                ): T = unknown(JsonValue.from(organizationUsageCompletions))
 
                 /** The aggregated embeddings usage details of the specific time bucket. */
                 fun visitOrganizationUsageEmbeddings(
                     organizationUsageEmbeddings: OrganizationUsageEmbeddingsResult
-                ): T
+                ): T = unknown(JsonValue.from(organizationUsageEmbeddings))
 
                 /** The aggregated moderations usage details of the specific time bucket. */
                 fun visitOrganizationUsageModerations(
                     organizationUsageModerations: OrganizationUsageModerationsResult
-                ): T
+                ): T = unknown(JsonValue.from(organizationUsageModerations))
 
                 /** The aggregated images usage details of the specific time bucket. */
                 fun visitOrganizationUsageImages(
                     organizationUsageImages: OrganizationUsageImagesResult
-                ): T
+                ): T = unknown(JsonValue.from(organizationUsageImages))
 
                 /** The aggregated audio speeches usage details of the specific time bucket. */
                 fun visitOrganizationUsageAudioSpeeches(
                     organizationUsageAudioSpeeches: OrganizationUsageAudioSpeechesResult
-                ): T
+                ): T = unknown(JsonValue.from(organizationUsageAudioSpeeches))
 
                 /**
                  * The aggregated audio transcriptions usage details of the specific time bucket.
                  */
                 fun visitOrganizationUsageAudioTranscriptions(
                     organizationUsageAudioTranscriptions: OrganizationUsageAudioTranscriptionsResult
-                ): T
+                ): T = unknown(JsonValue.from(organizationUsageAudioTranscriptions))
 
                 /** The aggregated vector stores usage details of the specific time bucket. */
                 fun visitOrganizationUsageVectorStores(
                     organizationUsageVectorStores: OrganizationUsageVectorStoresResult
-                ): T
+                ): T = unknown(JsonValue.from(organizationUsageVectorStores))
 
                 /**
                  * The aggregated code interpreter sessions usage details of the specific time
@@ -1261,20 +1261,21 @@ private constructor(
                 fun visitOrganizationUsageCodeInterpreterSessions(
                     organizationUsageCodeInterpreterSessions:
                         OrganizationUsageCodeInterpreterSessionsResult
-                ): T
+                ): T = unknown(JsonValue.from(organizationUsageCodeInterpreterSessions))
 
                 /** The aggregated file search calls usage details of the specific time bucket. */
                 fun visitOrganizationUsageFileSearches(
                     organizationUsageFileSearches: OrganizationUsageFileSearchesResult
-                ): T
+                ): T = unknown(JsonValue.from(organizationUsageFileSearches))
 
                 /** The aggregated web search calls usage details of the specific time bucket. */
                 fun visitOrganizationUsageWebSearches(
                     organizationUsageWebSearches: OrganizationUsageWebSearchesResult
-                ): T
+                ): T = unknown(JsonValue.from(organizationUsageWebSearches))
 
                 /** The aggregated costs details of the specific time bucket. */
-                fun visitOrganizationCosts(organizationCosts: OrganizationCostsResult): T
+                fun visitOrganizationCosts(organizationCosts: OrganizationCostsResult): T =
+                    unknown(JsonValue.from(organizationCosts))
 
                 /**
                  * Maps an unknown variant of [Result] to a value of type [T].
@@ -1283,6 +1284,10 @@ private constructor(
                  * from data that doesn't match any known variant. For example, if the SDK is on an
                  * older version than the API, then the API may respond with new variants that the
                  * SDK is unaware of.
+                 *
+                 * Recognized variants also reach this method when their visit method is not
+                 * overridden. This allows existing visitors to handle variants added by newer SDK
+                 * versions.
                  *
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */

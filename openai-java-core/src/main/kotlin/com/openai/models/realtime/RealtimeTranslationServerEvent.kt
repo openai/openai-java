@@ -182,7 +182,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -434,23 +434,26 @@ private constructor(
          * errors are recoverable and the session will stay open, we recommend to implementors to
          * monitor and log error messages by default.
          */
-        fun visitError(error: RealtimeErrorEvent): T
+        fun visitError(error: RealtimeErrorEvent): T = unknown(JsonValue.from(error))
 
         /**
          * Returned when a translation session is created. Emitted automatically when a new
          * connection is established as the first server event. This event contains the default
          * translation session configuration.
          */
-        fun visitSessionCreated(sessionCreated: RealtimeTranslationSessionCreatedEvent): T
+        fun visitSessionCreated(sessionCreated: RealtimeTranslationSessionCreatedEvent): T =
+            unknown(JsonValue.from(sessionCreated))
 
         /**
          * Returned when a translation session is updated with a `session.update` event, unless
          * there is an error.
          */
-        fun visitSessionUpdated(sessionUpdated: RealtimeTranslationSessionUpdatedEvent): T
+        fun visitSessionUpdated(sessionUpdated: RealtimeTranslationSessionUpdatedEvent): T =
+            unknown(JsonValue.from(sessionUpdated))
 
         /** Returned when a realtime translation session is closed. */
-        fun visitSessionClosed(sessionClosed: RealtimeTranslationSessionClosedEvent): T
+        fun visitSessionClosed(sessionClosed: RealtimeTranslationSessionClosedEvent): T =
+            unknown(JsonValue.from(sessionClosed))
 
         /**
          * Returned when optional source-language transcript text is available. This event is
@@ -461,7 +464,7 @@ private constructor(
          */
         fun visitSessionInputTranscriptDelta(
             sessionInputTranscriptDelta: RealtimeTranslationInputTranscriptDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(sessionInputTranscriptDelta))
 
         /**
          * Returned when translated transcript text is available.
@@ -471,7 +474,7 @@ private constructor(
          */
         fun visitSessionOutputTranscriptDelta(
             sessionOutputTranscriptDelta: RealtimeTranslationOutputTranscriptDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(sessionOutputTranscriptDelta))
 
         /**
          * Returned when translated output audio is available. The `delta` contains a PCM16 audio
@@ -480,7 +483,7 @@ private constructor(
          */
         fun visitSessionOutputAudioDelta(
             sessionOutputAudioDelta: RealtimeTranslationOutputAudioDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(sessionOutputAudioDelta))
 
         /**
          * Maps an unknown variant of [RealtimeTranslationServerEvent] to a value of type [T].
@@ -489,6 +492,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

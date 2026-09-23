@@ -1971,7 +1971,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -2079,12 +2079,12 @@ private constructor(
         interface Visitor<out T> {
 
             /** The unique ID of the conversation. */
-            fun visitId(id: String): T
+            fun visitId(id: String): T = unknown(JsonValue.from(id))
 
             /** The conversation that this response belongs to. */
             fun visitBetaResponseConversationParam(
                 betaResponseConversationParam: BetaResponseConversationParam
-            ): T
+            ): T = unknown(JsonValue.from(betaResponseConversationParam))
 
             /**
              * Maps an unknown variant of [Conversation] to a value of type [T].
@@ -2093,6 +2093,9 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -2207,7 +2210,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -2313,12 +2316,14 @@ private constructor(
         interface Visitor<out T> {
 
             /** A text input to the model, equivalent to a text input with the `user` role. */
-            fun visitString(string: String): T
+            fun visitString(string: String): T = unknown(JsonValue.from(string))
 
             /**
              * A list of one or many input items to the model, containing different content types.
              */
-            fun visitBetaResponseInputItems(betaResponseInputItems: List<BetaResponseInputItem>): T
+            fun visitBetaResponseInputItems(
+                betaResponseInputItems: List<BetaResponseInputItem>
+            ): T = unknown(JsonValue.from(betaResponseInputItems))
 
             /**
              * Maps an unknown variant of [Input] to a value of type [T].
@@ -2327,6 +2332,9 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -4254,7 +4262,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -4555,37 +4563,46 @@ private constructor(
              *
              * `required` means the model must call one or more tools.
              */
-            fun visitBetaToolChoiceOptions(betaToolChoiceOptions: BetaToolChoiceOptions): T
+            fun visitBetaToolChoiceOptions(betaToolChoiceOptions: BetaToolChoiceOptions): T =
+                unknown(JsonValue.from(betaToolChoiceOptions))
 
             /** Constrains the tools available to the model to a pre-defined set. */
-            fun visitBetaToolChoiceAllowed(betaToolChoiceAllowed: BetaToolChoiceAllowed): T
+            fun visitBetaToolChoiceAllowed(betaToolChoiceAllowed: BetaToolChoiceAllowed): T =
+                unknown(JsonValue.from(betaToolChoiceAllowed))
 
             /**
              * Indicates that the model should use a built-in tool to generate a response.
              * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
              */
-            fun visitBetaToolChoiceTypes(betaToolChoiceTypes: BetaToolChoiceTypes): T
+            fun visitBetaToolChoiceTypes(betaToolChoiceTypes: BetaToolChoiceTypes): T =
+                unknown(JsonValue.from(betaToolChoiceTypes))
 
             /** Use this option to force the model to call a specific function. */
-            fun visitBetaToolChoiceFunction(betaToolChoiceFunction: BetaToolChoiceFunction): T
+            fun visitBetaToolChoiceFunction(betaToolChoiceFunction: BetaToolChoiceFunction): T =
+                unknown(JsonValue.from(betaToolChoiceFunction))
 
             /**
              * Use this option to force the model to call a specific tool on a remote MCP server.
              */
-            fun visitBetaToolChoiceMcp(betaToolChoiceMcp: BetaToolChoiceMcp): T
+            fun visitBetaToolChoiceMcp(betaToolChoiceMcp: BetaToolChoiceMcp): T =
+                unknown(JsonValue.from(betaToolChoiceMcp))
 
             /** Use this option to force the model to call a specific custom tool. */
-            fun visitBetaToolChoiceCustom(betaToolChoiceCustom: BetaToolChoiceCustom): T
+            fun visitBetaToolChoiceCustom(betaToolChoiceCustom: BetaToolChoiceCustom): T =
+                unknown(JsonValue.from(betaToolChoiceCustom))
 
             fun visitBetaSpecificProgrammaticToolCallingParam(
                 betaSpecificProgrammaticToolCallingParam: JsonValue
-            ): T
+            ): T = unknown(JsonValue.from(betaSpecificProgrammaticToolCallingParam))
 
             /** Forces the model to call the apply_patch tool when executing a tool call. */
-            fun visitBetaToolChoiceApplyPatch(betaToolChoiceApplyPatch: BetaToolChoiceApplyPatch): T
+            fun visitBetaToolChoiceApplyPatch(
+                betaToolChoiceApplyPatch: BetaToolChoiceApplyPatch
+            ): T = unknown(JsonValue.from(betaToolChoiceApplyPatch))
 
             /** Forces the model to call the shell tool when a tool call is required. */
-            fun visitBetaToolChoiceShell(betaToolChoiceShell: BetaToolChoiceShell): T
+            fun visitBetaToolChoiceShell(betaToolChoiceShell: BetaToolChoiceShell): T =
+                unknown(JsonValue.from(betaToolChoiceShell))
 
             /**
              * Maps an unknown variant of [ToolChoice] to a value of type [T].
@@ -4594,6 +4611,9 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

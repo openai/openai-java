@@ -942,7 +942,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -1075,17 +1075,18 @@ private constructor(
              * - Used to define your testing criteria and
              * - What data is required when creating a run
              */
-            fun visitCustom(custom: Custom): T
+            fun visitCustom(custom: Custom): T = unknown(JsonValue.from(custom))
 
             /**
              * A data source config which specifies the metadata property of your logs query. This
              * is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
              */
-            fun visitLogs(logs: Logs): T
+            fun visitLogs(logs: Logs): T = unknown(JsonValue.from(logs))
 
             /** Deprecated in favor of LogsDataSourceConfig. */
             @Deprecated("deprecated")
-            fun visitStoredCompletions(storedCompletions: StoredCompletions): T
+            fun visitStoredCompletions(storedCompletions: StoredCompletions): T =
+                unknown(JsonValue.from(storedCompletions))
 
             /**
              * Maps an unknown variant of [DataSourceConfig] to a value of type [T].
@@ -1094,6 +1095,9 @@ private constructor(
              * deserialized from data that doesn't match any known variant. For example, if the SDK
              * is on an older version than the API, then the API may respond with new variants that
              * the SDK is unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -2274,7 +2278,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -2429,22 +2433,24 @@ private constructor(
              * A LabelModelGrader object which uses a model to assign labels to each item in the
              * evaluation.
              */
-            fun visitLabelModel(labelModel: LabelModel): T
+            fun visitLabelModel(labelModel: LabelModel): T = unknown(JsonValue.from(labelModel))
 
             /**
              * A StringCheckGrader object that performs a string comparison between input and
              * reference using a specified operation.
              */
-            fun visitStringCheck(stringCheck: StringCheckGrader): T
+            fun visitStringCheck(stringCheck: StringCheckGrader): T =
+                unknown(JsonValue.from(stringCheck))
 
             /** A TextSimilarityGrader object which grades text based on similarity metrics. */
-            fun visitTextSimilarity(textSimilarity: TextSimilarity): T
+            fun visitTextSimilarity(textSimilarity: TextSimilarity): T =
+                unknown(JsonValue.from(textSimilarity))
 
             /** A PythonGrader object that runs a python script on the input. */
-            fun visitPython(python: Python): T
+            fun visitPython(python: Python): T = unknown(JsonValue.from(python))
 
             /** A ScoreModelGrader object that uses a model to assign a score to the input. */
-            fun visitScoreModel(scoreModel: ScoreModel): T
+            fun visitScoreModel(scoreModel: ScoreModel): T = unknown(JsonValue.from(scoreModel))
 
             /**
              * Maps an unknown variant of [TestingCriterion] to a value of type [T].
@@ -2453,6 +2459,9 @@ private constructor(
              * deserialized from data that doesn't match any known variant. For example, if the SDK
              * is on an older version than the API, then the API may respond with new variants that
              * the SDK is unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -3002,7 +3011,8 @@ private constructor(
                  * ```
                  *
                  * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
-                 *   [visitor] and the current variant is unknown.
+                 *   [visitor] and the current variant is unknown or its visit method is not
+                 *   overridden.
                  */
                 fun <T> accept(visitor: Visitor<T>): T =
                     when {
@@ -3116,7 +3126,8 @@ private constructor(
                  */
                 interface Visitor<out T> {
 
-                    fun visitSimpleInputMessage(simpleInputMessage: SimpleInputMessage): T
+                    fun visitSimpleInputMessage(simpleInputMessage: SimpleInputMessage): T =
+                        unknown(JsonValue.from(simpleInputMessage))
 
                     /**
                      * A message input to the model with a role indicating instruction following
@@ -3125,7 +3136,7 @@ private constructor(
                      * `assistant` role are presumed to have been generated by the model in previous
                      * interactions.
                      */
-                    fun visitEvalItem(evalItem: EvalItem): T
+                    fun visitEvalItem(evalItem: EvalItem): T = unknown(JsonValue.from(evalItem))
 
                     /**
                      * Maps an unknown variant of [Input] to a value of type [T].
@@ -3134,6 +3145,10 @@ private constructor(
                      * from data that doesn't match any known variant. For example, if the SDK is on
                      * an older version than the API, then the API may respond with new variants
                      * that the SDK is unaware of.
+                     *
+                     * Recognized variants also reach this method when their visit method is not
+                     * overridden. This allows existing visitors to handle variants added by newer
+                     * SDK versions.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -3812,7 +3827,8 @@ private constructor(
                          * ```
                          *
                          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden
-                         *   in [visitor] and the current variant is unknown.
+                         *   in [visitor] and the current variant is unknown or its visit method is
+                         *   not overridden.
                          */
                         fun <T> accept(visitor: Visitor<T>): T =
                             when {
@@ -4000,25 +4016,31 @@ private constructor(
                         interface Visitor<out T> {
 
                             /** A text input to the model. */
-                            fun visitTextInput(textInput: String): T
+                            fun visitTextInput(textInput: String): T =
+                                unknown(JsonValue.from(textInput))
 
                             /** A text input to the model. */
-                            fun visitResponseInputText(responseInputText: ResponseInputText): T
+                            fun visitResponseInputText(responseInputText: ResponseInputText): T =
+                                unknown(JsonValue.from(responseInputText))
 
                             /** A text output from the model. */
-                            fun visitOutputText(outputText: OutputText): T
+                            fun visitOutputText(outputText: OutputText): T =
+                                unknown(JsonValue.from(outputText))
 
                             /** An image input block used within EvalItem content arrays. */
-                            fun visitInputImage(inputImage: InputImage): T
+                            fun visitInputImage(inputImage: InputImage): T =
+                                unknown(JsonValue.from(inputImage))
 
                             /** An audio input to the model. */
-                            fun visitResponseInputAudio(responseInputAudio: ResponseInputAudio): T
+                            fun visitResponseInputAudio(responseInputAudio: ResponseInputAudio): T =
+                                unknown(JsonValue.from(responseInputAudio))
 
                             /**
                              * A list of inputs, each of which may be either an input text, output
                              * text, input image, or input audio object.
                              */
-                            fun visitGraderInputs(graderInputs: List<EvalContentItem>): T
+                            fun visitGraderInputs(graderInputs: List<EvalContentItem>): T =
+                                unknown(JsonValue.from(graderInputs))
 
                             /**
                              * Maps an unknown variant of [Content] to a value of type [T].
@@ -4027,6 +4049,10 @@ private constructor(
                              * deserialized from data that doesn't match any known variant. For
                              * example, if the SDK is on an older version than the API, then the API
                              * may respond with new variants that the SDK is unaware of.
+                             *
+                             * Recognized variants also reach this method when their visit method is
+                             * not overridden. This allows existing visitors to handle variants
+                             * added by newer SDK versions.
                              *
                              * @throws OpenAIInvalidDataException in the default implementation.
                              */

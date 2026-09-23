@@ -215,7 +215,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -490,59 +490,69 @@ private constructor(
          * Occurs when a new [run](https://developers.openai.com/api/docs/assistants/migration) is
          * created.
          */
-        fun visitThreadRunCreated(threadRunCreated: ThreadRunCreated): T
+        fun visitThreadRunCreated(threadRunCreated: ThreadRunCreated): T =
+            unknown(JsonValue.from(threadRunCreated))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) moves to
          * a `queued` status.
          */
-        fun visitThreadRunQueued(threadRunQueued: ThreadRunQueued): T
+        fun visitThreadRunQueued(threadRunQueued: ThreadRunQueued): T =
+            unknown(JsonValue.from(threadRunQueued))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) moves to
          * an `in_progress` status.
          */
-        fun visitThreadRunInProgress(threadRunInProgress: ThreadRunInProgress): T
+        fun visitThreadRunInProgress(threadRunInProgress: ThreadRunInProgress): T =
+            unknown(JsonValue.from(threadRunInProgress))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) moves to
          * a `requires_action` status.
          */
-        fun visitThreadRunRequiresAction(threadRunRequiresAction: ThreadRunRequiresAction): T
+        fun visitThreadRunRequiresAction(threadRunRequiresAction: ThreadRunRequiresAction): T =
+            unknown(JsonValue.from(threadRunRequiresAction))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) is
          * completed.
          */
-        fun visitThreadRunCompleted(threadRunCompleted: ThreadRunCompleted): T
+        fun visitThreadRunCompleted(threadRunCompleted: ThreadRunCompleted): T =
+            unknown(JsonValue.from(threadRunCompleted))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) ends
          * with status `incomplete`.
          */
-        fun visitThreadRunIncomplete(threadRunIncomplete: ThreadRunIncomplete): T
+        fun visitThreadRunIncomplete(threadRunIncomplete: ThreadRunIncomplete): T =
+            unknown(JsonValue.from(threadRunIncomplete))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) fails.
          */
-        fun visitThreadRunFailed(threadRunFailed: ThreadRunFailed): T
+        fun visitThreadRunFailed(threadRunFailed: ThreadRunFailed): T =
+            unknown(JsonValue.from(threadRunFailed))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) moves to
          * a `cancelling` status.
          */
-        fun visitThreadRunCancelling(threadRunCancelling: ThreadRunCancelling): T
+        fun visitThreadRunCancelling(threadRunCancelling: ThreadRunCancelling): T =
+            unknown(JsonValue.from(threadRunCancelling))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) is
          * cancelled.
          */
-        fun visitThreadRunCancelled(threadRunCancelled: ThreadRunCancelled): T
+        fun visitThreadRunCancelled(threadRunCancelled: ThreadRunCancelled): T =
+            unknown(JsonValue.from(threadRunCancelled))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) expires.
          */
-        fun visitThreadRunExpired(threadRunExpired: ThreadRunExpired): T
+        fun visitThreadRunExpired(threadRunExpired: ThreadRunExpired): T =
+            unknown(JsonValue.from(threadRunExpired))
 
         /**
          * Maps an unknown variant of [RunStreamEvent] to a value of type [T].
@@ -551,6 +561,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

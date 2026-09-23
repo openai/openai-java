@@ -362,7 +362,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -763,14 +763,16 @@ private constructor(
          * If successful, the server will emit a `conversation.item.added` event and, when the item
          * is finalized, a `conversation.item.done` event. Otherwise, an `error` event will be sent.
          */
-        fun visitConversationItemCreate(conversationItemCreate: ConversationItemCreateEvent): T
+        fun visitConversationItemCreate(conversationItemCreate: ConversationItemCreateEvent): T =
+            unknown(JsonValue.from(conversationItemCreate))
 
         /**
          * Send this event when you want to remove any item from the conversation history. The
          * server will respond with a `conversation.item.deleted` event, unless the item does not
          * exist in the conversation history, in which case the server will respond with an error.
          */
-        fun visitConversationItemDelete(conversationItemDelete: ConversationItemDeleteEvent): T
+        fun visitConversationItemDelete(conversationItemDelete: ConversationItemDeleteEvent): T =
+            unknown(JsonValue.from(conversationItemDelete))
 
         /**
          * Send this event when you want to retrieve the server's representation of a specific item
@@ -781,7 +783,7 @@ private constructor(
          */
         fun visitConversationItemRetrieve(
             conversationItemRetrieve: ConversationItemRetrieveEvent
-        ): T
+        ): T = unknown(JsonValue.from(conversationItemRetrieve))
 
         /**
          * Send this event to truncate a previous assistant message’s audio. The server will produce
@@ -796,7 +798,7 @@ private constructor(
          */
         fun visitConversationItemTruncate(
             conversationItemTruncate: ConversationItemTruncateEvent
-        ): T
+        ): T = unknown(JsonValue.from(conversationItemTruncate))
 
         /**
          * Send this event to append audio bytes to the input audio buffer. The audio buffer is
@@ -813,13 +815,15 @@ private constructor(
          * responsive. Unlike most other client events, the server will not send a confirmation
          * response to this event.
          */
-        fun visitInputAudioBufferAppend(inputAudioBufferAppend: InputAudioBufferAppendEvent): T
+        fun visitInputAudioBufferAppend(inputAudioBufferAppend: InputAudioBufferAppendEvent): T =
+            unknown(JsonValue.from(inputAudioBufferAppend))
 
         /**
          * Send this event to clear the audio bytes in the buffer. The server will respond with an
          * `input_audio_buffer.cleared` event.
          */
-        fun visitInputAudioBufferClear(inputAudioBufferClear: InputAudioBufferClearEvent): T
+        fun visitInputAudioBufferClear(inputAudioBufferClear: InputAudioBufferClearEvent): T =
+            unknown(JsonValue.from(inputAudioBufferClear))
 
         /**
          * **WebRTC/SIP Only:** Emit to cut off the current audio response. This will trigger the
@@ -828,7 +832,8 @@ private constructor(
          * the current response.
          * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
-        fun visitOutputAudioBufferClear(outputAudioBufferClear: OutputAudioBufferClearEvent): T
+        fun visitOutputAudioBufferClear(outputAudioBufferClear: OutputAudioBufferClearEvent): T =
+            unknown(JsonValue.from(outputAudioBufferClear))
 
         /**
          * Send this event to commit the user input audio buffer, which will create a new user
@@ -840,7 +845,8 @@ private constructor(
          * session configuration), but it will not create a response from the model. The server will
          * respond with an `input_audio_buffer.committed` event.
          */
-        fun visitInputAudioBufferCommit(inputAudioBufferCommit: InputAudioBufferCommitEvent): T
+        fun visitInputAudioBufferCommit(inputAudioBufferCommit: InputAudioBufferCommitEvent): T =
+            unknown(JsonValue.from(inputAudioBufferCommit))
 
         /**
          * Send this event to cancel an in-progress response. The server will respond with a
@@ -849,7 +855,8 @@ private constructor(
          * `response.cancel` even if no response is in progress, an error will be returned the
          * session will remain unaffected.
          */
-        fun visitResponseCancel(responseCancel: ResponseCancelEvent): T
+        fun visitResponseCancel(responseCancel: ResponseCancelEvent): T =
+            unknown(JsonValue.from(responseCancel))
 
         /**
          * This event instructs the server to create a Response, which means triggering model
@@ -876,7 +883,8 @@ private constructor(
          * default Conversation. Arbitrary input can be provided with the `input` field, which is an
          * array accepting raw Items and references to existing Items.
          */
-        fun visitResponseCreate(responseCreate: ResponseCreateEvent): T
+        fun visitResponseCreate(responseCreate: ResponseCreateEvent): T =
+            unknown(JsonValue.from(responseCreate))
 
         /**
          * Send this event to update the session’s configuration. The client may send this event at
@@ -889,7 +897,8 @@ private constructor(
          * To clear a field like `tools`, pass an empty array. To clear a field like
          * `turn_detection`, pass `null`.
          */
-        fun visitSessionUpdate(sessionUpdate: SessionUpdateEvent): T
+        fun visitSessionUpdate(sessionUpdate: SessionUpdateEvent): T =
+            unknown(JsonValue.from(sessionUpdate))
 
         /**
          * Maps an unknown variant of [RealtimeClientEvent] to a value of type [T].
@@ -898,6 +907,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

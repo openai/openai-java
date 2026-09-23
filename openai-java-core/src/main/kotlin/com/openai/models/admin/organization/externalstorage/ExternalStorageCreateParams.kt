@@ -140,6 +140,9 @@ private constructor(
         /** Alias for calling [provider] with `Provider.ofAzure(azure)`. */
         fun provider(azure: Provider.Azure) = apply { body.provider(azure) }
 
+        /** Alias for calling [provider] with `Provider.ofGcp(gcp)`. */
+        fun provider(gcp: Provider.Gcp) = apply { body.provider(gcp) }
+
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -396,6 +399,9 @@ private constructor(
             /** Alias for calling [provider] with `Provider.ofAzure(azure)`. */
             fun provider(azure: Provider.Azure) = provider(Provider.ofAzure(azure))
 
+            /** Alias for calling [provider] with `Provider.ofGcp(gcp)`. */
+            fun provider(gcp: Provider.Gcp) = provider(Provider.ofGcp(gcp))
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -503,6 +509,7 @@ private constructor(
     private constructor(
         private val aws: Aws? = null,
         private val azure: Azure? = null,
+        private val gcp: Gcp? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -510,13 +517,19 @@ private constructor(
 
         fun azure(): Optional<Azure> = Optional.ofNullable(azure)
 
+        fun gcp(): Optional<Gcp> = Optional.ofNullable(gcp)
+
         fun isAws(): Boolean = aws != null
 
         fun isAzure(): Boolean = azure != null
 
+        fun isGcp(): Boolean = gcp != null
+
         fun asAws(): Aws = aws.getOrThrow("aws")
 
         fun asAzure(): Azure = azure.getOrThrow("azure")
+
+        fun asGcp(): Gcp = gcp.getOrThrow("gcp")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -547,12 +560,13 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 aws != null -> visitor.visitAws(aws)
                 azure != null -> visitor.visitAzure(azure)
+                gcp != null -> visitor.visitGcp(gcp)
                 else -> visitor.unknown(_json)
             }
 
@@ -581,6 +595,10 @@ private constructor(
                     override fun visitAzure(azure: Azure) {
                         azure.validate()
                     }
+
+                    override fun visitGcp(gcp: Gcp) {
+                        gcp.validate()
+                    }
                 }
             )
             validated = true
@@ -608,6 +626,8 @@ private constructor(
 
                     override fun visitAzure(azure: Azure) = azure.validity()
 
+                    override fun visitGcp(gcp: Gcp) = gcp.validity()
+
                     override fun unknown(json: JsonValue?) = 0
                 }
             )
@@ -617,15 +637,16 @@ private constructor(
                 return true
             }
 
-            return other is Provider && aws == other.aws && azure == other.azure
+            return other is Provider && aws == other.aws && azure == other.azure && gcp == other.gcp
         }
 
-        override fun hashCode(): Int = Objects.hash(aws, azure)
+        override fun hashCode(): Int = Objects.hash(aws, azure, gcp)
 
         override fun toString(): String =
             when {
                 aws != null -> "Provider{aws=$aws}"
                 azure != null -> "Provider{azure=$azure}"
+                gcp != null -> "Provider{gcp=$gcp}"
                 _json != null -> "Provider{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Provider")
             }
@@ -635,6 +656,8 @@ private constructor(
             @JvmStatic fun ofAws(aws: Aws) = Provider(aws = aws)
 
             @JvmStatic fun ofAzure(azure: Azure) = Provider(azure = azure)
+
+            @JvmStatic fun ofGcp(gcp: Gcp) = Provider(gcp = gcp)
         }
 
         /**
@@ -642,9 +665,11 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitAws(aws: Aws): T
+            fun visitAws(aws: Aws): T = unknown(JsonValue.from(aws))
 
-            fun visitAzure(azure: Azure): T
+            fun visitAzure(azure: Azure): T = unknown(JsonValue.from(azure))
+
+            fun visitGcp(gcp: Gcp): T = unknown(JsonValue.from(gcp))
 
             /**
              * Maps an unknown variant of [Provider] to a value of type [T].
@@ -653,6 +678,9 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -678,6 +706,11 @@ private constructor(
                             Provider(azure = it, _json = json)
                         } ?: Provider(_json = json)
                     }
+                    "gcp" -> {
+                        return tryDeserialize(node, jacksonTypeRef<Gcp>())?.let {
+                            Provider(gcp = it, _json = json)
+                        } ?: Provider(_json = json)
+                    }
                 }
 
                 return Provider(_json = json)
@@ -694,6 +727,7 @@ private constructor(
                 when {
                     value.aws != null -> generator.writeObject(value.aws)
                     value.azure != null -> generator.writeObject(value.azure)
+                    value.gcp != null -> generator.writeObject(value.gcp)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Provider")
                 }
@@ -1346,6 +1380,369 @@ private constructor(
 
             override fun toString() =
                 "Azure{accountName=$accountName, container=$container, resourceGroup=$resourceGroup, subscriptionId=$subscriptionId, tenantId=$tenantId, type=$type, additionalProperties=$additionalProperties}"
+        }
+
+        class Gcp
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val bucket: JsonField<String>,
+            private val type: JsonValue,
+            private val workloadIdentityPoolId: JsonField<String>,
+            private val workloadIdentityProjectNumber: JsonField<String>,
+            private val workloadIdentityProviderId: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("bucket")
+                @ExcludeMissing
+                bucket: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("workload_identity_pool_id")
+                @ExcludeMissing
+                workloadIdentityPoolId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("workload_identity_project_number")
+                @ExcludeMissing
+                workloadIdentityProjectNumber: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("workload_identity_provider_id")
+                @ExcludeMissing
+                workloadIdentityProviderId: JsonField<String> = JsonMissing.of(),
+            ) : this(
+                bucket,
+                type,
+                workloadIdentityPoolId,
+                workloadIdentityProjectNumber,
+                workloadIdentityProviderId,
+                mutableMapOf(),
+            )
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun bucket(): String = bucket.getRequired("bucket")
+
+            /**
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("gcp")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun workloadIdentityPoolId(): String =
+                workloadIdentityPoolId.getRequired("workload_identity_pool_id")
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun workloadIdentityProjectNumber(): String =
+                workloadIdentityProjectNumber.getRequired("workload_identity_project_number")
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun workloadIdentityProviderId(): String =
+                workloadIdentityProviderId.getRequired("workload_identity_provider_id")
+
+            /**
+             * Returns the raw JSON value of [bucket].
+             *
+             * Unlike [bucket], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("bucket") @ExcludeMissing fun _bucket(): JsonField<String> = bucket
+
+            /**
+             * Returns the raw JSON value of [workloadIdentityPoolId].
+             *
+             * Unlike [workloadIdentityPoolId], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("workload_identity_pool_id")
+            @ExcludeMissing
+            fun _workloadIdentityPoolId(): JsonField<String> = workloadIdentityPoolId
+
+            /**
+             * Returns the raw JSON value of [workloadIdentityProjectNumber].
+             *
+             * Unlike [workloadIdentityProjectNumber], this method doesn't throw if the JSON field
+             * has an unexpected type.
+             */
+            @JsonProperty("workload_identity_project_number")
+            @ExcludeMissing
+            fun _workloadIdentityProjectNumber(): JsonField<String> = workloadIdentityProjectNumber
+
+            /**
+             * Returns the raw JSON value of [workloadIdentityProviderId].
+             *
+             * Unlike [workloadIdentityProviderId], this method doesn't throw if the JSON field has
+             * an unexpected type.
+             */
+            @JsonProperty("workload_identity_provider_id")
+            @ExcludeMissing
+            fun _workloadIdentityProviderId(): JsonField<String> = workloadIdentityProviderId
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Gcp].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .bucket()
+                 * .workloadIdentityPoolId()
+                 * .workloadIdentityProjectNumber()
+                 * .workloadIdentityProviderId()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Gcp]. */
+            class Builder internal constructor() {
+
+                private var bucket: JsonField<String>? = null
+                private var type: JsonValue = JsonValue.from("gcp")
+                private var workloadIdentityPoolId: JsonField<String>? = null
+                private var workloadIdentityProjectNumber: JsonField<String>? = null
+                private var workloadIdentityProviderId: JsonField<String>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(gcp: Gcp) = apply {
+                    bucket = gcp.bucket
+                    type = gcp.type
+                    workloadIdentityPoolId = gcp.workloadIdentityPoolId
+                    workloadIdentityProjectNumber = gcp.workloadIdentityProjectNumber
+                    workloadIdentityProviderId = gcp.workloadIdentityProviderId
+                    additionalProperties = gcp.additionalProperties.toMutableMap()
+                }
+
+                fun bucket(bucket: String) = bucket(JsonField.of(bucket))
+
+                /**
+                 * Sets [Builder.bucket] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.bucket] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun bucket(bucket: JsonField<String>) = apply { this.bucket = bucket }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("gcp")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun workloadIdentityPoolId(workloadIdentityPoolId: String) =
+                    workloadIdentityPoolId(JsonField.of(workloadIdentityPoolId))
+
+                /**
+                 * Sets [Builder.workloadIdentityPoolId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.workloadIdentityPoolId] with a well-typed
+                 * [String] value instead. This method is primarily for setting the field to an
+                 * undocumented or not yet supported value.
+                 */
+                fun workloadIdentityPoolId(workloadIdentityPoolId: JsonField<String>) = apply {
+                    this.workloadIdentityPoolId = workloadIdentityPoolId
+                }
+
+                fun workloadIdentityProjectNumber(workloadIdentityProjectNumber: String) =
+                    workloadIdentityProjectNumber(JsonField.of(workloadIdentityProjectNumber))
+
+                /**
+                 * Sets [Builder.workloadIdentityProjectNumber] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.workloadIdentityProjectNumber] with a well-typed
+                 * [String] value instead. This method is primarily for setting the field to an
+                 * undocumented or not yet supported value.
+                 */
+                fun workloadIdentityProjectNumber(
+                    workloadIdentityProjectNumber: JsonField<String>
+                ) = apply { this.workloadIdentityProjectNumber = workloadIdentityProjectNumber }
+
+                fun workloadIdentityProviderId(workloadIdentityProviderId: String) =
+                    workloadIdentityProviderId(JsonField.of(workloadIdentityProviderId))
+
+                /**
+                 * Sets [Builder.workloadIdentityProviderId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.workloadIdentityProviderId] with a well-typed
+                 * [String] value instead. This method is primarily for setting the field to an
+                 * undocumented or not yet supported value.
+                 */
+                fun workloadIdentityProviderId(workloadIdentityProviderId: JsonField<String>) =
+                    apply {
+                        this.workloadIdentityProviderId = workloadIdentityProviderId
+                    }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Gcp].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .bucket()
+                 * .workloadIdentityPoolId()
+                 * .workloadIdentityProjectNumber()
+                 * .workloadIdentityProviderId()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Gcp =
+                    Gcp(
+                        checkRequired("bucket", bucket),
+                        type,
+                        checkRequired("workloadIdentityPoolId", workloadIdentityPoolId),
+                        checkRequired(
+                            "workloadIdentityProjectNumber",
+                            workloadIdentityProjectNumber,
+                        ),
+                        checkRequired("workloadIdentityProviderId", workloadIdentityProviderId),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Gcp = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                bucket()
+                _type().let {
+                    if (it != JsonValue.from("gcp")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                workloadIdentityPoolId()
+                workloadIdentityProjectNumber()
+                workloadIdentityProviderId()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (bucket.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("gcp")) 1 else 0 } +
+                    (if (workloadIdentityPoolId.asKnown().isPresent) 1 else 0) +
+                    (if (workloadIdentityProjectNumber.asKnown().isPresent) 1 else 0) +
+                    (if (workloadIdentityProviderId.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Gcp &&
+                    bucket == other.bucket &&
+                    type == other.type &&
+                    workloadIdentityPoolId == other.workloadIdentityPoolId &&
+                    workloadIdentityProjectNumber == other.workloadIdentityProjectNumber &&
+                    workloadIdentityProviderId == other.workloadIdentityProviderId &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    bucket,
+                    type,
+                    workloadIdentityPoolId,
+                    workloadIdentityProjectNumber,
+                    workloadIdentityProviderId,
+                    additionalProperties,
+                )
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Gcp{bucket=$bucket, type=$type, workloadIdentityPoolId=$workloadIdentityPoolId, workloadIdentityProjectNumber=$workloadIdentityProjectNumber, workloadIdentityProviderId=$workloadIdentityProviderId, additionalProperties=$additionalProperties}"
         }
     }
 

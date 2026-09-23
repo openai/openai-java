@@ -14,6 +14,7 @@ import com.openai.core.Params
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -21,7 +22,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Rotates a vault credential's write-only secret and returns only credential metadata. See
+ * Updates credential metadata or rotates its write-only secret. See
  * [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
  */
 class CredentialUpdateParams
@@ -40,10 +41,19 @@ private constructor(
     /**
      * Replacement values for the credential's existing authentication method.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun auth(): CredentialAuthRotateParam = body.auth()
+    fun auth(): Optional<CredentialAuthRotateParam> = body.auth()
+
+    /**
+     * Replaces all metadata. Omit to preserve it, or pass {} to clear it. Up to 16 string key-value
+     * pairs, with keys up to 64 and values up to 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
      * Returns the raw JSON value of [auth].
@@ -51,6 +61,13 @@ private constructor(
      * Unlike [auth], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _auth(): JsonField<CredentialAuthRotateParam> = body._auth()
+
+    /**
+     * Returns the raw JSON value of [metadata].
+     *
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _metadata(): JsonField<Metadata> = body._metadata()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -70,7 +87,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .vaultId()
-         * .auth()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -107,6 +123,7 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [auth]
+         * - [metadata]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -161,6 +178,21 @@ private constructor(
         fun environmentVariableAuth(secretValue: String) = apply {
             body.environmentVariableAuth(secretValue)
         }
+
+        /**
+         * Replaces all metadata. Omit to preserve it, or pass {} to clear it. Up to 16 string
+         * key-value pairs, with keys up to 64 and values up to 512 characters.
+         */
+        fun metadata(metadata: Metadata) = apply { body.metadata(metadata) }
+
+        /**
+         * Sets [Builder.metadata] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -287,7 +319,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .vaultId()
-         * .auth()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -315,11 +346,15 @@ private constructor(
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
-    /** Secret, expiry, and OAuth refresh scope updates for an existing vault credential. */
+    /**
+     * Metadata, secret, expiry, and OAuth refresh scope updates for an existing vault credential.
+     * Supply at least one of `auth` or `metadata`.
+     */
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val auth: JsonField<CredentialAuthRotateParam>,
+        private val metadata: JsonField<Metadata>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -327,16 +362,28 @@ private constructor(
         private constructor(
             @JsonProperty("auth")
             @ExcludeMissing
-            auth: JsonField<CredentialAuthRotateParam> = JsonMissing.of()
-        ) : this(auth, mutableMapOf())
+            auth: JsonField<CredentialAuthRotateParam> = JsonMissing.of(),
+            @JsonProperty("metadata")
+            @ExcludeMissing
+            metadata: JsonField<Metadata> = JsonMissing.of(),
+        ) : this(auth, metadata, mutableMapOf())
 
         /**
          * Replacement values for the credential's existing authentication method.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
-        fun auth(): CredentialAuthRotateParam = auth.getRequired("auth")
+        fun auth(): Optional<CredentialAuthRotateParam> = auth.getOptional("auth")
+
+        /**
+         * Replaces all metadata. Omit to preserve it, or pass {} to clear it. Up to 16 string
+         * key-value pairs, with keys up to 64 and values up to 512 characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
          * Returns the raw JSON value of [auth].
@@ -346,6 +393,13 @@ private constructor(
         @JsonProperty("auth")
         @ExcludeMissing
         fun _auth(): JsonField<CredentialAuthRotateParam> = auth
+
+        /**
+         * Returns the raw JSON value of [metadata].
+         *
+         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -361,26 +415,21 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .auth()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var auth: JsonField<CredentialAuthRotateParam>? = null
+            private var auth: JsonField<CredentialAuthRotateParam> = JsonMissing.of()
+            private var metadata: JsonField<Metadata> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 auth = body.auth
+                metadata = body.metadata
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -440,6 +489,21 @@ private constructor(
                         .build()
                 )
 
+            /**
+             * Replaces all metadata. Omit to preserve it, or pass {} to clear it. Up to 16 string
+             * key-value pairs, with keys up to 64 and values up to 512 characters.
+             */
+            fun metadata(metadata: Metadata) = metadata(JsonField.of(metadata))
+
+            /**
+             * Sets [Builder.metadata] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -463,16 +527,8 @@ private constructor(
              * Returns an immutable instance of [Body].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .auth()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
-            fun build(): Body =
-                Body(checkRequired("auth", auth), additionalProperties.toMutableMap())
+            fun build(): Body = Body(auth, metadata, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -491,7 +547,8 @@ private constructor(
                 return@apply
             }
 
-            auth().validate()
+            auth().ifPresent { it.validate() }
+            metadata().ifPresent { it.validate() }
             validated = true
         }
 
@@ -509,7 +566,10 @@ private constructor(
          *
          * Used for best match union deserialization.
          */
-        @JvmSynthetic internal fun validity(): Int = (auth.asKnown().getOrNull()?.validity() ?: 0)
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (auth.asKnown().getOrNull()?.validity() ?: 0) +
+                (metadata.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -518,14 +578,128 @@ private constructor(
 
             return other is Body &&
                 auth == other.auth &&
+                metadata == other.metadata &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(auth, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(auth, metadata, additionalProperties) }
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Body{auth=$auth, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "Body{auth=$auth, metadata=$metadata, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Replaces all metadata. Omit to preserve it, or pass {} to clear it. Up to 16 string key-value
+     * pairs, with keys up to 64 and values up to 512 characters.
+     */
+    class Metadata
+    @JsonCreator
+    private constructor(
+        @com.fasterxml.jackson.annotation.JsonValue
+        private val additionalProperties: Map<String, JsonValue>
+    ) {
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Metadata]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Metadata]. */
+        class Builder internal constructor() {
+
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(metadata: Metadata) = apply {
+                additionalProperties = metadata.additionalProperties.toMutableMap()
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Metadata].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Metadata = Metadata(additionalProperties.toImmutable())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Metadata = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Metadata && additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

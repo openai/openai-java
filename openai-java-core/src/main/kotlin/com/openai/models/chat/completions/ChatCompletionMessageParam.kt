@@ -124,7 +124,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -295,23 +295,28 @@ private constructor(
          * by the user. With o1 models and newer, `developer` messages replace the previous `system`
          * messages.
          */
-        fun visitDeveloper(developer: ChatCompletionDeveloperMessageParam): T
+        fun visitDeveloper(developer: ChatCompletionDeveloperMessageParam): T =
+            unknown(JsonValue.from(developer))
 
         /**
          * Developer-provided instructions that the model should follow, regardless of messages sent
          * by the user. With o1 models and newer, use `developer` messages for this purpose instead.
          */
-        fun visitSystem(system: ChatCompletionSystemMessageParam): T
+        fun visitSystem(system: ChatCompletionSystemMessageParam): T =
+            unknown(JsonValue.from(system))
 
         /** Messages sent by an end user, containing prompts or additional context information. */
-        fun visitUser(user: ChatCompletionUserMessageParam): T
+        fun visitUser(user: ChatCompletionUserMessageParam): T = unknown(JsonValue.from(user))
 
         /** Messages sent by the model in response to user messages. */
-        fun visitAssistant(assistant: ChatCompletionAssistantMessageParam): T
+        fun visitAssistant(assistant: ChatCompletionAssistantMessageParam): T =
+            unknown(JsonValue.from(assistant))
 
-        fun visitTool(tool: ChatCompletionToolMessageParam): T
+        fun visitTool(tool: ChatCompletionToolMessageParam): T = unknown(JsonValue.from(tool))
 
-        @Deprecated("deprecated") fun visitFunction(function: ChatCompletionFunctionMessageParam): T
+        @Deprecated("deprecated")
+        fun visitFunction(function: ChatCompletionFunctionMessageParam): T =
+            unknown(JsonValue.from(function))
 
         /**
          * Maps an unknown variant of [ChatCompletionMessageParam] to a value of type [T].
@@ -320,6 +325,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

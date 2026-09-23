@@ -109,7 +109,7 @@ internal class CredentialAuthRotateParamTest {
                 .contains("[REDACTED]", "future_field", "preserved")
         }
         assertThat(auth._json()).contains(raw)
-        assertThat(params._body().auth()._json()).contains(raw)
+        assertThat(params._body().auth().get()._json()).contains(raw)
         assertThat(mapper.readTree(mapper.writeValueAsString(auth)))
             .isEqualTo(mapper.readTree(original))
     }
@@ -157,7 +157,8 @@ internal class CredentialAuthRotateParamTest {
         }
         assertThat(environmentVariable.secretValue()).isEqualTo(secret)
         assertThat(environmentVariable._additionalProperties()["secret_value"]).isEqualTo(raw)
-        assertThat(params._body().auth().asEnvironmentVariable()).isEqualTo(environmentVariable)
+        assertThat(params._body().auth().get().asEnvironmentVariable())
+            .isEqualTo(environmentVariable)
         assertThat(mapper.writeValueAsString(auth)).isEqualTo(serialized)
         assertThat(serialized).contains(secret, "fake-additional-secret")
         assertThat(mapper.readTree(serialized).get("secret_value"))
@@ -184,7 +185,8 @@ internal class CredentialAuthRotateParamTest {
         val mapper = jsonMapper()
         assertThat(mapper.readTree(mapper.writeValueAsString(auth)).get("secret_value").asText())
             .isEqualTo(secret)
-        assertThat(params._body().auth().asEnvironmentVariable().secretValue()).isEqualTo(secret)
+        assertThat(params._body().auth().get().asEnvironmentVariable().secretValue())
+            .isEqualTo(secret)
     }
 
     @Test

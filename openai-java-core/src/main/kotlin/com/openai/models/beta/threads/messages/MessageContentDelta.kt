@@ -100,7 +100,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -232,16 +232,16 @@ private constructor(
          * References an image [File](https://developers.openai.com/api/reference/resources/files)
          * in the content of a message.
          */
-        fun visitImageFile(imageFile: ImageFileDeltaBlock): T
+        fun visitImageFile(imageFile: ImageFileDeltaBlock): T = unknown(JsonValue.from(imageFile))
 
         /** The text content that is part of a message. */
-        fun visitText(text: TextDeltaBlock): T
+        fun visitText(text: TextDeltaBlock): T = unknown(JsonValue.from(text))
 
         /** The refusal content that is part of a message. */
-        fun visitRefusal(refusal: RefusalDeltaBlock): T
+        fun visitRefusal(refusal: RefusalDeltaBlock): T = unknown(JsonValue.from(refusal))
 
         /** References an image URL in the content of a message. */
-        fun visitImageUrl(imageUrl: ImageUrlDeltaBlock): T
+        fun visitImageUrl(imageUrl: ImageUrlDeltaBlock): T = unknown(JsonValue.from(imageUrl))
 
         /**
          * Maps an unknown variant of [MessageContentDelta] to a value of type [T].
@@ -250,6 +250,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

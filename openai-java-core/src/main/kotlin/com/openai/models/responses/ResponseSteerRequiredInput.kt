@@ -174,7 +174,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -389,44 +389,51 @@ private constructor(
     interface Visitor<out T> {
 
         /** Supply `output` using the function tool call output input schema. */
-        fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput): T
+        fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput): T =
+            unknown(JsonValue.from(functionCallOutput))
 
         /**
          * Supply `output` using the custom tool call output input schema. The original custom tool
          * call supplies the tool's name.
          */
-        fun visitCustomToolCallOutput(customToolCallOutput: CustomToolCallOutput): T
+        fun visitCustomToolCallOutput(customToolCallOutput: CustomToolCallOutput): T =
+            unknown(JsonValue.from(customToolCallOutput))
 
         /**
          * Supply `output` using the computer tool call output input schema, including any required
          * `acknowledged_safety_checks`.
          */
-        fun visitComputerCallOutput(computerCallOutput: ComputerCallOutput): T
+        fun visitComputerCallOutput(computerCallOutput: ComputerCallOutput): T =
+            unknown(JsonValue.from(computerCallOutput))
 
         /**
          * Supply `output` using the shell tool call output input schema. Each output entry includes
          * `stdout`, `stderr`, and `outcome`.
          */
-        fun visitShellCallOutput(shellCallOutput: ShellCallOutput): T
+        fun visitShellCallOutput(shellCallOutput: ShellCallOutput): T =
+            unknown(JsonValue.from(shellCallOutput))
 
         /**
          * Supply `status` and optional `output` using the apply patch tool call output input
          * schema.
          */
-        fun visitApplyPatchCallOutput(applyPatchCallOutput: ApplyPatchCallOutput): T
+        fun visitApplyPatchCallOutput(applyPatchCallOutput: ApplyPatchCallOutput): T =
+            unknown(JsonValue.from(applyPatchCallOutput))
 
         /**
          * Supply `tools` using the tool search output input schema, retaining `execution:
          * "client"`.
          */
-        fun visitToolSearchOutput(toolSearchOutput: ToolSearchOutput): T
+        fun visitToolSearchOutput(toolSearchOutput: ToolSearchOutput): T =
+            unknown(JsonValue.from(toolSearchOutput))
 
         /**
          * Supply `approve` using the MCP approval response input schema. An optional `reason` can
          * be supplied when denying the request. The original approval request identifies the tool
          * and server.
          */
-        fun visitMcpApprovalResponse(mcpApprovalResponse: McpApprovalResponse): T
+        fun visitMcpApprovalResponse(mcpApprovalResponse: McpApprovalResponse): T =
+            unknown(JsonValue.from(mcpApprovalResponse))
 
         /**
          * Maps an unknown variant of [ResponseSteerRequiredInput] to a value of type [T].
@@ -435,6 +442,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

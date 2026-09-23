@@ -177,7 +177,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -460,40 +460,50 @@ private constructor(
     interface Visitor<out T> {
 
         /** An assistant message produced by the agent. */
-        fun visitMessage(message: AgentSessionAssistantMessage): T
+        fun visitMessage(message: AgentSessionAssistantMessage): T =
+            unknown(JsonValue.from(message))
 
         /** A reasoning item produced by the agent. */
-        fun visitReasoning(reasoning: AgentReasoningItem): T
+        fun visitReasoning(reasoning: AgentReasoningItem): T = unknown(JsonValue.from(reasoning))
 
         /** A function call produced by the agent. */
-        fun visitFunctionCall(functionCall: AgentFunctionCallItem): T
+        fun visitFunctionCall(functionCall: AgentFunctionCallItem): T =
+            unknown(JsonValue.from(functionCall))
 
         /** A call to a tool on an MCP server. */
-        fun visitMcpCall(mcpCall: AgentMcpCallItem): T
+        fun visitMcpCall(mcpCall: AgentMcpCallItem): T = unknown(JsonValue.from(mcpCall))
 
         /** A web search call produced by the agent. */
-        fun visitWebSearchCall(webSearchCall: AgentWebSearchCallItem): T
+        fun visitWebSearchCall(webSearchCall: AgentWebSearchCallItem): T =
+            unknown(JsonValue.from(webSearchCall))
 
         /** A command execution produced by the agent. */
-        fun visitCommandExecution(commandExecution: AgentCommandExecutionItem): T
+        fun visitCommandExecution(commandExecution: AgentCommandExecutionItem): T =
+            unknown(JsonValue.from(commandExecution))
 
         /** A request to spawn a subagent. */
-        fun visitCreateSubagentCall(createSubagentCall: AgentCreateSubagentCallItem): T
+        fun visitCreateSubagentCall(createSubagentCall: AgentCreateSubagentCallItem): T =
+            unknown(JsonValue.from(createSubagentCall))
 
         /** A request to send input to another agent. */
-        fun visitSendSubagentInputCall(sendSubagentInputCall: AgentSendSubagentInputCallItem): T
+        fun visitSendSubagentInputCall(sendSubagentInputCall: AgentSendSubagentInputCallItem): T =
+            unknown(JsonValue.from(sendSubagentInputCall))
 
         /** A request to resume a subagent. */
-        fun visitResumeSubagentCall(resumeSubagentCall: AgentResumeSubagentCallItem): T
+        fun visitResumeSubagentCall(resumeSubagentCall: AgentResumeSubagentCallItem): T =
+            unknown(JsonValue.from(resumeSubagentCall))
 
         /** A request to wait for one or more subagents. */
-        fun visitWaitForSubagentsCall(waitForSubagentsCall: AgentWaitForSubagentsCallItem): T
+        fun visitWaitForSubagentsCall(waitForSubagentsCall: AgentWaitForSubagentsCallItem): T =
+            unknown(JsonValue.from(waitForSubagentsCall))
 
         /** A request to interrupt a subagent's current turn. The subagent remains available. */
-        fun visitInterruptSubagentCall(interruptSubagentCall: AgentInterruptSubagentCallItem): T
+        fun visitInterruptSubagentCall(interruptSubagentCall: AgentInterruptSubagentCallItem): T =
+            unknown(JsonValue.from(interruptSubagentCall))
 
         /** A request to close a subagent. */
-        fun visitCloseSubagentCall(closeSubagentCall: AgentCloseSubagentCallItem): T
+        fun visitCloseSubagentCall(closeSubagentCall: AgentCloseSubagentCallItem): T =
+            unknown(JsonValue.from(closeSubagentCall))
 
         /**
          * Maps an unknown variant of [AgentOutputItem] to a value of type [T].
@@ -502,6 +512,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

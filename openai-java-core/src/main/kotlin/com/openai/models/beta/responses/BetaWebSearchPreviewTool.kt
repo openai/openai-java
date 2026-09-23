@@ -75,7 +75,9 @@ private constructor(
         searchContextSize.getOptional("search_context_size")
 
     /**
-     * The user's location.
+     * The approximate location of the user. If omitted or null, defaults to the United States. To
+     * avoid this fallback, pass `{"type": "approximate"}` without location fields. To localize
+     * results, provide the relevant location fields.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -220,7 +222,11 @@ private constructor(
             this.searchContextSize = searchContextSize
         }
 
-        /** The user's location. */
+        /**
+         * The approximate location of the user. If omitted or null, defaults to the United States.
+         * To avoid this fallback, pass `{"type": "approximate"}` without location fields. To
+         * localize results, provide the relevant location fields.
+         */
         fun userLocation(userLocation: UserLocation?) =
             userLocation(JsonField.ofNullable(userLocation))
 
@@ -746,7 +752,11 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The user's location. */
+    /**
+     * The approximate location of the user. If omitted or null, defaults to the United States. To
+     * avoid this fallback, pass `{"type": "approximate"}` without location fields. To localize
+     * results, provide the relevant location fields.
+     */
     class UserLocation
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(

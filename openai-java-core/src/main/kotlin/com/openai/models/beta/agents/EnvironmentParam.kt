@@ -94,7 +94,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -215,15 +215,15 @@ private constructor(
     interface Visitor<out T> {
 
         /** Runs the agent without an execution environment. */
-        fun visitNone(none: JsonValue): T
+        fun visitNone(none: JsonValue): T = unknown(JsonValue.from(none))
 
         /**
          * An existing OpenAI-hosted environment or new inline/template-based hosted configuration.
          */
-        fun visitOpenAIHosted(openaiHosted: OpenAIHosted): T
+        fun visitOpenAIHosted(openaiHosted: OpenAIHosted): T = unknown(JsonValue.from(openaiHosted))
 
         /** An application-hosted environment configured inline. */
-        fun visitSelfHosted(selfHosted: SelfHosted): T
+        fun visitSelfHosted(selfHosted: SelfHosted): T = unknown(JsonValue.from(selfHosted))
 
         /**
          * Maps an unknown variant of [EnvironmentParam] to a value of type [T].
@@ -232,6 +232,9 @@ private constructor(
          * from data that doesn't match any known variant. For example, if the SDK is on an older
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

@@ -907,7 +907,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -1030,16 +1030,19 @@ private constructor(
         interface Visitor<out T> {
 
             /** The string that will be turned into an embedding. */
-            fun visitString(string: String): T
+            fun visitString(string: String): T = unknown(JsonValue.from(string))
 
             /** The array of strings that will be turned into an embedding. */
-            fun visitArrayOfStrings(arrayOfStrings: List<String>): T
+            fun visitArrayOfStrings(arrayOfStrings: List<String>): T =
+                unknown(JsonValue.from(arrayOfStrings))
 
             /** The array of integers that will be turned into an embedding. */
-            fun visitArrayOfTokens(arrayOfTokens: List<Long>): T
+            fun visitArrayOfTokens(arrayOfTokens: List<Long>): T =
+                unknown(JsonValue.from(arrayOfTokens))
 
             /** The array of arrays containing integers that will be turned into an embedding. */
-            fun visitArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>): T
+            fun visitArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>): T =
+                unknown(JsonValue.from(arrayOfTokenArrays))
 
             /**
              * Maps an unknown variant of [Input] to a value of type [T].
@@ -1048,6 +1051,9 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
