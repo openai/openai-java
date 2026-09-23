@@ -63,13 +63,18 @@ jobs:
         run: |
           set -euo pipefail
 
+          # A branch name alone is not an identity: forks can use the same name.
+          # Read every page so unrelated PRs cannot hide the real legacy PR.
           legacy_pr="$(
-            gh pr list \
-              --repo "$GITHUB_REPOSITORY" \
-              --state open \
-              --head "$LEGACY_RELEASE_BRANCH" \
-              --json number,url \
-              --jq '.[0] // empty'
+            gh api --method GET --paginate \
+              "repos/$GITHUB_REPOSITORY/pulls" \
+              -f state=open -f base=main -f per_page=100 |
+              jq -cs --arg repository "$GITHUB_REPOSITORY" \
+                --arg branch "$LEGACY_RELEASE_BRANCH" '
+                [.[][] | select(
+                  .state == "open" and .base.ref == "main" and
+                  .head.repo.full_name == $repository and .head.ref == $branch
+                ) | {number, url: .html_url}] | first // empty'
           )"
           if [[ -n "$legacy_pr" ]]; then
             legacy_number="$(jq -r '.number' <<< "$legacy_pr")"
@@ -117,7 +122,7 @@ jobs:
           fi
 
       - name: Check out retry source
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -257,13 +262,13 @@ jobs:
     environment: publish
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
           ref: ${{ needs.release.outputs.source_sha }}
 
       - name: Set up Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: |
@@ -292,11 +297,14 @@ jobs:
       - name: Compile the openai-java-core project
         run: ./gradlew :openai-java-core:compileJava :openai-java-core:compileTestJava -x test
 
+      - name: Stop pre-GraalVM Gradle daemon
+        run: ./gradlew --stop
+
       - name: Run the mock server
         run: ./scripts/mock --daemon
 
       - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@03e8abf916fd0e281b2efe7b2da3378bb0a1d085 # v1
+        uses: graalvm/setup-graalvm@0426e2e191540e8514dff98dc52a5f5146a2a276 # v1
         with:
           java-version: 21
           distribution: graalvm-community
@@ -366,6 +374,7 @@ jobs:
             --arg repository_id "$GITHUB_REPOSITORY_ID" \
             --arg repository_owner_id "$GITHUB_REPOSITORY_OWNER_ID" \
             --arg runner_environment "$RUNNER_ENVIRONMENT" \
+            --arg workflow_sha "$GITHUB_SHA" \
             --arg source_sha "$SOURCE_SHA" \
             --arg release_tag "$RELEASE_TAG" \
             --arg invocation_id \
@@ -389,6 +398,10 @@ jobs:
                   }
                 },
                 resolvedDependencies: [
+                  {
+                    uri: ("git+" + $repository + "@" + $workflow_ref),
+                    digest: { gitCommit: $workflow_sha }
+                  },
                   {
                     uri: ("git+" + $repository + "@refs/tags/" + $release_tag),
                     digest: { gitCommit: $source_sha }
@@ -457,6 +470,7 @@ jobs:
           ./gradlew publishAndReleaseToMavenCentral \
             "${publish_exclusions[@]}" \
             --stacktrace \
+            --no-parallel \
             --no-configuration-cache
 
       - name: Verify attested Maven artifacts

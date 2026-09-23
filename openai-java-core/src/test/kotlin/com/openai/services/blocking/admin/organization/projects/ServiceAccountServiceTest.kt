@@ -30,6 +30,7 @@ internal class ServiceAccountServiceTest {
                     .projectId("project_id")
                     .name("name")
                     .createServiceAccountOnly(true)
+                    .expiresInSeconds(1L)
                     .build()
             )
 

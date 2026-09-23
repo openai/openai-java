@@ -14,13 +14,23 @@ dependencies {
     implementation("com.vanniktech:gradle-maven-publish-plugin:0.28.0")
 
     testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
-    testImplementation("org.yaml:snakeyaml:2.6")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
+    testImplementation("org.yaml:snakeyaml:2.7")
 }
 
 tasks.test {
     useJUnitPlatform()
     workingDir(layout.projectDirectory)
+    inputs
+        .file(layout.projectDirectory.file("../scripts/gradle"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .files(
+            layout.projectDirectory.file("../scripts/java-format"),
+            layout.projectDirectory.file("../scripts/lint"),
+            layout.projectDirectory.file("../scripts/format"),
+        )
+        .withPathSensitivity(PathSensitivity.RELATIVE)
     inputs
         .files(
             fileTree(layout.projectDirectory.dir("../openai-java-core/src/main/kotlin")) {
@@ -47,5 +57,8 @@ tasks.test {
         .withPathSensitivity(PathSensitivity.RELATIVE)
     inputs
         .file(layout.projectDirectory.file("../SECURITY.md"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .file(layout.projectDirectory.file("../docs/architecture/security-model.md"))
         .withPathSensitivity(PathSensitivity.RELATIVE)
 }

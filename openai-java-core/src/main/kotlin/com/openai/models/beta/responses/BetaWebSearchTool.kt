@@ -22,7 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Search the Internet for sources related to the prompt. Learn more about the
- * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+ * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
  */
 class BetaWebSearchTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

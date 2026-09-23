@@ -44,7 +44,8 @@ interface JobService {
      * Response includes details of the enqueued job including job status and the name of the
      * fine-tuned models once complete.
      *
-     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/model-optimization)
+     * [Learn more about
+     * fine-tuning](https://developers.openai.com/api/docs/guides/model-optimization)
      */
     fun create(params: JobCreateParams): FineTuningJob = create(params, RequestOptions.none())
 
@@ -57,7 +58,8 @@ interface JobService {
     /**
      * Get info about a fine-tuning job.
      *
-     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/model-optimization)
+     * [Learn more about
+     * fine-tuning](https://developers.openai.com/api/docs/guides/model-optimization)
      */
     fun retrieve(fineTuningJobId: String): FineTuningJob =
         retrieve(fineTuningJobId, JobRetrieveParams.none())

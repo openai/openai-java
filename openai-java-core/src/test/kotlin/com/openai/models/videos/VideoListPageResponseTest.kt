@@ -18,7 +18,26 @@ internal class VideoListPageResponseTest {
                         .id("id")
                         .completedAt(0L)
                         .createdAt(0L)
-                        .error(VideoCreateError.builder().code("code").message("message").build())
+                        .error(
+                            VideoCreateError.builder()
+                                .code("code")
+                                .message("message")
+                                .misalignment(
+                                    VideoCreateError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            VideoCreateError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            VideoCreateError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
                         .expiresAt(0L)
                         .model(VideoModel.SORA_2)
                         .progress(0L)
@@ -40,7 +59,26 @@ internal class VideoListPageResponseTest {
                     .id("id")
                     .completedAt(0L)
                     .createdAt(0L)
-                    .error(VideoCreateError.builder().code("code").message("message").build())
+                    .error(
+                        VideoCreateError.builder()
+                            .code("code")
+                            .message("message")
+                            .misalignment(
+                                VideoCreateError.Misalignment.builder()
+                                    .detailedExplanation("detailed_explanation")
+                                    .errorType(
+                                        VideoCreateError.Misalignment.ErrorType
+                                            .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                    )
+                                    .steer(
+                                        VideoCreateError.Misalignment.Steer.builder()
+                                            .message("message")
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
                     .expiresAt(0L)
                     .model(VideoModel.SORA_2)
                     .progress(0L)
@@ -66,7 +104,26 @@ internal class VideoListPageResponseTest {
                         .id("id")
                         .completedAt(0L)
                         .createdAt(0L)
-                        .error(VideoCreateError.builder().code("code").message("message").build())
+                        .error(
+                            VideoCreateError.builder()
+                                .code("code")
+                                .message("message")
+                                .misalignment(
+                                    VideoCreateError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            VideoCreateError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            VideoCreateError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
                         .expiresAt(0L)
                         .model(VideoModel.SORA_2)
                         .progress(0L)

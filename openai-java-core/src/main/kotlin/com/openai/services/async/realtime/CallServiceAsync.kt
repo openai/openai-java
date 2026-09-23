@@ -6,6 +6,7 @@ import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.models.realtime.calls.CallAcceptParams
+import com.openai.models.realtime.calls.CallCreateParams
 import com.openai.models.realtime.calls.CallHangupParams
 import com.openai.models.realtime.calls.CallReferParams
 import com.openai.models.realtime.calls.CallRejectParams
@@ -25,6 +26,19 @@ interface CallServiceAsync {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CallServiceAsync
+
+    /**
+     * Create a new Realtime API call over WebRTC and receive the SDP answer needed to complete the
+     * peer connection.
+     */
+    fun create(params: CallCreateParams): CompletableFuture<HttpResponse> =
+        create(params, RequestOptions.none())
+
+    /** @see create */
+    fun create(
+        params: CallCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<HttpResponse>
 
     /** Accept an incoming SIP call and configure the realtime session that will handle it. */
     fun accept(callId: String, params: CallAcceptParams): CompletableFuture<Void?> =
@@ -137,6 +151,19 @@ interface CallServiceAsync {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): CallServiceAsync.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /realtime/calls`, but is otherwise the same as
+         * [CallServiceAsync.create].
+         */
+        fun create(params: CallCreateParams): CompletableFuture<HttpResponse> =
+            create(params, RequestOptions.none())
+
+        /** @see create */
+        fun create(
+            params: CallCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse>
 
         /**
          * Returns a raw HTTP response for `post /realtime/calls/{call_id}/accept`, but is otherwise

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.SerializerProvider
@@ -17,9 +18,11 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.type.LogicalType
+import com.fasterxml.jackson.databind.util.TokenBuffer
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.kotlinModule
+import java.io.IOException
 import java.io.InputStream
 import java.time.DateTimeException
 import java.time.LocalDate
@@ -115,7 +118,28 @@ private val JSON_MAPPER: JsonMapper =
         .disable(MapperFeature.AUTO_DETECT_SETTERS)
         .build()
 
-/** A serializer that serializes [InputStream] to bytes. */
+private class MultipartTokenBuffer(
+    mapper: JsonMapper,
+    val retainedStreams: MutableSet<InputStream>,
+) : TokenBuffer(mapper, false)
+
+/** Retain streams inside unions and lists until the multipart body is written. */
+@JvmSynthetic
+internal fun JsonMapper.multipartValueToTree(
+    value: Any,
+    retainedStreams: MutableSet<InputStream>,
+): JsonNode =
+    try {
+        MultipartTokenBuffer(this, retainedStreams).use { buffer ->
+            writeValue(buffer, value)
+            buffer.asParser().use { parser -> readTree(parser) }
+        }
+    } catch (failure: IOException) {
+        // Match valueToTree for ordinary multipart serialization failures.
+        throw IllegalArgumentException(failure.message, failure)
+    }
+
+/** A serializer that serializes [InputStream] to bytes outside multipart bodies. */
 private object InputStreamSerializer : BaseSerializer<InputStream>(InputStream::class) {
 
     private fun readResolve(): Any = InputStreamSerializer
@@ -127,6 +151,9 @@ private object InputStreamSerializer : BaseSerializer<InputStream>(InputStream::
     ) {
         if (value == null) {
             gen?.writeNull()
+        } else if (gen is MultipartTokenBuffer) {
+            gen.retainedStreams.add(value)
+            gen.writeEmbeddedObject(value)
         } else {
             value.use { gen?.writeBinary(it.readBytes()) }
         }
