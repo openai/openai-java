@@ -227,6 +227,13 @@ class ChatCompletionAccumulator private constructor() {
             }
         }
 
+        if (chatCompletion != null) {
+            // All choices in this chunk have been processed. Later usage chunks reuse the built
+            // choices, not these mutable buffers.
+            messageContents.clear()
+            messageRefusals.clear()
+        }
+
         return chunk
     }
 
