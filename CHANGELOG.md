@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.69.0](https://github.com/openai/openai-java/compare/v4.68.0...v4.69.0) (2026-09-23)
+
+
+### Features
+
+* **api:** add GPT-Rosalind research model ([#1062](https://github.com/openai/openai-java/issues/1062)) ([374d7ef](https://github.com/openai/openai-java/commit/374d7ef1ffdb1ab3020efc4945b4dacb2c3f44c3))
+
+
+### Chores
+
+* **api:** clarify Chat Completions seed bounds ([#1065](https://github.com/openai/openai-java/issues/1065)) ([544e367](https://github.com/openai/openai-java/commit/544e3677ce82bdfa3b4fa3c960a883bde534727e))
+
 ## [4.68.0](https://github.com/openai/openai-java/compare/v4.67.0...v4.68.0) (2026-09-22)
 
 
