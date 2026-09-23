@@ -2,6 +2,8 @@ package com.openai.helpers
 
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.chat.completions.*
 import com.openai.models.completions.CompletionUsage
 import org.assertj.core.api.Assertions.assertThat
@@ -418,6 +420,167 @@ internal class ChatCompletionAccumulatorTest {
         assertThat(tc.function().name()).isEqualTo("fn-1-1")
         assertThat(tc.function().arguments()).isEqualTo("{a-1-1-0, a-1-1-1}")
     }
+
+    @Test
+    fun accumulatesManyToolArgumentFragmentsWithoutMixingSlots() {
+        val accumulator = ChatCompletionAccumulator.create()
+        accumulator.accumulate(toolCallChunk(0, 0, "call-a", "function-a"))
+        accumulator.accumulate(toolCallChunk(0, 1, "call-b", "function-b"))
+        val first = toolCallChunk(0, 0, argsFragment = "λ")
+        val second = toolCallChunk(0, 1, argsFragment = "b")
+        repeat(10_000) {
+            accumulator.accumulate(first)
+            accumulator.accumulate(second)
+        }
+        accumulator.accumulate(finalChunk())
+        val calls = accumulator.chatCompletion().choices().single().message().toolCalls().get()
+        assertThat(calls[0].asFunction().function().arguments()).isEqualTo("λ".repeat(10_000))
+        assertThat(calls[1].asFunction().function().arguments()).isEqualTo("b".repeat(10_000))
+    }
+
+    @Test
+    fun malformedFirstToolArgumentsDoNotCreateAnEmptyArgumentBuffer() {
+        val accumulator = ChatCompletionAccumulator.create()
+        val chunk =
+            jsonMapper()
+                .readValue(
+                    """{
+                        "id": "chunk-id", "created": 123456789, "model": "model-id",
+                        "object": "chat.completion.chunk",
+                        "choices": [{"index": 0, "delta": {"tool_calls": [{
+                            "index": 0, "id": "call-id", "type": "function",
+                            "function": {"name": "function-name", "arguments": 123}
+                        }]}}]
+                    }""",
+                    ChatCompletionChunk::class.java,
+                )
+
+        assertThatThrownBy { accumulator.accumulate(chunk) }
+            .isInstanceOf(OpenAIInvalidDataException::class.java)
+        assertThatThrownBy { accumulator.accumulate(finalChunk()) }
+            .isInstanceOf(OpenAIInvalidDataException::class.java)
+            .hasMessage("Missing function arguments for index 0.0.")
+    }
+
+    @Test
+    fun completedToolArgumentsReleaseBuffersAndSurviveLateUsage() {
+        val accumulator = ChatCompletionAccumulator.create()
+        accumulator.accumulate(toolCallChunk(0, 0, "call-a", "function-a"))
+        accumulator.accumulate(toolCallChunk(0, 0, argsFragment = "arguments"))
+        accumulator.accumulate(finalChunk())
+        val result = accumulator.chatCompletion()
+        assertThat(accumulator.chatCompletion()).isSameAs(result)
+        assertThat(argumentBuffers(accumulator)).isEmpty()
+        accumulator.accumulate(finalUsageChunk())
+        for (completion in listOf(result, accumulator.chatCompletion())) {
+            assertThat(
+                    completion
+                        .choices()
+                        .single()
+                        .message()
+                        .toolCalls()
+                        .get()
+                        .single()
+                        .asFunction()
+                        .function()
+                        .arguments()
+                )
+                .isEqualTo("arguments")
+        }
+        assertThat(accumulator.chatCompletion().usage()).isPresent()
+        assertThat(argumentBuffers(accumulator)).isEmpty()
+    }
+
+    @Test
+    fun choicesFirstSeenInTheFinalChunkKeepTheirArguments() {
+        val accumulator = ChatCompletionAccumulator.create()
+        accumulator.accumulate(
+            finalChunk()
+                .toBuilder()
+                .choices(
+                    (0L..1L).map { index ->
+                        finalChunk(index)
+                            .choices()
+                            .single()
+                            .toBuilder()
+                            .delta(
+                                ChatCompletionChunk.Choice.Delta.builder()
+                                    .addToolCall(
+                                        toolCall(
+                                            "call-$index",
+                                            toolCallFunction("function-$index", "args-$index"),
+                                        )
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    }
+                )
+                .build()
+        )
+        assertThat(
+                accumulator.chatCompletion().choices().map {
+                    it.message().toolCalls().get().single().asFunction().function().arguments()
+                }
+            )
+            .containsExactly("args-0", "args-1")
+        assertThat(argumentBuffers(accumulator)).isEmpty()
+    }
+
+    @Test
+    fun failedFinalBuildPreservesArgumentsForRecovery() {
+        val accumulator = ChatCompletionAccumulator.create()
+        accumulator.accumulate(toolCallChunk(0, 0, "call-a", "function-a"))
+        accumulator.accumulate(toolCallChunk(0, 0, argsFragment = "arguments"))
+        val malformed =
+            finalChunk()
+                .toBuilder()
+                .choices(
+                    listOf(
+                        finalChunk()
+                            .choices()
+                            .single()
+                            .toBuilder()
+                            .delta(
+                                ChatCompletionChunk.Choice.Delta.builder()
+                                    .addToolCall(
+                                        toolCall(
+                                            "call-b",
+                                            toolCallFunction()
+                                                .toBuilder()
+                                                .arguments(JsonValue.from(123))
+                                                .build(),
+                                        )
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
+                )
+                .build()
+        assertThatThrownBy { accumulator.accumulate(malformed) }
+            .isInstanceOf(OpenAIInvalidDataException::class.java)
+        assertThatThrownBy { accumulator.accumulate(finalChunk()) }
+            .isInstanceOf(OpenAIInvalidDataException::class.java)
+        assertThat(argumentBuffers(accumulator)).isNotEmpty()
+        accumulator.accumulate(toolCallChunk(0, 1, argsFragment = "recovered"))
+        accumulator.accumulate(finalChunk())
+        assertThat(
+                accumulator.chatCompletion().choices().single().message().toolCalls().get().map {
+                    it.asFunction().function().arguments()
+                }
+            )
+            .containsExactly("arguments", "recovered")
+        assertThat(argumentBuffers(accumulator)).isEmpty()
+    }
+
+    // Inspect retained storage directly to avoid a GC-dependent memory assertion.
+    private fun argumentBuffers(accumulator: ChatCompletionAccumulator): Map<*, *> =
+        ChatCompletionAccumulator::class
+            .java
+            .getDeclaredField("toolCallFunctionArgs")
+            .apply { isAccessible = true }
+            .get(accumulator) as Map<*, *>
 
     // -------------------------------------------------------------------------
     // Helper functions to create test fixtures.
