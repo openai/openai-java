@@ -330,7 +330,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -438,14 +438,15 @@ private constructor(
         interface Visitor<out T> {
 
             /** The text contents of the message. */
-            fun visitText(text: String): T
+            fun visitText(text: String): T = unknown(JsonValue.from(text))
 
             /**
              * An array of content parts with a defined type. Supported options differ based on the
              * [model](https://developers.openai.com/api/docs/models) being used to generate the
              * response. Can contain text, image, or audio inputs.
              */
-            fun visitArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPart>): T
+            fun visitArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPart>): T =
+                unknown(JsonValue.from(arrayOfContentParts))
 
             /**
              * Maps an unknown variant of [Content] to a value of type [T].
@@ -454,6 +455,9 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

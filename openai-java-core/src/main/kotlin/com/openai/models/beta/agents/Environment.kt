@@ -94,7 +94,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -210,13 +210,13 @@ private constructor(
     interface Visitor<out T> {
 
         /** The session talks to CCA without selecting or provisioning an execution environment. */
-        fun visitNone(none: JsonValue): T
+        fun visitNone(none: JsonValue): T = unknown(JsonValue.from(none))
 
         /** An environment hosted by OpenAI. */
-        fun visitOpenAIHosted(openaiHosted: OpenAIHosted): T
+        fun visitOpenAIHosted(openaiHosted: OpenAIHosted): T = unknown(JsonValue.from(openaiHosted))
 
         /** An environment hosted by the application. */
-        fun visitSelfHosted(selfHosted: SelfHosted): T
+        fun visitSelfHosted(selfHosted: SelfHosted): T = unknown(JsonValue.from(selfHosted))
 
         /**
          * Maps an unknown variant of [Environment] to a value of type [T].
@@ -224,6 +224,9 @@ private constructor(
          * An instance of [Environment] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

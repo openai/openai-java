@@ -79,7 +79,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -184,11 +184,12 @@ private constructor(
     /** An interface that defines how to map each variant of [AllModels] to a value of type [T]. */
     interface Visitor<out T> {
 
-        fun visitString(string: String): T
+        fun visitString(string: String): T = unknown(JsonValue.from(string))
 
-        fun visitChatModel(chatModel: ChatModel): T
+        fun visitChatModel(chatModel: ChatModel): T = unknown(JsonValue.from(chatModel))
 
-        fun visitResponsesOnlyModel(responsesOnlyModel: ResponsesOnlyModel): T
+        fun visitResponsesOnlyModel(responsesOnlyModel: ResponsesOnlyModel): T =
+            unknown(JsonValue.from(responsesOnlyModel))
 
         /**
          * Maps an unknown variant of [AllModels] to a value of type [T].
@@ -196,6 +197,9 @@ private constructor(
          * An instance of [AllModels] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

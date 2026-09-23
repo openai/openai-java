@@ -4,6 +4,7 @@ package com.openai.services.blocking.beta.agents.vaults
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.core.JsonValue
 import com.openai.models.beta.agents.vaults.credentials.CredentialAuthCreateParam
 import com.openai.models.beta.agents.vaults.credentials.CredentialAuthRotateParam
 import com.openai.models.beta.agents.vaults.credentials.CredentialCreateParams
@@ -49,6 +50,11 @@ internal class CredentialServiceTest {
                             .build()
                     )
                     .name("x")
+                    .metadata(
+                        CredentialCreateParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .build()
             )
 
@@ -107,6 +113,11 @@ internal class CredentialServiceTest {
                                     )
                                     .build()
                             )
+                            .build()
+                    )
+                    .metadata(
+                        CredentialUpdateParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
                     .build()

@@ -420,7 +420,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -591,22 +591,27 @@ private constructor(
              * A StringCheckGrader object that performs a string comparison between input and
              * reference using a specified operation.
              */
-            fun visitStringCheckGrader(stringCheckGrader: StringCheckGrader): T
+            fun visitStringCheckGrader(stringCheckGrader: StringCheckGrader): T =
+                unknown(JsonValue.from(stringCheckGrader))
 
             /** A TextSimilarityGrader object which grades text based on similarity metrics. */
-            fun visitTextSimilarityGrader(textSimilarityGrader: TextSimilarityGrader): T
+            fun visitTextSimilarityGrader(textSimilarityGrader: TextSimilarityGrader): T =
+                unknown(JsonValue.from(textSimilarityGrader))
 
             /** A PythonGrader object that runs a python script on the input. */
-            fun visitPythonGrader(pythonGrader: PythonGrader): T
+            fun visitPythonGrader(pythonGrader: PythonGrader): T =
+                unknown(JsonValue.from(pythonGrader))
 
             /** A ScoreModelGrader object that uses a model to assign a score to the input. */
-            fun visitScoreModelGrader(scoreModelGrader: ScoreModelGrader): T
+            fun visitScoreModelGrader(scoreModelGrader: ScoreModelGrader): T =
+                unknown(JsonValue.from(scoreModelGrader))
 
             /**
              * A LabelModelGrader object which uses a model to assign labels to each item in the
              * evaluation.
              */
-            fun visitLabelModelGrader(labelModelGrader: LabelModelGrader): T
+            fun visitLabelModelGrader(labelModelGrader: LabelModelGrader): T =
+                unknown(JsonValue.from(labelModelGrader))
 
             /**
              * Maps an unknown variant of [Graders] to a value of type [T].
@@ -615,6 +620,9 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

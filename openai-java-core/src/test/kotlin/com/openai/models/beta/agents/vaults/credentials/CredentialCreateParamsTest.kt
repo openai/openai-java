@@ -2,6 +2,7 @@
 
 package com.openai.models.beta.agents.vaults.credentials
 
+import com.openai.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -29,6 +30,11 @@ internal class CredentialCreateParamsTest {
                     .build()
             )
             .name("x")
+            .metadata(
+                CredentialCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
+            )
             .build()
     }
 
@@ -74,6 +80,11 @@ internal class CredentialCreateParamsTest {
                         .build()
                 )
                 .name("x")
+                .metadata(
+                    CredentialCreateParams.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .build()
 
         val body = params._body()
@@ -99,6 +110,12 @@ internal class CredentialCreateParamsTest {
                 )
             )
         assertThat(body.name()).isEqualTo("x")
+        assertThat(body.metadata())
+            .contains(
+                CredentialCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
+            )
     }
 
     @Test

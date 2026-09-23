@@ -82,7 +82,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -180,10 +180,10 @@ private constructor(
     interface Visitor<out T> {
 
         /** Text input recorded in a session item. */
-        fun visitInputText(inputText: InputText): T
+        fun visitInputText(inputText: InputText): T = unknown(JsonValue.from(inputText))
 
         /** Image input recorded in a session item. */
-        fun visitInputImage(inputImage: InputImage): T
+        fun visitInputImage(inputImage: InputImage): T = unknown(JsonValue.from(inputImage))
 
         /**
          * Maps an unknown variant of [InputContent] to a value of type [T].
@@ -191,6 +191,9 @@ private constructor(
          * An instance of [InputContent] can contain an unknown variant if it was deserialized from
          * data that doesn't match any known variant. For example, if the SDK is on an older version
          * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

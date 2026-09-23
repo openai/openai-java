@@ -1635,7 +1635,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -1734,9 +1734,9 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitInteger(integer: Long): T
+            fun visitInteger(integer: Long): T = unknown(JsonValue.from(integer))
 
-            fun visitInf(inf: JsonValue): T
+            fun visitInf(inf: JsonValue): T = unknown(JsonValue.from(inf))
 
             /**
              * Maps an unknown variant of [MaxResponseOutputTokens] to a value of type [T].
@@ -1745,6 +1745,9 @@ private constructor(
              * deserialized from data that doesn't match any known variant. For example, if the SDK
              * is on an older version than the API, then the API may respond with new variants that
              * the SDK is unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -2500,7 +2503,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -2606,10 +2609,11 @@ private constructor(
         interface Visitor<out T> {
 
             /** Default tracing mode for the session. */
-            fun visitAuto(auto: JsonValue): T
+            fun visitAuto(auto: JsonValue): T = unknown(JsonValue.from(auto))
 
             /** Granular configuration for tracing. */
-            fun visitConfiguration(configuration: TracingConfiguration): T
+            fun visitConfiguration(configuration: TracingConfiguration): T =
+                unknown(JsonValue.from(configuration))
 
             /**
              * Maps an unknown variant of [Tracing] to a value of type [T].
@@ -2618,6 +2622,9 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -2996,7 +3003,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -3107,13 +3114,13 @@ private constructor(
              * Server-side voice activity detection (VAD) which flips on when user speech is
              * detected and off after a period of silence.
              */
-            fun visitServerVad(serverVad: ServerVad): T
+            fun visitServerVad(serverVad: ServerVad): T = unknown(JsonValue.from(serverVad))
 
             /**
              * Server-side semantic turn detection which uses a model to determine when the user has
              * finished speaking.
              */
-            fun visitSemanticVad(semanticVad: SemanticVad): T
+            fun visitSemanticVad(semanticVad: SemanticVad): T = unknown(JsonValue.from(semanticVad))
 
             /**
              * Maps an unknown variant of [TurnDetection] to a value of type [T].
@@ -3122,6 +3129,9 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

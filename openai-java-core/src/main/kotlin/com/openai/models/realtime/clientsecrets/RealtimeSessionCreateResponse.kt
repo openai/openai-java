@@ -1719,7 +1719,8 @@ private constructor(
                  * ```
                  *
                  * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
-                 *   [visitor] and the current variant is unknown.
+                 *   [visitor] and the current variant is unknown or its visit method is not
+                 *   overridden.
                  */
                 fun <T> accept(visitor: Visitor<T>): T =
                     when {
@@ -1834,13 +1835,14 @@ private constructor(
                      * Server-side voice activity detection (VAD) which flips on when user speech is
                      * detected and off after a period of silence.
                      */
-                    fun visitServerVad(serverVad: ServerVad): T
+                    fun visitServerVad(serverVad: ServerVad): T = unknown(JsonValue.from(serverVad))
 
                     /**
                      * Server-side semantic turn detection which uses a model to determine when the
                      * user has finished speaking.
                      */
-                    fun visitSemanticVad(semanticVad: SemanticVad): T
+                    fun visitSemanticVad(semanticVad: SemanticVad): T =
+                        unknown(JsonValue.from(semanticVad))
 
                     /**
                      * Maps an unknown variant of [TurnDetection] to a value of type [T].
@@ -1849,6 +1851,10 @@ private constructor(
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
+                     *
+                     * Recognized variants also reach this method when their visit method is not
+                     * overridden. This allows existing visitors to handle variants added by newer
+                     * SDK versions.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -3636,7 +3642,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -3735,9 +3741,9 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitInteger(integer: Long): T
+            fun visitInteger(integer: Long): T = unknown(JsonValue.from(integer))
 
-            fun visitInf(inf: JsonValue): T
+            fun visitInf(inf: JsonValue): T = unknown(JsonValue.from(inf))
 
             /**
              * Maps an unknown variant of [MaxOutputTokens] to a value of type [T].
@@ -3746,6 +3752,9 @@ private constructor(
              * deserialized from data that doesn't match any known variant. For example, if the SDK
              * is on an older version than the API, then the API may respond with new variants that
              * the SDK is unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -4268,7 +4277,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -4401,15 +4410,15 @@ private constructor(
              *
              * `required` means the model must call one or more tools.
              */
-            fun visitOptions(options: ToolChoiceOptions): T
+            fun visitOptions(options: ToolChoiceOptions): T = unknown(JsonValue.from(options))
 
             /** Use this option to force the model to call a specific function. */
-            fun visitFunction(function: ToolChoiceFunction): T
+            fun visitFunction(function: ToolChoiceFunction): T = unknown(JsonValue.from(function))
 
             /**
              * Use this option to force the model to call a specific tool on a remote MCP server.
              */
-            fun visitMcp(mcp: ToolChoiceMcp): T
+            fun visitMcp(mcp: ToolChoiceMcp): T = unknown(JsonValue.from(mcp))
 
             /**
              * Maps an unknown variant of [ToolChoice] to a value of type [T].
@@ -4418,6 +4427,9 @@ private constructor(
              * from data that doesn't match any known variant. For example, if the SDK is on an
              * older version than the API, then the API may respond with new variants that the SDK
              * is unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -4543,7 +4555,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -4644,14 +4656,15 @@ private constructor(
         /** An interface that defines how to map each variant of [Tool] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitRealtimeFunction(realtimeFunction: RealtimeFunctionTool): T
+            fun visitRealtimeFunction(realtimeFunction: RealtimeFunctionTool): T =
+                unknown(JsonValue.from(realtimeFunction))
 
             /**
              * Give the model access to additional tools via remote Model Context Protocol (MCP)
              * servers.
              * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
              */
-            fun visitMcp(mcp: McpTool): T
+            fun visitMcp(mcp: McpTool): T = unknown(JsonValue.from(mcp))
 
             /**
              * Maps an unknown variant of [Tool] to a value of type [T].
@@ -4659,6 +4672,9 @@ private constructor(
              * An instance of [Tool] can contain an unknown variant if it was deserialized from data
              * that doesn't match any known variant. For example, if the SDK is on an older version
              * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */
@@ -5657,7 +5673,8 @@ private constructor(
                  * ```
                  *
                  * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
-                 *   [visitor] and the current variant is unknown.
+                 *   [visitor] and the current variant is unknown or its visit method is not
+                 *   overridden.
                  */
                 fun <T> accept(visitor: Visitor<T>): T =
                     when {
@@ -5760,10 +5777,11 @@ private constructor(
                 interface Visitor<out T> {
 
                     /** A string array of allowed tool names */
-                    fun visitMcp(mcp: List<String>): T
+                    fun visitMcp(mcp: List<String>): T = unknown(JsonValue.from(mcp))
 
                     /** A filter object to specify which tools are allowed. */
-                    fun visitMcpToolFilter(mcpToolFilter: McpToolFilter): T
+                    fun visitMcpToolFilter(mcpToolFilter: McpToolFilter): T =
+                        unknown(JsonValue.from(mcpToolFilter))
 
                     /**
                      * Maps an unknown variant of [AllowedTools] to a value of type [T].
@@ -5772,6 +5790,10 @@ private constructor(
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
+                     *
+                     * Recognized variants also reach this method when their visit method is not
+                     * overridden. This allows existing visitors to handle variants added by newer
+                     * SDK versions.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -6457,7 +6479,8 @@ private constructor(
                  * ```
                  *
                  * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
-                 *   [visitor] and the current variant is unknown.
+                 *   [visitor] and the current variant is unknown or its visit method is not
+                 *   overridden.
                  */
                 fun <T> accept(visitor: Visitor<T>): T =
                     when {
@@ -6586,7 +6609,9 @@ private constructor(
                      * Specify which of the MCP server's tools require approval. Can be `always`,
                      * `never`, or a filter object associated with tools that require approval.
                      */
-                    fun visitMcpToolApprovalFilter(mcpToolApprovalFilter: McpToolApprovalFilter): T
+                    fun visitMcpToolApprovalFilter(
+                        mcpToolApprovalFilter: McpToolApprovalFilter
+                    ): T = unknown(JsonValue.from(mcpToolApprovalFilter))
 
                     /**
                      * Specify a single approval policy for all tools. One of `always` or `never`.
@@ -6595,7 +6620,7 @@ private constructor(
                      */
                     fun visitMcpToolApprovalSetting(
                         mcpToolApprovalSetting: McpToolApprovalSetting
-                    ): T
+                    ): T = unknown(JsonValue.from(mcpToolApprovalSetting))
 
                     /**
                      * Maps an unknown variant of [RequireApproval] to a value of type [T].
@@ -6604,6 +6629,10 @@ private constructor(
                      * deserialized from data that doesn't match any known variant. For example, if
                      * the SDK is on an older version than the API, then the API may respond with
                      * new variants that the SDK is unaware of.
+                     *
+                     * Recognized variants also reach this method when their visit method is not
+                     * overridden. This allows existing visitors to handle variants added by newer
+                     * SDK versions.
                      *
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
@@ -7631,7 +7660,7 @@ private constructor(
          * ```
          *
          * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
-         *   and the current variant is unknown.
+         *   and the current variant is unknown or its visit method is not overridden.
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
@@ -7743,10 +7772,11 @@ private constructor(
              * Enables tracing and sets default values for tracing configuration options. Always
              * `auto`.
              */
-            fun visitAuto(auto: JsonValue): T
+            fun visitAuto(auto: JsonValue): T = unknown(JsonValue.from(auto))
 
             /** Granular configuration for tracing. */
-            fun visitConfiguration(configuration: TracingConfiguration): T
+            fun visitConfiguration(configuration: TracingConfiguration): T =
+                unknown(JsonValue.from(configuration))
 
             /**
              * Maps an unknown variant of [Tracing] to a value of type [T].
@@ -7755,6 +7785,9 @@ private constructor(
              * data that doesn't match any known variant. For example, if the SDK is on an older
              * version than the API, then the API may respond with new variants that the SDK is
              * unaware of.
+             *
+             * Recognized variants also reach this method when their visit method is not overridden.
+             * This allows existing visitors to handle variants added by newer SDK versions.
              *
              * @throws OpenAIInvalidDataException in the default implementation.
              */

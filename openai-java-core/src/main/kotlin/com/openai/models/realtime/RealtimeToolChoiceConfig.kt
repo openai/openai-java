@@ -105,7 +105,7 @@ private constructor(
      * ```
      *
      * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     *   the current variant is unknown or its visit method is not overridden.
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
@@ -246,13 +246,16 @@ private constructor(
          *
          * `required` means the model must call one or more tools.
          */
-        fun visitToolChoiceOptions(toolChoiceOptions: ToolChoiceOptions): T
+        fun visitToolChoiceOptions(toolChoiceOptions: ToolChoiceOptions): T =
+            unknown(JsonValue.from(toolChoiceOptions))
 
         /** Use this option to force the model to call a specific function. */
-        fun visitToolChoiceFunction(toolChoiceFunction: ToolChoiceFunction): T
+        fun visitToolChoiceFunction(toolChoiceFunction: ToolChoiceFunction): T =
+            unknown(JsonValue.from(toolChoiceFunction))
 
         /** Use this option to force the model to call a specific tool on a remote MCP server. */
-        fun visitToolChoiceMcp(toolChoiceMcp: ToolChoiceMcp): T
+        fun visitToolChoiceMcp(toolChoiceMcp: ToolChoiceMcp): T =
+            unknown(JsonValue.from(toolChoiceMcp))
 
         /**
          * Maps an unknown variant of [RealtimeToolChoiceConfig] to a value of type [T].
@@ -261,6 +264,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
