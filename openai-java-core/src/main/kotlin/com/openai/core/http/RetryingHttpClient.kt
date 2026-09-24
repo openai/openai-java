@@ -183,7 +183,18 @@ private constructor(
     }
 
     override fun close() {
-        httpClient.close()
+        try {
+            httpClient.close()
+        } catch (httpClientFailure: Throwable) {
+            try {
+                sleeper.close()
+            } catch (sleeperFailure: Throwable) {
+                if (sleeperFailure !== httpClientFailure) {
+                    httpClientFailure.addSuppressed(sleeperFailure)
+                }
+            }
+            throw httpClientFailure
+        }
         sleeper.close()
     }
 
