@@ -1,6 +1,6 @@
 plugins {
     id("openai.kotlin")
-    id("com.gradleup.shadow") version "9.6.1"
+    id("com.gradleup.shadow") version "9.2.2"
 }
 
 buildscript {
@@ -35,6 +35,9 @@ dependencies {
 }
 
 tasks.shadowJar {
+    // Keep the shrinker fixture on the same non-multi-release class path as Shadow 8.
+    // R8 does not rewrite versioned Kotlin reflection classes in META-INF/versions.
+    addMultiReleaseAttribute = false
     from(sourceSets.test.get().output)
     configurations = listOf(project.configurations.testRuntimeClasspath.get())
 }
