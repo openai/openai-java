@@ -35,6 +35,18 @@ implementation("com.openai:openai-java:4.69.2")
 The framework-neutral SDK artifacts require Java 8 or later. Runtime floors and lifecycle states
 are declared per artifact in the [Java version support policy](docs/version-support-policy.md).
 
+### Local development
+
+Before building the repository, check that the local environment uses the development JDK declared
+by `build.jdk` in `gradle/version-support.properties`, then run lint:
+
+```sh
+./scripts/check-env
+./scripts/lint
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the complete development workflow.
+
 ## Usage
 
 > [!TIP]

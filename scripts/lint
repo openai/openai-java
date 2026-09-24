@@ -4,6 +4,10 @@ set -e
 
 cd "$(dirname "$0")/.."
 
+if [ -f ./scripts/check-env ]; then
+    ./scripts/check-env
+fi
+
 echo "==> Running lints"
 
 echo "==> Running gradlew lintKotlin"
