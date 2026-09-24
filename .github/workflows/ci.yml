@@ -48,8 +48,9 @@ jobs:
             21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
         with:
+          cache-provider: basic
           cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
       - name: Verify Maven Central credential transport
@@ -107,8 +108,9 @@ jobs:
             21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
         with:
+          cache-provider: basic
           cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
       - name: Build SDK
@@ -156,8 +158,9 @@ jobs:
             21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
         with:
+          cache-provider: basic
           cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
       - name: Restore exact-run Gradle build cache
@@ -194,8 +197,9 @@ jobs:
             21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
         with:
+          cache-provider: basic
           cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
       - name: Restore exact-run Gradle build cache
@@ -240,8 +244,9 @@ jobs:
             21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
         with:
+          cache-provider: basic
           cache-read-only: true
 
       - name: Restore exact-run Gradle build cache
@@ -296,8 +301,9 @@ jobs:
           java-version: 21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
         with:
+          cache-provider: basic
           cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
       - name: Read version support policy
@@ -341,8 +347,9 @@ jobs:
           java-version: 21
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
         with:
+          cache-provider: basic
           cache-read-only: true
 
       - name: Restore exact-run Gradle build cache
