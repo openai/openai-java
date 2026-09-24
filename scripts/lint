@@ -4,7 +4,9 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-./scripts/check-env
+if [ -f ./scripts/check-env ]; then
+    ./scripts/check-env
+fi
 
 echo "==> Running lints"
 
