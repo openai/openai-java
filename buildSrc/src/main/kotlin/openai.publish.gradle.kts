@@ -70,6 +70,13 @@ configure<MavenPublishBaseExtension> {
     }
 }
 
+// Preserve Kotlin source paths when Maven Publish uses Gradle's Java sources task.
+tasks.named<Jar>("sourcesJar") {
+    filesMatching("**/*.kt") {
+        path = "main/$path"
+    }
+}
+
 tasks.withType<Zip>().configureEach {
     isZip64 = true
 }
