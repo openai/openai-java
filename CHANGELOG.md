@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.69.2](https://github.com/openai/openai-java/compare/v4.69.1...v4.69.2) (2026-09-24)
+
+
+### Bug Fixes
+
+* buffer completion text with linear accumulation ([#1051](https://github.com/openai/openai-java/issues/1051)) ([0971c87](https://github.com/openai/openai-java/commit/0971c8717c087eccb60e0ce94323f142794b6a58))
+
+
+### Build System
+
+* **deps:** bump com.fasterxml.jackson.core:jackson-databind in / ([#905](https://github.com/openai/openai-java/issues/905)) ([fc18819](https://github.com/openai/openai-java/commit/fc188194e7e016dfd8dd327d6f855dfe48c08b1c))
+* **deps:** bump gradle/actions/setup-gradle from 5.0.2 to 6.3.0 ([#932](https://github.com/openai/openai-java/issues/932)) ([3f00bce](https://github.com/openai/openai-java/commit/3f00bce4be75ba0791f926c13231b499704f9a95))
+
 ## [4.69.1](https://github.com/openai/openai-java/compare/v4.69.0...v4.69.1) (2026-09-24)
 
 
