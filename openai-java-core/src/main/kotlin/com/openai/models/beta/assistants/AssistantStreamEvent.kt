@@ -1049,146 +1049,169 @@ private constructor(
          * Occurs when a new [thread](https://developers.openai.com/api/docs/assistants/migration)
          * is created.
          */
-        fun visitThreadCreated(threadCreated: ThreadCreated): T
+        fun visitThreadCreated(threadCreated: ThreadCreated): T =
+            unknown(JsonValue.from(threadCreated))
 
         /**
          * Occurs when a new [run](https://developers.openai.com/api/docs/assistants/migration) is
          * created.
          */
-        fun visitThreadRunCreated(threadRunCreated: ThreadRunCreated): T
+        fun visitThreadRunCreated(threadRunCreated: ThreadRunCreated): T =
+            unknown(JsonValue.from(threadRunCreated))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) moves to
          * a `queued` status.
          */
-        fun visitThreadRunQueued(threadRunQueued: ThreadRunQueued): T
+        fun visitThreadRunQueued(threadRunQueued: ThreadRunQueued): T =
+            unknown(JsonValue.from(threadRunQueued))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) moves to
          * an `in_progress` status.
          */
-        fun visitThreadRunInProgress(threadRunInProgress: ThreadRunInProgress): T
+        fun visitThreadRunInProgress(threadRunInProgress: ThreadRunInProgress): T =
+            unknown(JsonValue.from(threadRunInProgress))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) moves to
          * a `requires_action` status.
          */
-        fun visitThreadRunRequiresAction(threadRunRequiresAction: ThreadRunRequiresAction): T
+        fun visitThreadRunRequiresAction(threadRunRequiresAction: ThreadRunRequiresAction): T =
+            unknown(JsonValue.from(threadRunRequiresAction))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) is
          * completed.
          */
-        fun visitThreadRunCompleted(threadRunCompleted: ThreadRunCompleted): T
+        fun visitThreadRunCompleted(threadRunCompleted: ThreadRunCompleted): T =
+            unknown(JsonValue.from(threadRunCompleted))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) ends
          * with status `incomplete`.
          */
-        fun visitThreadRunIncomplete(threadRunIncomplete: ThreadRunIncomplete): T
+        fun visitThreadRunIncomplete(threadRunIncomplete: ThreadRunIncomplete): T =
+            unknown(JsonValue.from(threadRunIncomplete))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) fails.
          */
-        fun visitThreadRunFailed(threadRunFailed: ThreadRunFailed): T
+        fun visitThreadRunFailed(threadRunFailed: ThreadRunFailed): T =
+            unknown(JsonValue.from(threadRunFailed))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) moves to
          * a `cancelling` status.
          */
-        fun visitThreadRunCancelling(threadRunCancelling: ThreadRunCancelling): T
+        fun visitThreadRunCancelling(threadRunCancelling: ThreadRunCancelling): T =
+            unknown(JsonValue.from(threadRunCancelling))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) is
          * cancelled.
          */
-        fun visitThreadRunCancelled(threadRunCancelled: ThreadRunCancelled): T
+        fun visitThreadRunCancelled(threadRunCancelled: ThreadRunCancelled): T =
+            unknown(JsonValue.from(threadRunCancelled))
 
         /**
          * Occurs when a [run](https://developers.openai.com/api/docs/assistants/migration) expires.
          */
-        fun visitThreadRunExpired(threadRunExpired: ThreadRunExpired): T
+        fun visitThreadRunExpired(threadRunExpired: ThreadRunExpired): T =
+            unknown(JsonValue.from(threadRunExpired))
 
         /**
          * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
          * created.
          */
-        fun visitThreadRunStepCreated(threadRunStepCreated: ThreadRunStepCreated): T
+        fun visitThreadRunStepCreated(threadRunStepCreated: ThreadRunStepCreated): T =
+            unknown(JsonValue.from(threadRunStepCreated))
 
         /**
          * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
          * moves to an `in_progress` state.
          */
-        fun visitThreadRunStepInProgress(threadRunStepInProgress: ThreadRunStepInProgress): T
+        fun visitThreadRunStepInProgress(threadRunStepInProgress: ThreadRunStepInProgress): T =
+            unknown(JsonValue.from(threadRunStepInProgress))
 
         /**
          * Occurs when parts of a
          * [run step](https://developers.openai.com/api/docs/assistants/migration) are being
          * streamed.
          */
-        fun visitThreadRunStepDelta(threadRunStepDelta: ThreadRunStepDelta): T
+        fun visitThreadRunStepDelta(threadRunStepDelta: ThreadRunStepDelta): T =
+            unknown(JsonValue.from(threadRunStepDelta))
 
         /**
          * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
          * completed.
          */
-        fun visitThreadRunStepCompleted(threadRunStepCompleted: ThreadRunStepCompleted): T
+        fun visitThreadRunStepCompleted(threadRunStepCompleted: ThreadRunStepCompleted): T =
+            unknown(JsonValue.from(threadRunStepCompleted))
 
         /**
          * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
          * fails.
          */
-        fun visitThreadRunStepFailed(threadRunStepFailed: ThreadRunStepFailed): T
+        fun visitThreadRunStepFailed(threadRunStepFailed: ThreadRunStepFailed): T =
+            unknown(JsonValue.from(threadRunStepFailed))
 
         /**
          * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration) is
          * cancelled.
          */
-        fun visitThreadRunStepCancelled(threadRunStepCancelled: ThreadRunStepCancelled): T
+        fun visitThreadRunStepCancelled(threadRunStepCancelled: ThreadRunStepCancelled): T =
+            unknown(JsonValue.from(threadRunStepCancelled))
 
         /**
          * Occurs when a [run step](https://developers.openai.com/api/docs/assistants/migration)
          * expires.
          */
-        fun visitThreadRunStepExpired(threadRunStepExpired: ThreadRunStepExpired): T
+        fun visitThreadRunStepExpired(threadRunStepExpired: ThreadRunStepExpired): T =
+            unknown(JsonValue.from(threadRunStepExpired))
 
         /**
          * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
          * created.
          */
-        fun visitThreadMessageCreated(threadMessageCreated: ThreadMessageCreated): T
+        fun visitThreadMessageCreated(threadMessageCreated: ThreadMessageCreated): T =
+            unknown(JsonValue.from(threadMessageCreated))
 
         /**
          * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration)
          * moves to an `in_progress` state.
          */
-        fun visitThreadMessageInProgress(threadMessageInProgress: ThreadMessageInProgress): T
+        fun visitThreadMessageInProgress(threadMessageInProgress: ThreadMessageInProgress): T =
+            unknown(JsonValue.from(threadMessageInProgress))
 
         /**
          * Occurs when parts of a
          * [Message](https://developers.openai.com/api/docs/assistants/migration) are being
          * streamed.
          */
-        fun visitThreadMessageDelta(threadMessageDelta: ThreadMessageDelta): T
+        fun visitThreadMessageDelta(threadMessageDelta: ThreadMessageDelta): T =
+            unknown(JsonValue.from(threadMessageDelta))
 
         /**
          * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
          * completed.
          */
-        fun visitThreadMessageCompleted(threadMessageCompleted: ThreadMessageCompleted): T
+        fun visitThreadMessageCompleted(threadMessageCompleted: ThreadMessageCompleted): T =
+            unknown(JsonValue.from(threadMessageCompleted))
 
         /**
          * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) ends
          * before it is completed.
          */
-        fun visitThreadMessageIncomplete(threadMessageIncomplete: ThreadMessageIncomplete): T
+        fun visitThreadMessageIncomplete(threadMessageIncomplete: ThreadMessageIncomplete): T =
+            unknown(JsonValue.from(threadMessageIncomplete))
 
         /**
          * Occurs when an
          * [error](https://developers.openai.com/api/docs/guides/error-codes#api-errors) occurs.
          * This can happen due to an internal server error or a timeout.
          */
-        fun visitErrorEvent(errorEvent: ErrorEvent): T
+        fun visitErrorEvent(errorEvent: ErrorEvent): T = unknown(JsonValue.from(errorEvent))
 
         /**
          * Maps an unknown variant of [AssistantStreamEvent] to a value of type [T].
@@ -1197,6 +1220,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized events also reach this method when their visit method is not overridden. This
+         * allows existing visitors to handle event variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

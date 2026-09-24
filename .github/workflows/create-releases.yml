@@ -63,13 +63,18 @@ jobs:
         run: |
           set -euo pipefail
 
+          # A branch name alone is not an identity: forks can use the same name.
+          # Read every page so unrelated PRs cannot hide the real legacy PR.
           legacy_pr="$(
-            gh pr list \
-              --repo "$GITHUB_REPOSITORY" \
-              --state open \
-              --head "$LEGACY_RELEASE_BRANCH" \
-              --json number,url \
-              --jq '.[0] // empty'
+            gh api --method GET --paginate \
+              "repos/$GITHUB_REPOSITORY/pulls" \
+              -f state=open -f base=main -f per_page=100 |
+              jq -cs --arg repository "$GITHUB_REPOSITORY" \
+                --arg branch "$LEGACY_RELEASE_BRANCH" '
+                [.[][] | select(
+                  .state == "open" and .base.ref == "main" and
+                  .head.repo.full_name == $repository and .head.ref == $branch
+                ) | {number, url: .html_url}] | first // empty'
           )"
           if [[ -n "$legacy_pr" ]]; then
             legacy_number="$(jq -r '.number' <<< "$legacy_pr")"
@@ -263,7 +268,7 @@ jobs:
           ref: ${{ needs.release.outputs.source_sha }}
 
       - name: Set up Java
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: |

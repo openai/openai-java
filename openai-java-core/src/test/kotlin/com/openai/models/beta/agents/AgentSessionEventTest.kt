@@ -35,6 +35,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).contains(error)
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -120,6 +121,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).contains(environmentReady)
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -186,6 +188,75 @@ internal class AgentSessionEventTest {
     }
 
     @Test
+    fun ofEnvironmentReset() {
+        val environmentReset =
+            AgentSessionEnvironmentResetEvent.builder()
+                .environmentId("environment_id")
+                .eventId("event_id")
+                .resetCount(0L)
+                .sessionId("session_id")
+                .turnId("turn_id")
+                .build()
+
+        val agentSessionEvent = AgentSessionEvent.ofEnvironmentReset(environmentReset)
+
+        assertThat(agentSessionEvent.error()).isEmpty
+        assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).contains(environmentReset)
+        assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
+        assertThat(agentSessionEvent.created()).isEmpty
+        assertThat(agentSessionEvent.turnCreated()).isEmpty
+        assertThat(agentSessionEvent.turnInProgress()).isEmpty
+        assertThat(agentSessionEvent.turnCompleted()).isEmpty
+        assertThat(agentSessionEvent.turnFailed()).isEmpty
+        assertThat(agentSessionEvent.turnCancelled()).isEmpty
+        assertThat(agentSessionEvent.turnItemAdded()).isEmpty
+        assertThat(agentSessionEvent.idle()).isEmpty
+        assertThat(agentSessionEvent.inProgress()).isEmpty
+        assertThat(agentSessionEvent.requiresAction()).isEmpty
+        assertThat(agentSessionEvent.failed()).isEmpty
+        assertThat(agentSessionEvent.environmentPending()).isEmpty
+        assertThat(agentSessionEvent.environmentConnected()).isEmpty
+        assertThat(agentSessionEvent.environmentDisconnected()).isEmpty
+        assertThat(agentSessionEvent.environmentFailed()).isEmpty
+        assertThat(agentSessionEvent.subagentCreated()).isEmpty
+        assertThat(agentSessionEvent.subagentActive()).isEmpty
+        assertThat(agentSessionEvent.subagentClosed()).isEmpty
+        assertThat(agentSessionEvent.turnItemDone()).isEmpty
+        assertThat(agentSessionEvent.turnContentPartAdded()).isEmpty
+        assertThat(agentSessionEvent.turnContentPartDone()).isEmpty
+        assertThat(agentSessionEvent.turnOutputTextDelta()).isEmpty
+        assertThat(agentSessionEvent.turnOutputTextDone()).isEmpty
+        assertThat(agentSessionEvent.turnReasoningSummaryPartAdded()).isEmpty
+        assertThat(agentSessionEvent.turnReasoningSummaryPartDone()).isEmpty
+        assertThat(agentSessionEvent.turnReasoningSummaryTextDelta()).isEmpty
+        assertThat(agentSessionEvent.turnReasoningSummaryTextDone()).isEmpty
+    }
+
+    @Test
+    fun ofEnvironmentResetRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val agentSessionEvent =
+            AgentSessionEvent.ofEnvironmentReset(
+                AgentSessionEnvironmentResetEvent.builder()
+                    .environmentId("environment_id")
+                    .eventId("event_id")
+                    .resetCount(0L)
+                    .sessionId("session_id")
+                    .turnId("turn_id")
+                    .build()
+            )
+
+        val roundtrippedAgentSessionEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(agentSessionEvent),
+                jacksonTypeRef<AgentSessionEvent>(),
+            )
+
+        assertThat(roundtrippedAgentSessionEvent).isEqualTo(agentSessionEvent)
+    }
+
+    @Test
     fun ofOutputCommandExecutionOutputDelta() {
         val outputCommandExecutionOutputDelta =
             AgentOutputCommandExecutionOutputDeltaEvent.builder()
@@ -202,6 +273,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta())
             .contains(outputCommandExecutionOutputDelta)
         assertThat(agentSessionEvent.created()).isEmpty
@@ -346,6 +418,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).contains(created)
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -525,6 +598,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).contains(turnCreated)
@@ -659,6 +733,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -806,6 +881,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -966,6 +1042,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -1126,6 +1203,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -1250,6 +1328,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -1401,6 +1480,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -1622,6 +1702,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -1843,6 +1924,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -2064,6 +2146,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -2223,6 +2306,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -2315,6 +2399,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -2407,6 +2492,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -2499,6 +2585,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -2588,6 +2675,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -2674,6 +2762,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -2760,6 +2849,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -2845,6 +2935,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -2923,6 +3014,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -2995,6 +3087,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -3067,6 +3160,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -3139,6 +3233,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -3212,6 +3307,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -3287,6 +3383,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -3362,6 +3459,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty
@@ -3436,6 +3534,7 @@ internal class AgentSessionEventTest {
 
         assertThat(agentSessionEvent.error()).isEmpty
         assertThat(agentSessionEvent.environmentReady()).isEmpty
+        assertThat(agentSessionEvent.environmentReset()).isEmpty
         assertThat(agentSessionEvent.outputCommandExecutionOutputDelta()).isEmpty
         assertThat(agentSessionEvent.created()).isEmpty
         assertThat(agentSessionEvent.turnCreated()).isEmpty

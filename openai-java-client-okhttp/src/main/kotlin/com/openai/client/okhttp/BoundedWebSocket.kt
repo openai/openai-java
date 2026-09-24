@@ -90,29 +90,25 @@ internal object BoundedWebSocket {
                 .readTimeout(readDuration)
                 .callTimeout(0, TimeUnit.MILLISECONDS)
                 .apply {
-                    if (maxMessageBytes < Int.MAX_VALUE) {
-                        // Disable compression before the native reader can inflate a message.
-                        addInterceptor { chain ->
-                            val response =
-                                chain.proceed(
-                                    chain
-                                        .request()
-                                        .newBuilder()
-                                        .removeHeader("Sec-WebSocket-Extensions")
-                                        .build()
-                                )
-                            if (
-                                response.code == 101 &&
-                                    response.headers("Sec-WebSocket-Extensions").isNotEmpty()
-                            ) {
-                                chain.call().cancel()
-                                response.close()
-                                throw IOException(
-                                    "WebSocket extensions are disabled when maxMessageBytes is configured"
-                                )
-                            }
-                            response
+                    // Disable compression before the native reader can inflate a message.
+                    addInterceptor { chain ->
+                        val response =
+                            chain.proceed(
+                                chain
+                                    .request()
+                                    .newBuilder()
+                                    .removeHeader("Sec-WebSocket-Extensions")
+                                    .build()
+                            )
+                        if (
+                            response.code == 101 &&
+                                response.headers("Sec-WebSocket-Extensions").isNotEmpty()
+                        ) {
+                            chain.call().cancel()
+                            response.close()
+                            throw IOException("WebSocket extensions are disabled")
                         }
+                        response
                     }
                 }
                 .build()

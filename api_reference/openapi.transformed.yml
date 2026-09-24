@@ -22961,7 +22961,7 @@ paths:
       - AdminApiKeyAuth: []
     delete:
       summary: Delete an external storage configuration
-      description: Soft-delete one customer-managed external storage configuration.
+      description: Disconnect a customer-managed external storage configuration. Removing the project's last configuration restores organization-default retention if customer-managed retention was active. Repeating a deletion also completes any interrupted retention update. Cloud storage is unchanged.
       operationId: Deleteanexternalstorageconfiguration
       parameters:
       - name: external_storage_id
@@ -35529,8 +35529,8 @@ components:
               propertyName: type
           seed:
             type: integer
-            minimum: -9.223372036854776e18
-            maximum: 9.223372036854776e18
+            minimum: -9223372036854775808
+            maximum: 9223372036854775807
             nullable: true
             deprecated: true
             description: |
@@ -35539,6 +35539,7 @@ components:
               Determinism is not guaranteed, and you should refer to the `system_fingerprint` response parameter to monitor changes in the backend.
             x-oaiMeta:
               beta: true
+            format: int64
           stream_options:
             $ref: '#/components/schemas/ChatCompletionStreamOptions'
           tools:
@@ -36953,6 +36954,7 @@ components:
               description: |
                 Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
                 overfitting.
+              default: auto
               anyOf:
               - type: string
                 enum:
@@ -36960,8 +36962,7 @@ components:
                 x-stainless-const: true
                 title: Auto
               - type: number
-                minimum: 0
-                exclusiveMinimum: true
+                exclusiveMinimum: 0
             n_epochs:
               description: |
                 The number of epochs to train the model for. An epoch refers to one full cycle
@@ -41280,15 +41281,15 @@ components:
         beta:
           description: |
             The beta value for the DPO method. A higher beta value will increase the weight of the penalty between the policy and reference model.
+          default: auto
           anyOf:
           - type: string
             enum:
             - auto
             x-stainless-const: true
           - type: number
-            minimum: 0
             maximum: 2
-            exclusiveMinimum: true
+            exclusiveMinimum: 0
         batch_size:
           description: |
             Number of examples in each batch. A larger batch size means that model parameters are updated less frequently, but with lower variance.
@@ -41304,14 +41305,14 @@ components:
         learning_rate_multiplier:
           description: |
             Scaling factor for the learning rate. A smaller learning rate may be useful to avoid overfitting.
+          default: auto
           anyOf:
           - type: string
             enum:
             - auto
             x-stainless-const: true
           - type: number
-            minimum: 0
-            exclusiveMinimum: true
+            exclusiveMinimum: 0
         n_epochs:
           description: |
             The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset.
@@ -41368,14 +41369,14 @@ components:
         learning_rate_multiplier:
           description: |
             Scaling factor for the learning rate. A smaller learning rate may be useful to avoid overfitting.
+          default: auto
           anyOf:
           - type: string
             enum:
             - auto
             x-stainless-const: true
           - type: number
-            minimum: 0
-            exclusiveMinimum: true
+            exclusiveMinimum: 0
         n_epochs:
           description: |
             The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset.
@@ -41401,15 +41402,15 @@ components:
         compute_multiplier:
           description: |
             Multiplier on amount of compute used for exploring search space during training.
+          default: auto
           anyOf:
           - type: string
             enum:
             - auto
             x-stainless-const: true
           - type: number
-            minimum: 0.00001
             maximum: 10
-            exclusiveMinimum: true
+            exclusiveMinimum: 0.00001
         eval_interval:
           description: |
             The number of training steps between evaluation runs.
@@ -41468,14 +41469,14 @@ components:
         learning_rate_multiplier:
           description: |
             Scaling factor for the learning rate. A smaller learning rate may be useful to avoid overfitting.
+          default: auto
           anyOf:
           - type: string
             enum:
             - auto
             x-stainless-const: true
           - type: number
-            minimum: 0
-            exclusiveMinimum: true
+            exclusiveMinimum: 0
         n_epochs:
           description: |
             The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset.
@@ -41648,6 +41649,7 @@ components:
               description: |
                 Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
                 overfitting.
+              default: auto
               anyOf:
               - type: string
                 enum:
@@ -41655,8 +41657,7 @@ components:
                 x-stainless-const: true
                 title: Auto
               - type: number
-                minimum: 0
-                exclusiveMinimum: true
+                exclusiveMinimum: 0
             n_epochs:
               description: |
                 The number of epochs to train the model for. An epoch refers to one full cycle
@@ -45850,6 +45851,7 @@ components:
         - gpt-daybreak-blue-latest
         - gpt-daybreak-red-latest
         - gpt-5.6-cyber
+        - gpt-rosalind-research
     ModelIdsShared:
       example: gpt-6-astra
       anyOf:
@@ -51334,6 +51336,9 @@ components:
             The session configuration for either a realtime or transcription session.
           discriminator:
             propertyName: type
+            mapping:
+              realtime: '#/components/schemas/RealtimeSessionCreateResponseGA'
+              transcription: '#/components/schemas/RealtimeTranscriptionSessionCreateResponseGA'
           anyOf:
           - $ref: '#/components/schemas/RealtimeSessionCreateResponseGA'
           - $ref: '#/components/schemas/RealtimeTranscriptionSessionCreateResponseGA'
@@ -54151,6 +54156,7 @@ components:
           - realtime.session
           description: The object type. Always `realtime.session`.
         modalities:
+          type: array
           description: |
             The set of modalities the model can respond with. To disable audio,
             set this to ["text"].
@@ -54364,6 +54370,7 @@ components:
           - value
           - expires_at
         modalities:
+          type: array
           description: |
             The set of modalities the model can respond with. To disable audio,
             set this to ["text"].
@@ -65316,7 +65323,9 @@ components:
       - type: object
         title: Web search approximate location
         description: |
-          The approximate location of the user.
+          The approximate location of the user. If omitted or null, defaults to the
+          United States. To avoid this fallback, pass `{"type": "approximate"}` without
+          location fields. To localize results, provide the relevant location fields.
         properties:
           type:
             type: string
@@ -68569,7 +68578,7 @@ components:
         user_location:
           anyOf:
           - $ref: '#/components/schemas/ApproximateLocation'
-            description: The user's location.
+            description: 'The approximate location of the user. If omitted or null, defaults to the United States. To avoid this fallback, pass `{"type": "approximate"}` without location fields. To localize results, provide the relevant location fields.'
           - type: 'null'
         search_context_size:
           $ref: '#/components/schemas/SearchContextSize'
@@ -73939,6 +73948,12 @@ components:
       - disconnected
       - expired
       - failed
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
       description: The public lifecycle status of an execution environment.
     HostedEnvironmentFileResourceFileId:
       type: object
@@ -78275,11 +78290,11 @@ components:
           maxItems: 2000
           description: Actions that must be completed before the session can continue.
         error:
+          description: The error that caused the session to fail, if any.
           type:
           - string
           - 'null'
           minLength: 0
-          description: The error that caused the session to fail, if any.
         agent:
           $ref: '#/components/schemas/SessionAgentResource'
           description: The agent running in the session.
@@ -78820,7 +78835,7 @@ components:
       required:
       - type
       additionalProperties: false
-      description: An OpenAI-hosted environment, optionally based on a reusable template.
+      description: An existing OpenAI-hosted environment or new inline/template-based hosted configuration.
     EnvironmentParamSelfHosted:
       type: object
       properties:
@@ -79179,6 +79194,48 @@ components:
       - environment
       additionalProperties: false
       description: Emitted when a hosted session environment is ready to connect.
+    SessionEventAgentSessionEnvironmentReset:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - agent.session.environment.reset
+          default: agent.session.environment.reset
+          x-stainless-const: true
+          description: The type of the object. Always `agent.session.environment.reset`.
+        event_id:
+          type: string
+          minLength: 0
+          description: The unique ID of the event.
+        session_id:
+          type: string
+          minLength: 0
+          description: The ID of the session associated with the event.
+        turn_id:
+          type:
+          - string
+          - 'null'
+          minLength: 0
+          description: The associated turn, when applicable.
+        environment_id:
+          type: string
+          minLength: 0
+          description: The stable environment ID, retained across sandbox replacements.
+        reset_count:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Monotonically increasing reset number. Repeated notifications share this number.
+      required:
+      - type
+      - event_id
+      - session_id
+      - turn_id
+      - environment_id
+      - reset_count
+      additionalProperties: false
+      description: Emitted after a hosted sandbox is replaced. Conversation history survives; changes to the previous sandbox's files and processes do not.
     SessionEventAgentOutputCommandExecutionOutputDelta:
       type: object
       properties:
@@ -80366,6 +80423,7 @@ components:
         mapping:
           error: '#/components/schemas/SessionEventError'
           agent.session.environment.ready: '#/components/schemas/SessionEventAgentSessionEnvironmentReady'
+          agent.session.environment.reset: '#/components/schemas/SessionEventAgentSessionEnvironmentReset'
           agent.output.command_execution_output.delta: '#/components/schemas/SessionEventAgentOutputCommandExecutionOutputDelta'
           agent.session.created: '#/components/schemas/SessionEventAgentSessionCreated'
           agent.session.turn.created: '#/components/schemas/SessionEventAgentSessionTurnCreated'
@@ -80397,6 +80455,7 @@ components:
       x-oai-discriminator-values:
       - error
       - agent.session.environment.ready
+      - agent.session.environment.reset
       - agent.output.command_execution_output.delta
       - agent.session.created
       - agent.session.turn.created
@@ -80428,6 +80487,7 @@ components:
       anyOf:
       - $ref: '#/components/schemas/SessionEventError'
       - $ref: '#/components/schemas/SessionEventAgentSessionEnvironmentReady'
+      - $ref: '#/components/schemas/SessionEventAgentSessionEnvironmentReset'
       - $ref: '#/components/schemas/SessionEventAgentOutputCommandExecutionOutputDelta'
       - $ref: '#/components/schemas/SessionEventAgentSessionCreated'
       - $ref: '#/components/schemas/SessionEventAgentSessionTurnCreated'
@@ -80464,6 +80524,7 @@ components:
           - $ref: '#/components/schemas/ReasoningEffortParam'
           - type: 'null'
           description: Omit to keep the current effort. Null selects the model's default effort.
+          x-openai-go-optional-enum: true
       additionalProperties: false
       description: Reasoning effort for subsequent turns. The reasoning summary stays unchanged.
     UpdateSessionAgentParam:
@@ -80482,6 +80543,7 @@ components:
           - $ref: '#/components/schemas/ServiceTierParam'
           - type: 'null'
           description: Omit to keep the current tier. Null resets it to auto.
+          x-openai-go-optional-enum: true
       additionalProperties: false
       description: Model settings that can change after session creation.
     UpdateAgentSessionParams:
@@ -84389,7 +84451,7 @@ components:
         user_location:
           anyOf:
           - $ref: '#/components/schemas/BetaApproximateLocation'
-            description: The user's location.
+            description: 'The approximate location of the user. If omitted or null, defaults to the United States. To avoid this fallback, pass `{"type": "approximate"}` without location fields. To localize results, provide the relevant location fields.'
           - type: 'null'
         search_context_size:
           $ref: '#/components/schemas/BetaSearchContextSize'
@@ -85362,7 +85424,9 @@ components:
       - type: object
         title: Web search approximate location
         description: |
-          The approximate location of the user.
+          The approximate location of the user. If omitted or null, defaults to the
+          United States. To avoid this fallback, pass `{"type": "approximate"}` without
+          location fields. To localize results, provide the relevant location fields.
         properties:
           type:
             type: string
@@ -89089,6 +89153,7 @@ components:
         - gpt-daybreak-blue-latest
         - gpt-daybreak-red-latest
         - gpt-5.6-cyber
+        - gpt-rosalind-research
     BetaModelIdsShared:
       example: gpt-6-astra
       anyOf:
@@ -96327,6 +96392,8 @@ components:
       type: string
       enum:
       - gpt-6-astra
+      - gpt-6-sol
+      - gpt-6-luna
       - gpt-5.6-sol
       - gpt-5.6-terra
       - gpt-5.6-luna
@@ -96346,6 +96413,7 @@ components:
       - gpt-5.1
       - gpt-5.1-2025-11-13
       - gpt-5.1-codex
+      - gpt-5.1-mini
       - gpt-5.1-chat-latest
       - gpt-5
       - gpt-5-mini

@@ -1245,6 +1245,10 @@ private constructor(
 
             @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
 
+            @JvmField val GPT_6_SOL = of("gpt-6-sol")
+
+            @JvmField val GPT_6_LUNA = of("gpt-6-luna")
+
             @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
             @JvmField val GPT_5_6_TERRA = of("gpt-5.6-terra")
@@ -1282,6 +1286,8 @@ private constructor(
             @JvmField val GPT_5_1_2025_11_13 = of("gpt-5.1-2025-11-13")
 
             @JvmField val GPT_5_1_CODEX = of("gpt-5.1-codex")
+
+            @JvmField val GPT_5_1_MINI = of("gpt-5.1-mini")
 
             @JvmField val GPT_5_1_CHAT_LATEST = of("gpt-5.1-chat-latest")
 
@@ -1453,12 +1459,16 @@ private constructor(
 
             @JvmField val GPT_5_6_CYBER = of("gpt-5.6-cyber")
 
+            @JvmField val GPT_ROSALIND_RESEARCH = of("gpt-rosalind-research")
+
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
             GPT_6_ASTRA,
+            GPT_6_SOL,
+            GPT_6_LUNA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
@@ -1478,6 +1488,7 @@ private constructor(
             GPT_5_1,
             GPT_5_1_2025_11_13,
             GPT_5_1_CODEX,
+            GPT_5_1_MINI,
             GPT_5_1_CHAT_LATEST,
             GPT_5,
             GPT_5_MINI,
@@ -1562,6 +1573,7 @@ private constructor(
             GPT_DAYBREAK_BLUE_LATEST,
             GPT_DAYBREAK_RED_LATEST,
             GPT_5_6_CYBER,
+            GPT_ROSALIND_RESEARCH,
         }
 
         /**
@@ -1575,6 +1587,8 @@ private constructor(
          */
         enum class Value {
             GPT_6_ASTRA,
+            GPT_6_SOL,
+            GPT_6_LUNA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
@@ -1594,6 +1608,7 @@ private constructor(
             GPT_5_1,
             GPT_5_1_2025_11_13,
             GPT_5_1_CODEX,
+            GPT_5_1_MINI,
             GPT_5_1_CHAT_LATEST,
             GPT_5,
             GPT_5_MINI,
@@ -1678,6 +1693,7 @@ private constructor(
             GPT_DAYBREAK_BLUE_LATEST,
             GPT_DAYBREAK_RED_LATEST,
             GPT_5_6_CYBER,
+            GPT_ROSALIND_RESEARCH,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -1692,6 +1708,8 @@ private constructor(
         fun value(): Value =
             when (this) {
                 GPT_6_ASTRA -> Value.GPT_6_ASTRA
+                GPT_6_SOL -> Value.GPT_6_SOL
+                GPT_6_LUNA -> Value.GPT_6_LUNA
                 GPT_5_6_SOL -> Value.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
@@ -1711,6 +1729,7 @@ private constructor(
                 GPT_5_1 -> Value.GPT_5_1
                 GPT_5_1_2025_11_13 -> Value.GPT_5_1_2025_11_13
                 GPT_5_1_CODEX -> Value.GPT_5_1_CODEX
+                GPT_5_1_MINI -> Value.GPT_5_1_MINI
                 GPT_5_1_CHAT_LATEST -> Value.GPT_5_1_CHAT_LATEST
                 GPT_5 -> Value.GPT_5
                 GPT_5_MINI -> Value.GPT_5_MINI
@@ -1795,6 +1814,7 @@ private constructor(
                 GPT_DAYBREAK_BLUE_LATEST -> Value.GPT_DAYBREAK_BLUE_LATEST
                 GPT_DAYBREAK_RED_LATEST -> Value.GPT_DAYBREAK_RED_LATEST
                 GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
+                GPT_ROSALIND_RESEARCH -> Value.GPT_ROSALIND_RESEARCH
                 else -> Value._UNKNOWN
             }
 
@@ -1810,6 +1830,8 @@ private constructor(
         fun known(): Known =
             when (this) {
                 GPT_6_ASTRA -> Known.GPT_6_ASTRA
+                GPT_6_SOL -> Known.GPT_6_SOL
+                GPT_6_LUNA -> Known.GPT_6_LUNA
                 GPT_5_6_SOL -> Known.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
@@ -1829,6 +1851,7 @@ private constructor(
                 GPT_5_1 -> Known.GPT_5_1
                 GPT_5_1_2025_11_13 -> Known.GPT_5_1_2025_11_13
                 GPT_5_1_CODEX -> Known.GPT_5_1_CODEX
+                GPT_5_1_MINI -> Known.GPT_5_1_MINI
                 GPT_5_1_CHAT_LATEST -> Known.GPT_5_1_CHAT_LATEST
                 GPT_5 -> Known.GPT_5
                 GPT_5_MINI -> Known.GPT_5_MINI
@@ -1913,6 +1936,7 @@ private constructor(
                 GPT_DAYBREAK_BLUE_LATEST -> Known.GPT_DAYBREAK_BLUE_LATEST
                 GPT_DAYBREAK_RED_LATEST -> Known.GPT_DAYBREAK_RED_LATEST
                 GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
+                GPT_ROSALIND_RESEARCH -> Known.GPT_ROSALIND_RESEARCH
                 else -> throw OpenAIInvalidDataException("Unknown Model: $value")
             }
 

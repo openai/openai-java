@@ -188,10 +188,12 @@ private constructor(
     interface Visitor<out T> {
 
         /** Emitted when a partial image is available during image generation streaming. */
-        fun visitGenerationPartialImage(generationPartialImage: ImageGenPartialImageEvent): T
+        fun visitGenerationPartialImage(generationPartialImage: ImageGenPartialImageEvent): T =
+            unknown(JsonValue.from(generationPartialImage))
 
         /** Emitted when image generation has completed and the final image is available. */
-        fun visitGenerationCompleted(generationCompleted: ImageGenCompletedEvent): T
+        fun visitGenerationCompleted(generationCompleted: ImageGenCompletedEvent): T =
+            unknown(JsonValue.from(generationCompleted))
 
         /**
          * Maps an unknown variant of [ImageGenStreamEvent] to a value of type [T].
@@ -200,6 +202,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized events also reach this method when their visit method is not overridden. This
+         * allows existing visitors to handle event variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

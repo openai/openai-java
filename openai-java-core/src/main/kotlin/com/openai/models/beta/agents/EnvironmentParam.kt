@@ -44,7 +44,7 @@ private constructor(
     /** Runs the agent without an execution environment. */
     fun none(): Optional<JsonValue> = Optional.ofNullable(none)
 
-    /** An OpenAI-hosted environment, optionally based on a reusable template. */
+    /** An existing OpenAI-hosted environment or new inline/template-based hosted configuration. */
     fun openaiHosted(): Optional<OpenAIHosted> = Optional.ofNullable(openaiHosted)
 
     /** An application-hosted environment configured inline. */
@@ -59,7 +59,7 @@ private constructor(
     /** Runs the agent without an execution environment. */
     fun asNone(): JsonValue = none.getOrThrow("none")
 
-    /** An OpenAI-hosted environment, optionally based on a reusable template. */
+    /** An existing OpenAI-hosted environment or new inline/template-based hosted configuration. */
     fun asOpenAIHosted(): OpenAIHosted = openaiHosted.getOrThrow("openaiHosted")
 
     /** An application-hosted environment configured inline. */
@@ -196,7 +196,9 @@ private constructor(
         /** Runs the agent without an execution environment. */
         @JvmStatic fun ofNone() = EnvironmentParam(none = JsonValue.from(mapOf("type" to "none")))
 
-        /** An OpenAI-hosted environment, optionally based on a reusable template. */
+        /**
+         * An existing OpenAI-hosted environment or new inline/template-based hosted configuration.
+         */
         @JvmStatic
         fun ofOpenAIHosted(openaiHosted: OpenAIHosted) =
             EnvironmentParam(openaiHosted = openaiHosted)
@@ -215,7 +217,9 @@ private constructor(
         /** Runs the agent without an execution environment. */
         fun visitNone(none: JsonValue): T
 
-        /** An OpenAI-hosted environment, optionally based on a reusable template. */
+        /**
+         * An existing OpenAI-hosted environment or new inline/template-based hosted configuration.
+         */
         fun visitOpenAIHosted(openaiHosted: OpenAIHosted): T
 
         /** An application-hosted environment configured inline. */
@@ -281,7 +285,7 @@ private constructor(
         }
     }
 
-    /** An OpenAI-hosted environment, optionally based on a reusable template. */
+    /** An existing OpenAI-hosted environment or new inline/template-based hosted configuration. */
     class OpenAIHosted
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(

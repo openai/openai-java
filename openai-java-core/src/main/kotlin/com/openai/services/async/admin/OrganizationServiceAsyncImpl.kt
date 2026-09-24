@@ -38,10 +38,6 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
         WithRawResponseImpl(clientOptions)
     }
 
-    private val externalStorage: ExternalStorageServiceAsync by lazy {
-        ExternalStorageServiceAsyncImpl(clientOptions)
-    }
-
     private val auditLogs: AuditLogServiceAsync by lazy { AuditLogServiceAsyncImpl(clientOptions) }
 
     private val adminApiKeys: AdminApiKeyServiceAsync by lazy {
@@ -60,6 +56,10 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
 
     private val dataRetention: DataRetentionServiceAsync by lazy {
         DataRetentionServiceAsyncImpl(clientOptions)
+    }
+
+    private val externalStorage: ExternalStorageServiceAsync by lazy {
+        ExternalStorageServiceAsyncImpl(clientOptions)
     }
 
     private val spendLimit: SpendLimitServiceAsync by lazy {
@@ -81,8 +81,6 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationServiceAsync =
         OrganizationServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun externalStorage(): ExternalStorageServiceAsync = externalStorage
-
     /** List user actions and configuration changes within this organization. */
     override fun auditLogs(): AuditLogServiceAsync = auditLogs
 
@@ -100,6 +98,8 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
 
     override fun dataRetention(): DataRetentionServiceAsync = dataRetention
 
+    override fun externalStorage(): ExternalStorageServiceAsync = externalStorage
+
     override fun spendLimit(): SpendLimitServiceAsync = spendLimit
 
     override fun spendAlerts(): SpendAlertServiceAsync = spendAlerts
@@ -110,10 +110,6 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         OrganizationServiceAsync.WithRawResponse {
-
-        private val externalStorage: ExternalStorageServiceAsync.WithRawResponse by lazy {
-            ExternalStorageServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
 
         private val auditLogs: AuditLogServiceAsync.WithRawResponse by lazy {
             AuditLogServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -147,6 +143,10 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
             DataRetentionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val externalStorage: ExternalStorageServiceAsync.WithRawResponse by lazy {
+            ExternalStorageServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val spendLimit: SpendLimitServiceAsync.WithRawResponse by lazy {
             SpendLimitServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -170,9 +170,6 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        override fun externalStorage(): ExternalStorageServiceAsync.WithRawResponse =
-            externalStorage
-
         /** List user actions and configuration changes within this organization. */
         override fun auditLogs(): AuditLogServiceAsync.WithRawResponse = auditLogs
 
@@ -189,6 +186,9 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
         override fun roles(): RoleServiceAsync.WithRawResponse = roles
 
         override fun dataRetention(): DataRetentionServiceAsync.WithRawResponse = dataRetention
+
+        override fun externalStorage(): ExternalStorageServiceAsync.WithRawResponse =
+            externalStorage
 
         override fun spendLimit(): SpendLimitServiceAsync.WithRawResponse = spendLimit
 
