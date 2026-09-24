@@ -1,4 +1,3 @@
-import com.openai.gradle.CoreCompilationClaimedSourceIncludeSpec
 import com.openai.gradle.CoreCompilationClaimedSourceSpec
 import com.openai.gradle.CoreCompilationDependencies
 import com.openai.gradle.CoreCompilationShards
@@ -86,15 +85,8 @@ val coreJar = tasks.named<Jar>("jar") {
     duplicatesStrategy = DuplicatesStrategy.FAIL
 }
 
-val coreSourcesJar = tasks.named<Jar>("kotlinSourcesJar") {
+val coreSourcesJar = tasks.named<Jar>("sourcesJar") {
     duplicatesStrategy = DuplicatesStrategy.FAIL
-    from(
-        fileTree("src/main/kotlin").matching {
-            include(CoreCompilationClaimedSourceIncludeSpec())
-        }
-    ) {
-        into("main")
-    }
 }
 
 val verifyCoreCompilationArtifact =
