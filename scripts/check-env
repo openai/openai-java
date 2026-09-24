@@ -26,7 +26,7 @@ fi
 java_version=""
 if [ -n "${java_bin}" ] && [ -x "${java_bin}" ] &&
   java_output="$("${java_bin}" -XshowSettings:properties -version 2>&1)"; then
-  java_version="$(printf '%s\n' "${java_output}" |
+  java_version="$(printf '%s\n' "${java_output}" | tr -d '\r' |
     sed -n 's/^[[:space:]]*java\.specification\.version = //p')"
 fi
 

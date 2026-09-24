@@ -2,6 +2,7 @@ package com.openai.gradle
 
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
+import kotlin.io.path.deleteIfExists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.test.Test
@@ -19,20 +20,23 @@ class JavaFormatScriptTest {
     @Test
     fun `installed formatter lint checks without changing Java files`() {
         val scripts = directory.resolve("scripts").createDirectories()
-        for (name in listOf("java-format", "lint", "format")) {
+        for (name in listOf("check-env", "java-format", "lint", "format")) {
             val script = scripts.resolve(name)
             script.writeText(Path.of("../scripts/$name").readText())
             assertTrue(script.toFile().setExecutable(true))
         }
-        val checkEnv = scripts.resolve("check-env")
-        checkEnv.writeText("#!/usr/bin/env bash\n")
-        assertTrue(checkEnv.toFile().setExecutable(true))
+        directory
+            .resolve("gradle")
+            .createDirectories()
+            .resolve("version-support.properties")
+            .writeText("build.jdk=21\n")
 
         val gradle = scripts.resolve("gradle")
         gradle.writeText(
             """
             |#!/usr/bin/env bash
-            |[[ "${'$'}1" == lintKotlin || "${'$'}1" == formatKotlin ]]
+            |printf '%s\n' "${'$'}1" >> gradle-invocations
+            |[[ "${'$'}1" == lintKotlin || "${'$'}1" == lintJava || "${'$'}1" == formatKotlin ]]
             """
                 .trimMargin() + "\n"
         )
@@ -84,38 +88,57 @@ class JavaFormatScriptTest {
                 .trimMargin() + "\n"
         )
         assertTrue(formatter.toFile().setExecutable(true))
+        val java = bin.resolve("java")
+        java.writeText(
+            "#!/usr/bin/env bash\nprintf '    java.specification.version = 21\\r\\n' >&2\n"
+        )
+        assertTrue(java.toFile().setExecutable(true))
 
-        val java = directory.resolve("Example.java")
+        val javaFile = directory.resolve("Example.java")
         val unformatted = "class Example{ }\n"
-        java.writeText(unformatted)
+        javaFile.writeText(unformatted)
 
         val lintBefore = run(scripts.resolve("lint"), bin)
         assertNotEquals(0, lintBefore.exitCode, lintBefore.output)
-        assertEquals(unformatted, java.readText())
+        assertEquals(unformatted, javaFile.readText())
 
         directory.resolve("opts").writeText("--dry-run --set-exit-if-changed\n")
         val responseFile = run(scripts.resolve("java-format"), bin, "@opts")
         assertEquals(2, responseFile.exitCode, responseFile.output)
         assertTrue(responseFile.output.contains("Response files are unsupported"))
-        assertEquals(unformatted, java.readText())
+        assertEquals(unformatted, javaFile.readText())
 
         val invalid = run(scripts.resolve("java-format"), bin, "--replace", "--dry-run")
         assertNotEquals(0, invalid.exitCode, invalid.output)
-        assertEquals(unformatted, java.readText())
+        assertEquals(unformatted, javaFile.readText())
 
         val format = run(scripts.resolve("format"), bin)
         assertEquals(0, format.exitCode, format.output)
-        assertEquals("class Example {}\n", java.readText())
+        assertEquals("class Example {}\n", javaFile.readText())
 
         val lintAfter = run(scripts.resolve("lint"), bin)
         assertEquals(0, lintAfter.exitCode, lintAfter.output)
+
+        formatter.deleteIfExists()
+        val gradleInvocations = directory.resolve("gradle-invocations")
+        gradleInvocations.writeText("")
+        val lintWithoutFormatter = run(scripts.resolve("lint"), bin, inheritPath = false)
+        assertEquals(0, lintWithoutFormatter.exitCode, lintWithoutFormatter.output)
+        assertTrue(lintWithoutFormatter.output.contains("Development environment: JDK 21"))
+        assertEquals(listOf("lintKotlin", "lintJava"), gradleInvocations.toFile().readLines())
     }
 
-    private fun run(script: Path, bin: Path, vararg args: String): Result {
+    private fun run(
+        script: Path,
+        bin: Path,
+        vararg args: String,
+        inheritPath: Boolean = true,
+    ): Result {
         val builder = ProcessBuilder(listOf("bash", script.toString()) + args)
         builder.directory(directory.toFile()).redirectErrorStream(true)
         val path = builder.environment()["PATH"] ?: ""
-        builder.environment()["PATH"] = "$bin:$path"
+        builder.environment()["PATH"] = "$bin:${if (inheritPath) path else "/usr/bin:/bin"}"
+        builder.environment().remove("JAVA_HOME")
         val process = builder.start()
         val output = process.inputStream.bufferedReader().use { it.readText() }
         return Result(process.waitFor(), output)

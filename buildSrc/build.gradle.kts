@@ -26,6 +26,7 @@ tasks.test {
         .withPathSensitivity(PathSensitivity.RELATIVE)
     inputs
         .files(
+            layout.projectDirectory.file("../scripts/check-env"),
             layout.projectDirectory.file("../scripts/java-format"),
             layout.projectDirectory.file("../scripts/lint"),
             layout.projectDirectory.file("../scripts/format"),
