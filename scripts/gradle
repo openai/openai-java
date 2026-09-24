@@ -4,6 +4,176 @@ set -e
 
 cd "$(dirname "$0")/.."
 
+required_jdk=21
+gradle_max_jdk=23
+
+java_bin=""
+if [ -n "${JAVA_HOME:-}" ]; then
+  if [ -x "${JAVA_HOME}/jre/sh/java" ]; then
+    java_bin="${JAVA_HOME}/jre/sh/java"
+  else
+    java_bin="${JAVA_HOME}/bin/java"
+  fi
+  if [ ! -x "${java_bin}" ]; then
+    cat >&2 <<EOF
+OpenAI Java SDK development requires JDK ${required_jdk}, but JAVA_HOME does not contain an executable Java launcher.
+
+JAVA_HOME is set to:
+  ${JAVA_HOME}
+
+Select JDK ${required_jdk}, then rerun lint:
+  export JAVA_HOME=/path/to/jdk-${required_jdk}
+  export PATH="\$JAVA_HOME/bin:\$PATH"
+  ./scripts/lint
+EOF
+    exit 1
+  fi
+else
+  java_bin="$(command -v java || true)"
+fi
+
+if [ -z "${java_bin}" ]; then
+  cat >&2 <<EOF
+OpenAI Java SDK development requires JDK ${required_jdk}, but no Java launcher was found.
+
+Install JDK ${required_jdk}, then select it before running Gradle:
+  export JAVA_HOME=/path/to/jdk-${required_jdk}
+  export PATH="\$JAVA_HOME/bin:\$PATH"
+  ./scripts/gradle --version
+EOF
+  exit 1
+fi
+
+java_version_output="$("${java_bin}" -version 2>&1)" || {
+  cat >&2 <<EOF
+OpenAI Java SDK development requires JDK ${required_jdk}, but no Java launcher was found.
+
+Install JDK ${required_jdk}, then select it before running Gradle:
+  export JAVA_HOME=/path/to/jdk-${required_jdk}
+  export PATH="\$JAVA_HOME/bin:\$PATH"
+  ./scripts/gradle --version
+EOF
+  exit 1
+}
+
+java_version="$(
+  printf '%s\n' "${java_version_output}" |
+    awk -F '"' '/version/ { print $2; exit }'
+)"
+
+case "${java_version}" in
+  1.*) java_major="${java_version#1.}"; java_major="${java_major%%.*}" ;;
+  *) java_major="${java_version%%[.+_-]*}" ;;
+esac
+
+if ! [[ "${java_major}" =~ ^[0-9]+$ ]]; then
+  cat >&2 <<EOF
+OpenAI Java SDK development requires JDK ${required_jdk}, but the current Java version could not be detected.
+
+java -version reported:
+${java_version_output}
+
+Select JDK ${required_jdk}, then verify Gradle's launcher JVM:
+  export JAVA_HOME=/path/to/jdk-${required_jdk}
+  export PATH="\$JAVA_HOME/bin:\$PATH"
+  ./scripts/gradle --version
+EOF
+  exit 1
+fi
+
+if [ "${java_major}" -ne "${required_jdk}" ]; then
+  if [ "${java_major}" -gt "${gradle_max_jdk}" ]; then
+    cat >&2 <<EOF
+OpenAI Java SDK development requires JDK ${required_jdk} to launch Gradle.
+
+This checkout uses Gradle 8.12, which cannot run on Java ${java_major}. Gradle 8.12
+supports running on Java 8 through ${gradle_max_jdk}; the repository's verified
+development launcher JDK is ${required_jdk}. This launcher JVM is separate from the
+Java 8-compatible SDK artifacts and the Gradle toolchains used for compilation
+and tests.
+
+Select JDK ${required_jdk}, then rerun lint:
+  export JAVA_HOME=/path/to/jdk-${required_jdk}
+  export PATH="\$JAVA_HOME/bin:\$PATH"
+  ./scripts/lint
+EOF
+  else
+    cat >&2 <<EOF
+OpenAI Java SDK development requires JDK ${required_jdk} to launch Gradle.
+
+The current launcher is Java ${java_major}. This launcher JVM is separate from the
+Java 8-compatible SDK artifacts and the Gradle toolchains used for compilation
+and tests.
+
+Select JDK ${required_jdk}, then rerun lint:
+  export JAVA_HOME=/path/to/jdk-${required_jdk}
+  export PATH="\$JAVA_HOME/bin:\$PATH"
+  ./scripts/lint
+EOF
+  fi
+  exit 1
+fi
+
+javac_bin=""
+if [ -n "${JAVA_HOME:-}" ] && [ -x "${JAVA_HOME}/bin/javac" ]; then
+  javac_bin="${JAVA_HOME}/bin/javac"
+elif [ -n "${JAVA_HOME:-}" ]; then
+  javac_bin=""
+else
+  javac_bin="$(command -v javac || true)"
+fi
+
+if [ -z "${javac_bin}" ]; then
+  cat >&2 <<EOF
+OpenAI Java SDK development requires a full JDK ${required_jdk}, but no javac was found.
+
+The current java launcher is Java ${java_major}, but Gradle also needs a JDK
+compiler for the repository's JDK ${required_jdk} toolchain.
+
+Install JDK ${required_jdk}, then select it before running Gradle:
+  export JAVA_HOME=/path/to/jdk-${required_jdk}
+  export PATH="\$JAVA_HOME/bin:\$PATH"
+  javac -version
+  ./scripts/lint
+EOF
+  exit 1
+fi
+
+javac_version_output="$("${javac_bin}" -version 2>&1)" || {
+  cat >&2 <<EOF
+OpenAI Java SDK development requires JDK ${required_jdk}, but javac could not be executed.
+
+Select a working JDK ${required_jdk}, then rerun lint:
+  export JAVA_HOME=/path/to/jdk-${required_jdk}
+  export PATH="\$JAVA_HOME/bin:\$PATH"
+  javac -version
+  ./scripts/lint
+EOF
+  exit 1
+}
+
+javac_version="${javac_version_output#javac }"
+case "${javac_version}" in
+  1.*) javac_major="${javac_version#1.}"; javac_major="${javac_major%%.*}" ;;
+  *) javac_major="${javac_version%%[.+_-]*}" ;;
+esac
+
+if ! [[ "${javac_major}" =~ ^[0-9]+$ ]] || [ "${javac_major}" -ne "${required_jdk}" ]; then
+  cat >&2 <<EOF
+OpenAI Java SDK development requires JDK ${required_jdk}, but javac is not from JDK ${required_jdk}.
+
+javac reported:
+${javac_version_output}
+
+Select JDK ${required_jdk}, then rerun lint:
+  export JAVA_HOME=/path/to/jdk-${required_jdk}
+  export PATH="\$JAVA_HOME/bin:\$PATH"
+  javac -version
+  ./scripts/lint
+EOF
+  exit 1
+fi
+
 gradle_args=()
 
 if [ "${OPENAI_JAVA_GRADLE_LOCAL:-true}" = "false" ]; then

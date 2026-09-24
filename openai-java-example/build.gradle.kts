@@ -21,8 +21,8 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 application {
-    // Use `./gradlew :openai-java-example:run` to run `Main`
-    // Use `./gradlew :openai-java-example:run -Pexample=Something` to run `SomethingExample`
+    // Use `./scripts/gradle :openai-java-example:run` to run `Main`
+    // Use `./scripts/gradle :openai-java-example:run -Pexample=Something` to run `SomethingExample`
     mainClass = "com.openai.example.${
         if (project.hasProperty("example"))
             "${project.property("example")}Example"

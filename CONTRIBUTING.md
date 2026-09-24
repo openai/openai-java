@@ -24,6 +24,31 @@ management. The framework-neutral SDK requires Java 8, while development require
 Kotlin toolchain. See the [Java version support policy](docs/version-support-policy.md) for
 artifact-level runtime, framework, lifecycle, and release rules.
 
+Use a full JDK 21 installation as the Java launcher before running repository Gradle commands. This
+is separate from the SDK's Java 8 runtime compatibility and from the Gradle toolchains that compile
+and test the artifacts.
+
+If your version manager supports `.java-version`, enter the repository and select the checked-in
+version. Otherwise, set `JAVA_HOME` to a JDK 21 installation before invoking Gradle:
+
+```sh
+$ export JAVA_HOME=/path/to/jdk-21
+$ export PATH="$JAVA_HOME/bin:$PATH"
+$ javac -version
+$ ./scripts/gradle --version
+```
+
+`javac -version` should report `javac 21...`, and `./scripts/gradle --version` should report
+`Launcher JVM: 21...`. Once both are true, run lint:
+
+```sh
+$ ./scripts/lint
+```
+
+Java versions newer than the repository's Gradle wrapper can fail before Gradle reaches any lint
+task. For example, Gradle 8.12 cannot run on Java 26, even though this SDK still emits Java
+8-compatible artifacts.
+
 ## Custom-code budget
 
 The custom-code budget counts additions plus deletions in the remaining patch
@@ -110,7 +135,7 @@ public class YourExample {
 ```
 
 ```sh
-$ ./gradlew :openai-java-example:run -PmainClass=com.openai.example.YourExample
+$ ./scripts/gradle :openai-java-example:run -PmainClass=com.openai.example.YourExample
 ```
 
 ## Using the repository from source
@@ -120,7 +145,7 @@ If you'd like to use the repository from source, you can either [install from gi
 To use a local version of this library from source in another project, you can publish it to your local Maven repository:
 
 ```sh
-$ ./gradlew publishToMavenLocal
+$ ./scripts/gradle publishToMavenLocal
 ```
 
 > [!NOTE]
@@ -147,7 +172,7 @@ implementation("com.openai:openai-java:4.69.1")
 Alternatively, you can build and install the JAR files directly:
 
 ```sh
-$ ./gradlew build
+$ ./scripts/gradle build
 ```
 
 JAR files will be available in each module's `build/libs/` directory.
@@ -227,21 +252,21 @@ To fix formatting:
 $ ./scripts/format
 ```
 
-For Kotlin only, run `./gradlew lintKotlin` or `./gradlew formatKotlin`. A module's
-own tasks remain available, such as `./gradlew :openai-java-core:lintKotlin`.
+For Kotlin only, run `./scripts/gradle lintKotlin` or `./scripts/gradle formatKotlin`. A module's
+own tasks remain available, such as `./scripts/gradle :openai-java-core:lintKotlin`.
 
 ## Building
 
 To build all modules:
 
 ```sh
-$ ./gradlew build
+$ ./scripts/gradle build
 ```
 
 To build a specific module:
 
 ```sh
-$ ./gradlew :openai-java-core:build
+$ ./scripts/gradle :openai-java-core:build
 ```
 
 ## Adding and running examples
@@ -332,7 +357,7 @@ existing deployment, then run:
 ```sh
 $ ORG_GRADLE_PROJECT_mavenCentralUsername="$SONATYPE_USERNAME" \
     ORG_GRADLE_PROJECT_mavenCentralPassword="$SONATYPE_PASSWORD" \
-    ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
+    ./scripts/gradle publishAndReleaseToMavenCentral --no-configuration-cache
 ```
 
 Pass Maven Central credentials through Gradle's environment-backed project properties, not `-P`
@@ -352,10 +377,10 @@ This requires the following environment variables to be set:
 Some useful Gradle tasks:
 
 ```sh
-$ ./gradlew tasks               # List all available tasks
-$ ./gradlew build               # Build all modules
-$ ./gradlew test                # Run all tests
-$ ./gradlew spotlessApply       # Format code
-$ ./gradlew publishToMavenLocal # Publish to local Maven repository
-$ ./gradlew dependencies        # Show dependency tree
+$ ./scripts/gradle tasks               # List all available tasks
+$ ./scripts/gradle build               # Build all modules
+$ ./scripts/gradle test                # Run all tests
+$ ./scripts/gradle format              # Format code
+$ ./scripts/gradle publishToMavenLocal # Publish to local Maven repository
+$ ./scripts/gradle dependencies        # Show dependency tree
 ```

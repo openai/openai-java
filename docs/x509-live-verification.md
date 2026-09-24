@@ -90,7 +90,7 @@ arguments, and keep shell tracing disabled.
 Run deterministic real-TLS verification with no credentials:
 
 ```shell
-./gradlew :openai-java-client-okhttp:test \
+./scripts/gradle :openai-java-client-okhttp:test \
   --tests '*X509TransportTest' \
   --tests '*X509LiveVerificationDiagnosticsTest'
 ```
@@ -102,7 +102,7 @@ environment values above through an approved local secret boundary:
 date -u +'%Y-%m-%dT%H:%M:%SZ'
 git rev-parse --verify HEAD
 java -version
-OPENAI_X509_LIVE_TEST=1 ./gradlew :openai-java-client-okhttp:test \
+OPENAI_X509_LIVE_TEST=1 ./scripts/gradle :openai-java-client-okhttp:test \
   --tests '*X509LiveVerificationTest' --no-build-cache --no-daemon --rerun-tasks
 ```
 

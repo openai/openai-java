@@ -67,7 +67,7 @@ Run the included example with your existing AWS credentials:
 
 ```shell
 AWS_REGION=us-east-1 BEDROCK_MODEL=us.openai.gpt-5.6-sol \
-  ./gradlew :openai-java-example:run -Pexample=BedrockRuntimeChat
+  ./scripts/gradle :openai-java-example:run -Pexample=BedrockRuntimeChat
 ```
 
 Set `BEDROCK_STREAM=true` to stream Chat Completions. Set `BEDROCK_AUTH=bearer` and
@@ -78,7 +78,7 @@ An opt-in live test exercises Sol, Terra, and Luna inference profiles using real
 
 ```shell
 BEDROCK_LIVE_TEST=1 AWS_REGION=us-east-1 \
-  ./gradlew :openai-java-bedrock:test --tests '*BedrockRuntimeLiveTest'
+  ./scripts/gradle :openai-java-bedrock:test --tests '*BedrockRuntimeLiveTest'
 ```
 
 Set `BEDROCK_LIVE_AUTH=bearer`, `BEDROCK_LIVE_API=responses`, or
