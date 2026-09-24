@@ -24,6 +24,10 @@ class JavaFormatScriptTest {
             script.writeText(Path.of("../scripts/$name").readText())
             assertTrue(script.toFile().setExecutable(true))
         }
+        val checkEnv = scripts.resolve("check-env")
+        checkEnv.writeText("#!/usr/bin/env bash\n")
+        assertTrue(checkEnv.toFile().setExecutable(true))
+
         val gradle = scripts.resolve("gradle")
         gradle.writeText(
             """

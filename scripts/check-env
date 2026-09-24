@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+required_jdk="$(
+  sed -nE \
+    's/^[[:space:]]*build\.jdk([[:space:]]*[:=][[:space:]]*|[[:space:]]+)([0-9]+)[[:space:]]*$/\2/p' \
+    gradle/version-support.properties
+)"
+if ! [[ "${required_jdk}" =~ ^[0-9]+$ ]]; then
+  echo "Unable to read build.jdk from gradle/version-support.properties." >&2
+  exit 1
+fi
+
+if [ -n "${JAVA_HOME:-}" ]; then
+  java_bin="${JAVA_HOME}/bin/java"
+  if [ -x "${JAVA_HOME}/jre/sh/java" ]; then
+    java_bin="${JAVA_HOME}/jre/sh/java"
+  fi
+else
+  java_bin="$(command -v java || true)"
+fi
+
+java_version=""
+if [ -n "${java_bin}" ] && [ -x "${java_bin}" ] &&
+  java_output="$("${java_bin}" -XshowSettings:properties -version 2>&1)"; then
+  java_version="$(printf '%s\n' "${java_output}" |
+    sed -n 's/^[[:space:]]*java\.specification\.version = //p')"
+fi
+
+case "${java_version}" in
+  1.*) java_major="${java_version#1.}"; java_major="${java_major%%.*}" ;;
+  *) java_major="${java_version%%.*}" ;;
+esac
+
+if ! [[ "${java_major}" =~ ^[0-9]+$ ]]; then
+  cat >&2 <<EOF
+Development environment check failed: no usable Java launcher was found.
+
+Select JDK ${required_jdk}, then retry:
+  export JAVA_HOME=/path/to/jdk-${required_jdk}
+  export PATH="\$JAVA_HOME/bin:\$PATH"
+  ./scripts/check-env
+EOF
+  exit 1
+fi
+
+if [ "${java_major}" != "${required_jdk}" ]; then
+  cat >&2 <<EOF
+Development environment check failed: this repository requires JDK ${required_jdk},
+but Gradle would use Java ${java_major}.
+
+Select JDK ${required_jdk}, then retry:
+  export JAVA_HOME=/path/to/jdk-${required_jdk}
+  export PATH="\$JAVA_HOME/bin:\$PATH"
+  ./scripts/check-env
+EOF
+  exit 1
+fi
+
+echo "Development environment: JDK ${java_major}"
