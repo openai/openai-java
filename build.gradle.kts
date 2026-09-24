@@ -11,12 +11,14 @@ buildscript {
     dependencies {
         constraints {
             val dokkaJacksonVersion =
-                requireNotNull(classpath("com.fasterxml.jackson.core:jackson-databind:2.18.9"))
+                requireNotNull(classpath("com.fasterxml.jackson.core:jackson-databind:2.22.1"))
                     .versionConstraint
                     .requiredVersion
 
+            // Jackson annotations uses a two-component version starting with 2.20.
+            classpath("com.fasterxml.jackson.core:jackson-annotations:2.22")
+
             listOf(
-                    "com.fasterxml.jackson.core:jackson-annotations",
                     "com.fasterxml.jackson.core:jackson-core",
                     "com.fasterxml.jackson.dataformat:jackson-dataformat-xml",
                     "com.fasterxml.jackson.module:jackson-module-kotlin",
@@ -58,7 +60,9 @@ allprojects {
                 requested.group == "com.fasterxml.jackson" ||
                     requested.group.startsWith("com.fasterxml.jackson.")
             ) {
-                useVersion(dokkaJacksonVersion)
+                useVersion(
+                    if (requested.name == "jackson-annotations") "2.22" else dokkaJacksonVersion
+                )
                 because("Dokka's build-only Jackson classpath must use a secure aligned release")
             } else if (requested.group == "org.jsoup" && requested.name == "jsoup") {
                 useVersion(dokkaJsoupVersion)
