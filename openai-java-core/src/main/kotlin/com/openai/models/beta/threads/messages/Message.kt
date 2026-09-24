@@ -33,7 +33,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Represents a message within a [thread](https://platform.openai.com/docs/api-reference/threads).
+ * Represents a message within a
+ * [thread](https://developers.openai.com/api/docs/assistants/migration).
  */
 class Message
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -111,7 +112,7 @@ private constructor(
 
     /**
      * If applicable, the ID of the
-     * [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this
+     * [assistant](https://developers.openai.com/api/docs/assistants/migration) that authored this
      * message.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -203,9 +204,9 @@ private constructor(
     fun role(): Role = role.getRequired("role")
 
     /**
-     * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with the
-     * creation of this message. Value is `null` when messages are created manually using the create
-     * message or create thread endpoints.
+     * The ID of the [run](https://developers.openai.com/api/docs/assistants/migration) associated
+     * with the creation of this message. Value is `null` when messages are created manually using
+     * the create message or create thread endpoints.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -221,8 +222,8 @@ private constructor(
     fun status(): Status = status.getRequired("status")
 
     /**
-     * The [thread](https://platform.openai.com/docs/api-reference/threads) ID that this message
-     * belongs to.
+     * The [thread](https://developers.openai.com/api/docs/assistants/migration) ID that this
+     * message belongs to.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -419,8 +420,8 @@ private constructor(
 
         /**
          * If applicable, the ID of the
-         * [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this
-         * message.
+         * [assistant](https://developers.openai.com/api/docs/assistants/migration) that authored
+         * this message.
          */
         fun assistantId(assistantId: String?) = assistantId(JsonField.ofNullable(assistantId))
 
@@ -672,9 +673,9 @@ private constructor(
         fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /**
-         * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with
-         * the creation of this message. Value is `null` when messages are created manually using
-         * the create message or create thread endpoints.
+         * The ID of the [run](https://developers.openai.com/api/docs/assistants/migration)
+         * associated with the creation of this message. Value is `null` when messages are created
+         * manually using the create message or create thread endpoints.
          */
         fun runId(runId: String?) = runId(JsonField.ofNullable(runId))
 
@@ -704,8 +705,8 @@ private constructor(
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /**
-         * The [thread](https://platform.openai.com/docs/api-reference/threads) ID that this message
-         * belongs to.
+         * The [thread](https://developers.openai.com/api/docs/assistants/migration) ID that this
+         * message belongs to.
          */
         fun threadId(threadId: String) = threadId(JsonField.of(threadId))
 

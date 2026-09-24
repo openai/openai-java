@@ -154,6 +154,7 @@ internal class UsageServiceTest {
                     .endTime(0L)
                     .addGroupBy(UsageCostsParams.GroupBy.PROJECT_ID)
                     .limit(0L)
+                    .addLineItem("string")
                     .page("page")
                     .addProjectId("string")
                     .build()

@@ -14,7 +14,7 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * Cancels a model response with the given ID. Only responses created with the `background`
  * parameter set to `true` can be cancelled.
- * [Learn more](https://platform.openai.com/docs/guides/background).
+ * [Learn more](https://developers.openai.com/api/docs/guides/background).
  */
 class ResponseCancelParams
 private constructor(

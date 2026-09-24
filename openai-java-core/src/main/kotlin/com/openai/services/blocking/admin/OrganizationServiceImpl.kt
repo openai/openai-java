@@ -11,6 +11,8 @@ import com.openai.services.blocking.admin.organization.CertificateService
 import com.openai.services.blocking.admin.organization.CertificateServiceImpl
 import com.openai.services.blocking.admin.organization.DataRetentionService
 import com.openai.services.blocking.admin.organization.DataRetentionServiceImpl
+import com.openai.services.blocking.admin.organization.ExternalStorageService
+import com.openai.services.blocking.admin.organization.ExternalStorageServiceImpl
 import com.openai.services.blocking.admin.organization.GroupService
 import com.openai.services.blocking.admin.organization.GroupServiceImpl
 import com.openai.services.blocking.admin.organization.InviteService
@@ -54,6 +56,10 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
         DataRetentionServiceImpl(clientOptions)
     }
 
+    private val externalStorage: ExternalStorageService by lazy {
+        ExternalStorageServiceImpl(clientOptions)
+    }
+
     private val spendLimit: SpendLimitService by lazy { SpendLimitServiceImpl(clientOptions) }
 
     private val spendAlerts: SpendAlertService by lazy { SpendAlertServiceImpl(clientOptions) }
@@ -83,6 +89,8 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
     override fun roles(): RoleService = roles
 
     override fun dataRetention(): DataRetentionService = dataRetention
+
+    override fun externalStorage(): ExternalStorageService = externalStorage
 
     override fun spendLimit(): SpendLimitService = spendLimit
 
@@ -127,6 +135,10 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
             DataRetentionServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val externalStorage: ExternalStorageService.WithRawResponse by lazy {
+            ExternalStorageServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val spendLimit: SpendLimitService.WithRawResponse by lazy {
             SpendLimitServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -166,6 +178,8 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
         override fun roles(): RoleService.WithRawResponse = roles
 
         override fun dataRetention(): DataRetentionService.WithRawResponse = dataRetention
+
+        override fun externalStorage(): ExternalStorageService.WithRawResponse = externalStorage
 
         override fun spendLimit(): SpendLimitService.WithRawResponse = spendLimit
 

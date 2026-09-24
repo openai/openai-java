@@ -40,15 +40,15 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
- * [image](https://platform.openai.com/docs/guides/images) inputs to generate
- * [text](https://platform.openai.com/docs/guides/text) or
- * [JSON](https://platform.openai.com/docs/guides/structured-outputs) outputs. Have the model call
- * your own [custom code](https://platform.openai.com/docs/guides/function-calling) or use built-in
- * [tools](https://platform.openai.com/docs/guides/tools) like
- * [web search](https://platform.openai.com/docs/guides/tools-web-search) or
- * [file search](https://platform.openai.com/docs/guides/tools-file-search) to use your own data as
- * input for the model's response.
+ * Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text) or
+ * [image](https://developers.openai.com/api/docs/guides/images-vision) inputs to generate
+ * [text](https://developers.openai.com/api/docs/guides/text) or
+ * [JSON](https://developers.openai.com/api/docs/guides/structured-outputs) outputs. Have the model
+ * call your own [custom code](https://developers.openai.com/api/docs/guides/function-calling) or
+ * use built-in [tools](https://developers.openai.com/api/docs/guides/tools) like
+ * [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+ * [file search](https://developers.openai.com/api/docs/guides/tools-file-search) to use your own
+ * data as input for the model's response.
  */
 class ResponseCreateParams
 private constructor(
@@ -59,7 +59,7 @@ private constructor(
 
     /**
      * Whether to run the model response in the background.
-     * [Learn more](https://platform.openai.com/docs/guides/background).
+     * [Learn more](https://developers.openai.com/api/docs/guides/background).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -108,11 +108,11 @@ private constructor(
      * Text, image, or file inputs to the model, used to generate a response.
      *
      * Learn more:
-     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-     * - [Image inputs](https://platform.openai.com/docs/guides/images)
-     * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-     * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-     * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+     * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+     * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+     * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+     * - [Conversation state](https://developers.openai.com/api/docs/guides/conversation-state)
+     * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -134,7 +134,7 @@ private constructor(
     /**
      * An upper bound for the number of tokens that can be generated for a response, including
      * visible output tokens and
-     * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+     * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -165,10 +165,10 @@ private constructor(
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
+     * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
+     * available models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -194,8 +194,8 @@ private constructor(
     /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
-     * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot be
-     * used in conjunction with `conversation`.
+     * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+     * Cannot be used in conjunction with `conversation`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -204,7 +204,7 @@ private constructor(
 
     /**
      * Reference to a prompt template and its variables.
-     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+     * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -214,7 +214,7 @@ private constructor(
     /**
      * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
      * Replaces the `user` field.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+     * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -228,8 +228,8 @@ private constructor(
      * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
      * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
      * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
-     * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for current
-     * details.
+     * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
+     * current details.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -241,7 +241,7 @@ private constructor(
      *
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
      * This field expresses a maximum retention policy, while `prompt_cache_options.ttl` expresses a
      * minimum cache lifetime. The two fields are independent and do not interact. For `gpt-5.5`,
      * `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -259,10 +259,8 @@ private constructor(
     fun promptCacheRetention(): Optional<PromptCacheRetention> = body.promptCacheRetention()
 
     /**
-     * **gpt-5 and o-series models only**
-     *
      * Configuration options for
-     * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+     * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -274,7 +272,7 @@ private constructor(
      * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user, with
      * a maximum length of 64 characters. We recommend hashing their username or email address, in
      * order to avoid sending us any identifying information.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -287,12 +285,12 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
      *   request will be processed with the Flex Processing service tier.
-     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
-     *   The response will show `service_tier=priority` regardless of if you specify
-     *   `service_tier=fast` or `priority` in your request.
+     * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the
+     *   request level, include the `service_tier=fast` or `service_tier=priority` parameter for
+     *   Responses or Chat Completions. The response will show `service_tier=priority` regardless of
+     *   if you specify `service_tier=fast` or `priority` in your request.
      * - If set to 'ultrafast', then the request will be processed with the access-controlled
      *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`; a
      *   response served through it will show `service_tier=ultrafast`.
@@ -308,7 +306,10 @@ private constructor(
     fun serviceTier(): Optional<ServiceTier> = body.serviceTier()
 
     /**
-     * Whether to store the generated model response for later retrieval via API.
+     * Whether to store the generated model response for later retrieval via API. Defaults to true
+     * when omitted. If set to true, response data will be stored for at least 30 days, subject to
+     * the
+     * [data retention exceptions](https://developers.openai.com/api/docs/guides/your-data#v1responses).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -336,8 +337,8 @@ private constructor(
     /**
      * Configuration options for a text response from the model. Can be plain text or structured
      * JSON data. Learn more:
-     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-     * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+     * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+     * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -359,16 +360,16 @@ private constructor(
      *
      * We support the following categories of tools:
      * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's capabilities,
-     *   like [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-     *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more about
-     *   [built-in tools](https://platform.openai.com/docs/guides/tools).
+     *   like [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+     *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn more
+     *   about [built-in tools](https://developers.openai.com/api/docs/guides/tools).
      * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or predefined
      *   connectors such as Google Drive and SharePoint. Learn more about
-     *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+     *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      * - **Function calls (custom tools)**: Functions that are defined by you, enabling the model to
      *   call your own code with strongly typed arguments and outputs. Learn more about
-     *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can also
-     *   use custom tools to call your own code.
+     *   [function calling](https://developers.openai.com/api/docs/guides/function-calling). You can
+     *   also use custom tools to call your own code.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -415,7 +416,7 @@ private constructor(
      * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for your
      * end-users. Used to boost cache hit rates by better bucketing similar requests and to help
      * OpenAI detect and prevent abuse.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -687,7 +688,7 @@ private constructor(
 
         /**
          * Whether to run the model response in the background.
-         * [Learn more](https://platform.openai.com/docs/guides/background).
+         * [Learn more](https://developers.openai.com/api/docs/guides/background).
          */
         fun background(background: Boolean?) = apply { body.background(background) }
 
@@ -814,11 +815,11 @@ private constructor(
          * Text, image, or file inputs to the model, used to generate a response.
          *
          * Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Image inputs](https://platform.openai.com/docs/guides/images)
-         * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-         * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-         * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+         * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+         * - [Conversation state](https://developers.openai.com/api/docs/guides/conversation-state)
+         * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
          */
         fun input(input: Input) = apply { body.input(input) }
 
@@ -864,7 +865,7 @@ private constructor(
         /**
          * An upper bound for the number of tokens that can be generated for a response, including
          * visible output tokens and
-         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
          */
         fun maxOutputTokens(maxOutputTokens: Long?) = apply {
             body.maxOutputTokens(maxOutputTokens)
@@ -941,9 +942,9 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
          * available models.
          */
         fun model(model: ResponsesModel) = apply { body.model(model) }
@@ -1012,8 +1013,8 @@ private constructor(
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
-         * be used in conjunction with `conversation`.
+         * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+         * Cannot be used in conjunction with `conversation`.
          */
         fun previousResponseId(previousResponseId: String?) = apply {
             body.previousResponseId(previousResponseId)
@@ -1038,7 +1039,7 @@ private constructor(
 
         /**
          * Reference to a prompt template and its variables.
-         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
          */
         fun prompt(prompt: ResponsePrompt?) = apply { body.prompt(prompt) }
 
@@ -1057,7 +1058,7 @@ private constructor(
         /**
          * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
          * Replaces the `user` field.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
          */
         fun promptCacheKey(promptCacheKey: String?) = apply { body.promptCacheKey(promptCacheKey) }
 
@@ -1084,7 +1085,7 @@ private constructor(
          * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
          * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
          * supported value. See the
-         * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+         * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
          * current details.
          */
         fun promptCacheOptions(promptCacheOptions: PromptCacheOptions) = apply {
@@ -1107,7 +1108,7 @@ private constructor(
          *
          * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
          * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
          * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
          * expresses a minimum cache lifetime. The two fields are independent and do not interact.
          * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -1144,10 +1145,8 @@ private constructor(
         }
 
         /**
-         * **gpt-5 and o-series models only**
-         *
          * Configuration options for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
          */
         fun reasoning(reasoning: Reasoning?) = apply { body.reasoning(reasoning) }
 
@@ -1168,7 +1167,7 @@ private constructor(
          * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user,
          * with a maximum length of 64 characters. We recommend hashing their username or email
          * address, in order to avoid sending us any identifying information.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          */
         fun safetyIdentifier(safetyIdentifier: String?) = apply {
             body.safetyIdentifier(safetyIdentifier)
@@ -1195,12 +1194,12 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
-         *   request will be processed with the Flex Processing service tier.
-         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         *   Completions. The response will show `service_tier=priority` regardless of if you
-         *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then
+         *   the request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at
+         *   the request level, include the `service_tier=fast` or `service_tier=priority` parameter
+         *   for Responses or Chat Completions. The response will show `service_tier=priority`
+         *   regardless of if you specify `service_tier=fast` or `priority` in your request.
          * - If set to 'ultrafast', then the request will be processed with the access-controlled
          *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`;
          *   a response served through it will show `service_tier=ultrafast`.
@@ -1226,7 +1225,12 @@ private constructor(
             body.serviceTier(serviceTier)
         }
 
-        /** Whether to store the generated model response for later retrieval via API. */
+        /**
+         * Whether to store the generated model response for later retrieval via API. Defaults to
+         * true when omitted. If set to true, response data will be stored for at least 30 days,
+         * subject to the
+         * [data retention exceptions](https://developers.openai.com/api/docs/guides/your-data#v1responses).
+         */
         fun store(store: Boolean?) = apply { body.store(store) }
 
         /**
@@ -1296,8 +1300,8 @@ private constructor(
         /**
          * Configuration options for a text response from the model. Can be plain text or structured
          * JSON data. Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
          */
         fun text(text: ResponseTextConfig) = apply { body.text(text) }
 
@@ -1403,16 +1407,16 @@ private constructor(
          * We support the following categories of tools:
          * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
          *   capabilities, like
-         *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-         *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
-         *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
+         *   [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+         *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn
+         *   more about [built-in tools](https://developers.openai.com/api/docs/guides/tools).
          * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
          *   predefined connectors such as Google Drive and SharePoint. Learn more about
-         *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+         *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
          *   model to call your own code with strongly typed arguments and outputs. Learn more about
-         *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can
-         *   also use custom tools to call your own code.
+         *   [function calling](https://developers.openai.com/api/docs/guides/function-calling). You
+         *   can also use custom tools to call your own code.
          */
         fun tools(tools: List<Tool>) = apply { body.tools(tools) }
 
@@ -1642,7 +1646,7 @@ private constructor(
          * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for
          * your end-users. Used to boost cache hit rates by better bucketing similar requests and to
          * help OpenAI detect and prevent abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          */
         @Deprecated("deprecated") fun user(user: String) = apply { body.user(user) }
 
@@ -1944,7 +1948,7 @@ private constructor(
 
         /**
          * Whether to run the model response in the background.
-         * [Learn more](https://platform.openai.com/docs/guides/background).
+         * [Learn more](https://developers.openai.com/api/docs/guides/background).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1996,11 +2000,11 @@ private constructor(
          * Text, image, or file inputs to the model, used to generate a response.
          *
          * Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Image inputs](https://platform.openai.com/docs/guides/images)
-         * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-         * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-         * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+         * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+         * - [Conversation state](https://developers.openai.com/api/docs/guides/conversation-state)
+         * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2022,7 +2026,7 @@ private constructor(
         /**
          * An upper bound for the number of tokens that can be generated for a response, including
          * visible output tokens and
-         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2053,9 +2057,9 @@ private constructor(
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
          * available models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -2083,8 +2087,8 @@ private constructor(
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
-         * be used in conjunction with `conversation`.
+         * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+         * Cannot be used in conjunction with `conversation`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2094,7 +2098,7 @@ private constructor(
 
         /**
          * Reference to a prompt template and its variables.
-         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2104,7 +2108,7 @@ private constructor(
         /**
          * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
          * Replaces the `user` field.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2119,7 +2123,7 @@ private constructor(
          * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
          * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
          * supported value. See the
-         * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+         * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
          * current details.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -2133,7 +2137,7 @@ private constructor(
          *
          * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
          * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
          * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
          * expresses a minimum cache lifetime. The two fields are independent and do not interact.
          * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -2152,10 +2156,8 @@ private constructor(
             promptCacheRetention.getOptional("prompt_cache_retention")
 
         /**
-         * **gpt-5 and o-series models only**
-         *
          * Configuration options for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2167,7 +2169,7 @@ private constructor(
          * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user,
          * with a maximum length of 64 characters. We recommend hashing their username or email
          * address, in order to avoid sending us any identifying information.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2180,12 +2182,12 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
-         *   request will be processed with the Flex Processing service tier.
-         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         *   Completions. The response will show `service_tier=priority` regardless of if you
-         *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then
+         *   the request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at
+         *   the request level, include the `service_tier=fast` or `service_tier=priority` parameter
+         *   for Responses or Chat Completions. The response will show `service_tier=priority`
+         *   regardless of if you specify `service_tier=fast` or `priority` in your request.
          * - If set to 'ultrafast', then the request will be processed with the access-controlled
          *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`;
          *   a response served through it will show `service_tier=ultrafast`.
@@ -2201,7 +2203,10 @@ private constructor(
         fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
 
         /**
-         * Whether to store the generated model response for later retrieval via API.
+         * Whether to store the generated model response for later retrieval via API. Defaults to
+         * true when omitted. If set to true, response data will be stored for at least 30 days,
+         * subject to the
+         * [data retention exceptions](https://developers.openai.com/api/docs/guides/your-data#v1responses).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2229,8 +2234,8 @@ private constructor(
         /**
          * Configuration options for a text response from the model. Can be plain text or structured
          * JSON data. Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2253,16 +2258,16 @@ private constructor(
          * We support the following categories of tools:
          * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
          *   capabilities, like
-         *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-         *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
-         *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
+         *   [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+         *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn
+         *   more about [built-in tools](https://developers.openai.com/api/docs/guides/tools).
          * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
          *   predefined connectors such as Google Drive and SharePoint. Learn more about
-         *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+         *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
          *   model to call your own code with strongly typed arguments and outputs. Learn more about
-         *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can
-         *   also use custom tools to call your own code.
+         *   [function calling](https://developers.openai.com/api/docs/guides/function-calling). You
+         *   can also use custom tools to call your own code.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2310,7 +2315,7 @@ private constructor(
          * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for
          * your end-users. Used to boost cache hit rates by better bucketing similar requests and to
          * help OpenAI detect and prevent abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2676,7 +2681,7 @@ private constructor(
 
             /**
              * Whether to run the model response in the background.
-             * [Learn more](https://platform.openai.com/docs/guides/background).
+             * [Learn more](https://developers.openai.com/api/docs/guides/background).
              */
             fun background(background: Boolean?) = background(JsonField.ofNullable(background))
 
@@ -2816,11 +2821,12 @@ private constructor(
              * Text, image, or file inputs to the model, used to generate a response.
              *
              * Learn more:
-             * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-             * - [Image inputs](https://platform.openai.com/docs/guides/images)
-             * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-             * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-             * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+             * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+             * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+             * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+             * - [Conversation
+             *   state](https://developers.openai.com/api/docs/guides/conversation-state)
+             * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
              */
             fun input(input: Input) = input(JsonField.of(input))
 
@@ -2868,7 +2874,7 @@ private constructor(
             /**
              * An upper bound for the number of tokens that can be generated for a response,
              * including visible output tokens and
-             * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+             * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
              */
             fun maxOutputTokens(maxOutputTokens: Long?) =
                 maxOutputTokens(JsonField.ofNullable(maxOutputTokens))
@@ -2946,10 +2952,10 @@ private constructor(
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /**
-             * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
-             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
-             * and compare available models.
+             * points. Refer to the [model guide](https://developers.openai.com/api/docs/models) to
+             * browse and compare available models.
              */
             fun model(model: ResponsesModel) = model(JsonField.of(model))
 
@@ -3020,7 +3026,7 @@ private constructor(
             /**
              * The unique ID of the previous response to the model. Use this to create multi-turn
              * conversations. Learn more about
-             * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+             * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
              * Cannot be used in conjunction with `conversation`.
              */
             fun previousResponseId(previousResponseId: String?) =
@@ -3046,7 +3052,7 @@ private constructor(
 
             /**
              * Reference to a prompt template and its variables.
-             * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+             * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
              */
             fun prompt(prompt: ResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
 
@@ -3065,7 +3071,7 @@ private constructor(
             /**
              * Used by OpenAI to cache responses for similar requests to optimize your cache hit
              * rates. Replaces the `user` field.
-             * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+             * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
              */
             fun promptCacheKey(promptCacheKey: String?) =
                 promptCacheKey(JsonField.ofNullable(promptCacheKey))
@@ -3093,8 +3099,8 @@ private constructor(
              * breakpoints in the conversation, without a content-block lookback limit. Set `mode`
              * to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which
              * is currently the only supported value. See the
-             * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
-             * current details.
+             * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching)
+             * for current details.
              */
             fun promptCacheOptions(promptCacheOptions: PromptCacheOptions) =
                 promptCacheOptions(JsonField.of(promptCacheOptions))
@@ -3115,7 +3121,7 @@ private constructor(
              *
              * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
              * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-             * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+             * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
              * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
              * expresses a minimum cache lifetime. The two fields are independent and do not
              * interact. For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -3152,10 +3158,8 @@ private constructor(
                 }
 
             /**
-             * **gpt-5 and o-series models only**
-             *
              * Configuration options for
-             * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+             * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
              */
             fun reasoning(reasoning: Reasoning?) = reasoning(JsonField.ofNullable(reasoning))
 
@@ -3177,7 +3181,7 @@ private constructor(
              * identifies each user, with a maximum length of 64 characters. We recommend hashing
              * their username or email address, in order to avoid sending us any identifying
              * information.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+             * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
              */
             fun safetyIdentifier(safetyIdentifier: String?) =
                 safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
@@ -3206,12 +3210,13 @@ private constructor(
              *   use 'default'.
              * - If set to 'default', then the request will be processed with the standard pricing
              *   and performance for the selected model.
-             * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then
-             *   the request will be processed with the Flex Processing service tier.
-             * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include
-             *   the `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-             *   Completions. The response will show `service_tier=priority` regardless of if you
-             *   specify `service_tier=fast` or `priority` in your request.
+             * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)',
+             *   then the request will be processed with the Flex Processing service tier.
+             * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode)
+             *   at the request level, include the `service_tier=fast` or `service_tier=priority`
+             *   parameter for Responses or Chat Completions. The response will show
+             *   `service_tier=priority` regardless of if you specify `service_tier=fast` or
+             *   `priority` in your request.
              * - If set to 'ultrafast', then the request will be processed with the
              *   access-controlled Ultrafast Processing service tier. This tier is currently
              *   available for `gpt-5.6-sol`; a response served through it will show
@@ -3240,7 +3245,12 @@ private constructor(
                 this.serviceTier = serviceTier
             }
 
-            /** Whether to store the generated model response for later retrieval via API. */
+            /**
+             * Whether to store the generated model response for later retrieval via API. Defaults
+             * to true when omitted. If set to true, response data will be stored for at least 30
+             * days, subject to the
+             * [data retention exceptions](https://developers.openai.com/api/docs/guides/your-data#v1responses).
+             */
             fun store(store: Boolean?) = store(JsonField.ofNullable(store))
 
             /**
@@ -3312,8 +3322,9 @@ private constructor(
             /**
              * Configuration options for a text response from the model. Can be plain text or
              * structured JSON data. Learn more:
-             * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-             * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+             * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+             * - [Structured
+             *   Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
              */
             fun text(text: ResponseTextConfig) = text(JsonField.of(text))
 
@@ -3383,15 +3394,17 @@ private constructor(
              * We support the following categories of tools:
              * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
              *   capabilities, like
-             *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-             *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn
-             *   more about [built-in tools](https://platform.openai.com/docs/guides/tools).
+             *   [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+             *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search).
+             *   Learn more about
+             *   [built-in tools](https://developers.openai.com/api/docs/guides/tools).
              * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
              *   predefined connectors such as Google Drive and SharePoint. Learn more about
-             *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+             *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
              * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
              *   model to call your own code with strongly typed arguments and outputs. Learn more
-             *   about [function calling](https://platform.openai.com/docs/guides/function-calling).
+             *   about
+             *   [function calling](https://developers.openai.com/api/docs/guides/function-calling).
              *   You can also use custom tools to call your own code.
              */
             fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
@@ -3620,7 +3633,7 @@ private constructor(
              * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for
              * your end-users. Used to boost cache hit rates by better bucketing similar requests
              * and to help OpenAI detect and prevent abuse.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+             * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
              */
             @Deprecated("deprecated") fun user(user: String) = user(JsonField.of(user))
 
@@ -4341,11 +4354,11 @@ private constructor(
      * Text, image, or file inputs to the model, used to generate a response.
      *
      * Learn more:
-     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-     * - [Image inputs](https://platform.openai.com/docs/guides/images)
-     * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-     * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-     * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+     * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+     * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+     * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+     * - [Conversation state](https://developers.openai.com/api/docs/guides/conversation-state)
+     * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
      */
     @JsonDeserialize(using = Input.Deserializer::class)
     @JsonSerialize(using = Input.Serializer::class)
@@ -5726,22 +5739,38 @@ private constructor(
      * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
      * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
      * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
-     * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for current
-     * details.
+     * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
+     * current details.
      */
     class PromptCacheOptions
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val comparisonResponseId: JsonField<String>,
         private val mode: JsonField<Mode>,
+        private val prewarm: JsonField<Boolean>,
         private val ttl: JsonField<Ttl>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
+            @JsonProperty("comparison_response_id")
+            @ExcludeMissing
+            comparisonResponseId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
+            @JsonProperty("prewarm") @ExcludeMissing prewarm: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
-        ) : this(mode, ttl, mutableMapOf())
+        ) : this(comparisonResponseId, mode, prewarm, ttl, mutableMapOf())
+
+        /**
+         * The ID of a response to compare when diagnosing prompt cache reuse. Supplying this field
+         * requests prompt cache diagnostics when the feature is enabled.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun comparisonResponseId(): Optional<String> =
+            comparisonResponseId.getOptional("comparison_response_id")
 
         /**
          * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults to
@@ -5756,6 +5785,15 @@ private constructor(
         fun mode(): Optional<Mode> = mode.getOptional("mode")
 
         /**
+         * Prepares the prompt cache without generating output. Defaults to `false`. When set to
+         * `true`, overrides the `generate` field to `false`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun prewarm(): Optional<Boolean> = prewarm.getOptional("prewarm")
+
+        /**
          * The minimum lifetime applied to every implicit and explicit cache breakpoint written by
          * the request. Defaults to `30m`, which is currently the only supported value. The backend
          * may retain cache entries for longer.
@@ -5766,11 +5804,28 @@ private constructor(
         fun ttl(): Optional<Ttl> = ttl.getOptional("ttl")
 
         /**
+         * Returns the raw JSON value of [comparisonResponseId].
+         *
+         * Unlike [comparisonResponseId], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("comparison_response_id")
+        @ExcludeMissing
+        fun _comparisonResponseId(): JsonField<String> = comparisonResponseId
+
+        /**
          * Returns the raw JSON value of [mode].
          *
          * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
+
+        /**
+         * Returns the raw JSON value of [prewarm].
+         *
+         * Unlike [prewarm], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("prewarm") @ExcludeMissing fun _prewarm(): JsonField<Boolean> = prewarm
 
         /**
          * Returns the raw JSON value of [ttl].
@@ -5800,15 +5855,44 @@ private constructor(
         /** A builder for [PromptCacheOptions]. */
         class Builder internal constructor() {
 
+            private var comparisonResponseId: JsonField<String> = JsonMissing.of()
             private var mode: JsonField<Mode> = JsonMissing.of()
+            private var prewarm: JsonField<Boolean> = JsonMissing.of()
             private var ttl: JsonField<Ttl> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
+                comparisonResponseId = promptCacheOptions.comparisonResponseId
                 mode = promptCacheOptions.mode
+                prewarm = promptCacheOptions.prewarm
                 ttl = promptCacheOptions.ttl
                 additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The ID of a response to compare when diagnosing prompt cache reuse. Supplying this
+             * field requests prompt cache diagnostics when the feature is enabled.
+             */
+            fun comparisonResponseId(comparisonResponseId: String?) =
+                comparisonResponseId(JsonField.ofNullable(comparisonResponseId))
+
+            /**
+             * Alias for calling [Builder.comparisonResponseId] with
+             * `comparisonResponseId.orElse(null)`.
+             */
+            fun comparisonResponseId(comparisonResponseId: Optional<String>) =
+                comparisonResponseId(comparisonResponseId.getOrNull())
+
+            /**
+             * Sets [Builder.comparisonResponseId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.comparisonResponseId] with a well-typed [String]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun comparisonResponseId(comparisonResponseId: JsonField<String>) = apply {
+                this.comparisonResponseId = comparisonResponseId
             }
 
             /**
@@ -5829,6 +5913,21 @@ private constructor(
              * value.
              */
             fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
+
+            /**
+             * Prepares the prompt cache without generating output. Defaults to `false`. When set to
+             * `true`, overrides the `generate` field to `false`.
+             */
+            fun prewarm(prewarm: Boolean) = prewarm(JsonField.of(prewarm))
+
+            /**
+             * Sets [Builder.prewarm] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.prewarm] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun prewarm(prewarm: JsonField<Boolean>) = apply { this.prewarm = prewarm }
 
             /**
              * The minimum lifetime applied to every implicit and explicit cache breakpoint written
@@ -5871,7 +5970,13 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): PromptCacheOptions =
-                PromptCacheOptions(mode, ttl, additionalProperties.toMutableMap())
+                PromptCacheOptions(
+                    comparisonResponseId,
+                    mode,
+                    prewarm,
+                    ttl,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -5890,7 +5995,9 @@ private constructor(
                 return@apply
             }
 
+            comparisonResponseId()
             mode().ifPresent { it.validate() }
+            prewarm()
             ttl().ifPresent { it.validate() }
             validated = true
         }
@@ -5911,7 +6018,9 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (mode.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (comparisonResponseId.asKnown().isPresent) 1 else 0) +
+                (mode.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (prewarm.asKnown().isPresent) 1 else 0) +
                 (ttl.asKnown().getOrNull()?.validity() ?: 0)
 
         /**
@@ -6200,17 +6309,21 @@ private constructor(
             }
 
             return other is PromptCacheOptions &&
+                comparisonResponseId == other.comparisonResponseId &&
                 mode == other.mode &&
+                prewarm == other.prewarm &&
                 ttl == other.ttl &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(mode, ttl, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(comparisonResponseId, mode, prewarm, ttl, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "PromptCacheOptions{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+            "PromptCacheOptions{comparisonResponseId=$comparisonResponseId, mode=$mode, prewarm=$prewarm, ttl=$ttl, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -6218,7 +6331,7 @@ private constructor(
      *
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
      * This field expresses a maximum retention policy, while `prompt_cache_options.ttl` expresses a
      * minimum cache lifetime. The two fields are independent and do not interact. For `gpt-5.5`,
      * `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -6376,12 +6489,12 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
      *   request will be processed with the Flex Processing service tier.
-     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
-     *   The response will show `service_tier=priority` regardless of if you specify
-     *   `service_tier=fast` or `priority` in your request.
+     * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the
+     *   request level, include the `service_tier=fast` or `service_tier=priority` parameter for
+     *   Responses or Chat Completions. The response will show `service_tier=priority` regardless of
+     *   if you specify `service_tier=fast` or `priority` in your request.
      * - If set to 'ultrafast', then the request will be processed with the access-controlled
      *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`; a
      *   response served through it will show `service_tier=ultrafast`.
@@ -6769,7 +6882,7 @@ private constructor(
 
         /**
          * Indicates that the model should use a built-in tool to generate a response.
-         * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+         * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
          */
         fun types(): Optional<ToolChoiceTypes> = Optional.ofNullable(types)
 
@@ -6827,7 +6940,7 @@ private constructor(
 
         /**
          * Indicates that the model should use a built-in tool to generate a response.
-         * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+         * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
          */
         fun asTypes(): ToolChoiceTypes = types.getOrThrow("types")
 
@@ -7079,7 +7192,7 @@ private constructor(
 
             /**
              * Indicates that the model should use a built-in tool to generate a response.
-             * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+             * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
              */
             @JvmStatic fun ofTypes(types: ToolChoiceTypes) = ToolChoice(types = types)
 
@@ -7132,7 +7245,7 @@ private constructor(
 
             /**
              * Indicates that the model should use a built-in tool to generate a response.
-             * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+             * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
              */
             fun visitTypes(types: ToolChoiceTypes): T
 

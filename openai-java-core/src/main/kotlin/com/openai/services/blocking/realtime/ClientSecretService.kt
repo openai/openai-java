@@ -36,7 +36,7 @@ interface ClientSecretService {
      * client connection.
      *
      * [Learn more about authentication with client secrets over
-     * WebRTC](https://platform.openai.com/docs/guides/realtime-webrtc).
+     * WebRTC](https://developers.openai.com/api/docs/guides/realtime-webrtc).
      *
      * Returns the created client secret and the effective session object. The client secret is a
      * string that looks like `ek_1234`.

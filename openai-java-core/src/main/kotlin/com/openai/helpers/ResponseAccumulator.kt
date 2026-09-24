@@ -12,6 +12,7 @@ import com.openai.models.responses.ResponseCodeInterpreterCallCodeDoneEvent
 import com.openai.models.responses.ResponseCodeInterpreterCallCompletedEvent
 import com.openai.models.responses.ResponseCodeInterpreterCallInProgressEvent
 import com.openai.models.responses.ResponseCodeInterpreterCallInterpretingEvent
+import com.openai.models.responses.ResponseCompactionCompactingEvent
 import com.openai.models.responses.ResponseCompletedEvent
 import com.openai.models.responses.ResponseContentPartAddedEvent
 import com.openai.models.responses.ResponseContentPartDoneEvent
@@ -111,6 +112,20 @@ class ResponseAccumulator private constructor() {
     fun <T : Any> response(responseType: Class<T>) = StructuredResponse(responseType, response())
 
     /**
+     * Accumulates a Responses WebSocket event while returning the same event for raw processing.
+     * Use one accumulator per response or lane. Unknown and nonterminal events do not change the
+     * final snapshot. Protocol errors remain available on the returned event for caller handling.
+     */
+    fun accumulate(
+        event: com.openai.models.responses.ResponsesServerEvent
+    ): com.openai.models.responses.ResponsesServerEvent {
+        event.responseCompleted().ifPresent { accumulate(ResponseStreamEvent.ofCompleted(it)) }
+        event.responseFailed().ifPresent { accumulate(ResponseStreamEvent.ofFailed(it)) }
+        event.responseIncomplete().ifPresent { accumulate(ResponseStreamEvent.ofIncomplete(it)) }
+        return event
+    }
+
+    /**
      * Accumulates a streamed event and uses it to construct a [Response]. When all events have been
      * accumulated, the response can be retrieved by calling [response]. The last event is detected
      * if one of `ResponseCompletedEvent`, `ResponseIncompleteEvent`, or `ResponseFailedEvent` is
@@ -204,6 +219,10 @@ class ResponseAccumulator private constructor() {
 
                 override fun visitCodeInterpreterCallInterpreting(
                     codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent
+                ) {}
+
+                override fun visitCompactionCompacting(
+                    compactionCompacting: ResponseCompactionCompactingEvent
                 ) {}
 
                 override fun visitContentPartAdded(

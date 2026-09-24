@@ -35,7 +35,7 @@ private constructor(
      * content.
      *
      * See the
-     * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
+     * [file search tool documentation](https://developers.openai.com/api/docs/guides/tools-file-search#retrieval-customization)
      * for more information.
      */
     fun include(): Optional<List<RunStepInclude>> = Optional.ofNullable(include)
@@ -97,7 +97,7 @@ private constructor(
          * search result content.
          *
          * See the
-         * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
+         * [file search tool documentation](https://developers.openai.com/api/docs/guides/tools-file-search#retrieval-customization)
          * for more information.
          */
         fun include(include: List<RunStepInclude>?) = apply {

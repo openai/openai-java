@@ -6703,6 +6703,7 @@ private constructor(
                 private val lineItem: JsonField<String>,
                 private val projectId: JsonField<String>,
                 private val quantity: JsonField<Double>,
+                private val quantityUnit: JsonField<CostQuantityUnit>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
@@ -6724,7 +6725,19 @@ private constructor(
                     @JsonProperty("quantity")
                     @ExcludeMissing
                     quantity: JsonField<Double> = JsonMissing.of(),
-                ) : this(object_, amount, apiKeyId, lineItem, projectId, quantity, mutableMapOf())
+                    @JsonProperty("quantity_unit")
+                    @ExcludeMissing
+                    quantityUnit: JsonField<CostQuantityUnit> = JsonMissing.of(),
+                ) : this(
+                    object_,
+                    amount,
+                    apiKeyId,
+                    lineItem,
+                    projectId,
+                    quantity,
+                    quantityUnit,
+                    mutableMapOf(),
+                )
 
                 /**
                  * Expected to always return the following:
@@ -6782,6 +6795,16 @@ private constructor(
                 fun quantity(): Optional<Double> = quantity.getOptional("quantity")
 
                 /**
+                 * The unit of the `quantity` value. If no single supported unit applies to the
+                 * result, this field is `null`.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun quantityUnit(): Optional<CostQuantityUnit> =
+                    quantityUnit.getOptional("quantity_unit")
+
+                /**
                  * Returns the raw JSON value of [amount].
                  *
                  * Unlike [amount], this method doesn't throw if the JSON field has an unexpected
@@ -6829,6 +6852,16 @@ private constructor(
                 @ExcludeMissing
                 fun _quantity(): JsonField<Double> = quantity
 
+                /**
+                 * Returns the raw JSON value of [quantityUnit].
+                 *
+                 * Unlike [quantityUnit], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("quantity_unit")
+                @ExcludeMissing
+                fun _quantityUnit(): JsonField<CostQuantityUnit> = quantityUnit
+
                 @JsonAnySetter
                 private fun putAdditionalProperty(key: String, value: JsonValue) {
                     additionalProperties.put(key, value)
@@ -6859,6 +6892,7 @@ private constructor(
                     private var lineItem: JsonField<String> = JsonMissing.of()
                     private var projectId: JsonField<String> = JsonMissing.of()
                     private var quantity: JsonField<Double> = JsonMissing.of()
+                    private var quantityUnit: JsonField<CostQuantityUnit> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -6869,6 +6903,7 @@ private constructor(
                         lineItem = organizationCostsResult.lineItem
                         projectId = organizationCostsResult.projectId
                         quantity = organizationCostsResult.quantity
+                        quantityUnit = organizationCostsResult.quantityUnit
                         additionalProperties =
                             organizationCostsResult.additionalProperties.toMutableMap()
                     }
@@ -6980,6 +7015,39 @@ private constructor(
                      */
                     fun quantity(quantity: JsonField<Double>) = apply { this.quantity = quantity }
 
+                    /**
+                     * The unit of the `quantity` value. If no single supported unit applies to the
+                     * result, this field is `null`.
+                     */
+                    fun quantityUnit(quantityUnit: CostQuantityUnit?) =
+                        quantityUnit(JsonField.ofNullable(quantityUnit))
+
+                    /**
+                     * Alias for calling [Builder.quantityUnit] with `quantityUnit.orElse(null)`.
+                     */
+                    fun quantityUnit(quantityUnit: Optional<CostQuantityUnit>) =
+                        quantityUnit(quantityUnit.getOrNull())
+
+                    /**
+                     * Sets [Builder.quantityUnit] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.quantityUnit] with a well-typed
+                     * [CostQuantityUnit] value instead. This method is primarily for setting the
+                     * field to an undocumented or not yet supported value.
+                     */
+                    fun quantityUnit(quantityUnit: JsonField<CostQuantityUnit>) = apply {
+                        this.quantityUnit = quantityUnit
+                    }
+
+                    /**
+                     * Sets [quantityUnit] to an arbitrary [String].
+                     *
+                     * You should usually call [quantityUnit] with a well-typed [CostQuantityUnit]
+                     * constant instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun quantityUnit(value: String) = quantityUnit(CostQuantityUnit.of(value))
+
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
                         putAllAdditionalProperties(additionalProperties)
@@ -7015,6 +7083,7 @@ private constructor(
                             lineItem,
                             projectId,
                             quantity,
+                            quantityUnit,
                             additionalProperties.toMutableMap(),
                         )
                 }
@@ -7046,6 +7115,7 @@ private constructor(
                     lineItem()
                     projectId()
                     quantity()
+                    quantityUnit()
                     validated = true
                 }
 
@@ -7072,7 +7142,8 @@ private constructor(
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
                         (if (lineItem.asKnown().isPresent) 1 else 0) +
                         (if (projectId.asKnown().isPresent) 1 else 0) +
-                        (if (quantity.asKnown().isPresent) 1 else 0)
+                        (if (quantity.asKnown().isPresent) 1 else 0) +
+                        (if (quantityUnit.asKnown().isPresent) 1 else 0)
 
                 /** The monetary value in its associated currency. */
                 class Amount
@@ -7291,6 +7362,7 @@ private constructor(
                         lineItem == other.lineItem &&
                         projectId == other.projectId &&
                         quantity == other.quantity &&
+                        quantityUnit == other.quantityUnit &&
                         additionalProperties == other.additionalProperties
                 }
 
@@ -7302,6 +7374,7 @@ private constructor(
                         lineItem,
                         projectId,
                         quantity,
+                        quantityUnit,
                         additionalProperties,
                     )
                 }
@@ -7309,7 +7382,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationCostsResult{object_=$object_, amount=$amount, apiKeyId=$apiKeyId, lineItem=$lineItem, projectId=$projectId, quantity=$quantity, additionalProperties=$additionalProperties}"
+                    "OrganizationCostsResult{object_=$object_, amount=$amount, apiKeyId=$apiKeyId, lineItem=$lineItem, projectId=$projectId, quantity=$quantity, quantityUnit=$quantityUnit, additionalProperties=$additionalProperties}"
             }
         }
 

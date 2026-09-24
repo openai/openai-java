@@ -167,6 +167,7 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
                 .systemFingerprint("system_fingerprint")
                 .usage(
@@ -347,6 +348,7 @@ internal class ChatCompletionChunkTest {
                     )
                     .build()
             )
+        assertThat(chatCompletionChunk.obfuscation()).contains("obfuscation")
         assertThat(chatCompletionChunk.serviceTier()).contains(ChatCompletionChunk.ServiceTier.AUTO)
         assertThat(chatCompletionChunk.systemFingerprint()).contains("system_fingerprint")
         assertThat(chatCompletionChunk.usage())
@@ -534,6 +536,7 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
+                .obfuscation("obfuscation")
                 .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
                 .systemFingerprint("system_fingerprint")
                 .usage(

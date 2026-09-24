@@ -3,6 +3,7 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.services.async.beta.AgentServiceAsync
 import com.openai.services.async.beta.AssistantServiceAsync
 import com.openai.services.async.beta.ChatKitServiceAsync
 import com.openai.services.async.beta.RealtimeServiceAsync
@@ -29,6 +30,9 @@ interface BetaServiceAsync {
     )
     fun realtime(): RealtimeServiceAsync
 
+    fun agents(): AgentServiceAsync
+
+    /** Create and manage model responses. */
     fun responses(): ResponseServiceAsync
 
     fun chatkit(): ChatKitServiceAsync
@@ -55,6 +59,9 @@ interface BetaServiceAsync {
         )
         fun realtime(): RealtimeServiceAsync.WithRawResponse
 
+        fun agents(): AgentServiceAsync.WithRawResponse
+
+        /** Create and manage model responses. */
         fun responses(): ResponseServiceAsync.WithRawResponse
 
         fun chatkit(): ChatKitServiceAsync.WithRawResponse

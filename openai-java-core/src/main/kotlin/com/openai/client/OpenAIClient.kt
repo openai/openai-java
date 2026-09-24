@@ -18,10 +18,12 @@ import com.openai.services.blocking.FileService
 import com.openai.services.blocking.FineTuningService
 import com.openai.services.blocking.GraderService
 import com.openai.services.blocking.ImageService
+import com.openai.services.blocking.LiveService
 import com.openai.services.blocking.ModelService
 import com.openai.services.blocking.ModerationService
 import com.openai.services.blocking.RealtimeService
 import com.openai.services.blocking.ResponseService
+import com.openai.services.blocking.SafetyService
 import com.openai.services.blocking.SkillService
 import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.VectorStoreService
@@ -104,6 +106,8 @@ interface OpenAIClient {
 
     fun vectorStores(): VectorStoreService
 
+    fun safety(): SafetyService
+
     fun webhooks(): WebhookService
 
     fun beta(): BetaService
@@ -116,7 +120,10 @@ interface OpenAIClient {
 
     fun admin(): AdminService
 
+    /** Create and manage model responses. */
     fun responses(): ResponseService
+
+    fun live(): LiveService
 
     fun realtime(): RealtimeService
 
@@ -194,6 +201,8 @@ interface OpenAIClient {
 
         fun vectorStores(): VectorStoreService.WithRawResponse
 
+        fun safety(): SafetyService.WithRawResponse
+
         fun webhooks(): WebhookService.WithRawResponse
 
         fun beta(): BetaService.WithRawResponse
@@ -206,7 +215,10 @@ interface OpenAIClient {
 
         fun admin(): AdminService.WithRawResponse
 
+        /** Create and manage model responses. */
         fun responses(): ResponseService.WithRawResponse
+
+        fun live(): LiveService.WithRawResponse
 
         fun realtime(): RealtimeService.WithRawResponse
 

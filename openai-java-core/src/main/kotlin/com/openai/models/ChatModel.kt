@@ -20,6 +20,12 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
     companion object {
 
+        @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
+
+        @JvmField val GPT_6_SOL = of("gpt-6-sol")
+
+        @JvmField val GPT_6_LUNA = of("gpt-6-luna")
+
         @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
         @JvmField val GPT_5_6_TERRA = of("gpt-5.6-terra")
@@ -120,6 +126,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val GPT_4O_2024_05_13 = of("gpt-4o-2024-05-13")
 
+        @JvmField val GPT_AUDIO_MINI = of("gpt-audio-mini")
+
+        @JvmField val GPT_AUDIO_MINI_2025_12_15 = of("gpt-audio-mini-2025-12-15")
+
         @JvmField val GPT_4O_AUDIO_PREVIEW = of("gpt-4o-audio-preview")
 
         @JvmField val GPT_4O_AUDIO_PREVIEW_2024_10_01 = of("gpt-4o-audio-preview-2024-10-01")
@@ -193,6 +203,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
     /** An enum containing [ChatModel]'s known values. */
     enum class Known {
+        GPT_6_ASTRA,
+        GPT_6_SOL,
+        GPT_6_LUNA,
         GPT_5_6_SOL,
         GPT_5_6_TERRA,
         GPT_5_6_LUNA,
@@ -243,6 +256,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_4O_2024_11_20,
         GPT_4O_2024_08_06,
         GPT_4O_2024_05_13,
+        GPT_AUDIO_MINI,
+        GPT_AUDIO_MINI_2025_12_15,
         GPT_4O_AUDIO_PREVIEW,
         GPT_4O_AUDIO_PREVIEW_2024_10_01,
         GPT_4O_AUDIO_PREVIEW_2024_12_17,
@@ -288,6 +303,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
+        GPT_6_ASTRA,
+        GPT_6_SOL,
+        GPT_6_LUNA,
         GPT_5_6_SOL,
         GPT_5_6_TERRA,
         GPT_5_6_LUNA,
@@ -338,6 +356,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_4O_2024_11_20,
         GPT_4O_2024_08_06,
         GPT_4O_2024_05_13,
+        GPT_AUDIO_MINI,
+        GPT_AUDIO_MINI_2025_12_15,
         GPT_4O_AUDIO_PREVIEW,
         GPT_4O_AUDIO_PREVIEW_2024_10_01,
         GPT_4O_AUDIO_PREVIEW_2024_12_17,
@@ -384,6 +404,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      */
     fun value(): Value =
         when (this) {
+            GPT_6_ASTRA -> Value.GPT_6_ASTRA
+            GPT_6_SOL -> Value.GPT_6_SOL
+            GPT_6_LUNA -> Value.GPT_6_LUNA
             GPT_5_6_SOL -> Value.GPT_5_6_SOL
             GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
             GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
@@ -434,6 +457,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_4O_2024_11_20 -> Value.GPT_4O_2024_11_20
             GPT_4O_2024_08_06 -> Value.GPT_4O_2024_08_06
             GPT_4O_2024_05_13 -> Value.GPT_4O_2024_05_13
+            GPT_AUDIO_MINI -> Value.GPT_AUDIO_MINI
+            GPT_AUDIO_MINI_2025_12_15 -> Value.GPT_AUDIO_MINI_2025_12_15
             GPT_4O_AUDIO_PREVIEW -> Value.GPT_4O_AUDIO_PREVIEW
             GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Value.GPT_4O_AUDIO_PREVIEW_2024_10_01
             GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Value.GPT_4O_AUDIO_PREVIEW_2024_12_17
@@ -480,6 +505,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      */
     fun known(): Known =
         when (this) {
+            GPT_6_ASTRA -> Known.GPT_6_ASTRA
+            GPT_6_SOL -> Known.GPT_6_SOL
+            GPT_6_LUNA -> Known.GPT_6_LUNA
             GPT_5_6_SOL -> Known.GPT_5_6_SOL
             GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
             GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
@@ -530,6 +558,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_4O_2024_11_20 -> Known.GPT_4O_2024_11_20
             GPT_4O_2024_08_06 -> Known.GPT_4O_2024_08_06
             GPT_4O_2024_05_13 -> Known.GPT_4O_2024_05_13
+            GPT_AUDIO_MINI -> Known.GPT_AUDIO_MINI
+            GPT_AUDIO_MINI_2025_12_15 -> Known.GPT_AUDIO_MINI_2025_12_15
             GPT_4O_AUDIO_PREVIEW -> Known.GPT_4O_AUDIO_PREVIEW
             GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Known.GPT_4O_AUDIO_PREVIEW_2024_10_01
             GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Known.GPT_4O_AUDIO_PREVIEW_2024_12_17

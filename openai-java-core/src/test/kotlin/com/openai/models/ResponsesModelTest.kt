@@ -41,7 +41,7 @@ internal class ResponsesModelTest {
 
     @Test
     fun ofChat() {
-        val chat = ChatModel.GPT_5_6_SOL
+        val chat = ChatModel.GPT_6_ASTRA
 
         val responsesModel = ResponsesModel.ofChat(chat)
 
@@ -53,7 +53,7 @@ internal class ResponsesModelTest {
     @Test
     fun ofChatRoundtrip() {
         val jsonMapper = jsonMapper()
-        val responsesModel = ResponsesModel.ofChat(ChatModel.GPT_5_6_SOL)
+        val responsesModel = ResponsesModel.ofChat(ChatModel.GPT_6_ASTRA)
 
         val roundtrippedResponsesModel =
             jsonMapper.readValue(
