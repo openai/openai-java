@@ -50,7 +50,7 @@ fi
 if [ "${java_major}" != "${required_jdk}" ]; then
   cat >&2 <<EOF
 Development environment check failed: this repository requires JDK ${required_jdk},
-but Gradle would use Java ${java_major}.
+but the selected Java launcher is Java ${java_major}.
 
 Select JDK ${required_jdk}, then retry:
   export JAVA_HOME=/path/to/jdk-${required_jdk}
