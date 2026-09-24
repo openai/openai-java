@@ -85,6 +85,10 @@ class StructuredResponse<T : Any>(
     /** @see Response.prompt */
     fun prompt(): Optional<ResponsePrompt> = rawResponse.prompt()
 
+    /** @see Response.promptCacheDiagnostics */
+    fun promptCacheDiagnostics(): Optional<Response.PromptCacheDiagnostics> =
+        rawResponse.promptCacheDiagnostics()
+
     /** @see Response.promptCacheKey */
     fun promptCacheKey(): Optional<String> = rawResponse.promptCacheKey()
 
@@ -186,6 +190,10 @@ class StructuredResponse<T : Any>(
 
     /** @see Response._prompt */
     fun _prompt(): JsonField<ResponsePrompt> = rawResponse._prompt()
+
+    /** @see Response._promptCacheDiagnostics */
+    fun _promptCacheDiagnostics(): JsonField<Response.PromptCacheDiagnostics> =
+        rawResponse._promptCacheDiagnostics()
 
     /** @see Response._promptCacheKey */
     fun _promptCacheKey(): JsonField<String> = rawResponse._promptCacheKey()

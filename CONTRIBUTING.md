@@ -1,11 +1,45 @@
 # Contributing to OpenAI Java SDK
 
+## Contribution policy
+
+We welcome bug reports, feature requests, minimal reproductions, and root-cause
+analysis through [GitHub issues](https://github.com/openai/openai-java/issues).
+
+**Pull requests are limited to repository collaborators. We do not accept pull
+requests from non-collaborators**, including documentation or example changes.
+If you are not a collaborator, please open an issue instead of preparing a pull
+request. Include the affected version, expected and actual behavior, and a small,
+sanitized reproduction when applicable.
+
+Report suspected security vulnerabilities privately as described in
+[SECURITY.md](SECURITY.md), rather than in issues or pull requests.
+
+The development and pull request instructions below are for maintainers and
+repository collaborators.
+
 ## Setting up the environment
 
 This repository uses [Gradle](https://gradle.org/) with Kotlin DSL for building and dependency
 management. The framework-neutral SDK requires Java 8, while development requires JDK 21 for the
 Kotlin toolchain. See the [Java version support policy](docs/version-support-policy.md) for
 artifact-level runtime, framework, lifecycle, and release rules.
+
+## Custom-code budget
+
+The custom-code budget counts additions plus deletions in the remaining patch
+against verified generated output. `.castiron-ratchet.json` defines this repository's
+ceiling. CI uses the checker and budget on main, not the PR's proposed versions.
+
+Budget changes must be in a separate PR modifying **only `.castiron-ratchet.json`**.
+Justify the current usage, proposed ceiling, and why fixing generation is not
+appropriate in the PR description. Increases require a **human approving review**
+and must merge before an SDK change relies on them. Agents may draft proposals,
+but must not approve increases or bypass the gate. Keep default CODEOWNERS.
+Lower the ceiling after cleanup while retaining headroom; decreases must still
+fit the measured usage.
+
+See [custom-code technical details](scripts/castiron/CUSTOM_CODE.md) for accounting,
+local checks, trusted CI, and activation instructions.
 
 ## Security expectations
 
@@ -34,10 +68,10 @@ The SDK's primary artifacts are:
 
 - `openai-java-core`
   - Contains core SDK logic
-  - Does not depend on [OkHttp](https://square.github.io/okhttp)
+  - Does not depend on [OkHttp](https://lysine.dev/okhttp/)
   - Exposes [`OpenAIClient`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt), [`OpenAIClientAsync`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsync.kt), [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt), and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), all of which can work with any HTTP client
 - `openai-java-client-okhttp`
-  - Depends on [OkHttp](https://square.github.io/okhttp)
+  - Depends on [OkHttp](https://lysine.dev/okhttp/)
   - Exposes [`OpenAIOkHttpClient`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt) and [`OpenAIOkHttpClientAsync`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClientAsync.kt), which provide a way to construct [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt) and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), respectively, using OkHttp
 - `openai-java`
   - Depends on and exposes the APIs of both `openai-java-core` and `openai-java-client-okhttp`
@@ -97,14 +131,14 @@ Then in your project's `build.gradle.kts` or `pom.xml`, reference the locally pu
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java:4.52.0")
+implementation("com.openai:openai-java:4.69.1")
 ```
 
 ```xml
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.52.0</version>
+  <version>4.69.1</version>
 </dependency>
 ```
 
@@ -120,7 +154,24 @@ JAR files will be available in each module's `build/libs/` directory.
 
 ## Running tests
 
-Most tests require [our mock server](https://github.com/stoplightio/prism) to be running against the OpenAPI spec to work.
+The mock server uses [the OpenAI Steady fork](https://github.com/openai-oss-forks/steady).
+`scripts/steady/manifest.json` is the single source of dependency pins: the
+Steady Git commit and source digest, plus the Deno version and runtime checksums. `./scripts/steady/install` fetches that source, verifies the runtime,
+and caches dependencies using the fork's frozen Deno lockfile. It requires
+Git, Node.js, curl, unzip, and sha256sum or shasum. The installation supports
+macOS and Linux on x64/ARM64, and Windows x64 through Git Bash.
+
+`./scripts/run-steady` verifies the local source and runtime, then runs without
+downloading dependencies. Pass a local OpenAPI specification path. To update
+Steady, review the fork commit and run
+`node scripts/steady/update.cjs <full-commit-sha>`. This updates the manifest
+with the commit and its source digest; no launcher or test edits are needed.
+Then run `./scripts/steady/install`. Review the release checksums when changing Deno.
+Run `node scripts/steady/test.cjs` to check the
+installation, integrity checks, and mock-server lifecycle.
+
+
+Most tests require [our mock server](https://github.com/openai-oss-forks/steady) to be running against the OpenAPI spec to work.
 
 The test script will automatically start the mock server for you (if it's not already running) and run the tests against it:
 

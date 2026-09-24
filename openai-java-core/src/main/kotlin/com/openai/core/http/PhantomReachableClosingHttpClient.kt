@@ -10,6 +10,16 @@ import java.util.concurrent.CompletableFuture
  * This class ensures the `HttpClient` is closed even if the user forgets to close it.
  */
 internal class PhantomReachableClosingHttpClient(private val httpClient: HttpClient) : HttpClient {
+    companion object {
+        @JvmSynthetic
+        internal fun wrap(httpClient: HttpClient): HttpClient {
+            val wrapper = PhantomReachableClosingHttpClient(httpClient)
+            return if (httpClient is WebSocketClient) {
+                object : HttpClient by wrapper, WebSocketClient by httpClient {}
+            } else wrapper
+        }
+    }
+
     init {
         closeWhenPhantomReachable(this, httpClient)
     }

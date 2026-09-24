@@ -11,9 +11,9 @@ interface HttpResponseFor<T> : HttpResponse {
 internal fun <T> HttpResponse.parseable(parse: () -> T): HttpResponseFor<T> =
     object : HttpResponseFor<T> {
 
-        private val parsed: T by lazy { parse() }
+        private val parsed = lazy { parse() }
 
-        override fun parse(): T = parsed
+        override fun parse(): T = parsed.value
 
         override fun statusCode(): Int = this@parseable.statusCode()
 
@@ -21,5 +21,12 @@ internal fun <T> HttpResponse.parseable(parse: () -> T): HttpResponseFor<T> =
 
         override fun body(): InputStream = this@parseable.body()
 
-        override fun close() = this@parseable.close()
+        override fun close() {
+            val stream = if (parsed.isInitialized()) parsed.value as? StreamResponse<*> else null
+            if (stream != null) {
+                stream.close()
+            } else {
+                this@parseable.close()
+            }
+        }
     }

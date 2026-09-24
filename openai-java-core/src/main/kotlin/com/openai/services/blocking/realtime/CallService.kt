@@ -7,6 +7,7 @@ import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.models.realtime.calls.CallAcceptParams
+import com.openai.models.realtime.calls.CallCreateParams
 import com.openai.models.realtime.calls.CallHangupParams
 import com.openai.models.realtime.calls.CallReferParams
 import com.openai.models.realtime.calls.CallRejectParams
@@ -25,6 +26,20 @@ interface CallService {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CallService
+
+    /**
+     * Create a new Realtime API call over WebRTC and receive the SDP answer needed to complete the
+     * peer connection.
+     */
+    @MustBeClosed
+    fun create(params: CallCreateParams): HttpResponse = create(params, RequestOptions.none())
+
+    /** @see create */
+    @MustBeClosed
+    fun create(
+        params: CallCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): HttpResponse
 
     /** Accept an incoming SIP call and configure the realtime session that will handle it. */
     fun accept(callId: String, params: CallAcceptParams) =
@@ -117,6 +132,20 @@ interface CallService {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): CallService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /realtime/calls`, but is otherwise the same as
+         * [CallService.create].
+         */
+        @MustBeClosed
+        fun create(params: CallCreateParams): HttpResponse = create(params, RequestOptions.none())
+
+        /** @see create */
+        @MustBeClosed
+        fun create(
+            params: CallCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse
 
         /**
          * Returns a raw HTTP response for `post /realtime/calls/{call_id}/accept`, but is otherwise

@@ -6,10 +6,12 @@ import com.openai.TestServerExtension
 import com.openai.client.OpenAIClient
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.http.Headers
-import com.openai.errors.InvalidWebhookSignatureException
+import com.openai.models.webhooks.WebhookCreateParams
+import com.openai.models.webhooks.WebhookRotateSecretParams
+import com.openai.models.webhooks.WebhookTestParams
+import com.openai.models.webhooks.WebhookUpdateParams
 import com.openai.models.webhooks.WebhookVerificationParams
 import java.time.Clock
-import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
 import kotlin.test.assertTrue
@@ -94,184 +96,134 @@ internal class WebhookServiceTest {
     }
 
     @Test
-    fun verifySignatureWithInvalidSecret() {
+    fun create() {
         val client =
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val webhookService = client.webhooks()
 
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", "v1,invalid_signature")
-                .put("webhook-timestamp", fixedTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        assertThrows<InvalidWebhookSignatureException> {
-            webhookService.verifySignature(
-                WebhookVerificationParams.builder()
-                    .payload(testPayload)
-                    .headers(headers)
-                    .secret("invalid_secret")
+        val webhookEndpointWithSecret =
+            webhookService.create(
+                WebhookCreateParams.builder()
+                    .addEventType(WebhookCreateParams.EventType.BATCH_COMPLETED)
+                    .name("x")
+                    .url("https://")
                     .build()
             )
-        }
+
+        webhookEndpointWithSecret.validate()
     }
 
     @Test
-    fun verifySignatureWithOldTimestamp() {
+    fun retrieve() {
         val client =
             OpenAIOkHttpClient.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
         val webhookService = client.webhooks()
 
-        // Use a timestamp that's older than 5 minutes (300 seconds)
-        val oldTimestamp = (1643723400 - 400).toString()
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", "v1,signature")
-                .put("webhook-timestamp", oldTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
+        val webhookEndpoint = webhookService.retrieve("whe_123")
 
-        assertThrows<InvalidWebhookSignatureException> {
-            webhookService.verifySignature(
-                WebhookVerificationParams.builder()
-                    .payload(testPayload)
-                    .headers(headers)
-                    .secret(testSecret)
+        webhookEndpoint.validate()
+    }
+
+    @Test
+    fun update() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val webhookService = client.webhooks()
+
+        val webhookEndpoint =
+            webhookService.update(
+                WebhookUpdateParams.builder()
+                    .webhookEndpointId("whe_123")
+                    .addEventType(WebhookUpdateParams.EventType.BATCH_COMPLETED)
+                    .name("x")
+                    .url("https://")
                     .build()
             )
-        }
+
+        webhookEndpoint.validate()
     }
 
     @Test
-    fun verifySignatureWithInvalidTimestampFormat() {
-        val client = createClientWithFixedClock()
+    fun list() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
         val webhookService = client.webhooks()
 
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", "v1,invalid_signature")
-                .put("webhook-timestamp", "not_a_number")
-                .put("webhook-id", webhookId)
-                .build()
+        val page = webhookService.list()
 
-        assertThrows<InvalidWebhookSignatureException> {
-            webhookService.verifySignature(
-                WebhookVerificationParams.builder()
-                    .payload(testPayload)
-                    .headers(headers)
-                    .secret(testSecret)
+        page.response().validate()
+    }
+
+    @Test
+    fun delete() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val webhookService = client.webhooks()
+
+        val deletedWebhookEndpoint = webhookService.delete("whe_123")
+
+        deletedWebhookEndpoint.validate()
+    }
+
+    @Test
+    fun rotateSecret() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val webhookService = client.webhooks()
+
+        val webhookEndpointWithSecret =
+            webhookService.rotateSecret(
+                WebhookRotateSecretParams.builder()
+                    .webhookEndpointId("whe_123")
+                    .keepOldSecretActiveFor24Hours(true)
                     .build()
             )
-        }
+
+        webhookEndpointWithSecret.validate()
     }
 
     @Test
-    fun verifySignatureWithValidSignature() {
-        val client = createClientWithFixedClock()
+    fun test() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
         val webhookService = client.webhooks()
 
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", validSignatureForSecret)
-                .put("webhook-timestamp", fixedTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        // Should not throw any exception when using correct signature
-        webhookService.verifySignature(
-            WebhookVerificationParams.builder()
-                .payload(testPayload)
-                .headers(headers)
-                .secret(testSecret)
-                .build()
-        )
-    }
-
-    @Test
-    fun verifySignatureWithCustomTolerance() {
-        val client = createClientWithFixedClock()
-        val webhookService = client.webhooks()
-
-        // Use a timestamp that's very old (should fail with default tolerance)
-        val oldTimestamp = (1750861210 - 400).toString() // 400 seconds before our payload timestamp
-
-        val headers =
-            Headers.builder()
-                .put(
-                    "webhook-signature",
-                    validSignatureForSecret,
-                ) // This won't match old timestamp but we're testing time validation
-                .put("webhook-timestamp", oldTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        // Should fail due to old timestamp
-        assertThrows<InvalidWebhookSignatureException> {
-            webhookService.verifySignature(
-                WebhookVerificationParams.builder()
-                    .payload(testPayload)
-                    .headers(headers)
-                    .secret(testSecret)
-                    .tolerance(Duration.ofMinutes(5))
+        val webhookEndpointTestResult =
+            webhookService.test(
+                WebhookTestParams.builder()
+                    .webhookEndpointId("whe_123")
+                    .eventType(WebhookTestParams.EventType.BATCH_COMPLETED)
                     .build()
             )
-        }
-    }
 
-    @Test
-    fun verifySignatureWithMultipleSignatures() {
-        val client = createClientWithFixedClock()
-        val webhookService = client.webhooks()
-
-        // Create a signature header with multiple signatures: one valid, one invalid
-        val multipleSignatures = "v1,invalid_signature $validSignatureForSecret"
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", multipleSignatures)
-                .put("webhook-timestamp", fixedTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        // Should not throw any exception when at least one signature is correct
-        webhookService.verifySignature(
-            WebhookVerificationParams.builder()
-                .payload(testPayload)
-                .headers(headers)
-                .secret(testSecret)
-                .build()
-        )
-    }
-
-    @Test
-    fun verifySignatureWithAllInvalidMultipleSignatures() {
-        val client = createClientWithFixedClock()
-        val webhookService = client.webhooks()
-
-        // Create a signature header with multiple invalid signatures
-        val multipleInvalidSignatures = "v1,invalid_signature1 v1,invalid_signature2"
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", multipleInvalidSignatures)
-                .put("webhook-timestamp", fixedTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        // Should throw exception when all signatures are invalid
-        assertThrows<InvalidWebhookSignatureException> {
-            webhookService.verifySignature(
-                WebhookVerificationParams.builder()
-                    .payload(testPayload)
-                    .headers(headers)
-                    .secret(testSecret)
-                    .build()
-            )
-        }
+        webhookEndpointTestResult.validate()
     }
 }

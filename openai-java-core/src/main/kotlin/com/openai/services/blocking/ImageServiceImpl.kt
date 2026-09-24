@@ -85,7 +85,9 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ImageService.WithRawResponse =
-            WithRawResponseImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+            ImageServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val createVariationHandler: Handler<ImagesResponse> =
             jsonHandler<ImagesResponse>(clientOptions.jsonMapper)

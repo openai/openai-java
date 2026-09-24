@@ -43,8 +43,8 @@ private constructor(
      * conversation and to add new items mid-stream, but has the current limitation that it cannot
      * populate assistant audio messages.
      *
-     * If successful, the server will respond with a `conversation.item.created` event, otherwise an
-     * `error` event will be sent.
+     * If successful, the server will emit a `conversation.item.added` event and, when the item is
+     * finalized, a `conversation.item.done` event. Otherwise, an `error` event will be sent.
      */
     fun conversationItemCreate(): Optional<ConversationItemCreateEvent> =
         Optional.ofNullable(conversationItemCreate)
@@ -110,7 +110,7 @@ private constructor(
      * **WebRTC/SIP Only:** Emit to cut off the current audio response. This will trigger the server
      * to stop generating audio and emit a `output_audio_buffer.cleared` event. This event should be
      * preceded by a `response.cancel` client event to stop the generation of the current response.
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     fun outputAudioBufferClear(): Optional<OutputAudioBufferClearEvent> =
         Optional.ofNullable(outputAudioBufferClear)
@@ -202,8 +202,8 @@ private constructor(
      * conversation and to add new items mid-stream, but has the current limitation that it cannot
      * populate assistant audio messages.
      *
-     * If successful, the server will respond with a `conversation.item.created` event, otherwise an
-     * `error` event will be sent.
+     * If successful, the server will emit a `conversation.item.added` event and, when the item is
+     * finalized, a `conversation.item.done` event. Otherwise, an `error` event will be sent.
      */
     fun asConversationItemCreate(): ConversationItemCreateEvent =
         conversationItemCreate.getOrThrow("conversationItemCreate")
@@ -269,7 +269,7 @@ private constructor(
      * **WebRTC/SIP Only:** Emit to cut off the current audio response. This will trigger the server
      * to stop generating audio and emit a `output_audio_buffer.cleared` event. This event should be
      * preceded by a `response.cancel` client event to stop the generation of the current response.
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     fun asOutputAudioBufferClear(): OutputAudioBufferClearEvent =
         outputAudioBufferClear.getOrThrow("outputAudioBufferClear")
@@ -598,8 +598,8 @@ private constructor(
          * conversation and to add new items mid-stream, but has the current limitation that it
          * cannot populate assistant audio messages.
          *
-         * If successful, the server will respond with a `conversation.item.created` event,
-         * otherwise an `error` event will be sent.
+         * If successful, the server will emit a `conversation.item.added` event and, when the item
+         * is finalized, a `conversation.item.done` event. Otherwise, an `error` event will be sent.
          */
         @JvmStatic
         fun ofConversationItemCreate(conversationItemCreate: ConversationItemCreateEvent) =
@@ -672,7 +672,7 @@ private constructor(
          * server to stop generating audio and emit a `output_audio_buffer.cleared` event. This
          * event should be preceded by a `response.cancel` client event to stop the generation of
          * the current response.
-         * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+         * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         @JvmStatic
         fun ofOutputAudioBufferClear(outputAudioBufferClear: OutputAudioBufferClearEvent) =
@@ -760,8 +760,8 @@ private constructor(
          * conversation and to add new items mid-stream, but has the current limitation that it
          * cannot populate assistant audio messages.
          *
-         * If successful, the server will respond with a `conversation.item.created` event,
-         * otherwise an `error` event will be sent.
+         * If successful, the server will emit a `conversation.item.added` event and, when the item
+         * is finalized, a `conversation.item.done` event. Otherwise, an `error` event will be sent.
          */
         fun visitConversationItemCreate(conversationItemCreate: ConversationItemCreateEvent): T
 
@@ -826,7 +826,7 @@ private constructor(
          * server to stop generating audio and emit a `output_audio_buffer.cleared` event. This
          * event should be preceded by a `response.cancel` client event to stop the generation of
          * the current response.
-         * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+         * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         fun visitOutputAudioBufferClear(outputAudioBufferClear: OutputAudioBufferClearEvent): T
 

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -27,12 +28,6 @@ import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
-
-private fun Map<String, JsonValue>.streamId(): JsonField<String> =
-    get("stream_id") ?: JsonMissing.of()
-
-private fun JsonField<String>.asStreamId(): Optional<String> =
-    if (isMissing() || isNull()) Optional.empty() else Optional.of(asStringOrThrow())
 
 /** Server events emitted by the Responses WebSocket server. */
 @JsonDeserialize(using = BetaResponsesServerEvent.Deserializer::class)
@@ -57,6 +52,7 @@ private constructor(
     private val responseCodeInterpreterCallInterpreting:
         BetaResponseCodeInterpreterCallInterpretingEvent? =
         null,
+    private val responseCompactionCompacting: BetaResponseCompactionCompactingEvent? = null,
     private val responseCompleted: BetaResponseCompletedEvent? = null,
     private val responseContentPartAdded: BetaResponseContentPartAddedEvent? = null,
     private val responseContentPartDone: BetaResponseContentPartDoneEvent? = null,
@@ -118,6 +114,9 @@ private constructor(
     private val responseCustomToolCallInputDelta: BetaResponseCustomToolCallInputDeltaEvent? = null,
     private val responseCustomToolCallInputDone: BetaResponseCustomToolCallInputDoneEvent? = null,
     private val error: BetaResponseWsError? = null,
+    private val responseSteerAccepted: BetaResponseSteerAcceptedEvent? = null,
+    private val responseSteerPending: BetaResponseSteerPendingEvent? = null,
+    private val responseSteerFailed: BetaResponseSteerFailedEvent? = null,
     private val responseInjectCreated: BetaResponseInjectCreatedEvent? = null,
     private val responseInjectFailed: BetaResponseInjectFailedEvent? = null,
     private val _json: JsonValue? = null,
@@ -163,6 +162,13 @@ private constructor(
     fun responseCodeInterpreterCallInterpreting():
         Optional<BetaResponseCodeInterpreterCallInterpretingEvent> =
         Optional.ofNullable(responseCodeInterpreterCallInterpreting)
+
+    /**
+     * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+     * content.
+     */
+    fun responseCompactionCompacting(): Optional<BetaResponseCompactionCompactingEvent> =
+        Optional.ofNullable(responseCompactionCompacting)
 
     /** Emitted when the model response is complete. */
     fun responseCompleted(): Optional<BetaResponseCompletedEvent> =
@@ -229,7 +235,13 @@ private constructor(
     /** An event that is emitted when a response fails. */
     fun responseFailed(): Optional<BetaResponseFailedEvent> = Optional.ofNullable(responseFailed)
 
-    /** An event that is emitted when a response finishes as incomplete. */
+    /**
+     * An event that is emitted when a response finishes as incomplete.
+     *
+     * Over WebSocket, steering can finish a response with `response.incomplete_details.reason` set
+     * to `steered`, followed automatically by a successor `response.created` that commits the
+     * queued steering input.
+     */
     fun responseIncomplete(): Optional<BetaResponseIncompleteEvent> =
         Optional.ofNullable(responseIncomplete)
 
@@ -366,6 +378,52 @@ private constructor(
     fun error(): Optional<BetaResponseWsError> = Optional.ofNullable(error)
 
     /**
+     * Emitted when steering input has been validated and queued. Acceptance means the server owns
+     * the input, not that it has been applied. The successor's `response.created` event is the
+     * commit point. If accepted input cannot be committed, `response.steer.failed` returns it with
+     * the same steering ID.
+     *
+     * When the response stops for client-owned tool output or approval, the input remains queued
+     * and `response.steer.pending` is emitted after `response.completed`. Fill the pending event's
+     * `required_input` stubs with saved results and send one matching explicit `response.create`
+     * per parent. Do not resend accepted input while it is still queued.
+     */
+    fun responseSteerAccepted(): Optional<BetaResponseSteerAcceptedEvent> =
+        Optional.ofNullable(responseSteerAccepted)
+
+    /**
+     * Emitted when accepted steering input remains queued after the target response completes. The
+     * server still owns the input. Do not resend it. The successor's `response.created` event is
+     * the commit point.
+     *
+     * When `reason` is `waiting_for_required_input`, this event follows `response.completed` while
+     * the response waits for the tool results or approval decisions identified by `required_input`.
+     * Copy those stubs, fill their result fields using the ordinary `response.create` input
+     * schemas, and submit one continuation per parent with the same `previous_response_id` and
+     * WebSocket lane. Use saved results without rerunning tools. The queued steering input is
+     * prepended in submission order to the continuation's input. That explicit request retains its
+     * own settings.
+     *
+     * This notification is emitted at most once per steering submission. Multiple submissions for
+     * the same parent can report the same required inputs; they do not each require a separate
+     * continuation.
+     */
+    fun responseSteerPending(): Optional<BetaResponseSteerPendingEvent> =
+        Optional.ofNullable(responseSteerPending)
+
+    /**
+     * Emitted when steering input is rejected or cannot be committed to a successor response.
+     * Returns the original, uncommitted input so the client can carry it into `response.create`
+     * when appropriate. Invalid input must be corrected before retrying.
+     *
+     * Failures after acceptance include the same steering ID. Failures before an ID is allocated
+     * omit `steer.id`. A lost connection or missing acknowledgement leaves the outcome unknown; it
+     * is not proof that the input was rejected.
+     */
+    fun responseSteerFailed(): Optional<BetaResponseSteerFailedEvent> =
+        Optional.ofNullable(responseSteerFailed)
+
+    /**
      * Emitted when all injected input items were validated and committed to the active response.
      */
     fun responseInjectCreated(): Optional<BetaResponseInjectCreatedEvent> =
@@ -382,120 +440,243 @@ private constructor(
      * The WebSocket lane that emitted this event. This field is present when the originating
      * `response.create` event supplied a `stream_id`.
      */
-    fun streamId(): Optional<String> = streamIdField().asStreamId()
+    fun streamId(): Optional<String> {
+        val value = streamIdField()
+        return if (value.isMissing() || value.isNull()) Optional.empty()
+        else Optional.of(value.asStringOrThrow())
+    }
 
     private fun streamIdField(): JsonField<String> =
         _json?.asObject()?.getOrNull()?.get("stream_id")
             ?: when {
-                responseAudioDelta != null -> responseAudioDelta._additionalProperties().streamId()
-                responseAudioDone != null -> responseAudioDone._additionalProperties().streamId()
+                responseAudioDelta != null ->
+                    responseAudioDelta._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseAudioDone != null ->
+                    responseAudioDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
                 responseAudioTranscriptDelta != null ->
-                    responseAudioTranscriptDelta._additionalProperties().streamId()
+                    responseAudioTranscriptDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseAudioTranscriptDone != null ->
-                    responseAudioTranscriptDone._additionalProperties().streamId()
+                    responseAudioTranscriptDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseCodeInterpreterCallCodeDelta != null ->
-                    responseCodeInterpreterCallCodeDelta._additionalProperties().streamId()
+                    responseCodeInterpreterCallCodeDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseCodeInterpreterCallCodeDone != null ->
-                    responseCodeInterpreterCallCodeDone._additionalProperties().streamId()
+                    responseCodeInterpreterCallCodeDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseCodeInterpreterCallCompleted != null ->
-                    responseCodeInterpreterCallCompleted._additionalProperties().streamId()
+                    responseCodeInterpreterCallCompleted._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseCodeInterpreterCallInProgress != null ->
-                    responseCodeInterpreterCallInProgress._additionalProperties().streamId()
+                    responseCodeInterpreterCallInProgress._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseCodeInterpreterCallInterpreting != null ->
-                    responseCodeInterpreterCallInterpreting._additionalProperties().streamId()
-                responseCompleted != null -> responseCompleted._additionalProperties().streamId()
+                    responseCodeInterpreterCallInterpreting._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseCompactionCompacting != null ->
+                    responseCompactionCompacting._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseCompleted != null ->
+                    responseCompleted._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
                 responseContentPartAdded != null ->
-                    responseContentPartAdded._additionalProperties().streamId()
+                    responseContentPartAdded._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseContentPartDone != null ->
-                    responseContentPartDone._additionalProperties().streamId()
-                responseCreated != null -> responseCreated._additionalProperties().streamId()
-                error != null -> error._additionalProperties().streamId()
+                    responseContentPartDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseCreated != null ->
+                    responseCreated._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
                 responseFileSearchCallCompleted != null ->
-                    responseFileSearchCallCompleted._additionalProperties().streamId()
+                    responseFileSearchCallCompleted._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseFileSearchCallInProgress != null ->
-                    responseFileSearchCallInProgress._additionalProperties().streamId()
+                    responseFileSearchCallInProgress._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseFileSearchCallSearching != null ->
-                    responseFileSearchCallSearching._additionalProperties().streamId()
+                    responseFileSearchCallSearching._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseFunctionCallArgumentsDelta != null ->
-                    responseFunctionCallArgumentsDelta._additionalProperties().streamId()
+                    responseFunctionCallArgumentsDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseFunctionCallArgumentsDone != null ->
-                    responseFunctionCallArgumentsDone._additionalProperties().streamId()
-                responseInProgress != null -> responseInProgress._additionalProperties().streamId()
-                responseFailed != null -> responseFailed._additionalProperties().streamId()
-                responseIncomplete != null -> responseIncomplete._additionalProperties().streamId()
-                responseOutputItemAdded != null ->
-                    responseOutputItemAdded._additionalProperties().streamId()
-                responseOutputItemDone != null ->
-                    responseOutputItemDone._additionalProperties().streamId()
-                responseReasoningSummaryPartAdded != null ->
-                    responseReasoningSummaryPartAdded._additionalProperties().streamId()
-                responseReasoningSummaryPartDone != null ->
-                    responseReasoningSummaryPartDone._additionalProperties().streamId()
-                responseReasoningSummaryTextDelta != null ->
-                    responseReasoningSummaryTextDelta._additionalProperties().streamId()
-                responseReasoningSummaryTextDone != null ->
-                    responseReasoningSummaryTextDone._additionalProperties().streamId()
-                responseReasoningTextDelta != null ->
-                    responseReasoningTextDelta._additionalProperties().streamId()
-                responseReasoningTextDone != null ->
-                    responseReasoningTextDone._additionalProperties().streamId()
-                responseRefusalDelta != null ->
-                    responseRefusalDelta._additionalProperties().streamId()
-                responseRefusalDone != null ->
-                    responseRefusalDone._additionalProperties().streamId()
-                responseOutputTextDelta != null ->
-                    responseOutputTextDelta._additionalProperties().streamId()
-                responseOutputTextDone != null ->
-                    responseOutputTextDone._additionalProperties().streamId()
-                responseWebSearchCallCompleted != null ->
-                    responseWebSearchCallCompleted._additionalProperties().streamId()
-                responseWebSearchCallInProgress != null ->
-                    responseWebSearchCallInProgress._additionalProperties().streamId()
-                responseWebSearchCallSearching != null ->
-                    responseWebSearchCallSearching._additionalProperties().streamId()
-                responseImageGenerationCallCompleted != null ->
-                    responseImageGenerationCallCompleted._additionalProperties().streamId()
-                responseImageGenerationCallGenerating != null ->
-                    responseImageGenerationCallGenerating._additionalProperties().streamId()
-                responseImageGenerationCallInProgress != null ->
-                    responseImageGenerationCallInProgress._additionalProperties().streamId()
-                responseImageGenerationCallPartialImage != null ->
-                    responseImageGenerationCallPartialImage._additionalProperties().streamId()
-                responseMcpCallArgumentsDelta != null ->
-                    responseMcpCallArgumentsDelta._additionalProperties().streamId()
-                responseMcpCallArgumentsDone != null ->
-                    responseMcpCallArgumentsDone._additionalProperties().streamId()
-                responseMcpCallCompleted != null ->
-                    responseMcpCallCompleted._additionalProperties().streamId()
-                responseMcpCallFailed != null ->
-                    responseMcpCallFailed._additionalProperties().streamId()
-                responseMcpCallInProgress != null ->
-                    responseMcpCallInProgress._additionalProperties().streamId()
-                responseMcpListToolsCompleted != null ->
-                    responseMcpListToolsCompleted._additionalProperties().streamId()
-                responseMcpListToolsFailed != null ->
-                    responseMcpListToolsFailed._additionalProperties().streamId()
-                responseMcpListToolsInProgress != null ->
-                    responseMcpListToolsInProgress._additionalProperties().streamId()
-                responseOutputTextAnnotationAdded != null ->
-                    responseOutputTextAnnotationAdded._additionalProperties().streamId()
-                responseQueued != null -> responseQueued._additionalProperties().streamId()
-                responseCustomToolCallInputDelta != null ->
-                    responseCustomToolCallInputDelta._additionalProperties().streamId()
-                responseCustomToolCallInputDone != null ->
-                    responseCustomToolCallInputDone._additionalProperties().streamId()
-                responseInjectCreated != null -> responseInjectCreated._streamId()
-                responseInjectFailed != null -> responseInjectFailed._streamId()
+                    responseFunctionCallArgumentsDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseShellCallCommandAdded != null ->
-                    responseShellCallCommandAdded._additionalProperties().streamId()
+                    responseShellCallCommandAdded._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseShellCallCommandDelta != null ->
-                    responseShellCallCommandDelta._additionalProperties().streamId()
+                    responseShellCallCommandDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseShellCallCommandDone != null ->
-                    responseShellCallCommandDone._additionalProperties().streamId()
+                    responseShellCallCommandDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseShellCallOutputContentDelta != null ->
-                    responseShellCallOutputContentDelta._additionalProperties().streamId()
+                    responseShellCallOutputContentDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
                 responseShellCallOutputContentDone != null ->
-                    responseShellCallOutputContentDone._additionalProperties().streamId()
+                    responseShellCallOutputContentDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseInProgress != null ->
+                    responseInProgress._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseFailed != null ->
+                    responseFailed._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseIncomplete != null ->
+                    responseIncomplete._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseOutputItemAdded != null ->
+                    responseOutputItemAdded._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseOutputItemDone != null ->
+                    responseOutputItemDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseReasoningSummaryPartAdded != null ->
+                    responseReasoningSummaryPartAdded._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseReasoningSummaryPartDone != null ->
+                    responseReasoningSummaryPartDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseReasoningSummaryTextDelta != null ->
+                    responseReasoningSummaryTextDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseReasoningSummaryTextDone != null ->
+                    responseReasoningSummaryTextDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseReasoningTextDelta != null ->
+                    responseReasoningTextDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseReasoningTextDone != null ->
+                    responseReasoningTextDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseRefusalDelta != null ->
+                    responseRefusalDelta._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseRefusalDone != null ->
+                    responseRefusalDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseOutputTextDelta != null ->
+                    responseOutputTextDelta._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseOutputTextDone != null ->
+                    responseOutputTextDone._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseWebSearchCallCompleted != null ->
+                    responseWebSearchCallCompleted._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseWebSearchCallInProgress != null ->
+                    responseWebSearchCallInProgress._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseWebSearchCallSearching != null ->
+                    responseWebSearchCallSearching._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseImageGenerationCallCompleted != null ->
+                    responseImageGenerationCallCompleted._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseImageGenerationCallGenerating != null ->
+                    responseImageGenerationCallGenerating._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseImageGenerationCallInProgress != null ->
+                    responseImageGenerationCallInProgress._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseImageGenerationCallPartialImage != null ->
+                    responseImageGenerationCallPartialImage._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpCallArgumentsDelta != null ->
+                    responseMcpCallArgumentsDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpCallArgumentsDone != null ->
+                    responseMcpCallArgumentsDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpCallCompleted != null ->
+                    responseMcpCallCompleted._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpCallFailed != null ->
+                    responseMcpCallFailed._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseMcpCallInProgress != null ->
+                    responseMcpCallInProgress._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpListToolsCompleted != null ->
+                    responseMcpListToolsCompleted._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpListToolsFailed != null ->
+                    responseMcpListToolsFailed._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseMcpListToolsInProgress != null ->
+                    responseMcpListToolsInProgress._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseOutputTextAnnotationAdded != null ->
+                    responseOutputTextAnnotationAdded._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseQueued != null ->
+                    responseQueued._additionalProperties()["stream_id"] ?: JsonMissing.of()
+
+                responseCustomToolCallInputDelta != null ->
+                    responseCustomToolCallInputDelta._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                responseCustomToolCallInputDone != null ->
+                    responseCustomToolCallInputDone._additionalProperties()["stream_id"]
+                        ?: JsonMissing.of()
+
+                error != null -> error._streamId()
+
+                responseSteerAccepted != null -> responseSteerAccepted._streamId()
+
+                responseSteerPending != null -> responseSteerPending._streamId()
+
+                responseSteerFailed != null -> responseSteerFailed._streamId()
+
+                responseInjectCreated != null -> responseInjectCreated._streamId()
+
+                responseInjectFailed != null -> responseInjectFailed._streamId()
+
                 else -> JsonMissing.of()
             }
 
@@ -521,6 +702,8 @@ private constructor(
 
     fun isResponseCodeInterpreterCallInterpreting(): Boolean =
         responseCodeInterpreterCallInterpreting != null
+
+    fun isResponseCompactionCompacting(): Boolean = responseCompactionCompacting != null
 
     fun isResponseCompleted(): Boolean = responseCompleted != null
 
@@ -625,6 +808,12 @@ private constructor(
 
     fun isError(): Boolean = error != null
 
+    fun isResponseSteerAccepted(): Boolean = responseSteerAccepted != null
+
+    fun isResponseSteerPending(): Boolean = responseSteerPending != null
+
+    fun isResponseSteerFailed(): Boolean = responseSteerFailed != null
+
     fun isResponseInjectCreated(): Boolean = responseInjectCreated != null
 
     fun isResponseInjectFailed(): Boolean = responseInjectFailed != null
@@ -667,6 +856,13 @@ private constructor(
         responseCodeInterpreterCallInterpreting.getOrThrow(
             "responseCodeInterpreterCallInterpreting"
         )
+
+    /**
+     * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+     * content.
+     */
+    fun asResponseCompactionCompacting(): BetaResponseCompactionCompactingEvent =
+        responseCompactionCompacting.getOrThrow("responseCompactionCompacting")
 
     /** Emitted when the model response is complete. */
     fun asResponseCompleted(): BetaResponseCompletedEvent =
@@ -731,7 +927,13 @@ private constructor(
     /** An event that is emitted when a response fails. */
     fun asResponseFailed(): BetaResponseFailedEvent = responseFailed.getOrThrow("responseFailed")
 
-    /** An event that is emitted when a response finishes as incomplete. */
+    /**
+     * An event that is emitted when a response finishes as incomplete.
+     *
+     * Over WebSocket, steering can finish a response with `response.incomplete_details.reason` set
+     * to `steered`, followed automatically by a successor `response.created` that commits the
+     * queued steering input.
+     */
     fun asResponseIncomplete(): BetaResponseIncompleteEvent =
         responseIncomplete.getOrThrow("responseIncomplete")
 
@@ -869,6 +1071,52 @@ private constructor(
     fun asError(): BetaResponseWsError = error.getOrThrow("error")
 
     /**
+     * Emitted when steering input has been validated and queued. Acceptance means the server owns
+     * the input, not that it has been applied. The successor's `response.created` event is the
+     * commit point. If accepted input cannot be committed, `response.steer.failed` returns it with
+     * the same steering ID.
+     *
+     * When the response stops for client-owned tool output or approval, the input remains queued
+     * and `response.steer.pending` is emitted after `response.completed`. Fill the pending event's
+     * `required_input` stubs with saved results and send one matching explicit `response.create`
+     * per parent. Do not resend accepted input while it is still queued.
+     */
+    fun asResponseSteerAccepted(): BetaResponseSteerAcceptedEvent =
+        responseSteerAccepted.getOrThrow("responseSteerAccepted")
+
+    /**
+     * Emitted when accepted steering input remains queued after the target response completes. The
+     * server still owns the input. Do not resend it. The successor's `response.created` event is
+     * the commit point.
+     *
+     * When `reason` is `waiting_for_required_input`, this event follows `response.completed` while
+     * the response waits for the tool results or approval decisions identified by `required_input`.
+     * Copy those stubs, fill their result fields using the ordinary `response.create` input
+     * schemas, and submit one continuation per parent with the same `previous_response_id` and
+     * WebSocket lane. Use saved results without rerunning tools. The queued steering input is
+     * prepended in submission order to the continuation's input. That explicit request retains its
+     * own settings.
+     *
+     * This notification is emitted at most once per steering submission. Multiple submissions for
+     * the same parent can report the same required inputs; they do not each require a separate
+     * continuation.
+     */
+    fun asResponseSteerPending(): BetaResponseSteerPendingEvent =
+        responseSteerPending.getOrThrow("responseSteerPending")
+
+    /**
+     * Emitted when steering input is rejected or cannot be committed to a successor response.
+     * Returns the original, uncommitted input so the client can carry it into `response.create`
+     * when appropriate. Invalid input must be corrected before retrying.
+     *
+     * Failures after acceptance include the same steering ID. Failures before an ID is allocated
+     * omit `steer.id`. A lost connection or missing acknowledgement leaves the outcome unknown; it
+     * is not proof that the input was rejected.
+     */
+    fun asResponseSteerFailed(): BetaResponseSteerFailedEvent =
+        responseSteerFailed.getOrThrow("responseSteerFailed")
+
+    /**
      * Emitted when all injected input items were validated and committed to the active response.
      */
     fun asResponseInjectCreated(): BetaResponseInjectCreatedEvent =
@@ -940,6 +1188,8 @@ private constructor(
                 visitor.visitResponseCodeInterpreterCallInterpreting(
                     responseCodeInterpreterCallInterpreting
                 )
+            responseCompactionCompacting != null ->
+                visitor.visitResponseCompactionCompacting(responseCompactionCompacting)
             responseCompleted != null -> visitor.visitResponseCompleted(responseCompleted)
             responseContentPartAdded != null ->
                 visitor.visitResponseContentPartAdded(responseContentPartAdded)
@@ -1039,6 +1289,10 @@ private constructor(
             responseCustomToolCallInputDone != null ->
                 visitor.visitResponseCustomToolCallInputDone(responseCustomToolCallInputDone)
             error != null -> visitor.visitError(error)
+            responseSteerAccepted != null ->
+                visitor.visitResponseSteerAccepted(responseSteerAccepted)
+            responseSteerPending != null -> visitor.visitResponseSteerPending(responseSteerPending)
+            responseSteerFailed != null -> visitor.visitResponseSteerFailed(responseSteerFailed)
             responseInjectCreated != null ->
                 visitor.visitResponseInjectCreated(responseInjectCreated)
             responseInjectFailed != null -> visitor.visitResponseInjectFailed(responseInjectFailed)
@@ -1117,6 +1371,12 @@ private constructor(
                         BetaResponseCodeInterpreterCallInterpretingEvent
                 ) {
                     responseCodeInterpreterCallInterpreting.validate()
+                }
+
+                override fun visitResponseCompactionCompacting(
+                    responseCompactionCompacting: BetaResponseCompactionCompactingEvent
+                ) {
+                    responseCompactionCompacting.validate()
                 }
 
                 override fun visitResponseCompleted(responseCompleted: BetaResponseCompletedEvent) {
@@ -1405,6 +1665,24 @@ private constructor(
                     error.validate()
                 }
 
+                override fun visitResponseSteerAccepted(
+                    responseSteerAccepted: BetaResponseSteerAcceptedEvent
+                ) {
+                    responseSteerAccepted.validate()
+                }
+
+                override fun visitResponseSteerPending(
+                    responseSteerPending: BetaResponseSteerPendingEvent
+                ) {
+                    responseSteerPending.validate()
+                }
+
+                override fun visitResponseSteerFailed(
+                    responseSteerFailed: BetaResponseSteerFailedEvent
+                ) {
+                    responseSteerFailed.validate()
+                }
+
                 override fun visitResponseInjectCreated(
                     responseInjectCreated: BetaResponseInjectCreatedEvent
                 ) {
@@ -1478,6 +1756,10 @@ private constructor(
                     responseCodeInterpreterCallInterpreting:
                         BetaResponseCodeInterpreterCallInterpretingEvent
                 ) = responseCodeInterpreterCallInterpreting.validity()
+
+                override fun visitResponseCompactionCompacting(
+                    responseCompactionCompacting: BetaResponseCompactionCompactingEvent
+                ) = responseCompactionCompacting.validity()
 
                 override fun visitResponseCompleted(responseCompleted: BetaResponseCompletedEvent) =
                     responseCompleted.validity()
@@ -1671,6 +1953,18 @@ private constructor(
 
                 override fun visitError(error: BetaResponseWsError) = error.validity()
 
+                override fun visitResponseSteerAccepted(
+                    responseSteerAccepted: BetaResponseSteerAcceptedEvent
+                ) = responseSteerAccepted.validity()
+
+                override fun visitResponseSteerPending(
+                    responseSteerPending: BetaResponseSteerPendingEvent
+                ) = responseSteerPending.validity()
+
+                override fun visitResponseSteerFailed(
+                    responseSteerFailed: BetaResponseSteerFailedEvent
+                ) = responseSteerFailed.validity()
+
                 override fun visitResponseInjectCreated(
                     responseInjectCreated: BetaResponseInjectCreatedEvent
                 ) = responseInjectCreated.validity()
@@ -1699,6 +1993,7 @@ private constructor(
             responseCodeInterpreterCallInProgress == other.responseCodeInterpreterCallInProgress &&
             responseCodeInterpreterCallInterpreting ==
                 other.responseCodeInterpreterCallInterpreting &&
+            responseCompactionCompacting == other.responseCompactionCompacting &&
             responseCompleted == other.responseCompleted &&
             responseContentPartAdded == other.responseContentPartAdded &&
             responseContentPartDone == other.responseContentPartDone &&
@@ -1749,6 +2044,9 @@ private constructor(
             responseCustomToolCallInputDelta == other.responseCustomToolCallInputDelta &&
             responseCustomToolCallInputDone == other.responseCustomToolCallInputDone &&
             error == other.error &&
+            responseSteerAccepted == other.responseSteerAccepted &&
+            responseSteerPending == other.responseSteerPending &&
+            responseSteerFailed == other.responseSteerFailed &&
             responseInjectCreated == other.responseInjectCreated &&
             responseInjectFailed == other.responseInjectFailed
     }
@@ -1764,6 +2062,7 @@ private constructor(
             responseCodeInterpreterCallCompleted,
             responseCodeInterpreterCallInProgress,
             responseCodeInterpreterCallInterpreting,
+            responseCompactionCompacting,
             responseCompleted,
             responseContentPartAdded,
             responseContentPartDone,
@@ -1813,6 +2112,9 @@ private constructor(
             responseCustomToolCallInputDelta,
             responseCustomToolCallInputDone,
             error,
+            responseSteerAccepted,
+            responseSteerPending,
+            responseSteerFailed,
             responseInjectCreated,
             responseInjectFailed,
         )
@@ -1837,6 +2139,8 @@ private constructor(
                 "BetaResponsesServerEvent{responseCodeInterpreterCallInProgress=$responseCodeInterpreterCallInProgress}"
             responseCodeInterpreterCallInterpreting != null ->
                 "BetaResponsesServerEvent{responseCodeInterpreterCallInterpreting=$responseCodeInterpreterCallInterpreting}"
+            responseCompactionCompacting != null ->
+                "BetaResponsesServerEvent{responseCompactionCompacting=$responseCompactionCompacting}"
             responseCompleted != null ->
                 "BetaResponsesServerEvent{responseCompleted=$responseCompleted}"
             responseContentPartAdded != null ->
@@ -1931,6 +2235,12 @@ private constructor(
             responseCustomToolCallInputDone != null ->
                 "BetaResponsesServerEvent{responseCustomToolCallInputDone=$responseCustomToolCallInputDone}"
             error != null -> "BetaResponsesServerEvent{error=$error}"
+            responseSteerAccepted != null ->
+                "BetaResponsesServerEvent{responseSteerAccepted=$responseSteerAccepted}"
+            responseSteerPending != null ->
+                "BetaResponsesServerEvent{responseSteerPending=$responseSteerPending}"
+            responseSteerFailed != null ->
+                "BetaResponsesServerEvent{responseSteerFailed=$responseSteerFailed}"
             responseInjectCreated != null ->
                 "BetaResponsesServerEvent{responseInjectCreated=$responseInjectCreated}"
             responseInjectFailed != null ->
@@ -2008,6 +2318,15 @@ private constructor(
             BetaResponsesServerEvent(
                 responseCodeInterpreterCallInterpreting = responseCodeInterpreterCallInterpreting
             )
+
+        /**
+         * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+         * content.
+         */
+        @JvmStatic
+        fun ofResponseCompactionCompacting(
+            responseCompactionCompacting: BetaResponseCompactionCompactingEvent
+        ) = BetaResponsesServerEvent(responseCompactionCompacting = responseCompactionCompacting)
 
         /** Emitted when the model response is complete. */
         @JvmStatic
@@ -2121,7 +2440,13 @@ private constructor(
         fun ofResponseFailed(responseFailed: BetaResponseFailedEvent) =
             BetaResponsesServerEvent(responseFailed = responseFailed)
 
-        /** An event that is emitted when a response finishes as incomplete. */
+        /**
+         * An event that is emitted when a response finishes as incomplete.
+         *
+         * Over WebSocket, steering can finish a response with `response.incomplete_details.reason`
+         * set to `steered`, followed automatically by a successor `response.created` that commits
+         * the queued steering input.
+         */
         @JvmStatic
         fun ofResponseIncomplete(responseIncomplete: BetaResponseIncompleteEvent) =
             BetaResponsesServerEvent(responseIncomplete = responseIncomplete)
@@ -2361,6 +2686,55 @@ private constructor(
         @JvmStatic fun ofError(error: BetaResponseWsError) = BetaResponsesServerEvent(error = error)
 
         /**
+         * Emitted when steering input has been validated and queued. Acceptance means the server
+         * owns the input, not that it has been applied. The successor's `response.created` event is
+         * the commit point. If accepted input cannot be committed, `response.steer.failed` returns
+         * it with the same steering ID.
+         *
+         * When the response stops for client-owned tool output or approval, the input remains
+         * queued and `response.steer.pending` is emitted after `response.completed`. Fill the
+         * pending event's `required_input` stubs with saved results and send one matching explicit
+         * `response.create` per parent. Do not resend accepted input while it is still queued.
+         */
+        @JvmStatic
+        fun ofResponseSteerAccepted(responseSteerAccepted: BetaResponseSteerAcceptedEvent) =
+            BetaResponsesServerEvent(responseSteerAccepted = responseSteerAccepted)
+
+        /**
+         * Emitted when accepted steering input remains queued after the target response completes.
+         * The server still owns the input. Do not resend it. The successor's `response.created`
+         * event is the commit point.
+         *
+         * When `reason` is `waiting_for_required_input`, this event follows `response.completed`
+         * while the response waits for the tool results or approval decisions identified by
+         * `required_input`. Copy those stubs, fill their result fields using the ordinary
+         * `response.create` input schemas, and submit one continuation per parent with the same
+         * `previous_response_id` and WebSocket lane. Use saved results without rerunning tools. The
+         * queued steering input is prepended in submission order to the continuation's input. That
+         * explicit request retains its own settings.
+         *
+         * This notification is emitted at most once per steering submission. Multiple submissions
+         * for the same parent can report the same required inputs; they do not each require a
+         * separate continuation.
+         */
+        @JvmStatic
+        fun ofResponseSteerPending(responseSteerPending: BetaResponseSteerPendingEvent) =
+            BetaResponsesServerEvent(responseSteerPending = responseSteerPending)
+
+        /**
+         * Emitted when steering input is rejected or cannot be committed to a successor response.
+         * Returns the original, uncommitted input so the client can carry it into `response.create`
+         * when appropriate. Invalid input must be corrected before retrying.
+         *
+         * Failures after acceptance include the same steering ID. Failures before an ID is
+         * allocated omit `steer.id`. A lost connection or missing acknowledgement leaves the
+         * outcome unknown; it is not proof that the input was rejected.
+         */
+        @JvmStatic
+        fun ofResponseSteerFailed(responseSteerFailed: BetaResponseSteerFailedEvent) =
+            BetaResponsesServerEvent(responseSteerFailed = responseSteerFailed)
+
+        /**
          * Emitted when all injected input items were validated and committed to the active
          * response.
          */
@@ -2384,186 +2758,215 @@ private constructor(
     interface Visitor<out T> {
 
         /** Emitted when there is a partial audio response. */
-        fun visitResponseAudioDelta(responseAudioDelta: BetaResponseAudioDeltaEvent): T
+        fun visitResponseAudioDelta(responseAudioDelta: BetaResponseAudioDeltaEvent): T =
+            unknown(JsonValue.from(responseAudioDelta))
 
         /** Emitted when the audio response is complete. */
-        fun visitResponseAudioDone(responseAudioDone: BetaResponseAudioDoneEvent): T
+        fun visitResponseAudioDone(responseAudioDone: BetaResponseAudioDoneEvent): T =
+            unknown(JsonValue.from(responseAudioDone))
 
         /** Emitted when there is a partial transcript of audio. */
         fun visitResponseAudioTranscriptDelta(
             responseAudioTranscriptDelta: BetaResponseAudioTranscriptDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseAudioTranscriptDelta))
 
         /** Emitted when the full audio transcript is completed. */
         fun visitResponseAudioTranscriptDone(
             responseAudioTranscriptDone: BetaResponseAudioTranscriptDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseAudioTranscriptDone))
 
         /** Emitted when a partial code snippet is streamed by the code interpreter. */
         fun visitResponseCodeInterpreterCallCodeDelta(
             responseCodeInterpreterCallCodeDelta: BetaResponseCodeInterpreterCallCodeDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCodeInterpreterCallCodeDelta))
 
         /** Emitted when the code snippet is finalized by the code interpreter. */
         fun visitResponseCodeInterpreterCallCodeDone(
             responseCodeInterpreterCallCodeDone: BetaResponseCodeInterpreterCallCodeDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCodeInterpreterCallCodeDone))
 
         /** Emitted when the code interpreter call is completed. */
         fun visitResponseCodeInterpreterCallCompleted(
             responseCodeInterpreterCallCompleted: BetaResponseCodeInterpreterCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCodeInterpreterCallCompleted))
 
         /** Emitted when a code interpreter call is in progress. */
         fun visitResponseCodeInterpreterCallInProgress(
             responseCodeInterpreterCallInProgress: BetaResponseCodeInterpreterCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCodeInterpreterCallInProgress))
 
         /** Emitted when the code interpreter is actively interpreting the code snippet. */
         fun visitResponseCodeInterpreterCallInterpreting(
             responseCodeInterpreterCallInterpreting:
                 BetaResponseCodeInterpreterCallInterpretingEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCodeInterpreterCallInterpreting))
+
+        /**
+         * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+         * content.
+         *
+         * Defaults to [unknown] so existing visitors can handle newly added progress events.
+         */
+        fun visitResponseCompactionCompacting(
+            responseCompactionCompacting: BetaResponseCompactionCompactingEvent
+        ): T = unknown(JsonValue.from(responseCompactionCompacting))
 
         /** Emitted when the model response is complete. */
-        fun visitResponseCompleted(responseCompleted: BetaResponseCompletedEvent): T
+        fun visitResponseCompleted(responseCompleted: BetaResponseCompletedEvent): T =
+            unknown(JsonValue.from(responseCompleted))
 
         /** Emitted when a new content part is added. */
         fun visitResponseContentPartAdded(
             responseContentPartAdded: BetaResponseContentPartAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseContentPartAdded))
 
         /** Emitted when a content part is done. */
         fun visitResponseContentPartDone(
             responseContentPartDone: BetaResponseContentPartDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseContentPartDone))
 
         /** An event that is emitted when a response is created. */
-        fun visitResponseCreated(responseCreated: BetaResponseCreatedEvent): T
+        fun visitResponseCreated(responseCreated: BetaResponseCreatedEvent): T =
+            unknown(JsonValue.from(responseCreated))
 
         /** Emitted when a file search call is completed (results found). */
         fun visitResponseFileSearchCallCompleted(
             responseFileSearchCallCompleted: BetaResponseFileSearchCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseFileSearchCallCompleted))
 
         /** Emitted when a file search call is initiated. */
         fun visitResponseFileSearchCallInProgress(
             responseFileSearchCallInProgress: BetaResponseFileSearchCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseFileSearchCallInProgress))
 
         /** Emitted when a file search is currently searching. */
         fun visitResponseFileSearchCallSearching(
             responseFileSearchCallSearching: BetaResponseFileSearchCallSearchingEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseFileSearchCallSearching))
 
         /** Emitted when there is a partial function-call arguments delta. */
         fun visitResponseFunctionCallArgumentsDelta(
             responseFunctionCallArgumentsDelta: BetaResponseFunctionCallArgumentsDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseFunctionCallArgumentsDelta))
 
         /** Emitted when function-call arguments are finalized. */
         fun visitResponseFunctionCallArgumentsDone(
             responseFunctionCallArgumentsDone: BetaResponseFunctionCallArgumentsDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseFunctionCallArgumentsDone))
 
         /** A streaming event that indicated a shell command was added to a tool call. */
         fun visitResponseShellCallCommandAdded(
             responseShellCallCommandAdded: BetaResponseShellCallCommandAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseShellCallCommandAdded))
 
         /** A streaming event that indicated a shell command was incrementally updated. */
         fun visitResponseShellCallCommandDelta(
             responseShellCallCommandDelta: BetaResponseShellCallCommandDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseShellCallCommandDelta))
 
         /** A streaming event that indicated a shell command was completed. */
         fun visitResponseShellCallCommandDone(
             responseShellCallCommandDone: BetaResponseShellCallCommandDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseShellCallCommandDone))
 
         /** A streaming event that indicated shell call output was incrementally added. */
         fun visitResponseShellCallOutputContentDelta(
             responseShellCallOutputContentDelta: BetaResponseShellCallOutputContentDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseShellCallOutputContentDelta))
 
         /** A streaming event that indicated shell call output was completed. */
         fun visitResponseShellCallOutputContentDone(
             responseShellCallOutputContentDone: BetaResponseShellCallOutputContentDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseShellCallOutputContentDone))
 
         /** Emitted when the response is in progress. */
-        fun visitResponseInProgress(responseInProgress: BetaResponseInProgressEvent): T
+        fun visitResponseInProgress(responseInProgress: BetaResponseInProgressEvent): T =
+            unknown(JsonValue.from(responseInProgress))
 
         /** An event that is emitted when a response fails. */
-        fun visitResponseFailed(responseFailed: BetaResponseFailedEvent): T
+        fun visitResponseFailed(responseFailed: BetaResponseFailedEvent): T =
+            unknown(JsonValue.from(responseFailed))
 
-        /** An event that is emitted when a response finishes as incomplete. */
-        fun visitResponseIncomplete(responseIncomplete: BetaResponseIncompleteEvent): T
+        /**
+         * An event that is emitted when a response finishes as incomplete.
+         *
+         * Over WebSocket, steering can finish a response with `response.incomplete_details.reason`
+         * set to `steered`, followed automatically by a successor `response.created` that commits
+         * the queued steering input.
+         */
+        fun visitResponseIncomplete(responseIncomplete: BetaResponseIncompleteEvent): T =
+            unknown(JsonValue.from(responseIncomplete))
 
         /** Emitted when a new output item is added. */
         fun visitResponseOutputItemAdded(
             responseOutputItemAdded: BetaResponseOutputItemAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseOutputItemAdded))
 
         /** Emitted when an output item is marked done. */
-        fun visitResponseOutputItemDone(responseOutputItemDone: BetaResponseOutputItemDoneEvent): T
+        fun visitResponseOutputItemDone(
+            responseOutputItemDone: BetaResponseOutputItemDoneEvent
+        ): T = unknown(JsonValue.from(responseOutputItemDone))
 
         /** Emitted when a new reasoning summary part is added. */
         fun visitResponseReasoningSummaryPartAdded(
             responseReasoningSummaryPartAdded: BetaResponseReasoningSummaryPartAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseReasoningSummaryPartAdded))
 
         /** Emitted when a reasoning summary part is completed. */
         fun visitResponseReasoningSummaryPartDone(
             responseReasoningSummaryPartDone: BetaResponseReasoningSummaryPartDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseReasoningSummaryPartDone))
 
         /** Emitted when a delta is added to a reasoning summary text. */
         fun visitResponseReasoningSummaryTextDelta(
             responseReasoningSummaryTextDelta: BetaResponseReasoningSummaryTextDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseReasoningSummaryTextDelta))
 
         /** Emitted when a reasoning summary text is completed. */
         fun visitResponseReasoningSummaryTextDone(
             responseReasoningSummaryTextDone: BetaResponseReasoningSummaryTextDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseReasoningSummaryTextDone))
 
         /** Emitted when a delta is added to a reasoning text. */
         fun visitResponseReasoningTextDelta(
             responseReasoningTextDelta: BetaResponseReasoningTextDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseReasoningTextDelta))
 
         /** Emitted when a reasoning text is completed. */
         fun visitResponseReasoningTextDone(
             responseReasoningTextDone: BetaResponseReasoningTextDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseReasoningTextDone))
 
         /** Emitted when there is a partial refusal text. */
-        fun visitResponseRefusalDelta(responseRefusalDelta: BetaResponseRefusalDeltaEvent): T
+        fun visitResponseRefusalDelta(responseRefusalDelta: BetaResponseRefusalDeltaEvent): T =
+            unknown(JsonValue.from(responseRefusalDelta))
 
         /** Emitted when refusal text is finalized. */
-        fun visitResponseRefusalDone(responseRefusalDone: BetaResponseRefusalDoneEvent): T
+        fun visitResponseRefusalDone(responseRefusalDone: BetaResponseRefusalDoneEvent): T =
+            unknown(JsonValue.from(responseRefusalDone))
 
         /** Emitted when there is an additional text delta. */
-        fun visitResponseOutputTextDelta(responseOutputTextDelta: BetaResponseTextDeltaEvent): T
+        fun visitResponseOutputTextDelta(responseOutputTextDelta: BetaResponseTextDeltaEvent): T =
+            unknown(JsonValue.from(responseOutputTextDelta))
 
         /** Emitted when text content is finalized. */
-        fun visitResponseOutputTextDone(responseOutputTextDone: BetaResponseTextDoneEvent): T
+        fun visitResponseOutputTextDone(responseOutputTextDone: BetaResponseTextDoneEvent): T =
+            unknown(JsonValue.from(responseOutputTextDone))
 
         /** Emitted when a web search call is completed. */
         fun visitResponseWebSearchCallCompleted(
             responseWebSearchCallCompleted: BetaResponseWebSearchCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseWebSearchCallCompleted))
 
         /** Emitted when a web search call is initiated. */
         fun visitResponseWebSearchCallInProgress(
             responseWebSearchCallInProgress: BetaResponseWebSearchCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseWebSearchCallInProgress))
 
         /** Emitted when a web search call is executing. */
         fun visitResponseWebSearchCallSearching(
             responseWebSearchCallSearching: BetaResponseWebSearchCallSearchingEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseWebSearchCallSearching))
 
         /**
          * Emitted when an image generation tool call has completed and the final image is
@@ -2571,7 +2974,7 @@ private constructor(
          */
         fun visitResponseImageGenerationCallCompleted(
             responseImageGenerationCallCompleted: BetaResponseImageGenCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseImageGenerationCallCompleted))
 
         /**
          * Emitted when an image generation tool call is actively generating an image (intermediate
@@ -2579,90 +2982,140 @@ private constructor(
          */
         fun visitResponseImageGenerationCallGenerating(
             responseImageGenerationCallGenerating: BetaResponseImageGenCallGeneratingEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseImageGenerationCallGenerating))
 
         /** Emitted when an image generation tool call is in progress. */
         fun visitResponseImageGenerationCallInProgress(
             responseImageGenerationCallInProgress: BetaResponseImageGenCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseImageGenerationCallInProgress))
 
         /** Emitted when a partial image is available during image generation streaming. */
         fun visitResponseImageGenerationCallPartialImage(
             responseImageGenerationCallPartialImage: BetaResponseImageGenCallPartialImageEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseImageGenerationCallPartialImage))
 
         /** Emitted when there is a delta (partial update) to the arguments of an MCP tool call. */
         fun visitResponseMcpCallArgumentsDelta(
             responseMcpCallArgumentsDelta: BetaResponseMcpCallArgumentsDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpCallArgumentsDelta))
 
         /** Emitted when the arguments for an MCP tool call are finalized. */
         fun visitResponseMcpCallArgumentsDone(
             responseMcpCallArgumentsDone: BetaResponseMcpCallArgumentsDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpCallArgumentsDone))
 
         /** Emitted when an MCP tool call has completed successfully. */
         fun visitResponseMcpCallCompleted(
             responseMcpCallCompleted: BetaResponseMcpCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpCallCompleted))
 
         /** Emitted when an MCP tool call has failed. */
-        fun visitResponseMcpCallFailed(responseMcpCallFailed: BetaResponseMcpCallFailedEvent): T
+        fun visitResponseMcpCallFailed(responseMcpCallFailed: BetaResponseMcpCallFailedEvent): T =
+            unknown(JsonValue.from(responseMcpCallFailed))
 
         /** Emitted when an MCP tool call is in progress. */
         fun visitResponseMcpCallInProgress(
             responseMcpCallInProgress: BetaResponseMcpCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpCallInProgress))
 
         /** Emitted when the list of available MCP tools has been successfully retrieved. */
         fun visitResponseMcpListToolsCompleted(
             responseMcpListToolsCompleted: BetaResponseMcpListToolsCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpListToolsCompleted))
 
         /** Emitted when the attempt to list available MCP tools has failed. */
         fun visitResponseMcpListToolsFailed(
             responseMcpListToolsFailed: BetaResponseMcpListToolsFailedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpListToolsFailed))
 
         /**
          * Emitted when the system is in the process of retrieving the list of available MCP tools.
          */
         fun visitResponseMcpListToolsInProgress(
             responseMcpListToolsInProgress: BetaResponseMcpListToolsInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseMcpListToolsInProgress))
 
         /** Emitted when an annotation is added to output text content. */
         fun visitResponseOutputTextAnnotationAdded(
             responseOutputTextAnnotationAdded: BetaResponseOutputTextAnnotationAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseOutputTextAnnotationAdded))
 
         /** Emitted when a response is queued and waiting to be processed. */
-        fun visitResponseQueued(responseQueued: BetaResponseQueuedEvent): T
+        fun visitResponseQueued(responseQueued: BetaResponseQueuedEvent): T =
+            unknown(JsonValue.from(responseQueued))
 
         /** Event representing a delta (partial update) to the input of a custom tool call. */
         fun visitResponseCustomToolCallInputDelta(
             responseCustomToolCallInputDelta: BetaResponseCustomToolCallInputDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCustomToolCallInputDelta))
 
         /** Event indicating that input for a custom tool call is complete. */
         fun visitResponseCustomToolCallInputDone(
             responseCustomToolCallInputDone: BetaResponseCustomToolCallInputDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(responseCustomToolCallInputDone))
 
         /** Emitted when an error occurs while processing a Responses WebSocket request. */
-        fun visitError(error: BetaResponseWsError): T
+        fun visitError(error: BetaResponseWsError): T = unknown(JsonValue.from(error))
+
+        /**
+         * Emitted when steering input has been validated and queued. Acceptance means the server
+         * owns the input, not that it has been applied. The successor's `response.created` event is
+         * the commit point. If accepted input cannot be committed, `response.steer.failed` returns
+         * it with the same steering ID.
+         *
+         * When the response stops for client-owned tool output or approval, the input remains
+         * queued and `response.steer.pending` is emitted after `response.completed`. Fill the
+         * pending event's `required_input` stubs with saved results and send one matching explicit
+         * `response.create` per parent. Do not resend accepted input while it is still queued.
+         */
+        fun visitResponseSteerAccepted(responseSteerAccepted: BetaResponseSteerAcceptedEvent): T =
+            unknown(JsonValue.from(responseSteerAccepted))
+
+        /**
+         * Emitted when accepted steering input remains queued after the target response completes.
+         * The server still owns the input. Do not resend it. The successor's `response.created`
+         * event is the commit point.
+         *
+         * When `reason` is `waiting_for_required_input`, this event follows `response.completed`
+         * while the response waits for the tool results or approval decisions identified by
+         * `required_input`. Copy those stubs, fill their result fields using the ordinary
+         * `response.create` input schemas, and submit one continuation per parent with the same
+         * `previous_response_id` and WebSocket lane. Use saved results without rerunning tools. The
+         * queued steering input is prepended in submission order to the continuation's input. That
+         * explicit request retains its own settings.
+         *
+         * This notification is emitted at most once per steering submission. Multiple submissions
+         * for the same parent can report the same required inputs; they do not each require a
+         * separate continuation.
+         */
+        fun visitResponseSteerPending(responseSteerPending: BetaResponseSteerPendingEvent): T =
+            unknown(JsonValue.from(responseSteerPending))
+
+        /**
+         * Emitted when steering input is rejected or cannot be committed to a successor response.
+         * Returns the original, uncommitted input so the client can carry it into `response.create`
+         * when appropriate. Invalid input must be corrected before retrying.
+         *
+         * Failures after acceptance include the same steering ID. Failures before an ID is
+         * allocated omit `steer.id`. A lost connection or missing acknowledgement leaves the
+         * outcome unknown; it is not proof that the input was rejected.
+         */
+        fun visitResponseSteerFailed(responseSteerFailed: BetaResponseSteerFailedEvent): T =
+            unknown(JsonValue.from(responseSteerFailed))
 
         /**
          * Emitted when all injected input items were validated and committed to the active
          * response.
          */
-        fun visitResponseInjectCreated(responseInjectCreated: BetaResponseInjectCreatedEvent): T
+        fun visitResponseInjectCreated(responseInjectCreated: BetaResponseInjectCreatedEvent): T =
+            unknown(JsonValue.from(responseInjectCreated))
 
         /**
          * Emitted when injected input could not be committed to a response. The event returns the
          * uncommitted raw input so the client can retry it in another response when appropriate.
          */
-        fun visitResponseInjectFailed(responseInjectFailed: BetaResponseInjectFailedEvent): T
+        fun visitResponseInjectFailed(responseInjectFailed: BetaResponseInjectFailedEvent): T =
+            unknown(JsonValue.from(responseInjectFailed))
 
         /**
          * Maps an unknown variant of [BetaResponsesServerEvent] to a value of type [T].
@@ -2671,6 +3124,9 @@ private constructor(
          * deserialized from data that doesn't match any known variant. For example, if the SDK is
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
+         *
+         * Recognized events also reach this method when their visit method is not overridden. This
+         * allows existing visitors to handle event variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
@@ -2774,6 +3230,18 @@ private constructor(
                         ?.let {
                             BetaResponsesServerEvent(
                                 responseCodeInterpreterCallInterpreting = it,
+                                _json = json,
+                            )
+                        } ?: BetaResponsesServerEvent(_json = json)
+                }
+                "response.compaction.compacting" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<BetaResponseCompactionCompactingEvent>(),
+                        )
+                        ?.let {
+                            BetaResponsesServerEvent(
+                                responseCompactionCompacting = it,
                                 _json = json,
                             )
                         } ?: BetaResponsesServerEvent(_json = json)
@@ -3240,6 +3708,21 @@ private constructor(
                         BetaResponsesServerEvent(error = it, _json = json)
                     } ?: BetaResponsesServerEvent(_json = json)
                 }
+                "response.steer.accepted" -> {
+                    return tryDeserialize(node, jacksonTypeRef<BetaResponseSteerAcceptedEvent>())
+                        ?.let { BetaResponsesServerEvent(responseSteerAccepted = it, _json = json) }
+                        ?: BetaResponsesServerEvent(_json = json)
+                }
+                "response.steer.pending" -> {
+                    return tryDeserialize(node, jacksonTypeRef<BetaResponseSteerPendingEvent>())
+                        ?.let { BetaResponsesServerEvent(responseSteerPending = it, _json = json) }
+                        ?: BetaResponsesServerEvent(_json = json)
+                }
+                "response.steer.failed" -> {
+                    return tryDeserialize(node, jacksonTypeRef<BetaResponseSteerFailedEvent>())
+                        ?.let { BetaResponsesServerEvent(responseSteerFailed = it, _json = json) }
+                        ?: BetaResponsesServerEvent(_json = json)
+                }
                 "response.inject.created" -> {
                     return tryDeserialize(node, jacksonTypeRef<BetaResponseInjectCreatedEvent>())
                         ?.let { BetaResponsesServerEvent(responseInjectCreated = it, _json = json) }
@@ -3281,6 +3764,8 @@ private constructor(
                     generator.writeObject(value.responseCodeInterpreterCallInProgress)
                 value.responseCodeInterpreterCallInterpreting != null ->
                     generator.writeObject(value.responseCodeInterpreterCallInterpreting)
+                value.responseCompactionCompacting != null ->
+                    generator.writeObject(value.responseCompactionCompacting)
                 value.responseCompleted != null -> generator.writeObject(value.responseCompleted)
                 value.responseContentPartAdded != null ->
                     generator.writeObject(value.responseContentPartAdded)
@@ -3372,6 +3857,12 @@ private constructor(
                 value.responseCustomToolCallInputDone != null ->
                     generator.writeObject(value.responseCustomToolCallInputDone)
                 value.error != null -> generator.writeObject(value.error)
+                value.responseSteerAccepted != null ->
+                    generator.writeObject(value.responseSteerAccepted)
+                value.responseSteerPending != null ->
+                    generator.writeObject(value.responseSteerPending)
+                value.responseSteerFailed != null ->
+                    generator.writeObject(value.responseSteerFailed)
                 value.responseInjectCreated != null ->
                     generator.writeObject(value.responseInjectCreated)
                 value.responseInjectFailed != null ->
@@ -3734,6 +4225,7 @@ private constructor(
             private val param: JsonField<String>,
             private val type: JsonField<String>,
             private val headers: JsonField<Headers>,
+            private val misalignment: JsonField<Misalignment>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -3748,7 +4240,10 @@ private constructor(
                 @JsonProperty("headers")
                 @ExcludeMissing
                 headers: JsonField<Headers> = JsonMissing.of(),
-            ) : this(code, message, param, type, headers, mutableMapOf())
+                @JsonProperty("misalignment")
+                @ExcludeMissing
+                misalignment: JsonField<Misalignment> = JsonMissing.of(),
+            ) : this(code, message, param, type, headers, misalignment, mutableMapOf())
 
             /**
              * The error code that was emitted, if any.
@@ -3793,6 +4288,12 @@ private constructor(
             fun headers(): Optional<Headers> = headers.getOptional("headers")
 
             /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun misalignment(): Optional<Misalignment> = misalignment.getOptional("misalignment")
+
+            /**
              * Returns the raw JSON value of [code].
              *
              * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
@@ -3826,6 +4327,16 @@ private constructor(
              * Unlike [headers], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("headers") @ExcludeMissing fun _headers(): JsonField<Headers> = headers
+
+            /**
+             * Returns the raw JSON value of [misalignment].
+             *
+             * Unlike [misalignment], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("misalignment")
+            @ExcludeMissing
+            fun _misalignment(): JsonField<Misalignment> = misalignment
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -3863,6 +4374,7 @@ private constructor(
                 private var param: JsonField<String>? = null
                 private var type: JsonField<String>? = null
                 private var headers: JsonField<Headers> = JsonMissing.of()
+                private var misalignment: JsonField<Misalignment> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -3872,6 +4384,7 @@ private constructor(
                     param = error.param
                     type = error.type
                     headers = error.headers
+                    misalignment = error.misalignment
                     additionalProperties = error.additionalProperties.toMutableMap()
                 }
 
@@ -3941,6 +4454,20 @@ private constructor(
                  */
                 fun headers(headers: JsonField<Headers>) = apply { this.headers = headers }
 
+                fun misalignment(misalignment: Misalignment) =
+                    misalignment(JsonField.of(misalignment))
+
+                /**
+                 * Sets [Builder.misalignment] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.misalignment] with a well-typed [Misalignment]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun misalignment(misalignment: JsonField<Misalignment>) = apply {
+                    this.misalignment = misalignment
+                }
+
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
                     putAllAdditionalProperties(additionalProperties)
@@ -3985,6 +4512,7 @@ private constructor(
                         checkRequired("param", param),
                         checkRequired("type", type),
                         headers,
+                        misalignment,
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -4011,6 +4539,7 @@ private constructor(
                 param()
                 type()
                 headers().ifPresent { it.validate() }
+                misalignment().ifPresent { it.validate() }
                 validated = true
             }
 
@@ -4034,7 +4563,8 @@ private constructor(
                     (if (message.asKnown().isPresent) 1 else 0) +
                     (if (param.asKnown().isPresent) 1 else 0) +
                     (if (type.asKnown().isPresent) 1 else 0) +
-                    (headers.asKnown().getOrNull()?.validity() ?: 0)
+                    (headers.asKnown().getOrNull()?.validity() ?: 0) +
+                    (misalignment.asKnown().getOrNull()?.validity() ?: 0)
 
             /** The response headers that were emitted with the error, if any. */
             class Headers
@@ -4151,6 +4681,619 @@ private constructor(
                 override fun toString() = "Headers{additionalProperties=$additionalProperties}"
             }
 
+            class Misalignment
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val detailedExplanation: JsonField<String>,
+                private val errorType: JsonField<ErrorType>,
+                private val steer: JsonField<Steer>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("detailed_explanation")
+                    @ExcludeMissing
+                    detailedExplanation: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("error_type")
+                    @ExcludeMissing
+                    errorType: JsonField<ErrorType> = JsonMissing.of(),
+                    @JsonProperty("steer")
+                    @ExcludeMissing
+                    steer: JsonField<Steer> = JsonMissing.of(),
+                ) : this(detailedExplanation, errorType, steer, mutableMapOf())
+
+                /**
+                 * The public explanation for this block.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun detailedExplanation(): Optional<String> =
+                    detailedExplanation.getOptional("detailed_explanation")
+
+                /**
+                 * An optional classification; clients must accept additional values.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun errorType(): Optional<ErrorType> = errorType.getOptional("error_type")
+
+                /**
+                 * An optional public continuation instruction.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun steer(): Optional<Steer> = steer.getOptional("steer")
+
+                /**
+                 * Returns the raw JSON value of [detailedExplanation].
+                 *
+                 * Unlike [detailedExplanation], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("detailed_explanation")
+                @ExcludeMissing
+                fun _detailedExplanation(): JsonField<String> = detailedExplanation
+
+                /**
+                 * Returns the raw JSON value of [errorType].
+                 *
+                 * Unlike [errorType], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("error_type")
+                @ExcludeMissing
+                fun _errorType(): JsonField<ErrorType> = errorType
+
+                /**
+                 * Returns the raw JSON value of [steer].
+                 *
+                 * Unlike [steer], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("steer") @ExcludeMissing fun _steer(): JsonField<Steer> = steer
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /** Returns a mutable builder for constructing an instance of [Misalignment]. */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Misalignment]. */
+                class Builder internal constructor() {
+
+                    private var detailedExplanation: JsonField<String> = JsonMissing.of()
+                    private var errorType: JsonField<ErrorType> = JsonMissing.of()
+                    private var steer: JsonField<Steer> = JsonMissing.of()
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(misalignment: Misalignment) = apply {
+                        detailedExplanation = misalignment.detailedExplanation
+                        errorType = misalignment.errorType
+                        steer = misalignment.steer
+                        additionalProperties = misalignment.additionalProperties.toMutableMap()
+                    }
+
+                    /** The public explanation for this block. */
+                    fun detailedExplanation(detailedExplanation: String) =
+                        detailedExplanation(JsonField.of(detailedExplanation))
+
+                    /**
+                     * Sets [Builder.detailedExplanation] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.detailedExplanation] with a well-typed
+                     * [String] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun detailedExplanation(detailedExplanation: JsonField<String>) = apply {
+                        this.detailedExplanation = detailedExplanation
+                    }
+
+                    /** An optional classification; clients must accept additional values. */
+                    fun errorType(errorType: ErrorType) = errorType(JsonField.of(errorType))
+
+                    /**
+                     * Sets [Builder.errorType] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.errorType] with a well-typed [ErrorType]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun errorType(errorType: JsonField<ErrorType>) = apply {
+                        this.errorType = errorType
+                    }
+
+                    /**
+                     * Sets [errorType] to an arbitrary [String].
+                     *
+                     * You should usually call [errorType] with a well-typed [ErrorType] constant
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun errorType(value: String) = errorType(ErrorType.of(value))
+
+                    /** An optional public continuation instruction. */
+                    fun steer(steer: Steer) = steer(JsonField.of(steer))
+
+                    /**
+                     * Sets [Builder.steer] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.steer] with a well-typed [Steer] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun steer(steer: JsonField<Steer>) = apply { this.steer = steer }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Misalignment].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
+                    fun build(): Misalignment =
+                        Misalignment(
+                            detailedExplanation,
+                            errorType,
+                            steer,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Misalignment = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    detailedExplanation()
+                    errorType()
+                    steer().ifPresent { it.validate() }
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (detailedExplanation.asKnown().isPresent) 1 else 0) +
+                        (if (errorType.asKnown().isPresent) 1 else 0) +
+                        (steer.asKnown().getOrNull()?.validity() ?: 0)
+
+                /** An optional classification; clients must accept additional values. */
+                class ErrorType
+                @JsonCreator
+                private constructor(private val value: JsonField<String>) : Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField
+                        val POTENTIALLY_UNINTENDED_DATA_TRANSFER =
+                            of("potentially_unintended_data_transfer")
+
+                        @JvmField
+                        val POTENTIALLY_UNINTENDED_DATA_ACCESS =
+                            of("potentially_unintended_data_access")
+
+                        @JvmField
+                        val POTENTIALLY_UNINTENDED_DESTRUCTIVE_ACTIVITY =
+                            of("potentially_unintended_destructive_activity")
+
+                        @JvmField val OTHER = of("other")
+
+                        @JvmStatic fun of(value: String) = ErrorType(JsonField.of(value))
+                    }
+
+                    /** An enum containing [ErrorType]'s known values. */
+                    enum class Known {
+                        POTENTIALLY_UNINTENDED_DATA_TRANSFER,
+                        POTENTIALLY_UNINTENDED_DATA_ACCESS,
+                        POTENTIALLY_UNINTENDED_DESTRUCTIVE_ACTIVITY,
+                        OTHER,
+                    }
+
+                    /**
+                     * An enum containing [ErrorType]'s known values, as well as an [_UNKNOWN]
+                     * member.
+                     *
+                     * An instance of [ErrorType] can contain an unknown value in a couple of cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        POTENTIALLY_UNINTENDED_DATA_TRANSFER,
+                        POTENTIALLY_UNINTENDED_DATA_ACCESS,
+                        POTENTIALLY_UNINTENDED_DESTRUCTIVE_ACTIVITY,
+                        OTHER,
+                        /**
+                         * An enum member indicating that [ErrorType] was instantiated with an
+                         * unknown value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            POTENTIALLY_UNINTENDED_DATA_TRANSFER ->
+                                Value.POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                            POTENTIALLY_UNINTENDED_DATA_ACCESS ->
+                                Value.POTENTIALLY_UNINTENDED_DATA_ACCESS
+                            POTENTIALLY_UNINTENDED_DESTRUCTIVE_ACTIVITY ->
+                                Value.POTENTIALLY_UNINTENDED_DESTRUCTIVE_ACTIVITY
+                            OTHER -> Value.OTHER
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            POTENTIALLY_UNINTENDED_DATA_TRANSFER ->
+                                Known.POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                            POTENTIALLY_UNINTENDED_DATA_ACCESS ->
+                                Known.POTENTIALLY_UNINTENDED_DATA_ACCESS
+                            POTENTIALLY_UNINTENDED_DESTRUCTIVE_ACTIVITY ->
+                                Known.POTENTIALLY_UNINTENDED_DESTRUCTIVE_ACTIVITY
+                            OTHER -> Known.OTHER
+                            else -> throw OpenAIInvalidDataException("Unknown ErrorType: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): ErrorType = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is ErrorType && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
+
+                /** An optional public continuation instruction. */
+                class Steer
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                private constructor(
+                    private val message: JsonField<String>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("message")
+                        @ExcludeMissing
+                        message: JsonField<String> = JsonMissing.of()
+                    ) : this(message, mutableMapOf())
+
+                    /**
+                     * The public continuation instruction.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun message(): String = message.getRequired("message")
+
+                    /**
+                     * Returns the raw JSON value of [message].
+                     *
+                     * Unlike [message], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("message")
+                    @ExcludeMissing
+                    fun _message(): JsonField<String> = message
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Steer].
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .message()
+                         * ```
+                         */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [Steer]. */
+                    class Builder internal constructor() {
+
+                        private var message: JsonField<String>? = null
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(steer: Steer) = apply {
+                            message = steer.message
+                            additionalProperties = steer.additionalProperties.toMutableMap()
+                        }
+
+                        /** The public continuation instruction. */
+                        fun message(message: String) = message(JsonField.of(message))
+
+                        /**
+                         * Sets [Builder.message] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.message] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun message(message: JsonField<String>) = apply { this.message = message }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [Steer].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .message()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
+                        fun build(): Steer =
+                            Steer(
+                                checkRequired("message", message),
+                                additionalProperties.toMutableMap(),
+                            )
+                    }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): Steer = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        message()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = (if (message.asKnown().isPresent) 1 else 0)
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is Steer &&
+                            message == other.message &&
+                            additionalProperties == other.additionalProperties
+                    }
+
+                    private val hashCode: Int by lazy {
+                        Objects.hash(message, additionalProperties)
+                    }
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() =
+                        "Steer{message=$message, additionalProperties=$additionalProperties}"
+                }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Misalignment &&
+                        detailedExplanation == other.detailedExplanation &&
+                        errorType == other.errorType &&
+                        steer == other.steer &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(detailedExplanation, errorType, steer, additionalProperties)
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Misalignment{detailedExplanation=$detailedExplanation, errorType=$errorType, steer=$steer, additionalProperties=$additionalProperties}"
+            }
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -4162,17 +5305,26 @@ private constructor(
                     param == other.param &&
                     type == other.type &&
                     headers == other.headers &&
+                    misalignment == other.misalignment &&
                     additionalProperties == other.additionalProperties
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(code, message, param, type, headers, additionalProperties)
+                Objects.hash(
+                    code,
+                    message,
+                    param,
+                    type,
+                    headers,
+                    misalignment,
+                    additionalProperties,
+                )
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Error{code=$code, message=$message, param=$param, type=$type, headers=$headers, additionalProperties=$additionalProperties}"
+                "Error{code=$code, message=$message, param=$param, type=$type, headers=$headers, misalignment=$misalignment, additionalProperties=$additionalProperties}"
         }
 
         /** The agent that owns this multi-agent streaming event. */

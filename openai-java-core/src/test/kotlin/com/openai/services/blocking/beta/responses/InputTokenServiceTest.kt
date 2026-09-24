@@ -61,6 +61,7 @@ internal class InputTokenServiceTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(

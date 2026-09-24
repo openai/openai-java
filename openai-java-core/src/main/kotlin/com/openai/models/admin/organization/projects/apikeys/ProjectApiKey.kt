@@ -30,6 +30,7 @@ private constructor(
     private val owner: JsonField<Owner>,
     private val ownerProjectAccess: JsonField<OwnerProjectAccess>,
     private val redactedValue: JsonField<String>,
+    private val expiresAt: JsonField<Long>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -49,6 +50,7 @@ private constructor(
         @JsonProperty("redacted_value")
         @ExcludeMissing
         redactedValue: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("expires_at") @ExcludeMissing expiresAt: JsonField<Long> = JsonMissing.of(),
     ) : this(
         id,
         createdAt,
@@ -58,6 +60,7 @@ private constructor(
         owner,
         ownerProjectAccess,
         redactedValue,
+        expiresAt,
         mutableMapOf(),
     )
 
@@ -130,6 +133,14 @@ private constructor(
     fun redactedValue(): String = redactedValue.getRequired("redacted_value")
 
     /**
+     * The Unix timestamp (in seconds) when the API key expires, or null if it does not expire.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -183,6 +194,13 @@ private constructor(
     @ExcludeMissing
     fun _redactedValue(): JsonField<String> = redactedValue
 
+    /**
+     * Returns the raw JSON value of [expiresAt].
+     *
+     * Unlike [expiresAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -225,6 +243,7 @@ private constructor(
         private var owner: JsonField<Owner>? = null
         private var ownerProjectAccess: JsonField<OwnerProjectAccess>? = null
         private var redactedValue: JsonField<String>? = null
+        private var expiresAt: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -237,6 +256,7 @@ private constructor(
             owner = projectApiKey.owner
             ownerProjectAccess = projectApiKey.ownerProjectAccess
             redactedValue = projectApiKey.redactedValue
+            expiresAt = projectApiKey.expiresAt
             additionalProperties = projectApiKey.additionalProperties.toMutableMap()
         }
 
@@ -347,6 +367,29 @@ private constructor(
             this.redactedValue = redactedValue
         }
 
+        /**
+         * The Unix timestamp (in seconds) when the API key expires, or null if it does not expire.
+         */
+        fun expiresAt(expiresAt: Long?) = expiresAt(JsonField.ofNullable(expiresAt))
+
+        /**
+         * Alias for [Builder.expiresAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun expiresAt(expiresAt: Long) = expiresAt(expiresAt as Long?)
+
+        /** Alias for calling [Builder.expiresAt] with `expiresAt.orElse(null)`. */
+        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.getOrNull())
+
+        /**
+         * Sets [Builder.expiresAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -394,6 +437,7 @@ private constructor(
                 checkRequired("owner", owner),
                 checkRequired("ownerProjectAccess", ownerProjectAccess),
                 checkRequired("redactedValue", redactedValue),
+                expiresAt,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -425,6 +469,7 @@ private constructor(
         owner().validate()
         ownerProjectAccess().validate()
         redactedValue()
+        expiresAt()
         validated = true
     }
 
@@ -450,7 +495,8 @@ private constructor(
             object_.let { if (it == JsonValue.from("organization.project.api_key")) 1 else 0 } +
             (owner.asKnown().getOrNull()?.validity() ?: 0) +
             (ownerProjectAccess.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (redactedValue.asKnown().isPresent) 1 else 0)
+            (if (redactedValue.asKnown().isPresent) 1 else 0) +
+            (if (expiresAt.asKnown().isPresent) 1 else 0)
 
     class Owner
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -1608,6 +1654,7 @@ private constructor(
             owner == other.owner &&
             ownerProjectAccess == other.ownerProjectAccess &&
             redactedValue == other.redactedValue &&
+            expiresAt == other.expiresAt &&
             additionalProperties == other.additionalProperties
     }
 
@@ -1621,6 +1668,7 @@ private constructor(
             owner,
             ownerProjectAccess,
             redactedValue,
+            expiresAt,
             additionalProperties,
         )
     }
@@ -1628,5 +1676,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ProjectApiKey{id=$id, createdAt=$createdAt, lastUsedAt=$lastUsedAt, name=$name, object_=$object_, owner=$owner, ownerProjectAccess=$ownerProjectAccess, redactedValue=$redactedValue, additionalProperties=$additionalProperties}"
+        "ProjectApiKey{id=$id, createdAt=$createdAt, lastUsedAt=$lastUsedAt, name=$name, object_=$object_, owner=$owner, ownerProjectAccess=$ownerProjectAccess, redactedValue=$redactedValue, expiresAt=$expiresAt, additionalProperties=$additionalProperties}"
 }

@@ -167,7 +167,7 @@ class GradleCacheTrustPolicyTest {
 
         val restoreSteps = artifactRestoreActions(workflow)
 
-        assertEquals(3, restoreSteps.size, "All exact-run cache consumers must remain protected.")
+        assertEquals(4, restoreSteps.size, "All exact-run cache consumers must remain protected.")
         restoreSteps.forEach { restoreStep ->
             assertEquals(
                 "\${{ needs.build.outputs.gradle-cache-artifact-id }}",
@@ -193,7 +193,7 @@ class GradleCacheTrustPolicyTest {
         val cacheEntry = temporaryDirectory.resolve(cacheKey).apply { writeText("cached classes") }
         val restoreSteps = artifactRestoreActions(workflow)
 
-        assertEquals(3, restoreSteps.size)
+        assertEquals(4, restoreSteps.size)
         restoreSteps.forEachIndexed { index, restoreStep ->
             val mergeMultiple =
                 restoreStep.inputs["merge-multiple"].equals("true", ignoreCase = true)
@@ -225,6 +225,27 @@ class GradleCacheTrustPolicyTest {
     fun `publishing creates a private fresh Gradle home and never restores shared caches`() {
         val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
         assertPublishingCachePolicy(workflow)
+    }
+
+    @Test
+    fun `publishing releases obsolete daemons and serializes documentation generation`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        assertPublishingRunnerStabilityPolicy(workflow)
+
+        listOf(
+                workflow.replaceFirst(
+                    "      - name: Stop pre-GraalVM Gradle daemon\n" +
+                        "        run: ./gradlew --stop\n\n",
+                    "",
+                ),
+                workflow.replaceFirst("            --no-parallel \\\n", ""),
+            )
+            .forEach { poisonedWorkflow ->
+                assertTrue(poisonedWorkflow != workflow)
+                assertFailsWith<AssertionError> {
+                    assertPublishingRunnerStabilityPolicy(poisonedWorkflow)
+                }
+            }
     }
 
     @Test
@@ -372,7 +393,7 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
-    fun `retry provenance resolves the checked out historical tag not the newer workflow SHA`() {
+    fun `retry provenance records historical release source beside canonical workflow source`() {
         val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
         val parsedWorkflow = parseWorkflow(workflow)
         val preparation =
@@ -469,14 +490,23 @@ class GradleCacheTrustPolicyTest {
         val workflowSource = external["workflow"] as Map<*, *>
         assertEquals("refs/heads/main", workflowSource["ref"])
         assertEquals(".github/workflows/create-releases.yml", workflowSource["path"])
-        val dependency = (definition["resolvedDependencies"] as List<*>).single() as Map<*, *>
+        val dependencies = definition["resolvedDependencies"] as List<*>
+        assertEquals(2, dependencies.size)
+        val workflowDependency = dependencies[0] as Map<*, *>
+        assertEquals(
+            "git+https://github.com/openai/openai-java@refs/heads/main",
+            workflowDependency["uri"],
+        )
+        val workflowDigest = workflowDependency["digest"] as Map<*, *>
+        assertEquals(workflowSha, workflowDigest["gitCommit"])
+        val releaseDependency = dependencies[1] as Map<*, *>
         assertEquals(
             "git+https://github.com/openai/openai-java@refs/tags/v1.2.3",
-            dependency["uri"],
+            releaseDependency["uri"],
         )
-        val digest = dependency["digest"] as Map<*, *>
-        assertEquals(sourceSha, digest["gitCommit"])
-        assertTrue(digest["gitCommit"] != workflowSha)
+        val releaseDigest = releaseDependency["digest"] as Map<*, *>
+        assertEquals(sourceSha, releaseDigest["gitCommit"])
+        assertTrue(releaseDigest["gitCommit"] != workflowSha)
         val details = predicate["runDetails"] as Map<*, *>
         val builder = details["builder"] as Map<*, *>
         assertEquals(
@@ -592,14 +622,14 @@ class GradleCacheTrustPolicyTest {
 
     @Test
     fun `published Maven artifact provenance verification is documented`() {
-        val securityPolicy = Path.of("../SECURITY.md").readText()
+        val securityModel = Path.of("../docs/architecture/security-model.md").readText()
 
-        assertContains(securityPolicy, "## Maven Artifact Provenance")
+        assertContains(securityModel, "### Maven artifact provenance")
         assertContains(
-            securityPolicy,
+            securityModel,
             "gh attestation verify path/to/openai-java-VERSION.jar -R openai/openai-java",
         )
-        assertContains(securityPolicy, "not exposed to the attestation action")
+        assertContains(securityModel, "not exposed to the attestation action")
     }
 
     @Test
@@ -621,14 +651,14 @@ class GradleCacheTrustPolicyTest {
 
     @Test
     fun `documented cache trust boundary is enforced outside pull request code`() {
-        val securityPolicy = Path.of("../SECURITY.md").readText()
+        val securityModel = Path.of("../docs/architecture/security-model.md").readText()
 
-        assertContains(securityPolicy, "`refs/pull/<number>/merge`")
-        assertContains(securityPolicy, "cannot write to the default-branch cache scope")
-        assertContains(securityPolicy, "not a security boundary")
-        assertContains(securityPolicy, "base branch's CODEOWNERS")
+        assertContains(securityModel, "`refs/pull/<number>/merge`")
+        assertContains(securityModel, "cannot write to the default-branch cache scope")
+        assertContains(securityModel, "not a security boundary")
+        assertContains(securityModel, "base branch's CODEOWNERS")
         assertContains(
-            securityPolicy,
+            securityModel,
             "https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching",
         )
     }
@@ -802,7 +832,9 @@ class GradleCacheTrustPolicyTest {
             "Untrusted CI must use GitHub's server-enforced pull-request cache scope.",
         )
         assertTrue(
-            parsedWorkflow.events.all { it in setOf("push", "pull_request", "workflow_dispatch") },
+            parsedWorkflow.events.all {
+                it in setOf("push", "pull_request", "merge_group", "workflow_dispatch")
+            },
             "Untrusted CI must not run in a default-branch-context event such as pull_request_target.",
         )
         val setupActions =
@@ -837,7 +869,7 @@ class GradleCacheTrustPolicyTest {
 
             assertTrue(
                 effectivelyReadOnly,
-                "Gradle cache for job ${action.job} must remain effectively read-only on pull requests.",
+                "Gradle cache for job ${action.job} must remain effectively read-only on pull requests and merge groups.",
             )
         }
     }
@@ -924,6 +956,33 @@ class GradleCacheTrustPolicyTest {
         assertPublishingProvenancePolicy(workflow)
     }
 
+    private fun assertPublishingRunnerStabilityPolicy(workflow: String) {
+        val publishSteps = parseWorkflow(workflow).job("publish").steps
+        val compilation =
+            publishSteps.indexOfFirst { it.name == "Compile the openai-java-core project" }
+        val daemonStop = publishSteps.indexOfFirst { it.name == "Stop pre-GraalVM Gradle daemon" }
+        val graalVm = publishSteps.indexOfFirst { it.name == "Set up GraalVM" }
+
+        assertTrue(
+            compilation >= 0 && daemonStop > compilation && graalVm > daemonStop,
+            "Stop the build-JDK Gradle daemon before switching to GraalVM.",
+        )
+        assertEquals("./gradlew --stop", publishSteps[daemonStop].run)
+
+        val publication =
+            requireNotNull(publishSteps.single { it.name == "Publish to Maven Central" }.run)
+        val serializedInvocation =
+            "./gradlew publishAndReleaseToMavenCentral \\\n" +
+                "  \"\${publish_exclusions[@]}\" \\\n" +
+                "  --stacktrace \\\n" +
+                "  --no-parallel \\\n" +
+                "  --no-configuration-cache"
+        assertTrue(
+            publication.contains(serializedInvocation),
+            "Serialize Dokka publication tasks to keep the standard runner within memory limits.",
+        )
+    }
+
     private fun assertPublishingProvenancePolicy(workflow: String) {
         val parsedWorkflow = parseWorkflow(workflow)
         val publishJob = parsedWorkflow.job("publish")
@@ -962,8 +1021,11 @@ class GradleCacheTrustPolicyTest {
             preparation.environment.getValue("SOURCE_SHA"),
         )
         assertContains(preparationScript, "\"\$SOURCE_SHA\" != \"\$(git rev-parse HEAD)\"")
+        assertContains(preparationScript, "--arg workflow_sha \"\$GITHUB_SHA\"")
         assertContains(preparationScript, "--arg source_sha \"\$SOURCE_SHA\"")
         assertContains(preparationScript, "--arg workflow_ref \"\$GITHUB_REF\"")
+        assertContains(preparationScript, "uri: (\"git+\" + \$repository + \"@\" + \$workflow_ref)")
+        assertContains(preparationScript, "digest: { gitCommit: \$workflow_sha }")
         assertContains(
             preparationScript,
             "uri: (\"git+\" + \$repository + \"@refs/tags/\" + \$release_tag)",

@@ -15,7 +15,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.52.0")
+implementation("com.openai:openai-java:4.69.1")
 ```
 
 ### Maven
@@ -24,7 +24,7 @@ implementation("com.openai:openai-java:4.52.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.52.0</version>
+  <version>4.69.1</version>
 </dependency>
 ```
 
@@ -87,7 +87,7 @@ with normal AWS credentials:
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java-bedrock:4.52.0")
+implementation("com.openai:openai-java-bedrock:4.69.1")
 ```
 
 <!-- x-release-please-end -->
@@ -202,6 +202,48 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .workloadIdentity(workloadIdentity)
     .build();
 ```
+
+#### X.509 client certificate authentication
+
+Applications with a client certificate can exchange that certificate directly for short-lived
+OpenAI access tokens without providing a JWT or implementing `SubjectTokenProvider`:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.client.okhttp.X509Transport;
+import com.openai.client.okhttp.X509WorkloadIdentity;
+import java.time.Duration;
+import javax.net.ssl.X509ExtendedKeyManager;
+import javax.net.ssl.X509TrustManager;
+
+X509ExtendedKeyManager keyManager = /* load your PKCS#12 key manager */;
+X509TrustManager trustManager = /* load your trusted server roots */;
+
+X509Transport transport = X509Transport.builder()
+    .keyManager(keyManager)
+    .certificateAlias("client-certificate")
+    .trustManager(trustManager)
+    .build();
+
+X509WorkloadIdentity identity = X509WorkloadIdentity.builder()
+    .identityProviderId("your-identity-provider-id")
+    .serviceAccountId("your-service-account-id")
+    .transport(transport)
+    .refreshBuffer(Duration.ofMinutes(10)) // Optional; defaults to 20 minutes.
+    .build();
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .x509WorkloadIdentity(identity)
+    .build();
+```
+
+`OpenAIOkHttpClientAsync.builder()` supports the same `x509WorkloadIdentity` option. Tokens are
+obtained lazily, cached, and refreshed before expiration. Both the token exchange and API requests
+use the configured fixed certificate alias, isolated direct mutual-TLS connections, and native
+hostname verification; redirects and custom transport settings are not supported. Close the SDK
+client to release both connection pools. For a complete compilable PKCS#12 setup, see
+[`X509WorkloadIdentityExample`](openai-java-example/src/main/java/com/openai/example/X509WorkloadIdentityExample.java).
 
 #### Kubernetes service account token provider
 
@@ -968,7 +1010,7 @@ may make the process of function calling simpler to understand and implement.
 _Function Calling_ is also supported for the Responses API. The usage is the same as described
 except where the Responses API differs slightly from the Chat Completions API. Pass the top-level
 class to `addTool(Class<T>)` when building the parameters. In the response, look for
-[`RepoonseOutputItem`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseOutputItem.kt)
+[`ResponseOutputItem`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseOutputItem.kt)
 instances that are function calls. Parse the parameters to each function call to an instance of the
 class using
 [`ResponseFunctionToolCall.arguments(Class<T>)`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseFunctionToolCall.kt).
@@ -1302,7 +1344,9 @@ The SDK throws custom unchecked exception types:
 
 - [`OpenAIInvalidDataException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIInvalidDataException.kt): Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
 
-- [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
+- [`InvalidResourceIdException`](openai-java-core/src/main/kotlin/com/openai/errors/InvalidResourceIdException.kt): Local rejection of an empty resource ID or one exactly equal to `.` or `..`. Extends `IllegalArgumentException`, not `OpenAIException`; no HTTP request is sent.
+
+- [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for SDK service, I/O, and data exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
 
 ## Pagination
 
@@ -1343,12 +1387,12 @@ import java.util.concurrent.CompletableFuture;
 
 CompletableFuture<JobListPageAsync> pageFuture = client.async().fineTuning().jobs().list();
 
-pageFuture.thenRun(page -> page.autoPager().subscribe(job -> {
+pageFuture.thenAccept(page -> page.autoPager().subscribe(job -> {
     System.out.println(job);
 }));
 
 // If you need to handle errors or completion of the stream
-pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
+pageFuture.thenAccept(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
     @Override
     public void onNext(FineTuningJob job) {
         System.out.println(job);
@@ -1366,7 +1410,7 @@ pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Ha
 }));
 
 // Or use futures
-pageFuture.thenRun(page -> page.autoPager()
+pageFuture.thenAccept(page -> page.autoPager()
     .subscribe(job -> {
         System.out.println(job);
     })
@@ -1761,10 +1805,10 @@ The SDK consists of three artifacts:
 
 - `openai-java-core`
   - Contains core SDK logic
-  - Does not depend on [OkHttp](https://square.github.io/okhttp)
+  - Does not depend on [OkHttp](https://lysine.dev/okhttp/)
   - Exposes [`OpenAIClient`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt), [`OpenAIClientAsync`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsync.kt), [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt), and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), all of which can work with any HTTP client
 - `openai-java-client-okhttp`
-  - Depends on [OkHttp](https://square.github.io/okhttp)
+  - Depends on [OkHttp](https://lysine.dev/okhttp/)
   - Exposes [`OpenAIOkHttpClient`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt) and [`OpenAIOkHttpClientAsync`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClientAsync.kt), which provide a way to construct [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt) and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), respectively, using OkHttp
 - `openai-java`
   - Depends on and exposes the APIs of both `openai-java-core` and `openai-java-client-okhttp`
@@ -1772,7 +1816,7 @@ The SDK consists of three artifacts:
 
 This structure allows replacing the SDK's default HTTP client without pulling in unnecessary dependencies.
 
-#### Customized [`OkHttpClient`](https://square.github.io/okhttp/3.x/okhttp/okhttp3/OkHttpClient.html)
+#### Customized [`OkHttpClient`](https://lysine.dev/okhttp/4.x/okhttp/okhttp3/-ok-http-client/)
 
 > [!TIP]
 > Try the available [network options](#network-options) before replacing the default client.
@@ -2031,3 +2075,10 @@ changing the last available artifact may be a minor release.
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
 We are keen for your feedback; please open an [issue](https://www.github.com/openai/openai-java/issues) with questions, bugs, or suggestions.
+
+## Contributing
+
+Please share bug reports and feature requests through [GitHub issues](https://github.com/openai/openai-java/issues).
+Pull requests are limited to repository collaborators; we do not accept pull requests from non-collaborators.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the contribution policy and development guide.
+For security vulnerabilities, follow [SECURITY.md](SECURITY.md).

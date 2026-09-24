@@ -1138,8 +1138,8 @@ private constructor(
                     ) : this(fileId, mutableMapOf())
 
                     /**
-                     * The [file](https://platform.openai.com/docs/api-reference/files) ID of the
-                     * image.
+                     * The [file](https://developers.openai.com/api/reference/resources/files) ID of
+                     * the image.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   or is unexpectedly missing or null (e.g. if the server responded with an
@@ -1196,8 +1196,8 @@ private constructor(
                         }
 
                         /**
-                         * The [file](https://platform.openai.com/docs/api-reference/files) ID of
-                         * the image.
+                         * The [file](https://developers.openai.com/api/reference/resources/files)
+                         * ID of the image.
                          */
                         fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 

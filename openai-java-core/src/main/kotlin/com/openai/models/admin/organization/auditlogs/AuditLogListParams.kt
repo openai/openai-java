@@ -60,7 +60,7 @@ private constructor(
     /**
      * Return only events with a `type` in one of these values. For example, `project.created`. For
      * all options, see the documentation for the
-     * [audit log object](https://platform.openai.com/docs/api-reference/audit-logs/object).
+     * [audit log object](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/audit_logs).
      */
     fun eventTypes(): Optional<List<EventType>> = Optional.ofNullable(eventTypes)
 
@@ -201,7 +201,7 @@ private constructor(
         /**
          * Return only events with a `type` in one of these values. For example, `project.created`.
          * For all options, see the documentation for the
-         * [audit log object](https://platform.openai.com/docs/api-reference/audit-logs/object).
+         * [audit log object](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/audit_logs).
          */
         fun eventTypes(eventTypes: List<EventType>?) = apply {
             this.eventTypes = eventTypes?.toMutableList()
@@ -673,6 +673,10 @@ private constructor(
 
             @JvmField val EXTERNAL_KEY_REMOVED = of("external_key.removed")
 
+            @JvmField val EXTERNAL_STORAGE_REGISTERED = of("external_storage.registered")
+
+            @JvmField val EXTERNAL_STORAGE_REMOVED = of("external_storage.removed")
+
             @JvmField val GROUP_CREATED = of("group.created")
 
             @JvmField val GROUP_UPDATED = of("group.updated")
@@ -829,6 +833,14 @@ private constructor(
             @JvmField val TENANT_ADMIN_API_KEY_DELETED = of("tenant.admin_api_key.deleted")
 
             @JvmField val TENANT_PROJECT_API_KEY_CREATED = of("tenant.project_api_key.created")
+
+            @JvmField
+            val TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED =
+                of("tenant.trusted_access.business_verification.started")
+
+            @JvmField
+            val TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED =
+                of("tenant.trusted_access.application.submitted")
 
             @JvmField
             val TENANT_CHATGPT_ACCESS_TOKEN_REVOKED = of("tenant.chatgpt_access_token.revoked")
@@ -1024,6 +1036,8 @@ private constructor(
             CHECKPOINT_PERMISSION_DELETED,
             EXTERNAL_KEY_REGISTERED,
             EXTERNAL_KEY_REMOVED,
+            EXTERNAL_STORAGE_REGISTERED,
+            EXTERNAL_STORAGE_REMOVED,
             GROUP_CREATED,
             GROUP_UPDATED,
             GROUP_DELETED,
@@ -1087,6 +1101,8 @@ private constructor(
             TENANT_ADMIN_API_KEY_UPDATED,
             TENANT_ADMIN_API_KEY_DELETED,
             TENANT_PROJECT_API_KEY_CREATED,
+            TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED,
+            TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED,
             TENANT_CHATGPT_ACCESS_TOKEN_REVOKED,
             TENANT_MIGRATION_COMPLETED,
             TENANT_SSO_MIGRATED,
@@ -1181,6 +1197,8 @@ private constructor(
             CHECKPOINT_PERMISSION_DELETED,
             EXTERNAL_KEY_REGISTERED,
             EXTERNAL_KEY_REMOVED,
+            EXTERNAL_STORAGE_REGISTERED,
+            EXTERNAL_STORAGE_REMOVED,
             GROUP_CREATED,
             GROUP_UPDATED,
             GROUP_DELETED,
@@ -1244,6 +1262,8 @@ private constructor(
             TENANT_ADMIN_API_KEY_UPDATED,
             TENANT_ADMIN_API_KEY_DELETED,
             TENANT_PROJECT_API_KEY_CREATED,
+            TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED,
+            TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED,
             TENANT_CHATGPT_ACCESS_TOKEN_REVOKED,
             TENANT_MIGRATION_COMPLETED,
             TENANT_SSO_MIGRATED,
@@ -1341,6 +1361,8 @@ private constructor(
                 CHECKPOINT_PERMISSION_DELETED -> Value.CHECKPOINT_PERMISSION_DELETED
                 EXTERNAL_KEY_REGISTERED -> Value.EXTERNAL_KEY_REGISTERED
                 EXTERNAL_KEY_REMOVED -> Value.EXTERNAL_KEY_REMOVED
+                EXTERNAL_STORAGE_REGISTERED -> Value.EXTERNAL_STORAGE_REGISTERED
+                EXTERNAL_STORAGE_REMOVED -> Value.EXTERNAL_STORAGE_REMOVED
                 GROUP_CREATED -> Value.GROUP_CREATED
                 GROUP_UPDATED -> Value.GROUP_UPDATED
                 GROUP_DELETED -> Value.GROUP_DELETED
@@ -1418,6 +1440,10 @@ private constructor(
                 TENANT_ADMIN_API_KEY_UPDATED -> Value.TENANT_ADMIN_API_KEY_UPDATED
                 TENANT_ADMIN_API_KEY_DELETED -> Value.TENANT_ADMIN_API_KEY_DELETED
                 TENANT_PROJECT_API_KEY_CREATED -> Value.TENANT_PROJECT_API_KEY_CREATED
+                TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED ->
+                    Value.TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED
+                TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED ->
+                    Value.TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED
                 TENANT_CHATGPT_ACCESS_TOKEN_REVOKED -> Value.TENANT_CHATGPT_ACCESS_TOKEN_REVOKED
                 TENANT_MIGRATION_COMPLETED -> Value.TENANT_MIGRATION_COMPLETED
                 TENANT_SSO_MIGRATED -> Value.TENANT_SSO_MIGRATED
@@ -1525,6 +1551,8 @@ private constructor(
                 CHECKPOINT_PERMISSION_DELETED -> Known.CHECKPOINT_PERMISSION_DELETED
                 EXTERNAL_KEY_REGISTERED -> Known.EXTERNAL_KEY_REGISTERED
                 EXTERNAL_KEY_REMOVED -> Known.EXTERNAL_KEY_REMOVED
+                EXTERNAL_STORAGE_REGISTERED -> Known.EXTERNAL_STORAGE_REGISTERED
+                EXTERNAL_STORAGE_REMOVED -> Known.EXTERNAL_STORAGE_REMOVED
                 GROUP_CREATED -> Known.GROUP_CREATED
                 GROUP_UPDATED -> Known.GROUP_UPDATED
                 GROUP_DELETED -> Known.GROUP_DELETED
@@ -1602,6 +1630,10 @@ private constructor(
                 TENANT_ADMIN_API_KEY_UPDATED -> Known.TENANT_ADMIN_API_KEY_UPDATED
                 TENANT_ADMIN_API_KEY_DELETED -> Known.TENANT_ADMIN_API_KEY_DELETED
                 TENANT_PROJECT_API_KEY_CREATED -> Known.TENANT_PROJECT_API_KEY_CREATED
+                TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED ->
+                    Known.TENANT_TRUSTED_ACCESS_BUSINESS_VERIFICATION_STARTED
+                TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED ->
+                    Known.TENANT_TRUSTED_ACCESS_APPLICATION_SUBMITTED
                 TENANT_CHATGPT_ACCESS_TOKEN_REVOKED -> Known.TENANT_CHATGPT_ACCESS_TOKEN_REVOKED
                 TENANT_MIGRATION_COMPLETED -> Known.TENANT_MIGRATION_COMPLETED
                 TENANT_SSO_MIGRATED -> Known.TENANT_SSO_MIGRATED

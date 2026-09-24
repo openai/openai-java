@@ -21,6 +21,7 @@ import com.openai.models.beta.responses.inputtokens.InputTokenCountResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 class InputTokenServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     InputTokenServiceAsync {
 

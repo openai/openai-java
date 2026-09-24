@@ -50,9 +50,9 @@ private constructor(
 
     /**
      * ID of the model to use. You can use the
-     * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
-     * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
-     * for descriptions of them.
+     * [List models](https://developers.openai.com/api/reference/resources/models/methods/list) API
+     * to see all of your available models, or see our
+     * [Model overview](https://developers.openai.com/api/docs/models) for descriptions of them.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -101,7 +101,7 @@ private constructor(
      * `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort can result
      * in faster responses and fewer tokens used on reasoning in a response. Not all reasoning
      * models support every value. See the
-     * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
+     * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for model-specific
      * support.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -111,13 +111,13 @@ private constructor(
 
     /**
      * Specifies the format that the model must output. Compatible with
-     * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-     * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo
+     * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+     * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
      * models since `gpt-3.5-turbo-1106`.
      *
      * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs which
      * ensures the model will match your supplied JSON schema. Learn more in the
-     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+     * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
      *
      * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
      * generates is valid JSON.
@@ -304,9 +304,9 @@ private constructor(
 
         /**
          * ID of the model to use. You can use the
-         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
-         * of your available models, or see our
-         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         * [List models](https://developers.openai.com/api/reference/resources/models/methods/list)
+         * API to see all of your available models, or see our
+         * [Model overview](https://developers.openai.com/api/docs/models) for descriptions of them.
          */
         fun model(model: ChatModel) = apply { body.model(model) }
 
@@ -402,8 +402,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          */
         fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
             body.reasoningEffort(reasoningEffort)
@@ -426,13 +426,13 @@ private constructor(
 
         /**
          * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
+         * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+         * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
+         * models since `gpt-3.5-turbo-1106`.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
          * model generates is valid JSON.
@@ -814,9 +814,9 @@ private constructor(
 
         /**
          * ID of the model to use. You can use the
-         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
-         * of your available models, or see our
-         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         * [List models](https://developers.openai.com/api/reference/resources/models/methods/list)
+         * API to see all of your available models, or see our
+         * [Model overview](https://developers.openai.com/api/docs/models) for descriptions of them.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -866,8 +866,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -877,13 +877,13 @@ private constructor(
 
         /**
          * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
+         * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+         * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
+         * models since `gpt-3.5-turbo-1106`.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
          * model generates is valid JSON.
@@ -1094,9 +1094,10 @@ private constructor(
 
             /**
              * ID of the model to use. You can use the
-             * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see
-             * all of your available models, or see our
-             * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+             * [List models](https://developers.openai.com/api/reference/resources/models/methods/list)
+             * API to see all of your available models, or see our
+             * [Model overview](https://developers.openai.com/api/docs/models) for descriptions of
+             * them.
              */
             fun model(model: ChatModel) = model(JsonField.of(model))
 
@@ -1199,7 +1200,7 @@ private constructor(
              * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning
              * effort can result in faster responses and fewer tokens used on reasoning in a
              * response. Not all reasoning models support every value. See the
-             * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+             * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
              * model-specific support.
              */
             fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
@@ -1222,14 +1223,14 @@ private constructor(
 
             /**
              * Specifies the format that the model must output. Compatible with
-             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
-             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
+             * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+             * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5
+             * Turbo models since `gpt-3.5-turbo-1106`.
              *
              * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
              * Outputs which ensures the model will match your supplied JSON schema. Learn more in
              * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
              *
              * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
              * the model generates is valid JSON.
@@ -1887,8 +1888,8 @@ private constructor(
             ) : this(fileIds, mutableMapOf())
 
             /**
-             * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-             * available to the `code_interpreter` tool. There can be a maximum of 20 files
+             * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
+             * made available to the `code_interpreter` tool. There can be a maximum of 20 files
              * associated with the tool.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -1936,8 +1937,8 @@ private constructor(
                 }
 
                 /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
+                 * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
+                 * made available to the `code_interpreter` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  */
                 fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
@@ -2074,7 +2075,7 @@ private constructor(
 
             /**
              * The
-             * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+             * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
              * attached to this assistant. There can be a maximum of 1 vector store attached to the
              * assistant.
              *
@@ -2086,7 +2087,7 @@ private constructor(
 
             /**
              * A helper to create a
-             * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+             * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
              * with file_ids and attach it to this assistant. There can be a maximum of 1 vector
              * store attached to the assistant.
              *
@@ -2150,7 +2151,7 @@ private constructor(
 
                 /**
                  * The
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
                  * attached to this assistant. There can be a maximum of 1 vector store attached to
                  * the assistant.
                  */
@@ -2182,7 +2183,7 @@ private constructor(
 
                 /**
                  * A helper to create a
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
                  * with file_ids and attach it to this assistant. There can be a maximum of 1 vector
                  * store attached to the assistant.
                  */
@@ -2321,10 +2322,10 @@ private constructor(
                     chunkingStrategy.getOptional("chunking_strategy")
 
                 /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to add
-                 * to the vector store. For vector stores created before Nov 2025, there can be a
-                 * maximum of 10,000 files in a vector store. For vector stores created starting in
-                 * Nov 2025, the limit is 100,000,000 files.
+                 * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
+                 * to add to the vector store. For vector stores created before Nov 2025, there can
+                 * be a maximum of 10,000 files in a vector store. For vector stores created
+                 * starting in Nov 2025, the limit is 100,000,000 files.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -2448,10 +2449,10 @@ private constructor(
                         chunkingStrategy(ChunkingStrategy.Static.builder().static_(static_).build())
 
                     /**
-                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
-                     * add to the vector store. For vector stores created before Nov 2025, there can
-                     * be a maximum of 10,000 files in a vector store. For vector stores created
-                     * starting in Nov 2025, the limit is 100,000,000 files.
+                     * A list of [file](https://developers.openai.com/api/reference/resources/files)
+                     * IDs to add to the vector store. For vector stores created before Nov 2025,
+                     * there can be a maximum of 10,000 files in a vector store. For vector stores
+                     * created starting in Nov 2025, the limit is 100,000,000 files.
                      */
                     fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 
