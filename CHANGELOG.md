@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.69.1](https://github.com/openai/openai-java/compare/v4.69.0...v4.69.1) (2026-09-24)
+
+
+### Bug Fixes
+
+* buffer streamed tool arguments per tool ([#1070](https://github.com/openai/openai-java/issues/1070)) ([56ee772](https://github.com/openai/openai-java/commit/56ee772ff4734af8b5c0ac278fe2cfafbf90b09f))
+* **ci:** restrict legacy release guard to same-repository PRs ([#1058](https://github.com/openai/openai-java/issues/1058)) ([55de0fe](https://github.com/openai/openai-java/commit/55de0fef34190cd177a0e6c68b10cb22297d4cdf))
+* complete asynchronous pagers when first-page handling fails ([#1050](https://github.com/openai/openai-java/issues/1050)) ([bd5e5d2](https://github.com/openai/openai-java/commit/bd5e5d28f3f735bb3883b084151b16db3dcbf4f6))
+* disable compression for default WebSocket connections ([#1049](https://github.com/openai/openai-java/issues/1049)) ([8f7972a](https://github.com/openai/openai-java/commit/8f7972aee66dabddd61245c625e4acc21b9253b8))
+* match header hashing to case-insensitive equality ([#1052](https://github.com/openai/openai-java/issues/1052)) ([82440c9](https://github.com/openai/openai-java/commit/82440c9c05a0e2983c47d55dbcd9f4cf889bd9ec))
+* remove the unused asynchronous thread-owned lock helper ([#1072](https://github.com/openai/openai-java/issues/1072)) ([132f095](https://github.com/openai/openai-java/commit/132f0959016b9c680abc273407dfe7d85ca27081))
+* retain response ownership while consuming a stream ([#1073](https://github.com/openai/openai-java/issues/1073)) ([697c9d0](https://github.com/openai/openai-java/commit/697c9d0d47e1ff49ff73f087f786a1d4c9f205ef))
+
+
+### Chores
+
+* **api:** clarify approximate web search location defaults ([#1071](https://github.com/openai/openai-java/issues/1071)) ([39a920a](https://github.com/openai/openai-java/commit/39a920a1087b7798bd1728a3cc4e59688a7d0ab3))
+* **api:** clarify Realtime modality array definitions ([#1074](https://github.com/openai/openai-java/issues/1074)) ([66acb5d](https://github.com/openai/openai-java/commit/66acb5d73d2a8f3ffb0a6386ce5082d7944ac40f))
+* **api:** correct fine-tuning bounds and Realtime response reference ([#1068](https://github.com/openai/openai-java/issues/1068)) ([aa75cc5](https://github.com/openai/openai-java/commit/aa75cc55171484defe66fb9b8c26b8e8648bb7cc))
+
+
+### Documentation
+
+* clarify collaborator-only pull request policy ([#1066](https://github.com/openai/openai-java/issues/1066)) ([c9f222f](https://github.com/openai/openai-java/commit/c9f222f0daaaac679ff94d7407e8400aaf24eed4))
+
 ## [4.69.0](https://github.com/openai/openai-java/compare/v4.68.0...v4.69.0) (2026-09-23)
 
 
