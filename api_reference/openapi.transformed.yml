@@ -1680,6 +1680,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Batch'
+        '400':
+          description: The request is invalid or the account cannot create a batch.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: The request was rejected because a rate limit was exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An internal error prevented the batch from being created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: The batch could not be created because the service is temporarily unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       x-oaiMeta:
         group: batch
         examples:
@@ -1777,6 +1801,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListBatchesResponse'
+        '400':
+          description: Invalid pagination parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No batch was found with the specified pagination cursor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: The request was rejected because a rate limit was exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       x-oaiMeta:
         group: batch
         examples:
@@ -1864,6 +1906,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Batch'
+        '400':
+          description: Invalid batch ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No batch was found with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: The request was rejected because a rate limit was exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       x-oaiMeta:
         group: batch
         examples:
@@ -1940,6 +2000,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Batch'
+        '400':
+          description: Invalid batch ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: No batch was found with the specified ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: The batch's current status does not allow cancellation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: The request was rejected because a rate limit was exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       x-oaiMeta:
         group: batch
         examples:
@@ -79538,72 +79622,6 @@ components:
       - environment
       additionalProperties: false
       description: Emitted when a hosted session environment is ready to connect.
-    BetaResponseStreamEvent:
-      description: Event emitted while a response is streamed.
-      anyOf:
-      - $ref: '#/components/schemas/BetaResponseAudioDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseAudioDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseAudioTranscriptDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseAudioTranscriptDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallCodeDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallCodeDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallInterpretingEvent'
-      - $ref: '#/components/schemas/BetaResponseCompactionCompactingStreamingEvent'
-      - $ref: '#/components/schemas/BetaResponseCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseContentPartAddedEvent'
-      - $ref: '#/components/schemas/BetaResponseContentPartDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseCreatedEvent'
-      - $ref: '#/components/schemas/BetaResponseErrorEvent'
-      - $ref: '#/components/schemas/BetaResponseFileSearchCallCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseFileSearchCallInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseFileSearchCallSearchingEvent'
-      - $ref: '#/components/schemas/BetaResponseFunctionCallArgumentsDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseFunctionCallArgumentsDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseShellCallCommandAddedStreamingEvent'
-      - $ref: '#/components/schemas/BetaResponseShellCallCommandDeltaStreamingEvent'
-      - $ref: '#/components/schemas/BetaResponseShellCallCommandDoneStreamingEvent'
-      - $ref: '#/components/schemas/BetaResponseShellCallOutputContentDeltaStreamingEvent'
-        x-stainless-skip:
-        - go
-      - $ref: '#/components/schemas/BetaResponseShellCallOutputContentDoneStreamingEvent'
-      - $ref: '#/components/schemas/BetaResponseInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseFailedEvent'
-      - $ref: '#/components/schemas/BetaResponseIncompleteEvent'
-      - $ref: '#/components/schemas/BetaResponseOutputItemAddedEvent'
-      - $ref: '#/components/schemas/BetaResponseOutputItemDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseReasoningSummaryPartAddedEvent'
-      - $ref: '#/components/schemas/BetaResponseReasoningSummaryPartDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseReasoningSummaryTextDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseReasoningSummaryTextDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseReasoningTextDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseReasoningTextDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseRefusalDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseRefusalDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseTextDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseTextDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseWebSearchCallCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseWebSearchCallInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseWebSearchCallSearchingEvent'
-      - $ref: '#/components/schemas/BetaResponseImageGenCallCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseImageGenCallGeneratingEvent'
-      - $ref: '#/components/schemas/BetaResponseImageGenCallInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseImageGenCallPartialImageEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPCallArgumentsDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPCallArgumentsDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPCallCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPCallFailedEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPCallInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPListToolsCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPListToolsFailedEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPListToolsInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseOutputTextAnnotationAddedEvent'
-      - $ref: '#/components/schemas/BetaResponseQueuedEvent'
-      - $ref: '#/components/schemas/BetaResponseCustomToolCallInputDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseCustomToolCallInputDoneEvent'
-      discriminator:
-        propertyName: type
     SessionEventAgentSessionEnvironmentReset:
       type: object
       properties:
@@ -80833,7 +80851,6 @@ components:
         mapping:
           error: '#/components/schemas/SessionEventError'
           agent.session.environment.ready: '#/components/schemas/SessionEventAgentSessionEnvironmentReady'
-          agent.session.turn.reasoning_summary_text.done: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryTextDone'
           agent.session.environment.reset: '#/components/schemas/SessionEventAgentSessionEnvironmentReset'
           agent.output.command_execution_output.delta: '#/components/schemas/SessionEventAgentOutputCommandExecutionOutputDelta'
           agent.session.created: '#/components/schemas/SessionEventAgentSessionCreated'
@@ -80862,6 +80879,7 @@ components:
           agent.session.turn.reasoning_summary_part.added: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryPartAdded'
           agent.session.turn.reasoning_summary_part.done: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryPartDone'
           agent.session.turn.reasoning_summary_text.delta: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryTextDelta'
+          agent.session.turn.reasoning_summary_text.done: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryTextDone'
       x-oai-discriminator-values:
       - error
       - agent.session.environment.ready
@@ -96591,6 +96609,72 @@ components:
             type: integer
             minimum: 0
             maximum: 20
+    BetaResponseStreamEvent:
+      description: Event emitted while a response is streamed.
+      anyOf:
+      - $ref: '#/components/schemas/BetaResponseAudioDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseAudioDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseAudioTranscriptDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseAudioTranscriptDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallCodeDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallCodeDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallInterpretingEvent'
+      - $ref: '#/components/schemas/BetaResponseCompactionCompactingStreamingEvent'
+      - $ref: '#/components/schemas/BetaResponseCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseContentPartAddedEvent'
+      - $ref: '#/components/schemas/BetaResponseContentPartDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseCreatedEvent'
+      - $ref: '#/components/schemas/BetaResponseErrorEvent'
+      - $ref: '#/components/schemas/BetaResponseFileSearchCallCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseFileSearchCallInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseFileSearchCallSearchingEvent'
+      - $ref: '#/components/schemas/BetaResponseFunctionCallArgumentsDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseFunctionCallArgumentsDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseShellCallCommandAddedStreamingEvent'
+      - $ref: '#/components/schemas/BetaResponseShellCallCommandDeltaStreamingEvent'
+      - $ref: '#/components/schemas/BetaResponseShellCallCommandDoneStreamingEvent'
+      - $ref: '#/components/schemas/BetaResponseShellCallOutputContentDeltaStreamingEvent'
+        x-stainless-skip:
+        - go
+      - $ref: '#/components/schemas/BetaResponseShellCallOutputContentDoneStreamingEvent'
+      - $ref: '#/components/schemas/BetaResponseInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseFailedEvent'
+      - $ref: '#/components/schemas/BetaResponseIncompleteEvent'
+      - $ref: '#/components/schemas/BetaResponseOutputItemAddedEvent'
+      - $ref: '#/components/schemas/BetaResponseOutputItemDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseReasoningSummaryPartAddedEvent'
+      - $ref: '#/components/schemas/BetaResponseReasoningSummaryPartDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseReasoningSummaryTextDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseReasoningSummaryTextDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseReasoningTextDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseReasoningTextDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseRefusalDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseRefusalDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseTextDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseTextDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseWebSearchCallCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseWebSearchCallInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseWebSearchCallSearchingEvent'
+      - $ref: '#/components/schemas/BetaResponseImageGenCallCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseImageGenCallGeneratingEvent'
+      - $ref: '#/components/schemas/BetaResponseImageGenCallInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseImageGenCallPartialImageEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPCallArgumentsDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPCallArgumentsDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPCallCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPCallFailedEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPCallInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPListToolsCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPListToolsFailedEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPListToolsInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseOutputTextAnnotationAddedEvent'
+      - $ref: '#/components/schemas/BetaResponseQueuedEvent'
+      - $ref: '#/components/schemas/BetaResponseCustomToolCallInputDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseCustomToolCallInputDoneEvent'
+      discriminator:
+        propertyName: type
     OAuthErrorCode:
       anyOf:
       - enum:
