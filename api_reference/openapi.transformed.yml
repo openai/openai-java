@@ -601,11 +601,64 @@ paths:
               schema:
                 type: string
                 format: binary
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+            audio/aac:
+              schema:
+                type: string
+                format: binary
+            audio/opus:
+              schema:
+                type: string
+                format: binary
+            audio/flac:
+              schema:
+                type: string
+                format: binary
+            audio/pcm:
+              schema:
+                type: string
+                format: binary
+            audio/wav:
+              schema:
+                type: string
+                format: binary
             text/event-stream:
               schema:
                 $ref: '#/components/schemas/CreateSpeechResponseStreamEvent'
+        '400':
+          description: Invalid speech request, input, output format, or voice.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Authentication failed because the API key is missing or revoked, or the client IP is not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            text/plain:
+              schema:
+                type: string
+                description: JSON-encoded error text containing an error object and the HTTP status.
+        '403':
+          description: Access to a personal API organization is blocked by the organization policy.
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: JSON-encoded error text containing an error object and the HTTP status.
         '429':
           $ref: '#/components/responses/InferenceRateLimited'
+        '500':
+          description: The voice or speech audio could not be processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '503':
           $ref: '#/components/responses/InferenceServiceUnavailable'
       x-oaiMeta:
@@ -694,7 +747,8 @@ paths:
         Transcribes audio into the input language.
 
         Returns a transcription object in `json`, `diarized_json`, or `verbose_json`
-        format, or a stream of transcript events.
+        format, plain text in `text`, `srt`, or `vtt` format, or a stream of transcript
+        events. Supported formats depend on the model.
       requestBody:
         required: true
         content:
@@ -710,16 +764,58 @@ paths:
                 anyOf:
                 - $ref: '#/components/schemas/CreateTranscriptionResponseJson'
                 - $ref: '#/components/schemas/CreateTranscriptionResponseDiarizedJson'
-                  x-stainless-skip:
-                  - go
                 - $ref: '#/components/schemas/CreateTranscriptionResponseVerboseJson'
                 discriminator:
                   propertyName: task
+            text/plain:
+              schema:
+                type: string
             text/event-stream:
               schema:
                 $ref: '#/components/schemas/CreateTranscriptionResponseStreamEvent'
+        '400':
+          description: Invalid audio input or request parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Authentication failed because the API key is missing or revoked, or the client IP is not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            text/plain:
+              schema:
+                type: string
+                description: JSON-encoded error text containing an error object and the HTTP status.
+        '403':
+          description: Access to a personal API organization is blocked by the organization policy.
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: JSON-encoded error text containing an error object and the HTTP status.
+        '413':
+          description: The audio request exceeds the supported size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '429':
           $ref: '#/components/responses/InferenceRateLimited'
+        '500':
+          description: The audio could not be processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: The upstream audio service connection failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '503':
           $ref: '#/components/responses/InferenceServiceUnavailable'
       x-oaiMeta:
@@ -1271,8 +1367,52 @@ paths:
                 - $ref: '#/components/schemas/CreateTranslationResponseVerboseJson'
                   x-stainless-skip:
                   - go
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Invalid audio input or request parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Authentication failed because the API key is missing or revoked, or the client IP is not authorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            text/plain:
+              schema:
+                type: string
+                description: JSON-encoded error text containing an error object and the HTTP status.
+        '403':
+          description: Access to a personal API organization is blocked by the organization policy.
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: JSON-encoded error text containing an error object and the HTTP status.
+        '413':
+          description: The audio request exceeds the supported size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '429':
           $ref: '#/components/responses/InferenceRateLimited'
+        '500':
+          description: The audio could not be processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: The upstream audio service connection failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '503':
           $ref: '#/components/responses/InferenceServiceUnavailable'
       x-oaiMeta:
@@ -66943,6 +67083,36 @@ components:
             "type": "safety.warning_issued",
             "data": {"id": "C-abc123"}
           }
+    _MisalignmentErrorType:
+      anyOf:
+      - type: string
+      - type: string
+        enum:
+        - potentially_unintended_data_transfer
+        - potentially_unintended_data_access
+        - potentially_unintended_destructive_activity
+        - other
+    _MisalignmentSteer:
+      properties:
+        message:
+          type: string
+          description: The public continuation instruction.
+      type: object
+      required:
+      - message
+    MisalignmentErrorDetailsResource:
+      properties:
+        error_type:
+          $ref: '#/components/schemas/_MisalignmentErrorType'
+          description: An optional classification; clients must accept additional values.
+        detailed_explanation:
+          type: string
+          description: The public explanation for this block.
+        steer:
+          $ref: '#/components/schemas/_MisalignmentSteer'
+          description: An optional public continuation instruction.
+      type: object
+      required: []
     ModerationInputType:
       type: string
       enum:
@@ -70419,36 +70589,6 @@ components:
       - object
       - metadata
       - created_at
-    _MisalignmentErrorType:
-      anyOf:
-      - type: string
-      - type: string
-        enum:
-        - potentially_unintended_data_transfer
-        - potentially_unintended_data_access
-        - potentially_unintended_destructive_activity
-        - other
-    _MisalignmentSteer:
-      properties:
-        message:
-          type: string
-          description: The public continuation instruction.
-      type: object
-      required:
-      - message
-    MisalignmentErrorDetailsResource:
-      properties:
-        error_type:
-          $ref: '#/components/schemas/_MisalignmentErrorType'
-          description: An optional classification; clients must accept additional values.
-        detailed_explanation:
-          type: string
-          description: The public explanation for this block.
-        steer:
-          $ref: '#/components/schemas/_MisalignmentSteer'
-          description: An optional public continuation instruction.
-      type: object
-      required: []
     ImageGenOutputTokensDetails:
       properties:
         image_tokens:
@@ -79398,6 +79538,72 @@ components:
       - environment
       additionalProperties: false
       description: Emitted when a hosted session environment is ready to connect.
+    BetaResponseStreamEvent:
+      description: Event emitted while a response is streamed.
+      anyOf:
+      - $ref: '#/components/schemas/BetaResponseAudioDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseAudioDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseAudioTranscriptDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseAudioTranscriptDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallCodeDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallCodeDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallInterpretingEvent'
+      - $ref: '#/components/schemas/BetaResponseCompactionCompactingStreamingEvent'
+      - $ref: '#/components/schemas/BetaResponseCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseContentPartAddedEvent'
+      - $ref: '#/components/schemas/BetaResponseContentPartDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseCreatedEvent'
+      - $ref: '#/components/schemas/BetaResponseErrorEvent'
+      - $ref: '#/components/schemas/BetaResponseFileSearchCallCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseFileSearchCallInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseFileSearchCallSearchingEvent'
+      - $ref: '#/components/schemas/BetaResponseFunctionCallArgumentsDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseFunctionCallArgumentsDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseShellCallCommandAddedStreamingEvent'
+      - $ref: '#/components/schemas/BetaResponseShellCallCommandDeltaStreamingEvent'
+      - $ref: '#/components/schemas/BetaResponseShellCallCommandDoneStreamingEvent'
+      - $ref: '#/components/schemas/BetaResponseShellCallOutputContentDeltaStreamingEvent'
+        x-stainless-skip:
+        - go
+      - $ref: '#/components/schemas/BetaResponseShellCallOutputContentDoneStreamingEvent'
+      - $ref: '#/components/schemas/BetaResponseInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseFailedEvent'
+      - $ref: '#/components/schemas/BetaResponseIncompleteEvent'
+      - $ref: '#/components/schemas/BetaResponseOutputItemAddedEvent'
+      - $ref: '#/components/schemas/BetaResponseOutputItemDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseReasoningSummaryPartAddedEvent'
+      - $ref: '#/components/schemas/BetaResponseReasoningSummaryPartDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseReasoningSummaryTextDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseReasoningSummaryTextDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseReasoningTextDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseReasoningTextDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseRefusalDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseRefusalDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseTextDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseTextDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseWebSearchCallCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseWebSearchCallInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseWebSearchCallSearchingEvent'
+      - $ref: '#/components/schemas/BetaResponseImageGenCallCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseImageGenCallGeneratingEvent'
+      - $ref: '#/components/schemas/BetaResponseImageGenCallInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseImageGenCallPartialImageEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPCallArgumentsDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPCallArgumentsDoneEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPCallCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPCallFailedEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPCallInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPListToolsCompletedEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPListToolsFailedEvent'
+      - $ref: '#/components/schemas/BetaResponseMCPListToolsInProgressEvent'
+      - $ref: '#/components/schemas/BetaResponseOutputTextAnnotationAddedEvent'
+      - $ref: '#/components/schemas/BetaResponseQueuedEvent'
+      - $ref: '#/components/schemas/BetaResponseCustomToolCallInputDeltaEvent'
+      - $ref: '#/components/schemas/BetaResponseCustomToolCallInputDoneEvent'
+      discriminator:
+        propertyName: type
     SessionEventAgentSessionEnvironmentReset:
       type: object
       properties:
@@ -80627,6 +80833,7 @@ components:
         mapping:
           error: '#/components/schemas/SessionEventError'
           agent.session.environment.ready: '#/components/schemas/SessionEventAgentSessionEnvironmentReady'
+          agent.session.turn.reasoning_summary_text.done: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryTextDone'
           agent.session.environment.reset: '#/components/schemas/SessionEventAgentSessionEnvironmentReset'
           agent.output.command_execution_output.delta: '#/components/schemas/SessionEventAgentOutputCommandExecutionOutputDelta'
           agent.session.created: '#/components/schemas/SessionEventAgentSessionCreated'
@@ -80655,7 +80862,6 @@ components:
           agent.session.turn.reasoning_summary_part.added: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryPartAdded'
           agent.session.turn.reasoning_summary_part.done: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryPartDone'
           agent.session.turn.reasoning_summary_text.delta: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryTextDelta'
-          agent.session.turn.reasoning_summary_text.done: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryTextDone'
       x-oai-discriminator-values:
       - error
       - agent.session.environment.ready
@@ -96385,72 +96591,6 @@ components:
             type: integer
             minimum: 0
             maximum: 20
-    BetaResponseStreamEvent:
-      description: Event emitted while a response is streamed.
-      anyOf:
-      - $ref: '#/components/schemas/BetaResponseAudioDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseAudioDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseAudioTranscriptDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseAudioTranscriptDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallCodeDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallCodeDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseCodeInterpreterCallInterpretingEvent'
-      - $ref: '#/components/schemas/BetaResponseCompactionCompactingStreamingEvent'
-      - $ref: '#/components/schemas/BetaResponseCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseContentPartAddedEvent'
-      - $ref: '#/components/schemas/BetaResponseContentPartDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseCreatedEvent'
-      - $ref: '#/components/schemas/BetaResponseErrorEvent'
-      - $ref: '#/components/schemas/BetaResponseFileSearchCallCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseFileSearchCallInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseFileSearchCallSearchingEvent'
-      - $ref: '#/components/schemas/BetaResponseFunctionCallArgumentsDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseFunctionCallArgumentsDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseShellCallCommandAddedStreamingEvent'
-      - $ref: '#/components/schemas/BetaResponseShellCallCommandDeltaStreamingEvent'
-      - $ref: '#/components/schemas/BetaResponseShellCallCommandDoneStreamingEvent'
-      - $ref: '#/components/schemas/BetaResponseShellCallOutputContentDeltaStreamingEvent'
-        x-stainless-skip:
-        - go
-      - $ref: '#/components/schemas/BetaResponseShellCallOutputContentDoneStreamingEvent'
-      - $ref: '#/components/schemas/BetaResponseInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseFailedEvent'
-      - $ref: '#/components/schemas/BetaResponseIncompleteEvent'
-      - $ref: '#/components/schemas/BetaResponseOutputItemAddedEvent'
-      - $ref: '#/components/schemas/BetaResponseOutputItemDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseReasoningSummaryPartAddedEvent'
-      - $ref: '#/components/schemas/BetaResponseReasoningSummaryPartDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseReasoningSummaryTextDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseReasoningSummaryTextDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseReasoningTextDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseReasoningTextDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseRefusalDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseRefusalDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseTextDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseTextDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseWebSearchCallCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseWebSearchCallInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseWebSearchCallSearchingEvent'
-      - $ref: '#/components/schemas/BetaResponseImageGenCallCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseImageGenCallGeneratingEvent'
-      - $ref: '#/components/schemas/BetaResponseImageGenCallInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseImageGenCallPartialImageEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPCallArgumentsDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPCallArgumentsDoneEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPCallCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPCallFailedEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPCallInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPListToolsCompletedEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPListToolsFailedEvent'
-      - $ref: '#/components/schemas/BetaResponseMCPListToolsInProgressEvent'
-      - $ref: '#/components/schemas/BetaResponseOutputTextAnnotationAddedEvent'
-      - $ref: '#/components/schemas/BetaResponseQueuedEvent'
-      - $ref: '#/components/schemas/BetaResponseCustomToolCallInputDeltaEvent'
-      - $ref: '#/components/schemas/BetaResponseCustomToolCallInputDoneEvent'
-      discriminator:
-        propertyName: type
     OAuthErrorCode:
       anyOf:
       - enum:
