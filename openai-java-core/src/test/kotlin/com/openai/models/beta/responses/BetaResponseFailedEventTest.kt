@@ -17,6 +17,11 @@ internal class BetaResponseFailedEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -262,6 +267,11 @@ internal class BetaResponseFailedEventTest {
             .isEqualTo(
                 BetaResponse.builder()
                     .id("id")
+                    .accessPrograms(
+                        BetaResponse.AccessPrograms.builder()
+                            .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .createdAt(0.0)
                     .error(
                         BetaResponseError.builder()
@@ -508,6 +518,11 @@ internal class BetaResponseFailedEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()

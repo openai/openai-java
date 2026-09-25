@@ -1990,7 +1990,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Conversation: $json")
+                throw OpenAIInvalidDataException("Unknown Conversation")
             }
         }
 
@@ -2221,7 +2221,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Input: $json")
+                throw OpenAIInvalidDataException("Unknown Input")
             }
         }
 
@@ -3249,7 +3249,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ToolChoice: $json")
+                throw OpenAIInvalidDataException("Unknown ToolChoice")
             }
         }
 

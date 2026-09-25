@@ -67,6 +67,16 @@ class StructuredResponseCreateParams<T : Any>(
             this.paramsBuilder = paramsBuilder
         }
 
+        /** @see ResponseCreateParams.Builder.accessPrograms */
+        fun accessPrograms(accessPrograms: ResponseCreateParams.AccessPrograms) = apply {
+            paramsBuilder.accessPrograms(accessPrograms)
+        }
+
+        /** @see ResponseCreateParams.Builder.accessPrograms */
+        fun accessPrograms(accessPrograms: JsonField<ResponseCreateParams.AccessPrograms>) = apply {
+            paramsBuilder.accessPrograms(accessPrograms)
+        }
+
         // The `body(...)` function is deliberately not supported.
 
         /** @see ResponseCreateParams.Builder.input */

@@ -467,7 +467,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown RunStepStreamEvent: $json")
+            throw OpenAIInvalidDataException("Unknown RunStepStreamEvent")
         }
     }
 

@@ -1236,6 +1236,8 @@ private constructor(
 
                 @JvmField val FAST = of("fast")
 
+                @JvmField val ULTRAFAST = of("ultrafast")
+
                 @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
             }
 
@@ -1246,6 +1248,7 @@ private constructor(
                 FLEX,
                 PRIORITY,
                 FAST,
+                ULTRAFAST,
             }
 
             /**
@@ -1263,6 +1266,7 @@ private constructor(
                 FLEX,
                 PRIORITY,
                 FAST,
+                ULTRAFAST,
                 /**
                  * An enum member indicating that [ServiceTier] was instantiated with an unknown
                  * value.
@@ -1284,6 +1288,7 @@ private constructor(
                     FLEX -> Value.FLEX
                     PRIORITY -> Value.PRIORITY
                     FAST -> Value.FAST
+                    ULTRAFAST -> Value.ULTRAFAST
                     else -> Value._UNKNOWN
                 }
 
@@ -1303,6 +1308,7 @@ private constructor(
                     FLEX -> Known.FLEX
                     PRIORITY -> Known.PRIORITY
                     FAST -> Known.FAST
+                    ULTRAFAST -> Known.ULTRAFAST
                     else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
                 }
 
@@ -1703,7 +1709,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown RequiredAction: $json")
+                throw OpenAIInvalidDataException("Unknown RequiredAction")
             }
         }
 

@@ -45,8 +45,7 @@ internal class ResponseStreamEventValidationTest {
 
         assertThat(result.error)
             .isInstanceOf(OpenAIInvalidDataException::class.java)
-            .hasMessageContaining("Unknown ResponseStreamEvent")
-            .hasMessageContaining("type=future.event")
+            .hasMessage("Unknown ResponseStreamEvent")
         assertThat(result.events.map(::eventType)).containsExactly("response.output_text.delta")
         assertThat(result.outputTextDeltas()).containsExactly("before")
     }

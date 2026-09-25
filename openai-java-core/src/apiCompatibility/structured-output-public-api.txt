@@ -237,6 +237,7 @@ com.openai.models.chat.completions.StructuredChatCompletionMessage#refusal ()Lja
 com.openai.models.chat.completions.StructuredChatCompletionMessage#responseType ()Ljava/lang/Class;
 com.openai.models.chat.completions.StructuredChatCompletionMessage#toolCalls ()Ljava/util/Optional;
 com.openai.models.chat.completions.StructuredChatCompletionMessage#validate ()Lcom/openai/models/chat/completions/ChatCompletionMessage;
+com.openai.models.responses.StructuredResponse#_accessPrograms ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_additionalProperties ()Ljava/util/Map;
 com.openai.models.responses.StructuredResponse#_background ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_completedAt ()Lcom/openai/core/JsonField;
@@ -273,6 +274,7 @@ com.openai.models.responses.StructuredResponse#_topP ()Lcom/openai/core/JsonFiel
 com.openai.models.responses.StructuredResponse#_truncation ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_usage ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_user ()Lcom/openai/core/JsonField;
+com.openai.models.responses.StructuredResponse#accessPrograms ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#background ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#completedAt ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#conversation ()Ljava/util/Optional;
@@ -314,6 +316,8 @@ com.openai.models.responses.StructuredResponse#validate ()Lcom/openai/models/res
 com.openai.models.responses.StructuredResponseCreateParams#builder ()Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams#rawParams ()Lcom/openai/models/responses/ResponseCreateParams;
 com.openai.models.responses.StructuredResponseCreateParams#responseType ()Ljava/lang/Class;
+com.openai.models.responses.StructuredResponseCreateParams$Builder#accessPrograms (Lcom/openai/core/JsonField;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
+com.openai.models.responses.StructuredResponseCreateParams$Builder#accessPrograms (Lcom/openai/models/responses/ResponseCreateParams$AccessPrograms;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#addCodeInterpreterTool (Lcom/openai/models/responses/Tool$CodeInterpreter$Container$CodeInterpreterToolAuto;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#addCodeInterpreterTool (Lcom/openai/models/responses/Tool$CodeInterpreter$Container;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#addCodeInterpreterTool (Ljava/lang/String;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;

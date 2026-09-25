@@ -641,7 +641,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown ForkClientEvent: $json")
+            throw OpenAIInvalidDataException("Unknown ForkClientEvent")
         }
     }
 

@@ -823,7 +823,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ContentPart: $json")
+                throw OpenAIInvalidDataException("Unknown ContentPart")
             }
         }
 

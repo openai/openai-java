@@ -696,7 +696,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown BetaTool: $json")
+            throw OpenAIInvalidDataException("Unknown BetaTool")
         }
     }
 
@@ -1869,7 +1869,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown AllowedTools: $json")
+                    throw OpenAIInvalidDataException("Unknown AllowedTools")
                 }
             }
 
@@ -2687,7 +2687,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown RequireApproval: $json")
+                    throw OpenAIInvalidDataException("Unknown RequireApproval")
                 }
             }
 
@@ -4084,7 +4084,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Container: $json")
+                    throw OpenAIInvalidDataException("Unknown Container")
                 }
             }
 
@@ -4800,7 +4800,7 @@ private constructor(
                          * @throws OpenAIInvalidDataException in the default implementation.
                          */
                         fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException("Unknown NetworkPolicy: $json")
+                            throw OpenAIInvalidDataException("Unknown NetworkPolicy")
                         }
                     }
 

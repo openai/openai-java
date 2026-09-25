@@ -3,6 +3,7 @@
 package com.openai.models.beta.agents.vaults.credentials
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -32,6 +33,11 @@ internal class CredentialListPageResponseTest {
                                 .build()
                         )
                         .createdAt(0L)
+                        .metadata(
+                            Credential.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .name("name")
                         .updatedAt(0L)
                         .vaultId("vault_id")
@@ -62,6 +68,11 @@ internal class CredentialListPageResponseTest {
                             .build()
                     )
                     .createdAt(0L)
+                    .metadata(
+                        Credential.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .name("name")
                     .updatedAt(0L)
                     .vaultId("vault_id")
@@ -96,6 +107,11 @@ internal class CredentialListPageResponseTest {
                                 .build()
                         )
                         .createdAt(0L)
+                        .metadata(
+                            Credential.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .name("name")
                         .updatedAt(0L)
                         .vaultId("vault_id")

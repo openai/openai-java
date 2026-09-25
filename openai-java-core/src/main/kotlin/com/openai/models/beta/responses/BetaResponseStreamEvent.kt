@@ -2532,7 +2532,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown BetaResponseStreamEvent: $json")
+            throw OpenAIInvalidDataException("Unknown BetaResponseStreamEvent")
         }
     }
 

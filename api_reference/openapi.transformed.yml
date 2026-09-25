@@ -601,19 +601,22 @@ paths:
               schema:
                 type: string
                 format: binary
-            audio/mpeg:
+            text/event-stream:
               schema:
-                type: string
-                format: binary
+                $ref: '#/components/schemas/CreateSpeechResponseStreamEvent'
             audio/aac:
               schema:
                 type: string
                 format: binary
-            audio/opus:
+            audio/flac:
               schema:
                 type: string
                 format: binary
-            audio/flac:
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+            audio/opus:
               schema:
                 type: string
                 format: binary
@@ -625,9 +628,6 @@ paths:
               schema:
                 type: string
                 format: binary
-            text/event-stream:
-              schema:
-                $ref: '#/components/schemas/CreateSpeechResponseStreamEvent'
         '400':
           description: Invalid speech request, input, output format, or voice.
           content:
@@ -764,15 +764,17 @@ paths:
                 anyOf:
                 - $ref: '#/components/schemas/CreateTranscriptionResponseJson'
                 - $ref: '#/components/schemas/CreateTranscriptionResponseDiarizedJson'
+                  x-stainless-skip:
+                  - go
                 - $ref: '#/components/schemas/CreateTranscriptionResponseVerboseJson'
                 discriminator:
                   propertyName: task
-            text/plain:
-              schema:
-                type: string
             text/event-stream:
               schema:
                 $ref: '#/components/schemas/CreateTranscriptionResponseStreamEvent'
+            text/plain:
+              schema:
+                type: string
         '400':
           description: Invalid audio input or request parameters.
           content:
@@ -17358,6 +17360,7 @@ paths:
             {
               "id": "resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741476542,
               "status": "completed",
               "completed_at": 1741476543,
@@ -17507,6 +17510,7 @@ paths:
             {
               "id": "resp_67ccd3a9da748190baa7f1570fe91ac604becb25c45c1d41",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741476777,
               "status": "completed",
               "completed_at": 1741476778,
@@ -17634,6 +17638,7 @@ paths:
             {
               "id": "resp_686eef60237881a2bd1180bb8b13de430e34c516d176ff86",
               "object": "response",
+              "access_programs": null,
               "created_at": 1752100704,
               "status": "completed",
               "completed_at": 1752100705,
@@ -17756,6 +17761,7 @@ paths:
             {
               "id": "resp_67ccf18ef5fc8190b16dbee19bc54e5f087bb177ab789d5c",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741484430,
               "status": "completed",
               "completed_at": 1741484431,
@@ -17928,6 +17934,7 @@ paths:
             {
               "id": "resp_67ccf4c55fc48190b71bd0463ad3306d09504fb6872380d7",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741485253,
               "status": "completed",
               "completed_at": 1741485254,
@@ -18125,10 +18132,10 @@ paths:
               }
           response: |
             event: response.created
-            data: {"type":"response.created","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","created_at":1741290958,"status":"in_progress","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-6-astra","output":[],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+            data: {"type":"response.created","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","access_programs":null,"created_at":1741290958,"status":"in_progress","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-6-astra","output":[],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
 
             event: response.in_progress
-            data: {"type":"response.in_progress","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","created_at":1741290958,"status":"in_progress","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-6-astra","output":[],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+            data: {"type":"response.in_progress","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","access_programs":null,"created_at":1741290958,"status":"in_progress","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-6-astra","output":[],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
 
             event: response.output_item.added
             data: {"type":"response.output_item.added","output_index":0,"item":{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"in_progress","role":"assistant","content":[]}}
@@ -18151,7 +18158,7 @@ paths:
             data: {"type":"response.output_item.done","output_index":0,"item":{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"completed","role":"assistant","content":[{"type":"output_text","text":"Hi there! How can I assist you today?","annotations":[]}]}}
 
             event: response.completed
-            data: {"type":"response.completed","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","created_at":1741290958,"status":"completed","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-6-astra","output":[{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"completed","role":"assistant","content":[{"type":"output_text","text":"Hi there! How can I assist you today?","annotations":[]}]}],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":37,"output_tokens":11,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":48},"user":null,"metadata":{}}}
+            data: {"type":"response.completed","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","access_programs":null,"created_at":1741290958,"status":"completed","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-6-astra","output":[{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"completed","role":"assistant","content":[{"type":"output_text","text":"Hi there! How can I assist you today?","annotations":[]}]}],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":37,"output_tokens":11,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":48},"user":null,"metadata":{}}}
         - title: Functions
           request:
             curl: |
@@ -18292,6 +18299,7 @@ paths:
             {
               "id": "resp_67ca09c5efe0819096d0511c92b8c890096610f474011cc0",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741294021,
               "status": "completed",
               "completed_at": 1741294022,
@@ -18430,6 +18438,7 @@ paths:
             {
               "id": "resp_67ccd7eca01881908ff0b5146584e408072912b2993db808",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741477868,
               "status": "completed",
               "completed_at": 1741477869,
@@ -18576,6 +18585,7 @@ paths:
             {
               "id": "resp_67cb71b351908190a308f3859487620d06981a8637e6bc44",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741386163,
               "status": "completed",
               "completed_at": 1741386164,
@@ -18740,6 +18750,7 @@ paths:
             {
               "id": "resp_67cb71b351908190a308f3859487620d06981a8637e6bc44",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741386163,
               "status": "cancelled",
               "background": true,
@@ -23541,10 +23552,27 @@ paths:
                   "geography": "US",
                   "status": "validated",
                   "created_at": 1711471500
+                },
+                {
+                  "object": "organization.external_storage",
+                  "id": "extstorage_gcp123",
+                  "project_id": "proj_gcp123",
+                  "provider": {
+                    "type": "gcp",
+                    "bucket": "customer-gcp-retention",
+                    "workload_identity_project_number": "123456789012",
+                    "workload_identity_pool_id": "customer-pool",
+                    "workload_identity_provider_id": "customer-provider",
+                    "region": "us-central1",
+                    "audience": "proj_gcp123"
+                  },
+                  "geography": "US",
+                  "status": "validated",
+                  "created_at": 1711471400
                 }
               ],
               "first_id": "extstorage_abc123",
-              "last_id": "extstorage_azure123",
+              "last_id": "extstorage_gcp123",
               "has_more": false
             }
       security:
@@ -23635,6 +23663,40 @@ paths:
               "geography": "US",
               "status": "pending",
               "created_at": 1711471533
+            }
+        - title: Google Cloud Storage
+          request:
+            curl: |
+              curl -X POST https://api.openai.com/v1/organization/external_storage \
+                -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
+                -H "Content-Type: application/json" \
+                -d '{
+                  "project_id": "proj_gcp123",
+                  "provider": {
+                    "type": "gcp",
+                    "bucket": "customer-gcp-retention",
+                    "workload_identity_project_number": "123456789012",
+                    "workload_identity_pool_id": "customer-pool",
+                    "workload_identity_provider_id": "customer-provider"
+                  }
+                }'
+          response: |
+            {
+              "object": "organization.external_storage",
+              "id": "extstorage_gcp123",
+              "project_id": "proj_gcp123",
+              "provider": {
+                "type": "gcp",
+                "bucket": "customer-gcp-retention",
+                "workload_identity_project_number": "123456789012",
+                "workload_identity_pool_id": "customer-pool",
+                "workload_identity_provider_id": "customer-provider",
+                "region": "us-central1",
+                "audience": "proj_gcp123"
+              },
+              "geography": "US",
+              "status": "pending",
+              "created_at": 1711471400
             }
       security:
       - AdminApiKeyAuth: []
@@ -29187,8 +29249,8 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse-2'
     post:
       operationId: rotateVaultCredential
-      summary: Rotate a vault credential
-      description: Rotates a vault credential's write-only secret and returns only credential metadata. See [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
+      summary: Update a vault credential
+      description: Updates credential metadata or rotates its write-only secret. See [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
       tags:
       - Vaults
       parameters:
@@ -29215,7 +29277,7 @@ paths:
               $ref: '#/components/schemas/RotateVaultCredentialParams'
       responses:
         '200':
-          description: The rotated vault credential without secret values.
+          description: The updated vault credential without secret values.
           content:
             application/json:
               schema:
@@ -29609,6 +29671,7 @@ paths:
             {
               "id": "resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741476542,
               "status": "completed",
               "completed_at": 1741476543,
@@ -29758,6 +29821,7 @@ paths:
             {
               "id": "resp_67ccd3a9da748190baa7f1570fe91ac604becb25c45c1d41",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741476777,
               "status": "completed",
               "completed_at": 1741476778,
@@ -29885,6 +29949,7 @@ paths:
             {
               "id": "resp_686eef60237881a2bd1180bb8b13de430e34c516d176ff86",
               "object": "response",
+              "access_programs": null,
               "created_at": 1752100704,
               "status": "completed",
               "completed_at": 1752100705,
@@ -30007,6 +30072,7 @@ paths:
             {
               "id": "resp_67ccf18ef5fc8190b16dbee19bc54e5f087bb177ab789d5c",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741484430,
               "status": "completed",
               "completed_at": 1741484431,
@@ -30179,6 +30245,7 @@ paths:
             {
               "id": "resp_67ccf4c55fc48190b71bd0463ad3306d09504fb6872380d7",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741485253,
               "status": "completed",
               "completed_at": 1741485254,
@@ -30376,10 +30443,10 @@ paths:
               }
           response: |
             event: response.created
-            data: {"type":"response.created","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","created_at":1741290958,"status":"in_progress","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-6-astra","output":[],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+            data: {"type":"response.created","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","access_programs":null,"created_at":1741290958,"status":"in_progress","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-6-astra","output":[],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
 
             event: response.in_progress
-            data: {"type":"response.in_progress","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","created_at":1741290958,"status":"in_progress","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-6-astra","output":[],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+            data: {"type":"response.in_progress","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","access_programs":null,"created_at":1741290958,"status":"in_progress","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-6-astra","output":[],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
 
             event: response.output_item.added
             data: {"type":"response.output_item.added","output_index":0,"item":{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"in_progress","role":"assistant","content":[]}}
@@ -30402,7 +30469,7 @@ paths:
             data: {"type":"response.output_item.done","output_index":0,"item":{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"completed","role":"assistant","content":[{"type":"output_text","text":"Hi there! How can I assist you today?","annotations":[]}]}}
 
             event: response.completed
-            data: {"type":"response.completed","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","created_at":1741290958,"status":"completed","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-6-astra","output":[{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"completed","role":"assistant","content":[{"type":"output_text","text":"Hi there! How can I assist you today?","annotations":[]}]}],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":37,"output_tokens":11,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":48},"user":null,"metadata":{}}}
+            data: {"type":"response.completed","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","access_programs":null,"created_at":1741290958,"status":"completed","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-6-astra","output":[{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"completed","role":"assistant","content":[{"type":"output_text","text":"Hi there! How can I assist you today?","annotations":[]}]}],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":37,"output_tokens":11,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":48},"user":null,"metadata":{}}}
         - title: Functions
           request:
             curl: |
@@ -30543,6 +30610,7 @@ paths:
             {
               "id": "resp_67ca09c5efe0819096d0511c92b8c890096610f474011cc0",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741294021,
               "status": "completed",
               "completed_at": 1741294022,
@@ -30681,6 +30749,7 @@ paths:
             {
               "id": "resp_67ccd7eca01881908ff0b5146584e408072912b2993db808",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741477868,
               "status": "completed",
               "completed_at": 1741477869,
@@ -30854,6 +30923,7 @@ paths:
             {
               "id": "resp_67cb71b351908190a308f3859487620d06981a8637e6bc44",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741386163,
               "status": "completed",
               "completed_at": 1741386164,
@@ -31044,6 +31114,7 @@ paths:
             {
               "id": "resp_67cb71b351908190a308f3859487620d06981a8637e6bc44",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741386163,
               "status": "cancelled",
               "background": true,
@@ -38697,6 +38768,8 @@ components:
       - $ref: '#/components/schemas/ResponseProperties'
       - type: object
         properties:
+          access_programs:
+            $ref: '#/components/schemas/AccessProgramsParam'
           prompt_cache_options:
             $ref: '#/components/schemas/ResponsePromptCacheOptionsParam'
           service_tier:
@@ -38924,7 +38997,25 @@ components:
           maxLength: 4096
         voice:
           description: 'The voice to use when generating the audio. Supported built-in voices are `alloy`, `ash`, `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Previews of the voices are available in the [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).'
-          $ref: '#/components/schemas/VoiceIdsOrCustomVoice'
+          title: Voice
+          anyOf:
+          - anyOf:
+            - $ref: '#/components/schemas/VoiceIdsShared'
+            - type: string
+              enum:
+              - fable
+              - onyx
+              - nova
+          - type: object
+            description: Custom voice reference.
+            additionalProperties: false
+            required:
+            - id
+            properties:
+              id:
+                type: string
+                description: The custom voice ID, e.g. `voice_1234`.
+                example: voice_1234
         response_format:
           description: The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and `pcm`.
           default: mp3
@@ -57269,6 +57360,10 @@ components:
             - cancelled
             - queued
             - incomplete
+          access_programs:
+            anyOf:
+            - $ref: '#/components/schemas/AccessProgramsBody'
+            - type: 'null'
           created_at:
             type: number
             format: unixtime
@@ -57381,6 +57476,7 @@ components:
               type: integer
             - type: 'null'
         required:
+        - access_programs
         - id
         - object
         - created_at
@@ -57740,6 +57836,7 @@ components:
             "response": {
               "id": "resp_123",
               "object": "response",
+              "access_programs": null,
               "created_at": 1740855869,
               "status": "completed",
               "completed_at": 1740855870,
@@ -57987,6 +58084,7 @@ components:
             "response": {
               "id": "resp_67ccfcdd16748190a91872c75d38539e09e4d4aac714747c",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741487325,
               "status": "in_progress",
               "completed_at": null,
@@ -58222,6 +58320,7 @@ components:
             "response": {
               "id": "resp_123",
               "object": "response",
+              "access_programs": null,
               "created_at": 1740855869,
               "status": "failed",
               "completed_at": null,
@@ -58760,6 +58859,7 @@ components:
             "response": {
               "id": "resp_67ccfcdd16748190a91872c75d38539e09e4d4aac714747c",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741487325,
               "status": "in_progress",
               "completed_at": null,
@@ -58828,6 +58928,7 @@ components:
             "response": {
               "id": "resp_123",
               "object": "response",
+              "access_programs": null,
               "created_at": 1740855869,
               "status": "incomplete",
               "completed_at": null,
@@ -66061,9 +66162,7 @@ components:
       - type: object
         title: Web search approximate location
         description: |
-          The approximate location of the user. If omitted or null, defaults to the
-          United States. To avoid this fallback, pass `{"type": "approximate"}` without
-          location fields. To localize results, provide the relevant location fields.
+          The approximate location of the user.
         properties:
           type:
             type: string
@@ -66161,6 +66260,10 @@ components:
           - type: 'null'
         user_location:
           $ref: '#/components/schemas/WebSearchApproximateLocation'
+          description: |
+            The approximate location of the user. If omitted or null, defaults to the
+            United States. To avoid this fallback, pass `{"type": "approximate"}` without
+            location fields. To localize results, provide the relevant location fields.
         search_context_size:
           type: string
           enum:
@@ -71690,12 +71793,44 @@ components:
       - account_name
       - container
       - region
+    GcpExternalStorageProviderResponse:
+      properties:
+        type:
+          type: string
+          enum:
+          - gcp
+          default: gcp
+          x-stainless-const: true
+        bucket:
+          type: string
+        workload_identity_project_number:
+          type: string
+        workload_identity_pool_id:
+          type: string
+        workload_identity_provider_id:
+          type: string
+        region:
+          type: string
+        audience:
+          type: string
+      type: object
+      required:
+      - type
+      - bucket
+      - workload_identity_project_number
+      - workload_identity_pool_id
+      - workload_identity_provider_id
+      - region
+      - audience
+      x-stainless-skip:
+      - java
     provider:
       discriminator:
         propertyName: type
       anyOf:
       - $ref: '#/components/schemas/AwsExternalStorageProviderResponse'
       - $ref: '#/components/schemas/AzureExternalStorageProviderResponse'
+      - $ref: '#/components/schemas/GcpExternalStorageProviderResponse'
     PublicProjectResidency:
       type: string
       enum:
@@ -71751,6 +71886,21 @@ components:
       - type
       title: Specific shell tool choice
       description: Forces the model to call the shell tool when a tool call is required.
+    CyberAccessProgramEnum:
+      type: string
+      enum:
+      - standard
+      - daybreak_blue
+      - daybreak_red
+    AccessProgramsParam:
+      properties:
+        cyber:
+          $ref: '#/components/schemas/CyberAccessProgramEnum'
+          description: The Cyber access program to use for this request. Supported values are `standard`, `daybreak_blue`, and `daybreak_red`. If omitted, the API resolves the program from the model's Cyber tier and your organization and project access, subject to model-specific eligibility restrictions. By default, models without a Cyber tier use Standard. Blue-tier models use Daybreak Blue when authorized; otherwise they fall back to Standard unless the model requires Daybreak access. Red-tier models use Daybreak Red and require authorization. Requests that require unavailable Daybreak access return 403. An implicit Standard fallback is represented by null in the response's access_programs field, rather than an explicit Standard selection.
+      additionalProperties: false
+      type: object
+      required: []
+      description: Domain-specific access programs to use for this request.
     ResponsePromptCacheOptionsParam:
       properties:
         ttl:
@@ -71804,6 +71954,14 @@ components:
       type: object
       required:
       - type
+    AccessProgramsBody:
+      properties:
+        cyber:
+          $ref: '#/components/schemas/CyberAccessProgramEnum'
+          description: The effective Cyber access program used for this response.
+      type: object
+      required:
+      - cyber
     PromptCacheOptions:
       properties:
         ttl:
@@ -72317,6 +72475,7 @@ components:
           anyOf:
           - $ref: '#/components/schemas/AwsExternalStorageProviderResponse'
           - $ref: '#/components/schemas/AzureExternalStorageProviderResponse'
+          - $ref: '#/components/schemas/GcpExternalStorageProviderResponse'
         geography:
           type: string
         status:
@@ -72405,6 +72564,31 @@ components:
       - resource_group
       - account_name
       - container
+    GcpExternalStorageProviderParams:
+      properties:
+        type:
+          type: string
+          enum:
+          - gcp
+          default: gcp
+          x-stainless-const: true
+        bucket:
+          type: string
+        workload_identity_project_number:
+          type: string
+        workload_identity_pool_id:
+          type: string
+        workload_identity_provider_id:
+          type: string
+      type: object
+      required:
+      - type
+      - bucket
+      - workload_identity_project_number
+      - workload_identity_pool_id
+      - workload_identity_provider_id
+      x-stainless-skip:
+      - java
     CreateExternalStorageBody:
       properties:
         project_id:
@@ -72416,6 +72600,7 @@ components:
           anyOf:
           - $ref: '#/components/schemas/AwsExternalStorageProviderParams'
           - $ref: '#/components/schemas/AzureExternalStorageProviderParams'
+          - $ref: '#/components/schemas/GcpExternalStorageProviderParams'
       type: object
       required:
       - project_id
@@ -72812,6 +72997,13 @@ components:
         message:
           type: string
           description: A human-readable description of the error that was returned.
+        headers:
+          additionalProperties:
+            type: string
+            description: The retry header value.
+          type: object
+          description: The Retry-After and Retry-After-Ms headers returned with the original error, if any.
+          x-oaiTypeLabel: map
         misalignment:
           $ref: '#/components/schemas/MisalignmentErrorDetailsResource'
       type: object
@@ -76291,6 +76483,7 @@ components:
       - rate_limit_exceeded
       - server_overloaded
       - cyber_policy
+      - misalignment_policy_violation
       - connection_failed
       - server_error
       - authentication_error
@@ -76309,6 +76502,7 @@ components:
       - The request exceeds the available rate limit.
       - The model service is temporarily overloaded.
       - The request was rejected by a safety policy.
+      - The request was blocked by the safety systems.
       - The request could not connect to the model service.
       - The model service encountered an unexpected error.
       - The API credentials are invalid or lack the required access.
@@ -76612,6 +76806,7 @@ components:
       - flex
       - priority
       - fast
+      - ultrafast
       description: The service-tier policy configured for an agent.
     PersistedAgentToolResourceFunction:
       type: object
@@ -77205,12 +77400,14 @@ components:
       - flex
       - priority
       - fast
+      - ultrafast
       x-enumDescriptions:
       - Selects the service tier automatically.
       - Uses the default service tier.
       - Uses the flex service tier.
       - Uses the priority service tier.
       - Uses the fast service tier.
+      - Uses the ultrafast service tier.
       description: The service tier used for model requests.
     PersistedAgentToolConfigParamFunction:
       type: object
@@ -81964,6 +82161,16 @@ components:
         auth:
           $ref: '#/components/schemas/VaultCredentialAuthResource'
           description: The authentication method and non-secret configuration of the credential.
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+            minLength: 0
+          propertyNames:
+            type: string
+            minLength: 0
+          minProperties: 0
+          description: Application-defined key-value pairs associated with this credential.
         created_at:
           type: integer
           format: int64
@@ -81978,6 +82185,7 @@ components:
       - vault_id
       - name
       - auth
+      - metadata
       - created_at
       - updated_at
       additionalProperties: false
@@ -82306,6 +82514,19 @@ components:
         auth:
           $ref: '#/components/schemas/CreateVaultCredentialAuthParam'
           description: The authentication method and write-only secret values to store.
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+            minLength: 0
+            maxLength: 512
+          propertyNames:
+            type: string
+            minLength: 1
+            maxLength: 64
+          minProperties: 0
+          maxProperties: 16
+          description: Up to 16 string key-value pairs, with keys up to 64 and values up to 512 characters. Defaults to an empty map.
       required:
       - auth
       - name
@@ -82485,10 +82706,21 @@ components:
         auth:
           $ref: '#/components/schemas/RotateVaultCredentialAuthParam'
           description: Replacement values for the credential's existing authentication method.
-      required:
-      - auth
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+            minLength: 0
+            maxLength: 512
+          propertyNames:
+            type: string
+            minLength: 1
+            maxLength: 64
+          minProperties: 0
+          maxProperties: 16
+          description: Replaces all metadata. Omit to preserve it, or pass {} to clear it. Up to 16 string key-value pairs, with keys up to 64 and values up to 512 characters.
       additionalProperties: false
-      description: Secret, expiry, and OAuth refresh scope updates for an existing vault credential.
+      description: Metadata, secret, expiry, and OAuth refresh scope updates for an existing vault credential. Supply at least one of `auth` or `metadata`.
     DeletedVaultCredentialResource:
       type: object
       properties:
@@ -86147,6 +86379,10 @@ components:
           - type: 'null'
         user_location:
           $ref: '#/components/schemas/BetaWebSearchApproximateLocation'
+          description: |
+            The approximate location of the user. If omitted or null, defaults to the
+            United States. To avoid this fallback, pass `{"type": "approximate"}` without
+            location fields. To localize results, provide the relevant location fields.
         search_context_size:
           type: string
           enum:
@@ -86162,9 +86398,7 @@ components:
       - type: object
         title: Web search approximate location
         description: |
-          The approximate location of the user. If omitted or null, defaults to the
-          United States. To avoid this fallback, pass `{"type": "approximate"}` without
-          location fields. To localize results, provide the relevant location fields.
+          The approximate location of the user.
         properties:
           type:
             type: string
@@ -91520,6 +91754,10 @@ components:
             - cancelled
             - queued
             - incomplete
+          access_programs:
+            anyOf:
+            - $ref: '#/components/schemas/BetaAccessProgramsBody'
+            - type: 'null'
           created_at:
             type: number
             format: unixtime
@@ -91632,6 +91870,7 @@ components:
               type: integer
             - type: 'null'
         required:
+        - access_programs
         - id
         - object
         - created_at
@@ -91924,6 +92163,20 @@ components:
       - empty_image_file
       - failed_to_download_image
       - image_file_not_found
+    BetaAccessProgramsBody:
+      properties:
+        cyber:
+          $ref: '#/components/schemas/BetaCyberAccessProgramEnum'
+          description: The effective Cyber access program used for this response.
+      type: object
+      required:
+      - cyber
+    BetaCyberAccessProgramEnum:
+      type: string
+      enum:
+      - standard
+      - daybreak_blue
+      - daybreak_red
     BetaServiceTierResponses:
       anyOf:
       - type: string
@@ -93507,6 +93760,7 @@ components:
             "response": {
               "id": "resp_67ccfcdd16748190a91872c75d38539e09e4d4aac714747c",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741487325,
               "status": "in_progress",
               "completed_at": null,
@@ -94035,6 +94289,7 @@ components:
             "response": {
               "id": "resp_67ccfcdd16748190a91872c75d38539e09e4d4aac714747c",
               "object": "response",
+              "access_programs": null,
               "created_at": 1741487325,
               "status": "in_progress",
               "completed_at": null,
@@ -94226,6 +94481,7 @@ components:
             "response": {
               "id": "resp_123",
               "object": "response",
+              "access_programs": null,
               "created_at": 1740855869,
               "status": "completed",
               "completed_at": 1740855870,
@@ -94691,6 +94947,7 @@ components:
             "response": {
               "id": "resp_123",
               "object": "response",
+              "access_programs": null,
               "created_at": 1740855869,
               "status": "incomplete",
               "completed_at": null,
@@ -94758,6 +95015,7 @@ components:
             "response": {
               "id": "resp_123",
               "object": "response",
+              "access_programs": null,
               "created_at": 1740855869,
               "status": "failed",
               "completed_at": null,
@@ -96679,6 +96937,8 @@ components:
       - $ref: '#/components/schemas/BetaResponseProperties'
       - type: object
         properties:
+          access_programs:
+            $ref: '#/components/schemas/BetaAccessProgramsParam'
           prompt_cache_options:
             $ref: '#/components/schemas/BetaResponsePromptCacheOptionsParam'
           service_tier:
@@ -96903,6 +97163,15 @@ components:
       required: []
       title: Prompt cache options
       description: Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for current details.
+    BetaAccessProgramsParam:
+      properties:
+        cyber:
+          $ref: '#/components/schemas/BetaCyberAccessProgramEnum'
+          description: The Cyber access program to use for this request. Supported values are `standard`, `daybreak_blue`, and `daybreak_red`. If omitted, the API resolves the program from the model's Cyber tier and your organization and project access, subject to model-specific eligibility restrictions. By default, models without a Cyber tier use Standard. Blue-tier models use Daybreak Blue when authorized; otherwise they fall back to Standard unless the model requires Daybreak access. Red-tier models use Daybreak Red and require authorization. Requests that require unavailable Daybreak access return 403. An implicit Standard fallback is represented by null in the response's access_programs field, rather than an explicit Standard selection.
+      additionalProperties: false
+      type: object
+      required: []
+      description: Domain-specific access programs to use for this request.
     BetaCreateModelResponseProperties:
       allOf:
       - $ref: '#/components/schemas/BetaModelResponseProperties'

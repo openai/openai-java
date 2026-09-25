@@ -237,6 +237,9 @@ private constructor(
             /** The request was rejected by a safety policy. */
             @JvmField val CYBER_POLICY = of("cyber_policy")
 
+            /** The request was blocked by the safety systems. */
+            @JvmField val MISALIGNMENT_POLICY_VIOLATION = of("misalignment_policy_violation")
+
             /** The request could not connect to the model service. */
             @JvmField val CONNECTION_FAILED = of("connection_failed")
 
@@ -286,6 +289,8 @@ private constructor(
             SERVER_OVERLOADED,
             /** The request was rejected by a safety policy. */
             CYBER_POLICY,
+            /** The request was blocked by the safety systems. */
+            MISALIGNMENT_POLICY_VIOLATION,
             /** The request could not connect to the model service. */
             CONNECTION_FAILED,
             /** The model service encountered an unexpected error. */
@@ -332,6 +337,8 @@ private constructor(
             SERVER_OVERLOADED,
             /** The request was rejected by a safety policy. */
             CYBER_POLICY,
+            /** The request was blocked by the safety systems. */
+            MISALIGNMENT_POLICY_VIOLATION,
             /** The request could not connect to the model service. */
             CONNECTION_FAILED,
             /** The model service encountered an unexpected error. */
@@ -372,6 +379,7 @@ private constructor(
                 RATE_LIMIT_EXCEEDED -> Value.RATE_LIMIT_EXCEEDED
                 SERVER_OVERLOADED -> Value.SERVER_OVERLOADED
                 CYBER_POLICY -> Value.CYBER_POLICY
+                MISALIGNMENT_POLICY_VIOLATION -> Value.MISALIGNMENT_POLICY_VIOLATION
                 CONNECTION_FAILED -> Value.CONNECTION_FAILED
                 SERVER_ERROR -> Value.SERVER_ERROR
                 AUTHENTICATION_ERROR -> Value.AUTHENTICATION_ERROR
@@ -403,6 +411,7 @@ private constructor(
                 RATE_LIMIT_EXCEEDED -> Known.RATE_LIMIT_EXCEEDED
                 SERVER_OVERLOADED -> Known.SERVER_OVERLOADED
                 CYBER_POLICY -> Known.CYBER_POLICY
+                MISALIGNMENT_POLICY_VIOLATION -> Known.MISALIGNMENT_POLICY_VIOLATION
                 CONNECTION_FAILED -> Known.CONNECTION_FAILED
                 SERVER_ERROR -> Known.SERVER_ERROR
                 AUTHENTICATION_ERROR -> Known.AUTHENTICATION_ERROR

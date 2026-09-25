@@ -78,7 +78,7 @@ interface CredentialService {
     ): Credential
 
     /**
-     * Rotates a vault credential's write-only secret and returns only credential metadata. See
+     * Updates credential metadata or rotates its write-only secret. See
      * [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
      */
     fun update(credentialId: String, params: CredentialUpdateParams): Credential =

@@ -261,7 +261,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown CredentialAuth: ${redactSecretValue(json)}")
+            throw OpenAIInvalidDataException("Unknown CredentialAuth")
         }
     }
 
