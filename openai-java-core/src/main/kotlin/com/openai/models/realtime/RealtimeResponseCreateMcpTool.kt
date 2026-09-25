@@ -1039,7 +1039,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown AllowedTools: $json")
+                throw OpenAIInvalidDataException("Unknown AllowedTools")
             }
         }
 
@@ -1842,7 +1842,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown RequireApproval: $json")
+                throw OpenAIInvalidDataException("Unknown RequireApproval")
             }
         }
 

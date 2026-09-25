@@ -878,7 +878,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown UnwrapWebhookEvent: $json")
+            throw OpenAIInvalidDataException("Unknown UnwrapWebhookEvent")
         }
     }
 

@@ -293,7 +293,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown AgentToolParam: $json")
+            throw OpenAIInvalidDataException("Unknown AgentToolParam")
         }
     }
 

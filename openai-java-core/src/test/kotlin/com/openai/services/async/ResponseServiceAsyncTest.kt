@@ -36,6 +36,11 @@ internal class ResponseServiceAsyncTest {
         val responseFuture =
             responseServiceAsync.create(
                 ResponseCreateParams.builder()
+                    .accessPrograms(
+                        ResponseCreateParams.AccessPrograms.builder()
+                            .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()
@@ -172,6 +177,11 @@ internal class ResponseServiceAsyncTest {
         val responseStreamResponse =
             responseServiceAsync.createStreaming(
                 ResponseCreateParams.builder()
+                    .accessPrograms(
+                        ResponseCreateParams.AccessPrograms.builder()
+                            .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()

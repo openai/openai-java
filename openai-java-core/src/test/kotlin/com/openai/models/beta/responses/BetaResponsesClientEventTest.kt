@@ -18,6 +18,13 @@ internal class BetaResponsesClientEventTest {
     fun ofResponseCreate() {
         val responseCreate =
             BetaResponsesClientEvent.ResponseCreate.builder()
+                .accessPrograms(
+                    BetaResponsesClientEvent.ResponseCreate.AccessPrograms.builder()
+                        .cyber(
+                            BetaResponsesClientEvent.ResponseCreate.AccessPrograms.Cyber.STANDARD
+                        )
+                        .build()
+                )
                 .background(true)
                 .addContextManagement(
                     BetaResponsesClientEvent.ResponseCreate.ContextManagement.builder()
@@ -171,6 +178,14 @@ internal class BetaResponsesClientEventTest {
         val betaResponsesClientEvent =
             BetaResponsesClientEvent.ofResponseCreate(
                 BetaResponsesClientEvent.ResponseCreate.builder()
+                    .accessPrograms(
+                        BetaResponsesClientEvent.ResponseCreate.AccessPrograms.builder()
+                            .cyber(
+                                BetaResponsesClientEvent.ResponseCreate.AccessPrograms.Cyber
+                                    .STANDARD
+                            )
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         BetaResponsesClientEvent.ResponseCreate.ContextManagement.builder()

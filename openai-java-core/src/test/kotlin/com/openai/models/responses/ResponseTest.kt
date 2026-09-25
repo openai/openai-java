@@ -20,6 +20,11 @@ internal class ResponseTest {
         val response =
             Response.builder()
                 .id("id")
+                .accessPrograms(
+                    Response.AccessPrograms.builder()
+                        .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                        .build()
+                )
                 .createdAt(0.0)
                 .error(
                     ResponseError.builder()
@@ -241,6 +246,12 @@ internal class ResponseTest {
                 .build()
 
         assertThat(response.id()).isEqualTo("id")
+        assertThat(response.accessPrograms())
+            .contains(
+                Response.AccessPrograms.builder()
+                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                    .build()
+            )
         assertThat(response.createdAt()).isEqualTo(0.0)
         assertThat(response.error())
             .contains(
@@ -479,6 +490,11 @@ internal class ResponseTest {
         val response =
             Response.builder()
                 .id("id")
+                .accessPrograms(
+                    Response.AccessPrograms.builder()
+                        .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                        .build()
+                )
                 .createdAt(0.0)
                 .error(
                     ResponseError.builder()

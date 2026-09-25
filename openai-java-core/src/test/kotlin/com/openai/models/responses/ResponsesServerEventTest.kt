@@ -1034,6 +1034,11 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -1340,6 +1345,11 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
@@ -1901,6 +1911,11 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -2207,6 +2222,11 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
@@ -3499,6 +3519,11 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -3805,6 +3830,11 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
@@ -4063,6 +4093,11 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -4369,6 +4404,11 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
@@ -4627,6 +4667,11 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -4933,6 +4978,11 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
@@ -8198,6 +8248,11 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -8504,6 +8559,11 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()

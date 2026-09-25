@@ -36,6 +36,11 @@ internal class ResponseServiceTest {
         val response =
             responseService.create(
                 ResponseCreateParams.builder()
+                    .accessPrograms(
+                        ResponseCreateParams.AccessPrograms.builder()
+                            .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()
@@ -171,6 +176,11 @@ internal class ResponseServiceTest {
         val responseStreamResponse =
             responseService.createStreaming(
                 ResponseCreateParams.builder()
+                    .accessPrograms(
+                        ResponseCreateParams.AccessPrograms.builder()
+                            .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()

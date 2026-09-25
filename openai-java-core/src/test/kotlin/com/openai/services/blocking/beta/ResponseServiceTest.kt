@@ -35,6 +35,11 @@ internal class ResponseServiceTest {
             responseService.create(
                 ResponseCreateParams.builder()
                     .addBeta(ResponseCreateParams.Beta.RESPONSES_MULTI_AGENT_V1)
+                    .accessPrograms(
+                        ResponseCreateParams.AccessPrograms.builder()
+                            .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()
@@ -177,6 +182,11 @@ internal class ResponseServiceTest {
             responseService.createStreaming(
                 ResponseCreateParams.builder()
                     .addBeta(ResponseCreateParams.Beta.RESPONSES_MULTI_AGENT_V1)
+                    .accessPrograms(
+                        ResponseCreateParams.AccessPrograms.builder()
+                            .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()

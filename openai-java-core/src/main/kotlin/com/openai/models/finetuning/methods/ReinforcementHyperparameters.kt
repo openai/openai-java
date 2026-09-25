@@ -640,7 +640,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown BatchSize: $json")
+                throw OpenAIInvalidDataException("Unknown BatchSize")
             }
         }
 
@@ -856,7 +856,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ComputeMultiplier: $json")
+                throw OpenAIInvalidDataException("Unknown ComputeMultiplier")
             }
         }
 
@@ -1073,7 +1073,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown EvalInterval: $json")
+                throw OpenAIInvalidDataException("Unknown EvalInterval")
             }
         }
 
@@ -1289,7 +1289,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown EvalSamples: $json")
+                throw OpenAIInvalidDataException("Unknown EvalSamples")
             }
         }
 
@@ -1508,7 +1508,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown LearningRateMultiplier: $json")
+                throw OpenAIInvalidDataException("Unknown LearningRateMultiplier")
             }
         }
 
@@ -1728,7 +1728,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown NEpochs: $json")
+                throw OpenAIInvalidDataException("Unknown NEpochs")
             }
         }
 

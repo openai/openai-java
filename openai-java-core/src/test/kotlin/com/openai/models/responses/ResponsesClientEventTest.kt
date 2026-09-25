@@ -22,6 +22,11 @@ internal class ResponsesClientEventTest {
     fun ofResponseCreate() {
         val responseCreate =
             ResponsesClientEvent.ResponseCreate.builder()
+                .accessPrograms(
+                    ResponsesClientEvent.ResponseCreate.AccessPrograms.builder()
+                        .cyber(ResponsesClientEvent.ResponseCreate.AccessPrograms.Cyber.STANDARD)
+                        .build()
+                )
                 .background(true)
                 .addContextManagement(
                     ResponsesClientEvent.ResponseCreate.ContextManagement.builder()
@@ -162,6 +167,13 @@ internal class ResponsesClientEventTest {
         val responsesClientEvent =
             ResponsesClientEvent.ofResponseCreate(
                 ResponsesClientEvent.ResponseCreate.builder()
+                    .accessPrograms(
+                        ResponsesClientEvent.ResponseCreate.AccessPrograms.builder()
+                            .cyber(
+                                ResponsesClientEvent.ResponseCreate.AccessPrograms.Cyber.STANDARD
+                            )
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponsesClientEvent.ResponseCreate.ContextManagement.builder()

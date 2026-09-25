@@ -245,7 +245,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown CredentialAuthRotateParam: $json")
+            throw OpenAIInvalidDataException("Unknown CredentialAuthRotateParam")
         }
     }
 

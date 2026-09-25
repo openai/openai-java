@@ -279,7 +279,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown EvalContentItem: $json")
+            throw OpenAIInvalidDataException("Unknown EvalContentItem")
         }
     }
 

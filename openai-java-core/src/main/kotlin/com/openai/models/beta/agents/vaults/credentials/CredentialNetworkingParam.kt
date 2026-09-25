@@ -241,7 +241,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown CredentialNetworkingParam: $json")
+            throw OpenAIInvalidDataException("Unknown CredentialNetworkingParam")
         }
     }
 

@@ -15,6 +15,11 @@ internal class BetaResponseTest {
         val betaResponse =
             BetaResponse.builder()
                 .id("id")
+                .accessPrograms(
+                    BetaResponse.AccessPrograms.builder()
+                        .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                        .build()
+                )
                 .createdAt(0.0)
                 .error(
                     BetaResponseError.builder()
@@ -245,6 +250,12 @@ internal class BetaResponseTest {
                 .build()
 
         assertThat(betaResponse.id()).isEqualTo("id")
+        assertThat(betaResponse.accessPrograms())
+            .contains(
+                BetaResponse.AccessPrograms.builder()
+                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                    .build()
+            )
         assertThat(betaResponse.createdAt()).isEqualTo(0.0)
         assertThat(betaResponse.error())
             .contains(
@@ -492,6 +503,11 @@ internal class BetaResponseTest {
         val betaResponse =
             BetaResponse.builder()
                 .id("id")
+                .accessPrograms(
+                    BetaResponse.AccessPrograms.builder()
+                        .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                        .build()
+                )
                 .createdAt(0.0)
                 .error(
                     BetaResponseError.builder()
