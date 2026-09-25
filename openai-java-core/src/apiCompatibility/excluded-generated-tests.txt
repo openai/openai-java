@@ -22,3 +22,10 @@ openai-java-core/src/test/kotlin/com/openai/models/videos/VideoEditParamsTest.kt
 openai-java-core/src/test/kotlin/com/openai/models/videos/VideoExtendParamsTest.kt
 openai-java-core/src/test/kotlin/com/openai/models/videos/VideoRemixParamsTest.kt
 openai-java-core/src/test/kotlin/com/openai/services/ResponseStreamEventValidationTest.kt
+
+# Intentional Agents beta exception: CredentialUpdateParams.auth() and Body.auth() become Optional
+# for metadata-only updates. CredentialAuthRotateCompatibility preserves the other expressions.
+# This does not exempt other beta APIs or disable the ordinary runtime/redaction tests.
+# Scoped to the beta credential update API documented here:
+# https://developers.openai.com/api/reference/java/resources/beta/subresources/agents/subresources/vaults
+openai-java-core/src/test/kotlin/com/openai/models/beta/agents/vaults/credentials/CredentialAuthRotateParamTest.kt
