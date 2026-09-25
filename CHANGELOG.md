@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.69.3](https://github.com/openai/openai-java/compare/v4.69.2...v4.69.3) (2026-09-25)
+
+
+### Chores
+
+* **api:** document files and uploads error responses ([#1081](https://github.com/openai/openai-java/issues/1081)) ([69a4e21](https://github.com/openai/openai-java/commit/69a4e21ba3686e83b084901febeffb42b818460b))
+* **api:** document Responses not-found errors ([#1080](https://github.com/openai/openai-java/issues/1080)) ([e8cbf5d](https://github.com/openai/openai-java/commit/e8cbf5d732d4f5acf7cc455ff2dc75ce91377800))
+
+
+### Build System
+
+* **deps:** bump Maven Publish to 0.34.0 ([#910](https://github.com/openai/openai-java/issues/910)) ([2cbf22c](https://github.com/openai/openai-java/commit/2cbf22ca192670619bce0f04761813b814b758d5))
+* **deps:** bump Shadow to 9.2.2 ([#904](https://github.com/openai/openai-java/issues/904)) ([09b8c60](https://github.com/openai/openai-java/commit/09b8c60a86232d23c1c29e167a4233a154470924))
+* **deps:** upgrade Kotlin declarations together to 2.2.21 ([#1079](https://github.com/openai/openai-java/issues/1079)) ([465742d](https://github.com/openai/openai-java/commit/465742d697dd584f8012a1f56857fb97f3001b11))
+
 ## [4.69.2](https://github.com/openai/openai-java/compare/v4.69.1...v4.69.2) (2026-09-24)
 
 
