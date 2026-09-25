@@ -4977,7 +4977,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown FunctionCall: $json")
+                throw OpenAIInvalidDataException("Unknown FunctionCall")
             }
         }
 
@@ -7744,7 +7744,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ResponseFormat: $json")
+                throw OpenAIInvalidDataException("Unknown ResponseFormat")
             }
         }
 
@@ -8132,7 +8132,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Stop: $json")
+                throw OpenAIInvalidDataException("Unknown Stop")
             }
         }
 

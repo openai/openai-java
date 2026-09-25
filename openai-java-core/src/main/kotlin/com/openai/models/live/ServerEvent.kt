@@ -1119,7 +1119,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown ServerEvent: $json")
+            throw OpenAIInvalidDataException("Unknown ServerEvent")
         }
     }
 

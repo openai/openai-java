@@ -3,6 +3,7 @@
 package com.openai.models.videos
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -15,6 +16,11 @@ internal class VideoCreateErrorTest {
             VideoCreateError.builder()
                 .code("code")
                 .message("message")
+                .headers(
+                    VideoCreateError.Headers.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .misalignment(
                     VideoCreateError.Misalignment.builder()
                         .detailedExplanation("detailed_explanation")
@@ -31,6 +37,12 @@ internal class VideoCreateErrorTest {
 
         assertThat(videoCreateError.code()).isEqualTo("code")
         assertThat(videoCreateError.message()).isEqualTo("message")
+        assertThat(videoCreateError.headers())
+            .contains(
+                VideoCreateError.Headers.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
+            )
         assertThat(videoCreateError.misalignment())
             .contains(
                 VideoCreateError.Misalignment.builder()
@@ -50,6 +62,11 @@ internal class VideoCreateErrorTest {
             VideoCreateError.builder()
                 .code("code")
                 .message("message")
+                .headers(
+                    VideoCreateError.Headers.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .misalignment(
                     VideoCreateError.Misalignment.builder()
                         .detailedExplanation("detailed_explanation")

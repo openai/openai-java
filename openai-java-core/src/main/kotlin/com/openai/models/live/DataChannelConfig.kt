@@ -421,7 +421,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown AllowedClientEvents: $json")
+                throw OpenAIInvalidDataException("Unknown AllowedClientEvents")
             }
         }
 
@@ -652,7 +652,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown AllowedServerEvents: $json")
+                throw OpenAIInvalidDataException("Unknown AllowedServerEvents")
             }
         }
 

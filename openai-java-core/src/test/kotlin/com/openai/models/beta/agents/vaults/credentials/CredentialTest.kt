@@ -3,6 +3,7 @@
 package com.openai.models.beta.agents.vaults.credentials
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -30,6 +31,11 @@ internal class CredentialTest {
                         .build()
                 )
                 .createdAt(0L)
+                .metadata(
+                    Credential.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .name("name")
                 .updatedAt(0L)
                 .vaultId("vault_id")
@@ -55,6 +61,12 @@ internal class CredentialTest {
                 )
             )
         assertThat(credential.createdAt()).isEqualTo(0L)
+        assertThat(credential.metadata())
+            .isEqualTo(
+                Credential.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
+            )
         assertThat(credential.name()).isEqualTo("name")
         assertThat(credential.updatedAt()).isEqualTo(0L)
         assertThat(credential.vaultId()).isEqualTo("vault_id")
@@ -82,6 +94,11 @@ internal class CredentialTest {
                         .build()
                 )
                 .createdAt(0L)
+                .metadata(
+                    Credential.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .name("name")
                 .updatedAt(0L)
                 .vaultId("vault_id")

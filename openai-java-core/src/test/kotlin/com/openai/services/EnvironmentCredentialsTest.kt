@@ -286,7 +286,7 @@ internal class EnvironmentCredentialsTest {
         aResponse()
             .withHeader("Content-Type", "application/json")
             .withBody(
-                """{"id":"credential_test","auth":$auth,"created_at":1700000000,"updated_at":1700000000,"name":"Test credential","object":"vault.credential","vault_id":"vault_test"}"""
+                """{"id":"credential_test","metadata":{},"auth":$auth,"created_at":1700000000,"updated_at":1700000000,"name":"Test credential","object":"vault.credential","vault_id":"vault_test"}"""
             )
 
     private fun unrestrictedMetadata() =

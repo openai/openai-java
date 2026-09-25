@@ -135,9 +135,7 @@ internal class EnvironmentCredentialVisitorCompatibilityTest {
                         }
                         .cause
                 assertThat(error).isInstanceOf(OpenAIInvalidDataException::class.java)
-                assertThat(error?.message)
-                    .doesNotContain("fake-secret")
-                    .contains("[REDACTED]", "future_field", "preserved")
+                assertThat(error).hasMessage("Unknown ${union.simpleName}")
                 assertThat(jsonMapper().readTree(jsonMapper().writeValueAsString(auth)))
                     .isEqualTo(expected)
             }

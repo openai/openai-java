@@ -799,7 +799,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown File: $json")
+                throw OpenAIInvalidDataException("Unknown File")
             }
         }
 
@@ -2205,7 +2205,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Skill: $json")
+                throw OpenAIInvalidDataException("Unknown Skill")
             }
         }
 

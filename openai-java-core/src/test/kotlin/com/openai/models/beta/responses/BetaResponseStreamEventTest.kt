@@ -1058,6 +1058,11 @@ internal class BetaResponseStreamEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -1371,6 +1376,11 @@ internal class BetaResponseStreamEventTest {
                     .response(
                         BetaResponse.builder()
                             .id("id")
+                            .accessPrograms(
+                                BetaResponse.AccessPrograms.builder()
+                                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 BetaResponseError.builder()
@@ -1954,6 +1964,11 @@ internal class BetaResponseStreamEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -2267,6 +2282,11 @@ internal class BetaResponseStreamEventTest {
                     .response(
                         BetaResponse.builder()
                             .id("id")
+                            .accessPrograms(
+                                BetaResponse.AccessPrograms.builder()
+                                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 BetaResponseError.builder()
@@ -3737,6 +3757,11 @@ internal class BetaResponseStreamEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -4051,6 +4076,11 @@ internal class BetaResponseStreamEventTest {
                     .response(
                         BetaResponse.builder()
                             .id("id")
+                            .accessPrograms(
+                                BetaResponse.AccessPrograms.builder()
+                                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 BetaResponseError.builder()
@@ -4318,6 +4348,11 @@ internal class BetaResponseStreamEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -4631,6 +4666,11 @@ internal class BetaResponseStreamEventTest {
                     .response(
                         BetaResponse.builder()
                             .id("id")
+                            .accessPrograms(
+                                BetaResponse.AccessPrograms.builder()
+                                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 BetaResponseError.builder()
@@ -4896,6 +4936,11 @@ internal class BetaResponseStreamEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -5210,6 +5255,11 @@ internal class BetaResponseStreamEventTest {
                     .response(
                         BetaResponse.builder()
                             .id("id")
+                            .accessPrograms(
+                                BetaResponse.AccessPrograms.builder()
+                                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 BetaResponseError.builder()
@@ -8690,6 +8740,11 @@ internal class BetaResponseStreamEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -9003,6 +9058,11 @@ internal class BetaResponseStreamEventTest {
                     .response(
                         BetaResponse.builder()
                             .id("id")
+                            .accessPrograms(
+                                BetaResponse.AccessPrograms.builder()
+                                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 BetaResponseError.builder()

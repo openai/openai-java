@@ -135,6 +135,13 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("input", JSON_FIELD),
                 DelegationWriteTestCase("input", STRING),
                 DelegationWriteTestCase("inputOfResponse", LIST),
+                DelegationWriteTestCase(
+                    "accessPrograms",
+                    ResponseCreateParams.AccessPrograms.builder()
+                        .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                        .build(),
+                ),
+                DelegationWriteTestCase("accessPrograms", JSON_FIELD),
                 DelegationWriteTestCase("model", RESPONSES_MODEL),
                 DelegationWriteTestCase("model", JSON_FIELD),
                 DelegationWriteTestCase("model", STRING),

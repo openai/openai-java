@@ -236,7 +236,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown EnvironmentParam: $json")
+            throw OpenAIInvalidDataException("Unknown EnvironmentParam")
         }
     }
 

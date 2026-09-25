@@ -21,6 +21,11 @@ internal class ResponseIncompleteEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -256,6 +261,11 @@ internal class ResponseIncompleteEventTest {
             .isEqualTo(
                 Response.builder()
                     .id("id")
+                    .accessPrograms(
+                        Response.AccessPrograms.builder()
+                            .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .createdAt(0.0)
                     .error(
                         ResponseError.builder()
@@ -491,6 +501,11 @@ internal class ResponseIncompleteEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
