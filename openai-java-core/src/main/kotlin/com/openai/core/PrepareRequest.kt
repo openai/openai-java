@@ -7,6 +7,8 @@ import com.openai.azure.replaceBearerTokenForAzure
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.closeMultipartOnFailure
 import com.openai.errors.InvalidResourceIdException
+import com.openai.models.ChatModel
+import com.openai.models.ResponsesModel
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import kotlin.reflect.full.declaredFunctions
@@ -69,8 +71,29 @@ internal fun Params.modelNameOrNull(): String? {
             null
         }
 
-    return when (modelName) {
-        is Optional<*> -> modelName.orElse(null)?.toString()
-        else -> modelName?.toString()
+    val unwrappedModelName =
+        when (modelName) {
+            is Optional<*> -> modelName.orElse(null)
+            else -> modelName
+        }
+
+    return when (unwrappedModelName) {
+        // The `toString()` of a union type is a debug representation, so resolve its variant.
+        is ResponsesModel -> unwrappedModelName.modelNameOrNull()
+        else -> unwrappedModelName?.toString()
     }
 }
+
+private fun ResponsesModel.modelNameOrNull(): String? =
+    accept(
+        object : ResponsesModel.Visitor<String?> {
+            override fun visitString(string: String): String = string
+
+            override fun visitChat(chat: ChatModel): String = chat.toString()
+
+            override fun visitOnly(only: ResponsesModel.ResponsesOnlyModel): String =
+                only.toString()
+
+            override fun unknown(json: JsonValue?): String? = null
+        }
+    )
