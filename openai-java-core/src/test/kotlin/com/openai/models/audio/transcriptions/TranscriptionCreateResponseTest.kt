@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ValueSource
 
 internal class TranscriptionCreateResponseTest {
 
@@ -162,6 +163,63 @@ internal class TranscriptionCreateResponseTest {
             )
 
         assertThat(roundtrippedTranscriptionCreateResponse).isEqualTo(transcriptionCreateResponse)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["", "\"task\": null,", "\"task\": \"transcribe\","])
+    fun deserializeDiarizedWithEmptySegments(task: String) {
+        val transcriptionCreateResponse =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                      "text": "",
+                      $task
+                      "segments": []
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<TranscriptionCreateResponse>(),
+                )
+
+        assertThat(transcriptionCreateResponse.isDiarized()).isTrue()
+    }
+
+    @Test
+    fun deserializePlainTranscriptionWithoutDiarizedFields() {
+        val transcriptionCreateResponse =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                      "text": "hello"
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<TranscriptionCreateResponse>(),
+                )
+
+        assertThat(transcriptionCreateResponse.isTranscription()).isTrue()
+    }
+
+    @Test
+    fun deserializeVerboseWithEmptySegments() {
+        val transcriptionCreateResponse =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                      "duration": 0.0,
+                      "language": "en",
+                      "text": "",
+                      "segments": []
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<TranscriptionCreateResponse>(),
+                )
+
+        assertThat(transcriptionCreateResponse.isVerbose()).isTrue()
     }
 
     @Test

@@ -58,10 +58,21 @@ private constructor(
     /**
      * Duration of the input audio in seconds.
      *
+     * This accessor preserves the existing behavior and throws when the field is missing or null.
+     * Use [durationOptional] when the server may omit the field.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun duration(): Double = duration.getRequired("duration")
+
+    /**
+     * Returns the duration of the input audio when provided by the server.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun durationOptional(): Optional<Double> = duration.getOptional("duration")
 
     /**
      * Segments of the transcript annotated with timestamps and speaker labels.
@@ -149,7 +160,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .duration()
          * .segments()
          * .text()
          * ```
@@ -160,7 +170,7 @@ private constructor(
     /** A builder for [TranscriptionDiarized]. */
     class Builder internal constructor() {
 
-        private var duration: JsonField<Double>? = null
+        private var duration: JsonField<Double> = JsonMissing.of()
         private var segments: JsonField<MutableList<TranscriptionDiarizedSegment>>? = null
         private var task: JsonValue = JsonValue.from("transcribe")
         private var text: JsonField<String>? = null
@@ -178,7 +188,17 @@ private constructor(
         }
 
         /** Duration of the input audio in seconds. */
-        fun duration(duration: Double) = duration(JsonField.of(duration))
+        fun duration(duration: Double?) = duration(JsonField.ofNullable(duration))
+
+        /**
+         * Alias for [Builder.duration].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun duration(duration: Double) = duration(duration as Double?)
+
+        /** Alias for calling [Builder.duration] with `duration.orElse(null)`. */
+        fun duration(duration: Optional<Double>) = duration(duration.getOrNull())
 
         /**
          * Sets [Builder.duration] to an arbitrary JSON value.
@@ -294,7 +314,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .duration()
          * .segments()
          * .text()
          * ```
@@ -303,7 +322,7 @@ private constructor(
          */
         fun build(): TranscriptionDiarized =
             TranscriptionDiarized(
-                checkRequired("duration", duration),
+                duration,
                 checkRequired("segments", segments).map { it.toImmutable() },
                 task,
                 checkRequired("text", text),
@@ -327,10 +346,11 @@ private constructor(
             return@apply
         }
 
-        duration()
+        durationOptional()
         segments().forEach { it.validate() }
+        // The API may omit task or return null; when present, it must be "transcribe".
         _task().let {
-            if (it != JsonValue.from("transcribe")) {
+            if (!it.isMissing() && !it.isNull() && it != JsonValue.from("transcribe")) {
                 throw OpenAIInvalidDataException("'task' is invalid, received $it")
             }
         }
@@ -355,6 +375,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (duration.asKnown().isPresent) 1 else 0) +
+            (if (segments.asKnown().isPresent) 1 else 0) +
             (segments.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             task.let { if (it == JsonValue.from("transcribe")) 1 else 0 } +
             (if (text.asKnown().isPresent) 1 else 0) +
