@@ -1,5 +1,25 @@
 # Changelog
 
+## [4.70.0](https://github.com/openai/openai-java/compare/v4.69.3...v4.70.0) (2026-09-26)
+
+
+### Features
+
+* **api:** add access programs and credential metadata ([#1088](https://github.com/openai/openai-java/issues/1088)) ([c197342](https://github.com/openai/openai-java/commit/c1973427bddbab4d6bf8e1f91e9fe372415eadd1))
+
+
+### Bug Fixes
+
+* **api:** preserve plaintext and rich audio response models ([#1083](https://github.com/openai/openai-java/issues/1083)) ([59d019d](https://github.com/openai/openai-java/commit/59d019d42daf06d3369c76b7f98a00ee2c7c3d2f))
+
+
+### Chores
+
+* **api:** clarify documented API error responses ([#1089](https://github.com/openai/openai-java/issues/1089)) ([e929b50](https://github.com/openai/openai-java/commit/e929b504eb6314c33cebc15d206988bd79481797))
+* **api:** document batch error responses ([#1082](https://github.com/openai/openai-java/issues/1082)) ([840bb12](https://github.com/openai/openai-java/commit/840bb120c0d37313aa494ef2bd3a6981a2089341))
+* **api:** document fine-tuning and model errors ([#1087](https://github.com/openai/openai-java/issues/1087)) ([2bfb718](https://github.com/openai/openai-java/commit/2bfb7186eac7af18ba080eb3effd417a1ea44844))
+* **api:** document stored chat completion errors ([#1086](https://github.com/openai/openai-java/issues/1086)) ([20d1235](https://github.com/openai/openai-java/commit/20d1235befd2b4f9f2e8cd6923ca40c6801da126))
+
 ## [4.69.3](https://github.com/openai/openai-java/compare/v4.69.2...v4.69.3) (2026-09-25)
 
 

@@ -15,7 +15,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.69.3")
+implementation("com.openai:openai-java:4.70.0")
 ```
 
 ### Maven
@@ -24,7 +24,7 @@ implementation("com.openai:openai-java:4.69.3")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.69.3</version>
+  <version>4.70.0</version>
 </dependency>
 ```
 
@@ -99,7 +99,7 @@ with normal AWS credentials:
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java-bedrock:4.69.3")
+implementation("com.openai:openai-java-bedrock:4.70.0")
 ```
 
 <!-- x-release-please-end -->
