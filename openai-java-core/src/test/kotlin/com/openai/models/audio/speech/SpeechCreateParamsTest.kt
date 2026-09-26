@@ -65,4 +65,14 @@ internal class SpeechCreateParamsTest {
                 SpeechCreateParams.Voice.ofUnionMember1(SpeechCreateParams.Voice.UnionMember1.ALLOY)
             )
     }
+
+    @Test
+    fun voiceKnownValuesIncludeSupportedSpeechVoices() {
+        assertThat(SpeechCreateParams.Voice.UnionMember1.FABLE.known())
+            .isEqualTo(SpeechCreateParams.Voice.UnionMember1.Known.FABLE)
+        assertThat(SpeechCreateParams.Voice.UnionMember1.ONYX.known())
+            .isEqualTo(SpeechCreateParams.Voice.UnionMember1.Known.ONYX)
+        assertThat(SpeechCreateParams.Voice.UnionMember1.NOVA.known())
+            .isEqualTo(SpeechCreateParams.Voice.UnionMember1.Known.NOVA)
+    }
 }
