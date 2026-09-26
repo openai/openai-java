@@ -601,30 +601,6 @@ paths:
               schema:
                 type: string
                 format: binary
-            audio/mpeg:
-              schema:
-                type: string
-                format: binary
-            audio/aac:
-              schema:
-                type: string
-                format: binary
-            audio/opus:
-              schema:
-                type: string
-                format: binary
-            audio/flac:
-              schema:
-                type: string
-                format: binary
-            audio/pcm:
-              schema:
-                type: string
-                format: binary
-            audio/wav:
-              schema:
-                type: string
-                format: binary
             text/event-stream:
               schema:
                 $ref: '#/components/schemas/CreateSpeechResponseStreamEvent'
@@ -747,8 +723,7 @@ paths:
         Transcribes audio into the input language.
 
         Returns a transcription object in `json`, `diarized_json`, or `verbose_json`
-        format, plain text in `text`, `srt`, or `vtt` format, or a stream of transcript
-        events. Supported formats depend on the model.
+        format, or a stream of transcript events.
       requestBody:
         required: true
         content:
@@ -769,9 +744,6 @@ paths:
                 - $ref: '#/components/schemas/CreateTranscriptionResponseVerboseJson'
                 discriminator:
                   propertyName: task
-            text/plain:
-              schema:
-                type: string
             text/event-stream:
               schema:
                 $ref: '#/components/schemas/CreateTranscriptionResponseStreamEvent'
@@ -1369,9 +1341,6 @@ paths:
                 - $ref: '#/components/schemas/CreateTranslationResponseVerboseJson'
                   x-stainless-skip:
                   - go
-            text/plain:
-              schema:
-                type: string
         '400':
           description: Invalid audio input or request parameters.
           content:
@@ -1849,7 +1818,7 @@ paths:
               },
               "metadata": {
                 "customer_id": "user_123456789",
-                "batch_description": "Nightly eval job",
+                "batch_description": "Nightly eval job"
               }
             }
     get:
@@ -2056,7 +2025,7 @@ paths:
               },
               "metadata": {
                 "customer_id": "user_123456789",
-                "batch_description": "Nightly eval job",
+                "batch_description": "Nightly eval job"
               }
             }
   /batches/{batch_id}/cancel:
@@ -2157,7 +2126,7 @@ paths:
               },
               "metadata": {
                 "customer_id": "user_123456789",
-                "batch_description": "Nightly eval job",
+                "batch_description": "Nightly eval job"
               }
             }
   /chat/completions:
@@ -3710,8 +3679,8 @@ paths:
                   "finish_reason": null
                 }
               ],
-              "model": "gpt-3.5-turbo-instruct"
-              "system_fingerprint": "fp_44709d6fcb",
+              "model": "gpt-3.5-turbo-instruct",
+              "system_fingerprint": "fp_44709d6fcb"
             }
   /containers:
     get:
@@ -5147,6 +5116,7 @@ paths:
                     "item",
                     "sample"
                   ]
+                }
               },
               "testing_criteria": [
                 {
@@ -5281,7 +5251,7 @@ paths:
               ],
               "name": "External Data Eval",
               "created_at": 1739314509,
-              "metadata": {},
+              "metadata": {}
             }
     post:
       operationId: updateEval
@@ -5406,7 +5376,7 @@ paths:
               ],
               "name": "Updated Eval",
               "created_at": 1739314509,
-              "metadata": {"description": "Updated description"},
+              "metadata": {"description": "Updated description"}
             }
     delete:
       operationId: deleteEval
@@ -6775,7 +6745,7 @@ paths:
                   "created_at": 1613677385,
                   "expires_at": 1677614202,
                   "filename": "salesOverview.pdf",
-                  "purpose": "assistants",
+                  "purpose": "assistants"
                 },
                 {
                   "id": "file-abc456",
@@ -6784,7 +6754,7 @@ paths:
                   "created_at": 1613779121,
                   "expires_at": 1677614202,
                   "filename": "puppy.jsonl",
-                  "purpose": "fine-tune",
+                  "purpose": "fine-tune"
                 }
               ],
               "first_id": "file-abc123",
@@ -6904,7 +6874,7 @@ paths:
               "created_at": 1677610602,
               "expires_at": 1677614202,
               "filename": "mydata.jsonl",
-              "purpose": "fine-tune",
+              "purpose": "fine-tune"
             }
   /files/{file_id}:
     delete:
@@ -7034,7 +7004,7 @@ paths:
               "created_at": 1677610602,
               "expires_at": 1677614202,
               "filename": "mydata.jsonl",
-              "purpose": "fine-tune",
+              "purpose": "fine-tune"
             }
   /files/{file_id}/content:
     get:
@@ -7054,9 +7024,10 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            application/octet-stream:
               schema:
                 type: string
+                format: binary
         '400':
           description: The file cannot be downloaded for its purpose or the account does not have permission to download it.
           content:
@@ -7499,7 +7470,7 @@ paths:
                   "id": "cp_enQCFmOTGj3syEpYVhBRLTSy",
                   "created_at": 1721764800,
                   "project_id": "proj_iqGMw1llN8IrBb6SvvY5A1oF"
-                },
+                }
               ],
               "first_id": "cp_zc4Q7MP6XxulcVzj4MZdwsAB",
               "last_id": "cp_enQCFmOTGj3syEpYVhBRLTSy",
@@ -7732,7 +7703,7 @@ paths:
                   "hyperparameters": {
                     "batch_size": "auto",
                     "learning_rate_multiplier": "auto",
-                    "n_epochs": "auto",
+                    "n_epochs": "auto"
                   }
                 }
               },
@@ -7995,7 +7966,7 @@ paths:
                   "hyperparameters": {
                     "batch_size": "auto",
                     "learning_rate_multiplier": "auto",
-                    "n_epochs": "auto",
+                    "n_epochs": "auto"
                   }
                 }
               },
@@ -8041,7 +8012,7 @@ paths:
                   "type": "wandb",
                   "wandb": {
                     "project": "my-wandb-project",
-                    "entity": None,
+                    "entity": null,
                     "run_id": "ftjob-abc123"
                   }
                 }
@@ -8052,7 +8023,7 @@ paths:
                   "hyperparameters": {
                     "batch_size": "auto",
                     "learning_rate_multiplier": "auto",
-                    "n_epochs": "auto",
+                    "n_epochs": "auto"
                   }
                 }
               },
@@ -9594,7 +9565,7 @@ paths:
                   "created": 1686935002,
                   "owned_by": "openai",
                   "shutdown_date": "2026-10-23"
-                },
+                }
               ]
             }
   /models/{model}:
@@ -10438,7 +10409,7 @@ paths:
                         },
                         "project.archived": {
                             "id": "proj_abc"
-                        },
+                        }
                     },
                     {
                         "id": "audit_log-yyy__20240101",
@@ -10471,7 +10442,7 @@ paths:
                             "data": {
                                 "scopes": ["resource_2.operation_2"]
                             }
-                        },
+                        }
                     }
                 ],
                 "first_id": "audit_log-xxx__20240101",
@@ -10555,7 +10526,7 @@ paths:
                     "valid_at": 12345667,
                     "expires_at": 12345678
                   }
-                },
+                }
               ],
               "first_id": "cert_abc",
               "last_id": "cert_abc",
@@ -10711,8 +10682,8 @@ paths:
                     "valid_at": 12345667,
                     "expires_at": 12345678
                   }
-                },
-              ],
+                }
+              ]
             }
   /organization/certificates/deactivate:
     post:
@@ -10802,8 +10773,8 @@ paths:
                     "valid_at": 12345667,
                     "expires_at": 12345678
                   }
-                },
-              ],
+                }
+              ]
             }
   /organization/certificates/{certificate_id}:
     get:
@@ -13205,7 +13176,7 @@ paths:
                     "valid_at": 12345667,
                     "expires_at": 12345678
                   }
-                },
+                }
               ],
               "first_id": "cert_abc",
               "last_id": "cert_abc",
@@ -13306,8 +13277,8 @@ paths:
                     "valid_at": 12345667,
                     "expires_at": 12345678
                   }
-                },
-              ],
+                }
+              ]
             }
   /organization/projects/{project_id}/certificates/deactivate:
     post:
@@ -13401,8 +13372,8 @@ paths:
                     "valid_at": 12345667,
                     "expires_at": 12345678
                   }
-                },
-              ],
+                }
+              ]
             }
   /organization/projects/{project_id}/data_retention:
     get:
@@ -19740,7 +19711,7 @@ paths:
                     "transcription": null,
                     "noise_reduction": null,
                     "turn_detection": {
-                      "type": "server_vad",
+                      "type": "server_vad"
                     }
                   },
                   "output": {
@@ -24378,7 +24349,7 @@ paths:
                 "created_at": 1719186911,
                 "expires_at": 1719127296,
                 "filename": "training_examples.jsonl",
-                "purpose": "fine-tune",
+                "purpose": "fine-tune"
               }
             }
   /uploads/{upload_id}/parts:
@@ -24891,9 +24862,9 @@ paths:
               main();
           response: |
             {
-              id: "vs_abc123",
-              object: "vector_store.deleted",
-              deleted: true
+              "id": "vs_abc123",
+              "object": "vector_store.deleted",
+              "deleted": true
             }
   /vector_stores/{vector_store_id}/file_batches:
     post:
@@ -25043,7 +25014,7 @@ paths:
                 "completed": 1,
                 "failed": 0,
                 "cancelled": 0,
-                "total": 0,
+                "total": 0
               }
             }
   /vector_stores/{vector_store_id}/file_batches/{batch_id}:
@@ -25132,7 +25103,7 @@ paths:
                 "completed": 1,
                 "failed": 0,
                 "cancelled": 0,
-                "total": 0,
+                "total": 0
               }
             }
   /vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel:
@@ -25232,7 +25203,7 @@ paths:
                 "completed": 3,
                 "failed": 0,
                 "cancelled": 0,
-                "total": 15,
+                "total": 15
               }
             }
   /vector_stores/{vector_store_id}/file_batches/{batch_id}/files:
@@ -25774,9 +25745,9 @@ paths:
               main();
           response: |
             {
-              id: "file-abc123",
-              object: "vector_store.file.deleted",
-              deleted: true
+              "id": "file-abc123",
+              "object": "vector_store.file.deleted",
+              "deleted": true
             }
     post:
       operationId: updateVectorStoreFileAttributes
@@ -25987,7 +25958,7 @@ paths:
           response: |
             {
               "object": "vector_store.search_results.page",
-              "search_query": "What is the return policy?",
+              "search_query": ["What is the return policy?"],
               "data": [
                 {
                   "file_id": "file_123",
@@ -28037,7 +28008,12 @@ paths:
         group: videos
         path: delete
         examples:
-          response: ''
+          response: |
+            {
+              "id": "video_123",
+              "object": "video.deleted",
+              "deleted": true
+            }
           request:
             javascript: |
               import OpenAI from 'openai';
@@ -29750,7 +29726,12 @@ paths:
       x-oaiMeta:
         beta: true
         examples:
-          response: ''
+          response: |
+            {
+              "id": "cthr_123",
+              "object": "chatkit.thread.deleted",
+              "deleted": true
+            }
           request:
             javascript: |
               import OpenAI from 'openai';
@@ -37709,7 +37690,7 @@ components:
             },
             "metadata": {
               "customer_id": "user_123456789",
-              "batch_description": "Nightly eval job",
+              "batch_description": "Nightly eval job"
             }
           }
     BatchError:
@@ -39641,10 +39622,6 @@ components:
       required:
       - id
       - object
-      - name
-      - created_at
-      - status
-      - id
       - name
       - created_at
       - status
@@ -44526,7 +44503,7 @@ components:
               "item_schema": {
                 "type": "object",
                 "properties": {
-                  "label": {"type": "string"},
+                  "label": {"type": "string"}
                 },
                 "required": ["label"]
               },
@@ -44538,13 +44515,13 @@ components:
                 "type": "string_check",
                 "input": "{{sample.output_text}}",
                 "reference": "{{item.label}}",
-                "operation": "eq",
+                "operation": "eq"
               }
             ],
             "name": "External Data Eval",
             "created_at": 1739314509,
             "metadata": {
-              "test": "synthetics",
+              "test": "synthetics"
             }
           }
     EvalApiError:
@@ -44592,6 +44569,18 @@ components:
             The json schema for the run data source items.
             Learn how to build JSON schemas [here](https://json-schema.org/).
           additionalProperties: true
+          example:
+            type: object
+            properties:
+              item:
+                type: object
+                properties:
+                  label:
+                    type: string
+                required:
+                - label
+            required:
+            - item
       required:
       - type
       - schema
@@ -44607,7 +44596,7 @@ components:
                 "item": {
                   "type": "object",
                   "properties": {
-                    "label": {"type": "string"},
+                    "label": {"type": "string"}
                   },
                   "required": ["label"]
                 }
@@ -44638,15 +44627,7 @@ components:
               "type": "python",
               "name": "Example python grader",
               "image_tag": "2025-05-08",
-              "source": """
-            def grade(sample: dict, item: dict) -> float:
-                \"""
-                Returns 1.0 if `output_text` equals `label`, otherwise 0.0.
-                \"""
-                output = sample.get("output_text")
-                label = item.get("label")
-                return 1.0 if output == label else 0.0
-            """,
+              "source": "\ndef grade(sample: dict, item: dict) -> float:\n    \"\"\"\n    Returns 1.0 if `output_text` equals `label`, otherwise 0.0.\n    \"\"\"\n    output = sample.get(\"output_text\")\n    label = item.get(\"label\")\n    return 1.0 if output == label else 0.0\n",
               "pass_threshold": 0.8
             }
     EvalGraderScoreModel:
@@ -44925,7 +44906,7 @@ components:
                 ],
                 "name": "External Data Eval",
                 "created_at": 1739314509,
-                "metadata": {},
+                "metadata": {}
               }
             ],
             "first_id": "eval_67abd54d9b0081909a86353f6fb9317a",
@@ -44981,7 +44962,8 @@ components:
               "required": [
                 "item",
                 "sample"
-              }
+              ]
+            }
           }
     EvalResponsesSource:
       type: object
@@ -45605,7 +45587,7 @@ components:
                 "name": "String Check Grader",
                 "type": "string-check-grader",
                 "score": 1.0,
-                "passed": true,
+                "passed": true
               }
             ],
             "sample": {
@@ -45699,7 +45681,7 @@ components:
                     "name": "String Check Grader",
                     "type": "string-check-grader",
                     "score": 1.0,
-                    "passed": true,
+                    "passed": true
                   }
                 ],
                 "sample": {
@@ -45733,7 +45715,7 @@ components:
                   "top_p": 1.0,
                   "seed": 42
                 }
-              },
+              }
             ],
             "first_id": "outputitem_67abd55eb6548190bb580745d5644a33",
             "last_id": "outputitem_67abd55eb6548190bb580745d5644a33",
@@ -45815,7 +45797,8 @@ components:
               "required": [
                 "item",
                 "sample"
-              }
+              ]
+            }
           }
     EvalStoredCompletionsSource:
       type: object
@@ -46657,7 +46640,7 @@ components:
         example: |
           {
             "object": "fine_tuning.job.event",
-            "id": "ftevent-abc123"
+            "id": "ftevent-abc123",
             "created_at": 1677610602,
             "level": "info",
             "message": "Created fine-tuning job",
@@ -47019,15 +47002,7 @@ components:
             "type": "python",
             "name": "Example python grader",
             "image_tag": "2025-05-08",
-            "source": """
-          def grade(sample: dict, item: dict) -> float:
-              \"""
-              Returns 1.0 if `output_text` equals `label`, otherwise 0.0.
-              \"""
-              output = sample.get("output_text")
-              label = item.get("label")
-              return 1.0 if output == label else 0.0
-          """,
+            "source": "\ndef grade(sample: dict, item: dict) -> float:\n    \"\"\"\n    Returns 1.0 if `output_text` equals `label`, otherwise 0.0.\n    \"\"\"\n    output = sample.get(\"output_text\")\n    label = item.get(\"label\")\n    return 1.0 if output == label else 0.0\n"
           }
     GraderScoreModel:
       type: object
@@ -47111,12 +47086,7 @@ components:
                       "content": [
                           {
                               "type": "input_text",
-                              "text": (
-                                  "Score how close the reference answer is to the model answer. Score 1.0 if they are the same and 0.0 if they are different."
-                                  " Return just a floating point score\n\n"
-                                  " Reference answer: {{item.label}}\n\n"
-                                  " Model answer: {{sample.output_text}}"
-                              )
+                              "text": "Score how close the reference answer is to the model answer. Score 1.0 if they are the same and 0.0 if they are different. Return just a floating point score\n\n Reference answer: {{item.label}}\n\n Model answer: {{sample.output_text}}"
                           },
                           {
                               "type": "input_image",
@@ -47124,7 +47094,7 @@ components:
                               "file_id": null,
                               "detail": "auto"
                           }
-                      ],
+                      ]
                   }
               ],
               "model": "gpt-5-mini",
@@ -47134,7 +47104,7 @@ components:
                   "seed": 42,
                   "max_completions_tokens": 32768,
                   "reasoning_effort": "medium"
-              },
+              }
           }
     GraderStringCheck:
       type: object
@@ -50911,7 +50881,7 @@ components:
             "created_at": 1677610602,
             "expires_at": 1680202602,
             "filename": "salesOverview.pdf",
-            "purpose": "assistants",
+            "purpose": "assistants"
           }
     OrganizationCertificate:
       type: object
@@ -61909,7 +61879,8 @@ components:
             "part": {
               "type": "output_text",
               "text": "",
-              "annotations": []
+              "annotations": [],
+              "logprobs": []
             },
             "sequence_number": 1
           }
@@ -61963,7 +61934,8 @@ components:
             "part": {
               "type": "output_text",
               "text": "In a shimmering forest under a sky full of stars, a lonely unicorn named Lila discovered a hidden pond that glowed with moonlight. Every night, she would leave sparkling, magical flowers by the water's edge, hoping to share her beauty with others. One enchanting evening, she woke to find a group of friendly animals gathered around, eager to be friends and share in her magic.",
-              "annotations": []
+              "annotations": [],
+              "logprobs": []
             }
           }
     ResponseCreatedEvent:
@@ -62067,6 +62039,7 @@ components:
         example: |
           {
             "type": "response.custom_tool_call_input.delta",
+            "sequence_number": 1,
             "output_index": 0,
             "item_id": "ctc_1234567890abcdef",
             "delta": "partial input text"
@@ -62107,6 +62080,7 @@ components:
         example: |
           {
             "type": "response.custom_tool_call_input.done",
+            "sequence_number": 1,
             "output_index": 0,
             "item_id": "ctc_1234567890abcdef",
             "input": "final complete input text"
@@ -62535,7 +62509,7 @@ components:
             "type": "response.function_call_arguments.delta",
             "item_id": "item-abc",
             "output_index": 0,
-            "delta": "{ \"arg\":"
+            "delta": "{ \"arg\":",
             "sequence_number": 1
           }
     ResponseFunctionCallArgumentsDoneEvent:
@@ -64610,7 +64584,8 @@ components:
             "output_index": 0,
             "content_index": 0,
             "delta": "In",
-            "sequence_number": 1
+            "sequence_number": 1,
+            "logprobs": []
           }
     ResponseTextDoneEvent:
       type: object
@@ -64666,7 +64641,8 @@ components:
             "output_index": 0,
             "content_index": 0,
             "text": "In a shimmering forest under a sky full of stars, a lonely unicorn named Lila discovered a hidden pond that glowed with moonlight. Every night, she would leave sparkling, magical flowers by the water's edge, hoping to share her beauty with others. One enchanting evening, she woke to find a group of friendly animals gathered around, eager to be friends and share in her magic.",
-            "sequence_number": 1
+            "sequence_number": 1,
+            "logprobs": []
           }
     ResponseTextParam:
       type: object
@@ -68296,7 +68272,7 @@ components:
               "bytes": 2147483648,
               "created_at": 1719186911,
               "filename": "training_examples.jsonl",
-              "purpose": "fine-tune",
+              "purpose": "fine-tune"
             }
           }
     UploadCertificateRequest:
@@ -82422,7 +82398,7 @@ components:
           anyOf:
           - $ref: '#/components/schemas/NetworkPolicyParam'
           - type: 'null'
-          description: Network access policy for the environment. Defaults to disabled for GA requests and enabled for alpha/beta requests.
+          description: Network access policy for the environment. Defaults to disabled for GA requests and enabled for beta requests.
         env:
           type:
           - object
@@ -82513,7 +82489,7 @@ components:
           anyOf:
           - $ref: '#/components/schemas/NetworkPolicyParam'
           - type: 'null'
-          description: Network access available after setup completes. Omit to preserve the current policy, or pass `null` to reset to disabled for GA requests or enabled for alpha/beta requests.
+          description: Network access available after setup completes. Omit to preserve the current policy, or pass `null` to reset to disabled for GA requests or enabled for beta requests.
         env:
           type:
           - object
@@ -83622,7 +83598,7 @@ components:
           anyOf:
           - $ref: '#/components/schemas/NetworkPolicyParam'
           - type: 'null'
-          description: Network access policy for the environment. Defaults to disabled for GA requests and enabled for alpha/beta requests.
+          description: Network access policy for the environment. Defaults to disabled for GA requests and enabled for beta requests.
         env:
           type:
           - object
@@ -95531,6 +95507,7 @@ components:
         example: |
           {
             "type": "response.custom_tool_call_input.done",
+            "sequence_number": 1,
             "output_index": 0,
             "item_id": "ctc_1234567890abcdef",
             "input": "final complete input text"
@@ -95576,6 +95553,7 @@ components:
         example: |
           {
             "type": "response.custom_tool_call_input.delta",
+            "sequence_number": 1,
             "output_index": 0,
             "item_id": "ctc_1234567890abcdef",
             "delta": "partial input text"
@@ -97331,7 +97309,8 @@ components:
             "output_index": 0,
             "content_index": 0,
             "text": "In a shimmering forest under a sky full of stars, a lonely unicorn named Lila discovered a hidden pond that glowed with moonlight. Every night, she would leave sparkling, magical flowers by the water's edge, hoping to share her beauty with others. One enchanting evening, she woke to find a group of friendly animals gathered around, eager to be friends and share in her magic.",
-            "sequence_number": 1
+            "sequence_number": 1,
+            "logprobs": []
           }
     BetaResponseLogProb:
       type: object
@@ -97419,7 +97398,8 @@ components:
             "output_index": 0,
             "content_index": 0,
             "delta": "In",
-            "sequence_number": 1
+            "sequence_number": 1,
+            "logprobs": []
           }
     BetaResponseRefusalDoneEvent:
       type: object
@@ -97985,7 +97965,7 @@ components:
             "type": "response.function_call_arguments.delta",
             "item_id": "item-abc",
             "output_index": 0,
-            "delta": "{ \"arg\":"
+            "delta": "{ \"arg\":",
             "sequence_number": 1
           }
     BetaResponseFileSearchCallSearchingEvent:
@@ -98291,7 +98271,8 @@ components:
             "part": {
               "type": "output_text",
               "text": "In a shimmering forest under a sky full of stars, a lonely unicorn named Lila discovered a hidden pond that glowed with moonlight. Every night, she would leave sparkling, magical flowers by the water's edge, hoping to share her beauty with others. One enchanting evening, she woke to find a group of friendly animals gathered around, eager to be friends and share in her magic.",
-              "annotations": []
+              "annotations": [],
+              "logprobs": []
             }
           }
     BetaOutputContent:
@@ -98355,7 +98336,8 @@ components:
             "part": {
               "type": "output_text",
               "text": "",
-              "annotations": []
+              "annotations": [],
+              "logprobs": []
             },
             "sequence_number": 1
           }

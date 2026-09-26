@@ -30,9 +30,8 @@ interface TranscriptionService {
     /**
      * Transcribes audio into the input language.
      *
-     * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, plain
-     * text in `text`, `srt`, or `vtt` format, or a stream of transcript events. Supported formats
-     * depend on the model.
+     * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, or a
+     * stream of transcript events.
      */
     fun create(params: TranscriptionCreateParams): TranscriptionCreateResponse =
         create(params, RequestOptions.none())
@@ -46,9 +45,8 @@ interface TranscriptionService {
     /**
      * Transcribes audio into the input language.
      *
-     * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, plain
-     * text in `text`, `srt`, or `vtt` format, or a stream of transcript events. Supported formats
-     * depend on the model.
+     * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, or a
+     * stream of transcript events.
      */
     @MustBeClosed
     fun createStreaming(

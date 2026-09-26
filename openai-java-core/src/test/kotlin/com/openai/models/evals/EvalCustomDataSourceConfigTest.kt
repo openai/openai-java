@@ -16,7 +16,9 @@ internal class EvalCustomDataSourceConfigTest {
             EvalCustomDataSourceConfig.builder()
                 .schema(
                     EvalCustomDataSourceConfig.Schema.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .putAdditionalProperty("type", JsonValue.from("object"))
+                        .putAdditionalProperty("properties", JsonValue.from("bar"))
+                        .putAdditionalProperty("required", JsonValue.from(listOf("item")))
                         .build()
                 )
                 .build()
@@ -24,7 +26,9 @@ internal class EvalCustomDataSourceConfigTest {
         assertThat(evalCustomDataSourceConfig.schema())
             .isEqualTo(
                 EvalCustomDataSourceConfig.Schema.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .putAdditionalProperty("type", JsonValue.from("object"))
+                    .putAdditionalProperty("properties", JsonValue.from("bar"))
+                    .putAdditionalProperty("required", JsonValue.from(listOf("item")))
                     .build()
             )
     }
@@ -36,7 +40,9 @@ internal class EvalCustomDataSourceConfigTest {
             EvalCustomDataSourceConfig.builder()
                 .schema(
                     EvalCustomDataSourceConfig.Schema.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .putAdditionalProperty("type", JsonValue.from("object"))
+                        .putAdditionalProperty("properties", JsonValue.from("bar"))
+                        .putAdditionalProperty("required", JsonValue.from(listOf("item")))
                         .build()
                 )
                 .build()
