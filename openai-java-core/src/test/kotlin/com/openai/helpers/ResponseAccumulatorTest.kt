@@ -28,6 +28,112 @@ import org.junit.jupiter.params.provider.ValueSource
 internal class ResponseAccumulatorTest {
 
     @Test
+    fun snapshotsRequireOptInAndNeverSupplyOmittedServerFields() {
+        val mapper = jsonMapper()
+        val terminalOnly = ResponseAccumulator.create()
+        assertThatThrownBy { terminalOnly.snapshot() }
+            .isInstanceOf(IllegalStateException::class.java)
+        val accumulator = ResponseAccumulator.createWithSnapshots()
+        assertThat(accumulator.snapshot()).isEmpty()
+        // The server did not provide output or status. An item at index zero is not permission
+        // to turn missing output into a list or turn a created response into a completed response.
+        val created =
+            mapper.readValue(
+                """{"type":"response.created","sequence_number":0,"response":{"id":"resp_partial","provider_metadata":{"trace":"kept"}}}""",
+                ResponseStreamEvent::class.java,
+            )
+        assertThat(accumulator.accumulate(created)).isSameAs(created)
+        val partial = accumulator.snapshot().orElseThrow()
+        val added =
+            mapper.readValue(
+                """{"type":"response.output_item.added","sequence_number":1,"output_index":0,"item":{"id":"msg","type":"message","role":"assistant","status":"in_progress","content":[]}}""",
+                ResponseStreamEvent::class.java,
+            )
+        accumulator.accumulate(added)
+        assertThat(accumulator.snapshot().orElseThrow()).isSameAs(partial)
+        assertThat(partial._output().isMissing()).isTrue()
+        assertThat(partial._status().isMissing()).isTrue()
+        assertThat(
+                mapper
+                    .valueToTree<com.fasterxml.jackson.databind.JsonNode>(partial)
+                    .path("provider_metadata")
+                    .path("trace")
+                    .asText()
+            )
+            .isEqualTo("kept")
+        assertThatThrownBy { accumulator.response() }
+            .isExactlyInstanceOf(IllegalStateException::class.java)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["completed", "failed", "incomplete"])
+    fun snapshotUsesOnlyAuthoritativeTerminalResponse(terminal: String) {
+        val mapper = jsonMapper()
+        val accumulator = ResponseAccumulator.createWithSnapshots()
+        val created =
+            mapper.readValue(
+                """{"type":"response.created","sequence_number":0,"response":{"id":"resp_start","output":[],"status":"in_progress"}}""",
+                ResponseStreamEvent::class.java,
+            )
+        accumulator.accumulate(created)
+        val originalPartial = accumulator.snapshot().orElseThrow()
+        val authoritative =
+            mapper.readValue(
+                """{"type":"response.$terminal","sequence_number":2,"response":{"id":"resp_final","error":{"code":"model_error","message":"authoritative"},"incomplete_details":{"reason":"max_output_tokens"}}}""",
+                ResponseStreamEvent::class.java,
+            )
+        accumulator.accumulate(authoritative)
+        val result = accumulator.response()
+        assertThat(accumulator.snapshot().orElseThrow()).isSameAs(result)
+        assertThat(result.id()).isEqualTo("resp_final")
+        assertThat(result._status().isMissing()).isTrue()
+        assertThat(result._output().isMissing()).isTrue()
+        assertThat(originalPartial.id()).isEqualTo("resp_start")
+        accumulator.accumulate(created)
+        assertThat(accumulator.snapshot().orElseThrow()).isSameAs(result)
+    }
+
+    @Test
+    fun sseSnapshotsAreImmutableAndKeepTextAndRefusalPartsDistinct() {
+        val mapper = jsonMapper()
+        val accumulator = ResponseAccumulator.createWithSnapshots()
+        val frames =
+            listOf(
+                """{"type":"response.created","sequence_number":0,"response":{"id":"r","output":[],"status":"in_progress"}}""",
+                """{"type":"response.output_item.added","sequence_number":1,"output_index":0,"item":{"id":"m","type":"message","role":"assistant","status":"in_progress","content":[],"from_server":true}}""",
+                """{"type":"response.content_part.added","sequence_number":2,"output_index":0,"content_index":0,"item_id":"m","part":{"type":"output_text","text":"","annotations":[],"from_server":17}}""",
+                """{"type":"response.output_text.delta","sequence_number":3,"output_index":0,"content_index":0,"item_id":"m","delta":"hello"}""",
+                """{"type":"response.content_part.added","sequence_number":4,"output_index":0,"content_index":1,"item_id":"m","part":{"type":"refusal","refusal":""}}""",
+                """{"type":"response.refusal.delta","sequence_number":5,"output_index":0,"content_index":1,"item_id":"m","delta":"cannot"}""",
+            )
+        for (frame in frames) {
+            val event = mapper.readValue(frame, ResponseStreamEvent::class.java)
+            assertThat(accumulator.accumulate(event)).isSameAs(event)
+        }
+        val before = accumulator.snapshot().orElseThrow()
+        val content = before.output().single().asMessage().content()
+        assertThat(content[0].asOutputText().text()).isEqualTo("hello")
+        assertThat(content[1].asRefusal().refusal()).isEqualTo("cannot")
+        val next =
+            mapper.readValue(
+                """{"type":"response.output_text.done","sequence_number":6,"output_index":0,"content_index":0,"item_id":"m","text":"hello final","logprobs":[]}""",
+                ResponseStreamEvent::class.java,
+            )
+        accumulator.accumulate(next)
+        val after = accumulator.snapshot().orElseThrow()
+        assertThat(before.output().single().asMessage().content()[0].asOutputText().text())
+            .isEqualTo("hello")
+        assertThat(after.output().single().asMessage().content()[0].asOutputText().text())
+            .isEqualTo("hello final")
+        val tree = mapper.valueToTree<com.fasterxml.jackson.databind.JsonNode>(after)
+        assertThat(tree.path("output")[0].path("from_server").asBoolean()).isTrue()
+        assertThat(tree.path("output")[0].path("content")[0].path("from_server").asInt())
+            .isEqualTo(17)
+        assertThatThrownBy { accumulator.response() }
+            .isExactlyInstanceOf(IllegalStateException::class.java)
+    }
+
+    @Test
     fun responseBeforeAccumulation() {
         val accumulator = ResponseAccumulator.create()
 

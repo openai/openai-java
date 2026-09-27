@@ -40,8 +40,10 @@ import com.openai.models.responses.ResponseMcpCallInProgressEvent
 import com.openai.models.responses.ResponseMcpListToolsCompletedEvent
 import com.openai.models.responses.ResponseMcpListToolsFailedEvent
 import com.openai.models.responses.ResponseMcpListToolsInProgressEvent
+import com.openai.models.responses.ResponseOutputItem
 import com.openai.models.responses.ResponseOutputItemAddedEvent
 import com.openai.models.responses.ResponseOutputItemDoneEvent
+import com.openai.models.responses.ResponseOutputMessage
 import com.openai.models.responses.ResponseOutputTextAnnotationAddedEvent
 import com.openai.models.responses.ResponseQueuedEvent
 import com.openai.models.responses.ResponseReasoningSummaryPartAddedEvent
@@ -64,6 +66,7 @@ import com.openai.models.responses.ResponseWebSearchCallCompletedEvent
 import com.openai.models.responses.ResponseWebSearchCallInProgressEvent
 import com.openai.models.responses.ResponseWebSearchCallSearchingEvent
 import com.openai.models.responses.StructuredResponse
+import java.util.Optional
 
 /**
  * An accumulator that constructs a [Response] from a sequence of streamed events. Pass all events
@@ -73,16 +76,37 @@ import com.openai.models.responses.StructuredResponse
  * A [ResponseAccumulator] may only be used to accumulate _one_ response. To accumulate another
  * response, create another instance of `ResponseAccumulator`.
  */
-class ResponseAccumulator private constructor() {
+class ResponseAccumulator private constructor(private val snapshotsEnabled: Boolean) {
 
     /**
      * The response accumulated from the event stream. This is set when a terminal event is
      * accumulated. That single event carries all the response details.
      */
     private var response: Response? = null
+    private var partial: Response? = null
 
     companion object {
-        @JvmStatic fun create() = ResponseAccumulator()
+        @JvmStatic fun create() = ResponseAccumulator(false)
+
+        /**
+         * Opts into incremental snapshots for this single response (or WebSocket lane). Raw events
+         * remain available from [accumulate]. Tool calls are data; this helper never executes them.
+         */
+        @JvmStatic fun createWithSnapshots() = ResponseAccumulator(true)
+    }
+
+    /**
+     * The most recently observed response, including incremental output text, refusal and function
+     * call arguments. Empty until a response-bearing event arrives. Fields the server omitted
+     * remain omitted. A snapshot is not a completed response: only [response] requires a terminal
+     * event. Failed and incomplete terminal events replace the snapshot with their full response.
+     * Other item kinds are retained when output-item events arrive and in the raw stream.
+     *
+     * Use [createWithSnapshots] to enable this method. One accumulator handles one response only.
+     */
+    fun snapshot(): Optional<Response> {
+        check(snapshotsEnabled) { "Snapshots require ResponseAccumulator.createWithSnapshots()." }
+        return Optional.ofNullable(response ?: partial)
     }
 
     /**
@@ -122,6 +146,43 @@ class ResponseAccumulator private constructor() {
         event.responseCompleted().ifPresent { accumulate(ResponseStreamEvent.ofCompleted(it)) }
         event.responseFailed().ifPresent { accumulate(ResponseStreamEvent.ofFailed(it)) }
         event.responseIncomplete().ifPresent { accumulate(ResponseStreamEvent.ofIncomplete(it)) }
+        if (snapshotsEnabled && response == null) {
+            event.responseCreated().ifPresent { accumulate(ResponseStreamEvent.ofCreated(it)) }
+            event.responseInProgress().ifPresent {
+                accumulate(ResponseStreamEvent.ofInProgress(it))
+            }
+            event.responseQueued().ifPresent { accumulate(ResponseStreamEvent.ofQueued(it)) }
+            event.responseOutputItemAdded().ifPresent {
+                accumulate(ResponseStreamEvent.ofOutputItemAdded(it))
+            }
+            event.responseOutputItemDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofOutputItemDone(it))
+            }
+            event.responseContentPartAdded().ifPresent {
+                accumulate(ResponseStreamEvent.ofContentPartAdded(it))
+            }
+            event.responseContentPartDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofContentPartDone(it))
+            }
+            event.responseOutputTextDelta().ifPresent {
+                accumulate(ResponseStreamEvent.ofOutputTextDelta(it))
+            }
+            event.responseOutputTextDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofOutputTextDone(it))
+            }
+            event.responseRefusalDelta().ifPresent {
+                accumulate(ResponseStreamEvent.ofRefusalDelta(it))
+            }
+            event.responseRefusalDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofRefusalDone(it))
+            }
+            event.responseFunctionCallArgumentsDelta().ifPresent {
+                accumulate(ResponseStreamEvent.ofFunctionCallArgumentsDelta(it))
+            }
+            event.responseFunctionCallArgumentsDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofFunctionCallArgumentsDone(it))
+            }
+        }
         return event
     }
 
@@ -148,7 +209,7 @@ class ResponseAccumulator private constructor() {
                 // The following events _all_ have a `response` property.
 
                 override fun visitCreated(created: ResponseCreatedEvent) {
-                    // The initial response (on creation) has no content, so it is not stored.
+                    if (snapshotsEnabled) partial = created.response()
                 }
 
                 override fun visitCompleted(completed: ResponseCompletedEvent) {
@@ -156,12 +217,11 @@ class ResponseAccumulator private constructor() {
                 }
 
                 override fun visitInProgress(inProgress: ResponseInProgressEvent) {
-                    // An in-progress response is not complete, so it is not stored.
+                    if (snapshotsEnabled) partial = inProgress.response()
                 }
 
                 override fun visitQueued(queued: ResponseQueuedEvent) {
-                    // A queued response that is awaiting processing is not complete, so it is not
-                    // stored.
+                    if (snapshotsEnabled) partial = queued.response()
                 }
 
                 override fun visitCustomToolCallInputDelta(
@@ -227,9 +287,49 @@ class ResponseAccumulator private constructor() {
 
                 override fun visitContentPartAdded(
                     contentPartAdded: ResponseContentPartAddedEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    val part = contentPartAdded.part()
+                    val content =
+                        part
+                            .outputText()
+                            .map(ResponseOutputMessage.Content::ofOutputText)
+                            .orElseGet {
+                                part
+                                    .refusal()
+                                    .map(ResponseOutputMessage.Content::ofRefusal)
+                                    .orElse(null)
+                            }
+                    if (content != null)
+                        updateContent(
+                            contentPartAdded.outputIndex(),
+                            contentPartAdded.contentIndex(),
+                        ) {
+                            content
+                        }
+                }
 
-                override fun visitContentPartDone(contentPartDone: ResponseContentPartDoneEvent) {}
+                override fun visitContentPartDone(contentPartDone: ResponseContentPartDoneEvent) {
+                    if (!snapshotsEnabled) return
+                    val part = contentPartDone.part()
+                    val content =
+                        part
+                            .outputText()
+                            .map(ResponseOutputMessage.Content::ofOutputText)
+                            .orElseGet {
+                                part
+                                    .refusal()
+                                    .map(ResponseOutputMessage.Content::ofRefusal)
+                                    .orElse(null)
+                            }
+                    if (content != null)
+                        updateContent(
+                            contentPartDone.outputIndex(),
+                            contentPartDone.contentIndex(),
+                        ) {
+                            content
+                        }
+                }
 
                 override fun visitError(error: ResponseErrorEvent) {}
 
@@ -247,11 +347,35 @@ class ResponseAccumulator private constructor() {
 
                 override fun visitFunctionCallArgumentsDelta(
                     functionCallArgumentsDelta: ResponseFunctionCallArgumentsDeltaEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    updateItem(functionCallArgumentsDelta.outputIndex()) { item ->
+                        val call = item?.functionCall()?.orElse(null) ?: return@updateItem null
+                        val arguments =
+                            call._arguments().asKnown().orElse(null) ?: return@updateItem null
+                        ResponseOutputItem.ofFunctionCall(
+                            call
+                                .toBuilder()
+                                .arguments(arguments + functionCallArgumentsDelta.delta())
+                                .build()
+                        )
+                    }
+                }
 
                 override fun visitFunctionCallArgumentsDone(
                     functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    updateItem(functionCallArgumentsDone.outputIndex()) { item ->
+                        val call = item?.functionCall()?.orElse(null) ?: return@updateItem null
+                        ResponseOutputItem.ofFunctionCall(
+                            call
+                                .toBuilder()
+                                .arguments(functionCallArgumentsDone.arguments())
+                                .build()
+                        )
+                    }
+                }
 
                 override fun visitShellCallCommandAdded(
                     shellCallCommandAdded: ResponseShellCallCommandAddedEvent
@@ -273,9 +397,15 @@ class ResponseAccumulator private constructor() {
                     shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
                 ) {}
 
-                override fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent) {}
+                override fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent) {
+                    if (snapshotsEnabled)
+                        updateItem(outputItemAdded.outputIndex()) { outputItemAdded.item() }
+                }
 
-                override fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) {}
+                override fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) {
+                    if (snapshotsEnabled)
+                        updateItem(outputItemDone.outputIndex()) { outputItemDone.item() }
+                }
 
                 override fun visitReasoningSummaryPartAdded(
                     reasoningSummaryPartAdded: ResponseReasoningSummaryPartAddedEvent
@@ -301,13 +431,55 @@ class ResponseAccumulator private constructor() {
                     reasoningTextDone: ResponseReasoningTextDoneEvent
                 ) {}
 
-                override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) {}
+                override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) {
+                    if (!snapshotsEnabled) return
+                    updateContent(refusalDelta.outputIndex(), refusalDelta.contentIndex()) { content
+                        ->
+                        val refusal = content?.refusal()?.orElse(null) ?: return@updateContent null
+                        val text =
+                            refusal._refusal().asKnown().orElse(null) ?: return@updateContent null
+                        ResponseOutputMessage.Content.ofRefusal(
+                            refusal.toBuilder().refusal(text + refusalDelta.delta()).build()
+                        )
+                    }
+                }
 
-                override fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent) {}
+                override fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent) {
+                    if (!snapshotsEnabled) return
+                    updateContent(refusalDone.outputIndex(), refusalDone.contentIndex()) { content
+                        ->
+                        val refusal = content?.refusal()?.orElse(null) ?: return@updateContent null
+                        ResponseOutputMessage.Content.ofRefusal(
+                            refusal.toBuilder().refusal(refusalDone.refusal()).build()
+                        )
+                    }
+                }
 
-                override fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent) {}
+                override fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent) {
+                    if (!snapshotsEnabled) return
+                    updateContent(outputTextDelta.outputIndex(), outputTextDelta.contentIndex()) {
+                        content ->
+                        val outputText =
+                            content?.outputText()?.orElse(null) ?: return@updateContent null
+                        val text =
+                            outputText._text().asKnown().orElse(null) ?: return@updateContent null
+                        ResponseOutputMessage.Content.ofOutputText(
+                            outputText.toBuilder().text(text + outputTextDelta.delta()).build()
+                        )
+                    }
+                }
 
-                override fun visitOutputTextDone(outputTextDone: ResponseTextDoneEvent) {}
+                override fun visitOutputTextDone(outputTextDone: ResponseTextDoneEvent) {
+                    if (!snapshotsEnabled) return
+                    updateContent(outputTextDone.outputIndex(), outputTextDone.contentIndex()) {
+                        content ->
+                        val outputText =
+                            content?.outputText()?.orElse(null) ?: return@updateContent null
+                        ResponseOutputMessage.Content.ofOutputText(
+                            outputText.toBuilder().text(outputTextDone.text()).build()
+                        )
+                    }
+                }
 
                 override fun visitWebSearchCallCompleted(
                     webSearchCallCompleted: ResponseWebSearchCallCompletedEvent
@@ -377,5 +549,34 @@ class ResponseAccumulator private constructor() {
         )
 
         return event
+    }
+
+    // Never allocate invented items/parts to fill a missing index. A missing output/content field
+    // likewise remains missing: only apply deltas for which the preceding data was observed.
+    private fun updateItem(index: Long, update: (ResponseOutputItem?) -> ResponseOutputItem?) {
+        val current = partial ?: return
+        val output = current._output().asKnown().orElse(null)?.toMutableList() ?: return
+        if (index < 0 || index > output.size.toLong()) return
+        val i = index.toInt()
+        val item = update(output.getOrNull(i)) ?: return
+        if (i == output.size) output.add(item) else output[i] = item
+        partial = current.toBuilder().output(output).build()
+    }
+
+    private fun updateContent(
+        outputIndex: Long,
+        contentIndex: Long,
+        update: (ResponseOutputMessage.Content?) -> ResponseOutputMessage.Content?,
+    ) {
+        updateItem(outputIndex) { item ->
+            val message = item?.message()?.orElse(null) ?: return@updateItem null
+            val content =
+                message._content().asKnown().orElse(null)?.toMutableList() ?: return@updateItem null
+            if (contentIndex < 0 || contentIndex > content.size.toLong()) return@updateItem null
+            val i = contentIndex.toInt()
+            val part = update(content.getOrNull(i)) ?: return@updateItem null
+            if (i == content.size) content.add(part) else content[i] = part
+            ResponseOutputItem.ofMessage(message.toBuilder().content(content).build())
+        }
     }
 }

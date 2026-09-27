@@ -34,6 +34,199 @@ class ResponsesWebSocketTest {
         """{"type":"$type","sequence_number":1,"response":{"id":"resp_123","created_at":0,"object":"response","model":"gpt-4o-mini","output":[],"parallel_tool_calls":false,"tool_choice":"auto","tools":[],"status":"${type.substringAfterLast('.')}"}${id?.let { ",\"stream_id\":\"$it\"" } ?: ""}}"""
 
     @Test
+    fun `incremental snapshots follow their socket lanes and an error never supplies a final response`() {
+        val emit = CountDownLatch(1)
+        Peer { socket, _ ->
+                assertThat(emit.await(5, TimeUnit.SECONDS)).isTrue()
+                send(socket, event("response.in_progress", "text"))
+                send(socket, event("response.in_progress", "tool"))
+                send(
+                    socket,
+                    """{"type":"response.output_item.added","sequence_number":2,"stream_id":"text","output_index":0,"item":{"id":"m","type":"message","role":"assistant","status":"in_progress","content":[]}}""",
+                )
+                send(
+                    socket,
+                    """{"type":"response.output_item.added","sequence_number":3,"stream_id":"tool","output_index":0,"item":{"id":"f","type":"function_call","call_id":"call_1","name":"weather","arguments":"","status":"in_progress"}}""",
+                )
+                send(
+                    socket,
+                    """{"type":"response.content_part.added","sequence_number":4,"stream_id":"text","output_index":0,"content_index":0,"item_id":"m","part":{"type":"output_text","text":"","annotations":[]}}""",
+                )
+                send(
+                    socket,
+                    """{"type":"response.function_call_arguments.delta","sequence_number":5,"stream_id":"tool","output_index":0,"item_id":"f","delta":"{\"city\":"}""",
+                )
+                send(
+                    socket,
+                    """{"type":"response.output_text.delta","sequence_number":6,"stream_id":"text","output_index":0,"content_index":0,"item_id":"m","delta":"par","provider_trace":"retained"}""",
+                )
+                send(
+                    socket,
+                    """{"type":"response.function_call_arguments.delta","sequence_number":7,"stream_id":"tool","output_index":0,"item_id":"f","delta":"\"Paris\"}"}""",
+                )
+                send(
+                    socket,
+                    """{"type":"response.output_text.delta","sequence_number":8,"stream_id":"text","output_index":0,"content_index":0,"item_id":"m","delta":"tial"}""",
+                )
+                send(socket, event("response.incomplete", "tool"))
+                send(
+                    socket,
+                    """{"type":"error","stream_id":"text","error":{"type":"invalid_request_error","code":"bad_input","message":"synthetic"}}""",
+                )
+                while (socket.getInputStream().read() != -1) {}
+            }
+            .use { peer ->
+                val client =
+                    OpenAIOkHttpClient.builder().apiKey("fake-key").baseUrl(peer.url).build()
+                try {
+                    client.responses().connect().use { connection ->
+                        val text = connection.lane("text")
+                        val tool = connection.lane("tool")
+                        val textState = com.openai.helpers.ResponseAccumulator.createWithSnapshots()
+                        val toolState = com.openai.helpers.ResponseAccumulator.createWithSnapshots()
+                        emit.countDown()
+                        repeat(3) {
+                            val raw = text.receive()
+                            assertThat(textState.accumulate(raw)).isSameAs(raw)
+                        }
+                        repeat(3) {
+                            val raw = tool.receive()
+                            assertThat(toolState.accumulate(raw)).isSameAs(raw)
+                        }
+                        val firstDelta = text.receive()
+                        assertThat(textState.accumulate(firstDelta)).isSameAs(firstDelta)
+                        assertThat(
+                                mapper.valueToTree<JsonNode>(firstDelta).path("stream_id").asText()
+                            )
+                            .isEqualTo("text")
+                        assertThat(
+                                mapper
+                                    .valueToTree<JsonNode>(firstDelta)
+                                    .path("provider_trace")
+                                    .asText()
+                            )
+                            .isEqualTo("retained")
+                        val beforeText = textState.snapshot().orElseThrow()
+                        val beforeCall = toolState.snapshot().orElseThrow()
+                        assertThat(
+                                beforeText
+                                    .output()
+                                    .single()
+                                    .asMessage()
+                                    .content()
+                                    .single()
+                                    .asOutputText()
+                                    .text()
+                            )
+                            .isEqualTo("par")
+                        assertThat(beforeCall.output().single().asFunctionCall().arguments())
+                            .isEqualTo("{\"city\":")
+                        assertThatThrownBy { textState.response() }
+                            .isInstanceOf(IllegalStateException::class.java)
+                        assertThatThrownBy { toolState.response() }
+                            .isInstanceOf(IllegalStateException::class.java)
+                        toolState.accumulate(tool.receive())
+                        textState.accumulate(text.receive())
+                        assertThat(
+                                toolState
+                                    .snapshot()
+                                    .orElseThrow()
+                                    .output()
+                                    .single()
+                                    .asFunctionCall()
+                                    .arguments()
+                            )
+                            .isEqualTo("{\"city\":\"Paris\"}")
+                        assertThat(
+                                textState
+                                    .snapshot()
+                                    .orElseThrow()
+                                    .output()
+                                    .single()
+                                    .asMessage()
+                                    .content()
+                                    .single()
+                                    .asOutputText()
+                                    .text()
+                            )
+                            .isEqualTo("partial")
+                        assertThat(
+                                beforeText
+                                    .output()
+                                    .single()
+                                    .asMessage()
+                                    .content()
+                                    .single()
+                                    .asOutputText()
+                                    .text()
+                            )
+                            .isEqualTo("par")
+                        assertThat(beforeCall.output().single().asFunctionCall().arguments())
+                            .isEqualTo("{\"city\":")
+                        val terminal = tool.receive()
+                        toolState.accumulate(terminal)
+                        assertThat(toolState.response())
+                            .isSameAs(terminal.asResponseIncomplete().response())
+                        assertThat(toolState.snapshot().orElseThrow())
+                            .isSameAs(toolState.response())
+                        val error = text.receive()
+                        assertThat(textState.accumulate(error)).isSameAs(error)
+                        assertThat(error.isError()).isTrue()
+                        assertThat(
+                                textState
+                                    .snapshot()
+                                    .orElseThrow()
+                                    .output()
+                                    .single()
+                                    .asMessage()
+                                    .content()
+                                    .single()
+                                    .asOutputText()
+                                    .text()
+                            )
+                            .isEqualTo("partial")
+                        assertThatThrownBy { textState.response() }
+                            .isInstanceOf(IllegalStateException::class.java)
+                    }
+                    peer.await()
+                } finally {
+                    client.close()
+                }
+            }
+    }
+
+    @Test
+    fun `premature socket EOF keeps the last partial snapshot and cannot finish the response`() {
+        Peer { socket, _ ->
+                readMessage(socket)
+                send(socket, event("response.in_progress"))
+                // End the TCP stream without ever sending a response terminal event.
+            }
+            .use { peer ->
+                val client =
+                    OpenAIOkHttpClient.builder().apiKey("fake-key").baseUrl(peer.url).build()
+                try {
+                    client.responses().connect().use { connection ->
+                        val state = com.openai.helpers.ResponseAccumulator.createWithSnapshots()
+                        connection.send(command())
+                        state.accumulate(connection.receive())
+                        val lastObserved = state.snapshot().orElseThrow()
+                        assertThat(lastObserved.status().orElseThrow().toString())
+                            .isEqualTo("in_progress")
+                        assertThatThrownBy { connection.receive() }
+                            .isInstanceOf(com.openai.errors.OpenAIException::class.java)
+                        assertThat(state.snapshot().orElseThrow()).isSameAs(lastObserved)
+                        assertThatThrownBy { state.response() }
+                            .isExactlyInstanceOf(IllegalStateException::class.java)
+                    }
+                    peer.await()
+                } finally {
+                    client.close()
+                }
+            }
+    }
+
+    @Test
     fun `shared contract scenarios through blocking and async entrypoints`() {
         val scenarios =
             mapper
