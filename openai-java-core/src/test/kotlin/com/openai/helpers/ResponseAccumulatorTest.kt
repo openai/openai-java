@@ -43,14 +43,14 @@ internal class ResponseAccumulatorTest {
                 ResponseStreamEvent::class.java,
             )
         assertThat(accumulator.accumulate(created)).isSameAs(created)
-        val partial = accumulator.snapshot().orElseThrow()
+        val partial = accumulator.snapshot().get()
         val added =
             mapper.readValue(
                 """{"type":"response.output_item.added","sequence_number":1,"output_index":0,"item":{"id":"msg","type":"message","role":"assistant","status":"in_progress","content":[]}}""",
                 ResponseStreamEvent::class.java,
             )
         accumulator.accumulate(added)
-        assertThat(accumulator.snapshot().orElseThrow()).isSameAs(partial)
+        assertThat(accumulator.snapshot().get()).isSameAs(partial)
         assertThat(partial._output().isMissing()).isTrue()
         assertThat(partial._status().isMissing()).isTrue()
         assertThat(
@@ -76,7 +76,7 @@ internal class ResponseAccumulatorTest {
                 ResponseStreamEvent::class.java,
             )
         accumulator.accumulate(created)
-        val originalPartial = accumulator.snapshot().orElseThrow()
+        val originalPartial = accumulator.snapshot().get()
         val authoritative =
             mapper.readValue(
                 """{"type":"response.$terminal","sequence_number":2,"response":{"id":"resp_final","error":{"code":"model_error","message":"authoritative"},"incomplete_details":{"reason":"max_output_tokens"}}}""",
@@ -84,13 +84,13 @@ internal class ResponseAccumulatorTest {
             )
         accumulator.accumulate(authoritative)
         val result = accumulator.response()
-        assertThat(accumulator.snapshot().orElseThrow()).isSameAs(result)
+        assertThat(accumulator.snapshot().get()).isSameAs(result)
         assertThat(result.id()).isEqualTo("resp_final")
         assertThat(result._status().isMissing()).isTrue()
         assertThat(result._output().isMissing()).isTrue()
         assertThat(originalPartial.id()).isEqualTo("resp_start")
         accumulator.accumulate(created)
-        assertThat(accumulator.snapshot().orElseThrow()).isSameAs(result)
+        assertThat(accumulator.snapshot().get()).isSameAs(result)
     }
 
     @Test
@@ -110,7 +110,7 @@ internal class ResponseAccumulatorTest {
             val event = mapper.readValue(frame, ResponseStreamEvent::class.java)
             assertThat(accumulator.accumulate(event)).isSameAs(event)
         }
-        val before = accumulator.snapshot().orElseThrow()
+        val before = accumulator.snapshot().get()
         val content = before.output().single().asMessage().content()
         assertThat(content[0].asOutputText().text()).isEqualTo("hello")
         assertThat(content[1].asRefusal().refusal()).isEqualTo("cannot")
@@ -120,7 +120,7 @@ internal class ResponseAccumulatorTest {
                 ResponseStreamEvent::class.java,
             )
         accumulator.accumulate(next)
-        val after = accumulator.snapshot().orElseThrow()
+        val after = accumulator.snapshot().get()
         assertThat(before.output().single().asMessage().content()[0].asOutputText().text())
             .isEqualTo("hello")
         assertThat(after.output().single().asMessage().content()[0].asOutputText().text())

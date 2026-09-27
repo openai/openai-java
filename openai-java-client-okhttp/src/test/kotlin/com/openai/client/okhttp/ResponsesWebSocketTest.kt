@@ -130,7 +130,7 @@ class ResponsesWebSocketTest {
                         assertThat(
                                 toolState
                                     .snapshot()
-                                    .orElseThrow()
+                                    .get()
                                     .output()
                                     .single()
                                     .asFunctionCall()
