@@ -17,6 +17,7 @@ import com.openai.models.responses.ResponseOutputItem
 import com.openai.models.responses.ResponseOutputMessage
 import com.openai.models.responses.ResponseOutputText
 import com.openai.models.responses.ResponseStreamEvent
+import com.openai.models.responses.ResponsesServerEvent
 import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatNoException
@@ -131,6 +132,125 @@ internal class ResponseAccumulatorTest {
             .isEqualTo(17)
         assertThatThrownBy { accumulator.response() }
             .isExactlyInstanceOf(IllegalStateException::class.java)
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun annotationSnapshotsKeepIdentityOrderAndSurviveErrors(websocket: Boolean) {
+        val mapper = jsonMapper()
+        val accumulator = ResponseAccumulator.createWithSnapshots()
+        fun send(frame: String) {
+            if (websocket) {
+                val event = mapper.readValue(frame, ResponsesServerEvent::class.java)
+                assertThat(accumulator.accumulate(event)).isSameAs(event)
+            } else {
+                val event = mapper.readValue(frame, ResponseStreamEvent::class.java)
+                assertThat(accumulator.accumulate(event)).isSameAs(event)
+            }
+        }
+        send(
+            """{"type":"response.created","sequence_number":0,"response":{"id":"r","output":[{"id":"m","type":"message","role":"assistant","status":"in_progress","content":[{"type":"output_text","text":"See ","annotations":[]},{"type":"refusal","refusal":""}]}]}}"""
+        )
+        send(
+            """{"type":"response.output_text.delta","sequence_number":1,"output_index":0,"content_index":0,"item_id":"m","delta":"references."}"""
+        )
+        val before = accumulator.snapshot().get()
+        fun annotation(item: String, content: Int, index: Long, title: String) =
+            """{"type":"response.output_text.annotation.added","sequence_number":2,"output_index":0,"content_index":$content,"item_id":"$item","annotation_index":$index,"annotation":{"type":"url_citation","url":"https://example.com/citation","title":"$title","start_index":4,"end_index":14,"provider_tag":"kept"}}"""
+
+        send(annotation("m", 0, 0, "original"))
+        send(annotation("m", 0, 1, "second"))
+        send(annotation("m", 0, 0, "updated"))
+        val valid = accumulator.snapshot().get()
+        send(annotation("old", 0, 0, "wrong item"))
+        send(annotation("m", 1, 0, "wrong part"))
+        send(annotation("m", 0, -1, "negative"))
+        send(annotation("m", 0, Long.MAX_VALUE, "sparse"))
+        send(
+            """{"type":"response.error","sequence_number":3,"code":"model_error","message":"offline test","param":null}"""
+        )
+        val last = accumulator.snapshot().get()
+        assertThat(last).isSameAs(valid)
+        val text = last.output().single().asMessage().content()[0].asOutputText()
+        assertThat(text.text()).isEqualTo("See references.")
+        assertThat(text.annotations().map { it.asUrlCitation().title() })
+            .containsExactly("updated", "second")
+        assertThat(
+                text
+                    .annotations()[0]
+                    .asUrlCitation()
+                    ._additionalProperties()["provider_tag"]
+                    ?.convert(String::class.java)
+            )
+            .isEqualTo("kept")
+        assertThat(before.output().single().asMessage().content()[0].asOutputText().annotations())
+            .isEmpty()
+        assertThatThrownBy { accumulator.response() }
+            .isExactlyInstanceOf(IllegalStateException::class.java)
+    }
+
+    @Test
+    fun manyFragmentedDeltasPreserveEarlierReadsAndAuthoritativeReplacements() {
+        val mapper = jsonMapper()
+        val accumulator = ResponseAccumulator.createWithSnapshots()
+        fun event(frame: String) = mapper.readValue(frame, ResponseStreamEvent::class.java)
+        accumulator.accumulate(
+            event(
+                """{"type":"response.created","sequence_number":0,"response":{"id":"r","output":[{"id":"m","type":"message","role":"assistant","status":"in_progress","content":[{"type":"output_text","text":"prefix","annotations":[]},{"type":"refusal","refusal":"sorry"}]},{"type":"function_call","id":"f","call_id":"c","name":"tool","arguments":"{"}]}}"""
+            )
+        )
+        val fragment = "x".repeat(128)
+        val text =
+            event(
+                """{"type":"response.output_text.delta","sequence_number":1,"output_index":0,"content_index":0,"item_id":"m","delta":"$fragment"}"""
+            )
+        val refusal =
+            event(
+                """{"type":"response.refusal.delta","sequence_number":2,"output_index":0,"content_index":1,"item_id":"m","delta":"$fragment"}"""
+            )
+        val args =
+            event(
+                """{"type":"response.function_call_arguments.delta","sequence_number":3,"output_index":1,"item_id":"f","delta":"$fragment"}"""
+            )
+        accumulator.accumulate(text)
+        accumulator.accumulate(refusal)
+        accumulator.accumulate(args)
+        val before = accumulator.snapshot().get()
+        // A real multi-megabyte response fragmented into small events, with no arbitrary API limit.
+        repeat(32_768) {
+            accumulator.accumulate(text)
+            accumulator.accumulate(refusal)
+            accumulator.accumulate(args)
+        }
+        val last = accumulator.snapshot().get()
+        assertThat(last.output()[0].asMessage().content()[0].asOutputText().text())
+            .isEqualTo("prefix" + fragment.repeat(32_769))
+        assertThat(last.output()[0].asMessage().content()[1].asRefusal().refusal())
+            .isEqualTo("sorry" + fragment.repeat(32_769))
+        assertThat(last.output()[1].asFunctionCall().arguments())
+            .isEqualTo("{" + fragment.repeat(32_769))
+        assertThat(before.output()[0].asMessage().content()[0].asOutputText().text())
+            .isEqualTo("prefix$fragment")
+        assertThat(before.output()[0].asMessage().content()[1].asRefusal().refusal())
+            .isEqualTo("sorry$fragment")
+        assertThat(before.output()[1].asFunctionCall().arguments()).isEqualTo("{$fragment")
+        accumulator.accumulate(
+            event(
+                """{"type":"response.output_item.done","sequence_number":4,"output_index":0,"item":{"id":"replacement","type":"message","role":"assistant","status":"completed","content":[{"type":"output_text","text":"authoritative","annotations":[]}]}}"""
+            )
+        )
+        accumulator.accumulate(text)
+        accumulator.accumulate(refusal)
+        accumulator.accumulate(
+            event(
+                """{"type":"response.function_call_arguments.done","sequence_number":5,"output_index":1,"item_id":"f","arguments":"{}"}"""
+            )
+        )
+        val replaced = accumulator.snapshot().get()
+        assertThat(replaced.output()[0].asMessage().content().single().asOutputText().text())
+            .isEqualTo("authoritative")
+        assertThat(replaced.output()[1].asFunctionCall().arguments()).isEqualTo("{}")
+        assertThat(last.output()[1].asFunctionCall().arguments()).endsWith(fragment)
     }
 
     @Test

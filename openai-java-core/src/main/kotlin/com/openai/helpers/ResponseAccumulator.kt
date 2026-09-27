@@ -45,6 +45,7 @@ import com.openai.models.responses.ResponseOutputItem
 import com.openai.models.responses.ResponseOutputItemAddedEvent
 import com.openai.models.responses.ResponseOutputItemDoneEvent
 import com.openai.models.responses.ResponseOutputMessage
+import com.openai.models.responses.ResponseOutputText
 import com.openai.models.responses.ResponseOutputTextAnnotationAddedEvent
 import com.openai.models.responses.ResponseQueuedEvent
 import com.openai.models.responses.ResponseReasoningSummaryPartAddedEvent
@@ -85,6 +86,12 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
      */
     private var response: Response? = null
     private var partial: Response? = null
+    private var materialized: Response? = null
+
+    // A null content index denotes function-call arguments, which belong to the output item.
+    private data class Position(val output: Long, val content: Long? = null)
+
+    private val fragments = mutableMapOf<Position, StringBuilder>()
 
     companion object {
         @JvmStatic fun create() = ResponseAccumulator(false)
@@ -107,7 +114,44 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
      */
     fun snapshot(): Optional<Response> {
         check(snapshotsEnabled) { "Snapshots require ResponseAccumulator.createWithSnapshots()." }
-        return Optional.ofNullable(response ?: partial)
+        if (response != null) return Optional.ofNullable(response)
+        val current = partial ?: return Optional.empty()
+        materialized?.let {
+            return Optional.of(it)
+        }
+        if (fragments.isEmpty()) return Optional.of(current)
+        val output = current._output().asKnown().orElse(null) ?: return Optional.of(current)
+        val items =
+            output.mapIndexed { index, item ->
+                val arguments = fragments[Position(index.toLong())]
+                val call = item.functionCall().orElse(null)
+                if (call != null && arguments != null) {
+                    return@mapIndexed ResponseOutputItem.ofFunctionCall(
+                        call.toBuilder().arguments(arguments.toString()).build()
+                    )
+                }
+                val message = item.message().orElse(null) ?: return@mapIndexed item
+                val parts = message._content().asKnown().orElse(null) ?: return@mapIndexed item
+                val content =
+                    parts.mapIndexed content@{ contentIndex, part ->
+                        val text =
+                            fragments[Position(index.toLong(), contentIndex.toLong())]
+                                ?: return@content part
+                        val outputText = part.outputText().orElse(null)
+                        if (outputText != null) {
+                            ResponseOutputMessage.Content.ofOutputText(
+                                outputText.toBuilder().text(text.toString()).build()
+                            )
+                        } else {
+                            val refusal = part.refusal().orElse(null) ?: return@content part
+                            ResponseOutputMessage.Content.ofRefusal(
+                                refusal.toBuilder().refusal(text.toString()).build()
+                            )
+                        }
+                    }
+                ResponseOutputItem.ofMessage(message.toBuilder().content(content).build())
+            }
+        return Optional.of(current.toBuilder().output(items).build().also { materialized = it })
     }
 
     /**
@@ -171,6 +215,9 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
             event.responseOutputTextDone().ifPresent {
                 accumulate(ResponseStreamEvent.ofOutputTextDone(it))
             }
+            event.responseOutputTextAnnotationAdded().ifPresent {
+                accumulate(ResponseStreamEvent.ofOutputTextAnnotationAdded(it))
+            }
             event.responseRefusalDelta().ifPresent {
                 accumulate(ResponseStreamEvent.ofRefusalDelta(it))
             }
@@ -210,7 +257,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 // The following events _all_ have a `response` property.
 
                 override fun visitCreated(created: ResponseCreatedEvent) {
-                    if (snapshotsEnabled) partial = created.response()
+                    if (snapshotsEnabled) replacePartial(created.response())
                 }
 
                 override fun visitCompleted(completed: ResponseCompletedEvent) {
@@ -218,11 +265,11 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 }
 
                 override fun visitInProgress(inProgress: ResponseInProgressEvent) {
-                    if (snapshotsEnabled) partial = inProgress.response()
+                    if (snapshotsEnabled) replacePartial(inProgress.response())
                 }
 
                 override fun visitQueued(queued: ResponseQueuedEvent) {
-                    if (snapshotsEnabled) partial = queued.response()
+                    if (snapshotsEnabled) replacePartial(queued.response())
                 }
 
                 override fun visitCustomToolCallInputDelta(
@@ -307,6 +354,12 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                             contentPartAdded.contentIndex(),
                             contentPartAdded._itemId(),
                         ) {
+                            fragments.remove(
+                                Position(
+                                    contentPartAdded.outputIndex(),
+                                    contentPartAdded.contentIndex(),
+                                )
+                            )
                             content
                         }
                 }
@@ -330,6 +383,12 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                             contentPartDone.contentIndex(),
                             contentPartDone._itemId(),
                         ) {
+                            fragments.remove(
+                                Position(
+                                    contentPartDone.outputIndex(),
+                                    contentPartDone.contentIndex(),
+                                )
+                            )
                             content
                         }
                 }
@@ -352,19 +411,13 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                     functionCallArgumentsDelta: ResponseFunctionCallArgumentsDeltaEvent
                 ) {
                     if (!snapshotsEnabled) return
-                    updateItem(
+                    append(
                         functionCallArgumentsDelta.outputIndex(),
+                        null,
                         functionCallArgumentsDelta._itemId(),
+                        functionCallArgumentsDelta.delta(),
                     ) { item ->
-                        val call = item?.functionCall()?.orElse(null) ?: return@updateItem null
-                        val arguments =
-                            call._arguments().asKnown().orElse(null) ?: return@updateItem null
-                        ResponseOutputItem.ofFunctionCall(
-                            call
-                                .toBuilder()
-                                .arguments(arguments + functionCallArgumentsDelta.delta())
-                                .build()
-                        )
+                        item.functionCall().orElse(null)?._arguments()?.asKnown()?.orElse(null)
                     }
                 }
 
@@ -377,12 +430,15 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                         functionCallArgumentsDone._itemId(),
                     ) { item ->
                         val call = item?.functionCall()?.orElse(null) ?: return@updateItem null
-                        ResponseOutputItem.ofFunctionCall(
-                            call
-                                .toBuilder()
-                                .arguments(functionCallArgumentsDone.arguments())
-                                .build()
-                        )
+                        val result =
+                            ResponseOutputItem.ofFunctionCall(
+                                call
+                                    .toBuilder()
+                                    .arguments(functionCallArgumentsDone.arguments())
+                                    .build()
+                            )
+                        fragments.remove(Position(functionCallArgumentsDone.outputIndex()))
+                        result
                     }
                 }
 
@@ -408,12 +464,20 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
 
                 override fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent) {
                     if (snapshotsEnabled)
-                        updateItem(outputItemAdded.outputIndex()) { outputItemAdded.item() }
+                        updateItem(outputItemAdded.outputIndex()) {
+                            val item = outputItemAdded.item()
+                            fragments.keys.removeAll { it.output == outputItemAdded.outputIndex() }
+                            item
+                        }
                 }
 
                 override fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) {
                     if (snapshotsEnabled)
-                        updateItem(outputItemDone.outputIndex()) { outputItemDone.item() }
+                        updateItem(outputItemDone.outputIndex()) {
+                            val item = outputItemDone.item()
+                            fragments.keys.removeAll { it.output == outputItemDone.outputIndex() }
+                            item
+                        }
                 }
 
                 override fun visitReasoningSummaryPartAdded(
@@ -442,17 +506,13 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
 
                 override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) {
                     if (!snapshotsEnabled) return
-                    updateContent(
+                    appendContent(
                         refusalDelta.outputIndex(),
                         refusalDelta.contentIndex(),
                         refusalDelta._itemId(),
+                        refusalDelta.delta(),
                     ) { content ->
-                        val refusal = content?.refusal()?.orElse(null) ?: return@updateContent null
-                        val text =
-                            refusal._refusal().asKnown().orElse(null) ?: return@updateContent null
-                        ResponseOutputMessage.Content.ofRefusal(
-                            refusal.toBuilder().refusal(text + refusalDelta.delta()).build()
-                        )
+                        content.refusal().orElse(null)?._refusal()?.asKnown()?.orElse(null)
                     }
                 }
 
@@ -464,26 +524,26 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                         refusalDone._itemId(),
                     ) { content ->
                         val refusal = content?.refusal()?.orElse(null) ?: return@updateContent null
-                        ResponseOutputMessage.Content.ofRefusal(
-                            refusal.toBuilder().refusal(refusalDone.refusal()).build()
+                        val result =
+                            ResponseOutputMessage.Content.ofRefusal(
+                                refusal.toBuilder().refusal(refusalDone.refusal()).build()
+                            )
+                        fragments.remove(
+                            Position(refusalDone.outputIndex(), refusalDone.contentIndex())
                         )
+                        result
                     }
                 }
 
                 override fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent) {
                     if (!snapshotsEnabled) return
-                    updateContent(
+                    appendContent(
                         outputTextDelta.outputIndex(),
                         outputTextDelta.contentIndex(),
                         outputTextDelta._itemId(),
+                        outputTextDelta.delta(),
                     ) { content ->
-                        val outputText =
-                            content?.outputText()?.orElse(null) ?: return@updateContent null
-                        val text =
-                            outputText._text().asKnown().orElse(null) ?: return@updateContent null
-                        ResponseOutputMessage.Content.ofOutputText(
-                            outputText.toBuilder().text(text + outputTextDelta.delta()).build()
-                        )
+                        content.outputText().orElse(null)?._text()?.asKnown()?.orElse(null)
                     }
                 }
 
@@ -496,9 +556,14 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                     ) { content ->
                         val outputText =
                             content?.outputText()?.orElse(null) ?: return@updateContent null
-                        ResponseOutputMessage.Content.ofOutputText(
-                            outputText.toBuilder().text(outputTextDone.text()).build()
+                        val result =
+                            ResponseOutputMessage.Content.ofOutputText(
+                                outputText.toBuilder().text(outputTextDone.text()).build()
+                            )
+                        fragments.remove(
+                            Position(outputTextDone.outputIndex(), outputTextDone.contentIndex())
                         )
+                        result
                     }
                 }
 
@@ -562,14 +627,97 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
 
                 override fun visitOutputTextAnnotationAdded(
                     outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    val annotation =
+                        outputTextAnnotationAdded._annotation().asKnown().orElse(null) ?: return
+                    val annotationIndex =
+                        outputTextAnnotationAdded._annotationIndex().asKnown().orElse(null)
+                            ?: return
+                    updateContent(
+                        outputTextAnnotationAdded.outputIndex(),
+                        outputTextAnnotationAdded.contentIndex(),
+                        outputTextAnnotationAdded._itemId(),
+                    ) { content ->
+                        val text = content?.outputText()?.orElse(null) ?: return@updateContent null
+                        val annotations =
+                            text._annotations().asKnown().orElse(null)?.toMutableList()
+                                ?: return@updateContent null
+                        if (annotationIndex < 0 || annotationIndex > annotations.size.toLong())
+                            return@updateContent null
+                        // The generated event and output unions are distinct Kotlin types with
+                        // the same wire form. Preserve additional fields, including future kinds.
+                        val converted =
+                            JsonValue.from(annotation)
+                                .convert(ResponseOutputText.Annotation::class.java)
+                                ?: return@updateContent null
+                        val index = annotationIndex.toInt()
+                        if (index == annotations.size) annotations.add(converted)
+                        else annotations[index] = converted
+                        ResponseOutputMessage.Content.ofOutputText(
+                            text.toBuilder().annotations(annotations).build()
+                        )
+                    }
+                }
 
                 // Ignore unknown variants for forwards compatibility.
                 override fun unknown(json: JsonValue?) {}
             }
         )
 
+        if (response != null) {
+            fragments.clear()
+            materialized = null
+            partial = null
+        }
         return event
+    }
+
+    private fun replacePartial(value: Response) {
+        partial = value
+        materialized = null
+        fragments.clear()
+    }
+
+    private fun append(
+        outputIndex: Long,
+        contentIndex: Long?,
+        expectedId: JsonField<String>,
+        delta: String,
+        initial: (ResponseOutputItem) -> String?,
+    ) {
+        val output = partial?._output()?.asKnown()?.orElse(null) ?: return
+        if (outputIndex < 0 || outputIndex >= output.size.toLong()) return
+        val item = output[outputIndex.toInt()]
+        if (!matchesId(item, expectedId)) return
+        val text = initial(item) ?: return
+        fragments
+            .getOrPut(Position(outputIndex, contentIndex)) { StringBuilder(text) }
+            .append(delta)
+        materialized = null
+    }
+
+    private fun appendContent(
+        outputIndex: Long,
+        contentIndex: Long,
+        expectedId: JsonField<String>,
+        delta: String,
+        initial: (ResponseOutputMessage.Content) -> String?,
+    ) {
+        append(outputIndex, contentIndex, expectedId, delta) { item ->
+            val parts =
+                item.message().orElse(null)?._content()?.asKnown()?.orElse(null)
+                    ?: return@append null
+            if (contentIndex < 0 || contentIndex >= parts.size.toLong()) return@append null
+            initial(parts[contentIndex.toInt()])
+        }
+    }
+
+    private fun matchesId(item: ResponseOutputItem?, expectedId: JsonField<String>): Boolean {
+        val expected = expectedId.asKnown().orElse(null) ?: return false
+        val actual =
+            item?.message()?.orElse(null)?._id() ?: item?.functionCall()?.orElse(null)?._id()
+        return actual?.asKnown()?.orElse(null) == expected
     }
 
     // Never allocate invented items/parts to fill a missing index. A missing output/content field
@@ -586,16 +734,11 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         val previous = output.getOrNull(i)
         // Full output-item events replace the index. Subsequent deltas/parts must name the
         // current item; never let a late event for an older occupant change its replacement.
-        if (expectedId != null) {
-            val expected = expectedId.asKnown().orElse(null) ?: return
-            val actual =
-                previous?.message()?.orElse(null)?._id()
-                    ?: previous?.functionCall()?.orElse(null)?._id()
-            if (actual?.asKnown()?.orElse(null) != expected) return
-        }
+        if (expectedId != null && !matchesId(previous, expectedId)) return
         val item = update(previous) ?: return
         if (i == output.size) output.add(item) else output[i] = item
         partial = current.toBuilder().output(output).build()
+        materialized = null
     }
 
     private fun updateContent(
