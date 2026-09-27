@@ -37,8 +37,9 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * Transcribes audio into the input language.
  *
- * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, or a stream
- * of transcript events.
+ * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, plain text
+ * in `text`, `srt`, or `vtt` format, or a stream of transcript events. Supported formats depend on
+ * the model.
  */
 class TranscriptionCreateParams
 private constructor(
