@@ -106,8 +106,8 @@ class ResponsesWebSocketTest {
                                     .asText()
                             )
                             .isEqualTo("retained")
-                        val beforeText = textState.snapshot().orElseThrow()
-                        val beforeCall = toolState.snapshot().orElseThrow()
+                        val beforeText = textState.snapshot().get()
+                        val beforeCall = toolState.snapshot().get()
                         assertThat(
                                 beforeText
                                     .output()
@@ -140,7 +140,7 @@ class ResponsesWebSocketTest {
                         assertThat(
                                 textState
                                     .snapshot()
-                                    .orElseThrow()
+                                    .get()
                                     .output()
                                     .single()
                                     .asMessage()
@@ -167,7 +167,7 @@ class ResponsesWebSocketTest {
                         toolState.accumulate(terminal)
                         assertThat(toolState.response())
                             .isSameAs(terminal.asResponseIncomplete().response())
-                        assertThat(toolState.snapshot().orElseThrow())
+                        assertThat(toolState.snapshot().get())
                             .isSameAs(toolState.response())
                         val error = text.receive()
                         assertThat(textState.accumulate(error)).isSameAs(error)
@@ -175,7 +175,7 @@ class ResponsesWebSocketTest {
                         assertThat(
                                 textState
                                     .snapshot()
-                                    .orElseThrow()
+                                    .get()
                                     .output()
                                     .single()
                                     .asMessage()
@@ -210,12 +210,12 @@ class ResponsesWebSocketTest {
                         val state = com.openai.helpers.ResponseAccumulator.createWithSnapshots()
                         connection.send(command())
                         state.accumulate(connection.receive())
-                        val lastObserved = state.snapshot().orElseThrow()
-                        assertThat(lastObserved.status().orElseThrow().toString())
+                        val lastObserved = state.snapshot().get()
+                        assertThat(lastObserved.status().get().toString())
                             .isEqualTo("in_progress")
                         assertThatThrownBy { connection.receive() }
                             .isInstanceOf(com.openai.errors.OpenAIException::class.java)
-                        assertThat(state.snapshot().orElseThrow()).isSameAs(lastObserved)
+                        assertThat(state.snapshot().get()).isSameAs(lastObserved)
                         assertThatThrownBy { state.response() }
                             .isExactlyInstanceOf(IllegalStateException::class.java)
                     }
@@ -271,15 +271,15 @@ class ResponsesWebSocketTest {
                         val state = com.openai.helpers.ResponseAccumulator.createWithSnapshots()
                         connection.send(command())
                         repeat(3) { state.accumulate(connection.receive()) }
-                        val replaced = state.snapshot().orElseThrow()
+                        val replaced = state.snapshot().get()
                         assertThat(replaced.output().single().asMessage().id()).isEqualTo("new")
                         late.forEach { _ ->
                             state.accumulate(connection.receive())
-                            assertThat(state.snapshot().orElseThrow()).isSameAs(replaced)
+                            assertThat(state.snapshot().get()).isSameAs(replaced)
                         }
                         repeat(2) { state.accumulate(connection.receive()) }
                         val contents =
-                            state.snapshot().orElseThrow().output().single().asMessage().content()
+                            state.snapshot().get().output().single().asMessage().content()
                         assertThat(contents).hasSize(2)
                         assertThat(contents[0].asOutputText().text()).isEqualTo("base text")
                         assertThat(contents[1].asRefusal().refusal()).isEqualTo("correct refusal")
@@ -295,7 +295,7 @@ class ResponsesWebSocketTest {
                             .isEqualTo("base")
                         val terminal = connection.receive()
                         state.accumulate(terminal)
-                        assertThat(state.snapshot().orElseThrow())
+                        assertThat(state.snapshot().get())
                             .isSameAs(terminal.asResponseCompleted().response())
                     }
                     peer.await()
@@ -345,18 +345,18 @@ class ResponsesWebSocketTest {
                         val state = com.openai.helpers.ResponseAccumulator.createWithSnapshots()
                         connection.send(command())
                         repeat(3) { state.accumulate(connection.receive()) }
-                        val replaced = state.snapshot().orElseThrow()
+                        val replaced = state.snapshot().get()
                         assertThat(replaced.output().single().asFunctionCall().name())
                             .isEqualTo("weather")
                         repeat(2) {
                             state.accumulate(connection.receive())
-                            assertThat(state.snapshot().orElseThrow()).isSameAs(replaced)
+                            assertThat(state.snapshot().get()).isSameAs(replaced)
                         }
                         state.accumulate(connection.receive())
                         assertThat(
                                 state
                                     .snapshot()
-                                    .orElseThrow()
+                                    .get()
                                     .output()
                                     .single()
                                     .asFunctionCall()
@@ -367,7 +367,7 @@ class ResponsesWebSocketTest {
                         assertThat(
                                 state
                                     .snapshot()
-                                    .orElseThrow()
+                                    .get()
                                     .output()
                                     .single()
                                     .asFunctionCall()
