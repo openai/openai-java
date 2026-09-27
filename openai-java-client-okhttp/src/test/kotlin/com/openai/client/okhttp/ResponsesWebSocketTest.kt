@@ -227,6 +227,168 @@ class ResponsesWebSocketTest {
     }
 
     @Test
+    fun `late message events cannot mutate a replacement item at the same output index`() {
+        val late =
+            listOf(
+                """{"type":"response.content_part.added","sequence_number":3,"output_index":0,"content_index":2,"item_id":"old","part":{"type":"output_text","text":"wrong part","annotations":[]}}""",
+                """{"type":"response.content_part.done","sequence_number":4,"output_index":0,"content_index":0,"item_id":"old","part":{"type":"output_text","text":"wrong part","annotations":[]}}""",
+                """{"type":"response.output_text.delta","sequence_number":5,"output_index":0,"content_index":0,"item_id":"old","delta":"wrong"}""",
+                """{"type":"response.output_text.done","sequence_number":6,"output_index":0,"content_index":0,"item_id":"old","text":"wrong"}""",
+                """{"type":"response.refusal.delta","sequence_number":7,"output_index":0,"content_index":1,"item_id":"old","delta":"wrong"}""",
+                """{"type":"response.refusal.done","sequence_number":8,"output_index":0,"content_index":1,"item_id":"old","refusal":"wrong"}""",
+                // Unresolved item identity cannot authorize a delta either.
+                """{"type":"response.output_text.delta","sequence_number":9,"output_index":0,"content_index":0,"delta":"missing-id"}""",
+            )
+        Peer { socket, _ ->
+                readMessage(socket)
+                send(socket, event("response.in_progress"))
+                send(
+                    socket,
+                    """{"type":"response.output_item.added","sequence_number":1,"output_index":0,"item":{"id":"old","type":"message","role":"assistant","status":"in_progress","content":[]}}""",
+                )
+                // A full done item is authoritative even when it corrects the original id.
+                send(
+                    socket,
+                    """{"type":"response.output_item.done","sequence_number":2,"output_index":0,"item":{"id":"new","type":"message","role":"assistant","status":"in_progress","content":[{"type":"output_text","text":"base","annotations":[]},{"type":"refusal","refusal":"no"}]}}""",
+                )
+                late.forEach { send(socket, it) }
+                send(
+                    socket,
+                    """{"type":"response.output_text.delta","sequence_number":10,"output_index":0,"content_index":0,"item_id":"new","delta":" text"}""",
+                )
+                send(
+                    socket,
+                    """{"type":"response.refusal.done","sequence_number":11,"output_index":0,"content_index":1,"item_id":"new","refusal":"correct refusal"}""",
+                )
+                send(socket, event("response.completed"))
+                while (socket.getInputStream().read() != -1) {}
+            }
+            .use { peer ->
+                val client =
+                    OpenAIOkHttpClient.builder().apiKey("fake-key").baseUrl(peer.url).build()
+                try {
+                    client.responses().connect().use { connection ->
+                        val state = com.openai.helpers.ResponseAccumulator.createWithSnapshots()
+                        connection.send(command())
+                        repeat(3) { state.accumulate(connection.receive()) }
+                        val replaced = state.snapshot().orElseThrow()
+                        assertThat(replaced.output().single().asMessage().id()).isEqualTo("new")
+                        late.forEach { _ ->
+                            state.accumulate(connection.receive())
+                            assertThat(state.snapshot().orElseThrow()).isSameAs(replaced)
+                        }
+                        repeat(2) { state.accumulate(connection.receive()) }
+                        val contents =
+                            state.snapshot().orElseThrow().output().single().asMessage().content()
+                        assertThat(contents).hasSize(2)
+                        assertThat(contents[0].asOutputText().text()).isEqualTo("base text")
+                        assertThat(contents[1].asRefusal().refusal()).isEqualTo("correct refusal")
+                        assertThat(
+                                replaced
+                                    .output()
+                                    .single()
+                                    .asMessage()
+                                    .content()[0]
+                                    .asOutputText()
+                                    .text()
+                            )
+                            .isEqualTo("base")
+                        val terminal = connection.receive()
+                        state.accumulate(terminal)
+                        assertThat(state.snapshot().orElseThrow())
+                            .isSameAs(terminal.asResponseCompleted().response())
+                    }
+                    peer.await()
+                } finally {
+                    client.close()
+                }
+            }
+    }
+
+    @Test
+    fun `late function arguments cannot change a replacement call`() {
+        Peer { socket, _ ->
+                readMessage(socket)
+                send(socket, event("response.in_progress"))
+                send(
+                    socket,
+                    """{"type":"response.output_item.added","sequence_number":1,"output_index":0,"item":{"id":"f-old","type":"function_call","call_id":"c-old","name":"old","arguments":"","status":"in_progress"}}""",
+                )
+                send(
+                    socket,
+                    """{"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"f-new","type":"function_call","call_id":"c-new","name":"weather","arguments":"start","status":"in_progress"}}""",
+                )
+                send(
+                    socket,
+                    """{"type":"response.function_call_arguments.delta","sequence_number":3,"output_index":0,"item_id":"f-old","delta":"wrong"}""",
+                )
+                send(
+                    socket,
+                    """{"type":"response.function_call_arguments.done","sequence_number":4,"output_index":0,"item_id":"f-old","arguments":"wrong"}""",
+                )
+                send(
+                    socket,
+                    """{"type":"response.function_call_arguments.delta","sequence_number":5,"output_index":0,"item_id":"f-new","delta":" delta"}""",
+                )
+                send(
+                    socket,
+                    """{"type":"response.function_call_arguments.done","sequence_number":6,"output_index":0,"item_id":"f-new","arguments":"corrected"}""",
+                )
+                send(socket, event("response.incomplete"))
+                while (socket.getInputStream().read() != -1) {}
+            }
+            .use { peer ->
+                val client =
+                    OpenAIOkHttpClient.builder().apiKey("fake-key").baseUrl(peer.url).build()
+                try {
+                    client.responses().connect().use { connection ->
+                        val state = com.openai.helpers.ResponseAccumulator.createWithSnapshots()
+                        connection.send(command())
+                        repeat(3) { state.accumulate(connection.receive()) }
+                        val replaced = state.snapshot().orElseThrow()
+                        assertThat(replaced.output().single().asFunctionCall().name())
+                            .isEqualTo("weather")
+                        repeat(2) {
+                            state.accumulate(connection.receive())
+                            assertThat(state.snapshot().orElseThrow()).isSameAs(replaced)
+                        }
+                        state.accumulate(connection.receive())
+                        assertThat(
+                                state
+                                    .snapshot()
+                                    .orElseThrow()
+                                    .output()
+                                    .single()
+                                    .asFunctionCall()
+                                    .arguments()
+                            )
+                            .isEqualTo("start delta")
+                        state.accumulate(connection.receive())
+                        assertThat(
+                                state
+                                    .snapshot()
+                                    .orElseThrow()
+                                    .output()
+                                    .single()
+                                    .asFunctionCall()
+                                    .arguments()
+                            )
+                            .isEqualTo("corrected")
+                        assertThat(replaced.output().single().asFunctionCall().arguments())
+                            .isEqualTo("start")
+                        val terminal = connection.receive()
+                        state.accumulate(terminal)
+                        assertThat(state.response())
+                            .isSameAs(terminal.asResponseIncomplete().response())
+                    }
+                    peer.await()
+                } finally {
+                    client.close()
+                }
+            }
+    }
+
+    @Test
     fun `shared contract scenarios through blocking and async entrypoints`() {
         val scenarios =
             mapper
