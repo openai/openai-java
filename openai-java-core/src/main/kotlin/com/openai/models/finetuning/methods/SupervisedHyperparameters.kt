@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.methods
 
@@ -446,7 +446,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown BatchSize: $json")
+                throw OpenAIInvalidDataException("Unknown BatchSize")
             }
         }
 
@@ -665,7 +665,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown LearningRateMultiplier: $json")
+                throw OpenAIInvalidDataException("Unknown LearningRateMultiplier")
             }
         }
 
@@ -885,7 +885,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown NEpochs: $json")
+                throw OpenAIInvalidDataException("Unknown NEpochs")
             }
         }
 

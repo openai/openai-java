@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.evals
 
@@ -46,7 +46,7 @@ import kotlin.jvm.optionals.getOrNull
  * evaluation is a set of testing criteria and the config for a data source, which dictates the
  * schema of the data used in the evaluation. After creating an evaluation, you can run it on
  * different models and model parameters. We support several types of graders and datasources. For
- * more information, see the [Evals guide](https://platform.openai.com/docs/guides/evals).
+ * more information, see the [Evals guide](https://developers.openai.com/api/docs/guides/evals).
  */
 class EvalCreateParams
 private constructor(
@@ -1098,7 +1098,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown DataSourceConfig: $json")
+                throw OpenAIInvalidDataException("Unknown DataSourceConfig")
             }
         }
 
@@ -2457,7 +2457,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown TestingCriterion: $json")
+                throw OpenAIInvalidDataException("Unknown TestingCriterion")
             }
         }
 
@@ -3138,7 +3138,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
                     fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown Input: $json")
+                        throw OpenAIInvalidDataException("Unknown Input")
                     }
                 }
 
@@ -4031,7 +4031,7 @@ private constructor(
                              * @throws OpenAIInvalidDataException in the default implementation.
                              */
                             fun unknown(json: JsonValue?): T {
-                                throw OpenAIInvalidDataException("Unknown Content: $json")
+                                throw OpenAIInvalidDataException("Unknown Content")
                             }
                         }
 

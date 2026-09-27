@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -22,7 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * The results of a file search tool call. See the
- * [file search guide](https://platform.openai.com/docs/guides/tools-file-search) for more
+ * [file search guide](https://developers.openai.com/api/docs/guides/tools-file-search) for more
  * information.
  */
 class BetaResponseFileSearchToolCall

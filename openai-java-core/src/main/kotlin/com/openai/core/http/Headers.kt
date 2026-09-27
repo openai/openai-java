@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core.http
 
 import com.openai.core.JsonArray
@@ -101,7 +99,17 @@ private constructor(
             )
     }
 
-    override fun hashCode(): Int = map.hashCode()
+    override fun hashCode(): Int =
+        map.entries.sumOf { (name, values) ->
+            // Match the case folding used by String.CASE_INSENSITIVE_ORDER without
+            // locale-dependent mappings or multi-character case expansions.
+            val nameHash =
+                name
+                    .codePoints()
+                    .map { Character.toLowerCase(Character.toUpperCase(it)) }
+                    .reduce(0) { hash, codePoint -> 31 * hash + codePoint }
+            nameHash xor values.hashCode()
+        }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

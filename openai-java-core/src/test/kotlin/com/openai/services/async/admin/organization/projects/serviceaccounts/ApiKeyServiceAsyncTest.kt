@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.admin.organization.projects.serviceaccounts
 
@@ -27,6 +27,7 @@ internal class ApiKeyServiceAsyncTest {
                 ApiKeyCreateParams.builder()
                     .projectId("project_id")
                     .serviceAccountId("service_account_id")
+                    .expiresInSeconds(1L)
                     .name("name")
                     .addScope("string")
                     .build()

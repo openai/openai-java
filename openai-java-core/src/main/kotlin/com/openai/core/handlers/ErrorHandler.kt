@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 @file:JvmName("ErrorHandler")
 
 package com.openai.core.handlers

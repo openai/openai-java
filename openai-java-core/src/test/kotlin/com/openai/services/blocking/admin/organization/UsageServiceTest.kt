@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization
 
@@ -154,6 +154,7 @@ internal class UsageServiceTest {
                     .endTime(0L)
                     .addGroupBy(UsageCostsParams.GroupBy.PROJECT_ID)
                     .limit(0L)
+                    .addLineItem("string")
                     .page("page")
                     .addProjectId("string")
                     .build()

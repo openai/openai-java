@@ -24,7 +24,11 @@ internal fun HttpRequest.Builder.replaceBearerTokenForAzure(
 ): HttpRequest.Builder = apply {
     val urlCategory =
         AzureUrlCategory.categorizeBaseUrl(clientOptions.baseUrl(), clientOptions.azureUrlPathMode)
-    if (urlCategory.isAzure() && clientOptions.credential is BearerTokenCredential) {
+    if (
+        urlCategory.isAzure() &&
+            clientOptions.credential is BearerTokenCredential &&
+            !clientOptions.isSecurityHeaderRemoved("Authorization")
+    ) {
         replaceHeaders("Authorization", "Bearer ${clientOptions.credential.token()}")
     }
 }

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.images
 
@@ -79,7 +79,7 @@ private constructor(
     /**
      * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
      * abuse.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -293,7 +293,7 @@ private constructor(
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          */
         fun user(user: String) = apply { body.user(user) }
 
@@ -514,7 +514,7 @@ private constructor(
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -735,7 +735,7 @@ private constructor(
             /**
              * A unique identifier representing your end-user, which can help OpenAI to monitor and
              * detect abuse.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+             * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
              */
             fun user(user: String) = user(MultipartField.of(user))
 

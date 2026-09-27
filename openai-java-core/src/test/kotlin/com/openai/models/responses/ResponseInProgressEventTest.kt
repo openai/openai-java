@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -21,11 +21,30 @@ internal class ResponseInProgressEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -39,7 +58,7 @@ internal class ResponseInProgressEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -86,6 +105,7 @@ internal class ResponseInProgressEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -175,11 +195,21 @@ internal class ResponseInProgressEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -231,11 +261,30 @@ internal class ResponseInProgressEventTest {
             .isEqualTo(
                 Response.builder()
                     .id("id")
+                    .accessPrograms(
+                        Response.AccessPrograms.builder()
+                            .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .createdAt(0.0)
                     .error(
                         ResponseError.builder()
                             .code(ResponseError.Code.SERVER_ERROR)
                             .message("message")
+                            .misalignment(
+                                ResponseError.Misalignment.builder()
+                                    .detailedExplanation("detailed_explanation")
+                                    .errorType(
+                                        ResponseError.Misalignment.ErrorType
+                                            .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                    )
+                                    .steer(
+                                        ResponseError.Misalignment.Steer.builder()
+                                            .message("message")
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .build()
                     )
                     .incompleteDetails(
@@ -249,7 +298,7 @@ internal class ResponseInProgressEventTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_1)
+                    .model(ChatModel.GPT_6_ASTRA)
                     .addOutput(
                         ResponseOutputMessage.builder()
                             .id("id")
@@ -296,6 +345,7 @@ internal class ResponseInProgressEventTest {
                             )
                             .strict(true)
                             .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -383,11 +433,19 @@ internal class ResponseInProgressEventTest {
                             .version("version")
                             .build()
                     )
+                    .promptCacheDiagnostics(
+                        Response.PromptCacheDiagnostics.CacheMiss.builder()
+                            .cacheMissedTokens(0L)
+                            .reason(Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED)
+                            .comparisonReusableTokens(0L)
+                            .build()
+                    )
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         Response.PromptCacheOptions.builder()
                             .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                             .ttl(Response.PromptCacheOptions.Ttl._30M)
+                            .comparisonResponseId("comparison_response_id")
                             .build()
                     )
                     .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -443,11 +501,30 @@ internal class ResponseInProgressEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -461,7 +538,7 @@ internal class ResponseInProgressEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -508,6 +585,7 @@ internal class ResponseInProgressEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -597,11 +675,21 @@ internal class ResponseInProgressEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)

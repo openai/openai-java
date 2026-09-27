@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models
 
@@ -683,7 +683,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Value: $json")
+                throw OpenAIInvalidDataException("Unknown Value")
             }
         }
 
@@ -902,7 +902,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown ComparisonFilterValueItem: $json")
+                    throw OpenAIInvalidDataException("Unknown ComparisonFilterValueItem")
                 }
             }
 

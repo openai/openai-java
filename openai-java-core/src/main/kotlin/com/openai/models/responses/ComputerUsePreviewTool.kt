@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -19,7 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * A tool that controls a virtual computer. Learn more about the
- * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+ * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
  */
 class ComputerUsePreviewTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

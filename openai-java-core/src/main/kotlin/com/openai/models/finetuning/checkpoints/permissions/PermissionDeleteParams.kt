@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.checkpoints.permissions
 
@@ -13,7 +13,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * **NOTE:** This endpoint requires an [admin API key](../admin-api-keys).
+ * **NOTE:** This endpoint requires an
+ * [admin API key](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys).
  *
  * Organization owners can use this endpoint to delete a permission for a fine-tuned model
  * checkpoint.

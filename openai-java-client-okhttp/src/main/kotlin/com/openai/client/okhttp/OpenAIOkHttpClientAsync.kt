@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.json.JsonMapper
@@ -9,6 +7,7 @@ import com.openai.azure.AzureUrlPathMode
 import com.openai.client.OpenAIClientAsync
 import com.openai.client.OpenAIClientAsyncImpl
 import com.openai.core.ClientOptions
+import com.openai.core.DataResidency
 import com.openai.core.LogLevel
 import com.openai.core.Sleeper
 import com.openai.core.Timeout
@@ -62,6 +61,8 @@ class OpenAIOkHttpClientAsync private constructor() {
         private var sslSocketFactory: SSLSocketFactory? = null
         private var trustManager: X509TrustManager? = null
         private var hostnameVerifier: HostnameVerifier? = null
+        private var x509WorkloadIdentity: X509WorkloadIdentity? = null
+        private var x509BaseUrl: String? = null
 
         /**
          * The executor service to use for running HTTP requests.
@@ -253,10 +254,26 @@ class OpenAIOkHttpClientAsync private constructor() {
          *
          * Defaults to the production environment: `https://api.openai.com/v1`.
          */
-        fun baseUrl(baseUrl: String?) = apply { clientOptions.baseUrl(baseUrl) }
+        fun baseUrl(baseUrl: String?) = apply {
+            clientOptions.baseUrl(baseUrl)
+            x509BaseUrl = baseUrl
+        }
 
         /** Alias for calling [Builder.baseUrl] with `baseUrl.orElse(null)`. */
         fun baseUrl(baseUrl: Optional<String>) = baseUrl(baseUrl.getOrNull())
+
+        /**
+         * Selects an OpenAI endpoint for request-scoped data and compute residency.
+         *
+         * @see ClientOptions.Builder.dataResidency
+         */
+        fun dataResidency(dataResidency: DataResidency?) = apply {
+            clientOptions.dataResidency(dataResidency)
+        }
+
+        /** Alias for calling [dataResidency] with `dataResidency.orElse(null)`. */
+        fun dataResidency(dataResidency: Optional<DataResidency>) =
+            dataResidency(dataResidency.getOrNull())
 
         /**
          * Whether to call `validate` on every response before returning it.
@@ -339,6 +356,11 @@ class OpenAIOkHttpClientAsync private constructor() {
         /** Alias for calling [Builder.workloadIdentity] with `workloadIdentity.orElse(null)`. */
         fun workloadIdentity(workloadIdentity: Optional<WorkloadIdentity>) =
             workloadIdentity(workloadIdentity.getOrNull())
+
+        /** Authenticates requests using a fixed X.509 client certificate instead of an API key. */
+        fun x509WorkloadIdentity(x509WorkloadIdentity: X509WorkloadIdentity) = apply {
+            this.x509WorkloadIdentity = x509WorkloadIdentity
+        }
 
         fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
             clientOptions.azureServiceVersion(azureServiceVersion)
@@ -451,7 +473,12 @@ class OpenAIOkHttpClientAsync private constructor() {
          *
          * @see ClientOptions.Builder.fromEnv
          */
-        fun fromEnv() = apply { clientOptions.fromEnv() }
+        fun fromEnv() = apply {
+            clientOptions.fromEnv()
+            (System.getProperty("openai.baseUrl") ?: System.getenv("OPENAI_BASE_URL"))?.let {
+                x509BaseUrl = it
+            }
+        }
 
         /**
          * Returns an immutable instance of [OpenAIClientAsync].
@@ -460,22 +487,37 @@ class OpenAIOkHttpClientAsync private constructor() {
          */
         fun build(): OpenAIClientAsync =
             OpenAIClientAsyncImpl(
-                clientOptions
-                    .httpClient(
-                        OkHttpClient.builder()
-                            .timeout(clientOptions.timeout())
-                            .followRedirects(followRedirects)
-                            .proxy(proxy)
-                            .proxyAuthenticator(proxyAuthenticator)
-                            .maxIdleConnections(maxIdleConnections)
-                            .keepAliveDuration(keepAliveDuration)
-                            .dispatcherExecutorService(dispatcherExecutorService)
-                            .sslSocketFactory(sslSocketFactory)
-                            .trustManager(trustManager)
-                            .hostnameVerifier(hostnameVerifier)
-                            .build()
-                    )
-                    .build()
+                x509WorkloadIdentity?.let { identity ->
+                    require(
+                        proxy == null &&
+                            proxyAuthenticator == null &&
+                            maxIdleConnections == null &&
+                            keepAliveDuration == null &&
+                            dispatcherExecutorService == null &&
+                            sslSocketFactory == null &&
+                            trustManager == null &&
+                            hostnameVerifier == null
+                    ) {
+                        "X.509 workload identity cannot be combined with custom transport settings"
+                    }
+                    x509ClientOptions(clientOptions, identity, x509BaseUrl)
+                }
+                    ?: clientOptions
+                        .httpClient(
+                            OkHttpClient.builder()
+                                .timeout(clientOptions.timeout())
+                                .followRedirects(followRedirects)
+                                .proxy(proxy)
+                                .proxyAuthenticator(proxyAuthenticator)
+                                .maxIdleConnections(maxIdleConnections)
+                                .keepAliveDuration(keepAliveDuration)
+                                .dispatcherExecutorService(dispatcherExecutorService)
+                                .sslSocketFactory(sslSocketFactory)
+                                .trustManager(trustManager)
+                                .hostnameVerifier(hostnameVerifier)
+                                .build()
+                        )
+                        .build()
             )
     }
 }

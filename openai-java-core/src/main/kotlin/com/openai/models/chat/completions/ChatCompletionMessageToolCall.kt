@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -194,7 +194,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown ChatCompletionMessageToolCall: $json")
+            throw OpenAIInvalidDataException("Unknown ChatCompletionMessageToolCall")
         }
     }
 

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.vectorstores.filebatches
 
@@ -58,11 +58,12 @@ private constructor(
     fun chunkingStrategy(): Optional<FileChunkingStrategyParam> = body.chunkingStrategy()
 
     /**
-     * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the vector
-     * store should use. Useful for tools like `file_search` that can access files. If `attributes`
-     * or `chunking_strategy` are provided, they will be applied to all files in the batch. The
-     * maximum batch size is 2000 files. This endpoint is recommended for multi-file ingestion and
-     * helps reduce per-vector-store write request pressure. Mutually exclusive with `files`.
+     * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that the
+     * vector store should use. Useful for tools like `file_search` that can access files. If
+     * `attributes` or `chunking_strategy` are provided, they will be applied to all files in the
+     * batch. The maximum batch size is 2000 files. This endpoint is recommended for multi-file
+     * ingestion and helps reduce per-vector-store write request pressure. Mutually exclusive with
+     * `files`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -228,9 +229,9 @@ private constructor(
         }
 
         /**
-         * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-         * vector store should use. Useful for tools like `file_search` that can access files. If
-         * `attributes` or `chunking_strategy` are provided, they will be applied to all files in
+         * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that
+         * the vector store should use. Useful for tools like `file_search` that can access files.
+         * If `attributes` or `chunking_strategy` are provided, they will be applied to all files in
          * the batch. The maximum batch size is 2000 files. This endpoint is recommended for
          * multi-file ingestion and helps reduce per-vector-store write request pressure. Mutually
          * exclusive with `files`.
@@ -469,9 +470,9 @@ private constructor(
             chunkingStrategy.getOptional("chunking_strategy")
 
         /**
-         * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-         * vector store should use. Useful for tools like `file_search` that can access files. If
-         * `attributes` or `chunking_strategy` are provided, they will be applied to all files in
+         * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that
+         * the vector store should use. Useful for tools like `file_search` that can access files.
+         * If `attributes` or `chunking_strategy` are provided, they will be applied to all files in
          * the batch. The maximum batch size is 2000 files. This endpoint is recommended for
          * multi-file ingestion and helps reduce per-vector-store write request pressure. Mutually
          * exclusive with `files`.
@@ -631,10 +632,10 @@ private constructor(
                 )
 
             /**
-             * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-             * vector store should use. Useful for tools like `file_search` that can access files.
-             * If `attributes` or `chunking_strategy` are provided, they will be applied to all
-             * files in the batch. The maximum batch size is 2000 files. This endpoint is
+             * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs
+             * that the vector store should use. Useful for tools like `file_search` that can access
+             * files. If `attributes` or `chunking_strategy` are provided, they will be applied to
+             * all files in the batch. The maximum batch size is 2000 files. This endpoint is
              * recommended for multi-file ingestion and helps reduce per-vector-store write request
              * pressure. Mutually exclusive with `files`.
              */
@@ -932,10 +933,10 @@ private constructor(
         ) : this(fileId, attributes, chunkingStrategy, mutableMapOf())
 
         /**
-         * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-         * should use. Useful for tools like `file_search` that can access files. For multi-file
-         * ingestion, we recommend
-         * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+         * A [File](https://developers.openai.com/api/reference/resources/files) ID that the vector
+         * store should use. Useful for tools like `file_search` that can access files. For
+         * multi-file ingestion, we recommend
+         * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
          * to minimize per-vector-store write requests.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -1033,10 +1034,10 @@ private constructor(
             }
 
             /**
-             * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector
-             * store should use. Useful for tools like `file_search` that can access files. For
-             * multi-file ingestion, we recommend
-             * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+             * A [File](https://developers.openai.com/api/reference/resources/files) ID that the
+             * vector store should use. Useful for tools like `file_search` that can access files.
+             * For multi-file ingestion, we recommend
+             * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
              * to minimize per-vector-store write requests.
              */
             fun fileId(fileId: String) = fileId(JsonField.of(fileId))

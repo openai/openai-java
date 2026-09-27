@@ -1,0 +1,5 @@
+[versions]
+jacksonPublished = "2.18.9"
+
+[libraries]
+jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jacksonPublished" }

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -14,6 +14,7 @@ internal class BetaWebSearchToolTest {
         val betaWebSearchTool =
             BetaWebSearchTool.builder()
                 .type(BetaWebSearchTool.Type.WEB_SEARCH)
+                .externalWebAccess(true)
                 .filters(BetaWebSearchTool.Filters.builder().addAllowedDomain("string").build())
                 .searchContextSize(BetaWebSearchTool.SearchContextSize.LOW)
                 .userLocation(
@@ -28,6 +29,7 @@ internal class BetaWebSearchToolTest {
                 .build()
 
         assertThat(betaWebSearchTool.type()).isEqualTo(BetaWebSearchTool.Type.WEB_SEARCH)
+        assertThat(betaWebSearchTool.externalWebAccess()).contains(true)
         assertThat(betaWebSearchTool.filters())
             .contains(BetaWebSearchTool.Filters.builder().addAllowedDomain("string").build())
         assertThat(betaWebSearchTool.searchContextSize())
@@ -50,6 +52,7 @@ internal class BetaWebSearchToolTest {
         val betaWebSearchTool =
             BetaWebSearchTool.builder()
                 .type(BetaWebSearchTool.Type.WEB_SEARCH)
+                .externalWebAccess(true)
                 .filters(BetaWebSearchTool.Filters.builder().addAllowedDomain("string").build())
                 .searchContextSize(BetaWebSearchTool.SearchContextSize.LOW)
                 .userLocation(

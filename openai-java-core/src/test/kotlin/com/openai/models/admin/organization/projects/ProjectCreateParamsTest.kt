@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects
 
@@ -13,6 +13,7 @@ internal class ProjectCreateParamsTest {
             .name("name")
             .externalKeyId("external_key_id")
             .geography("geography")
+            .residency(ProjectResidency.GLOBAL)
             .build()
     }
 
@@ -23,6 +24,7 @@ internal class ProjectCreateParamsTest {
                 .name("name")
                 .externalKeyId("external_key_id")
                 .geography("geography")
+                .residency(ProjectResidency.GLOBAL)
                 .build()
 
         val body = params._body()
@@ -30,6 +32,7 @@ internal class ProjectCreateParamsTest {
         assertThat(body.name()).isEqualTo("name")
         assertThat(body.externalKeyId()).contains("external_key_id")
         assertThat(body.geography()).contains("geography")
+        assertThat(body.residency()).contains(ProjectResidency.GLOBAL)
     }
 
     @Test

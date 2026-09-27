@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -34,16 +34,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -78,6 +83,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -98,6 +107,55 @@ internal class ResponsesServerEventTest {
     }
 
     @Test
+    fun ofResponseAudioDeltaStreamIdMetadata() {
+        val mapper = jsonMapper()
+        val original =
+            ResponsesServerEvent.ofResponseAudioDelta(
+                ResponseAudioDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
+            )
+        val originalIsValid = original.isValid()
+        val seed = mapper.readTree(mapper.writeValueAsString(original))
+        for (value in listOf(null, "null", "\"route\"", "42", "[]", "{}")) {
+            val node = seed.deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+            node.put("x_castiron_unknown", "preserved")
+            if (value == null) {
+                node.remove("stream_id")
+            } else {
+                node.set<com.fasterxml.jackson.databind.JsonNode>(
+                    "stream_id",
+                    mapper.readTree(value),
+                )
+            }
+            val json = mapper.writeValueAsString(node)
+            val deserialized = mapper.readValue(json, jacksonTypeRef<ResponsesServerEvent>())
+            val wrapped =
+                ResponsesServerEvent.ofResponseAudioDelta(
+                    mapper.readValue(json, original.asResponseAudioDelta().javaClass)
+                )
+            for (event in listOf(deserialized, wrapped)) {
+                assertThat(event.isResponseAudioDelta()).isTrue()
+                assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
+                when (value) {
+                    null,
+                    "null" -> assertThat(event.streamId()).isEmpty
+                    "\"route\"" -> assertThat(event.streamId()).contains("route")
+                    else -> {
+                        assertThrows<OpenAIInvalidDataException> { event.streamId() }
+                        assertThrows<OpenAIInvalidDataException> { event.validate() }
+                        assertThat(event.isValid()).isFalse()
+                        continue
+                    }
+                }
+                assertThat(event.isValid()).isEqualTo(originalIsValid)
+                if (originalIsValid) {
+                    assertThat(event.validate()).isSameAs(event)
+                    assertThat(event.validate()).isSameAs(event)
+                }
+            }
+        }
+    }
+
+    @Test
     fun ofResponseAudioDone() {
         val responseAudioDone = ResponseAudioDoneEvent.builder().sequenceNumber(0L).build()
 
@@ -112,16 +170,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -156,6 +219,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -193,16 +260,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -237,6 +309,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -277,16 +353,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -321,6 +402,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -365,16 +450,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -409,6 +499,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -458,16 +552,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -502,6 +601,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -550,16 +653,21 @@ internal class ResponsesServerEventTest {
             .contains(responseCodeInterpreterCallCompleted)
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -594,6 +702,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -641,16 +753,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress())
             .contains(responseCodeInterpreterCallInProgress)
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -685,6 +802,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -732,16 +853,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting())
             .contains(responseCodeInterpreterCallInterpreting)
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -776,6 +902,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -800,17 +930,134 @@ internal class ResponsesServerEventTest {
     }
 
     @Test
+    fun ofResponseCompactionCompacting() {
+        val responseCompactionCompacting =
+            ResponseCompactionCompactingEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseCompactionCompacting(responseCompactionCompacting)
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting())
+            .contains(responseCompactionCompacting)
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
+    }
+
+    @Test
+    fun ofResponseCompactionCompactingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseCompactionCompacting(
+                ResponseCompactionCompactingEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
     fun ofResponseCompleted() {
         val responseCompleted =
             ResponseCompletedEvent.builder()
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -824,7 +1071,7 @@ internal class ResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -871,6 +1118,7 @@ internal class ResponsesServerEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -960,11 +1208,21 @@ internal class ResponsesServerEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -1023,16 +1281,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).contains(responseCompleted)
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -1067,6 +1330,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -1078,11 +1345,30 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
                                     .code(ResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        ResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                ResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                ResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -1096,7 +1382,7 @@ internal class ResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_5_1)
+                            .model(ChatModel.GPT_6_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -1144,6 +1430,7 @@ internal class ResponsesServerEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -1241,11 +1528,22 @@ internal class ResponsesServerEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -1351,17 +1649,22 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded())
             .contains(responseContentPartAdded)
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -1396,6 +1699,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -1494,16 +1801,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).contains(responseContentPartDone)
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -1538,6 +1850,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -1595,11 +1911,30 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -1613,7 +1948,7 @@ internal class ResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -1660,6 +1995,7 @@ internal class ResponsesServerEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -1749,11 +2085,21 @@ internal class ResponsesServerEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -1812,16 +2158,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).contains(responseCreated)
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -1856,6 +2207,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -1867,11 +2222,30 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
                                     .code(ResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        ResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                ResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                ResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -1885,7 +2259,7 @@ internal class ResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_5_1)
+                            .model(ChatModel.GPT_6_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -1933,6 +2307,7 @@ internal class ResponsesServerEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -2030,11 +2405,22 @@ internal class ResponsesServerEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -2093,95 +2479,6 @@ internal class ResponsesServerEventTest {
     }
 
     @Test
-    fun ofError() {
-        val error =
-            ResponseErrorEvent.builder()
-                .code("code")
-                .message("message")
-                .param("param")
-                .sequenceNumber(0L)
-                .build()
-
-        val responsesServerEvent = ResponsesServerEvent.ofError(error)
-
-        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
-        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
-        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
-        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
-        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
-        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
-        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
-        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
-        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
-        assertThat(responsesServerEvent.responseCompleted()).isEmpty
-        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
-        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
-        assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).contains(error)
-        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
-        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
-        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
-        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
-        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
-        assertThat(responsesServerEvent.responseInProgress()).isEmpty
-        assertThat(responsesServerEvent.responseFailed()).isEmpty
-        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
-        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
-        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
-        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
-        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
-        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
-        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
-        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
-        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
-        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
-        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
-        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
-        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
-        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
-        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
-        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
-        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
-        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
-        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
-        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
-        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
-        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
-        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
-        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
-        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
-        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
-        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
-        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
-        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
-        assertThat(responsesServerEvent.responseQueued()).isEmpty
-        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
-        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
-    }
-
-    @Test
-    fun ofErrorRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val responsesServerEvent =
-            ResponsesServerEvent.ofError(
-                ResponseErrorEvent.builder()
-                    .code("code")
-                    .message("message")
-                    .param("param")
-                    .sequenceNumber(0L)
-                    .build()
-            )
-
-        val roundtrippedResponsesServerEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(responsesServerEvent),
-                jacksonTypeRef<ResponsesServerEvent>(),
-            )
-
-        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
-    }
-
-    @Test
     fun ofResponseFileSearchCallCompleted() {
         val responseFileSearchCallCompleted =
             ResponseFileSearchCallCompletedEvent.builder()
@@ -2202,17 +2499,22 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted())
             .contains(responseFileSearchCallCompleted)
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -2247,6 +2549,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -2293,17 +2599,22 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress())
             .contains(responseFileSearchCallInProgress)
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -2338,6 +2649,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -2382,17 +2697,22 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching())
             .contains(responseFileSearchCallSearching)
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -2427,6 +2747,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -2474,17 +2798,22 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta())
             .contains(responseFunctionCallArgumentsDelta)
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -2519,6 +2848,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -2549,7 +2882,6 @@ internal class ResponsesServerEventTest {
             ResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
-                .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
@@ -2568,17 +2900,22 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone())
             .contains(responseFunctionCallArgumentsDone)
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -2613,6 +2950,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -2623,7 +2964,540 @@ internal class ResponsesServerEventTest {
                 ResponseFunctionCallArgumentsDoneEvent.builder()
                     .arguments("arguments")
                     .itemId("item_id")
-                    .name("name")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallCommandAdded() {
+        val responseShellCallCommandAdded =
+            ResponseShellCallCommandAddedEvent.builder()
+                .command("command")
+                .commandIndex(0L)
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallCommandAdded(responseShellCallCommandAdded)
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded())
+            .contains(responseShellCallCommandAdded)
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallCommandAddedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallCommandAdded(
+                ResponseShellCallCommandAddedEvent.builder()
+                    .command("command")
+                    .commandIndex(0L)
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallCommandDelta() {
+        val responseShellCallCommandDelta =
+            ResponseShellCallCommandDeltaEvent.builder()
+                .commandIndex(0L)
+                .delta("delta")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .obfuscation("obfuscation")
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallCommandDelta(responseShellCallCommandDelta)
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta())
+            .contains(responseShellCallCommandDelta)
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallCommandDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallCommandDelta(
+                ResponseShellCallCommandDeltaEvent.builder()
+                    .commandIndex(0L)
+                    .delta("delta")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .obfuscation("obfuscation")
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallCommandDone() {
+        val responseShellCallCommandDone =
+            ResponseShellCallCommandDoneEvent.builder()
+                .command("command")
+                .commandIndex(0L)
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallCommandDone(responseShellCallCommandDone)
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone())
+            .contains(responseShellCallCommandDone)
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallCommandDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallCommandDone(
+                ResponseShellCallCommandDoneEvent.builder()
+                    .command("command")
+                    .commandIndex(0L)
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallOutputContentDelta() {
+        val responseShellCallOutputContentDelta =
+            ResponseShellCallOutputContentDeltaEvent.builder()
+                .commandIndex(0L)
+                .delta(
+                    ResponseShellCallOutputContentDeltaEvent.Delta.builder()
+                        .stderr("stderr")
+                        .stdout("stdout")
+                        .build()
+                )
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallOutputContentDelta(
+                responseShellCallOutputContentDelta
+            )
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta())
+            .contains(responseShellCallOutputContentDelta)
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallOutputContentDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallOutputContentDelta(
+                ResponseShellCallOutputContentDeltaEvent.builder()
+                    .commandIndex(0L)
+                    .delta(
+                        ResponseShellCallOutputContentDeltaEvent.Delta.builder()
+                            .stderr("stderr")
+                            .stdout("stdout")
+                            .build()
+                    )
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseShellCallOutputContentDone() {
+        val responseShellCallOutputContentDone =
+            ResponseShellCallOutputContentDoneEvent.builder()
+                .commandIndex(0L)
+                .itemId("item_id")
+                .addOutput(
+                    ResponseShellCallOutputContentDoneEvent.Output.builder()
+                        .outcomeTimeout()
+                        .stderr("stderr")
+                        .stdout("stdout")
+                        .createdBy("created_by")
+                        .build()
+                )
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallOutputContentDone(
+                responseShellCallOutputContentDone
+            )
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone())
+            .contains(responseShellCallOutputContentDone)
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
+    }
+
+    @Test
+    fun ofResponseShellCallOutputContentDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseShellCallOutputContentDone(
+                ResponseShellCallOutputContentDoneEvent.builder()
+                    .commandIndex(0L)
+                    .itemId("item_id")
+                    .addOutput(
+                        ResponseShellCallOutputContentDoneEvent.Output.builder()
+                            .outcomeTimeout()
+                            .stderr("stderr")
+                            .stdout("stdout")
+                            .createdBy("created_by")
+                            .build()
+                    )
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .build()
@@ -2645,11 +3519,30 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -2663,7 +3556,7 @@ internal class ResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -2710,6 +3603,7 @@ internal class ResponsesServerEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -2799,11 +3693,21 @@ internal class ResponsesServerEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -2862,16 +3766,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).contains(responseInProgress)
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -2906,6 +3815,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -2917,11 +3830,30 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
                                     .code(ResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        ResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                ResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                ResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -2935,7 +3867,7 @@ internal class ResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_5_1)
+                            .model(ChatModel.GPT_6_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -2983,6 +3915,7 @@ internal class ResponsesServerEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -3080,11 +4013,22 @@ internal class ResponsesServerEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -3149,11 +4093,30 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -3167,7 +4130,7 @@ internal class ResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -3214,6 +4177,7 @@ internal class ResponsesServerEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -3303,11 +4267,21 @@ internal class ResponsesServerEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -3366,16 +4340,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).contains(responseFailed)
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -3410,6 +4389,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -3421,11 +4404,30 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
                                     .code(ResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        ResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                ResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                ResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -3439,7 +4441,7 @@ internal class ResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_5_1)
+                            .model(ChatModel.GPT_6_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -3487,6 +4489,7 @@ internal class ResponsesServerEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -3584,11 +4587,22 @@ internal class ResponsesServerEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -3653,11 +4667,30 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -3671,7 +4704,7 @@ internal class ResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -3718,6 +4751,7 @@ internal class ResponsesServerEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -3807,11 +4841,21 @@ internal class ResponsesServerEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -3870,16 +4914,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).contains(responseIncomplete)
@@ -3914,6 +4963,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -3925,11 +4978,30 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
                                     .code(ResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        ResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                ResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                ResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -3943,7 +5015,7 @@ internal class ResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_5_1)
+                            .model(ChatModel.GPT_6_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -3991,6 +5063,7 @@ internal class ResponsesServerEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -4088,11 +5161,22 @@ internal class ResponsesServerEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -4203,16 +5287,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4247,6 +5336,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -4355,16 +5448,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4399,6 +5497,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -4479,16 +5581,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4524,6 +5631,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -4577,16 +5688,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4622,6 +5738,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -4673,16 +5793,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4718,6 +5843,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -4768,16 +5897,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4813,6 +5947,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -4861,16 +5999,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4906,6 +6049,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -4954,16 +6101,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -4999,6 +6151,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -5046,16 +6202,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5090,6 +6251,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -5137,16 +6302,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5181,6 +6351,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -5241,16 +6415,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5285,6 +6464,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -5357,16 +6540,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5401,6 +6589,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -5459,16 +6651,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5504,6 +6701,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -5548,16 +6749,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5593,6 +6799,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -5637,16 +6847,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5682,6 +6897,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -5728,16 +6947,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5773,6 +6997,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -5819,16 +7047,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5864,6 +7097,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -5910,16 +7147,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -5955,6 +7197,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -5987,6 +7233,10 @@ internal class ResponsesServerEventTest {
                 .partialImageB64("partial_image_b64")
                 .partialImageIndex(0L)
                 .sequenceNumber(0L)
+                .background("background")
+                .outputFormat("output_format")
+                .quality("quality")
+                .size("size")
                 .build()
 
         val responsesServerEvent =
@@ -6003,16 +7253,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6048,6 +7303,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -6061,6 +7320,10 @@ internal class ResponsesServerEventTest {
                     .partialImageB64("partial_image_b64")
                     .partialImageIndex(0L)
                     .sequenceNumber(0L)
+                    .background("background")
+                    .outputFormat("output_format")
+                    .quality("quality")
+                    .size("size")
                     .build()
             )
 
@@ -6095,16 +7358,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6140,6 +7408,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -6186,16 +7458,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6231,6 +7508,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -6276,16 +7557,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6321,6 +7607,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -6365,16 +7655,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6409,6 +7704,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -6453,16 +7752,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6498,6 +7802,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -6542,16 +7850,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6587,6 +7900,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -6631,16 +7948,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6676,6 +7998,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -6720,16 +8046,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6765,6 +8096,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -6792,7 +8127,13 @@ internal class ResponsesServerEventTest {
     fun ofResponseOutputTextAnnotationAdded() {
         val responseOutputTextAnnotationAdded =
             ResponseOutputTextAnnotationAddedEvent.builder()
-                .annotation(JsonValue.from(mapOf<String, Any>()))
+                .annotation(
+                    ResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
+                        .fileId("file_id")
+                        .filename("filename")
+                        .index(0L)
+                        .build()
+                )
                 .annotationIndex(0L)
                 .contentIndex(0L)
                 .itemId("item_id")
@@ -6814,16 +8155,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -6859,6 +8205,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -6867,7 +8217,13 @@ internal class ResponsesServerEventTest {
         val responsesServerEvent =
             ResponsesServerEvent.ofResponseOutputTextAnnotationAdded(
                 ResponseOutputTextAnnotationAddedEvent.builder()
-                    .annotation(JsonValue.from(mapOf<String, Any>()))
+                    .annotation(
+                        ResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
+                            .fileId("file_id")
+                            .filename("filename")
+                            .index(0L)
+                            .build()
+                    )
                     .annotationIndex(0L)
                     .contentIndex(0L)
                     .itemId("item_id")
@@ -6892,11 +8248,30 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -6910,7 +8285,7 @@ internal class ResponsesServerEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -6957,6 +8332,7 @@ internal class ResponsesServerEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -7046,11 +8422,21 @@ internal class ResponsesServerEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -7109,16 +8495,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -7153,6 +8544,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseQueued()).contains(responseQueued)
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -7164,11 +8559,30 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
                                     .code(ResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        ResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                ResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                ResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -7182,7 +8596,7 @@ internal class ResponsesServerEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_5_1)
+                            .model(ChatModel.GPT_6_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -7230,6 +8644,7 @@ internal class ResponsesServerEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -7327,11 +8742,22 @@ internal class ResponsesServerEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -7413,16 +8839,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -7458,6 +8889,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta())
             .contains(responseCustomToolCallInputDelta)
         assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -7504,16 +8939,21 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
         assertThat(responsesServerEvent.responseCreated()).isEmpty
-        assertThat(responsesServerEvent.error()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
         assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
         assertThat(responsesServerEvent.responseInProgress()).isEmpty
         assertThat(responsesServerEvent.responseFailed()).isEmpty
         assertThat(responsesServerEvent.responseIncomplete()).isEmpty
@@ -7549,6 +8989,10 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
         assertThat(responsesServerEvent.responseCustomToolCallInputDone())
             .contains(responseCustomToolCallInputDone)
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
     }
 
     @Test
@@ -7573,6 +9017,777 @@ internal class ResponsesServerEventTest {
         assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
     }
 
+    @Test
+    fun ofError() {
+        val error =
+            ResponsesServerEvent.ResponseWsError.builder()
+                .error(
+                    ResponsesServerEvent.ResponseWsError.Error.builder()
+                        .code("code")
+                        .message("message")
+                        .param("param")
+                        .type("type")
+                        .headers(
+                            ResponsesServerEvent.ResponseWsError.Error.Headers.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .misalignment(
+                            ResponsesServerEvent.ResponseWsError.Error.Misalignment.builder()
+                                .detailedExplanation("detailed_explanation")
+                                .errorType(
+                                    ResponsesServerEvent.ResponseWsError.Error.Misalignment
+                                        .ErrorType
+                                        .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                )
+                                .steer(
+                                    ResponsesServerEvent.ResponseWsError.Error.Misalignment.Steer
+                                        .builder()
+                                        .message("message")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .sequenceNumber(0L)
+                .status(0L)
+                .streamId("stream_id")
+                .build()
+
+        val responsesServerEvent = ResponsesServerEvent.ofError(error)
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).contains(error)
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
+    }
+
+    @Test
+    fun ofErrorRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofError(
+                ResponsesServerEvent.ResponseWsError.builder()
+                    .error(
+                        ResponsesServerEvent.ResponseWsError.Error.builder()
+                            .code("code")
+                            .message("message")
+                            .param("param")
+                            .type("type")
+                            .headers(
+                                ResponsesServerEvent.ResponseWsError.Error.Headers.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .misalignment(
+                                ResponsesServerEvent.ResponseWsError.Error.Misalignment.builder()
+                                    .detailedExplanation("detailed_explanation")
+                                    .errorType(
+                                        ResponsesServerEvent.ResponseWsError.Error.Misalignment
+                                            .ErrorType
+                                            .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                    )
+                                    .steer(
+                                        ResponsesServerEvent.ResponseWsError.Error.Misalignment
+                                            .Steer
+                                            .builder()
+                                            .message("message")
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .status(0L)
+                    .streamId("stream_id")
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofErrorStreamIdMetadata() {
+        val mapper = jsonMapper()
+        val original =
+            ResponsesServerEvent.ofError(
+                ResponsesServerEvent.ResponseWsError.builder()
+                    .error(
+                        ResponsesServerEvent.ResponseWsError.Error.builder()
+                            .code("code")
+                            .message("message")
+                            .param("param")
+                            .type("type")
+                            .headers(
+                                ResponsesServerEvent.ResponseWsError.Error.Headers.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .misalignment(
+                                ResponsesServerEvent.ResponseWsError.Error.Misalignment.builder()
+                                    .detailedExplanation("detailed_explanation")
+                                    .errorType(
+                                        ResponsesServerEvent.ResponseWsError.Error.Misalignment
+                                            .ErrorType
+                                            .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                    )
+                                    .steer(
+                                        ResponsesServerEvent.ResponseWsError.Error.Misalignment
+                                            .Steer
+                                            .builder()
+                                            .message("message")
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .status(0L)
+                    .streamId("stream_id")
+                    .build()
+            )
+        val originalIsValid = original.isValid()
+        val seed = mapper.readTree(mapper.writeValueAsString(original))
+        for (value in listOf(null, "null", "\"route\"", "42", "[]", "{}")) {
+            val node = seed.deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+            node.put("x_castiron_unknown", "preserved")
+            if (value == null) {
+                node.remove("stream_id")
+            } else {
+                node.set<com.fasterxml.jackson.databind.JsonNode>(
+                    "stream_id",
+                    mapper.readTree(value),
+                )
+            }
+            val json = mapper.writeValueAsString(node)
+            val deserialized = mapper.readValue(json, jacksonTypeRef<ResponsesServerEvent>())
+            val wrapped =
+                ResponsesServerEvent.ofError(mapper.readValue(json, original.asError().javaClass))
+            for (event in listOf(deserialized, wrapped)) {
+                assertThat(event.isError()).isTrue()
+                assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
+                when (value) {
+                    null,
+                    "null" -> assertThat(event.streamId()).isEmpty
+                    "\"route\"" -> assertThat(event.streamId()).contains("route")
+                    else -> {
+                        assertThrows<OpenAIInvalidDataException> { event.streamId() }
+                        assertThrows<OpenAIInvalidDataException> { event.validate() }
+                        assertThat(event.isValid()).isFalse()
+                        continue
+                    }
+                }
+                assertThat(event.isValid()).isEqualTo(originalIsValid)
+                if (originalIsValid) {
+                    assertThat(event.validate()).isSameAs(event)
+                    assertThat(event.validate()).isSameAs(event)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun ofResponseSteerAccepted() {
+        val responseSteerAccepted =
+            ResponseSteerAcceptedEvent.builder()
+                .sequenceNumber(0L)
+                .steer(
+                    ResponseSteerAcceptedEvent.Steer.builder()
+                        .id("id")
+                        .previousResponseId("previous_response_id")
+                        .build()
+                )
+                .streamId("stream_id")
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseSteerAccepted(responseSteerAccepted)
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).contains(responseSteerAccepted)
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
+    }
+
+    @Test
+    fun ofResponseSteerAcceptedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseSteerAccepted(
+                ResponseSteerAcceptedEvent.builder()
+                    .sequenceNumber(0L)
+                    .steer(
+                        ResponseSteerAcceptedEvent.Steer.builder()
+                            .id("id")
+                            .previousResponseId("previous_response_id")
+                            .build()
+                    )
+                    .streamId("stream_id")
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseSteerAcceptedStreamIdMetadata() {
+        val mapper = jsonMapper()
+        val original =
+            ResponsesServerEvent.ofResponseSteerAccepted(
+                ResponseSteerAcceptedEvent.builder()
+                    .sequenceNumber(0L)
+                    .steer(
+                        ResponseSteerAcceptedEvent.Steer.builder()
+                            .id("id")
+                            .previousResponseId("previous_response_id")
+                            .build()
+                    )
+                    .streamId("stream_id")
+                    .build()
+            )
+        val originalIsValid = original.isValid()
+        val seed = mapper.readTree(mapper.writeValueAsString(original))
+        for (value in listOf(null, "null", "\"route\"", "42", "[]", "{}")) {
+            val node = seed.deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+            node.put("x_castiron_unknown", "preserved")
+            if (value == null) {
+                node.remove("stream_id")
+            } else {
+                node.set<com.fasterxml.jackson.databind.JsonNode>(
+                    "stream_id",
+                    mapper.readTree(value),
+                )
+            }
+            val json = mapper.writeValueAsString(node)
+            val deserialized = mapper.readValue(json, jacksonTypeRef<ResponsesServerEvent>())
+            val wrapped =
+                ResponsesServerEvent.ofResponseSteerAccepted(
+                    mapper.readValue(json, original.asResponseSteerAccepted().javaClass)
+                )
+            for (event in listOf(deserialized, wrapped)) {
+                assertThat(event.isResponseSteerAccepted()).isTrue()
+                assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
+                when (value) {
+                    null,
+                    "null" -> assertThat(event.streamId()).isEmpty
+                    "\"route\"" -> assertThat(event.streamId()).contains("route")
+                    else -> {
+                        assertThrows<OpenAIInvalidDataException> { event.streamId() }
+                        assertThrows<OpenAIInvalidDataException> { event.validate() }
+                        assertThat(event.isValid()).isFalse()
+                        continue
+                    }
+                }
+                assertThat(event.isValid()).isEqualTo(originalIsValid)
+                if (originalIsValid) {
+                    assertThat(event.validate()).isSameAs(event)
+                    assertThat(event.validate()).isSameAs(event)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun ofResponseSteerPending() {
+        val responseSteerPending =
+            ResponseSteerPendingEvent.builder()
+                .reason(ResponseSteerPendingReason.WAITING_FOR_REQUIRED_INPUT)
+                .addRequiredInput(
+                    ResponseSteerRequiredInput.FunctionCallOutput.builder()
+                        .callId("call_id")
+                        .name("name")
+                        .build()
+                )
+                .sequenceNumber(0L)
+                .steer(
+                    ResponseSteerPendingEvent.Steer.builder()
+                        .id("id")
+                        .previousResponseId("previous_response_id")
+                        .build()
+                )
+                .streamId("stream_id")
+                .build()
+
+        val responsesServerEvent = ResponsesServerEvent.ofResponseSteerPending(responseSteerPending)
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).contains(responseSteerPending)
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
+    }
+
+    @Test
+    fun ofResponseSteerPendingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseSteerPending(
+                ResponseSteerPendingEvent.builder()
+                    .reason(ResponseSteerPendingReason.WAITING_FOR_REQUIRED_INPUT)
+                    .addRequiredInput(
+                        ResponseSteerRequiredInput.FunctionCallOutput.builder()
+                            .callId("call_id")
+                            .name("name")
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .steer(
+                        ResponseSteerPendingEvent.Steer.builder()
+                            .id("id")
+                            .previousResponseId("previous_response_id")
+                            .build()
+                    )
+                    .streamId("stream_id")
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseSteerPendingStreamIdMetadata() {
+        val mapper = jsonMapper()
+        val original =
+            ResponsesServerEvent.ofResponseSteerPending(
+                ResponseSteerPendingEvent.builder()
+                    .reason(ResponseSteerPendingReason.WAITING_FOR_REQUIRED_INPUT)
+                    .addRequiredInput(
+                        ResponseSteerRequiredInput.FunctionCallOutput.builder()
+                            .callId("call_id")
+                            .name("name")
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .steer(
+                        ResponseSteerPendingEvent.Steer.builder()
+                            .id("id")
+                            .previousResponseId("previous_response_id")
+                            .build()
+                    )
+                    .streamId("stream_id")
+                    .build()
+            )
+        val originalIsValid = original.isValid()
+        val seed = mapper.readTree(mapper.writeValueAsString(original))
+        for (value in listOf(null, "null", "\"route\"", "42", "[]", "{}")) {
+            val node = seed.deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+            node.put("x_castiron_unknown", "preserved")
+            if (value == null) {
+                node.remove("stream_id")
+            } else {
+                node.set<com.fasterxml.jackson.databind.JsonNode>(
+                    "stream_id",
+                    mapper.readTree(value),
+                )
+            }
+            val json = mapper.writeValueAsString(node)
+            val deserialized = mapper.readValue(json, jacksonTypeRef<ResponsesServerEvent>())
+            val wrapped =
+                ResponsesServerEvent.ofResponseSteerPending(
+                    mapper.readValue(json, original.asResponseSteerPending().javaClass)
+                )
+            for (event in listOf(deserialized, wrapped)) {
+                assertThat(event.isResponseSteerPending()).isTrue()
+                assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
+                when (value) {
+                    null,
+                    "null" -> assertThat(event.streamId()).isEmpty
+                    "\"route\"" -> assertThat(event.streamId()).contains("route")
+                    else -> {
+                        assertThrows<OpenAIInvalidDataException> { event.streamId() }
+                        assertThrows<OpenAIInvalidDataException> { event.validate() }
+                        assertThat(event.isValid()).isFalse()
+                        continue
+                    }
+                }
+                assertThat(event.isValid()).isEqualTo(originalIsValid)
+                if (originalIsValid) {
+                    assertThat(event.validate()).isSameAs(event)
+                    assertThat(event.validate()).isSameAs(event)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun ofResponseSteerFailed() {
+        val responseSteerFailed =
+            ResponseSteerFailedEvent.builder()
+                .error(
+                    ResponseSteerFailedEvent.Error.builder()
+                        .code(ResponseSteerErrorCode.RESPONSE_NOT_FOUND)
+                        .message("message")
+                        .build()
+                )
+                .sequenceNumber(0L)
+                .steer(
+                    ResponseSteerFailedEvent.Steer.builder()
+                        .input("string")
+                        .previousResponseId("previous_response_id")
+                        .id("id")
+                        .build()
+                )
+                .streamId("stream_id")
+                .build()
+
+        val responsesServerEvent = ResponsesServerEvent.ofResponseSteerFailed(responseSteerFailed)
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).contains(responseSteerFailed)
+    }
+
+    @Test
+    fun ofResponseSteerFailedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseSteerFailed(
+                ResponseSteerFailedEvent.builder()
+                    .error(
+                        ResponseSteerFailedEvent.Error.builder()
+                            .code(ResponseSteerErrorCode.RESPONSE_NOT_FOUND)
+                            .message("message")
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .steer(
+                        ResponseSteerFailedEvent.Steer.builder()
+                            .input("string")
+                            .previousResponseId("previous_response_id")
+                            .id("id")
+                            .build()
+                    )
+                    .streamId("stream_id")
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
+    fun ofResponseSteerFailedStreamIdMetadata() {
+        val mapper = jsonMapper()
+        val original =
+            ResponsesServerEvent.ofResponseSteerFailed(
+                ResponseSteerFailedEvent.builder()
+                    .error(
+                        ResponseSteerFailedEvent.Error.builder()
+                            .code(ResponseSteerErrorCode.RESPONSE_NOT_FOUND)
+                            .message("message")
+                            .build()
+                    )
+                    .sequenceNumber(0L)
+                    .steer(
+                        ResponseSteerFailedEvent.Steer.builder()
+                            .input("string")
+                            .previousResponseId("previous_response_id")
+                            .id("id")
+                            .build()
+                    )
+                    .streamId("stream_id")
+                    .build()
+            )
+        val originalIsValid = original.isValid()
+        val seed = mapper.readTree(mapper.writeValueAsString(original))
+        for (value in listOf(null, "null", "\"route\"", "42", "[]", "{}")) {
+            val node = seed.deepCopy<com.fasterxml.jackson.databind.node.ObjectNode>()
+            node.put("x_castiron_unknown", "preserved")
+            if (value == null) {
+                node.remove("stream_id")
+            } else {
+                node.set<com.fasterxml.jackson.databind.JsonNode>(
+                    "stream_id",
+                    mapper.readTree(value),
+                )
+            }
+            val json = mapper.writeValueAsString(node)
+            val deserialized = mapper.readValue(json, jacksonTypeRef<ResponsesServerEvent>())
+            val wrapped =
+                ResponsesServerEvent.ofResponseSteerFailed(
+                    mapper.readValue(json, original.asResponseSteerFailed().javaClass)
+                )
+            for (event in listOf(deserialized, wrapped)) {
+                assertThat(event.isResponseSteerFailed()).isTrue()
+                assertThat(mapper.readTree(mapper.writeValueAsString(event))).isEqualTo(node)
+                when (value) {
+                    null,
+                    "null" -> assertThat(event.streamId()).isEmpty
+                    "\"route\"" -> assertThat(event.streamId()).contains("route")
+                    else -> {
+                        assertThrows<OpenAIInvalidDataException> { event.streamId() }
+                        assertThrows<OpenAIInvalidDataException> { event.validate() }
+                        assertThat(event.isValid()).isFalse()
+                        continue
+                    }
+                }
+                assertThat(event.isValid()).isEqualTo(originalIsValid)
+                if (originalIsValid) {
+                    assertThat(event.validate()).isSameAs(event)
+                    assertThat(event.validate()).isSameAs(event)
+                }
+            }
+        }
+    }
+
     enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
         BOOLEAN(JsonValue.from(false)),
         STRING(JsonValue.from("invalid")),
@@ -7589,5 +9804,106 @@ internal class ResponsesServerEventTest {
 
         val e = assertThrows<OpenAIInvalidDataException> { responsesServerEvent.validate() }
         assertThat(e).hasMessageStartingWith("Unknown ")
+    }
+
+    @Test
+    fun websocketStreamId() {
+        val responsesServerEvent =
+            jsonMapper()
+                .readValue(
+                    """{"type":"response.audio.delta","delta":"delta","sequence_number":0,"stream_id":"stream_id"}""",
+                    jacksonTypeRef<ResponsesServerEvent>(),
+                )
+
+        assertThat(responsesServerEvent.streamId()).contains("stream_id")
+        assertThat(responsesServerEvent.responseAudioDelta()).isPresent
+        assertThat(responsesServerEvent.asResponseAudioDelta().delta()).isEqualTo("delta")
+        assertThat(jsonMapper().writeValueAsString(responsesServerEvent)).contains("stream_id")
+        assertThat(responsesServerEvent.validate()).isSameAs(responsesServerEvent)
+        assertThat(responsesServerEvent.isValid()).isTrue()
+    }
+
+    @Test
+    fun websocketStreamIdRejectsMalformedValue() {
+        val responsesServerEvent =
+            jsonMapper()
+                .readValue(
+                    """{"type":"response.audio.delta","delta":"delta","sequence_number":0,"stream_id":42}""",
+                    jacksonTypeRef<ResponsesServerEvent>(),
+                )
+
+        assertThrows<OpenAIInvalidDataException> { responsesServerEvent.streamId() }
+        assertThrows<OpenAIInvalidDataException> { responsesServerEvent.validate() }
+        assertThat(responsesServerEvent.isValid()).isFalse()
+    }
+
+    @Test
+    fun shellCallCommandAddedPreservesStreamId() {
+        val mapper = jsonMapper()
+        val json =
+            """{"type":"response.shell_call_command.added","sequence_number":1,"output_index":0,"command_index":0,"stream_id":"lane","command":"ls"}"""
+        val event = mapper.readValue(json, ResponsesServerEvent::class.java)
+        event.validate()
+        assertThat(event.isResponseShellCallCommandAdded()).isTrue()
+        assertThat(event.streamId()).contains("lane")
+        val roundtrip =
+            mapper.readValue(mapper.writeValueAsString(event), ResponsesServerEvent::class.java)
+        assertThat(roundtrip).isEqualTo(event)
+    }
+
+    @Test
+    fun shellCallCommandDeltaPreservesStreamId() {
+        val mapper = jsonMapper()
+        val json =
+            """{"type":"response.shell_call_command.delta","sequence_number":1,"output_index":0,"command_index":0,"stream_id":"lane","delta":"ls"}"""
+        val event = mapper.readValue(json, ResponsesServerEvent::class.java)
+        event.validate()
+        assertThat(event.isResponseShellCallCommandDelta()).isTrue()
+        assertThat(event.streamId()).contains("lane")
+        val roundtrip =
+            mapper.readValue(mapper.writeValueAsString(event), ResponsesServerEvent::class.java)
+        assertThat(roundtrip).isEqualTo(event)
+    }
+
+    @Test
+    fun shellCallCommandDonePreservesStreamId() {
+        val mapper = jsonMapper()
+        val json =
+            """{"type":"response.shell_call_command.done","sequence_number":1,"output_index":0,"command_index":0,"stream_id":"lane","command":"ls"}"""
+        val event = mapper.readValue(json, ResponsesServerEvent::class.java)
+        event.validate()
+        assertThat(event.isResponseShellCallCommandDone()).isTrue()
+        assertThat(event.streamId()).contains("lane")
+        val roundtrip =
+            mapper.readValue(mapper.writeValueAsString(event), ResponsesServerEvent::class.java)
+        assertThat(roundtrip).isEqualTo(event)
+    }
+
+    @Test
+    fun shellCallOutputContentDeltaPreservesStreamId() {
+        val mapper = jsonMapper()
+        val json =
+            """{"type":"response.shell_call_output_content.delta","sequence_number":1,"output_index":0,"command_index":0,"stream_id":"lane","item_id":"item","delta":{"stdout":"ok"}}"""
+        val event = mapper.readValue(json, ResponsesServerEvent::class.java)
+        event.validate()
+        assertThat(event.isResponseShellCallOutputContentDelta()).isTrue()
+        assertThat(event.streamId()).contains("lane")
+        val roundtrip =
+            mapper.readValue(mapper.writeValueAsString(event), ResponsesServerEvent::class.java)
+        assertThat(roundtrip).isEqualTo(event)
+    }
+
+    @Test
+    fun shellCallOutputContentDonePreservesStreamId() {
+        val mapper = jsonMapper()
+        val json =
+            """{"type":"response.shell_call_output_content.done","sequence_number":1,"output_index":0,"command_index":0,"stream_id":"lane","item_id":"item","output":[]}"""
+        val event = mapper.readValue(json, ResponsesServerEvent::class.java)
+        event.validate()
+        assertThat(event.isResponseShellCallOutputContentDone()).isTrue()
+        assertThat(event.streamId()).contains("lane")
+        val roundtrip =
+            mapper.readValue(mapper.writeValueAsString(event), ResponsesServerEvent::class.java)
+        assertThat(roundtrip).isEqualTo(event)
     }
 }

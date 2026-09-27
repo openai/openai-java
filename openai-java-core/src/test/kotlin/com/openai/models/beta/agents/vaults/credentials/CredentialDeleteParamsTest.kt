@@ -1,0 +1,28 @@
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+
+package com.openai.models.beta.agents.vaults.credentials
+
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+
+internal class CredentialDeleteParamsTest {
+
+    @Test
+    fun create() {
+        CredentialDeleteParams.builder().vaultId("vault_id").credentialId("credential_id").build()
+    }
+
+    @Test
+    fun pathParams() {
+        val params =
+            CredentialDeleteParams.builder()
+                .vaultId("vault_id")
+                .credentialId("credential_id")
+                .build()
+
+        assertThat(params._pathParam(0)).isEqualTo("vault_id")
+        assertThat(params._pathParam(1)).isEqualTo("credential_id")
+        // out-of-bound path param
+        assertThat(params._pathParam(2)).isEqualTo("")
+    }
+}

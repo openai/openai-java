@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.images
 
@@ -82,7 +82,7 @@ private constructor(
     fun outputFormat(): Optional<OutputFormat> = outputFormat.getOptional("output_format")
 
     /**
-     * The quality of the image generated. Either `low`, `medium`, or `high`.
+     * The quality of the image generated. One of `low`, `medium`, `high`, `xhigh`, or `max`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -90,7 +90,7 @@ private constructor(
     fun quality(): Optional<Quality> = quality.getOptional("quality")
 
     /**
-     * The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`.
+     * The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -272,7 +272,9 @@ private constructor(
             this.outputFormat = outputFormat
         }
 
-        /** The quality of the image generated. Either `low`, `medium`, or `high`. */
+        /**
+         * The quality of the image generated. One of `low`, `medium`, `high`, `xhigh`, or `max`.
+         */
         fun quality(quality: Quality) = quality(JsonField.of(quality))
 
         /**
@@ -283,7 +285,7 @@ private constructor(
          */
         fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
 
-        /** The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`. */
+        /** The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. */
         fun size(size: Size) = size(JsonField.of(size))
 
         /**
@@ -293,6 +295,14 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun size(size: JsonField<Size>) = apply { this.size = size }
+
+        /**
+         * Sets [size] to an arbitrary [String].
+         *
+         * You should usually call [size] with a well-typed [Size] constant instead. This method is
+         * primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun size(value: String) = size(Size.of(value))
 
         /** For `gpt-image-1` only, the token usage information for the image generation. */
         fun usage(usage: Usage) = usage(JsonField.of(usage))
@@ -369,7 +379,7 @@ private constructor(
         data().ifPresent { it.forEach { it.validate() } }
         outputFormat().ifPresent { it.validate() }
         quality().ifPresent { it.validate() }
-        size().ifPresent { it.validate() }
+        size()
         usage().ifPresent { it.validate() }
         validated = true
     }
@@ -394,7 +404,7 @@ private constructor(
             (data.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (outputFormat.asKnown().getOrNull()?.validity() ?: 0) +
             (quality.asKnown().getOrNull()?.validity() ?: 0) +
-            (size.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (size.asKnown().isPresent) 1 else 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0)
 
     /** The background parameter used for the image generation. Either `transparent` or `opaque`. */
@@ -678,7 +688,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The quality of the image generated. Either `low`, `medium`, or `high`. */
+    /** The quality of the image generated. One of `low`, `medium`, `high`, `xhigh`, or `max`. */
     class Quality @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -699,6 +709,10 @@ private constructor(
 
             @JvmField val HIGH = of("high")
 
+            @JvmField val XHIGH = of("xhigh")
+
+            @JvmField val MAX = of("max")
+
             @JvmStatic fun of(value: String) = Quality(JsonField.of(value))
         }
 
@@ -707,6 +721,8 @@ private constructor(
             LOW,
             MEDIUM,
             HIGH,
+            XHIGH,
+            MAX,
         }
 
         /**
@@ -722,6 +738,8 @@ private constructor(
             LOW,
             MEDIUM,
             HIGH,
+            XHIGH,
+            MAX,
             /** An enum member indicating that [Quality] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -738,6 +756,8 @@ private constructor(
                 LOW -> Value.LOW
                 MEDIUM -> Value.MEDIUM
                 HIGH -> Value.HIGH
+                XHIGH -> Value.XHIGH
+                MAX -> Value.MAX
                 else -> Value._UNKNOWN
             }
 
@@ -755,6 +775,8 @@ private constructor(
                 LOW -> Known.LOW
                 MEDIUM -> Known.MEDIUM
                 HIGH -> Known.HIGH
+                XHIGH -> Known.XHIGH
+                MAX -> Known.MAX
                 else -> throw OpenAIInvalidDataException("Unknown Quality: $value")
             }
 
@@ -819,7 +841,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`. */
+    /** The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. */
     class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**

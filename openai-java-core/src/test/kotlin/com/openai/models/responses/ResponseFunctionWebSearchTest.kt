@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -8,6 +8,30 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class ResponseFunctionWebSearchTest {
+
+    @Test
+    fun deserializeIncompleteStatus() {
+        val responseFunctionWebSearch =
+            jsonMapper()
+                .readValue(
+                    """
+                    {
+                        "id": "ws_incomplete",
+                        "type": "web_search_call",
+                        "status": "incomplete",
+                        "action": {"type": "search", "query": "synthetic query"}
+                    }
+                    """
+                        .trimIndent(),
+                    jacksonTypeRef<ResponseFunctionWebSearch>(),
+                )
+
+        responseFunctionWebSearch.validate()
+        assertThat(responseFunctionWebSearch.status().value())
+            .isEqualTo(ResponseFunctionWebSearch.Status.Value.INCOMPLETE)
+        assertThat(responseFunctionWebSearch.status().known())
+            .isEqualTo(ResponseFunctionWebSearch.Status.Known.INCOMPLETE)
+    }
 
     @Test
     fun create() {

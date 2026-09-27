@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.apikeys
 
@@ -41,6 +41,7 @@ internal class ProjectApiKeyTest {
                 )
                 .ownerProjectAccess(ProjectApiKey.OwnerProjectAccess.ACTIVE)
                 .redactedValue("redacted_value")
+                .expiresAt(0L)
                 .build()
 
         assertThat(projectApiKey.id()).isEqualTo("id")
@@ -73,6 +74,7 @@ internal class ProjectApiKeyTest {
         assertThat(projectApiKey.ownerProjectAccess())
             .isEqualTo(ProjectApiKey.OwnerProjectAccess.ACTIVE)
         assertThat(projectApiKey.redactedValue()).isEqualTo("redacted_value")
+        assertThat(projectApiKey.expiresAt()).contains(0L)
     }
 
     @Test
@@ -108,6 +110,7 @@ internal class ProjectApiKeyTest {
                 )
                 .ownerProjectAccess(ProjectApiKey.OwnerProjectAccess.ACTIVE)
                 .redactedValue("redacted_value")
+                .expiresAt(0L)
                 .build()
 
         val roundtrippedProjectApiKey =

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -18,7 +18,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Emitted when there is a partial audio response. */
+/** Event emitted while a response is streamed. */
 @JsonDeserialize(using = ResponseStreamEvent.Deserializer::class)
 @JsonSerialize(using = ResponseStreamEvent.Serializer::class)
 class ResponseStreamEvent
@@ -33,6 +33,7 @@ private constructor(
     private val codeInterpreterCallInProgress: ResponseCodeInterpreterCallInProgressEvent? = null,
     private val codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent? =
         null,
+    private val compactionCompacting: ResponseCompactionCompactingEvent? = null,
     private val completed: ResponseCompletedEvent? = null,
     private val contentPartAdded: ResponseContentPartAddedEvent? = null,
     private val contentPartDone: ResponseContentPartDoneEvent? = null,
@@ -43,6 +44,11 @@ private constructor(
     private val fileSearchCallSearching: ResponseFileSearchCallSearchingEvent? = null,
     private val functionCallArgumentsDelta: ResponseFunctionCallArgumentsDeltaEvent? = null,
     private val functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent? = null,
+    private val shellCallCommandAdded: ResponseShellCallCommandAddedEvent? = null,
+    private val shellCallCommandDelta: ResponseShellCallCommandDeltaEvent? = null,
+    private val shellCallCommandDone: ResponseShellCallCommandDoneEvent? = null,
+    private val shellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent? = null,
+    private val shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent? = null,
     private val inProgress: ResponseInProgressEvent? = null,
     private val failed: ResponseFailedEvent? = null,
     private val incomplete: ResponseIncompleteEvent? = null,
@@ -114,6 +120,13 @@ private constructor(
     fun codeInterpreterCallInterpreting(): Optional<ResponseCodeInterpreterCallInterpretingEvent> =
         Optional.ofNullable(codeInterpreterCallInterpreting)
 
+    /**
+     * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+     * content.
+     */
+    fun compactionCompacting(): Optional<ResponseCompactionCompactingEvent> =
+        Optional.ofNullable(compactionCompacting)
+
     /** Emitted when the model response is complete. */
     fun completed(): Optional<ResponseCompletedEvent> = Optional.ofNullable(completed)
 
@@ -151,13 +164,39 @@ private constructor(
     fun functionCallArgumentsDone(): Optional<ResponseFunctionCallArgumentsDoneEvent> =
         Optional.ofNullable(functionCallArgumentsDone)
 
+    /** A streaming event that indicated a shell command was added to a tool call. */
+    fun shellCallCommandAdded(): Optional<ResponseShellCallCommandAddedEvent> =
+        Optional.ofNullable(shellCallCommandAdded)
+
+    /** A streaming event that indicated a shell command was incrementally updated. */
+    fun shellCallCommandDelta(): Optional<ResponseShellCallCommandDeltaEvent> =
+        Optional.ofNullable(shellCallCommandDelta)
+
+    /** A streaming event that indicated a shell command was completed. */
+    fun shellCallCommandDone(): Optional<ResponseShellCallCommandDoneEvent> =
+        Optional.ofNullable(shellCallCommandDone)
+
+    /** A streaming event that indicated shell call output was incrementally added. */
+    fun shellCallOutputContentDelta(): Optional<ResponseShellCallOutputContentDeltaEvent> =
+        Optional.ofNullable(shellCallOutputContentDelta)
+
+    /** A streaming event that indicated shell call output was completed. */
+    fun shellCallOutputContentDone(): Optional<ResponseShellCallOutputContentDoneEvent> =
+        Optional.ofNullable(shellCallOutputContentDone)
+
     /** Emitted when the response is in progress. */
     fun inProgress(): Optional<ResponseInProgressEvent> = Optional.ofNullable(inProgress)
 
     /** An event that is emitted when a response fails. */
     fun failed(): Optional<ResponseFailedEvent> = Optional.ofNullable(failed)
 
-    /** An event that is emitted when a response finishes as incomplete. */
+    /**
+     * An event that is emitted when a response finishes as incomplete.
+     *
+     * Over WebSocket, steering can finish a response with `response.incomplete_details.reason` set
+     * to `steered`, followed automatically by a successor `response.created` that commits the
+     * queued steering input.
+     */
     fun incomplete(): Optional<ResponseIncompleteEvent> = Optional.ofNullable(incomplete)
 
     /** Emitted when a new output item is added. */
@@ -301,6 +340,8 @@ private constructor(
 
     fun isCodeInterpreterCallInterpreting(): Boolean = codeInterpreterCallInterpreting != null
 
+    fun isCompactionCompacting(): Boolean = compactionCompacting != null
+
     fun isCompleted(): Boolean = completed != null
 
     fun isContentPartAdded(): Boolean = contentPartAdded != null
@@ -320,6 +361,16 @@ private constructor(
     fun isFunctionCallArgumentsDelta(): Boolean = functionCallArgumentsDelta != null
 
     fun isFunctionCallArgumentsDone(): Boolean = functionCallArgumentsDone != null
+
+    fun isShellCallCommandAdded(): Boolean = shellCallCommandAdded != null
+
+    fun isShellCallCommandDelta(): Boolean = shellCallCommandDelta != null
+
+    fun isShellCallCommandDone(): Boolean = shellCallCommandDone != null
+
+    fun isShellCallOutputContentDelta(): Boolean = shellCallOutputContentDelta != null
+
+    fun isShellCallOutputContentDone(): Boolean = shellCallOutputContentDone != null
 
     fun isInProgress(): Boolean = inProgress != null
 
@@ -423,6 +474,13 @@ private constructor(
     fun asCodeInterpreterCallInterpreting(): ResponseCodeInterpreterCallInterpretingEvent =
         codeInterpreterCallInterpreting.getOrThrow("codeInterpreterCallInterpreting")
 
+    /**
+     * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+     * content.
+     */
+    fun asCompactionCompacting(): ResponseCompactionCompactingEvent =
+        compactionCompacting.getOrThrow("compactionCompacting")
+
     /** Emitted when the model response is complete. */
     fun asCompleted(): ResponseCompletedEvent = completed.getOrThrow("completed")
 
@@ -460,13 +518,39 @@ private constructor(
     fun asFunctionCallArgumentsDone(): ResponseFunctionCallArgumentsDoneEvent =
         functionCallArgumentsDone.getOrThrow("functionCallArgumentsDone")
 
+    /** A streaming event that indicated a shell command was added to a tool call. */
+    fun asShellCallCommandAdded(): ResponseShellCallCommandAddedEvent =
+        shellCallCommandAdded.getOrThrow("shellCallCommandAdded")
+
+    /** A streaming event that indicated a shell command was incrementally updated. */
+    fun asShellCallCommandDelta(): ResponseShellCallCommandDeltaEvent =
+        shellCallCommandDelta.getOrThrow("shellCallCommandDelta")
+
+    /** A streaming event that indicated a shell command was completed. */
+    fun asShellCallCommandDone(): ResponseShellCallCommandDoneEvent =
+        shellCallCommandDone.getOrThrow("shellCallCommandDone")
+
+    /** A streaming event that indicated shell call output was incrementally added. */
+    fun asShellCallOutputContentDelta(): ResponseShellCallOutputContentDeltaEvent =
+        shellCallOutputContentDelta.getOrThrow("shellCallOutputContentDelta")
+
+    /** A streaming event that indicated shell call output was completed. */
+    fun asShellCallOutputContentDone(): ResponseShellCallOutputContentDoneEvent =
+        shellCallOutputContentDone.getOrThrow("shellCallOutputContentDone")
+
     /** Emitted when the response is in progress. */
     fun asInProgress(): ResponseInProgressEvent = inProgress.getOrThrow("inProgress")
 
     /** An event that is emitted when a response fails. */
     fun asFailed(): ResponseFailedEvent = failed.getOrThrow("failed")
 
-    /** An event that is emitted when a response finishes as incomplete. */
+    /**
+     * An event that is emitted when a response finishes as incomplete.
+     *
+     * Over WebSocket, steering can finish a response with `response.incomplete_details.reason` set
+     * to `steered`, followed automatically by a successor `response.created` that commits the
+     * queued steering input.
+     */
     fun asIncomplete(): ResponseIncompleteEvent = incomplete.getOrThrow("incomplete")
 
     /** Emitted when a new output item is added. */
@@ -639,6 +723,7 @@ private constructor(
                 visitor.visitCodeInterpreterCallInProgress(codeInterpreterCallInProgress)
             codeInterpreterCallInterpreting != null ->
                 visitor.visitCodeInterpreterCallInterpreting(codeInterpreterCallInterpreting)
+            compactionCompacting != null -> visitor.visitCompactionCompacting(compactionCompacting)
             completed != null -> visitor.visitCompleted(completed)
             contentPartAdded != null -> visitor.visitContentPartAdded(contentPartAdded)
             contentPartDone != null -> visitor.visitContentPartDone(contentPartDone)
@@ -654,6 +739,15 @@ private constructor(
                 visitor.visitFunctionCallArgumentsDelta(functionCallArgumentsDelta)
             functionCallArgumentsDone != null ->
                 visitor.visitFunctionCallArgumentsDone(functionCallArgumentsDone)
+            shellCallCommandAdded != null ->
+                visitor.visitShellCallCommandAdded(shellCallCommandAdded)
+            shellCallCommandDelta != null ->
+                visitor.visitShellCallCommandDelta(shellCallCommandDelta)
+            shellCallCommandDone != null -> visitor.visitShellCallCommandDone(shellCallCommandDone)
+            shellCallOutputContentDelta != null ->
+                visitor.visitShellCallOutputContentDelta(shellCallOutputContentDelta)
+            shellCallOutputContentDone != null ->
+                visitor.visitShellCallOutputContentDone(shellCallOutputContentDone)
             inProgress != null -> visitor.visitInProgress(inProgress)
             failed != null -> visitor.visitFailed(failed)
             incomplete != null -> visitor.visitIncomplete(incomplete)
@@ -775,6 +869,12 @@ private constructor(
                     codeInterpreterCallInterpreting.validate()
                 }
 
+                override fun visitCompactionCompacting(
+                    compactionCompacting: ResponseCompactionCompactingEvent
+                ) {
+                    compactionCompacting.validate()
+                }
+
                 override fun visitCompleted(completed: ResponseCompletedEvent) {
                     completed.validate()
                 }
@@ -825,6 +925,36 @@ private constructor(
                     functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
                 ) {
                     functionCallArgumentsDone.validate()
+                }
+
+                override fun visitShellCallCommandAdded(
+                    shellCallCommandAdded: ResponseShellCallCommandAddedEvent
+                ) {
+                    shellCallCommandAdded.validate()
+                }
+
+                override fun visitShellCallCommandDelta(
+                    shellCallCommandDelta: ResponseShellCallCommandDeltaEvent
+                ) {
+                    shellCallCommandDelta.validate()
+                }
+
+                override fun visitShellCallCommandDone(
+                    shellCallCommandDone: ResponseShellCallCommandDoneEvent
+                ) {
+                    shellCallCommandDone.validate()
+                }
+
+                override fun visitShellCallOutputContentDelta(
+                    shellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+                ) {
+                    shellCallOutputContentDelta.validate()
+                }
+
+                override fun visitShellCallOutputContentDone(
+                    shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
+                ) {
+                    shellCallOutputContentDone.validate()
                 }
 
                 override fun visitInProgress(inProgress: ResponseInProgressEvent) {
@@ -1064,6 +1194,10 @@ private constructor(
                     codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent
                 ) = codeInterpreterCallInterpreting.validity()
 
+                override fun visitCompactionCompacting(
+                    compactionCompacting: ResponseCompactionCompactingEvent
+                ) = compactionCompacting.validity()
+
                 override fun visitCompleted(completed: ResponseCompletedEvent) =
                     completed.validity()
 
@@ -1097,6 +1231,26 @@ private constructor(
                 override fun visitFunctionCallArgumentsDone(
                     functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
                 ) = functionCallArgumentsDone.validity()
+
+                override fun visitShellCallCommandAdded(
+                    shellCallCommandAdded: ResponseShellCallCommandAddedEvent
+                ) = shellCallCommandAdded.validity()
+
+                override fun visitShellCallCommandDelta(
+                    shellCallCommandDelta: ResponseShellCallCommandDeltaEvent
+                ) = shellCallCommandDelta.validity()
+
+                override fun visitShellCallCommandDone(
+                    shellCallCommandDone: ResponseShellCallCommandDoneEvent
+                ) = shellCallCommandDone.validity()
+
+                override fun visitShellCallOutputContentDelta(
+                    shellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+                ) = shellCallOutputContentDelta.validity()
+
+                override fun visitShellCallOutputContentDone(
+                    shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
+                ) = shellCallOutputContentDone.validity()
 
                 override fun visitInProgress(inProgress: ResponseInProgressEvent) =
                     inProgress.validity()
@@ -1240,6 +1394,7 @@ private constructor(
             codeInterpreterCallCompleted == other.codeInterpreterCallCompleted &&
             codeInterpreterCallInProgress == other.codeInterpreterCallInProgress &&
             codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting &&
+            compactionCompacting == other.compactionCompacting &&
             completed == other.completed &&
             contentPartAdded == other.contentPartAdded &&
             contentPartDone == other.contentPartDone &&
@@ -1250,6 +1405,11 @@ private constructor(
             fileSearchCallSearching == other.fileSearchCallSearching &&
             functionCallArgumentsDelta == other.functionCallArgumentsDelta &&
             functionCallArgumentsDone == other.functionCallArgumentsDone &&
+            shellCallCommandAdded == other.shellCallCommandAdded &&
+            shellCallCommandDelta == other.shellCallCommandDelta &&
+            shellCallCommandDone == other.shellCallCommandDone &&
+            shellCallOutputContentDelta == other.shellCallOutputContentDelta &&
+            shellCallOutputContentDone == other.shellCallOutputContentDone &&
             inProgress == other.inProgress &&
             failed == other.failed &&
             incomplete == other.incomplete &&
@@ -1297,6 +1457,7 @@ private constructor(
             codeInterpreterCallCompleted,
             codeInterpreterCallInProgress,
             codeInterpreterCallInterpreting,
+            compactionCompacting,
             completed,
             contentPartAdded,
             contentPartDone,
@@ -1307,6 +1468,11 @@ private constructor(
             fileSearchCallSearching,
             functionCallArgumentsDelta,
             functionCallArgumentsDone,
+            shellCallCommandAdded,
+            shellCallCommandDelta,
+            shellCallCommandDone,
+            shellCallOutputContentDelta,
+            shellCallOutputContentDone,
             inProgress,
             failed,
             incomplete,
@@ -1361,6 +1527,8 @@ private constructor(
                 "ResponseStreamEvent{codeInterpreterCallInProgress=$codeInterpreterCallInProgress}"
             codeInterpreterCallInterpreting != null ->
                 "ResponseStreamEvent{codeInterpreterCallInterpreting=$codeInterpreterCallInterpreting}"
+            compactionCompacting != null ->
+                "ResponseStreamEvent{compactionCompacting=$compactionCompacting}"
             completed != null -> "ResponseStreamEvent{completed=$completed}"
             contentPartAdded != null -> "ResponseStreamEvent{contentPartAdded=$contentPartAdded}"
             contentPartDone != null -> "ResponseStreamEvent{contentPartDone=$contentPartDone}"
@@ -1376,6 +1544,16 @@ private constructor(
                 "ResponseStreamEvent{functionCallArgumentsDelta=$functionCallArgumentsDelta}"
             functionCallArgumentsDone != null ->
                 "ResponseStreamEvent{functionCallArgumentsDone=$functionCallArgumentsDone}"
+            shellCallCommandAdded != null ->
+                "ResponseStreamEvent{shellCallCommandAdded=$shellCallCommandAdded}"
+            shellCallCommandDelta != null ->
+                "ResponseStreamEvent{shellCallCommandDelta=$shellCallCommandDelta}"
+            shellCallCommandDone != null ->
+                "ResponseStreamEvent{shellCallCommandDone=$shellCallCommandDone}"
+            shellCallOutputContentDelta != null ->
+                "ResponseStreamEvent{shellCallOutputContentDelta=$shellCallOutputContentDelta}"
+            shellCallOutputContentDone != null ->
+                "ResponseStreamEvent{shellCallOutputContentDone=$shellCallOutputContentDone}"
             inProgress != null -> "ResponseStreamEvent{inProgress=$inProgress}"
             failed != null -> "ResponseStreamEvent{failed=$failed}"
             incomplete != null -> "ResponseStreamEvent{incomplete=$incomplete}"
@@ -1486,6 +1664,14 @@ private constructor(
             codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent
         ) = ResponseStreamEvent(codeInterpreterCallInterpreting = codeInterpreterCallInterpreting)
 
+        /**
+         * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+         * content.
+         */
+        @JvmStatic
+        fun ofCompactionCompacting(compactionCompacting: ResponseCompactionCompactingEvent) =
+            ResponseStreamEvent(compactionCompacting = compactionCompacting)
+
         /** Emitted when the model response is complete. */
         @JvmStatic
         fun ofCompleted(completed: ResponseCompletedEvent) =
@@ -1538,6 +1724,33 @@ private constructor(
             functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
         ) = ResponseStreamEvent(functionCallArgumentsDone = functionCallArgumentsDone)
 
+        /** A streaming event that indicated a shell command was added to a tool call. */
+        @JvmStatic
+        fun ofShellCallCommandAdded(shellCallCommandAdded: ResponseShellCallCommandAddedEvent) =
+            ResponseStreamEvent(shellCallCommandAdded = shellCallCommandAdded)
+
+        /** A streaming event that indicated a shell command was incrementally updated. */
+        @JvmStatic
+        fun ofShellCallCommandDelta(shellCallCommandDelta: ResponseShellCallCommandDeltaEvent) =
+            ResponseStreamEvent(shellCallCommandDelta = shellCallCommandDelta)
+
+        /** A streaming event that indicated a shell command was completed. */
+        @JvmStatic
+        fun ofShellCallCommandDone(shellCallCommandDone: ResponseShellCallCommandDoneEvent) =
+            ResponseStreamEvent(shellCallCommandDone = shellCallCommandDone)
+
+        /** A streaming event that indicated shell call output was incrementally added. */
+        @JvmStatic
+        fun ofShellCallOutputContentDelta(
+            shellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+        ) = ResponseStreamEvent(shellCallOutputContentDelta = shellCallOutputContentDelta)
+
+        /** A streaming event that indicated shell call output was completed. */
+        @JvmStatic
+        fun ofShellCallOutputContentDone(
+            shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
+        ) = ResponseStreamEvent(shellCallOutputContentDone = shellCallOutputContentDone)
+
         /** Emitted when the response is in progress. */
         @JvmStatic
         fun ofInProgress(inProgress: ResponseInProgressEvent) =
@@ -1546,7 +1759,13 @@ private constructor(
         /** An event that is emitted when a response fails. */
         @JvmStatic fun ofFailed(failed: ResponseFailedEvent) = ResponseStreamEvent(failed = failed)
 
-        /** An event that is emitted when a response finishes as incomplete. */
+        /**
+         * An event that is emitted when a response finishes as incomplete.
+         *
+         * Over WebSocket, steering can finish a response with `response.incomplete_details.reason`
+         * set to `steered`, followed automatically by a successor `response.created` that commits
+         * the queued steering input.
+         */
         @JvmStatic
         fun ofIncomplete(incomplete: ResponseIncompleteEvent) =
             ResponseStreamEvent(incomplete = incomplete)
@@ -1732,149 +1951,205 @@ private constructor(
     interface Visitor<out T> {
 
         /** Emitted when there is a partial audio response. */
-        fun visitAudioDelta(audioDelta: ResponseAudioDeltaEvent): T
+        fun visitAudioDelta(audioDelta: ResponseAudioDeltaEvent): T =
+            unknown(JsonValue.from(audioDelta))
 
         /** Emitted when the audio response is complete. */
-        fun visitAudioDone(audioDone: ResponseAudioDoneEvent): T
+        fun visitAudioDone(audioDone: ResponseAudioDoneEvent): T =
+            unknown(JsonValue.from(audioDone))
 
         /** Emitted when there is a partial transcript of audio. */
-        fun visitAudioTranscriptDelta(audioTranscriptDelta: ResponseAudioTranscriptDeltaEvent): T
+        fun visitAudioTranscriptDelta(audioTranscriptDelta: ResponseAudioTranscriptDeltaEvent): T =
+            unknown(JsonValue.from(audioTranscriptDelta))
 
         /** Emitted when the full audio transcript is completed. */
-        fun visitAudioTranscriptDone(audioTranscriptDone: ResponseAudioTranscriptDoneEvent): T
+        fun visitAudioTranscriptDone(audioTranscriptDone: ResponseAudioTranscriptDoneEvent): T =
+            unknown(JsonValue.from(audioTranscriptDone))
 
         /** Emitted when a partial code snippet is streamed by the code interpreter. */
         fun visitCodeInterpreterCallCodeDelta(
             codeInterpreterCallCodeDelta: ResponseCodeInterpreterCallCodeDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(codeInterpreterCallCodeDelta))
 
         /** Emitted when the code snippet is finalized by the code interpreter. */
         fun visitCodeInterpreterCallCodeDone(
             codeInterpreterCallCodeDone: ResponseCodeInterpreterCallCodeDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(codeInterpreterCallCodeDone))
 
         /** Emitted when the code interpreter call is completed. */
         fun visitCodeInterpreterCallCompleted(
             codeInterpreterCallCompleted: ResponseCodeInterpreterCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(codeInterpreterCallCompleted))
 
         /** Emitted when a code interpreter call is in progress. */
         fun visitCodeInterpreterCallInProgress(
             codeInterpreterCallInProgress: ResponseCodeInterpreterCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(codeInterpreterCallInProgress))
 
         /** Emitted when the code interpreter is actively interpreting the code snippet. */
         fun visitCodeInterpreterCallInterpreting(
             codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent
-        ): T
+        ): T = unknown(JsonValue.from(codeInterpreterCallInterpreting))
+
+        /**
+         * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
+         * content.
+         *
+         * Defaults to [unknown] so existing visitors can handle newly added progress events.
+         */
+        fun visitCompactionCompacting(compactionCompacting: ResponseCompactionCompactingEvent): T =
+            unknown(JsonValue.from(compactionCompacting))
 
         /** Emitted when the model response is complete. */
-        fun visitCompleted(completed: ResponseCompletedEvent): T
+        fun visitCompleted(completed: ResponseCompletedEvent): T =
+            unknown(JsonValue.from(completed))
 
         /** Emitted when a new content part is added. */
-        fun visitContentPartAdded(contentPartAdded: ResponseContentPartAddedEvent): T
+        fun visitContentPartAdded(contentPartAdded: ResponseContentPartAddedEvent): T =
+            unknown(JsonValue.from(contentPartAdded))
 
         /** Emitted when a content part is done. */
-        fun visitContentPartDone(contentPartDone: ResponseContentPartDoneEvent): T
+        fun visitContentPartDone(contentPartDone: ResponseContentPartDoneEvent): T =
+            unknown(JsonValue.from(contentPartDone))
 
         /** An event that is emitted when a response is created. */
-        fun visitCreated(created: ResponseCreatedEvent): T
+        fun visitCreated(created: ResponseCreatedEvent): T = unknown(JsonValue.from(created))
 
         /** Emitted when an error occurs. */
-        fun visitError(error: ResponseErrorEvent): T
+        fun visitError(error: ResponseErrorEvent): T = unknown(JsonValue.from(error))
 
         /** Emitted when a file search call is completed (results found). */
         fun visitFileSearchCallCompleted(
             fileSearchCallCompleted: ResponseFileSearchCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(fileSearchCallCompleted))
 
         /** Emitted when a file search call is initiated. */
         fun visitFileSearchCallInProgress(
             fileSearchCallInProgress: ResponseFileSearchCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(fileSearchCallInProgress))
 
         /** Emitted when a file search is currently searching. */
         fun visitFileSearchCallSearching(
             fileSearchCallSearching: ResponseFileSearchCallSearchingEvent
-        ): T
+        ): T = unknown(JsonValue.from(fileSearchCallSearching))
 
         /** Emitted when there is a partial function-call arguments delta. */
         fun visitFunctionCallArgumentsDelta(
             functionCallArgumentsDelta: ResponseFunctionCallArgumentsDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(functionCallArgumentsDelta))
 
         /** Emitted when function-call arguments are finalized. */
         fun visitFunctionCallArgumentsDone(
             functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(functionCallArgumentsDone))
+
+        /** A streaming event that indicated a shell command was added to a tool call. */
+        fun visitShellCallCommandAdded(
+            shellCallCommandAdded: ResponseShellCallCommandAddedEvent
+        ): T = unknown(JsonValue.from(shellCallCommandAdded))
+
+        /** A streaming event that indicated a shell command was incrementally updated. */
+        fun visitShellCallCommandDelta(
+            shellCallCommandDelta: ResponseShellCallCommandDeltaEvent
+        ): T = unknown(JsonValue.from(shellCallCommandDelta))
+
+        /** A streaming event that indicated a shell command was completed. */
+        fun visitShellCallCommandDone(shellCallCommandDone: ResponseShellCallCommandDoneEvent): T =
+            unknown(JsonValue.from(shellCallCommandDone))
+
+        /** A streaming event that indicated shell call output was incrementally added. */
+        fun visitShellCallOutputContentDelta(
+            shellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+        ): T = unknown(JsonValue.from(shellCallOutputContentDelta))
+
+        /** A streaming event that indicated shell call output was completed. */
+        fun visitShellCallOutputContentDone(
+            shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
+        ): T = unknown(JsonValue.from(shellCallOutputContentDone))
 
         /** Emitted when the response is in progress. */
-        fun visitInProgress(inProgress: ResponseInProgressEvent): T
+        fun visitInProgress(inProgress: ResponseInProgressEvent): T =
+            unknown(JsonValue.from(inProgress))
 
         /** An event that is emitted when a response fails. */
-        fun visitFailed(failed: ResponseFailedEvent): T
+        fun visitFailed(failed: ResponseFailedEvent): T = unknown(JsonValue.from(failed))
 
-        /** An event that is emitted when a response finishes as incomplete. */
-        fun visitIncomplete(incomplete: ResponseIncompleteEvent): T
+        /**
+         * An event that is emitted when a response finishes as incomplete.
+         *
+         * Over WebSocket, steering can finish a response with `response.incomplete_details.reason`
+         * set to `steered`, followed automatically by a successor `response.created` that commits
+         * the queued steering input.
+         */
+        fun visitIncomplete(incomplete: ResponseIncompleteEvent): T =
+            unknown(JsonValue.from(incomplete))
 
         /** Emitted when a new output item is added. */
-        fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent): T
+        fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent): T =
+            unknown(JsonValue.from(outputItemAdded))
 
         /** Emitted when an output item is marked done. */
-        fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent): T
+        fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent): T =
+            unknown(JsonValue.from(outputItemDone))
 
         /** Emitted when a new reasoning summary part is added. */
         fun visitReasoningSummaryPartAdded(
             reasoningSummaryPartAdded: ResponseReasoningSummaryPartAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(reasoningSummaryPartAdded))
 
         /** Emitted when a reasoning summary part is completed. */
         fun visitReasoningSummaryPartDone(
             reasoningSummaryPartDone: ResponseReasoningSummaryPartDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(reasoningSummaryPartDone))
 
         /** Emitted when a delta is added to a reasoning summary text. */
         fun visitReasoningSummaryTextDelta(
             reasoningSummaryTextDelta: ResponseReasoningSummaryTextDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(reasoningSummaryTextDelta))
 
         /** Emitted when a reasoning summary text is completed. */
         fun visitReasoningSummaryTextDone(
             reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(reasoningSummaryTextDone))
 
         /** Emitted when a delta is added to a reasoning text. */
-        fun visitReasoningTextDelta(reasoningTextDelta: ResponseReasoningTextDeltaEvent): T
+        fun visitReasoningTextDelta(reasoningTextDelta: ResponseReasoningTextDeltaEvent): T =
+            unknown(JsonValue.from(reasoningTextDelta))
 
         /** Emitted when a reasoning text is completed. */
-        fun visitReasoningTextDone(reasoningTextDone: ResponseReasoningTextDoneEvent): T
+        fun visitReasoningTextDone(reasoningTextDone: ResponseReasoningTextDoneEvent): T =
+            unknown(JsonValue.from(reasoningTextDone))
 
         /** Emitted when there is a partial refusal text. */
-        fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent): T
+        fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent): T =
+            unknown(JsonValue.from(refusalDelta))
 
         /** Emitted when refusal text is finalized. */
-        fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent): T
+        fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent): T =
+            unknown(JsonValue.from(refusalDone))
 
         /** Emitted when there is an additional text delta. */
-        fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent): T
+        fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent): T =
+            unknown(JsonValue.from(outputTextDelta))
 
         /** Emitted when text content is finalized. */
-        fun visitOutputTextDone(outputTextDone: ResponseTextDoneEvent): T
+        fun visitOutputTextDone(outputTextDone: ResponseTextDoneEvent): T =
+            unknown(JsonValue.from(outputTextDone))
 
         /** Emitted when a web search call is completed. */
         fun visitWebSearchCallCompleted(
             webSearchCallCompleted: ResponseWebSearchCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(webSearchCallCompleted))
 
         /** Emitted when a web search call is initiated. */
         fun visitWebSearchCallInProgress(
             webSearchCallInProgress: ResponseWebSearchCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(webSearchCallInProgress))
 
         /** Emitted when a web search call is executing. */
         fun visitWebSearchCallSearching(
             webSearchCallSearching: ResponseWebSearchCallSearchingEvent
-        ): T
+        ): T = unknown(JsonValue.from(webSearchCallSearching))
 
         /**
          * Emitted when an image generation tool call has completed and the final image is
@@ -1882,7 +2157,7 @@ private constructor(
          */
         fun visitImageGenerationCallCompleted(
             imageGenerationCallCompleted: ResponseImageGenCallCompletedEvent
-        ): T
+        ): T = unknown(JsonValue.from(imageGenerationCallCompleted))
 
         /**
          * Emitted when an image generation tool call is actively generating an image (intermediate
@@ -1890,63 +2165,72 @@ private constructor(
          */
         fun visitImageGenerationCallGenerating(
             imageGenerationCallGenerating: ResponseImageGenCallGeneratingEvent
-        ): T
+        ): T = unknown(JsonValue.from(imageGenerationCallGenerating))
 
         /** Emitted when an image generation tool call is in progress. */
         fun visitImageGenerationCallInProgress(
             imageGenerationCallInProgress: ResponseImageGenCallInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(imageGenerationCallInProgress))
 
         /** Emitted when a partial image is available during image generation streaming. */
         fun visitImageGenerationCallPartialImage(
             imageGenerationCallPartialImage: ResponseImageGenCallPartialImageEvent
-        ): T
+        ): T = unknown(JsonValue.from(imageGenerationCallPartialImage))
 
         /** Emitted when there is a delta (partial update) to the arguments of an MCP tool call. */
-        fun visitMcpCallArgumentsDelta(mcpCallArgumentsDelta: ResponseMcpCallArgumentsDeltaEvent): T
+        fun visitMcpCallArgumentsDelta(
+            mcpCallArgumentsDelta: ResponseMcpCallArgumentsDeltaEvent
+        ): T = unknown(JsonValue.from(mcpCallArgumentsDelta))
 
         /** Emitted when the arguments for an MCP tool call are finalized. */
-        fun visitMcpCallArgumentsDone(mcpCallArgumentsDone: ResponseMcpCallArgumentsDoneEvent): T
+        fun visitMcpCallArgumentsDone(mcpCallArgumentsDone: ResponseMcpCallArgumentsDoneEvent): T =
+            unknown(JsonValue.from(mcpCallArgumentsDone))
 
         /** Emitted when an MCP tool call has completed successfully. */
-        fun visitMcpCallCompleted(mcpCallCompleted: ResponseMcpCallCompletedEvent): T
+        fun visitMcpCallCompleted(mcpCallCompleted: ResponseMcpCallCompletedEvent): T =
+            unknown(JsonValue.from(mcpCallCompleted))
 
         /** Emitted when an MCP tool call has failed. */
-        fun visitMcpCallFailed(mcpCallFailed: ResponseMcpCallFailedEvent): T
+        fun visitMcpCallFailed(mcpCallFailed: ResponseMcpCallFailedEvent): T =
+            unknown(JsonValue.from(mcpCallFailed))
 
         /** Emitted when an MCP tool call is in progress. */
-        fun visitMcpCallInProgress(mcpCallInProgress: ResponseMcpCallInProgressEvent): T
+        fun visitMcpCallInProgress(mcpCallInProgress: ResponseMcpCallInProgressEvent): T =
+            unknown(JsonValue.from(mcpCallInProgress))
 
         /** Emitted when the list of available MCP tools has been successfully retrieved. */
-        fun visitMcpListToolsCompleted(mcpListToolsCompleted: ResponseMcpListToolsCompletedEvent): T
+        fun visitMcpListToolsCompleted(
+            mcpListToolsCompleted: ResponseMcpListToolsCompletedEvent
+        ): T = unknown(JsonValue.from(mcpListToolsCompleted))
 
         /** Emitted when the attempt to list available MCP tools has failed. */
-        fun visitMcpListToolsFailed(mcpListToolsFailed: ResponseMcpListToolsFailedEvent): T
+        fun visitMcpListToolsFailed(mcpListToolsFailed: ResponseMcpListToolsFailedEvent): T =
+            unknown(JsonValue.from(mcpListToolsFailed))
 
         /**
          * Emitted when the system is in the process of retrieving the list of available MCP tools.
          */
         fun visitMcpListToolsInProgress(
             mcpListToolsInProgress: ResponseMcpListToolsInProgressEvent
-        ): T
+        ): T = unknown(JsonValue.from(mcpListToolsInProgress))
 
         /** Emitted when an annotation is added to output text content. */
         fun visitOutputTextAnnotationAdded(
             outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent
-        ): T
+        ): T = unknown(JsonValue.from(outputTextAnnotationAdded))
 
         /** Emitted when a response is queued and waiting to be processed. */
-        fun visitQueued(queued: ResponseQueuedEvent): T
+        fun visitQueued(queued: ResponseQueuedEvent): T = unknown(JsonValue.from(queued))
 
         /** Event representing a delta (partial update) to the input of a custom tool call. */
         fun visitCustomToolCallInputDelta(
             customToolCallInputDelta: ResponseCustomToolCallInputDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(customToolCallInputDelta))
 
         /** Event indicating that input for a custom tool call is complete. */
         fun visitCustomToolCallInputDone(
             customToolCallInputDone: ResponseCustomToolCallInputDoneEvent
-        ): T
+        ): T = unknown(JsonValue.from(customToolCallInputDone))
 
         /**
          * Maps an unknown variant of [ResponseStreamEvent] to a value of type [T].
@@ -1956,10 +2240,13 @@ private constructor(
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
          *
+         * Recognized events also reach this method when their visit method is not overridden. This
+         * allows existing visitors to handle event variants added by newer SDK versions.
+         *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown ResponseStreamEvent: $json")
+            throw OpenAIInvalidDataException("Unknown ResponseStreamEvent")
         }
     }
 
@@ -2036,6 +2323,11 @@ private constructor(
                             ResponseStreamEvent(codeInterpreterCallInterpreting = it, _json = json)
                         } ?: ResponseStreamEvent(_json = json)
                 }
+                "response.compaction.compacting" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseCompactionCompactingEvent>())
+                        ?.let { ResponseStreamEvent(compactionCompacting = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
                 "response.completed" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseCompletedEvent>())?.let {
                         ResponseStreamEvent(completed = it, _json = json)
@@ -2099,6 +2391,44 @@ private constructor(
                             jacksonTypeRef<ResponseFunctionCallArgumentsDoneEvent>(),
                         )
                         ?.let { ResponseStreamEvent(functionCallArgumentsDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.shell_call_command.added" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseShellCallCommandAddedEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(shellCallCommandAdded = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.shell_call_command.delta" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseShellCallCommandDeltaEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(shellCallCommandDelta = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.shell_call_command.done" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseShellCallCommandDoneEvent>())
+                        ?.let { ResponseStreamEvent(shellCallCommandDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.shell_call_output_content.delta" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseShellCallOutputContentDeltaEvent>(),
+                        )
+                        ?.let {
+                            ResponseStreamEvent(shellCallOutputContentDelta = it, _json = json)
+                        } ?: ResponseStreamEvent(_json = json)
+                }
+                "response.shell_call_output_content.done" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseShellCallOutputContentDoneEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(shellCallOutputContentDone = it, _json = json) }
                         ?: ResponseStreamEvent(_json = json)
                 }
                 "response.in_progress" -> {
@@ -2356,6 +2686,8 @@ private constructor(
                     generator.writeObject(value.codeInterpreterCallInProgress)
                 value.codeInterpreterCallInterpreting != null ->
                     generator.writeObject(value.codeInterpreterCallInterpreting)
+                value.compactionCompacting != null ->
+                    generator.writeObject(value.compactionCompacting)
                 value.completed != null -> generator.writeObject(value.completed)
                 value.contentPartAdded != null -> generator.writeObject(value.contentPartAdded)
                 value.contentPartDone != null -> generator.writeObject(value.contentPartDone)
@@ -2371,6 +2703,16 @@ private constructor(
                     generator.writeObject(value.functionCallArgumentsDelta)
                 value.functionCallArgumentsDone != null ->
                     generator.writeObject(value.functionCallArgumentsDone)
+                value.shellCallCommandAdded != null ->
+                    generator.writeObject(value.shellCallCommandAdded)
+                value.shellCallCommandDelta != null ->
+                    generator.writeObject(value.shellCallCommandDelta)
+                value.shellCallCommandDone != null ->
+                    generator.writeObject(value.shellCallCommandDone)
+                value.shellCallOutputContentDelta != null ->
+                    generator.writeObject(value.shellCallOutputContentDelta)
+                value.shellCallOutputContentDone != null ->
+                    generator.writeObject(value.shellCallOutputContentDone)
                 value.inProgress != null -> generator.writeObject(value.inProgress)
                 value.failed != null -> generator.writeObject(value.failed)
                 value.incomplete != null -> generator.writeObject(value.incomplete)
@@ -2423,7 +2765,6 @@ private constructor(
                     generator.writeObject(value.customToolCallInputDelta)
                 value.customToolCallInputDone != null ->
                     generator.writeObject(value.customToolCallInputDone)
-
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ResponseStreamEvent")
             }

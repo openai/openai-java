@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core.handlers
 
 import com.openai.core.http.Headers

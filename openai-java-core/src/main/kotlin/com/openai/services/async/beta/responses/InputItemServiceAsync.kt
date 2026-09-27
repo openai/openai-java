@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.beta.responses
 
@@ -10,6 +10,7 @@ import com.openai.models.beta.responses.inputitems.InputItemListParams
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 interface InputItemServiceAsync {
 
     /**

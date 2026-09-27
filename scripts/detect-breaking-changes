@@ -234,6 +234,22 @@ BASELINE_FIXTURE_SOURCE_ROOT="$(pwd)/${BASELINE_FIXTURE_PATH}"
 BASELINE_DEPENDENCIES_FILE="$(pwd)/${BASELINE_DEPENDENCIES_PATH}"
 PROPOSED_FIXTURE_SOURCE_ROOT="$(pwd)/${PROPOSED_FIXTURE_PATH}"
 PROPOSED_DEPENDENCIES_FILE="$(pwd)/${PROPOSED_DEPENDENCIES_PATH}"
+
+# One fresh compilation covers both policies when their complete compiler inputs match. Keep
+# separate compilations for any difference (including untracked local fixtures), comparison error,
+# or additional sources in Gradle's default source-set directories. Signature checks below still
+# validate both manifests independently.
+COMPATIBILITY_TASKS=(:openai-java-core:compileExternalApiCompatibilityKotlin)
+if [ ! -e openai-java-core/src/externalApiCompatibility ] &&
+    [ ! -e openai-java-core/src/proposedApiCompatibility ] &&
+    diff -qr "${GENERATED_TEST_SOURCE_ROOT}" "${PROPOSED_GENERATED_TEST_SOURCE_ROOT}" >/dev/null &&
+    diff -qr "${BASELINE_FIXTURE_SOURCE_ROOT}" "${PROPOSED_FIXTURE_SOURCE_ROOT}" >/dev/null &&
+    cmp -s "${BASELINE_DEPENDENCIES_FILE}" "${PROPOSED_DEPENDENCIES_FILE}"; then
+    echo "Compatibility compiler inputs are identical; compiling once against the proposed SDK."
+else
+    COMPATIBILITY_TASKS+=(:openai-java-core:compileProposedApiCompatibilityKotlin)
+fi
+
 COMPATIBILITY_INIT_SCRIPT="$(mktemp)"
 trap 'rm -f "${COMPATIBILITY_INIT_SCRIPT}"' EXIT
 
@@ -316,8 +332,7 @@ GENERATED_TEST_SOURCE_ROOT="${GENERATED_TEST_SOURCE_ROOT}" \
     PROPOSED_DEPENDENCIES_FILE="${PROPOSED_DEPENDENCIES_FILE}" \
     ./scripts/gradle \
     --init-script "${COMPATIBILITY_INIT_SCRIPT}" \
-    :openai-java-core:compileExternalApiCompatibilityKotlin \
-    :openai-java-core:compileProposedApiCompatibilityKotlin
+    "${COMPATIBILITY_TASKS[@]}"
 
 validate_public_api_signatures() {
     local manifest_path="$1"

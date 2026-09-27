@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects
 
@@ -20,6 +20,7 @@ internal class ProjectListPageResponseTest {
                         .archivedAt(0L)
                         .externalKeyId("external_key_id")
                         .name("name")
+                        .residency(ProjectResidency.GLOBAL)
                         .status("status")
                         .build()
                 )
@@ -36,6 +37,7 @@ internal class ProjectListPageResponseTest {
                     .archivedAt(0L)
                     .externalKeyId("external_key_id")
                     .name("name")
+                    .residency(ProjectResidency.GLOBAL)
                     .status("status")
                     .build()
             )
@@ -56,6 +58,7 @@ internal class ProjectListPageResponseTest {
                         .archivedAt(0L)
                         .externalKeyId("external_key_id")
                         .name("name")
+                        .residency(ProjectResidency.GLOBAL)
                         .status("status")
                         .build()
                 )

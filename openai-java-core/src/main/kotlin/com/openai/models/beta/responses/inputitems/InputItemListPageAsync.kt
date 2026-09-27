@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses.inputitems
 
@@ -11,6 +11,7 @@ import com.openai.models.beta.responses.BetaResponseCodeInterpreterToolCall
 import com.openai.models.beta.responses.BetaResponseCompactionItem
 import com.openai.models.beta.responses.BetaResponseComputerToolCall
 import com.openai.models.beta.responses.BetaResponseComputerToolCallOutputItem
+import com.openai.models.beta.responses.BetaResponseConfigurationUpdateItem
 import com.openai.models.beta.responses.BetaResponseCustomToolCallItem
 import com.openai.models.beta.responses.BetaResponseCustomToolCallOutputItem
 import com.openai.models.beta.responses.BetaResponseFileSearchToolCall
@@ -124,6 +125,10 @@ private constructor(
                             override fun visitAdditionalTools(
                                 additionalTools: BetaResponseItem.AdditionalTools
                             ): Optional<String> = additionalTools._id().getOptional("id")
+
+                            override fun visitConfigurationUpdate(
+                                configurationUpdate: BetaResponseConfigurationUpdateItem
+                            ): Optional<String> = configurationUpdate._id().getOptional("id")
 
                             override fun visitReasoning(
                                 reasoning: BetaResponseReasoningItem

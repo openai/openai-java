@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -17,6 +17,7 @@ internal class ResponseCustomToolCallTest {
                 .input("input")
                 .name("name")
                 .id("id")
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .build()
@@ -25,6 +26,7 @@ internal class ResponseCustomToolCallTest {
         assertThat(responseCustomToolCall.input()).isEqualTo("input")
         assertThat(responseCustomToolCall.name()).isEqualTo("name")
         assertThat(responseCustomToolCall.id()).contains("id")
+        assertThat(responseCustomToolCall.async()).contains(true)
         assertThat(responseCustomToolCall.caller())
             .contains(ResponseCustomToolCall.Caller.ofDirect())
         assertThat(responseCustomToolCall.namespace()).contains("namespace")
@@ -39,6 +41,7 @@ internal class ResponseCustomToolCallTest {
                 .input("input")
                 .name("name")
                 .id("id")
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .build()

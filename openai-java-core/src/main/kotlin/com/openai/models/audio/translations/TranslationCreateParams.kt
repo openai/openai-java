@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.audio.translations
 
@@ -36,7 +36,9 @@ private constructor(
 
     /**
      * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
-     * mpeg, mpga, m4a, ogg, wav, or webm.
+     * mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata for the
+     * file to be identified. We recommend an extension-bearing filename and an appropriate content
+     * type.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -54,7 +56,7 @@ private constructor(
 
     /**
      * An optional text to guide the model's style or continue a previous audio segment. The
-     * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be in
+     * [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting) should be in
      * English.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -173,7 +175,9 @@ private constructor(
 
         /**
          * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
-         * mpeg, mpga, m4a, ogg, wav, or webm.
+         * mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata for
+         * the file to be identified. We recommend an extension-bearing filename and an appropriate
+         * content type.
          */
         fun file(file: InputStream) = apply { body.file(file) }
 
@@ -188,13 +192,17 @@ private constructor(
 
         /**
          * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
-         * mpeg, mpga, m4a, ogg, wav, or webm.
+         * mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata for
+         * the file to be identified. We recommend an extension-bearing filename and an appropriate
+         * content type.
          */
         fun file(file: ByteArray) = apply { body.file(file) }
 
         /**
          * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
-         * mpeg, mpga, m4a, ogg, wav, or webm.
+         * mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata for
+         * the file to be identified. We recommend an extension-bearing filename and an appropriate
+         * content type.
          */
         fun file(path: Path) = apply { body.file(path) }
 
@@ -223,8 +231,8 @@ private constructor(
 
         /**
          * An optional text to guide the model's style or continue a previous audio segment. The
-         * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be in
-         * English.
+         * [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting) should
+         * be in English.
          */
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
@@ -439,7 +447,9 @@ private constructor(
 
         /**
          * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
-         * mpeg, mpga, m4a, ogg, wav, or webm.
+         * mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata for
+         * the file to be identified. We recommend an extension-bearing filename and an appropriate
+         * content type.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -457,8 +467,8 @@ private constructor(
 
         /**
          * An optional text to guide the model's style or continue a previous audio segment. The
-         * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be in
-         * English.
+         * [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting) should
+         * be in English.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -576,7 +586,9 @@ private constructor(
 
             /**
              * The audio file object (not file name) translate, in one of these formats: flac, mp3,
-             * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             * mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format
+             * metadata for the file to be identified. We recommend an extension-bearing filename
+             * and an appropriate content type.
              */
             fun file(file: InputStream) = file(MultipartField.of(file))
 
@@ -591,13 +603,17 @@ private constructor(
 
             /**
              * The audio file object (not file name) translate, in one of these formats: flac, mp3,
-             * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             * mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format
+             * metadata for the file to be identified. We recommend an extension-bearing filename
+             * and an appropriate content type.
              */
             fun file(file: ByteArray) = file(file.inputStream())
 
             /**
              * The audio file object (not file name) translate, in one of these formats: flac, mp3,
-             * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             * mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format
+             * metadata for the file to be identified. We recommend an extension-bearing filename
+             * and an appropriate content type.
              */
             fun file(path: Path) =
                 file(
@@ -633,8 +649,8 @@ private constructor(
 
             /**
              * An optional text to guide the model's style or continue a previous audio segment. The
-             * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be
-             * in English.
+             * [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting)
+             * should be in English.
              */
             fun prompt(prompt: String) = prompt(MultipartField.of(prompt))
 

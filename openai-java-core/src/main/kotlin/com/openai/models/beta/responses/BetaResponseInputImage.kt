@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -20,7 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * An image input to the model. Learn about
- * [image inputs](https://platform.openai.com/docs/guides/vision).
+ * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
  */
 class BetaResponseInputImage
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

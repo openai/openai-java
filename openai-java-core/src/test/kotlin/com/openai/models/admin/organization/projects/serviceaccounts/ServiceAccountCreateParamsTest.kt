@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.serviceaccounts
 
@@ -13,6 +13,7 @@ internal class ServiceAccountCreateParamsTest {
             .projectId("project_id")
             .name("name")
             .createServiceAccountOnly(true)
+            .expiresInSeconds(1L)
             .build()
     }
 
@@ -33,12 +34,14 @@ internal class ServiceAccountCreateParamsTest {
                 .projectId("project_id")
                 .name("name")
                 .createServiceAccountOnly(true)
+                .expiresInSeconds(1L)
                 .build()
 
         val body = params._body()
 
         assertThat(body.name()).isEqualTo("name")
         assertThat(body.createServiceAccountOnly()).contains(true)
+        assertThat(body.expiresInSeconds()).contains(1L)
     }
 
     @Test

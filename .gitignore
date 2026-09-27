@@ -6,3 +6,5 @@
 build/
 codegen.log
 kls_database.db
+
+/scripts/steady/.cache/

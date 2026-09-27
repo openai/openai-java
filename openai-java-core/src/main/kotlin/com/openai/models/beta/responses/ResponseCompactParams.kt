@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -37,9 +37,9 @@ import kotlin.jvm.optionals.getOrNull
  * Compact a conversation. Returns a compacted response object.
  *
  * Learn when and how to compact long-running conversations in the
- * [conversation state guide](https://platform.openai.com/docs/guides/conversation-state#managing-the-context-window).
+ * [conversation state guide](https://developers.openai.com/api/docs/guides/conversation-state#managing-the-context-window).
  * For ZDR-compatible compaction details, see
- * [Compaction (advanced)](https://platform.openai.com/docs/guides/conversation-state#compaction-advanced).
+ * [Compaction (advanced)](https://developers.openai.com/api/docs/guides/conversation-state#compaction-advanced).
  */
 class ResponseCompactParams
 private constructor(
@@ -52,10 +52,10 @@ private constructor(
     fun betas(): Optional<List<Beta>> = Optional.ofNullable(betas)
 
     /**
-     * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
+     * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
+     * available models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -84,8 +84,8 @@ private constructor(
     /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
-     * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot be
-     * used in conjunction with `conversation`.
+     * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+     * Cannot be used in conjunction with `conversation`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -107,8 +107,8 @@ private constructor(
      * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
      * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
      * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
-     * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for current
-     * details.
+     * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
+     * current details.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -129,15 +129,16 @@ private constructor(
      * request will be processed with the service tier configured in the Project settings. Unless
      * otherwise configured, the Project will use 'default'. - If set to 'default', then the request
      * will be processed with the standard pricing and performance for the selected model. - If set
-     * to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the request will
-     * be processed with the Flex Processing service tier. - To opt-in to
-     * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the `service_tier=fast`
-     * or `service_tier=priority` parameter for Responses or Chat Completions. The response will
-     * show `service_tier=priority` regardless of if you specify `service_tier=fast` or `priority`
-     * in your request. - When not set, the default behavior is 'auto'. When the `service_tier`
-     * parameter is set, the response body will include the `service_tier` value based on the
-     * processing mode actually used to serve the request. This response value may be different from
-     * the value set in the parameter.
+     * to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the request
+     * will be processed with the Flex Processing service tier. - To opt-in to
+     * [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the request level,
+     * include the `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
+     * Completions. For models with a dedicated Fast tier, either value resolves to
+     * `service_tier=fast`; for other models, either value resolves to `service_tier=priority`. -
+     * When not set, the default behavior is 'auto'. When the `service_tier` parameter is set, the
+     * response body will include the `service_tier` value based on the processing mode actually
+     * used to serve the request. This response value may be different from the value set in the
+     * parameter.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -270,9 +271,9 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
          * available models.
          */
         fun model(model: Model?) = apply { body.model(model) }
@@ -346,8 +347,8 @@ private constructor(
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
-         * be used in conjunction with `conversation`.
+         * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+         * Cannot be used in conjunction with `conversation`.
          */
         fun previousResponseId(previousResponseId: String?) = apply {
             body.previousResponseId(previousResponseId)
@@ -396,7 +397,7 @@ private constructor(
          * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
          * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
          * supported value. See the
-         * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+         * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
          * current details.
          */
         fun promptCacheOptions(promptCacheOptions: PromptCacheOptions?) = apply {
@@ -451,15 +452,17 @@ private constructor(
          * request will be processed with the service tier configured in the Project settings.
          * Unless otherwise configured, the Project will use 'default'. - If set to 'default', then
          * the request will be processed with the standard pricing and performance for the selected
-         * model. - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)',
-         * then the request will be processed with the Flex Processing service tier. - To opt-in to
-         * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-         * `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         * Completions. The response will show `service_tier=priority` regardless of if you specify
-         * `service_tier=fast` or `priority` in your request. - When not set, the default behavior
-         * is 'auto'. When the `service_tier` parameter is set, the response body will include the
-         * `service_tier` value based on the processing mode actually used to serve the request.
-         * This response value may be different from the value set in the parameter.
+         * model. - If set to
+         * '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the request
+         * will be processed with the Flex Processing service tier. - To opt-in to
+         * [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the request
+         * level, include the `service_tier=fast` or `service_tier=priority` parameter for Responses
+         * or Chat Completions. For models with a dedicated Fast tier, either value resolves to
+         * `service_tier=fast`; for other models, either value resolves to
+         * `service_tier=priority`. - When not set, the default behavior is 'auto'. When the
+         * `service_tier` parameter is set, the response body will include the `service_tier` value
+         * based on the processing mode actually used to serve the request. This response value may
+         * be different from the value set in the parameter.
          */
         fun serviceTier(serviceTier: ServiceTier?) = apply { body.serviceTier(serviceTier) }
 
@@ -676,9 +679,9 @@ private constructor(
         )
 
         /**
-         * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
          * available models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -708,8 +711,8 @@ private constructor(
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
-         * be used in conjunction with `conversation`.
+         * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+         * Cannot be used in conjunction with `conversation`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -733,7 +736,7 @@ private constructor(
          * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
          * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
          * supported value. See the
-         * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+         * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
          * current details.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -757,15 +760,17 @@ private constructor(
          * request will be processed with the service tier configured in the Project settings.
          * Unless otherwise configured, the Project will use 'default'. - If set to 'default', then
          * the request will be processed with the standard pricing and performance for the selected
-         * model. - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)',
-         * then the request will be processed with the Flex Processing service tier. - To opt-in to
-         * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-         * `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         * Completions. The response will show `service_tier=priority` regardless of if you specify
-         * `service_tier=fast` or `priority` in your request. - When not set, the default behavior
-         * is 'auto'. When the `service_tier` parameter is set, the response body will include the
-         * `service_tier` value based on the processing mode actually used to serve the request.
-         * This response value may be different from the value set in the parameter.
+         * model. - If set to
+         * '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the request
+         * will be processed with the Flex Processing service tier. - To opt-in to
+         * [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the request
+         * level, include the `service_tier=fast` or `service_tier=priority` parameter for Responses
+         * or Chat Completions. For models with a dedicated Fast tier, either value resolves to
+         * `service_tier=fast`; for other models, either value resolves to
+         * `service_tier=priority`. - When not set, the default behavior is 'auto'. When the
+         * `service_tier` parameter is set, the response body will include the `service_tier` value
+         * based on the processing mode actually used to serve the request. This response value may
+         * be different from the value set in the parameter.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -898,10 +903,10 @@ private constructor(
             }
 
             /**
-             * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
-             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
-             * and compare available models.
+             * points. Refer to the [model guide](https://developers.openai.com/api/docs/models) to
+             * browse and compare available models.
              */
             fun model(model: Model?) = model(JsonField.ofNullable(model))
 
@@ -978,7 +983,7 @@ private constructor(
             /**
              * The unique ID of the previous response to the model. Use this to create multi-turn
              * conversations. Learn more about
-             * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+             * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
              * Cannot be used in conjunction with `conversation`.
              */
             fun previousResponseId(previousResponseId: String?) =
@@ -1029,8 +1034,8 @@ private constructor(
              * breakpoints in the conversation, without a content-block lookback limit. Set `mode`
              * to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which
              * is currently the only supported value. See the
-             * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
-             * current details.
+             * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching)
+             * for current details.
              */
             fun promptCacheOptions(promptCacheOptions: PromptCacheOptions?) =
                 promptCacheOptions(JsonField.ofNullable(promptCacheOptions))
@@ -1085,16 +1090,16 @@ private constructor(
              * settings. Unless otherwise configured, the Project will use 'default'. - If set to
              * 'default', then the request will be processed with the standard pricing and
              * performance for the selected model. - If set to
-             * '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the request
-             * will be processed with the Flex Processing service tier. - To opt-in to
-             * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-             * `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-             * Completions. The response will show `service_tier=priority` regardless of if you
-             * specify `service_tier=fast` or `priority` in your request. - When not set, the
-             * default behavior is 'auto'. When the `service_tier` parameter is set, the response
-             * body will include the `service_tier` value based on the processing mode actually used
-             * to serve the request. This response value may be different from the value set in the
-             * parameter.
+             * '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
+             * request will be processed with the Flex Processing service tier. - To opt-in to
+             * [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the request
+             * level, include the `service_tier=fast` or `service_tier=priority` parameter for
+             * Responses or Chat Completions. For models with a dedicated Fast tier, either value
+             * resolves to `service_tier=fast`; for other models, either value resolves to
+             * `service_tier=priority`. - When not set, the default behavior is 'auto'. When the
+             * `service_tier` parameter is set, the response body will include the `service_tier`
+             * value based on the processing mode actually used to serve the request. This response
+             * value may be different from the value set in the parameter.
              */
             fun serviceTier(serviceTier: ServiceTier?) =
                 serviceTier(JsonField.ofNullable(serviceTier))
@@ -1249,10 +1254,10 @@ private constructor(
     }
 
     /**
-     * Model ID used to generate the response, like `gpt-5` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
+     * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
+     * available models.
      */
     class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -1268,6 +1273,12 @@ private constructor(
 
         companion object {
 
+            @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
+
+            @JvmField val GPT_6_SOL = of("gpt-6-sol")
+
+            @JvmField val GPT_6_LUNA = of("gpt-6-luna")
+
             @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
             @JvmField val GPT_5_6_TERRA = of("gpt-5.6-terra")
@@ -1275,6 +1286,8 @@ private constructor(
             @JvmField val GPT_5_6_LUNA = of("gpt-5.6-luna")
 
             @JvmField val GPT_5_5 = of("gpt-5.5")
+
+            @JvmField val GPT_5_5_2026_04_23 = of("gpt-5.5-2026-04-23")
 
             @JvmField val GPT_5_4 = of("gpt-5.4")
 
@@ -1366,6 +1379,10 @@ private constructor(
 
             @JvmField val GPT_4O_2024_05_13 = of("gpt-4o-2024-05-13")
 
+            @JvmField val GPT_AUDIO_MINI = of("gpt-audio-mini")
+
+            @JvmField val GPT_AUDIO_MINI_2025_12_15 = of("gpt-audio-mini-2025-12-15")
+
             @JvmField val GPT_4O_AUDIO_PREVIEW = of("gpt-4o-audio-preview")
 
             @JvmField val GPT_4O_AUDIO_PREVIEW_2024_10_01 = of("gpt-4o-audio-preview-2024-10-01")
@@ -1454,6 +1471,10 @@ private constructor(
 
             @JvmField val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
 
+            @JvmField val GPT_5_5_PRO = of("gpt-5.5-pro")
+
+            @JvmField val GPT_5_5_PRO_2026_04_23 = of("gpt-5.5-pro-2026-04-23")
+
             @JvmField val GPT_5_CODEX = of("gpt-5-codex")
 
             @JvmField val GPT_5_PRO = of("gpt-5-pro")
@@ -1462,15 +1483,27 @@ private constructor(
 
             @JvmField val GPT_5_1_CODEX_MAX = of("gpt-5.1-codex-max")
 
+            @JvmField val GPT_DAYBREAK_BLUE_LATEST = of("gpt-daybreak-blue-latest")
+
+            @JvmField val GPT_DAYBREAK_RED_LATEST = of("gpt-daybreak-red-latest")
+
+            @JvmField val GPT_5_6_CYBER = of("gpt-5.6-cyber")
+
+            @JvmField val GPT_ROSALIND_RESEARCH = of("gpt-rosalind-research")
+
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            GPT_6_ASTRA,
+            GPT_6_SOL,
+            GPT_6_LUNA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
             GPT_5_5,
+            GPT_5_5_2026_04_23,
             GPT_5_4,
             GPT_5_4_MINI,
             GPT_5_4_NANO,
@@ -1516,6 +1549,8 @@ private constructor(
             GPT_4O_2024_11_20,
             GPT_4O_2024_08_06,
             GPT_4O_2024_05_13,
+            GPT_AUDIO_MINI,
+            GPT_AUDIO_MINI_2025_12_15,
             GPT_4O_AUDIO_PREVIEW,
             GPT_4O_AUDIO_PREVIEW_2024_10_01,
             GPT_4O_AUDIO_PREVIEW_2024_12_17,
@@ -1559,10 +1594,16 @@ private constructor(
             O4_MINI_DEEP_RESEARCH_2025_06_26,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_5_PRO,
+            GPT_5_5_PRO_2026_04_23,
             GPT_5_CODEX,
             GPT_5_PRO,
             GPT_5_PRO_2025_10_06,
             GPT_5_1_CODEX_MAX,
+            GPT_DAYBREAK_BLUE_LATEST,
+            GPT_DAYBREAK_RED_LATEST,
+            GPT_5_6_CYBER,
+            GPT_ROSALIND_RESEARCH,
         }
 
         /**
@@ -1575,10 +1616,14 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            GPT_6_ASTRA,
+            GPT_6_SOL,
+            GPT_6_LUNA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
             GPT_5_5,
+            GPT_5_5_2026_04_23,
             GPT_5_4,
             GPT_5_4_MINI,
             GPT_5_4_NANO,
@@ -1624,6 +1669,8 @@ private constructor(
             GPT_4O_2024_11_20,
             GPT_4O_2024_08_06,
             GPT_4O_2024_05_13,
+            GPT_AUDIO_MINI,
+            GPT_AUDIO_MINI_2025_12_15,
             GPT_4O_AUDIO_PREVIEW,
             GPT_4O_AUDIO_PREVIEW_2024_10_01,
             GPT_4O_AUDIO_PREVIEW_2024_12_17,
@@ -1667,10 +1714,16 @@ private constructor(
             O4_MINI_DEEP_RESEARCH_2025_06_26,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_5_PRO,
+            GPT_5_5_PRO_2026_04_23,
             GPT_5_CODEX,
             GPT_5_PRO,
             GPT_5_PRO_2025_10_06,
             GPT_5_1_CODEX_MAX,
+            GPT_DAYBREAK_BLUE_LATEST,
+            GPT_DAYBREAK_RED_LATEST,
+            GPT_5_6_CYBER,
+            GPT_ROSALIND_RESEARCH,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -1684,10 +1737,14 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                GPT_6_ASTRA -> Value.GPT_6_ASTRA
+                GPT_6_SOL -> Value.GPT_6_SOL
+                GPT_6_LUNA -> Value.GPT_6_LUNA
                 GPT_5_6_SOL -> Value.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
                 GPT_5_5 -> Value.GPT_5_5
+                GPT_5_5_2026_04_23 -> Value.GPT_5_5_2026_04_23
                 GPT_5_4 -> Value.GPT_5_4
                 GPT_5_4_MINI -> Value.GPT_5_4_MINI
                 GPT_5_4_NANO -> Value.GPT_5_4_NANO
@@ -1733,6 +1790,8 @@ private constructor(
                 GPT_4O_2024_11_20 -> Value.GPT_4O_2024_11_20
                 GPT_4O_2024_08_06 -> Value.GPT_4O_2024_08_06
                 GPT_4O_2024_05_13 -> Value.GPT_4O_2024_05_13
+                GPT_AUDIO_MINI -> Value.GPT_AUDIO_MINI
+                GPT_AUDIO_MINI_2025_12_15 -> Value.GPT_AUDIO_MINI_2025_12_15
                 GPT_4O_AUDIO_PREVIEW -> Value.GPT_4O_AUDIO_PREVIEW
                 GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Value.GPT_4O_AUDIO_PREVIEW_2024_10_01
                 GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Value.GPT_4O_AUDIO_PREVIEW_2024_12_17
@@ -1776,10 +1835,16 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Value.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Value.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_5_PRO -> Value.GPT_5_5_PRO
+                GPT_5_5_PRO_2026_04_23 -> Value.GPT_5_5_PRO_2026_04_23
                 GPT_5_CODEX -> Value.GPT_5_CODEX
                 GPT_5_PRO -> Value.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Value.GPT_5_PRO_2025_10_06
                 GPT_5_1_CODEX_MAX -> Value.GPT_5_1_CODEX_MAX
+                GPT_DAYBREAK_BLUE_LATEST -> Value.GPT_DAYBREAK_BLUE_LATEST
+                GPT_DAYBREAK_RED_LATEST -> Value.GPT_DAYBREAK_RED_LATEST
+                GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
+                GPT_ROSALIND_RESEARCH -> Value.GPT_ROSALIND_RESEARCH
                 else -> Value._UNKNOWN
             }
 
@@ -1794,10 +1859,14 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                GPT_6_ASTRA -> Known.GPT_6_ASTRA
+                GPT_6_SOL -> Known.GPT_6_SOL
+                GPT_6_LUNA -> Known.GPT_6_LUNA
                 GPT_5_6_SOL -> Known.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
                 GPT_5_5 -> Known.GPT_5_5
+                GPT_5_5_2026_04_23 -> Known.GPT_5_5_2026_04_23
                 GPT_5_4 -> Known.GPT_5_4
                 GPT_5_4_MINI -> Known.GPT_5_4_MINI
                 GPT_5_4_NANO -> Known.GPT_5_4_NANO
@@ -1843,6 +1912,8 @@ private constructor(
                 GPT_4O_2024_11_20 -> Known.GPT_4O_2024_11_20
                 GPT_4O_2024_08_06 -> Known.GPT_4O_2024_08_06
                 GPT_4O_2024_05_13 -> Known.GPT_4O_2024_05_13
+                GPT_AUDIO_MINI -> Known.GPT_AUDIO_MINI
+                GPT_AUDIO_MINI_2025_12_15 -> Known.GPT_AUDIO_MINI_2025_12_15
                 GPT_4O_AUDIO_PREVIEW -> Known.GPT_4O_AUDIO_PREVIEW
                 GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Known.GPT_4O_AUDIO_PREVIEW_2024_10_01
                 GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Known.GPT_4O_AUDIO_PREVIEW_2024_12_17
@@ -1886,10 +1957,16 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Known.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_5_PRO -> Known.GPT_5_5_PRO
+                GPT_5_5_PRO_2026_04_23 -> Known.GPT_5_5_PRO_2026_04_23
                 GPT_5_CODEX -> Known.GPT_5_CODEX
                 GPT_5_PRO -> Known.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Known.GPT_5_PRO_2025_10_06
                 GPT_5_1_CODEX_MAX -> Known.GPT_5_1_CODEX_MAX
+                GPT_DAYBREAK_BLUE_LATEST -> Known.GPT_DAYBREAK_BLUE_LATEST
+                GPT_DAYBREAK_RED_LATEST -> Known.GPT_DAYBREAK_RED_LATEST
+                GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
+                GPT_ROSALIND_RESEARCH -> Known.GPT_ROSALIND_RESEARCH
                 else -> throw OpenAIInvalidDataException("Unknown Model: $value")
             }
 
@@ -2135,7 +2212,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Input: $json")
+                throw OpenAIInvalidDataException("Unknown Input")
             }
         }
 
@@ -2193,8 +2270,8 @@ private constructor(
      * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
      * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
      * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
-     * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for current
-     * details.
+     * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
+     * current details.
      */
     class PromptCacheOptions
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -2827,15 +2904,16 @@ private constructor(
      * request will be processed with the service tier configured in the Project settings. Unless
      * otherwise configured, the Project will use 'default'. - If set to 'default', then the request
      * will be processed with the standard pricing and performance for the selected model. - If set
-     * to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the request will
-     * be processed with the Flex Processing service tier. - To opt-in to
-     * [Fast mode](/api/docs/guides/fast-mode) at the request level, include the `service_tier=fast`
-     * or `service_tier=priority` parameter for Responses or Chat Completions. The response will
-     * show `service_tier=priority` regardless of if you specify `service_tier=fast` or `priority`
-     * in your request. - When not set, the default behavior is 'auto'. When the `service_tier`
-     * parameter is set, the response body will include the `service_tier` value based on the
-     * processing mode actually used to serve the request. This response value may be different from
-     * the value set in the parameter.
+     * to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the request
+     * will be processed with the Flex Processing service tier. - To opt-in to
+     * [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the request level,
+     * include the `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
+     * Completions. For models with a dedicated Fast tier, either value resolves to
+     * `service_tier=fast`; for other models, either value resolves to `service_tier=priority`. -
+     * When not set, the default behavior is 'auto'. When the `service_tier` parameter is set, the
+     * response body will include the `service_tier` value based on the processing mode actually
+     * used to serve the request. This response value may be different from the value set in the
+     * parameter.
      */
     class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.evals.runs
 
@@ -601,7 +601,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Source: $json")
+                throw OpenAIInvalidDataException("Unknown Source")
             }
         }
 
@@ -1613,7 +1613,7 @@ private constructor(
             fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
             /**
-             * An optional model to filter by (e.g., 'gpt-4o').
+             * An optional model to filter by (e.g., 'gpt-6-astra').
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -1816,7 +1816,7 @@ private constructor(
                  */
                 fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
-                /** An optional model to filter by (e.g., 'gpt-4o'). */
+                /** An optional model to filter by (e.g., 'gpt-6-astra'). */
                 fun model(model: String?) = model(JsonField.ofNullable(model))
 
                 /** Alias for calling [Builder.model] with `model.orElse(null)`. */
@@ -2379,7 +2379,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown InputMessages: $json")
+                throw OpenAIInvalidDataException("Unknown InputMessages")
             }
         }
 
@@ -2885,7 +2885,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
                     fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown InnerTemplate: $json")
+                        throw OpenAIInvalidDataException("Unknown InnerTemplate")
                     }
                 }
 
@@ -3554,7 +3554,7 @@ private constructor(
                              * @throws OpenAIInvalidDataException in the default implementation.
                              */
                             fun unknown(json: JsonValue?): T {
-                                throw OpenAIInvalidDataException("Unknown Content: $json")
+                                throw OpenAIInvalidDataException("Unknown Content")
                             }
                         }
 
@@ -4776,8 +4776,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -4790,7 +4790,7 @@ private constructor(
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
          * message the model generates is valid JSON. Using `json_schema` is preferred for models
@@ -4960,7 +4960,7 @@ private constructor(
              * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning
              * effort can result in faster responses and fewer tokens used on reasoning in a
              * response. Not all reasoning models support every value. See the
-             * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+             * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
              * model-specific support.
              */
             fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
@@ -4987,7 +4987,7 @@ private constructor(
              * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
              * Outputs which ensures the model will match your supplied JSON schema. Learn more in
              * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
              *
              * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
              * message the model generates is valid JSON. Using `json_schema` is preferred for
@@ -5183,7 +5183,7 @@ private constructor(
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
          * message the model generates is valid JSON. Using `json_schema` is preferred for models
@@ -5205,7 +5205,7 @@ private constructor(
             /**
              * JSON Schema response format. Used to generate structured JSON responses. Learn more
              * about
-             * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+             * [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
              */
             fun jsonSchema(): Optional<ResponseFormatJsonSchema> = Optional.ofNullable(jsonSchema)
 
@@ -5228,7 +5228,7 @@ private constructor(
             /**
              * JSON Schema response format. Used to generate structured JSON responses. Learn more
              * about
-             * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+             * [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
              */
             fun asJsonSchema(): ResponseFormatJsonSchema = jsonSchema.getOrThrow("jsonSchema")
 
@@ -5374,7 +5374,7 @@ private constructor(
                 /**
                  * JSON Schema response format. Used to generate structured JSON responses. Learn
                  * more about
-                 * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+                 * [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
                  */
                 @JvmStatic
                 fun ofJsonSchema(jsonSchema: ResponseFormatJsonSchema) =
@@ -5402,7 +5402,7 @@ private constructor(
                 /**
                  * JSON Schema response format. Used to generate structured JSON responses. Learn
                  * more about
-                 * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+                 * [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
                  */
                 fun visitJsonSchema(jsonSchema: ResponseFormatJsonSchema): T
 
@@ -5424,7 +5424,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown ResponseFormat: $json")
+                    throw OpenAIInvalidDataException("Unknown ResponseFormat")
                 }
             }
 

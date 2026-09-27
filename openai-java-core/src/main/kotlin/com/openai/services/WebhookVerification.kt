@@ -1,0 +1,100 @@
+package com.openai.services
+
+import com.openai.core.ClientOptions
+import com.openai.errors.InvalidWebhookSignatureException
+import com.openai.models.webhooks.WebhookVerificationParams
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
+import java.time.Instant
+import java.util.Base64
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
+
+/** Verifies a webhook using the SDK's configured secret, clock, and tolerance. */
+@JvmSynthetic
+internal fun verifyWebhookSignature(
+    clientOptions: ClientOptions,
+    params: WebhookVerificationParams,
+) {
+    val webhookSecret =
+        params.secret.orElse(null)
+            ?: clientOptions.webhookSecret().orElse(null)
+            ?: throw IllegalStateException(
+                "The webhook secret must either be set using the env var, OPENAI_WEBHOOK_SECRET, " +
+                    "on the client class builder, .webhookSecret(...), or passed to this function"
+            )
+
+    // Extract required headers
+    val signatureHeader =
+        params.headers.values("webhook-signature").firstOrNull()
+            ?: throw IllegalArgumentException("Missing required webhook-signature header")
+
+    val timestampHeader =
+        params.headers.values("webhook-timestamp").firstOrNull()
+            ?: throw IllegalArgumentException("Missing required webhook-timestamp header")
+
+    val webhookId =
+        params.headers.values("webhook-id").firstOrNull()
+            ?: throw IllegalArgumentException("Missing required webhook-id header")
+
+    // Validate timestamp to prevent replay attacks
+    val timestampSeconds =
+        try {
+            timestampHeader.toLong()
+        } catch (e: NumberFormatException) {
+            throw InvalidWebhookSignatureException("Invalid webhook timestamp format", e)
+        }
+
+    val now = Instant.now(clientOptions.clock)
+    val timestampInstant = Instant.ofEpochSecond(timestampSeconds)
+    val toleranceDuration = params.tolerance
+
+    if (timestampInstant.isBefore(now.minus(toleranceDuration))) {
+        throw InvalidWebhookSignatureException("Webhook timestamp is too old")
+    }
+
+    if (timestampInstant.isAfter(now.plus(toleranceDuration))) {
+        throw InvalidWebhookSignatureException("Webhook timestamp is too new")
+    }
+
+    // The signature header can have multiple values, separated by spaces.
+    val signatures =
+        signatureHeader
+            .split("\\s+".toRegex())
+            .filter { it.isNotBlank() }
+            .map { it.removePrefix("v1,") }
+
+    // Decode the secret if it starts with whsec_
+    val decodedSecret =
+        if (webhookSecret.startsWith("whsec_")) {
+            Base64.getDecoder().decode(webhookSecret.substring(6))
+        } else {
+            webhookSecret.toByteArray(StandardCharsets.UTF_8)
+        }
+
+    // Create the signed payload: {webhook_id}.{timestamp}.{payload}
+    val bodyString = String(params.payload, StandardCharsets.UTF_8)
+    val signedPayload = "$webhookId.$timestampHeader.$bodyString"
+
+    // Compute HMAC-SHA256 signature
+    val mac = Mac.getInstance("HmacSHA256")
+    val secretKey = SecretKeySpec(decodedSecret, "HmacSHA256")
+    mac.init(secretKey)
+    val expectedSignatureBytes = mac.doFinal(signedPayload.toByteArray(StandardCharsets.UTF_8))
+    val expectedSignature = Base64.getEncoder().encodeToString(expectedSignatureBytes)
+
+    // Accept if any signature matches using timing-safe comparison
+    val signatureMatches =
+        signatures.any { signature ->
+            MessageDigest.isEqual(
+                expectedSignature.toByteArray(StandardCharsets.UTF_8),
+                signature.toByteArray(StandardCharsets.UTF_8),
+            )
+        }
+
+    if (!signatureMatches) {
+        throw InvalidWebhookSignatureException(
+            "The given webhook signature does not match the expected signature"
+        )
+    }
+}

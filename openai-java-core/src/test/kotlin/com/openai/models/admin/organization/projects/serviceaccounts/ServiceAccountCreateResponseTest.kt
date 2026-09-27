@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.serviceaccounts
 
@@ -20,6 +20,7 @@ internal class ServiceAccountCreateResponseTest {
                         .createdAt(0L)
                         .name("name")
                         .value("value")
+                        .expiresAt(0L)
                         .build()
                 )
                 .createdAt(0L)
@@ -35,6 +36,7 @@ internal class ServiceAccountCreateResponseTest {
                     .createdAt(0L)
                     .name("name")
                     .value("value")
+                    .expiresAt(0L)
                     .build()
             )
         assertThat(serviceAccountCreateResponse.createdAt()).isEqualTo(0L)
@@ -55,6 +57,7 @@ internal class ServiceAccountCreateResponseTest {
                         .createdAt(0L)
                         .name("name")
                         .value("value")
+                        .expiresAt(0L)
                         .build()
                 )
                 .createdAt(0L)

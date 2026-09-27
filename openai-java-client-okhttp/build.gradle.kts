@@ -1,8 +1,17 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("openai.kotlin")
     id("openai.wiremock-test")
     id("openai.publish")
 }
+
+// Keep multipart cancellation coordination internal across the SDK's owned transport modules.
+tasks.withType<KotlinCompile>().configureEach {
+    friendPaths.from(project(":openai-java-core").layout.buildDirectory.dir("classes/kotlin/main"))
+}
+
+val jacksonPublishedVersion = libs.versions.jacksonPublished.get()
 
 listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath).forEach {
     it.configure {
@@ -11,7 +20,7 @@ listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath)
                 requested.group == "com.fasterxml.jackson" ||
                     requested.group.startsWith("com.fasterxml.jackson.")
             ) {
-                useVersion("2.18.9")
+                useVersion(jacksonPublishedVersion)
                 because("test classpaths must use the SDK's secure published Jackson release")
             }
         }
@@ -25,7 +34,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("org.assertj:assertj-core:3.27.7")
-    testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
+    testImplementation(platform(libs.jackson.bom))
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation("com.squareup.okhttp3:okhttp-tls:4.12.0")
 }

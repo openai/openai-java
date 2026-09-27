@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models
 
@@ -17,7 +17,7 @@ import java.util.Objects
 
 /**
  * A custom grammar for the model to follow when generating text. Learn more in the
- * [custom grammars guide](https://platform.openai.com/docs/guides/custom-grammars).
+ * [custom grammars guide](https://developers.openai.com/api/docs/guides/function-calling#context-free-grammars).
  */
 class ResponseFormatTextGrammar
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

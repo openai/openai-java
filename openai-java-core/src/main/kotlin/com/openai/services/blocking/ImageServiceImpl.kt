@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
@@ -85,7 +85,9 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ImageService.WithRawResponse =
-            WithRawResponseImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+            ImageServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val createVariationHandler: Handler<ImagesResponse> =
             jsonHandler<ImagesResponse>(clientOptions.jsonMapper)

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.batches
 
@@ -53,13 +53,13 @@ private constructor(
     /**
      * The ID of an uploaded file that contains requests for the new batch.
      *
-     * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
-     * upload a file.
+     * See [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
+     * for how to upload a file.
      *
      * Your input file must be formatted as a
-     * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and must be
-     * uploaded with the purpose `batch`. The file can contain up to 50,000 requests, and can be up
-     * to 200 MB in size.
+     * [JSONL file](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file),
+     * and must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
+     * and can be up to 200 MB in size.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -217,13 +217,14 @@ private constructor(
         /**
          * The ID of an uploaded file that contains requests for the new batch.
          *
-         * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
-         * upload a file.
+         * See
+         * [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
+         * for how to upload a file.
          *
          * Your input file must be formatted as a
-         * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
-         * must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
-         * and can be up to 200 MB in size.
+         * [JSONL file](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file),
+         * and must be uploaded with the purpose `batch`. The file can contain up to 50,000
+         * requests, and can be up to 200 MB in size.
          */
         fun inputFileId(inputFileId: String) = apply { body.inputFileId(inputFileId) }
 
@@ -482,13 +483,14 @@ private constructor(
         /**
          * The ID of an uploaded file that contains requests for the new batch.
          *
-         * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
-         * upload a file.
+         * See
+         * [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
+         * for how to upload a file.
          *
          * Your input file must be formatted as a
-         * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
-         * must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
-         * and can be up to 200 MB in size.
+         * [JSONL file](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file),
+         * and must be uploaded with the purpose `batch`. The file can contain up to 50,000
+         * requests, and can be up to 200 MB in size.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -646,12 +648,13 @@ private constructor(
             /**
              * The ID of an uploaded file that contains requests for the new batch.
              *
-             * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for
-             * how to upload a file.
+             * See
+             * [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
+             * for how to upload a file.
              *
              * Your input file must be formatted as a
-             * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
-             * must be uploaded with the purpose `batch`. The file can contain up to 50,000
+             * [JSONL file](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file),
+             * and must be uploaded with the purpose `batch`. The file can contain up to 50,000
              * requests, and can be up to 200 MB in size.
              */
             fun inputFileId(inputFileId: String) = inputFileId(JsonField.of(inputFileId))

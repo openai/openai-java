@@ -17,7 +17,7 @@ public final class AzureUnifiedEndpointExample {
         ChatCompletionCreateParams createParams = ChatCompletionCreateParams.builder()
                 .model(ChatModel.GPT_4_1106_PREVIEW)
                 .maxCompletionTokens(2048)
-                .addSystemMessage("Make sure you mention Stainless!") // Developer doesn't work
+                .addSystemMessage("You are a helpful assistant.") // Developer doesn't work
                 .addUserMessage("Tell me a story about building the best SDK!")
                 .build();
 

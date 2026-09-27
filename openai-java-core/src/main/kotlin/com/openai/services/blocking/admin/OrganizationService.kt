@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin
 
@@ -7,6 +7,7 @@ import com.openai.services.blocking.admin.organization.AdminApiKeyService
 import com.openai.services.blocking.admin.organization.AuditLogService
 import com.openai.services.blocking.admin.organization.CertificateService
 import com.openai.services.blocking.admin.organization.DataRetentionService
+import com.openai.services.blocking.admin.organization.ExternalStorageService
 import com.openai.services.blocking.admin.organization.GroupService
 import com.openai.services.blocking.admin.organization.InviteService
 import com.openai.services.blocking.admin.organization.ProjectService
@@ -48,6 +49,8 @@ interface OrganizationService {
 
     fun dataRetention(): DataRetentionService
 
+    fun externalStorage(): ExternalStorageService
+
     fun spendLimit(): SpendLimitService
 
     fun spendAlerts(): SpendAlertService
@@ -86,6 +89,8 @@ interface OrganizationService {
         fun roles(): RoleService.WithRawResponse
 
         fun dataRetention(): DataRetentionService.WithRawResponse
+
+        fun externalStorage(): ExternalStorageService.WithRawResponse
 
         fun spendLimit(): SpendLimitService.WithRawResponse
 

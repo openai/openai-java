@@ -2,6 +2,7 @@ package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.openai.bedrock.BedrockAuthOptions
+import com.openai.bedrock.BedrockEndpoint
 import com.openai.bedrock.resolve
 import com.openai.client.OpenAIClient
 import com.openai.core.LogLevel
@@ -44,6 +45,7 @@ class BedrockOpenAIOkHttpClient private constructor() {
     class Builder internal constructor() {
         private val delegate = OpenAIOkHttpClient.builder().followRedirects(false)
 
+        private var endpoint: BedrockEndpoint? = null
         private var awsRegion: String? = null
         private var baseUrl: String? = null
         private var apiKey: String? = null
@@ -57,6 +59,14 @@ class BedrockOpenAIOkHttpClient private constructor() {
         private var clock: Clock = Clock.systemUTC()
         private var authenticationExecutor: Executor? = null
 
+        /**
+         * Selects the Bedrock endpoint family and corresponding SigV4 signing service.
+         *
+         * Defaults to [BedrockEndpoint.MANTLE] unless a canonical Bedrock endpoint override
+         * identifies another family. Use [BedrockEndpoint.RUNTIME] for Runtime Chat Completions.
+         */
+        fun endpoint(endpoint: BedrockEndpoint) = apply { this.endpoint = endpoint }
+
         /** Sets the AWS region used for endpoint resolution and SigV4 signing. */
         fun awsRegion(awsRegion: String?) = apply { this.awsRegion = awsRegion }
 
@@ -68,7 +78,7 @@ class BedrockOpenAIOkHttpClient private constructor() {
 
         /**
          * Overrides the Bedrock API root. Defaults to `AWS_BEDROCK_BASE_URL`, then the regional
-         * `https://bedrock-mantle.{region}.api.aws/openai/v1` endpoint.
+         * Mantle or Runtime `/openai/v1` endpoint selected with [endpoint].
          */
         fun baseUrl(baseUrl: String?) = apply { this.baseUrl = baseUrl }
 
@@ -221,6 +231,7 @@ class BedrockOpenAIOkHttpClient private constructor() {
         fun build(): OpenAIClient {
             val configuration =
                 BedrockAuthOptions(
+                        endpoint = endpoint,
                         awsRegion = awsRegion,
                         baseUrl = baseUrl,
                         apiKey = apiKey,

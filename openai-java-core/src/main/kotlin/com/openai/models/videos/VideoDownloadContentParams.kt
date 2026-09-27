@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.videos
 
@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
  *
  * Streams the rendered video content for the specified video job.
  */
+@Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
 class VideoDownloadContentParams
 private constructor(
     private val videoId: String?,

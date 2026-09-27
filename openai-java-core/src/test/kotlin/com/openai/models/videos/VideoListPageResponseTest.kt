@@ -1,8 +1,9 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.videos
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -18,7 +19,31 @@ internal class VideoListPageResponseTest {
                         .id("id")
                         .completedAt(0L)
                         .createdAt(0L)
-                        .error(VideoCreateError.builder().code("code").message("message").build())
+                        .error(
+                            VideoCreateError.builder()
+                                .code("code")
+                                .message("message")
+                                .headers(
+                                    VideoCreateError.Headers.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
+                                .misalignment(
+                                    VideoCreateError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            VideoCreateError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            VideoCreateError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
                         .expiresAt(0L)
                         .model(VideoModel.SORA_2)
                         .progress(0L)
@@ -40,7 +65,31 @@ internal class VideoListPageResponseTest {
                     .id("id")
                     .completedAt(0L)
                     .createdAt(0L)
-                    .error(VideoCreateError.builder().code("code").message("message").build())
+                    .error(
+                        VideoCreateError.builder()
+                            .code("code")
+                            .message("message")
+                            .headers(
+                                VideoCreateError.Headers.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .misalignment(
+                                VideoCreateError.Misalignment.builder()
+                                    .detailedExplanation("detailed_explanation")
+                                    .errorType(
+                                        VideoCreateError.Misalignment.ErrorType
+                                            .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                    )
+                                    .steer(
+                                        VideoCreateError.Misalignment.Steer.builder()
+                                            .message("message")
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
                     .expiresAt(0L)
                     .model(VideoModel.SORA_2)
                     .progress(0L)
@@ -66,7 +115,31 @@ internal class VideoListPageResponseTest {
                         .id("id")
                         .completedAt(0L)
                         .createdAt(0L)
-                        .error(VideoCreateError.builder().code("code").message("message").build())
+                        .error(
+                            VideoCreateError.builder()
+                                .code("code")
+                                .message("message")
+                                .headers(
+                                    VideoCreateError.Headers.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
+                                .misalignment(
+                                    VideoCreateError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            VideoCreateError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            VideoCreateError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
                         .expiresAt(0L)
                         .model(VideoModel.SORA_2)
                         .progress(0L)

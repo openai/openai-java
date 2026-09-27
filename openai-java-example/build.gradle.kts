@@ -13,7 +13,7 @@ dependencies {
     // Structured-output examples use @Schema / @ArraySchema; not transitive from openai-java-core.
     implementation("io.swagger.core.v3:swagger-annotations:2.2.31")
     // Keep Azure Identity's Netty runtime aligned on a secure release.
-    implementation(platform("io.netty:netty-bom:4.1.136.Final"))
+    implementation(platform("io.netty:netty-bom:4.1.137.Final"))
     implementation("com.azure:azure-identity:1.18.4")
 }
 

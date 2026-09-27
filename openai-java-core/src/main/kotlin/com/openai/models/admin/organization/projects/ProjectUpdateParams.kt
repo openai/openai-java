@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects
 
@@ -39,12 +39,13 @@ private constructor(
     fun externalKeyId(): Optional<String> = body.externalKeyId()
 
     /**
-     * Geography for the project.
+     * Geography for the project. Deprecated: use `residency` when creating a project to configure
+     * data residency. This field is retained for backward compatibility.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun geography(): Optional<String> = body.geography()
+    @Deprecated("deprecated") fun geography(): Optional<String> = body.geography()
 
     /**
      * The updated name of the project, this name appears in reports.
@@ -66,7 +67,7 @@ private constructor(
      *
      * Unlike [geography], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _geography(): JsonField<String> = body._geography()
+    @Deprecated("deprecated") fun _geography(): JsonField<String> = body._geography()
 
     /**
      * Returns the raw JSON value of [name].
@@ -143,10 +144,15 @@ private constructor(
             body.externalKeyId(externalKeyId)
         }
 
-        /** Geography for the project. */
+        /**
+         * Geography for the project. Deprecated: use `residency` when creating a project to
+         * configure data residency. This field is retained for backward compatibility.
+         */
+        @Deprecated("deprecated")
         fun geography(geography: String?) = apply { body.geography(geography) }
 
         /** Alias for calling [Builder.geography] with `geography.orElse(null)`. */
+        @Deprecated("deprecated")
         fun geography(geography: Optional<String>) = geography(geography.getOrNull())
 
         /**
@@ -156,6 +162,7 @@ private constructor(
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
+        @Deprecated("deprecated")
         fun geography(geography: JsonField<String>) = apply { body.geography(geography) }
 
         /** The updated name of the project, this name appears in reports. */
@@ -344,11 +351,13 @@ private constructor(
         fun externalKeyId(): Optional<String> = externalKeyId.getOptional("external_key_id")
 
         /**
-         * Geography for the project.
+         * Geography for the project. Deprecated: use `residency` when creating a project to
+         * configure data residency. This field is retained for backward compatibility.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        @Deprecated("deprecated")
         fun geography(): Optional<String> = geography.getOptional("geography")
 
         /**
@@ -374,7 +383,10 @@ private constructor(
          *
          * Unlike [geography], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("geography") @ExcludeMissing fun _geography(): JsonField<String> = geography
+        @Deprecated("deprecated")
+        @JsonProperty("geography")
+        @ExcludeMissing
+        fun _geography(): JsonField<String> = geography
 
         /**
          * Returns the raw JSON value of [name].
@@ -436,10 +448,15 @@ private constructor(
                 this.externalKeyId = externalKeyId
             }
 
-            /** Geography for the project. */
+            /**
+             * Geography for the project. Deprecated: use `residency` when creating a project to
+             * configure data residency. This field is retained for backward compatibility.
+             */
+            @Deprecated("deprecated")
             fun geography(geography: String?) = geography(JsonField.ofNullable(geography))
 
             /** Alias for calling [Builder.geography] with `geography.orElse(null)`. */
+            @Deprecated("deprecated")
             fun geography(geography: Optional<String>) = geography(geography.getOrNull())
 
             /**
@@ -449,6 +466,7 @@ private constructor(
              * This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
+            @Deprecated("deprecated")
             fun geography(geography: JsonField<String>) = apply { this.geography = geography }
 
             /** The updated name of the project, this name appears in reports. */

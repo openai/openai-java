@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
@@ -42,8 +42,7 @@ interface ImageService {
 
     /**
      * Creates an edited or extended image given one or more source images and a prompt. This
-     * endpoint supports GPT Image models (`gpt-image-1.5`, `gpt-image-1`, `gpt-image-1-mini`, and
-     * `chatgpt-image-latest`) and `dall-e-2`.
+     * endpoint supports GPT Image models and `dall-e-2`.
      */
     fun edit(params: ImageEditParams): ImagesResponse = edit(params, RequestOptions.none())
 
@@ -55,8 +54,7 @@ interface ImageService {
 
     /**
      * Creates an edited or extended image given one or more source images and a prompt. This
-     * endpoint supports GPT Image models (`gpt-image-1.5`, `gpt-image-1`, `gpt-image-1-mini`, and
-     * `chatgpt-image-latest`) and `dall-e-2`.
+     * endpoint supports GPT Image models and `dall-e-2`.
      */
     @MustBeClosed
     fun editStreaming(params: ImageEditParams): StreamResponse<ImageEditStreamEvent> =
@@ -71,7 +69,7 @@ interface ImageService {
 
     /**
      * Creates an image given a prompt.
-     * [Learn more](https://platform.openai.com/docs/guides/images).
+     * [Learn more](https://developers.openai.com/api/docs/guides/images-vision).
      */
     fun generate(params: ImageGenerateParams): ImagesResponse =
         generate(params, RequestOptions.none())
@@ -84,7 +82,7 @@ interface ImageService {
 
     /**
      * Creates an image given a prompt.
-     * [Learn more](https://platform.openai.com/docs/guides/images).
+     * [Learn more](https://developers.openai.com/api/docs/guides/images-vision).
      */
     @MustBeClosed
     fun generateStreaming(params: ImageGenerateParams): StreamResponse<ImageGenStreamEvent> =

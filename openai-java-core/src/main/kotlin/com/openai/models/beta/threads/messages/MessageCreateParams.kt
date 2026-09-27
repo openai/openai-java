@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.messages
 
@@ -765,7 +765,7 @@ private constructor(
         /**
          * An array of content parts with a defined type, each can be of type `text` or images can
          * be passed with `image_url` or `image_file`. Image types are only supported on
-         * [Vision-compatible models](https://platform.openai.com/docs/models).
+         * [Vision-compatible models](https://developers.openai.com/api/docs/models).
          */
         fun arrayOfContentParts(): Optional<List<MessageContentPartParam>> =
             Optional.ofNullable(arrayOfContentParts)
@@ -780,7 +780,7 @@ private constructor(
         /**
          * An array of content parts with a defined type, each can be of type `text` or images can
          * be passed with `image_url` or `image_file`. Image types are only supported on
-         * [Vision-compatible models](https://platform.openai.com/docs/models).
+         * [Vision-compatible models](https://developers.openai.com/api/docs/models).
          */
         fun asArrayOfContentParts(): List<MessageContentPartParam> =
             arrayOfContentParts.getOrThrow("arrayOfContentParts")
@@ -909,7 +909,7 @@ private constructor(
             /**
              * An array of content parts with a defined type, each can be of type `text` or images
              * can be passed with `image_url` or `image_file`. Image types are only supported on
-             * [Vision-compatible models](https://platform.openai.com/docs/models).
+             * [Vision-compatible models](https://developers.openai.com/api/docs/models).
              */
             @JvmStatic
             fun ofArrayOfContentParts(arrayOfContentParts: List<MessageContentPartParam>) =
@@ -927,7 +927,7 @@ private constructor(
             /**
              * An array of content parts with a defined type, each can be of type `text` or images
              * can be passed with `image_url` or `image_file`. Image types are only supported on
-             * [Vision-compatible models](https://platform.openai.com/docs/models).
+             * [Vision-compatible models](https://developers.openai.com/api/docs/models).
              */
             fun visitArrayOfContentParts(arrayOfContentParts: List<MessageContentPartParam>): T
 
@@ -942,7 +942,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Content: $json")
+                throw OpenAIInvalidDataException("Unknown Content")
             }
         }
 
@@ -1507,7 +1507,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Tool: $json")
+                    throw OpenAIInvalidDataException("Unknown Tool")
                 }
             }
 

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -33,7 +33,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
- * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+ * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
  */
 @JsonDeserialize(using = RealtimeToolsConfigUnion.Deserializer::class)
 @JsonSerialize(using = RealtimeToolsConfigUnion.Serializer::class)
@@ -48,7 +48,7 @@ private constructor(
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     fun mcp(): Optional<Mcp> = Optional.ofNullable(mcp)
 
@@ -60,7 +60,7 @@ private constructor(
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     fun asMcp(): Mcp = mcp.getOrThrow("mcp")
 
@@ -183,7 +183,7 @@ private constructor(
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
-         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
         @JvmStatic fun ofMcp(mcp: Mcp) = RealtimeToolsConfigUnion(mcp = mcp)
     }
@@ -199,7 +199,7 @@ private constructor(
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
-         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
         fun visitMcp(mcp: Mcp): T
 
@@ -214,7 +214,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown RealtimeToolsConfigUnion: $json")
+            throw OpenAIInvalidDataException("Unknown RealtimeToolsConfigUnion")
         }
     }
 
@@ -261,7 +261,7 @@ private constructor(
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     class Mcp
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -382,7 +382,10 @@ private constructor(
         /**
          * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
-         * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+         * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
+         *
+         * This field is deprecated for models released after September 1, 2026. Use `server_url` to
+         * connect to a remote MCP server, or `tunnel_id` to connect through a Secure MCP Tunnel.
          *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`
@@ -397,6 +400,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        @Deprecated("deprecated")
         fun connectorId(): Optional<ConnectorId> = connectorId.getOptional("connector_id")
 
         /**
@@ -496,6 +500,7 @@ private constructor(
          *
          * Unlike [connectorId], this method doesn't throw if the JSON field has an unexpected type.
          */
+        @Deprecated("deprecated")
         @JsonProperty("connector_id")
         @ExcludeMissing
         fun _connectorId(): JsonField<ConnectorId> = connectorId
@@ -719,7 +724,11 @@ private constructor(
              * Identifier for service connectors, like those available in ChatGPT. One of
              * `server_url`, `connector_id`, or `tunnel_id` must be provided. Learn more about
              * service connectors
-             * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+             * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
+             *
+             * This field is deprecated for models released after September 1, 2026. Use
+             * `server_url` to connect to a remote MCP server, or `tunnel_id` to connect through a
+             * Secure MCP Tunnel.
              *
              * Currently supported `connector_id` values are:
              * - Dropbox: `connector_dropbox`
@@ -731,6 +740,7 @@ private constructor(
              * - Outlook Email: `connector_outlookemail`
              * - SharePoint: `connector_sharepoint`
              */
+            @Deprecated("deprecated")
             fun connectorId(connectorId: ConnectorId) = connectorId(JsonField.of(connectorId))
 
             /**
@@ -740,6 +750,7 @@ private constructor(
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
+            @Deprecated("deprecated")
             fun connectorId(connectorId: JsonField<ConnectorId>) = apply {
                 this.connectorId = connectorId
             }
@@ -1283,7 +1294,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown AllowedTools: $json")
+                    throw OpenAIInvalidDataException("Unknown AllowedTools")
                 }
             }
 
@@ -1569,7 +1580,10 @@ private constructor(
         /**
          * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
-         * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+         * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
+         *
+         * This field is deprecated for models released after September 1, 2026. Use `server_url` to
+         * connect to a remote MCP server, or `tunnel_id` to connect through a Secure MCP Tunnel.
          *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`
@@ -1581,6 +1595,7 @@ private constructor(
          * - Outlook Email: `connector_outlookemail`
          * - SharePoint: `connector_sharepoint`
          */
+        @Deprecated("deprecated")
         class ConnectorId @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
 
@@ -2097,7 +2112,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown RequireApproval: $json")
+                    throw OpenAIInvalidDataException("Unknown RequireApproval")
                 }
             }
 

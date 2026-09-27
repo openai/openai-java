@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.vectorstores.files
 
@@ -129,8 +129,8 @@ private constructor(
 
     /**
      * The ID of the
-     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
-     * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+     * [vector store](https://developers.openai.com/api/reference/resources/vector_stores) that the
+     * [File](https://developers.openai.com/api/reference/resources/files) is attached to.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -363,8 +363,8 @@ private constructor(
 
         /**
          * The ID of the
-         * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that
-         * the [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+         * [vector store](https://developers.openai.com/api/reference/resources/vector_stores) that
+         * the [File](https://developers.openai.com/api/reference/resources/files) is attached to.
          */
         fun vectorStoreId(vectorStoreId: String) = vectorStoreId(JsonField.of(vectorStoreId))
 

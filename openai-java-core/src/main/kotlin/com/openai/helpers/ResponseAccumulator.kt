@@ -12,6 +12,7 @@ import com.openai.models.responses.ResponseCodeInterpreterCallCodeDoneEvent
 import com.openai.models.responses.ResponseCodeInterpreterCallCompletedEvent
 import com.openai.models.responses.ResponseCodeInterpreterCallInProgressEvent
 import com.openai.models.responses.ResponseCodeInterpreterCallInterpretingEvent
+import com.openai.models.responses.ResponseCompactionCompactingEvent
 import com.openai.models.responses.ResponseCompletedEvent
 import com.openai.models.responses.ResponseContentPartAddedEvent
 import com.openai.models.responses.ResponseContentPartDoneEvent
@@ -51,6 +52,11 @@ import com.openai.models.responses.ResponseReasoningTextDeltaEvent
 import com.openai.models.responses.ResponseReasoningTextDoneEvent
 import com.openai.models.responses.ResponseRefusalDeltaEvent
 import com.openai.models.responses.ResponseRefusalDoneEvent
+import com.openai.models.responses.ResponseShellCallCommandAddedEvent
+import com.openai.models.responses.ResponseShellCallCommandDeltaEvent
+import com.openai.models.responses.ResponseShellCallCommandDoneEvent
+import com.openai.models.responses.ResponseShellCallOutputContentDeltaEvent
+import com.openai.models.responses.ResponseShellCallOutputContentDoneEvent
 import com.openai.models.responses.ResponseStreamEvent
 import com.openai.models.responses.ResponseTextDeltaEvent
 import com.openai.models.responses.ResponseTextDoneEvent
@@ -104,6 +110,20 @@ class ResponseAccumulator private constructor() {
      *   [responseType] class.
      */
     fun <T : Any> response(responseType: Class<T>) = StructuredResponse(responseType, response())
+
+    /**
+     * Accumulates a Responses WebSocket event while returning the same event for raw processing.
+     * Use one accumulator per response or lane. Unknown and nonterminal events do not change the
+     * final snapshot. Protocol errors remain available on the returned event for caller handling.
+     */
+    fun accumulate(
+        event: com.openai.models.responses.ResponsesServerEvent
+    ): com.openai.models.responses.ResponsesServerEvent {
+        event.responseCompleted().ifPresent { accumulate(ResponseStreamEvent.ofCompleted(it)) }
+        event.responseFailed().ifPresent { accumulate(ResponseStreamEvent.ofFailed(it)) }
+        event.responseIncomplete().ifPresent { accumulate(ResponseStreamEvent.ofIncomplete(it)) }
+        return event
+    }
 
     /**
      * Accumulates a streamed event and uses it to construct a [Response]. When all events have been
@@ -201,6 +221,10 @@ class ResponseAccumulator private constructor() {
                     codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent
                 ) {}
 
+                override fun visitCompactionCompacting(
+                    compactionCompacting: ResponseCompactionCompactingEvent
+                ) {}
+
                 override fun visitContentPartAdded(
                     contentPartAdded: ResponseContentPartAddedEvent
                 ) {}
@@ -227,6 +251,26 @@ class ResponseAccumulator private constructor() {
 
                 override fun visitFunctionCallArgumentsDone(
                     functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
+                ) {}
+
+                override fun visitShellCallCommandAdded(
+                    shellCallCommandAdded: ResponseShellCallCommandAddedEvent
+                ) {}
+
+                override fun visitShellCallCommandDelta(
+                    shellCallCommandDelta: ResponseShellCallCommandDeltaEvent
+                ) {}
+
+                override fun visitShellCallCommandDone(
+                    shellCallCommandDone: ResponseShellCallCommandDoneEvent
+                ) {}
+
+                override fun visitShellCallOutputContentDelta(
+                    shellCallOutputContentDelta: ResponseShellCallOutputContentDeltaEvent
+                ) {}
+
+                override fun visitShellCallOutputContentDone(
+                    shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
                 ) {}
 
                 override fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent) {}
