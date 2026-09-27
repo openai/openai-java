@@ -392,7 +392,7 @@ private constructor(
 
         /**
          * Network access policy for the environment. Defaults to disabled for GA requests and
-         * enabled for alpha/beta requests.
+         * enabled for beta requests.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -682,7 +682,7 @@ private constructor(
 
             /**
              * Network access policy for the environment. Defaults to disabled for GA requests and
-             * enabled for alpha/beta requests.
+             * enabled for beta requests.
              */
             fun network(network: Network?) = network(JsonField.ofNullable(network))
 
@@ -1042,7 +1042,7 @@ private constructor(
 
         /**
          * Network access policy for the environment. Defaults to disabled for GA requests and
-         * enabled for alpha/beta requests.
+         * enabled for beta requests.
          */
         class Network
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)

@@ -75,7 +75,7 @@ private constructor(
 
     /**
      * Network access available after setup completes. Omit to preserve the current policy, or pass
-     * `null` to reset to disabled for GA requests or enabled for alpha/beta requests.
+     * `null` to reset to disabled for GA requests or enabled for beta requests.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -327,7 +327,7 @@ private constructor(
 
         /**
          * Network access available after setup completes. Omit to preserve the current policy, or
-         * pass `null` to reset to disabled for GA requests or enabled for alpha/beta requests.
+         * pass `null` to reset to disabled for GA requests or enabled for beta requests.
          */
         fun network(network: Network?) = apply { body.network(network) }
 
@@ -680,7 +680,7 @@ private constructor(
 
         /**
          * Network access available after setup completes. Omit to preserve the current policy, or
-         * pass `null` to reset to disabled for GA requests or enabled for alpha/beta requests.
+         * pass `null` to reset to disabled for GA requests or enabled for beta requests.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -944,8 +944,7 @@ private constructor(
 
             /**
              * Network access available after setup completes. Omit to preserve the current policy,
-             * or pass `null` to reset to disabled for GA requests or enabled for alpha/beta
-             * requests.
+             * or pass `null` to reset to disabled for GA requests or enabled for beta requests.
              */
             fun network(network: Network?) = network(JsonField.ofNullable(network))
 
@@ -1330,7 +1329,7 @@ private constructor(
 
     /**
      * Network access available after setup completes. Omit to preserve the current policy, or pass
-     * `null` to reset to disabled for GA requests or enabled for alpha/beta requests.
+     * `null` to reset to disabled for GA requests or enabled for beta requests.
      */
     class Network
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
