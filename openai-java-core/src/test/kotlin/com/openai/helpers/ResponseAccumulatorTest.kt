@@ -253,6 +253,142 @@ internal class ResponseAccumulatorTest {
         assertThat(last.output()[1].asFunctionCall().arguments()).endsWith(fragment)
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun customInputAndProbabilitiesAreObservedBeforeTerminalAndDoneReplacesOnlyItsFields(
+        websocket: Boolean
+    ) {
+        val mapper = jsonMapper()
+        val state = ResponseAccumulator.createWithSnapshots()
+        fun send(frame: String) {
+            if (websocket) {
+                val event = mapper.readValue(frame, ResponsesServerEvent::class.java)
+                assertThat(state.accumulate(event)).isSameAs(event)
+            } else {
+                val event = mapper.readValue(frame, ResponseStreamEvent::class.java)
+                assertThat(state.accumulate(event)).isSameAs(event)
+            }
+        }
+        send(
+            """{"type":"response.created","sequence_number":0,"response":{"id":"r","output":[{"id":"m","type":"message","role":"assistant","status":"in_progress","content":[{"type":"output_text","text":"","annotations":[]}]},{"type":"custom_tool_call","id":"custom","call_id":"c","name":"editor","input":"patch "}],"from_server":17}}"""
+        )
+        send(
+            """{"type":"response.custom_tool_call_input.delta","sequence_number":1,"output_index":1,"item_id":"custom","delta":"first"}"""
+        )
+        send(
+            """{"type":"response.output_text.delta","sequence_number":2,"output_index":0,"content_index":0,"item_id":"m","delta":"A","logprobs":[{"token":"A","logprob":-0.1,"top_logprobs":[{"token":"a","logprob":-1.2}],"provider_tag":"kept"}]}"""
+        )
+        send(
+            """{"type":"response.output_text.annotation.added","sequence_number":3,"output_index":0,"content_index":0,"item_id":"m","annotation_index":0,"annotation":{"type":"file_citation","file_id":"file-1","filename":"test","index":0}}"""
+        )
+        val first = state.snapshot().get()
+        val originalText = first.output()[0].asMessage().content()[0].asOutputText()
+        assertThat(first.output()[1].asCustomToolCall().input()).isEqualTo("patch first")
+        assertThat(originalText.logprobs().get().single().token()).isEqualTo("A")
+        assertThat(
+                originalText
+                    .logprobs()
+                    .get()
+                    .single()
+                    ._additionalProperties()["provider_tag"]
+                    ?.convert(String::class.java)
+            )
+            .isEqualTo("kept")
+        assertThat(originalText.annotations()).hasSize(1)
+        send(
+            """{"type":"response.custom_tool_call_input.delta","sequence_number":4,"output_index":1,"item_id":"old","delta":"incorrect"}"""
+        )
+        send(
+            """{"type":"response.output_text.delta","sequence_number":5,"output_index":0,"content_index":0,"item_id":"old","delta":"incorrect","logprobs":[{"token":"incorrect","logprob":0,"top_logprobs":[]}]}"""
+        )
+        assertThat(state.snapshot().get()).isSameAs(first)
+        send(
+            """{"type":"response.custom_tool_call_input.delta","sequence_number":6,"output_index":1,"item_id":"custom","delta":" second"}"""
+        )
+        send(
+            """{"type":"response.output_text.delta","sequence_number":7,"output_index":0,"content_index":0,"item_id":"m","delta":"B","logprobs":[{"token":"B","logprob":-0.2,"top_logprobs":[]}]}"""
+        )
+        val partial = state.snapshot().get()
+        assertThat(partial.output()[1].asCustomToolCall().input()).isEqualTo("patch first second")
+        assertThat(
+                partial.output()[0].asMessage().content()[0].asOutputText().logprobs().get().map {
+                    it.token()
+                }
+            )
+            .containsExactly("A", "B")
+        send(
+            """{"type":"response.custom_tool_call_input.done","sequence_number":8,"output_index":1,"item_id":"custom","input":"authoritative patch"}"""
+        )
+        send(
+            """{"type":"response.output_text.done","sequence_number":9,"output_index":0,"content_index":0,"item_id":"m","text":"final","logprobs":[{"token":"final","logprob":-0.3,"top_logprobs":[]}]}"""
+        )
+        val last = state.snapshot().get()
+        val text = last.output()[0].asMessage().content()[0].asOutputText()
+        assertThat(last.output()[1].asCustomToolCall().input()).isEqualTo("authoritative patch")
+        assertThat(text.text()).isEqualTo("final")
+        assertThat(text.logprobs().get().map { it.token() }).containsExactly("final")
+        assertThat(text.annotations()).hasSize(1)
+        assertThat(originalText.text()).isEqualTo("A")
+        assertThat(originalText.logprobs().get().map { it.token() }).containsExactly("A")
+        assertThat(first.output()[1].asCustomToolCall().input()).isEqualTo("patch first")
+        assertThatThrownBy { state.response() }
+            .isExactlyInstanceOf(IllegalStateException::class.java)
+    }
+
+    @Test
+    fun largeOutputAndCitationCollectionsRemainAvailableOnPartialReads() {
+        val mapper = jsonMapper()
+        val state = ResponseAccumulator.createWithSnapshots()
+        state.accumulate(
+            mapper.readValue(
+                """{"type":"response.created","sequence_number":0,"response":{"id":"r","output":[]}}""",
+                ResponseStreamEvent::class.java,
+            )
+        )
+        val item = ResponseOutputItem.ofMessage(responseOutputMessage())
+        // Received output indexes select already observed items, never placeholders or an API cap.
+        val count = 32_768
+        repeat(count) { index ->
+            state.accumulate(
+                ResponseStreamEvent.ofOutputItemAdded(
+                    com.openai.models.responses.ResponseOutputItemAddedEvent.builder()
+                        .sequenceNumber(index.toLong())
+                        .outputIndex(index.toLong())
+                        .item(item)
+                        .build()
+                )
+            )
+        }
+        val before = state.snapshot().get()
+        assertThat(before.output()).hasSize(count)
+        val sample =
+            mapper
+                .readValue(
+                    """{"type":"response.output_text.annotation.added","sequence_number":1,"output_index":32767,"content_index":0,"item_id":"message-id","annotation_index":0,"annotation":{"type":"file_citation","file_id":"file-1","filename":"test","index":0}}""",
+                    ResponseStreamEvent::class.java,
+                )
+                .asOutputTextAnnotationAdded()
+        repeat(count) { index ->
+            state.accumulate(
+                ResponseStreamEvent.ofOutputTextAnnotationAdded(
+                    sample.toBuilder().annotationIndex(index.toLong()).build()
+                )
+            )
+        }
+        val last = state.snapshot().get()
+        assertThat(last.output()).hasSize(count)
+        assertThat(last.output().last().asMessage().content().single().asOutputText().annotations())
+            .hasSize(count)
+        assertThat(
+                last.output().first().asMessage().content().single().asOutputText().annotations()
+            )
+            .isEmpty()
+        assertThat(
+                before.output().last().asMessage().content().single().asOutputText().annotations()
+            )
+            .isEmpty()
+    }
+
     @Test
     fun responseBeforeAccumulation() {
         val accumulator = ResponseAccumulator.create()

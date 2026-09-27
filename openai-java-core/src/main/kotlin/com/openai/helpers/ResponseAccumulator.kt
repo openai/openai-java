@@ -88,10 +88,26 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
     private var partial: Response? = null
     private var materialized: Response? = null
 
-    // A null content index denotes function-call arguments, which belong to the output item.
-    private data class Position(val output: Long, val content: Long? = null)
+    private class PendingItem(val item: ResponseOutputItem) {
+        var input: StringBuilder? = null
+        val content =
+            item
+                .message()
+                .orElse(null)
+                ?._content()
+                ?.asKnown()
+                ?.orElse(null)
+                ?.map { PendingContent(it) }
+                ?.toMutableList()
+    }
 
-    private val fragments = mutableMapOf<Position, StringBuilder>()
+    private class PendingContent(var part: ResponseOutputMessage.Content) {
+        var text: StringBuilder? = null
+        var annotations: MutableList<ResponseOutputText.Annotation>? = null
+        var logprobs: MutableList<ResponseOutputText.Logprob>? = null
+    }
+
+    private var output: MutableList<PendingItem>? = null
 
     companion object {
         @JvmStatic fun create() = ResponseAccumulator(false)
@@ -119,31 +135,41 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         materialized?.let {
             return Optional.of(it)
         }
-        if (fragments.isEmpty()) return Optional.of(current)
-        val output = current._output().asKnown().orElse(null) ?: return Optional.of(current)
+        val output = output ?: return Optional.of(current)
         val items =
-            output.mapIndexed { index, item ->
-                val arguments = fragments[Position(index.toLong())]
+            output.map { pending ->
+                val item = pending.item
+                val arguments = pending.input
                 val call = item.functionCall().orElse(null)
                 if (call != null && arguments != null) {
-                    return@mapIndexed ResponseOutputItem.ofFunctionCall(
+                    return@map ResponseOutputItem.ofFunctionCall(
                         call.toBuilder().arguments(arguments.toString()).build()
                     )
                 }
-                val message = item.message().orElse(null) ?: return@mapIndexed item
-                val parts = message._content().asKnown().orElse(null) ?: return@mapIndexed item
+                val custom = item.customToolCall().orElse(null)
+                if (custom != null && arguments != null) {
+                    return@map ResponseOutputItem.ofCustomToolCall(
+                        custom.toBuilder().input(arguments.toString()).build()
+                    )
+                }
+                val message = item.message().orElse(null) ?: return@map item
+                val parts = pending.content ?: return@map item
                 val content =
-                    parts.mapIndexed content@{ contentIndex, part ->
-                        val text =
-                            fragments[Position(index.toLong(), contentIndex.toLong())]
-                                ?: return@content part
+                    parts.map content@{ data ->
+                        val part = data.part
+                        val text = data.text
                         val outputText = part.outputText().orElse(null)
                         if (outputText != null) {
-                            ResponseOutputMessage.Content.ofOutputText(
-                                outputText.toBuilder().text(text.toString()).build()
-                            )
+                            if (text == null && data.annotations == null && data.logprobs == null)
+                                return@content part
+                            val builder = outputText.toBuilder()
+                            if (text != null) builder.text(text.toString())
+                            data.annotations?.let { builder.annotations(it) }
+                            data.logprobs?.let { builder.logprobs(it) }
+                            ResponseOutputMessage.Content.ofOutputText(builder.build())
                         } else {
-                            val refusal = part.refusal().orElse(null) ?: return@content part
+                            val refusal = part.refusal().orElse(null)
+                            if (refusal == null || text == null) return@content part
                             ResponseOutputMessage.Content.ofRefusal(
                                 refusal.toBuilder().refusal(text.toString()).build()
                             )
@@ -230,6 +256,12 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
             event.responseFunctionCallArgumentsDone().ifPresent {
                 accumulate(ResponseStreamEvent.ofFunctionCallArgumentsDone(it))
             }
+            event.responseCustomToolCallInputDelta().ifPresent {
+                accumulate(ResponseStreamEvent.ofCustomToolCallInputDelta(it))
+            }
+            event.responseCustomToolCallInputDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofCustomToolCallInputDone(it))
+            }
         }
         return event
     }
@@ -274,11 +306,31 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
 
                 override fun visitCustomToolCallInputDelta(
                     customToolCallInputDelta: ResponseCustomToolCallInputDeltaEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    append(
+                        customToolCallInputDelta.outputIndex(),
+                        customToolCallInputDelta._itemId(),
+                        customToolCallInputDelta.delta(),
+                    ) { item ->
+                        item.customToolCall().orElse(null)?._input()?.asKnown()?.orElse(null)
+                    }
+                }
 
                 override fun visitCustomToolCallInputDone(
                     customToolCallInputDone: ResponseCustomToolCallInputDoneEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    updateItem(
+                        customToolCallInputDone.outputIndex(),
+                        customToolCallInputDone._itemId(),
+                    ) { item ->
+                        val call = item?.customToolCall()?.orElse(null) ?: return@updateItem null
+                        ResponseOutputItem.ofCustomToolCall(
+                            call.toBuilder().input(customToolCallInputDone.input()).build()
+                        )
+                    }
+                }
 
                 override fun visitFailed(failed: ResponseFailedEvent) {
                     // TODO: Confirm that this is a "terminal" event and will occur _instead of_
@@ -354,13 +406,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                             contentPartAdded.contentIndex(),
                             contentPartAdded._itemId(),
                         ) {
-                            fragments.remove(
-                                Position(
-                                    contentPartAdded.outputIndex(),
-                                    contentPartAdded.contentIndex(),
-                                )
-                            )
-                            content
+                            PendingContent(content)
                         }
                 }
 
@@ -383,13 +429,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                             contentPartDone.contentIndex(),
                             contentPartDone._itemId(),
                         ) {
-                            fragments.remove(
-                                Position(
-                                    contentPartDone.outputIndex(),
-                                    contentPartDone.contentIndex(),
-                                )
-                            )
-                            content
+                            PendingContent(content)
                         }
                 }
 
@@ -413,7 +453,6 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                     if (!snapshotsEnabled) return
                     append(
                         functionCallArgumentsDelta.outputIndex(),
-                        null,
                         functionCallArgumentsDelta._itemId(),
                         functionCallArgumentsDelta.delta(),
                     ) { item ->
@@ -437,7 +476,6 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                                     .arguments(functionCallArgumentsDone.arguments())
                                     .build()
                             )
-                        fragments.remove(Position(functionCallArgumentsDone.outputIndex()))
                         result
                     }
                 }
@@ -464,20 +502,12 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
 
                 override fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent) {
                     if (snapshotsEnabled)
-                        updateItem(outputItemAdded.outputIndex()) {
-                            val item = outputItemAdded.item()
-                            fragments.keys.removeAll { it.output == outputItemAdded.outputIndex() }
-                            item
-                        }
+                        updateItem(outputItemAdded.outputIndex()) { outputItemAdded.item() }
                 }
 
                 override fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) {
                     if (snapshotsEnabled)
-                        updateItem(outputItemDone.outputIndex()) {
-                            val item = outputItemDone.item()
-                            fragments.keys.removeAll { it.output == outputItemDone.outputIndex() }
-                            item
-                        }
+                        updateItem(outputItemDone.outputIndex()) { outputItemDone.item() }
                 }
 
                 override fun visitReasoningSummaryPartAdded(
@@ -523,27 +553,43 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                         refusalDone.contentIndex(),
                         refusalDone._itemId(),
                     ) { content ->
-                        val refusal = content?.refusal()?.orElse(null) ?: return@updateContent null
+                        val refusal =
+                            content?.part?.refusal()?.orElse(null) ?: return@updateContent null
                         val result =
                             ResponseOutputMessage.Content.ofRefusal(
                                 refusal.toBuilder().refusal(refusalDone.refusal()).build()
                             )
-                        fragments.remove(
-                            Position(refusalDone.outputIndex(), refusalDone.contentIndex())
-                        )
-                        result
+                        content.part = result
+                        content.text = null
+                        content
                     }
                 }
 
                 override fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent) {
                     if (!snapshotsEnabled) return
-                    appendContent(
-                        outputTextDelta.outputIndex(),
-                        outputTextDelta.contentIndex(),
-                        outputTextDelta._itemId(),
-                        outputTextDelta.delta(),
-                    ) { content ->
-                        content.outputText().orElse(null)?._text()?.asKnown()?.orElse(null)
+                    val part =
+                        appendContent(
+                            outputTextDelta.outputIndex(),
+                            outputTextDelta.contentIndex(),
+                            outputTextDelta._itemId(),
+                            outputTextDelta.delta(),
+                        ) { content ->
+                            content.outputText().orElse(null)?._text()?.asKnown()?.orElse(null)
+                        } ?: return
+                    val probabilities = outputTextDelta._logprobs().asKnown().orElse(null) ?: return
+                    val buffer =
+                        part.logprobs
+                            ?: part.part
+                                .asOutputText()
+                                ._logprobs()
+                                .asKnown()
+                                .orElse(emptyList())
+                                .toMutableList()
+                                .also { part.logprobs = it }
+                    probabilities.forEach {
+                        JsonValue.from(it)
+                            .convert(ResponseOutputText.Logprob::class.java)
+                            ?.let(buffer::add)
                     }
                 }
 
@@ -555,15 +601,20 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                         outputTextDone._itemId(),
                     ) { content ->
                         val outputText =
-                            content?.outputText()?.orElse(null) ?: return@updateContent null
+                            content?.part?.outputText()?.orElse(null) ?: return@updateContent null
                         val result =
                             ResponseOutputMessage.Content.ofOutputText(
                                 outputText.toBuilder().text(outputTextDone.text()).build()
                             )
-                        fragments.remove(
-                            Position(outputTextDone.outputIndex(), outputTextDone.contentIndex())
-                        )
-                        result
+                        val probabilities = outputTextDone._logprobs().asKnown().orElse(null)
+                        val converted =
+                            probabilities?.mapNotNull {
+                                JsonValue.from(it).convert(ResponseOutputText.Logprob::class.java)
+                            }
+                        content.part = result
+                        content.text = null
+                        if (converted != null) content.logprobs = converted.toMutableList()
+                        content
                     }
                 }
 
@@ -639,11 +690,14 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                         outputTextAnnotationAdded.contentIndex(),
                         outputTextAnnotationAdded._itemId(),
                     ) { content ->
-                        val text = content?.outputText()?.orElse(null) ?: return@updateContent null
-                        val annotations =
-                            text._annotations().asKnown().orElse(null)?.toMutableList()
-                                ?: return@updateContent null
-                        if (annotationIndex < 0 || annotationIndex > annotations.size.toLong())
+                        val text =
+                            content?.part?.outputText()?.orElse(null) ?: return@updateContent null
+                        val previous =
+                            text._annotations().asKnown().orElse(null) ?: return@updateContent null
+                        if (
+                            annotationIndex < 0 ||
+                                annotationIndex > (content.annotations ?: previous).size.toLong()
+                        )
                             return@updateContent null
                         // The generated event and output unions are distinct Kotlin types with
                         // the same wire form. Preserve additional fields, including future kinds.
@@ -651,12 +705,12 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                             JsonValue.from(annotation)
                                 .convert(ResponseOutputText.Annotation::class.java)
                                 ?: return@updateContent null
+                        val annotations = content.annotations ?: previous.toMutableList()
                         val index = annotationIndex.toInt()
                         if (index == annotations.size) annotations.add(converted)
                         else annotations[index] = converted
-                        ResponseOutputMessage.Content.ofOutputText(
-                            text.toBuilder().annotations(annotations).build()
-                        )
+                        content.annotations = annotations
+                        content
                     }
                 }
 
@@ -666,7 +720,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         )
 
         if (response != null) {
-            fragments.clear()
+            output = null
             materialized = null
             partial = null
         }
@@ -675,25 +729,23 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
 
     private fun replacePartial(value: Response) {
         partial = value
-        materialized = null
-        fragments.clear()
+        materialized = value
+        output = value._output().asKnown().orElse(null)?.map { PendingItem(it) }?.toMutableList()
     }
 
     private fun append(
         outputIndex: Long,
-        contentIndex: Long?,
         expectedId: JsonField<String>,
         delta: String,
         initial: (ResponseOutputItem) -> String?,
     ) {
-        val output = partial?._output()?.asKnown()?.orElse(null) ?: return
+        val output = output ?: return
         if (outputIndex < 0 || outputIndex >= output.size.toLong()) return
-        val item = output[outputIndex.toInt()]
-        if (!matchesId(item, expectedId)) return
-        val text = initial(item) ?: return
-        fragments
-            .getOrPut(Position(outputIndex, contentIndex)) { StringBuilder(text) }
-            .append(delta)
+        val data = output[outputIndex.toInt()]
+        if (!matchesId(data.item, expectedId)) return
+        val text = initial(data.item) ?: return
+        val buffer = data.input ?: StringBuilder(text).also { data.input = it }
+        buffer.append(delta)
         materialized = null
     }
 
@@ -703,20 +755,27 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         expectedId: JsonField<String>,
         delta: String,
         initial: (ResponseOutputMessage.Content) -> String?,
-    ) {
-        append(outputIndex, contentIndex, expectedId, delta) { item ->
-            val parts =
-                item.message().orElse(null)?._content()?.asKnown()?.orElse(null)
-                    ?: return@append null
-            if (contentIndex < 0 || contentIndex >= parts.size.toLong()) return@append null
-            initial(parts[contentIndex.toInt()])
-        }
+    ): PendingContent? {
+        val output = output ?: return null
+        if (outputIndex < 0 || outputIndex >= output.size.toLong()) return null
+        val item = output[outputIndex.toInt()]
+        if (!matchesId(item.item, expectedId)) return null
+        val parts = item.content ?: return null
+        if (contentIndex < 0 || contentIndex >= parts.size.toLong()) return null
+        val part = parts[contentIndex.toInt()]
+        val text = initial(part.part) ?: return null
+        val buffer = part.text ?: StringBuilder(text).also { part.text = it }
+        buffer.append(delta)
+        materialized = null
+        return part
     }
 
     private fun matchesId(item: ResponseOutputItem?, expectedId: JsonField<String>): Boolean {
         val expected = expectedId.asKnown().orElse(null) ?: return false
         val actual =
-            item?.message()?.orElse(null)?._id() ?: item?.functionCall()?.orElse(null)?._id()
+            item?.message()?.orElse(null)?._id()
+                ?: item?.functionCall()?.orElse(null)?._id()
+                ?: item?.customToolCall()?.orElse(null)?._id()
         return actual?.asKnown()?.orElse(null) == expected
     }
 
@@ -727,17 +786,15 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         expectedId: JsonField<String>? = null,
         update: (ResponseOutputItem?) -> ResponseOutputItem?,
     ) {
-        val current = partial ?: return
-        val output = current._output().asKnown().orElse(null)?.toMutableList() ?: return
+        val output = output ?: return
         if (index < 0 || index > output.size.toLong()) return
         val i = index.toInt()
-        val previous = output.getOrNull(i)
+        val previous = output.getOrNull(i)?.item
         // Full output-item events replace the index. Subsequent deltas/parts must name the
         // current item; never let a late event for an older occupant change its replacement.
         if (expectedId != null && !matchesId(previous, expectedId)) return
         val item = update(previous) ?: return
-        if (i == output.size) output.add(item) else output[i] = item
-        partial = current.toBuilder().output(output).build()
+        if (i == output.size) output.add(PendingItem(item)) else output[i] = PendingItem(item)
         materialized = null
     }
 
@@ -745,17 +802,17 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         outputIndex: Long,
         contentIndex: Long,
         expectedId: JsonField<String>,
-        update: (ResponseOutputMessage.Content?) -> ResponseOutputMessage.Content?,
+        update: (PendingContent?) -> PendingContent?,
     ) {
-        updateItem(outputIndex, expectedId) { item ->
-            val message = item?.message()?.orElse(null) ?: return@updateItem null
-            val content =
-                message._content().asKnown().orElse(null)?.toMutableList() ?: return@updateItem null
-            if (contentIndex < 0 || contentIndex > content.size.toLong()) return@updateItem null
-            val i = contentIndex.toInt()
-            val part = update(content.getOrNull(i)) ?: return@updateItem null
-            if (i == content.size) content.add(part) else content[i] = part
-            ResponseOutputItem.ofMessage(message.toBuilder().content(content).build())
-        }
+        val output = output ?: return
+        if (outputIndex < 0 || outputIndex >= output.size.toLong()) return
+        val item = output[outputIndex.toInt()]
+        if (!matchesId(item.item, expectedId)) return
+        val content = item.content ?: return
+        if (contentIndex < 0 || contentIndex > content.size.toLong()) return
+        val i = contentIndex.toInt()
+        val part = update(content.getOrNull(i)) ?: return
+        if (i == content.size) content.add(part) else content[i] = part
+        materialized = null
     }
 }
