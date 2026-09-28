@@ -415,22 +415,13 @@ private constructor(
                 maxOf(0L, deadline - System.nanoTime()),
                 TimeUnit.NANOSECONDS,
             )
-        CompletableFuture.runAsync {
+        // CompletableFuture.get on a common-pool worker may itself execute unrelated queued
+        // async tasks while waiting. Never allow the caller waiting on a deadline to pick up
+        // this potentially blocking transport operation.
+        Thread({
             var problem: Throwable? = null
             try {
-                ForkJoinPool.managedBlock(
-                    object : ForkJoinPool.ManagedBlocker {
-                        private var sent = false
-
-                        override fun isReleasable() = sent
-
-                        override fun block(): Boolean {
-                            write(event, deadline)
-                            sent = true
-                            return true
-                        }
-                    }
-                )
+                write(event, deadline)
             } catch (error: Throwable) {
                 problem = error
                 if (error is TimeoutException) fail(error)
@@ -446,6 +437,9 @@ private constructor(
                 if (problem == null) result.complete(Unit) else result.completeExceptionally(problem)
             }
             alarm.cancel(false)
+        }, "openai-translation-send").apply {
+            isDaemon = true
+            start()
         }
         try {
             await(result)
