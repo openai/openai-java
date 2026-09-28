@@ -51,17 +51,22 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         private val id: String,
         private val previousId: String?,
         private val speaker: Speaker,
-        private val text: String,
+        text: StringBuilder,
+        length: Int,
         private val startMs: Long,
         private val endMs: Long,
     ) {
+        // Text is append-only, so the captured prefix stays immutable. Do not copy a growing
+        // transcript on the event thread unless the consumer actually reads this snapshot.
+        private val frozenText by lazy { synchronized(text) { text.substring(0, length) } }
+
         fun id(): String = id
 
         fun previousId(): Optional<String> = Optional.ofNullable(previousId)
 
         fun speaker(): Speaker = speaker
 
-        fun text(): String = text
+        fun text(): String = frozenText
 
         fun startMs(): Long = startMs
 
@@ -155,7 +160,7 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         var emitted = false
         var canDrop = true
 
-        fun snapshot() = Segment(id, previous, speaker, text.toString(), start, end)
+        fun snapshot() = Segment(id, previous, speaker, text, text.length, start, end)
     }
 
     private val separation = builder.separationMs()
@@ -363,10 +368,9 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
             current = newTurn(fragment)
             emit(current!!)
         } else if (fragment.speaker == turn.speaker) {
-            append(turn, fragment, buffered != null)
+            append(turn, fragment)
             emit(turn)
         } else {
-            if (turn.speaker == Speaker.USER && userContinued()) buffered = null
             val waiting = buffered
             if (turn.speaker == Speaker.ASSISTANT) {
                 buffer(fragment)
@@ -396,16 +400,8 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
 
     private fun newTurn(fragment: Fragment) = Turn("${prefix}_${nextId++}", fragment)
 
-    private fun append(turn: Turn, fragment: Fragment, separate: Boolean = false) {
-        if (
-            separate &&
-                turn.text.isNotEmpty() &&
-                fragment.text.isNotEmpty() &&
-                turn.text.last().isLetterOrDigit() &&
-                fragment.text.first().isLetterOrDigit()
-        )
-            turn.text.append(' ')
-        turn.text.append(fragment.text)
+    private fun append(turn: Turn, fragment: Fragment) {
+        synchronized(turn.text) { turn.text.append(fragment.text) }
         turn.end = maxOf(turn.end, fragment.end)
     }
 
@@ -461,7 +457,9 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
 
     private fun maybeDrop(time: Double? = null, next: Fragment? = null): Turn? {
         val waiting = buffered ?: return null
-        if (!mightDrop()) return waiting
+        // A prefix is worth buffering, but must not be suppressed before it becomes a complete
+        // acknowledgment. It may still grow into substantive speech after a user delta.
+        if (!mightDrop() || normalize(waiting.text.toString()) !in acknowledgments) return waiting
         if (userContinued()) return null
         if (recentAssistant()) return waiting
         if (next != null && next.start - waiting.end < isolation) return waiting

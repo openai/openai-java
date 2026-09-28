@@ -160,7 +160,48 @@ internal class LiveTranscriptGrouperTest {
         grouper.push(input("u2", "jour", 100, 500))
         grouper.close()
         assertThat(finalized(events).map { it.segment().speaker() }).containsExactly(Speaker.USER)
-        assertThat(finalized(events).single().segment().text()).isEqualTo("bon jour")
+        assertThat(finalized(events).single().segment().text()).isEqualTo("bonjour")
+    }
+
+    @Test
+    fun overlappingPrefixCanCompleteAsSubstantiveTextOrAsAnAcknowledgment() {
+        val substantive = updates()
+        LiveTranscriptGrouper.create { substantive.add(it) }
+            .use { grouper ->
+                grouper.push(input("u1", "hel", 0, 100))
+                grouper.push(output("a1", "o", 0, 100))
+                grouper.push(input("u2", "lo", 100, 200))
+                grouper.push(output("a2", "utstanding", 200, 300))
+            }
+        val segments = finalized(substantive).map { it.segment() }
+        assertThat(segments.map { it.text() }).containsExactly("hello", "outstanding")
+        assertThat(segments.map { it.speaker() }).containsExactly(Speaker.USER, Speaker.ASSISTANT)
+        assertThat(segments[1].previousId()).contains(segments[0].id())
+
+        val acknowledgment = updates()
+        LiveTranscriptGrouper.create { acknowledgment.add(it) }
+            .use { grouper ->
+                grouper.push(input("u1", "hel", 0, 100))
+                grouper.push(output("a1", "o", 0, 100))
+                grouper.push(input("u2", "lo", 100, 200))
+                grouper.push(output("a2", "kay", 200, 300))
+                grouper.push(input("u3", " there", 300, 400))
+            }
+        assertThat(finalized(acknowledgment).map { it.segment().text() })
+            .containsExactly("hello there")
+    }
+
+    @Test
+    fun anUnfinishedAcknowledgmentPrefixIsNotSilentlyDiscardedOnClose() {
+        val events = updates()
+        LiveTranscriptGrouper.create { events.add(it) }
+            .use { grouper ->
+                grouper.push(input("u1", "I can", 0, 100))
+                grouper.push(output("a1", "o", 0, 100))
+                grouper.push(input("u2", " speak", 100, 200))
+            }
+        assertThat(finalized(events).map { it.segment().text() })
+            .containsExactly("I can speak", "o")
     }
 
     @Test
