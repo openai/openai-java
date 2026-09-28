@@ -12,6 +12,7 @@ import com.openai.core.http.HttpRequest
 import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketWriteNotAttempted
 import com.openai.core.http.utf8Size
+import com.openai.core.jsonMapper
 import com.openai.core.prepare
 import com.openai.errors.OpenAIIoException
 import com.openai.models.realtime.RealtimeTranslationClientEvent
@@ -114,6 +115,11 @@ private constructor(
     }
 
     companion object {
+        private val terminalReader =
+            jsonMapper()
+                .readerFor(RealtimeTranslationSessionClosedEvent::class.java)
+                .with(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+
         private val finishTimer =
             ScheduledThreadPoolExecutor(1) { runnable ->
                     Thread(runnable, "openai-translation-timeouts").apply { isDaemon = true }
@@ -231,7 +237,7 @@ private constructor(
                         if (active != null)
                             CompletableFuture.runAsync {
                                 try {
-                                    active.close()
+                                    connection.closeTransport(active)
                                 } catch (closing: Exception) {
                                     if (closing !== problem) problem.addSuppressed(closing)
                                 }
@@ -595,8 +601,12 @@ private constructor(
                 event.validate()
             // Even in lenient mode, incomplete/malformed terminal events cannot claim success.
             end =
-                if (wireType == "session.closed") event.sessionClosed().orElse(null)?.validate()
-                else null
+                if (wireType == "session.closed") {
+                    // Use generated validation on what was actually received, independently of
+                    // the caller's public event mapping. Preserve that mapping for delivery.
+                    terminalReader.readValue<RealtimeTranslationSessionClosedEvent>(text).validate()
+                    event.sessionClosed().orElse(null)?.validate()
+                } else null
         } catch (error: Throwable) {
             // Only parser/mapper/validation code is covered here, never user continuations.
             fail(error, unlessTerminal = true)
@@ -646,7 +656,7 @@ private constructor(
             }
         CompletableFuture.runAsync {
             try {
-                active.close()
+                closeTransport(active)
                 synchronized(lock) {
                     finished = true
                     lock.notifyAll()
@@ -681,7 +691,7 @@ private constructor(
         CompletableFuture.runAsync {
             try {
                 detached.second?.cancel(true)
-                detached.first?.close()
+                detached.first?.let { closeTransport(it) }
             } catch (closing: Throwable) {
                 if (closing !== error) error.addSuppressed(closing)
             } finally {
@@ -691,6 +701,24 @@ private constructor(
                 }
             }
         }
+    }
+
+    // All calls run off the transport reader/caller. Let other connections make progress when
+    // a custom transport has a blocking close (for instance, waiting for its own listener).
+    private fun closeTransport(active: WebSocketClient.Connection) {
+        ForkJoinPool.managedBlock(
+            object : ForkJoinPool.ManagedBlocker {
+                private var released = false
+
+                override fun isReleasable(): Boolean = released
+
+                override fun block(): Boolean {
+                    active.close()
+                    released = true
+                    return true
+                }
+            }
+        )
     }
 
     // User completion callbacks never run on the transport reader, including with a direct

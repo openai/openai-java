@@ -14,6 +14,7 @@ import com.openai.core.http.HttpRequest
 import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketWriteNotAttempted
 import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.helpers.TranslationConnection
 import com.openai.helpers.TranslationWebSocketOptions
 import com.openai.models.realtime.RealtimeTranslationClientEvent
@@ -1242,6 +1243,131 @@ class TranslationConnectionTest {
                         assertThat(server.requestCount).isEqualTo(1)
                     }
                 }
+            }
+        }
+    }
+
+    @Test
+    fun customReaderCannotSupplyRequiredTerminalDataMissingOnTheWire() {
+        for (raw in
+            listOf(
+                """{"type":"session.closed"}""",
+                """{"type":"session.closed","event_id":42}""",
+            )) {
+            MockWebServer().use { server ->
+                val peer = Peer { socket -> socket.send(raw) }
+                server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+                OkHttpClient.builder().build().use { http ->
+                    val customMapper = mapper.copy()
+                    customMapper.addMixIn(
+                        RealtimeTranslationServerEvent::class.java,
+                        TerminalTranslationMixin::class.java,
+                    )
+                    val configuration =
+                        options(server, http).toBuilder().jsonMapper(customMapper).build()
+                    TranslationConnection.connect(configuration).use { connection ->
+                        assertThatThrownBy {
+                                connection.finishAsync(deadline).get(7, TimeUnit.SECONDS)
+                            }
+                            .isInstanceOf(ExecutionException::class.java)
+                            .hasCauseInstanceOf(OpenAIInvalidDataException::class.java)
+                        assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                        assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                        assertThat(peer.messages).isEmpty()
+                    }
+                }
+            }
+        }
+        // For an actually valid terminal, the configured public mapping is still retained.
+        MockWebServer().use { server ->
+            val peer = Peer { socket ->
+                socket.send("""{"type":"session.closed","event_id":"on-wire"}""")
+            }
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val customMapper = mapper.copy()
+                customMapper.addMixIn(
+                    RealtimeTranslationServerEvent::class.java,
+                    TerminalTranslationMixin::class.java,
+                )
+                val configuration =
+                    options(server, http).toBuilder().jsonMapper(customMapper).build()
+                TranslationConnection.connect(configuration).use { connection ->
+                    assertThat(connection.finishAsync(deadline).get(7, TimeUnit.SECONDS).eventId())
+                        .isEqualTo("mapped")
+                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("mapped")
+                    assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                    assertThat(peer.messages).isEmpty()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun blockedCleanupsOfOtherSocketsDoNotHoldAnIndependentFinishDeadline() {
+        MockWebServer().use { server ->
+            val blocked = listOf(Peer(), Peer())
+            val independent = Peer()
+            for (peer in blocked + independent) server.enqueue(
+                MockResponse().withWebSocketUpgrade(peer)
+            )
+            val entered = CountDownLatch(blocked.size)
+            val release = CountDownLatch(1)
+            OkHttpClient.builder().build().use { http ->
+                val client =
+                    object : HttpClient by http, WebSocketClient {
+                        override fun connectWebSocket(
+                            request: HttpRequest,
+                            options: RequestOptions,
+                            maxMessageBytes: Int,
+                            listener: WebSocketClient.Listener,
+                        ): CompletableFuture<WebSocketClient.Connection> =
+                            http
+                                .connectWebSocket(request, options, maxMessageBytes, listener)
+                                .thenApply { native ->
+                                    object : WebSocketClient.Connection by native {
+                                        override fun close() {
+                                            entered.countDown()
+                                            try {
+                                                check(release.await(12, TimeUnit.SECONDS))
+                                            } finally {
+                                                native.close()
+                                            }
+                                        }
+                                    }
+                                }
+                    }
+                TranslationConnection.connect(options(server, client)).use { first ->
+                    TranslationConnection.connect(options(server, client)).use { second ->
+                        TranslationConnection.connect(options(server, http)).use { target ->
+                            try {
+                                first.send(audio("AA=="))
+                                second.send(audio("AQ=="))
+                                assertThat(blocked[0].next().path("audio").asText())
+                                    .isEqualTo("AA==")
+                                assertThat(blocked[1].next().path("audio").asText())
+                                    .isEqualTo("AQ==")
+                                for (peer in blocked) peer.socket
+                                    .get(5, TimeUnit.SECONDS)
+                                    .send("""{"type":"session.closed","event_id":"blocked"}""")
+                                check(entered.await(5, TimeUnit.SECONDS))
+                                assertThatThrownBy {
+                                        target
+                                            .finishAsync(Duration.ofMillis(300))
+                                            .get(3, TimeUnit.SECONDS)
+                                    }
+                                    .isInstanceOf(ExecutionException::class.java)
+                                    .hasCauseInstanceOf(TimeoutException::class.java)
+                                assertThat(independent.terminated.await(5, TimeUnit.SECONDS))
+                                    .isTrue()
+                            } finally {
+                                release.countDown()
+                            }
+                        }
+                    }
+                }
+                for (peer in blocked) assertThat(peer.terminated.await(5, TimeUnit.SECONDS))
+                    .isTrue()
             }
         }
     }
