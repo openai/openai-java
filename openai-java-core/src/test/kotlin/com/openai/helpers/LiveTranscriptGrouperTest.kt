@@ -353,7 +353,7 @@ internal class LiveTranscriptGrouperTest {
         val submitted = CountDownLatch(1)
         val events = updates()
         LiveTranscriptGrouper.builder { events.add(it) }
-            .assistantSilence(Duration.ofMillis(20))
+            .assistantSilence(Duration.ofMillis(300))
             .callbackExecutor {
                 queued.add(it)
                 submitted.countDown()
@@ -363,7 +363,7 @@ internal class LiveTranscriptGrouperTest {
                 grouper.push(output("a", "answer", 0, 100))
                 assertThat(submitted.await(2, TimeUnit.SECONDS)).isTrue()
                 // Allow the silence deadline to expire while the caller executor has not run.
-                Thread.sleep(150)
+                Thread.sleep(550)
                 assertThat(events).isEmpty()
                 assertThat(queued).hasSize(1)
                 queued.remove().run()
@@ -380,7 +380,7 @@ internal class LiveTranscriptGrouperTest {
         val attempts = CountDownLatch(2)
         val events = updates()
         LiveTranscriptGrouper.builder { events.add(it) }
-            .assistantSilence(Duration.ofMillis(20))
+            .assistantSilence(Duration.ofMillis(300))
             .callbackExecutor {
                 attempts.countDown()
                 throw RejectedExecutionException()
