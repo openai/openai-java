@@ -1,0 +1,578 @@
+package com.openai.client.okhttp
+
+import com.fasterxml.jackson.databind.JsonNode
+import com.openai.azure.AzureUrlPathMode
+import com.openai.core.ClientOptions
+import com.openai.core.RequestOptions
+import com.openai.core.http.HttpClient
+import com.openai.core.http.HttpRequest
+import com.openai.core.http.WebSocketClient
+import com.openai.core.http.WebSocketWriteNotAttempted
+import com.openai.core.jsonMapper
+import com.openai.helpers.TranslationConnection
+import com.openai.helpers.TranslationWebSocketOptions
+import com.openai.models.realtime.RealtimeTranslationClientEvent
+import com.openai.models.realtime.RealtimeTranslationInputAudioBufferAppendEvent
+import java.io.IOException
+import java.time.Duration
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
+import java.util.concurrent.atomic.AtomicInteger
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Timeout
+
+@Timeout(25)
+class TranslationConnectionTest {
+    private val mapper = jsonMapper()
+    private val deadline = Duration.ofSeconds(5)
+    private val appended = "session.input_audio_buffer.append"
+    private val close = "session.close"
+
+    private fun audio(value: String = "AAAA") =
+        RealtimeTranslationClientEvent.ofSessionInputAudioBufferAppend(
+            RealtimeTranslationInputAudioBufferAppendEvent.builder().audio(value).build()
+        )
+
+    private fun options(server: MockWebServer, http: HttpClient) =
+        ClientOptions.builder()
+            .httpClient(http)
+            .apiKey("fake-translation-key")
+            .baseUrl(server.url("/v1?inherited=1").toString())
+            .build()
+
+    private inner class Peer(private val whenClosing: (WebSocket) -> Unit = {}) :
+        WebSocketListener() {
+        val socket = CompletableFuture<WebSocket>()
+        val messages = LinkedBlockingQueue<JsonNode>()
+        val terminated = CountDownLatch(1)
+
+        override fun onOpen(webSocket: WebSocket, response: Response) {
+            socket.complete(webSocket)
+        }
+
+        override fun onMessage(webSocket: WebSocket, text: String) {
+            val json = mapper.readTree(text)
+            messages.add(json)
+            if (json.path("type").asText() == close) whenClosing(webSocket)
+        }
+
+        override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+            webSocket.close(code, reason)
+        }
+
+        override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+            terminated.countDown()
+        }
+
+        override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+            terminated.countDown()
+        }
+
+        fun next(): JsonNode = checkNotNull(messages.poll(7, TimeUnit.SECONDS))
+    }
+
+    private fun finalEvents(socket: WebSocket) {
+        socket.send(
+            """{"type":"session.output_transcript.delta","event_id":"t","delta":"Hola","elapsed_ms":200}"""
+        )
+        socket.send(
+            """{"type":"session.output_audio.delta","event_id":"a","delta":"AQID","sample_rate":24000}"""
+        )
+        socket.send("""{"type":"session.closed","event_id":"done"}""")
+    }
+
+    @Test
+    fun preparedRouteAndBothReceiveStylesKeepErrorAndFutureTypesObservable() {
+        for (async in listOf(false, true)) {
+            MockWebServer().use { server ->
+                val peer = Peer()
+                server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+                OkHttpClient.builder().build().use { http ->
+                    val settings =
+                        TranslationWebSocketOptions.builder()
+                            .model("translation-test")
+                            .putHeader("X-Test", "one")
+                            .putQueryParam("another", "2")
+                            .build()
+                    val connection =
+                        if (async)
+                            TranslationConnection.connectAsync(options(server, http), settings)
+                                .get(7, TimeUnit.SECONDS)
+                        else TranslationConnection.connect(options(server, http), settings)
+                    connection.use {
+                        val request = checkNotNull(server.takeRequest(7, TimeUnit.SECONDS))
+                        assertThat(request.requestUrl!!.encodedPath)
+                            .isEqualTo("/v1/realtime/translations")
+                        assertThat(request.requestUrl!!.queryParameter("model"))
+                            .isEqualTo("translation-test")
+                        assertThat(request.requestUrl!!.queryParameter("inherited")).isEqualTo("1")
+                        assertThat(request.requestUrl!!.queryParameter("another")).isEqualTo("2")
+                        assertThat(request.requestUrl!!.queryParameter("intent")).isNull()
+                        assertThat(request.getHeader("OpenAI-Beta")).isNull()
+                        assertThat(request.getHeader("Authorization"))
+                            .isEqualTo("Bearer fake-translation-key")
+                        assertThat(request.getHeader("X-Test")).isEqualTo("one")
+                        it.send(audio())
+                        val append = peer.next()
+                        assertThat(append.path("type").asText()).isEqualTo(appended)
+                        assertThat(append.path("audio").asText()).isEqualTo("AAAA")
+                        val socket = peer.socket.get(7, TimeUnit.SECONDS)
+                        socket.send(
+                            """{"type":"error","event_id":"e","error":{"type":"invalid_request_error","code":"synthetic","message":"test"}}"""
+                        )
+                        val error =
+                            if (async) it.receiveAsync().get(7, TimeUnit.SECONDS) else it.receive()
+                        assertThat(error.asError().error().message()).isEqualTo("test")
+                        socket.send("""{"type":"translation.future","raw":{"more":[1,2,3]}}""")
+                        val future =
+                            if (async) it.receiveAsync().get(7, TimeUnit.SECONDS) else it.receive()
+                        assertThat(future._json()).isPresent
+                        assertThat(mapper.valueToTree<JsonNode>(future).at("/raw/more/2").asInt())
+                            .isEqualTo(3)
+                        it.send(audio("AQID"))
+                        assertThat(peer.next().path("audio").asText()).isEqualTo("AQID")
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun finishWithoutAnActiveReaderPreservesFinalTranscriptAudioAndValidatedClosed() {
+        MockWebServer().use { server ->
+            val peer = Peer(::finalEvents)
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                TranslationConnection.connect(options(server, http)).use { connection ->
+                    connection.send(audio())
+                    assertThat(peer.next().path("type").asText()).isEqualTo(appended)
+                    val finish = connection.finishAsync(deadline)
+                    assertThat(connection.finishAsync(deadline)).isSameAs(finish)
+                    assertThat(finish.get(7, TimeUnit.SECONDS).eventId()).isEqualTo("done")
+                    assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                    val text = connection.receive().asSessionOutputTranscriptDelta()
+                    assertThat(text.delta()).isEqualTo("Hola")
+                    assertThat(text.elapsedMs()).hasValue(200L)
+                    val audio =
+                        connection
+                            .receiveAsync()
+                            .get(7, TimeUnit.SECONDS)
+                            .asSessionOutputAudioDelta()
+                    assertThat(audio.delta()).isEqualTo("AQID")
+                    assertThat(audio.sampleRate()).hasValue(24000L)
+                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
+                    assertThatThrownBy { connection.receive() }.hasMessageContaining("failed")
+                    assertThatThrownBy { connection.send(audio()) }
+                        .isInstanceOf(IllegalStateException::class.java)
+                    assertThat(peer.terminated.await(7, TimeUnit.SECONDS)).isTrue()
+                    assertThat(peer.messages).isEmpty()
+                    assertThat(server.requestCount).isEqualTo(1)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun directExecutorCallbackCanFinishWithOneReaderAndRetainsLaterEvents() {
+        MockWebServer().use { server ->
+            val peer = Peer(::finalEvents)
+            server.enqueue(
+                MockResponse()
+                    .setHeadersDelay(180, TimeUnit.MILLISECONDS)
+                    .withWebSocketUpgrade(peer)
+            )
+            OkHttpClient.builder().build().use { http ->
+                val configuration =
+                    options(server, http).toBuilder().streamHandlerExecutor { it.run() }.build()
+                val received =
+                    TranslationConnection.connectAsync(configuration).thenApply { connection ->
+                        connection.use {
+                            it.send(audio())
+                            assertThat(it.finish(deadline).eventId()).isEqualTo("done")
+                            listOf(
+                                it.receive().asSessionOutputTranscriptDelta().delta(),
+                                it.receive().asSessionOutputAudioDelta().delta(),
+                                it.receive().asSessionClosed().eventId(),
+                            )
+                        }
+                    }
+                assertThat(received.get(7, TimeUnit.SECONDS))
+                    .containsExactly("Hola", "AQID", "done")
+                assertThat(peer.next().path("type").asText()).isEqualTo(appended)
+                assertThat(peer.next().path("type").asText()).isEqualTo(close)
+            }
+        }
+    }
+
+    @Test
+    fun canceledReceiveAndSingleReaderWorkWhileFinishDoesNotStealEitherEvent() {
+        MockWebServer().use { server ->
+            val peer = Peer(::finalEvents)
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                TranslationConnection.connect(options(server, http)).use { connection ->
+                    val canceled = connection.receiveAsync()
+                    assertThatThrownBy { connection.receiveAsync() }
+                        .hasMessageContaining("already pending")
+                    assertThat(canceled.cancel(false)).isTrue()
+                    val waiting = connection.receiveAsync()
+                    val ending = connection.finishAsync(deadline)
+                    assertThat(
+                            waiting
+                                .get(7, TimeUnit.SECONDS)
+                                .asSessionOutputTranscriptDelta()
+                                .delta()
+                        )
+                        .isEqualTo("Hola")
+                    assertThat(ending.get(7, TimeUnit.SECONDS).eventId()).isEqualTo("done")
+                    assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                        .isEqualTo("AQID")
+                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
+                }
+            }
+        }
+    }
+
+    @Test
+    fun intentAndAzureAreRejectedBeforeOpeningOrSendingCredentials() {
+        MockWebServer().use { server ->
+            OkHttpClient.builder().build().use { http ->
+                val inheritedIntent =
+                    options(server, http)
+                        .toBuilder()
+                        .baseUrl(server.url("/v1?intent=translation").toString())
+                        .build()
+                assertThatThrownBy { TranslationConnection.connect(inheritedIntent) }
+                    .isInstanceOf(IllegalArgumentException::class.java)
+                    .hasMessageContaining("intent")
+                val explicit =
+                    TranslationWebSocketOptions.builder()
+                        .putQueryParam("intent", "transcription")
+                        .build()
+                assertThatThrownBy {
+                        TranslationConnection.connect(options(server, http), explicit)
+                    }
+                    .isInstanceOf(IllegalArgumentException::class.java)
+                    .hasMessageContaining("intent")
+                for (pathMode in listOf(AzureUrlPathMode.LEGACY, AzureUrlPathMode.UNIFIED)) {
+                    val azure = options(server, http).toBuilder().azureUrlPathMode(pathMode).build()
+                    assertThatThrownBy { TranslationConnection.connect(azure) }
+                        .isInstanceOf(IllegalArgumentException::class.java)
+                        .hasMessageContaining("Azure")
+                }
+                assertThat(server.requestCount).isZero()
+            }
+        }
+    }
+
+    @Test
+    fun unknownAndErrorCannotSatisfyFinishBeforeNormalTransportClose() {
+        MockWebServer().use { server ->
+            val peer = Peer { socket ->
+                socket.send(
+                    """{"type":"error","event_id":"e","error":{"type":"server_error","message":"not done"}}"""
+                )
+                socket.send("""{"type":"future.session.closed","event_id":"nope"}""")
+                socket.close(1000, "synthetic eof")
+            }
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                TranslationConnection.connect(options(server, http)).use { connection ->
+                    val finish = connection.finishAsync(deadline)
+                    assertThatThrownBy { finish.get(7, TimeUnit.SECONDS) }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .hasCauseInstanceOf(IOException::class.java)
+                    assertThat(connection.receive().isError()).isTrue()
+                    assertThat(connection.receive()._json()).isPresent
+                    assertThatThrownBy { connection.receive() }.hasMessageContaining("failed")
+                    assertThat(server.requestCount).isEqualTo(1)
+                    assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                    assertThat(peer.messages).isEmpty()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun malformedEnvelopeAndInvalidTerminalNeverBecomeSuccessfulDrainEvenLenient() {
+        for (frame in
+            listOf(
+                """{"type":"session.closed"}""",
+                """{"type":"session.closed","event_id":33}""",
+                """{"type":"session.closed","event_id":"x"} {}""",
+                """{"type":false,"event_id":"x"}""",
+            )) {
+            MockWebServer().use { server ->
+                val peer = Peer { it.send(frame) }
+                server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+                OkHttpClient.builder().build().use { http ->
+                    TranslationConnection.connect(options(server, http)).use { connection ->
+                        assertThatThrownBy {
+                                connection.finishAsync(deadline).get(7, TimeUnit.SECONDS)
+                            }
+                            .isInstanceOf(ExecutionException::class.java)
+                        assertThatThrownBy { connection.receive() }
+                            .isInstanceOf(RuntimeException::class.java)
+                        assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                        assertThat(server.requestCount).isEqualTo(1)
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun overflowBeforeTerminalFailsDrainButPreviouslyAdmittedDataCanStillBeRead() {
+        MockWebServer().use { server ->
+            val peer = Peer(::finalEvents)
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val limited = TranslationWebSocketOptions.builder().maxQueuedEvents(1).build()
+                TranslationConnection.connect(options(server, http), limited).use { connection ->
+                    assertThatThrownBy { connection.finishAsync(deadline).get(7, TimeUnit.SECONDS) }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .hasCauseInstanceOf(IOException::class.java)
+                    assertThat(connection.receive().asSessionOutputTranscriptDelta().delta())
+                        .isEqualTo("Hola")
+                    assertThatThrownBy { connection.receive() }.hasMessageContaining("failed")
+                    assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                    assertThat(peer.messages).isEmpty()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun finishTimeoutAndCancellationBothReleaseOnlyTheirSocketWithoutReplay() {
+        for (cancel in listOf(false, true)) {
+            MockWebServer().use { server ->
+                val peer = Peer { it.send("""{"type":"future.keepalive"}""") }
+                server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+                OkHttpClient.builder().build().use { http ->
+                    TranslationConnection.connect(options(server, http)).use { connection ->
+                        val end =
+                            connection.finishAsync(if (cancel) deadline else Duration.ofSeconds(2))
+                        assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                        assertThat(connection.receive()._json()).isPresent
+                        if (cancel) {
+                            assertThat(end.cancel(false)).isTrue()
+                            assertThatThrownBy { connection.receive() }
+                                .hasMessageContaining("closed")
+                        } else {
+                            assertThatThrownBy { end.get(7, TimeUnit.SECONDS) }
+                                .isInstanceOf(ExecutionException::class.java)
+                                .hasCauseInstanceOf(TimeoutException::class.java)
+                            assertThatThrownBy { connection.receive() }
+                                .hasMessageContaining("failed")
+                        }
+                        assertThat(peer.terminated.await(7, TimeUnit.SECONDS)).isTrue()
+                        assertThat(peer.messages).isEmpty()
+                        assertThat(server.requestCount).isEqualTo(1)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun wrapping(
+        delegate: OkHttpClient,
+        write: (WebSocketClient.Connection, String) -> Unit,
+    ): HttpClient =
+        object : HttpClient by delegate, WebSocketClient {
+            override fun connectWebSocket(
+                request: HttpRequest,
+                requestOptions: RequestOptions,
+                maxMessageBytes: Int,
+                listener: WebSocketClient.Listener,
+            ): CompletableFuture<WebSocketClient.Connection> =
+                delegate
+                    .connectWebSocket(request, requestOptions, maxMessageBytes, listener)
+                    .thenApply { connection ->
+                        object : WebSocketClient.Connection by connection {
+                            override fun send(text: String) = write(connection, text)
+                        }
+                    }
+        }
+
+    @Test
+    fun finishFollowsAnAdmittedInFlightAppendAndOnlyRetriesTypedPrewriteBusy() {
+        MockWebServer().use { server ->
+            val peer = Peer(::finalEvents)
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val admitted = CountDownLatch(1)
+                val release = CountDownLatch(1)
+                val remainingBusy = AtomicInteger(2)
+                val client =
+                    wrapping(http) { socket, text ->
+                        when (mapper.readTree(text).path("type").asText()) {
+                            appended -> {
+                                admitted.countDown()
+                                check(release.await(7, TimeUnit.SECONDS))
+                                socket.send(text)
+                            }
+                            close -> {
+                                if (remainingBusy.getAndDecrement() > 0)
+                                    throw WebSocketWriteNotAttempted.Busy(
+                                        "synthetic transport admission"
+                                    )
+                                socket.send(text)
+                            }
+                            else -> socket.send(text)
+                        }
+                    }
+                TranslationConnection.connect(options(server, client)).use { connection ->
+                    try {
+                        val input = CompletableFuture.runAsync { connection.send(audio()) }
+                        assertThat(admitted.await(7, TimeUnit.SECONDS)).isTrue()
+                        val end = connection.finishAsync(deadline)
+                        assertThatThrownBy { connection.send(audio("AQID")) }
+                            .hasMessageContaining("finishing")
+                        assertThat(peer.messages).isEmpty()
+                        release.countDown()
+                        input.get(7, TimeUnit.SECONDS)
+                        assertThat(end.get(7, TimeUnit.SECONDS).eventId()).isEqualTo("done")
+                        assertThat(peer.next().path("type").asText()).isEqualTo(appended)
+                        assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                        assertThat(peer.messages).isEmpty()
+                        assertThat(connection.receive().asSessionOutputTranscriptDelta().delta())
+                            .isEqualTo("Hola")
+                        assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                            .isEqualTo("AQID")
+                        assertThat(connection.receive().asSessionClosed().eventId())
+                            .isEqualTo("done")
+                    } finally {
+                        release.countDown()
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun genericIllegalStateAfterActuallyWritingCloseCannotTriggerReplayOrSuccess() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val client =
+                    wrapping(http) { socket, text ->
+                        socket.send(text)
+                        if (mapper.readTree(text).path("type").asText() == close) {
+                            check(peer.next().path("type").asText() == close)
+                            throw IllegalStateException("uncertain after native write")
+                        }
+                    }
+                TranslationConnection.connect(options(server, client)).use { connection ->
+                    assertThatThrownBy { connection.finishAsync(deadline).get(7, TimeUnit.SECONDS) }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .hasCauseInstanceOf(IllegalStateException::class.java)
+                    assertThatThrownBy { connection.receive() }.hasMessageContaining("uncertain")
+                    assertThat(peer.terminated.await(7, TimeUnit.SECONDS)).isTrue()
+                    assertThat(peer.messages).isEmpty()
+                    assertThat(server.requestCount).isEqualTo(1)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun invalidFrameReleasesCustomTransportWhoseCloseJoinsItsReader() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val readerReturned = CountDownLatch(1)
+                val client =
+                    object : HttpClient by http, WebSocketClient {
+                        override fun connectWebSocket(
+                            request: HttpRequest,
+                            options: RequestOptions,
+                            maxMessageBytes: Int,
+                            listener: WebSocketClient.Listener,
+                        ): CompletableFuture<WebSocketClient.Connection> =
+                            http
+                                .connectWebSocket(
+                                    request,
+                                    options,
+                                    maxMessageBytes,
+                                    object : WebSocketClient.Listener by listener {
+                                        override fun onMessage(text: String) {
+                                            try {
+                                                listener.onMessage(text)
+                                            } finally {
+                                                readerReturned.countDown()
+                                            }
+                                        }
+                                    },
+                                )
+                                .thenApply { socket ->
+                                    object : WebSocketClient.Connection by socket {
+                                        override fun close() {
+                                            check(readerReturned.await(2, TimeUnit.SECONDS)) {
+                                                "Cannot release transport until its reader returns"
+                                            }
+                                            socket.close()
+                                        }
+                                    }
+                                }
+                    }
+                TranslationConnection.connect(options(server, client)).use { connection ->
+                    val event = connection.receiveAsync()
+                    peer.socket.get(7, TimeUnit.SECONDS).send("""{"type":false}""")
+                    assertThatThrownBy { event.get(7, TimeUnit.SECONDS) }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .cause()
+                        .isInstanceOf(IllegalArgumentException::class.java)
+                        .hasMessage("Invalid Translation event")
+                        .hasNoSuppressedExceptions()
+                    assertThat(peer.terminated.await(7, TimeUnit.SECONDS)).isTrue()
+                    assertThat(server.requestCount).isEqualTo(1)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun reconnectIsCallerOwnedAndDoesNotResendCommandsOrTouchOtherSession() {
+        MockWebServer().use { server ->
+            val first = Peer()
+            val other = Peer()
+            val fresh = Peer(::finalEvents)
+            for (peer in listOf(first, other, fresh)) server.enqueue(
+                MockResponse().withWebSocketUpgrade(peer)
+            )
+            OkHttpClient.builder().build().use { http ->
+                val configuration = options(server, http)
+                TranslationConnection.connect(configuration).use { original ->
+                    TranslationConnection.connect(configuration).use { independent ->
+                        original.send(audio("AA=="))
+                        assertThat(first.next().path("audio").asText()).isEqualTo("AA==")
+                        original.reconnect().use { reconnected ->
+                            assertThat(first.terminated.await(7, TimeUnit.SECONDS)).isTrue()
+                            assertThat(fresh.messages).isEmpty()
+                            independent.send(audio("AQ=="))
+                            assertThat(other.next().path("audio").asText()).isEqualTo("AQ==")
+                            assertThat(reconnected.finish(deadline).eventId()).isEqualTo("done")
+                            assertThat(fresh.next().path("type").asText()).isEqualTo(close)
+                            assertThat(fresh.messages).isEmpty()
+                            assertThat(other.messages).isEmpty()
+                            assertThat(server.requestCount).isEqualTo(3)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
