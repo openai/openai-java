@@ -131,6 +131,14 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         fun create(listener: Consumer<Update>): LiveTranscriptGrouper = builder(listener).build()
 
         private val nextGrouper = AtomicLong()
+        // Like WebSocket timeouts, transcript timers are shared across sessions. Each grouper
+        // cancels only its own future. Threads are daemonized and start only when work is
+        // scheduled.
+        private val scheduler =
+            ScheduledThreadPoolExecutor(2) { work ->
+                    Thread(work, "openai-live-transcripts").apply { isDaemon = true }
+                }
+                .apply { removeOnCancelPolicy = true }
         private val punctuation = ".,!?;:\"'()[]{}"
         private val whitespace =
             Regex(
@@ -208,12 +216,6 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
     private var closed = false
     private var timerGeneration = 0L
     private var timer: ScheduledFuture<*>? = null
-    // A thread is created only when a timer is needed. Never retains the caller's connection.
-    private val scheduler =
-        ScheduledThreadPoolExecutor(1) { work ->
-                Thread(work, "openai-live-transcripts").apply { isDaemon = true }
-            }
-            .apply { removeOnCancelPolicy = true }
 
     fun push(event: ServerEvent) {
         when {
@@ -274,7 +276,6 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
             seen.clear()
             timerGeneration++
             timer?.cancel(false)
-            scheduler.shutdown()
         }
         dispatch()
     }
@@ -376,15 +377,18 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
                 buffer(fragment)
                 promote()
             } else if (fragment.start - turn.end < separation) {
-                val text = normalize((waiting?.text?.toString() ?: "") + fragment.text)
-                buffer(
-                    fragment,
-                    fragment.end - (waiting?.start ?: fragment.start) < maxDuration &&
-                        text.isNotEmpty() &&
-                        acknowledgments.any { it.startsWith(text) },
-                )
+                val canDrop =
+                    waiting?.canDrop != false &&
+                        fragment.end - (waiting?.start ?: fragment.start) < maxDuration &&
+                        normalize((waiting?.text?.toString() ?: "") + fragment.text).let { text ->
+                            // Leading whitespace or punctuation can still precede an
+                            // acknowledgment.
+                            text.isEmpty() || acknowledgments.any { it.startsWith(text) }
+                        }
+                buffer(fragment, canDrop)
             } else if (
-                fragment.end - (waiting?.start ?: fragment.start) < maxDuration &&
+                waiting?.canDrop != false &&
+                    fragment.end - (waiting?.start ?: fragment.start) < maxDuration &&
                     normalize((waiting?.text?.toString() ?: "") + fragment.text) in acknowledgments
             ) {
                 buffer(fragment, waiting != null)
@@ -459,7 +463,12 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         val waiting = buffered ?: return null
         // A prefix is worth buffering, but must not be suppressed before it becomes a complete
         // acknowledgment. It may still grow into substantive speech after a user delta.
-        if (!mightDrop() || normalize(waiting.text.toString()) !in acknowledgments) return waiting
+        if (
+            !waiting.canDrop ||
+                !mightDrop() ||
+                normalize(waiting.text.toString()) !in acknowledgments
+        )
+            return waiting
         if (userContinued()) return null
         if (recentAssistant()) return waiting
         if (next != null && next.start - waiting.end < isolation) return waiting

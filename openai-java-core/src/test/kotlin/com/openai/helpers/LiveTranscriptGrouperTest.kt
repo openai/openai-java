@@ -205,6 +205,46 @@ internal class LiveTranscriptGrouperTest {
     }
 
     @Test
+    fun leadingPunctuationDoesNotRuleOutAFragmentedAcknowledgment() {
+        val events = updates()
+        LiveTranscriptGrouper.create { events.add(it) }
+            .use { grouper ->
+                grouper.push(input("u1", "I can", 0, 100))
+                grouper.push(output("a1", " \"", 0, 100))
+                grouper.push(input("u2", " speak", 100, 200))
+                grouper.push(output("a2", "okay\"", 200, 300))
+                grouper.push(input("u3", " for myself", 300, 400))
+            }
+        assertThat(finalized(events).map { it.segment().text() })
+            .containsExactly("I can speak for myself")
+    }
+
+    @Test
+    fun closingOneGrouperDoesNotCancelAnotherSessionDeadline() {
+        val first = LiveTranscriptGrouper.create {}
+        val events = updates()
+        val completed = CountDownLatch(1)
+        val second =
+            LiveTranscriptGrouper.builder {
+                    events.add(it)
+                    if (it.closeReason().orElse(null) == CloseReason.INACTIVITY)
+                        completed.countDown()
+                }
+                .assistantSilence(Duration.ofMillis(20))
+                .build()
+        first.use {
+            second.use {
+                first.push(input("u1", "pending", 0, 100))
+                second.push(output("a1", "independent", 0, 100))
+                first.close()
+                assertThat(completed.await(2, TimeUnit.SECONDS)).isTrue()
+                assertThat(finalized(events).map { it.segment().text() })
+                    .containsExactly("independent")
+            }
+        }
+    }
+
+    @Test
     fun substantiveOverlappingAssistantSpeechIsNotSuppressed() {
         val events = updates()
         val grouper = LiveTranscriptGrouper.create { events.add(it) }
