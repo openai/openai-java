@@ -1,6 +1,10 @@
 package com.openai.client.okhttp
 
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.openai.azure.AzureUrlPathMode
 import com.openai.core.ClientOptions
@@ -14,6 +18,7 @@ import com.openai.helpers.TranslationConnection
 import com.openai.helpers.TranslationWebSocketOptions
 import com.openai.models.realtime.RealtimeTranslationClientEvent
 import com.openai.models.realtime.RealtimeTranslationInputAudioBufferAppendEvent
+import com.openai.models.realtime.RealtimeTranslationServerEvent
 import java.io.IOException
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
@@ -972,6 +977,188 @@ class TranslationConnectionTest {
             } finally {
                 // A failing implementation can leave the claimed read's completion queued.
                 // Release it during test cleanup, retaining the original observable failure.
+                executor.shutdownNow().forEach { it.run() }
+                executor.awaitTermination(5, TimeUnit.SECONDS)
+            }
+        }
+    }
+
+    @Test
+    fun finishTimeoutClosesBlockedSerializationAndBlockedAdmissionWithoutReplay() {
+        for (serialize in listOf(true, false)) {
+            MockWebServer().use { server ->
+                val peer = Peer()
+                server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+                OkHttpClient.builder().build().use { http ->
+                    val began = CountDownLatch(1)
+                    val closed = CountDownLatch(1)
+                    val client =
+                        object : HttpClient by http, WebSocketClient {
+                            override fun connectWebSocket(
+                                request: HttpRequest,
+                                options: RequestOptions,
+                                maxMessageBytes: Int,
+                                listener: WebSocketClient.Listener,
+                            ): CompletableFuture<WebSocketClient.Connection> =
+                                http
+                                    .connectWebSocket(request, options, maxMessageBytes, listener)
+                                    .thenApply { native ->
+                                        object : WebSocketClient.Connection by native {
+                                            override fun send(text: String) {
+                                                if (!serialize) {
+                                                    began.countDown()
+                                                    check(closed.await(9, TimeUnit.SECONDS))
+                                                }
+                                                native.send(text)
+                                            }
+
+                                            override fun close() {
+                                                native.close()
+                                                closed.countDown()
+                                            }
+                                        }
+                                    }
+                        }
+                    val configuration =
+                        options(server, client)
+                            .toBuilder()
+                            .jsonMapper(
+                                object : JsonMapper(mapper) {
+                                    override fun writeValueAsString(value: Any): String {
+                                        if (
+                                            serialize &&
+                                                value is RealtimeTranslationClientEvent &&
+                                                value.isSessionClose()
+                                        ) {
+                                            began.countDown()
+                                            check(closed.await(9, TimeUnit.SECONDS))
+                                        }
+                                        return super.writeValueAsString(value)
+                                    }
+                                }
+                            )
+                            .build()
+                    TranslationConnection.connect(configuration).use { connection ->
+                        val finish = connection.finishAsync(Duration.ofSeconds(1))
+                        assertThat(began.await(3, TimeUnit.SECONDS)).isTrue()
+                        assertThatThrownBy { finish.get(4, TimeUnit.SECONDS) }
+                            .isInstanceOf(ExecutionException::class.java)
+                            .hasCauseInstanceOf(TimeoutException::class.java)
+                        assertThat(closed.await(3, TimeUnit.SECONDS)).isTrue()
+                        assertThat(peer.terminated.await(3, TimeUnit.SECONDS)).isTrue()
+                        assertThat(peer.messages).isEmpty()
+                        assertThat(server.requestCount).isEqualTo(1)
+                    }
+                }
+            }
+        }
+    }
+
+    @JsonDeserialize(using = BrokenTranslationDeserializer::class)
+    private interface BrokenTranslationMixin
+
+    private class BrokenTranslationDeserializer :
+        JsonDeserializer<RealtimeTranslationServerEvent>() {
+        override fun deserialize(
+            parser: JsonParser,
+            context: DeserializationContext,
+        ): RealtimeTranslationServerEvent {
+            throw AssertionError("synthetic Translation deserializer error")
+        }
+    }
+
+    @Test
+    fun deserializerErrorCompletesReadEvenIfTransportContainsListenerThrowables() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val client =
+                    object : HttpClient by http, WebSocketClient {
+                        override fun connectWebSocket(
+                            request: HttpRequest,
+                            options: RequestOptions,
+                            maxMessageBytes: Int,
+                            listener: WebSocketClient.Listener,
+                        ): CompletableFuture<WebSocketClient.Connection> =
+                            http.connectWebSocket(
+                                request,
+                                options,
+                                maxMessageBytes,
+                                object : WebSocketClient.Listener by listener {
+                                    override fun onMessage(text: String) {
+                                        // Transports may contain listener failures to protect their
+                                        // reader.
+                                        try {
+                                            listener.onMessage(text)
+                                        } catch (_: Throwable) {}
+                                    }
+                                },
+                            )
+                    }
+                val customMapper = mapper.copy()
+                customMapper.addMixIn(
+                    RealtimeTranslationServerEvent::class.java,
+                    BrokenTranslationMixin::class.java,
+                )
+                val configuration =
+                    options(server, client).toBuilder().jsonMapper(customMapper).build()
+                TranslationConnection.connect(configuration).use { connection ->
+                    val read = connection.receiveAsync()
+                    peer.socket
+                        .get(5, TimeUnit.SECONDS)
+                        .send(
+                            """{"type":"session.output_transcript.delta","event_id":"text","delta":"Hola"}"""
+                        )
+                    assertThatThrownBy { read.get(5, TimeUnit.SECONDS) }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .hasCauseInstanceOf(AssertionError::class.java)
+                        .cause()
+                        .hasMessage("synthetic Translation deserializer error")
+                    assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(peer.messages).isEmpty()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun blockingReconnectFromSingleThreadAsyncCallbackCreatesOneFreshSocket() {
+        MockWebServer().use { server ->
+            val executor = Executors.newSingleThreadExecutor()
+            try {
+                val initial = Peer()
+                val fresh = Peer()
+                server.enqueue(MockResponse().withWebSocketUpgrade(initial))
+                server.enqueue(MockResponse().withWebSocketUpgrade(fresh))
+                OkHttpClient.builder().build().use { http ->
+                    val configuration =
+                        options(server, http).toBuilder().streamHandlerExecutor(executor).build()
+                    TranslationConnection.connect(configuration).use { connection ->
+                        connection.send(audio())
+                        assertThat(initial.next().path("audio").asText()).isEqualTo("AAAA")
+                        val recovered =
+                            connection.receiveAsync().thenApply {
+                                assertThat(it.asSessionOutputTranscriptDelta().delta())
+                                    .isEqualTo("Hola")
+                                connection.reconnect().use { next ->
+                                    assertThat(fresh.messages).isEmpty()
+                                    next.send(audio("AQID"))
+                                    fresh.next().path("audio").asText()
+                                }
+                            }
+                        initial.socket
+                            .get(5, TimeUnit.SECONDS)
+                            .send(
+                                """{"type":"session.output_transcript.delta","event_id":"text","delta":"Hola"}"""
+                            )
+                        assertThat(recovered.get(5, TimeUnit.SECONDS)).isEqualTo("AQID")
+                        assertThat(initial.terminated.await(3, TimeUnit.SECONDS)).isTrue()
+                        assertThat(fresh.terminated.await(3, TimeUnit.SECONDS)).isTrue()
+                        assertThat(server.requestCount).isEqualTo(2)
+                    }
+                }
+            } finally {
                 executor.shutdownNow().forEach { it.run() }
                 executor.awaitTermination(5, TimeUnit.SECONDS)
             }

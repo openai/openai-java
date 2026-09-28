@@ -28,8 +28,10 @@ import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.ForkJoinPool
+import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Managed Translation connection. Consume typed events synchronously or asynchronously, with one
@@ -112,6 +114,12 @@ private constructor(
     }
 
     companion object {
+        private val finishTimer =
+            ScheduledThreadPoolExecutor(1) { runnable ->
+                    Thread(runnable, "openai-translation-timeouts").apply { isDaemon = true }
+                }
+                .apply { removeOnCancelPolicy = true }
+
         @JvmStatic
         @JvmOverloads
         @MustBeClosed
@@ -119,7 +127,8 @@ private constructor(
             clientOptions: ClientOptions,
             options: TranslationWebSocketOptions = TranslationWebSocketOptions.defaults(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): TranslationConnection = await(connectAsync(clientOptions, options, requestOptions))
+        ): TranslationConnection =
+            await(connectAsync(clientOptions, options, requestOptions, blocking = true))
 
         @JvmStatic
         @JvmOverloads
@@ -127,6 +136,14 @@ private constructor(
             clientOptions: ClientOptions,
             options: TranslationWebSocketOptions = TranslationWebSocketOptions.defaults(),
             requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<TranslationConnection> =
+            connectAsync(clientOptions, options, requestOptions, blocking = false)
+
+        private fun connectAsync(
+            clientOptions: ClientOptions,
+            options: TranslationWebSocketOptions,
+            requestOptions: RequestOptions,
+            blocking: Boolean,
         ): CompletableFuture<TranslationConnection> {
             val connection = TranslationConnection(clientOptions, options, requestOptions)
             val result = CompletableFuture<TranslationConnection>()
@@ -220,7 +237,7 @@ private constructor(
                                 }
                             }
                     } else connection.finishTerminal()
-                    connection.dispatch {
+                    val complete: () -> Unit = {
                         // The owner or socket can close while completion waits on the executor.
                         // Inspect state here, but keep user callbacks outside the lock.
                         val completionError =
@@ -240,6 +257,9 @@ private constructor(
                             result.completeExceptionally(completionError)
                         } else if (!result.complete(connection)) connection.close()
                     }
+                    // The blocking path's private future has no user continuations and may
+                    // itself be called from the stream executor. Public futures still dispatch.
+                    if (blocking) complete() else connection.dispatch(complete)
                 }
             } catch (error: Exception) {
                 connection.fail(error)
@@ -376,16 +396,50 @@ private constructor(
             check(!closed) { "Translation connection is closed" }
             result = CompletableFuture()
             finishing = result
+            failure?.let {
+                // This new future has not escaped the lock and cannot have user callbacks yet.
+                result.completeExceptionally(it)
+                return result
+            }
         }
-        result.whenComplete { _, _ -> if (result.isCancelled) close() }
+        val decided = AtomicBoolean()
+        val alarm =
+            finishTimer.schedule(
+                {
+                    if (decided.compareAndSet(false, true))
+                        fail(TimeoutException("Translation finish timed out"))
+                },
+                maxOf(0L, deadline - System.nanoTime()),
+                TimeUnit.NANOSECONDS,
+            )
+        result.whenComplete { _, _ ->
+            alarm.cancel(false)
+            if (result.isCancelled) {
+                decided.set(true)
+                close()
+            }
+        }
         CompletableFuture.runAsync {
             try {
-                val closeText =
-                    clientOptions.jsonMapper.writeValueAsString(
-                        RealtimeTranslationClientEvent.ofSessionClose(
-                            RealtimeTranslationSessionCloseEvent.builder().build()
-                        )
-                    )
+                lateinit var closeText: String
+                ForkJoinPool.managedBlock(
+                    object : ForkJoinPool.ManagedBlocker {
+                        private var prepared = false
+
+                        override fun isReleasable() = prepared
+
+                        override fun block(): Boolean {
+                            closeText =
+                                clientOptions.jsonMapper.writeValueAsString(
+                                    RealtimeTranslationClientEvent.ofSessionClose(
+                                        RealtimeTranslationSessionCloseEvent.builder().build()
+                                    )
+                                )
+                            prepared = true
+                            return true
+                        }
+                    }
+                )
                 require(utf8Size(closeText) <= options.maxMessageBytes) {
                     "Translation close exceeds maxMessageBytes"
                 }
@@ -426,7 +480,8 @@ private constructor(
                         // Only this marker proves no write was attempted. Never replay on an
                         // arbitrary transport exception; its outcome may already be on the wire.
                         synchronized(lock) {
-                            waitUntil(deadline, TimeUnit.MILLISECONDS.toNanos(10))
+                            if (terminal == null && failure == null)
+                                waitUntil(deadline, TimeUnit.MILLISECONDS.toNanos(10))
                         }
                     }
                 }
@@ -438,10 +493,14 @@ private constructor(
                             throw TimeoutException("Translation finish timed out")
                         checkNotNull(terminal)
                     }
-                result.complete(end)
+                if (decided.compareAndSet(false, true)) result.complete(end)
             } catch (error: Throwable) {
-                fail(error)
-                result.completeExceptionally(error)
+                if (decided.compareAndSet(false, true)) {
+                    fail(error)
+                    // A failure may predate this finish; in that case fail already released
+                    // the socket and the newly created finish still needs its own completion.
+                    result.completeExceptionally(error)
+                }
             }
         }
         return result
@@ -497,6 +556,8 @@ private constructor(
 
     private fun accept(text: String) {
         synchronized(lock) { if (closed || failure != null || terminal != null) return }
+        val event: RealtimeTranslationServerEvent
+        val end: RealtimeTranslationSessionClosedEvent?
         try {
             // Reject malformed envelopes independently of lenient or user-supplied model readers.
             clientOptions.jsonMapper.factory.createParser(text).use { parser ->
@@ -518,11 +579,17 @@ private constructor(
                     "Invalid Translation event"
                 }
             }
-            val event: RealtimeTranslationServerEvent = reader.readValue(text)
+            event = reader.readValue(text)
             if (requestOptions.responseValidation ?: clientOptions.responseValidation)
                 event.validate()
             // Even in lenient mode, incomplete/malformed terminal events cannot claim success.
-            val end = event.sessionClosed().orElse(null)?.validate()
+            end = event.sessionClosed().orElse(null)?.validate()
+        } catch (error: Throwable) {
+            // Only parser/mapper/validation code is covered here, never user continuations.
+            fail(error, unlessTerminal = true)
+            return
+        }
+        try {
             val bytes = utf8Size(text)
             val target =
                 synchronized(lock) {
@@ -593,6 +660,11 @@ private constructor(
             }
         // Failure can originate on the listener, and custom transports can join that reader
         // during close. Release off-thread before completing the failed pending receive.
+        // Completing finish is independent of cleanup so even blocking transports cannot
+        // hold its deadline. Neither user callback nor transport close runs on the timer.
+        finishing?.let { ending ->
+            CompletableFuture.runAsync { ending.completeExceptionally(error) }
+        }
         CompletableFuture.runAsync {
             try {
                 detached.second?.cancel(true)
