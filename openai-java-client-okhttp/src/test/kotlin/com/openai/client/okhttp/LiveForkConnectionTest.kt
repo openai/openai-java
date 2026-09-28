@@ -357,6 +357,7 @@ class LiveForkConnectionTest {
                                 val event = it.receive()
                                 LiveForkConnection.connect(client, "second").use { other ->
                                     other.send(finish())
+                                    assertThat(other.receive().isSessionClosed()).isTrue()
                                 }
                                 event
                             }
@@ -371,8 +372,6 @@ class LiveForkConnectionTest {
                     first.socket
                         .get(8, TimeUnit.SECONDS)
                         .send("""{"type":"session.started","event_id":"ready","session":{}}""")
-                    assertThat(result.get(8, TimeUnit.SECONDS).asSessionStarted().eventId())
-                        .isEqualTo("ready")
                     assertThat(
                             mapper
                                 .readTree(second.messages.poll(8, TimeUnit.SECONDS))
@@ -380,6 +379,13 @@ class LiveForkConnectionTest {
                                 .asText()
                         )
                         .isEqualTo("session.close")
+                    second.socket
+                        .get(8, TimeUnit.SECONDS)
+                        .send(
+                            """{"type":"session.closed","event_id":"closed","session":{},"reason":"client_request"}"""
+                        )
+                    assertThat(result.get(8, TimeUnit.SECONDS).asSessionStarted().eventId())
+                        .isEqualTo("ready")
                 }
             }
         } finally {
