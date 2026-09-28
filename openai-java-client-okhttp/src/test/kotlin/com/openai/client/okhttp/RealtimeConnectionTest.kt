@@ -14,6 +14,7 @@ import com.openai.models.realtime.InputAudioBufferClearEvent
 import com.openai.models.realtime.RealtimeClientEvent
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import okhttp3.Response
@@ -94,6 +95,108 @@ class RealtimeConnectionTest {
                 } finally {
                     configuration.close()
                 }
+            }
+        }
+    }
+
+    @Test
+    fun blockingReadInSingleThreadAsyncCallbackReceivesFramesAndPeerFailures() {
+        for (peerCloses in listOf(false, true)) {
+            MockWebServer().use { server ->
+                val executor = Executors.newSingleThreadExecutor()
+                try {
+                    val peer = Listener()
+                    server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+                    OkHttpClient.builder().build().use { http ->
+                        val configuration =
+                            options(server, http)
+                                .toBuilder()
+                                .streamHandlerExecutor(executor)
+                                .build()
+                        RealtimeConnection.connect(configuration).use { connection ->
+                            val reading = CountDownLatch(1)
+                            val next =
+                                connection.receiveAsync().thenApply {
+                                    assertThat(it._json()).isPresent()
+                                    reading.countDown()
+                                    connection.receive()
+                                }
+                            val socket = peer.socket.get(5, TimeUnit.SECONDS)
+                            socket.send("""{"type":"future.first","data":"ready"}""")
+                            assertThat(reading.await(5, TimeUnit.SECONDS)).isTrue()
+                            if (peerCloses) {
+                                socket.close(1000, "complete")
+                                assertThatThrownBy { next.get(5, TimeUnit.SECONDS) }
+                                    .hasRootCauseMessage("GA Realtime WebSocket closed (code 1000)")
+                            } else {
+                                socket.send(
+                                    """{"type":"input_audio_buffer.cleared","event_id":"second"}"""
+                                )
+                                assertThat(
+                                        next
+                                            .get(5, TimeUnit.SECONDS)
+                                            .asInputAudioBufferCleared()
+                                            .eventId()
+                                    )
+                                    .isEqualTo("second")
+                            }
+                        }
+                    }
+                } finally {
+                    executor.shutdownNow().forEach { it.run() }
+                    executor.awaitTermination(5, TimeUnit.SECONDS)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun blockingReconnectInSingleThreadCallbackCreatesOneFreshSocketAndDoesNotReplay() {
+        MockWebServer().use { server ->
+            val executor = Executors.newSingleThreadExecutor()
+            try {
+                val initial = Listener()
+                val fresh = Listener()
+                server.enqueue(MockResponse().withWebSocketUpgrade(initial))
+                server.enqueue(MockResponse().withWebSocketUpgrade(fresh))
+                OkHttpClient.builder().build().use { http ->
+                    val configuration =
+                        options(server, http).toBuilder().streamHandlerExecutor(executor).build()
+                    RealtimeConnection.connect(configuration).use { connection ->
+                        connection.send(command())
+                        assertThat(
+                                mapper
+                                    .readTree(initial.messages.poll(5, TimeUnit.SECONDS))
+                                    .path("type")
+                                    .asText()
+                            )
+                            .isEqualTo("input_audio_buffer.clear")
+                        val recovered =
+                            connection.receiveAsync().thenApply {
+                                assertThat(it.asInputAudioBufferCleared().eventId())
+                                    .isEqualTo("first")
+                                connection.reconnect().use { next ->
+                                    assertThat(fresh.messages).isEmpty()
+                                    next.send(command())
+                                    mapper
+                                        .readTree(fresh.messages.poll(5, TimeUnit.SECONDS))
+                                        .path("type")
+                                        .asText()
+                                }
+                            }
+                        initial.socket
+                            .get(5, TimeUnit.SECONDS)
+                            .send("""{"type":"input_audio_buffer.cleared","event_id":"first"}""")
+                        assertThat(recovered.get(5, TimeUnit.SECONDS))
+                            .isEqualTo("input_audio_buffer.clear")
+                        assertThat(initial.terminated.await(3, TimeUnit.SECONDS)).isTrue()
+                        assertThat(fresh.terminated.await(3, TimeUnit.SECONDS)).isTrue()
+                        assertThat(server.requestCount).isEqualTo(2)
+                    }
+                }
+            } finally {
+                executor.shutdownNow().forEach { it.run() }
+                executor.awaitTermination(5, TimeUnit.SECONDS)
             }
         }
     }
@@ -446,10 +549,67 @@ class RealtimeConnectionTest {
 
     @Test
     fun uncertainFailedWriteClosesAndNeverResendsToTheReplacement() {
+        for (original in
+            listOf(java.io.IOException("uncertain write"), AssertionError("uncertain write"))) {
+            checkUncertainWrite(original)
+        }
+    }
+
+    @Test
+    fun failedOpeningCompletesWithTheOriginalErrorWhenSocketCleanupThrows() {
+        val original = java.io.IOException("failed while opening")
+        val closing = AssertionError("synthetic close failed")
+        var closes = 0
+        var httpClosed = false
+        val http =
+            object : HttpClient, WebSocketClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse = throw UnsupportedOperationException()
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> = throw UnsupportedOperationException()
+
+                override fun close() {
+                    httpClosed = true
+                }
+
+                override fun connectWebSocket(
+                    request: HttpRequest,
+                    options: RequestOptions,
+                    maxMessageBytes: Int,
+                    listener: WebSocketClient.Listener,
+                ): CompletableFuture<WebSocketClient.Connection> {
+                    listener.onFailure(original)
+                    return CompletableFuture.completedFuture(
+                        object : WebSocketClient.Connection {
+                            override fun send(text: String) = error("a failed socket cannot send")
+
+                            override fun close() {
+                                closes++
+                                throw closing
+                            }
+                        }
+                    )
+                }
+            }
+        val configuration = ClientOptions.builder().httpClient(http).apiKey("fake-key").build()
+        val opening = RealtimeConnection.connectAsync(configuration)
+        assertThatThrownBy { opening.get(5, TimeUnit.SECONDS) }.hasCause(original)
+        assertThat(original.suppressed).containsExactly(closing)
+        assertThat(closes).isEqualTo(1)
+        assertThat(httpClosed).isFalse()
+    }
+
+    private fun checkUncertainWrite(original: Throwable) {
         var opened = 0
         var writes = 0
         var closes = 0
         var httpClosed = false
+        val closing = AssertionError("synthetic close failed")
         val http =
             object : HttpClient, WebSocketClient {
                 override fun execute(
@@ -477,11 +637,12 @@ class RealtimeConnectionTest {
                         object : WebSocketClient.Connection {
                             override fun send(text: String) {
                                 writes++
-                                if (opened == 1) throw java.io.IOException("uncertain write")
+                                if (opened == 1) throw original
                             }
 
                             override fun close() {
                                 closes++
+                                if (opened == 1) throw closing
                             }
                         }
                     )
@@ -490,9 +651,10 @@ class RealtimeConnectionTest {
         val configuration = ClientOptions.builder().httpClient(http).apiKey("fake-key").build()
         RealtimeConnection.connect(configuration).use { old ->
             val pending = old.receiveAsync()
-            assertThatThrownBy { old.send(command()) }.hasMessage("uncertain write")
+            assertThatThrownBy { old.send(command()) }.isSameAs(original)
             assertThatThrownBy { pending.get(8, TimeUnit.SECONDS) }
                 .hasRootCauseMessage("uncertain write")
+            assertThat(original.suppressed).containsExactly(closing)
             assertThatThrownBy { old.send(command()) }.hasMessageContaining("not connected")
             old.reconnect().use { fresh ->
                 assertThat(writes).isEqualTo(1)
