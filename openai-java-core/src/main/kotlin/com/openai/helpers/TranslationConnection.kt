@@ -96,7 +96,8 @@ private constructor(
 
     // Assign a read without invoking arbitrary CompletableFuture callbacks while holding lock.
     // Once assigned it cannot be canceled and silently discard a server event.
-    private inner class ReadFuture : CompletableFuture<RealtimeTranslationServerEvent>() {
+    private inner class ReadFuture(val blocking: Boolean) :
+        CompletableFuture<RealtimeTranslationServerEvent>() {
         var claimed = false
         var cancellationReserved = false
 
@@ -277,10 +278,13 @@ private constructor(
     }
 
     /** Returns one event, even if the peer closes immediately after it. */
-    fun receive(): RealtimeTranslationServerEvent = await(receiveAsync())
+    fun receive(): RealtimeTranslationServerEvent = await(receiveAsync(blocking = true))
 
     /** Canceling an unassigned read leaves the session open for the next read. */
-    fun receiveAsync(): CompletableFuture<RealtimeTranslationServerEvent> {
+    fun receiveAsync(): CompletableFuture<RealtimeTranslationServerEvent> =
+        receiveAsync(blocking = false)
+
+    private fun receiveAsync(blocking: Boolean): CompletableFuture<RealtimeTranslationServerEvent> {
         synchronized(lock) {
             check(!closed) { "Translation connection is closed" }
             if (waiter?.let { it.isDone || it.cancellationReserved } == true) waiter = null
@@ -299,7 +303,7 @@ private constructor(
                 return CompletableFuture<RealtimeTranslationServerEvent>().apply {
                     completeExceptionally(EOFException("Translation session ended"))
                 }
-            return ReadFuture().also { next ->
+            return ReadFuture(blocking).also { next ->
                 waiter = next
                 next.whenComplete { _, _ ->
                     synchronized(lock) { if (waiter === next) waiter = null }
@@ -402,7 +406,21 @@ private constructor(
                         }
                     if (active == null) break
                     try {
-                        active.send(closeText)
+                        // A custom write can wait for transport progress that needs another
+                        // common-pool worker. Do not occupy its last worker unnoticed.
+                        ForkJoinPool.managedBlock(
+                            object : ForkJoinPool.ManagedBlocker {
+                                private var sent = false
+
+                                override fun isReleasable() = sent
+
+                                override fun block(): Boolean {
+                                    active.send(closeText)
+                                    sent = true
+                                    return true
+                                }
+                            }
+                        )
                         break
                     } catch (busy: WebSocketWriteNotAttempted.Busy) {
                         // Only this marker proves no write was attempted. Never replay on an
@@ -416,6 +434,8 @@ private constructor(
                     synchronized(lock) {
                         while (!finished && failure == null) waitUntil(deadline)
                         failure?.let { throw it }
+                        if (deadline - System.nanoTime() <= 0L)
+                            throw TimeoutException("Translation finish timed out")
                         checkNotNull(terminal)
                     }
                 result.complete(end)
@@ -524,7 +544,11 @@ private constructor(
                     }
                     available
                 }
-            if (target != null) dispatch { target.complete(event) }
+            if (target != null) {
+                // A blocking read's private future cannot have user callbacks. Its caller may
+                // itself occupy the only stream executor thread, so never queue behind it.
+                if (target.blocking) target.complete(event) else dispatch { target.complete(event) }
+            }
             if (end != null) finishTerminal()
         } catch (error: Exception) {
             fail(error, unlessTerminal = true)
@@ -547,7 +571,7 @@ private constructor(
                     finished = true
                     lock.notifyAll()
                 }
-            } catch (error: Exception) {
+            } catch (error: Throwable) {
                 fail(error)
             }
         }
@@ -576,7 +600,10 @@ private constructor(
             } catch (closing: Throwable) {
                 if (closing !== error) error.addSuppressed(closing)
             } finally {
-                detached.third?.let { read -> dispatch { read.completeExceptionally(error) } }
+                detached.third?.let { read ->
+                    if (read.blocking) read.completeExceptionally(error)
+                    else dispatch { read.completeExceptionally(error) }
+                }
             }
         }
     }

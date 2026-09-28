@@ -19,6 +19,7 @@ import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -858,6 +859,121 @@ class TranslationConnectionTest {
                         connection.send(audio())
                         assertThat(peer.next().path("audio").asText()).isEqualTo("AAAA")
                     }
+            }
+        }
+    }
+
+    @Test
+    fun terminalCleanupThrowableIsReturnedWithoutReplacingItByTimeout() {
+        MockWebServer().use { server ->
+            val peer = Peer(::finalEvents)
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val closing = AssertionError("synthetic terminal transport cleanup failure")
+                val client =
+                    object : HttpClient by http, WebSocketClient {
+                        override fun connectWebSocket(
+                            request: HttpRequest,
+                            options: RequestOptions,
+                            maxMessageBytes: Int,
+                            listener: WebSocketClient.Listener,
+                        ): CompletableFuture<WebSocketClient.Connection> =
+                            http
+                                .connectWebSocket(request, options, maxMessageBytes, listener)
+                                .thenApply { native ->
+                                    object : WebSocketClient.Connection by native {
+                                        override fun close() {
+                                            native.close()
+                                            throw closing
+                                        }
+                                    }
+                                }
+                    }
+                TranslationConnection.connect(options(server, client)).use { connection ->
+                    assertThatThrownBy { connection.finishAsync(deadline).get(7, TimeUnit.SECONDS) }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .hasCause(closing)
+                    assertThat(connection.receive().asSessionOutputTranscriptDelta().delta())
+                        .isEqualTo("Hola")
+                    assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                        .isEqualTo("AQID")
+                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
+                    assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun terminalCannotSucceedWhenAdmittedSendReturnsAfterDeadline() {
+        MockWebServer().use { server ->
+            val peer = Peer(::finalEvents)
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val client =
+                    wrapping(http) { native, text ->
+                        native.send(text)
+                        check(peer.terminated.await(5, TimeUnit.SECONDS))
+                        Thread.sleep(1200)
+                    }
+                TranslationConnection.connect(options(server, client)).use { connection ->
+                    assertThatThrownBy {
+                            connection.finishAsync(Duration.ofSeconds(1)).get(5, TimeUnit.SECONDS)
+                        }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .hasCauseInstanceOf(TimeoutException::class.java)
+                    assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                    assertThat(peer.messages).isEmpty()
+                    assertThat(connection.receive().asSessionOutputTranscriptDelta().delta())
+                        .isEqualTo("Hola")
+                    assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                        .isEqualTo("AQID")
+                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
+                }
+            }
+        }
+    }
+
+    @Test
+    fun singleThreadAsyncCallbackCanReceiveBlockingWithoutLosingNextWireEvent() {
+        MockWebServer().use { server ->
+            val executor = Executors.newSingleThreadExecutor()
+            try {
+                val peer = Peer()
+                server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+                OkHttpClient.builder().build().use { http ->
+                    val configuration =
+                        options(server, http).toBuilder().streamHandlerExecutor(executor).build()
+                    TranslationConnection.connect(configuration).use { connection ->
+                        val received =
+                            connection.receiveAsync().thenApply {
+                                connection.send(audio())
+                                listOf(
+                                    it.asSessionOutputTranscriptDelta().delta(),
+                                    connection.receive().asSessionOutputAudioDelta().delta(),
+                                )
+                            }
+                        val socket = peer.socket.get(5, TimeUnit.SECONDS)
+                        socket.send(
+                            """{"type":"session.output_transcript.delta","event_id":"text","delta":"Hola"}"""
+                        )
+                        assertThat(peer.next().path("audio").asText()).isEqualTo("AAAA")
+                        // Arrive after the callback has begun waiting for the next network frame.
+                        Thread.sleep(100)
+                        socket.send(
+                            """{"type":"session.output_audio.delta","event_id":"audio","delta":"AQID"}"""
+                        )
+                        assertThat(received.get(5, TimeUnit.SECONDS))
+                            .containsExactly("Hola", "AQID")
+                        assertThat(peer.messages).isEmpty()
+                        assertThat(server.requestCount).isEqualTo(1)
+                    }
+                }
+            } finally {
+                // A failing implementation can leave the claimed read's completion queued.
+                // Release it during test cleanup, retaining the original observable failure.
+                executor.shutdownNow().forEach { it.run() }
+                executor.awaitTermination(5, TimeUnit.SECONDS)
             }
         }
     }
