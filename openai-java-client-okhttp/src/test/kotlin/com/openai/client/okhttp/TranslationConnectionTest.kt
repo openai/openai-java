@@ -1,6 +1,7 @@
 package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.openai.azure.AzureUrlPathMode
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
@@ -687,6 +688,176 @@ class TranslationConnectionTest {
                 assertThat(problem).hasNoSuppressedExceptions()
                 assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
                 assertThat(server.requestCount).isEqualTo(1)
+            }
+        }
+    }
+
+    @Test
+    fun attemptedSendThrowableLeavesTheSocketUnusableAndCannotReplayAudio() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val problem = AssertionError("synthetic error after actual audio send")
+                val attempts = AtomicInteger()
+                val client =
+                    wrapping(http) { socket, text ->
+                        socket.send(text)
+                        if (attempts.getAndIncrement() == 0) {
+                            check(peer.next().path("audio").asText() == "AAAA")
+                            throw problem
+                        }
+                    }
+                TranslationConnection.connect(options(server, client)).use { connection ->
+                    assertThatThrownBy { connection.send(audio()) }.isSameAs(problem)
+                    assertThatThrownBy { connection.send(audio("AQID")) }
+                        .isInstanceOf(IllegalStateException::class.java)
+                    assertThatThrownBy { connection.finishAsync(deadline).get(5, TimeUnit.SECONDS) }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .hasCause(problem)
+                    assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(peer.messages).isEmpty()
+                    assertThat(server.requestCount).isEqualTo(1)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun receiveReportsOriginalErrorWithSuppressedCleanupThrowable() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val closing = AssertionError("synthetic native close failure")
+                val client =
+                    object : HttpClient by http, WebSocketClient {
+                        override fun connectWebSocket(
+                            request: HttpRequest,
+                            options: RequestOptions,
+                            maxMessageBytes: Int,
+                            listener: WebSocketClient.Listener,
+                        ): CompletableFuture<WebSocketClient.Connection> =
+                            http
+                                .connectWebSocket(request, options, maxMessageBytes, listener)
+                                .thenApply { native ->
+                                    object : WebSocketClient.Connection by native {
+                                        override fun close() {
+                                            native.close()
+                                            throw closing
+                                        }
+                                    }
+                                }
+                    }
+                TranslationConnection.connect(options(server, client)).use { connection ->
+                    val read = connection.receiveAsync()
+                    peer.socket.get(5, TimeUnit.SECONDS).send("""{"type":42}""")
+                    assertThatThrownBy { read.get(5, TimeUnit.SECONDS) }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .cause()
+                        .isInstanceOf(IllegalArgumentException::class.java)
+                        .hasMessage("Invalid Translation event")
+                        .hasSuppressedException(closing)
+                    assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun finishDoesNotWriteCloseIfSerializationConsumedItsDeadline() {
+        MockWebServer().use { server ->
+            val closeReceived = CountDownLatch(1)
+            val peer = Peer { closeReceived.countDown() }
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val client =
+                    wrapping(http) { native, text ->
+                        native.send(text)
+                        check(closeReceived.await(5, TimeUnit.SECONDS))
+                    }
+                val prepared =
+                    options(server, client)
+                        .toBuilder()
+                        .jsonMapper(
+                            object : JsonMapper(mapper) {
+                                override fun writeValueAsString(value: Any): String {
+                                    if (
+                                        value is RealtimeTranslationClientEvent &&
+                                            value.isSessionClose()
+                                    )
+                                        Thread.sleep(300)
+                                    return super.writeValueAsString(value)
+                                }
+                            }
+                        )
+                        .build()
+                TranslationConnection.connect(prepared).use { connection ->
+                    val end = connection.finishAsync(Duration.ofMillis(150))
+                    assertThatThrownBy { end.get(5, TimeUnit.SECONDS) }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .hasCauseInstanceOf(TimeoutException::class.java)
+                    assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(peer.messages).isEmpty()
+                    assertThat(server.requestCount).isEqualTo(1)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun customTransportCanUsePublicRequestUrlWithInheritedQueriesAndModelOverride() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val client =
+                    object : HttpClient by http, WebSocketClient {
+                        override fun connectWebSocket(
+                            request: HttpRequest,
+                            options: RequestOptions,
+                            maxMessageBytes: Int,
+                            listener: WebSocketClient.Listener,
+                        ): CompletableFuture<WebSocketClient.Connection> =
+                            http.connectWebSocket(
+                                request
+                                    .toBuilder()
+                                    .baseUrl(request.url())
+                                    .pathSegments(emptyList())
+                                    .queryParams(emptyMap())
+                                    .build(),
+                                options,
+                                maxMessageBytes,
+                                listener,
+                            )
+                    }
+                val configuration =
+                    options(server, client)
+                        .toBuilder()
+                        .baseUrl(
+                            server
+                                .url("/v1?tenant=a%2Fb&%6Dodel=old&tag=%E2%9C%93&tag=x+y")
+                                .toString()
+                        )
+                        .build()
+                TranslationConnection.connect(
+                        configuration,
+                        TranslationWebSocketOptions.builder().model("chosen").build(),
+                    )
+                    .use { connection ->
+                        val request = checkNotNull(server.takeRequest(5, TimeUnit.SECONDS))
+                        assertThat(request.requestUrl!!.encodedPath)
+                            .isEqualTo("/v1/realtime/translations")
+                        assertThat(request.requestUrl!!.queryParameterValues("model"))
+                            .containsExactly("chosen")
+                        assertThat(request.requestUrl!!.queryParameter("tenant")).isEqualTo("a/b")
+                        assertThat(request.requestUrl!!.queryParameterValues("tag"))
+                            .containsExactly("✓", "x y")
+                        assertThat(request.getHeader("Authorization"))
+                            .isEqualTo("Bearer fake-translation-key")
+                        connection.send(audio())
+                        assertThat(peer.next().path("audio").asText()).isEqualTo("AAAA")
+                    }
             }
         }
     }

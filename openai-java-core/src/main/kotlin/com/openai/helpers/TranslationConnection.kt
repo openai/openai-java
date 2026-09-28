@@ -143,40 +143,29 @@ private constructor(
                 }
                 val baseUrl = URI(clientOptions.baseUrl())
                 val baseQuery = baseUrl.rawQuery?.split('&').orEmpty()
-                val route =
-                    if (options._queryParams().values("model").isEmpty()) clientOptions.baseUrl()
-                    else {
-                        val inherited =
-                            baseQuery.filter {
-                                URLDecoder.decode(it.substringBefore('='), "UTF-8") != "model"
-                            }
-                        buildString {
-                            append(
-                                baseUrl.toASCIIString().substringBefore('#').substringBefore('?')
-                            )
-                            if (inherited.isNotEmpty())
-                                append("?").append(inherited.joinToString("&"))
-                            baseUrl.rawFragment?.let { append("#").append(it) }
-                        }
-                    }
                 val request =
                     HttpRequest.builder()
                         .method(HttpMethod.GET)
-                        .baseUrl(route)
+                        .baseUrl(baseUrl.toASCIIString().substringBefore('#').substringBefore('?'))
                         .addPathSegment("realtime")
                         .addPathSegment("translations")
+                        .apply {
+                            baseQuery
+                                .filter { it.isNotEmpty() }
+                                .forEach {
+                                    putQueryParam(
+                                        URLDecoder.decode(it.substringBefore('='), "UTF-8"),
+                                        URLDecoder.decode(it.substringAfter('=', ""), "UTF-8"),
+                                    )
+                                }
+                        }
                         .build()
                         .prepare(
                             clientOptions,
                             options,
                             SecurityOptions.builder().bearerAuth(true).build(),
                         )
-                require(
-                    request.queryParams.values("intent").isEmpty() &&
-                        baseQuery.none {
-                            URLDecoder.decode(it.substringBefore('='), "UTF-8") == "intent"
-                        }
-                ) {
+                require(request.queryParams.values("intent").isEmpty()) {
                     "Translation does not accept the Realtime intent query parameter"
                 }
                 val pending =
@@ -346,7 +335,7 @@ private constructor(
                 }
             try {
                 active.send(text)
-            } catch (error: Exception) {
+            } catch (error: Throwable) {
                 if (error !is WebSocketWriteNotAttempted) fail(error)
                 throw error
             }
@@ -404,9 +393,12 @@ private constructor(
                             )
                             failure?.let { throw it }
                             if (terminal != null) null
-                            else
+                            else {
+                                if (deadline - System.nanoTime() <= 0L)
+                                    throw TimeoutException("Translation finish timed out")
                                 socket
                                     ?: throw IllegalStateException("Translation is not connected")
+                            }
                         }
                     if (active == null) break
                     try {
@@ -578,13 +570,14 @@ private constructor(
         // Failure can originate on the listener, and custom transports can join that reader
         // during close. Release off-thread before completing the failed pending receive.
         CompletableFuture.runAsync {
-            detached.second?.cancel(true)
             try {
+                detached.second?.cancel(true)
                 detached.first?.close()
-            } catch (closing: Exception) {
+            } catch (closing: Throwable) {
                 if (closing !== error) error.addSuppressed(closing)
+            } finally {
+                detached.third?.let { read -> dispatch { read.completeExceptionally(error) } }
             }
-            detached.third?.let { read -> dispatch { read.completeExceptionally(error) } }
         }
     }
 
