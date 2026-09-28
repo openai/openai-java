@@ -320,24 +320,51 @@ internal class LiveTranscriptGrouperTest {
     }
 
     @Test
-    fun additionalAcknowledgmentsBoundNormalizedUnicodeRatherThanUtf16OrRawEdges() {
-        val phrase = "👍".repeat(128)
+    fun longAdditionalAcknowledgmentsAcceptFragmentedLargeUnicodePhrases() {
+        val phrase = "👍é".repeat(6000)
         val events = updates()
         LiveTranscriptGrouper.builder { events.add(it) }
             .additionalAcknowledgments(listOf("((  $phrase  ))"))
             .build()
-            .use {
-                it.push(input("u1", "hel", 0, 100))
-                it.push(output("a1", phrase, 0, 100))
-                it.push(input("u2", "lo", 100, 200))
+            .use { grouper ->
+                grouper.push(input("u1", "hel", 0, 100))
+                phrase.forEachIndexed { n, char ->
+                    grouper.push(output("a$n", char.toString(), 0, 10))
+                }
+                grouper.push(input("u2", "lo", 100, 200))
             }
         assertThat(finalized(events).map { it.segment().text() }).containsExactly("hello")
-        assertThatThrownBy {
-                LiveTranscriptGrouper.builder { _ -> }
-                    .additionalAcknowledgments(listOf(phrase + "👍"))
+    }
+
+    @Test
+    fun acknowledgmentCaseMatchingDoesNotDependOnDeltaBoundaries() {
+        // U+0130 expands on ROOT lowercasing; Greek sigma has a final and an ordinary form.
+        // The Deseret capital is a supplementary cased character split between wire deltas.
+        listOf(
+                Triple("οσος", listOf("ΟΣΟΣ"), true),
+                Triple("οσος", listOf("Ο", "Σ", "Ο", "Σ"), true),
+                Triple("İ", listOf("i", "\u0307"), true),
+                Triple("\uD801\uDC28", listOf("\uD801", "\uDC00"), true),
+                Triple("ΟΣ", listOf("Ο", "Σ", " διαφορετικό"), false),
+            )
+            .forEach { (phrase, fragments, suppress) ->
+                val events = updates()
+                LiveTranscriptGrouper.builder { events.add(it) }
+                    .additionalAcknowledgments(listOf(phrase))
+                    .build()
+                    .use { grouper ->
+                        grouper.push(input("u1", "hel", 0, 100))
+                        fragments.forEachIndexed { n, text ->
+                            grouper.push(output("a$n", text, 0, 10))
+                        }
+                        grouper.push(input("u2", "lo", 100, 200))
+                    }
+                val expected =
+                    if (suppress) listOf("hello") else listOf("hello", fragments.joinToString(""))
+                assertThat(finalized(events).map { it.segment().text() })
+                    .describedAs("Configured %s with fragments %s", phrase, fragments)
+                    .containsExactlyElementsOf(expected)
             }
-            .isInstanceOf(IllegalArgumentException::class.java)
-            .hasMessageContaining("128 normalized Unicode code points")
     }
 
     @Test

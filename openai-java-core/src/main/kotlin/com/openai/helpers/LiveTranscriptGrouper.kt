@@ -126,18 +126,12 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         fun backchannelIsolation(value: Duration) = apply { backchannelIsolation = checked(value) }
 
         /**
-         * Additional brief backchannels. Each phrase may contain at most 128 Unicode code points
-         * after case, whitespace, and punctuation normalization.
+         * Additional backchannels. Matching ignores edge punctuation, collapses whitespace and
+         * hyphens, and uses ROOT lowercase with both Greek sigma forms treated alike. Actual
+         * transcript text is never normalized.
          */
         fun additionalAcknowledgments(value: List<String>) = apply {
-            acknowledgments =
-                value.map { phrase ->
-                    val normalized = normalize(phrase)
-                    require(normalized.codePointCount(0, normalized.length) <= 128) {
-                        "Additional acknowledgments must be at most 128 normalized Unicode code points"
-                    }
-                    normalized
-                }
+            acknowledgments = value.map(::normalize)
         }
 
         /**
@@ -197,22 +191,46 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
             )
 
         private fun normalize(value: String): String =
-            whitespace.replace(value.lowercase(Locale.ROOT).replace('-', ' '), " ").trim {
-                it == ' ' || it in punctuation
+            whitespace
+                .replace(value.lowercase(Locale.ROOT).replace('ς', 'σ').replace('-', ' '), " ")
+                .trim { it == ' ' || it in punctuation }
+    }
+
+    private class AckNode {
+        val next = mutableMapOf<Char, AckNode>()
+        var complete = false
+    }
+
+    // The working cursor includes punctuation that might become interior text. The significant
+    // cursor stops before trailing punctuation/space, so we never rescan those edges.
+    private data class AckMatch(
+        var significant: AckNode?,
+        var working: AckNode?,
+        var leading: Boolean = true,
+        var space: Boolean = false,
+        var highSurrogate: Char? = null,
+    ) {
+        val possible: Boolean
+            get() = significant != null
+
+        val complete: Boolean
+            get() = highSurrogate == null && significant?.complete == true
+
+        fun advance(fragment: String) {
+            val text = highSurrogate?.let { it + fragment } ?: fragment
+            highSurrogate = text.last().takeIf(Char::isHighSurrogate)
+            val end = text.length - if (highSurrogate == null) 0 else 1
+            // Folding final sigma keeps ROOT lowercase independent of fragment boundaries.
+            val lower = text.substring(0, end).lowercase(Locale.ROOT).replace('ς', 'σ')
+            for (raw in lower) {
+                val char = if (raw == '-' || whitespace.matches(raw.toString())) ' ' else raw
+                val trim = char == ' ' || char in punctuation
+                if (leading && trim) continue
+                leading = false
+                if (char != ' ' || !space) working = working?.next?.get(char)
+                space = char == ' '
+                if (!trim) significant = working
             }
-
-        private fun trimsWhenNormalized(char: Char): Boolean =
-            char == '-' || char in punctuation || whitespace.matches(char.toString())
-
-        private fun normalizedWith(turn: Turn?, text: String): String {
-            val end = text.indexOfLast { !trimsWhenNormalized(it) } + 1
-            if (end == 0) return turn?.normalized() ?: ""
-            // Previously trailing separators are interior text if more content arrives.
-            val prior =
-                if (turn != null && turn.normalizationStart >= 0)
-                    turn.text.substring(turn.normalizationStart)
-                else ""
-            return normalize(prior + text.substring(0, end))
         }
     }
 
@@ -234,16 +252,13 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         var previous: String? = null
         var emitted = false
         var emittedLength = 0
-        var canDrop = true
-        var normalizationStart = fragment.text.indexOfFirst { !trimsWhenNormalized(it) }
-        var normalizationEnd = fragment.text.indexOfLast { !trimsWhenNormalized(it) } + 1
+        var match: AckMatch? = null
+        val canDrop: Boolean
+            get() = match?.possible == true
+
         var userAppendedAfterBuffer = false
 
         fun snapshot() = Segment(id, previous, speaker, text, text.length, start, end)
-
-        fun normalized(): String =
-            if (normalizationStart < 0) ""
-            else normalize(text.substring(normalizationStart, normalizationEnd))
     }
 
     private val separation = builder.separationMs()
@@ -252,25 +267,31 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
     private val isolation = builder.isolationMs()
     private val listener = builder.listener()
     private val acknowledgments =
-        (listOf(
-                "aha",
-                "alright",
-                "gotcha",
-                "hm",
-                "hmm",
-                "mhm",
-                "mm",
-                "mm hmm",
-                "okay",
-                "ok",
-                "right",
-                "sure",
-                "uh huh",
-                "yeah",
-                "yep",
-                "yes",
-            ) + builder.phrases().filter(String::isNotEmpty))
-            .toSet()
+        AckNode().apply {
+            (listOf(
+                    "aha",
+                    "alright",
+                    "gotcha",
+                    "hm",
+                    "hmm",
+                    "mhm",
+                    "mm",
+                    "mm hmm",
+                    "okay",
+                    "ok",
+                    "right",
+                    "sure",
+                    "uh huh",
+                    "yeah",
+                    "yep",
+                    "yes",
+                ) + builder.phrases().filter(String::isNotEmpty))
+                .forEach { phrase ->
+                    var node = this
+                    phrase.forEach { char -> node = node.next.getOrPut(char) { AckNode() } }
+                    node.complete = true
+                }
+        }
     private val prefix = "segment_${nextGrouper.getAndIncrement()}"
     private var nextId = 0L
     private var lastId: String? = null
@@ -468,28 +489,26 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
             if (turn.speaker == Speaker.ASSISTANT) {
                 buffer(fragment)
                 promote()
-            } else if (fragment.start - turn.end < separation) {
-                val canDrop =
-                    waiting?.canDrop != false &&
-                        fragment.end - (waiting?.start ?: fragment.start) < maxDuration &&
-                        normalizedWith(waiting, fragment.text).let { text ->
-                            // Leading whitespace or punctuation can still precede an
-                            // acknowledgment.
-                            text.isEmpty() || acknowledgments.any { it.startsWith(text) }
-                        }
-                buffer(fragment, canDrop)
-            } else if (
-                waiting?.canDrop != false &&
-                    fragment.end - (waiting?.start ?: fragment.start) < maxDuration &&
-                    normalizedWith(waiting, fragment.text) in acknowledgments
-            ) {
-                buffer(fragment, waiting != null)
             } else {
-                buffered = maybeDrop(next = fragment)
-                finishCurrent(CloseReason.SPEAKER_CHANGE)
-                current = buffered?.also { append(it, fragment) } ?: newTurn(fragment)
-                buffered = null
-                emit(current!!)
+                val match =
+                    if (
+                        waiting?.canDrop != false &&
+                            fragment.end - (waiting?.start ?: fragment.start) < maxDuration
+                    )
+                        (waiting?.match?.copy() ?: AckMatch(acknowledgments, acknowledgments))
+                            .apply { advance(fragment.text) }
+                    else null
+                if (fragment.start - turn.end < separation) {
+                    buffer(fragment, match)
+                } else if (match?.complete == true) {
+                    buffer(fragment, if (waiting != null) match else null)
+                } else {
+                    buffered = maybeDrop(next = fragment)
+                    finishCurrent(CloseReason.SPEAKER_CHANGE)
+                    current = buffered?.also { append(it, fragment) } ?: newTurn(fragment)
+                    buffered = null
+                    emit(current!!)
+                }
             }
         }
     }
@@ -497,22 +516,14 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
     private fun newTurn(fragment: Fragment) = Turn("${prefix}_${nextId++}", fragment)
 
     private fun append(turn: Turn, fragment: Fragment) {
-        if (turn.canDrop && turn.speaker == Speaker.ASSISTANT) {
-            val first = fragment.text.indexOfFirst { !trimsWhenNormalized(it) }
-            if (first >= 0) {
-                if (turn.normalizationStart < 0) turn.normalizationStart = turn.text.length + first
-                turn.normalizationEnd =
-                    turn.text.length + fragment.text.indexOfLast { !trimsWhenNormalized(it) } + 1
-            }
-        }
         synchronized(turn.text) { turn.text.append(fragment.text) }
         turn.eventIds.add(fragment.id)
         turn.end = maxOf(turn.end, fragment.end)
     }
 
-    private fun buffer(fragment: Fragment, canDrop: Boolean? = null) {
+    private fun buffer(fragment: Fragment, match: AckMatch? = null) {
         buffered?.let { append(it, fragment) } ?: run { buffered = newTurn(fragment) }
-        if (canDrop != null) buffered!!.canDrop = canDrop
+        buffered!!.match = match
     }
 
     private fun promote() {
@@ -570,8 +581,7 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         val waiting = buffered ?: return null
         // A prefix is worth buffering, but must not be suppressed before it becomes a complete
         // acknowledgment. It may still grow into substantive speech after a user delta.
-        if (!waiting.canDrop || !mightDrop() || waiting.normalized() !in acknowledgments)
-            return waiting
+        if (!waiting.canDrop || !mightDrop() || waiting.match?.complete != true) return waiting
         if (userContinued()) {
             seen.removeAll(waiting.eventIds)
             return null
