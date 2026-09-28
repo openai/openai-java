@@ -330,7 +330,8 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
                             }))
             ) {
                 pending.add(fragment)
-                if (pending.any { it.speaker != speaker }) flushPending()
+                // Pending fragments always have one speaker; the first different one flushes.
+                if (first.speaker != speaker) flushPending()
             } else {
                 flushPending()
                 if (current?.speaker == speaker) commit(listOf(fragment)) else pending.add(fragment)
