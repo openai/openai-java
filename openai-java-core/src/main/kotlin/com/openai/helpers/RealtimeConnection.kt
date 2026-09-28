@@ -60,7 +60,8 @@ private constructor(
 
     // Assign a read without invoking arbitrary CompletableFuture callbacks while holding lock.
     // Once assigned it cannot be canceled and silently discard a server event.
-    private inner class ReadFuture : CompletableFuture<RealtimeServerEvent>() {
+    private inner class ReadFuture(val blocking: Boolean) :
+        CompletableFuture<RealtimeServerEvent>() {
         var claimed = false
         var cancellationReserved = false
 
@@ -82,7 +83,8 @@ private constructor(
             clientOptions: ClientOptions,
             options: RealtimeWebSocketOptions = RealtimeWebSocketOptions.defaults(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): RealtimeConnection = await(connectAsync(clientOptions, options, requestOptions))
+        ): RealtimeConnection =
+            await(connectAsync(clientOptions, options, requestOptions, blocking = true))
 
         @JvmStatic
         @JvmOverloads
@@ -90,6 +92,14 @@ private constructor(
             clientOptions: ClientOptions,
             options: RealtimeWebSocketOptions = RealtimeWebSocketOptions.defaults(),
             requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<RealtimeConnection> =
+            connectAsync(clientOptions, options, requestOptions, blocking = false)
+
+        private fun connectAsync(
+            clientOptions: ClientOptions,
+            options: RealtimeWebSocketOptions,
+            requestOptions: RequestOptions,
+            blocking: Boolean,
         ): CompletableFuture<RealtimeConnection> {
             val connection = RealtimeConnection(clientOptions, options, requestOptions)
             val result = CompletableFuture<RealtimeConnection>()
@@ -154,10 +164,14 @@ private constructor(
                             }
                         }
                     if (problem != null) {
-                        active?.close()
+                        try {
+                            active?.close()
+                        } catch (closing: Throwable) {
+                            if (closing !== problem) problem.addSuppressed(closing)
+                        }
                         connection.fail(problem)
                     }
-                    connection.dispatch {
+                    val complete: () -> Unit = {
                         // The owner or socket can close while completion waits on the executor.
                         // Inspect state here, but keep user callbacks outside the lock.
                         val completionError =
@@ -177,6 +191,9 @@ private constructor(
                             result.completeExceptionally(completionError)
                         } else if (!result.complete(connection)) connection.close()
                     }
+                    // Blocking futures are private: a caller may already occupy the stream
+                    // executor. Public async continuations must still leave the transport reader.
+                    if (blocking) complete() else connection.dispatch(complete)
                 }
             } catch (error: Exception) {
                 connection.fail(error)
@@ -214,10 +231,12 @@ private constructor(
     }
 
     /** Returns one event, even if the peer closes immediately after it. */
-    fun receive(): RealtimeServerEvent = await(receiveAsync())
+    fun receive(): RealtimeServerEvent = await(receiveAsync(blocking = true))
 
     /** Canceling an unassigned read leaves the session open for the next read. */
-    fun receiveAsync(): CompletableFuture<RealtimeServerEvent> {
+    fun receiveAsync(): CompletableFuture<RealtimeServerEvent> = receiveAsync(blocking = false)
+
+    private fun receiveAsync(blocking: Boolean): CompletableFuture<RealtimeServerEvent> {
         synchronized(lock) {
             check(!closed) { "Realtime connection is closed" }
             if (waiter?.let { it.isDone || it.cancellationReserved } == true) waiter = null
@@ -230,7 +249,7 @@ private constructor(
             failure?.let {
                 return CompletableFuture<RealtimeServerEvent>().apply { completeExceptionally(it) }
             }
-            return ReadFuture().also { next ->
+            return ReadFuture(blocking).also { next ->
                 waiter = next
                 next.whenComplete { _, _ ->
                     synchronized(lock) { if (waiter === next) waiter = null }
@@ -262,7 +281,7 @@ private constructor(
                 }
             try {
                 active.send(text)
-            } catch (error: Exception) {
+            } catch (error: Throwable) {
                 if (error !is WebSocketWriteNotAttempted) fail(error)
                 throw error
             }
@@ -338,7 +357,9 @@ private constructor(
                     } else available.claimed = true
                     available
                 }
-            if (target != null) dispatch { target.complete(event) }
+            if (target != null) {
+                if (target.blocking) target.complete(event) else dispatch { target.complete(event) }
+            }
         } catch (error: Exception) {
             fail(error)
         }
@@ -358,12 +379,17 @@ private constructor(
                 }
             }
         detached.second?.cancel(true)
+        // Complete the detached read before cleanup: injected close() may depend on the reader
+        // having received its failure. Only private blocking futures complete on this thread.
+        detached.third?.let { read ->
+            if (read.blocking) read.completeExceptionally(error)
+            else dispatch { read.completeExceptionally(error) }
+        }
         try {
             detached.first?.close()
-        } catch (closing: Exception) {
+        } catch (closing: Throwable) {
             if (closing !== error) error.addSuppressed(closing)
         }
-        detached.third?.let { read -> dispatch { read.completeExceptionally(error) } }
     }
 
     // User completion callbacks never run on the transport reader, including with a direct
