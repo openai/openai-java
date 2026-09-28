@@ -77,7 +77,7 @@ private constructor(
 
     // Assign a read without invoking arbitrary CompletableFuture callbacks while holding lock.
     // Once assigned it cannot be canceled and silently discard a server event.
-    private inner class ReadFuture : CompletableFuture<ServerEvent>() {
+    private inner class ReadFuture(val blocking: Boolean) : CompletableFuture<ServerEvent>() {
         var claimed = false
         var cancellationReserved = false
 
@@ -183,11 +183,7 @@ private constructor(
                                 null
                             }
                         }
-                    if (problem != null) {
-                        active?.close()
-                        connection.fail(problem)
-                    }
-                    connection.dispatch {
+                    val complete: () -> Unit = {
                         // The owner or socket can close while completion waits on the executor.
                         // Inspect state here, but keep user callbacks outside the lock.
                         val completionError =
@@ -207,6 +203,22 @@ private constructor(
                             result.completeExceptionally(completionError)
                         } else if (!result.complete(connection)) connection.close()
                     }
+                    if (problem != null) {
+                        connection.fail(problem)
+                        // The handshake produced a socket after cancellation or an early
+                        // listener failure. It was never stored in connection.socket.
+                        // Retire it off the completing/transport thread and settle opening even
+                        // if the transport's close throws.
+                        CompletableFuture.runAsync {
+                            try {
+                                active?.close()
+                            } catch (closing: Throwable) {
+                                if (closing !== problem) problem.addSuppressed(closing)
+                            } finally {
+                                connection.dispatch(complete)
+                            }
+                        }
+                    } else connection.dispatch(complete)
                 }
             } catch (error: Exception) {
                 connection.fail(error)
@@ -241,10 +253,12 @@ private constructor(
     }
 
     /** Returns one event, even if the peer closes immediately after it. */
-    fun receive(): ServerEvent = await(receiveAsync())
+    fun receive(): ServerEvent = await(receiveFuture(blocking = true))
 
     /** Canceling an unassigned read leaves the session open for the next read. */
-    fun receiveAsync(): CompletableFuture<ServerEvent> {
+    fun receiveAsync(): CompletableFuture<ServerEvent> = receiveFuture(blocking = false)
+
+    private fun receiveFuture(blocking: Boolean): CompletableFuture<ServerEvent> {
         synchronized(lock) {
             check(!closed) { "Live connection is closed" }
             if (waiter?.let { it.isDone || it.cancellationReserved } == true) waiter = null
@@ -257,7 +271,7 @@ private constructor(
             failure?.let {
                 return CompletableFuture<ServerEvent>().apply { completeExceptionally(it) }
             }
-            return ReadFuture().also { next ->
+            return ReadFuture(blocking).also { next ->
                 waiter = next
                 next.whenComplete { _, _ ->
                     synchronized(lock) { if (waiter === next) waiter = null }
@@ -268,8 +282,8 @@ private constructor(
 
     /**
      * Successful send means accepted by the transport, not acknowledged by the server. A failed
-     * write makes the connection unusable because the remote outcome is uncertain. Reconnect never
-     * resends the command.
+     * write makes the connection unusable because the remote outcome is uncertain. The caller can
+     * explicitly open a fresh connection; no commands are replayed.
      */
     fun send(event: ClientEvent) {
         synchronized(lock) {
@@ -348,7 +362,11 @@ private constructor(
                     } else available.claimed = true
                     available
                 }
-            if (target != null) dispatch { target.complete(event) }
+            if (target != null) {
+                // Only our private blocking read may be completed directly. It cannot expose
+                // user callbacks on the physical reader or compete for the caller's executor.
+                if (target.blocking) target.complete(event) else dispatch { target.complete(event) }
+            }
         } catch (error: Exception) {
             fail(error)
         }
@@ -367,13 +385,21 @@ private constructor(
                     opening = null
                 }
             }
-        detached.second?.cancel(true)
-        try {
-            detached.first?.close()
-        } catch (closing: Throwable) {
-            if (closing !== error) error.addSuppressed(closing)
+        // Listener callbacks can run on a custom transport's dedicated reader, and its
+        // close() may join that reader. Never cancel an opening or close a socket on that thread.
+        CompletableFuture.runAsync {
+            try {
+                detached.second?.cancel(true)
+                detached.first?.close()
+            } catch (closing: Throwable) {
+                if (closing !== error) error.addSuppressed(closing)
+            } finally {
+                detached.third?.let { read ->
+                    if (read.blocking) read.completeExceptionally(error)
+                    else dispatch { read.completeExceptionally(error) }
+                }
+            }
         }
-        detached.third?.let { read -> dispatch { read.completeExceptionally(error) } }
     }
 
     // User completion callbacks never run on the transport reader, including with a direct

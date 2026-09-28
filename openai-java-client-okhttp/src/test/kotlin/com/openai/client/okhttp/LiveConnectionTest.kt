@@ -18,6 +18,8 @@ import com.openai.models.live.SessionStartEvent
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -30,6 +32,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
+import org.junit.jupiter.api.assertThrows
 
 @Timeout(25)
 class LiveConnectionTest {
@@ -286,6 +289,86 @@ class LiveConnectionTest {
     }
 
     @Test
+    fun singleThreadCallbackCanMakeNextBlockingReceive() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val single = Executors.newSingleThreadExecutor()
+                try {
+                    val client =
+                        options(server, http).toBuilder().streamHandlerExecutor(single).build()
+                    LiveConnection.connect(client).use { live ->
+                        val inCallback = CountDownLatch(1)
+                        val second =
+                            live.receiveAsync().thenApply {
+                                inCallback.countDown()
+                                live.receive()
+                            }
+                        val socket = peer.socket.get(8, TimeUnit.SECONDS)
+                        socket.send("""{"type":"live.first"}""")
+                        assertThat(inCallback.await(5, TimeUnit.SECONDS)).isTrue()
+                        socket.send(
+                            """{"type":"session.started","event_id":"second","session":{}}"""
+                        )
+                        assertThat(second.get(3, TimeUnit.SECONDS).asSessionStarted().eventId())
+                            .isEqualTo("second")
+                    }
+                } finally {
+                    single.shutdownNow()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun failureCleanupNeverJoinsItsOwnReaderAndSettlesPendingReceive() {
+        for (malformed in listOf(true, false)) {
+            val http = FakeTransport()
+            val readerExited = CountDownLatch(1)
+            val enteredClose = CountDownLatch(1)
+            http.onClose = {
+                enteredClose.countDown()
+                check(readerExited.await(3, TimeUnit.SECONDS)) { "closed on transport reader" }
+            }
+            val client = ClientOptions.builder().httpClient(http).apiKey("fake-key").build()
+            LiveConnection.connect(client).use { live ->
+                val pending = live.receiveAsync()
+                val reader = Thread {
+                    try {
+                        if (malformed) http.listener!!.onMessage("""{"type":5}""")
+                        else http.listener!!.onFailure(IOException("transport ended"))
+                    } finally {
+                        readerExited.countDown()
+                    }
+                }
+                reader.start()
+                assertThat(enteredClose.await(4, TimeUnit.SECONDS)).isTrue()
+                val error = assertThrows<ExecutionException> { pending.get(4, TimeUnit.SECONDS) }
+                assertThat(error.cause!!.suppressed).isEmpty()
+                assertThat(error.cause!!.message)
+                    .contains(if (malformed) "Invalid Live event" else "transport ended")
+                assertThat(readerExited.await(4, TimeUnit.SECONDS)).isTrue()
+                reader.join()
+            }
+        }
+    }
+
+    @Test
+    fun retiredHandshakeWithThrowingTransportCloseStillCompletesTheOpening() {
+        FakeTransport().use { http ->
+            val original = IOException("failed before open acknowledgement")
+            val closing = AssertionError("close failed")
+            http.closeFailure = closing
+            http.onOpen = { it.onFailure(original) }
+            val client = ClientOptions.builder().httpClient(http).apiKey("fake-key").build()
+            assertThatThrownBy { LiveConnection.connectAsync(client).get(3, TimeUnit.SECONDS) }
+                .hasCause(original)
+            assertThat(original.suppressed).containsExactly(closing)
+        }
+    }
+
+    @Test
     fun malformedEventIsTerminalButJsonValidationCanRemainForwardCompatible() {
         MockWebServer().use { server ->
             val peer = Peer()
@@ -317,6 +400,9 @@ class LiveConnectionTest {
         val writes = LinkedBlockingQueue<String>()
         var sendFailure: Throwable? = null
         var closeFailure: Throwable? = null
+        var onClose: (() -> Unit)? = null
+        var onOpen: ((WebSocketClient.Listener) -> Unit)? = null
+        var listener: WebSocketClient.Listener? = null
         var closed = false
 
         override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
@@ -336,6 +422,8 @@ class LiveConnectionTest {
             listener: WebSocketClient.Listener,
         ): CompletableFuture<WebSocketClient.Connection> {
             opens.add(request)
+            this.listener = listener
+            onOpen?.invoke(listener)
             return CompletableFuture.completedFuture(
                 object : WebSocketClient.Connection {
                     override fun send(text: String) {
@@ -345,6 +433,7 @@ class LiveConnectionTest {
 
                     override fun close() {
                         closed = true
+                        onClose?.invoke()
                         closeFailure?.let { throw it }
                     }
                 }
