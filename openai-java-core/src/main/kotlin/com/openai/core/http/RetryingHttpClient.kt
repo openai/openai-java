@@ -12,7 +12,6 @@ import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import java.time.temporal.ChronoUnit
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadLocalRandom
@@ -268,23 +267,23 @@ private constructor(
                                         retryAfter,
                                         DateTimeFormatter.RFC_1123_DATE_TIME,
                                     )
-                                try {
-                                    ChronoUnit.NANOS.between(now, retryAt)
-                                } catch (e: ArithmeticException) {
-                                    null
-                                }
+                                Duration.between(now, retryAt)
+                                    .coerceIn(Duration.ZERO, MAX_RETRY_DELAY)
+                                    .toNanos()
                             } catch (e: DateTimeParseException) {
                                 null
                             }
                     }
             }
             ?.let { retryAfterNanos ->
-                // If the API asks us to wait a certain amount of time, do what it says.
-                return Duration.ofNanos(retryAfterNanos.toLong().coerceAtLeast(0))
+                // Server-directed delays share the exponential-backoff ceiling.
+                return Duration.ofNanos(
+                    retryAfterNanos.toLong().coerceIn(0, MAX_RETRY_DELAY.toNanos())
+                )
             }
 
         // Apply exponential backoff, but not more than the max.
-        val backoffSeconds = min(0.5 * 2.0.pow(retries - 1), 8.0)
+        val backoffSeconds = min(0.5 * 2.0.pow(retries - 1), MAX_RETRY_DELAY.seconds.toDouble())
 
         // Apply some jitter
         val jitter = 1.0 - 0.25 * ThreadLocalRandom.current().nextDouble()
@@ -293,6 +292,8 @@ private constructor(
     }
 
     companion object {
+
+        private val MAX_RETRY_DELAY = Duration.ofSeconds(8)
 
         @JvmStatic fun builder() = Builder()
     }
