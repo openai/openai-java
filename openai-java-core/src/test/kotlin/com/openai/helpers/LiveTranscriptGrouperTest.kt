@@ -13,8 +13,10 @@ import com.openai.models.live.SessionClosedEvent
 import com.openai.models.live.forks.ForkServerEvent
 import java.time.Duration
 import java.util.Collections
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.FutureTask
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.function.Consumer
@@ -113,6 +115,27 @@ internal class LiveTranscriptGrouperTest {
             }
         assertThat(finalized(events).map { it.segment().speaker() }).containsExactly(Speaker.USER)
         assertThat(finalized(events).single().segment().text()).isEqualTo("I want to book")
+    }
+
+    @Test
+    fun pointAtSameStartOverlapsButAdjacentIntervalsDoNot() {
+        val simultaneous = updates()
+        LiveTranscriptGrouper.create { simultaneous.add(it) }
+            .use {
+                it.push(output("a", "okay", 0, 0))
+                it.push(input("u1", "hel", 0, 500))
+                it.push(input("u2", "lo", 500, 700))
+            }
+        assertThat(finalized(simultaneous).map { it.segment().text() }).containsExactly("hello")
+
+        val adjacent = updates()
+        LiveTranscriptGrouper.create { adjacent.add(it) }
+            .use {
+                it.push(output("a", "okay", 0, 100))
+                it.push(input("u1", "hel", 100, 500))
+                it.push(input("u2", "lo", 500, 700))
+            }
+        assertThat(finalized(adjacent).map { it.segment().text() }).containsExactly("okay", "hello")
     }
 
     @Test
@@ -322,6 +345,54 @@ internal class LiveTranscriptGrouperTest {
             blockers.forEach { it.close() }
             third.close()
         }
+    }
+
+    @Test
+    fun queuedTimerDeliveryCoalescesUntilCallerExecutorRunsIt() {
+        val queued = ConcurrentLinkedQueue<Runnable>()
+        val submitted = CountDownLatch(1)
+        val events = updates()
+        LiveTranscriptGrouper.builder { events.add(it) }
+            .assistantSilence(Duration.ofMillis(20))
+            .callbackExecutor {
+                queued.add(it)
+                submitted.countDown()
+            }
+            .build()
+            .use { grouper ->
+                grouper.push(output("a", "answer", 0, 100))
+                assertThat(submitted.await(2, TimeUnit.SECONDS)).isTrue()
+                // Allow the silence deadline to expire while the caller executor has not run.
+                Thread.sleep(150)
+                assertThat(events).isEmpty()
+                assertThat(queued).hasSize(1)
+                queued.remove().run()
+                assertThat(finalized(events).single().closeReason())
+                    .contains(CloseReason.INACTIVITY)
+                assertThat(finalized(events).single().segment().text()).isEqualTo("answer")
+                assertThat(queued).isEmpty()
+            }
+        assertThat(finalized(events)).hasSize(1)
+    }
+
+    @Test
+    fun rejectedTimerDeliveryCanRetryAndCloseWithoutLosingText() {
+        val attempts = CountDownLatch(2)
+        val events = updates()
+        LiveTranscriptGrouper.builder { events.add(it) }
+            .assistantSilence(Duration.ofMillis(20))
+            .callbackExecutor {
+                attempts.countDown()
+                throw RejectedExecutionException()
+            }
+            .build()
+            .use { grouper ->
+                grouper.push(output("a", "answer", 0, 100))
+                assertThat(attempts.await(2, TimeUnit.SECONDS)).isTrue()
+                assertThat(events).isEmpty()
+            }
+        assertThat(displayed(events).single().segment().text()).isEqualTo("answer")
+        assertThat(finalized(events).single().closeReason()).contains(CloseReason.INACTIVITY)
     }
 
     @Test

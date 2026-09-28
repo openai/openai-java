@@ -8,7 +8,10 @@ import java.time.Duration
 import java.util.ArrayDeque
 import java.util.Locale
 import java.util.Optional
+import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import java.util.concurrent.FutureTask
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -33,7 +36,11 @@ import kotlin.math.ceil
  * Use one instance per session and close it on disconnect. Close flushes remaining segments once
  * and cancels only this helper's timer. Push after close fails. Callbacks are serialized outside
  * the state lock and may call push or close; timer-driven callbacks run on a daemon thread. Delayed
- * event delivery can affect grouping because inactivity uses the local monotonic clock.
+ * event delivery can affect grouping because inactivity uses the local monotonic clock. The default
+ * callback executor allows four simultaneous timer-driven listeners across all groupers. Further
+ * callbacks wait without blocking the timers. For independent capacity, supply
+ * [Builder.callbackExecutor]; the caller owns that executor and must not run tasks inline.
+ * Synchronous pushes and close still deliver on the calling thread.
  *
  * Duplicate event IDs are ignored while their turn is pending or active and released on
  * finalization. Live deltas have no server turn identity, so this helper cannot identify arbitrary
@@ -102,6 +109,7 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         private var backchannelMaxDuration = Duration.ofSeconds(1)
         private var backchannelIsolation = Duration.ofSeconds(2)
         private var acknowledgments: List<String> = emptyList()
+        private var executor: Executor = callbacks
 
         fun minTurnSeparation(value: Duration) = apply { minTurnSeparation = checked(value) }
 
@@ -116,6 +124,9 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         fun additionalAcknowledgments(value: List<String>) = apply {
             acknowledgments = value.toList()
         }
+
+        /** Supplies asynchronous callback capacity. The grouper never shuts down this executor. */
+        fun callbackExecutor(value: Executor) = apply { executor = value }
 
         fun build(): LiveTranscriptGrouper = LiveTranscriptGrouper(this)
 
@@ -137,6 +148,8 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         internal fun phrases() = acknowledgments
 
         internal fun listener() = listener
+
+        internal fun executor() = executor
     }
 
     companion object {
@@ -154,10 +167,9 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
                     Thread(work, "openai-live-transcripts").apply { isDaemon = true }
                 }
                 .apply { removeOnCancelPolicy = true }
-        // Only active callbacks occupy a worker, and idle workers expire. User callbacks must not
-        // prevent the shared scheduler from advancing other sessions.
+        // User callbacks must not prevent the shared scheduler from advancing other sessions.
         private val callbacks =
-            Executors.newCachedThreadPool { work ->
+            Executors.newFixedThreadPool(4) { work ->
                 Thread(work, "openai-live-transcript-callbacks").apply { isDaemon = true }
             }
         private val punctuation = ".,!?;:\"'()[]{}"
@@ -236,6 +248,8 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
     private val lastStarts = mutableMapOf<Speaker, Long>()
     private val lock = Any()
     private val callbackLock = ReentrantLock()
+    private val callbackExecutor = builder.executor()
+    private var callbackScheduled = false
     private val updates = ArrayDeque<Update>()
     private var closed = false
     private var timerGeneration = 0L
@@ -279,8 +293,7 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
                     ((first.start == start && first.end == end) ||
                         (current == null &&
                             first.speaker != speaker &&
-                            first.start < end &&
-                            start < first.end))
+                            (first.start == start || (first.start < end && start < first.end))))
             ) {
                 pending.add(fragment)
                 if (pending.any { it.speaker != speaker }) flushPending()
@@ -546,11 +559,39 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
                         advance(sourceNow())
                         schedule()
                     }
-                    callbacks.submit { dispatch() }
+                    dispatchFromTimer()
                 },
                 ceil(delay.coerceAtLeast(0.0)).toLong(),
                 TimeUnit.MILLISECONDS,
             )
+    }
+
+    private fun dispatchFromTimer() {
+        synchronized(lock) {
+            if (callbackScheduled || updates.isEmpty()) return
+            callbackScheduled = true
+        }
+        try {
+            callbackExecutor.execute(
+                FutureTask(
+                    {
+                        var drained = false
+                        try {
+                            dispatch()
+                            drained = true
+                        } finally {
+                            synchronized(lock) { callbackScheduled = false }
+                            // Catch updates queued between the last poll and releasing the flag.
+                            if (drained) dispatchFromTimer()
+                        }
+                    },
+                    Unit,
+                )
+            )
+        } catch (_: RejectedExecutionException) {
+            // Preserve pending updates for the next timer, push, or close. Never run on a timer.
+            synchronized(lock) { callbackScheduled = false }
+        }
     }
 
     private fun dispatch() {
