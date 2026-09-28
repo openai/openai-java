@@ -10,6 +10,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketWriteNotAttempted
 import com.openai.core.jsonMapper
+import com.openai.errors.InvalidResourceIdException
 import com.openai.helpers.LiveForkConnection
 import com.openai.helpers.LiveWebSocketOptions
 import com.openai.models.live.ForkSessionConfig
@@ -167,6 +168,9 @@ class LiveForkConnectionTest {
                 for (id in listOf("", ".", "..")) {
                     assertThatThrownBy { LiveForkConnection.connect(client, id) }
                         .isInstanceOf(IllegalArgumentException::class.java)
+                    val pending = LiveForkConnection.connectAsync(client, id)
+                    assertThatThrownBy { pending.get(8, TimeUnit.SECONDS) }
+                        .hasCauseInstanceOf(InvalidResourceIdException::class.java)
                 }
                 assertThat(server.requestCount).isZero()
                 assertThatThrownBy { LiveForkConnection.connect(client, "unavailable-stored-id") }

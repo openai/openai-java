@@ -67,14 +67,8 @@ private constructor(
             options: LiveWebSocketOptions,
             requestOptions: RequestOptions,
             blocking: Boolean,
-        ): CompletableFuture<LiveForkConnection> {
-            // Dot segments have no stable representation across URL-normalizing transports.
-            require(
-                storedSessionId.isNotEmpty() && storedSessionId != "." && storedSessionId != ".."
-            ) {
-                "storedSessionId must be a non-empty path segment"
-            }
-            return LiveSocket<ForkClientEvent, ForkServerEvent>(
+        ): CompletableFuture<LiveForkConnection> =
+            LiveSocket<ForkClientEvent, ForkServerEvent>(
                     clientOptions,
                     options,
                     requestOptions,
@@ -84,7 +78,6 @@ private constructor(
                     embedEncodedPath = true,
                 )
                 .open(blocking) { LiveForkConnection(it, clientOptions.jsonMapper) }
-        }
     }
 
     fun receive(): ForkServerEvent = socket.receive()
