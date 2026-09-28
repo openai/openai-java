@@ -322,6 +322,70 @@ class LiveConnectionTest {
     }
 
     @Test
+    fun singleThreadCallbackCanOpenBlockingPrimarySocket() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val single = Executors.newSingleThreadExecutor()
+                try {
+                    val client =
+                        options(server, http).toBuilder().streamHandlerExecutor(single).build()
+                    val opened =
+                        single.submit {
+                            LiveConnection.connect(client).use { live ->
+                                live.send(start())
+                                assertThat(
+                                        mapper
+                                            .readTree(peer.messages.poll(8, TimeUnit.SECONDS))
+                                            .path("type")
+                                            .asText()
+                                    )
+                                    .isEqualTo("session.start")
+                            }
+                        }
+                    opened.get(3, TimeUnit.SECONDS)
+                } finally {
+                    single.shutdownNow()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun unifiedAzureWithQueryRetainsNativeAuthenticationAndDefaults() {
+        for (base in
+            listOf(
+                "https://sdkfixture.openai.azure.com/openai/v1?proxy=a%2Bb",
+                "https://sdkfixture.openai.azure.com/openai/v1/?proxy=a%2Bb",
+            )) {
+            FakeTransport().use { http ->
+                val client =
+                    ClientOptions.builder()
+                        .httpClient(http)
+                        .apiKey("fake-selected-bearer")
+                        .baseUrl(base)
+                        .build()
+                LiveConnection.connect(client).use { live ->
+                    val request = http.opens.poll(8, TimeUnit.SECONDS)
+                    assertThat(request.url())
+                        .startsWith("https://sdkfixture.openai.azure.com/openai/v1/live/sessions?")
+                    assertThat(request.queryParams.values("proxy")).containsExactly("a+b")
+                    assertThat(request.headers.values("Authorization"))
+                        .containsExactly("Bearer fake-selected-bearer")
+                    // The helper preserves the original ClientOptions defaults instead of
+                    // rewriting caller or SDK-selected api-version/auth policy.
+                    assertThat(request.queryParams.values("api-version"))
+                        .containsExactlyElementsOf(client.queryParams.values("api-version"))
+                    live.send(start())
+                    assertThat(mapper.readTree(http.writes.poll()).path("type").asText())
+                        .isEqualTo("session.start")
+                }
+            }
+        }
+    }
+
+    @Test
     fun failureCleanupNeverJoinsItsOwnReaderAndSettlesPendingReceive() {
         for (malformed in listOf(true, false)) {
             val http = FakeTransport()

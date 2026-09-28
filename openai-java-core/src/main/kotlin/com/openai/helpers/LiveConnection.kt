@@ -99,7 +99,7 @@ private constructor(
             clientOptions: ClientOptions,
             options: LiveWebSocketOptions = LiveWebSocketOptions.defaults(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): LiveConnection = await(connectAsync(clientOptions, options, requestOptions))
+        ): LiveConnection = await(open(clientOptions, options, requestOptions, blocking = true))
 
         @JvmStatic
         @JvmOverloads
@@ -107,15 +107,25 @@ private constructor(
             clientOptions: ClientOptions,
             options: LiveWebSocketOptions = LiveWebSocketOptions.defaults(),
             requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<LiveConnection> =
+            open(clientOptions, options, requestOptions, blocking = false)
+
+        private fun open(
+            clientOptions: ClientOptions,
+            options: LiveWebSocketOptions,
+            requestOptions: RequestOptions,
+            blocking: Boolean,
         ): CompletableFuture<LiveConnection> {
             val connection = LiveConnection(clientOptions, options, requestOptions)
             val result = CompletableFuture<LiveConnection>()
             result.whenComplete { _, _ -> if (result.isCancelled) connection.close() }
             try {
                 clientOptions.requireWebSocketTransport()
+                val baseUrl = URI(clientOptions.baseUrl())
+                val requestBase = baseUrl.toASCIIString().substringBefore('#').substringBefore('?')
                 require(
                     AzureUrlCategory.categorizeBaseUrl(
-                        clientOptions.baseUrl(),
+                        requestBase,
                         clientOptions.azureUrlPathMode,
                     ) != AzureUrlCategory.AZURE_LEGACY
                 ) {
@@ -124,11 +134,10 @@ private constructor(
                 // HttpRequest.url() appends segments to baseUrl. Canonicalize before both
                 // authentication and transport so custom WebSocketClient implementations see
                 // the same URL that OkHttp sends.
-                val baseUrl = URI(clientOptions.baseUrl())
                 val request =
                     HttpRequest.builder()
                         .method(HttpMethod.GET)
-                        .baseUrl(baseUrl.toASCIIString().substringBefore('#').substringBefore('?'))
+                        .baseUrl(requestBase)
                         .addPathSegments("live", "sessions")
                         .apply {
                             baseUrl.rawQuery
@@ -147,6 +156,12 @@ private constructor(
                             options,
                             SecurityOptions.builder().bearerAuth(true).build(),
                         )
+                        // Live requires unified routing as checked above. Shared request
+                        // preparation can still classify the original query-bearing base URL as
+                        // legacy; retain all prepared auth/defaults and this exact Live endpoint.
+                        .toBuilder()
+                        .pathSegments(listOf("live", "sessions"))
+                        .build()
                 val pending =
                     clientOptions.connectWebSocket(
                         request,
@@ -215,10 +230,14 @@ private constructor(
                             } catch (closing: Throwable) {
                                 if (closing !== problem) problem.addSuppressed(closing)
                             } finally {
-                                connection.dispatch(complete)
+                                if (blocking) complete() else connection.dispatch(complete)
                             }
                         }
-                    } else connection.dispatch(complete)
+                    } else {
+                        // A synchronous open uses an unexposed future with no user callbacks.
+                        // It must not queue completion behind its blocking caller's executor.
+                        if (blocking) complete() else connection.dispatch(complete)
+                    }
                 }
             } catch (error: Exception) {
                 connection.fail(error)
