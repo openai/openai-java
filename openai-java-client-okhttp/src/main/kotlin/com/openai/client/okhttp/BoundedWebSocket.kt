@@ -196,15 +196,24 @@ internal object BoundedWebSocket {
                                                 "WebSocket command must not be empty"
                                             }
                                             val size = text.utf8Size()
-                                            require(size <= maxMessageBytes) {
-                                                "WebSocket command exceeds maxMessageBytes"
-                                            }
-                                            require(size <= MAX_SEND_BYTES) {
-                                                "WebSocket command exceeds OkHttp's 16 MiB send limit"
-                                            }
-                                            check(webSocket.queueSize() == 0L) {
-                                                "WebSocket send buffer is full; command was not queued"
-                                            }
+                                            if (size > maxMessageBytes)
+                                                throw com.openai.core.http
+                                                    .WebSocketWriteNotAttempted
+                                                    .Message(
+                                                        "WebSocket command exceeds maxMessageBytes"
+                                                    )
+                                            if (size > MAX_SEND_BYTES)
+                                                throw com.openai.core.http
+                                                    .WebSocketWriteNotAttempted
+                                                    .Message(
+                                                        "WebSocket command exceeds OkHttp's 16 MiB send limit"
+                                                    )
+                                            if (webSocket.queueSize() != 0L)
+                                                throw com.openai.core.http
+                                                    .WebSocketWriteNotAttempted
+                                                    .Busy(
+                                                        "WebSocket send buffer is full; command was not queued"
+                                                    )
                                             check(webSocket.send(text)) {
                                                 "WebSocket is closed; command was not queued"
                                             }
