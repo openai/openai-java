@@ -4,8 +4,10 @@ import com.openai.core.RequestOptions
 import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketHandshakeException
 import java.io.IOException
+import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import okhttp3.Response
@@ -188,7 +190,28 @@ internal object BoundedWebSocket {
                                 return
                             }
                             val connection =
-                                object : WebSocketClient.Connection {
+                                object : WebSocketClient.WritableConnection {
+                                    override fun awaitWritable(timeout: Duration) {
+                                        require(!timeout.isNegative && !timeout.isZero) {
+                                            "WebSocket writable timeout must be positive"
+                                        }
+                                        val deadline = System.nanoTime() + timeout.toNanos()
+                                        while (true) {
+                                            check(!ended.get() && closeDeadline.get() == null) {
+                                                "WebSocket is closed or closing"
+                                            }
+                                            if (webSocket.queueSize() == 0L) return
+                                            val remaining = deadline - System.nanoTime()
+                                            if (remaining <= 0L)
+                                                throw TimeoutException(
+                                                    "WebSocket send buffer is full"
+                                                )
+                                            TimeUnit.NANOSECONDS.sleep(
+                                                minOf(remaining, TimeUnit.MILLISECONDS.toNanos(10))
+                                            )
+                                        }
+                                    }
+
                                     override fun send(text: String) {
                                         synchronized(this) {
                                             check(!ended.get()) { "WebSocket is closed" }
