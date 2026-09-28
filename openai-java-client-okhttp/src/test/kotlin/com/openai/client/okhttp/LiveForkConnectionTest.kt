@@ -17,6 +17,7 @@ import com.openai.models.live.ForkSessionStartEvent
 import com.openai.models.live.SessionCloseEvent
 import com.openai.models.live.forks.ForkClientEvent
 import java.io.IOException
+import java.net.URI
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
@@ -183,6 +184,66 @@ class LiveForkConnectionTest {
     }
 
     @Test
+    fun customAndOkHttpForksAddressTheSameStoredIdWithSpaces() {
+        verifyForkRouteAcrossTransports("stored id")
+    }
+
+    @Test
+    fun customAndOkHttpForksAddressTheSameStoredIdWithLiteralPlus() {
+        verifyForkRouteAcrossTransports("stored+id")
+    }
+
+    private fun verifyForkRouteAcrossTransports(id: String) {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { sdkHttp ->
+                WriteTransport().use { otherHttp ->
+                    val perSession =
+                        LiveWebSocketOptions.builder()
+                            .putHeader("X-Fork-Request", "fixture")
+                            .putQueryParam("graceful_close", "true")
+                            .build()
+                    LiveForkConnection.connect(options(server, sdkHttp), id, perSession).use { fork
+                        ->
+                        LiveForkConnection.connectAsync(options(server, otherHttp), id, perSession)
+                            .get(8, TimeUnit.SECONDS)
+                            .use { other ->
+                                val wire = server.takeRequest(8, TimeUnit.SECONDS)!!
+                                val custom = otherHttp.opens.poll(8, TimeUnit.SECONDS)!!
+                                val customUrl = URI(custom.url())
+                                val sdkUrl = wire.requestUrl!!.toUri()
+                                assertThat(customUrl.path)
+                                    .isEqualTo("/proxy/v1/live/sessions/$id/fork")
+                                assertThat(sdkUrl.path)
+                                    .isEqualTo("/proxy/v1/live/sessions/$id/fork")
+                                // Authenticators consuming HttpRequest.url() must see the same
+                                // escaped resource path that either physical transport sends.
+                                assertThat(customUrl.rawPath).isEqualTo(sdkUrl.rawPath)
+                                assertThat(custom.queryParams.values("inherited"))
+                                    .containsExactly("one/two")
+                                assertThat(wire.requestUrl!!.queryParameter("inherited"))
+                                    .isEqualTo("one/two")
+                                assertThat(custom.headers.values("Authorization"))
+                                    .containsExactly("Bearer fake-fork-key")
+                                assertThat(wire.getHeader("Authorization"))
+                                    .isEqualTo("Bearer fake-fork-key")
+                                fork.send(start())
+                                other.send(start())
+                                assertThat(mapper.readTree(peer.messages.poll(8, TimeUnit.SECONDS)))
+                                    .isEqualTo(
+                                        mapper.readTree(
+                                            otherHttp.attempted.poll(8, TimeUnit.SECONDS)
+                                        )
+                                    )
+                            }
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     fun reconnectNeverReachesForkWireIncludingMisdeclaredKnownAndUnknownEvents() {
         MockWebServer().use { server ->
             val peer = Peer()
@@ -328,6 +389,7 @@ class LiveForkConnectionTest {
 
     private class WriteTransport : HttpClient, WebSocketClient {
         val attempted = LinkedBlockingQueue<String>()
+        val opens = LinkedBlockingQueue<HttpRequest>()
         val closed = CountDownLatch(1)
         var writeFailure: Throwable? = null
 
@@ -346,8 +408,9 @@ class LiveForkConnectionTest {
             options: RequestOptions,
             maxMessageBytes: Int,
             listener: WebSocketClient.Listener,
-        ): CompletableFuture<WebSocketClient.Connection> =
-            CompletableFuture.completedFuture(
+        ): CompletableFuture<WebSocketClient.Connection> {
+            opens.add(request)
+            return CompletableFuture.completedFuture(
                 object : WebSocketClient.Connection {
                     override fun send(text: String) {
                         val problem = writeFailure
@@ -361,6 +424,7 @@ class LiveForkConnectionTest {
                     }
                 }
             )
+        }
     }
 
     @Test

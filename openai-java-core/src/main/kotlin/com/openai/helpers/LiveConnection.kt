@@ -19,6 +19,7 @@ import com.openai.models.live.ServerEvent
 import java.io.IOException
 import java.net.URI
 import java.net.URLDecoder
+import java.net.URLEncoder
 import java.util.ArrayDeque
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
@@ -113,6 +114,7 @@ internal class LiveSocket<C : Any, S : Any>(
     private val path: List<String>,
     eventType: Class<S>,
     private val validate: (S) -> Unit,
+    private val embedEncodedPath: Boolean = false,
 ) : AutoCloseable {
     private val lock = Any()
     private val reader =
@@ -194,6 +196,23 @@ internal class LiveSocket<C : Any, S : Any>(
                     // legacy; retain all prepared auth/defaults and this exact Live endpoint.
                     .toBuilder()
                     .pathSegments(path)
+                    .apply {
+                        if (embedEncodedPath) {
+                            // Fork IDs must address the same resource through request.url() and
+                            // OkHttp's addPathSegment. Validate the raw path in prepare() above,
+                            // then encode once as URL path (not form data) before authentication.
+                            // Keep the suffix in the base so neither transport encodes it again.
+                            val separator = if (requestBase.endsWith("/")) "" else "/"
+                            baseUrl(
+                                requestBase +
+                                    separator +
+                                    path.joinToString("/") {
+                                        URLEncoder.encode(it, "UTF-8").replace("+", "%20")
+                                    }
+                            )
+                            pathSegments(emptyList())
+                        }
+                    }
                     .build()
             val pending =
                 clientOptions.connectWebSocket(

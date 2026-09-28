@@ -81,6 +81,7 @@ private constructor(
                     listOf("live", "sessions", storedSessionId, "fork"),
                     ForkServerEvent::class.java,
                     { it.validate() },
+                    embedEncodedPath = true,
                 )
                 .open(blocking) { LiveForkConnection(it, clientOptions.jsonMapper) }
         }
