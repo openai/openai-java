@@ -314,8 +314,8 @@ private constructor(
      * Observes transport capacity without sending, receiving or reserving a message slot. The
      * standard OkHttp transport supports it. A legacy custom transport can opt in by implementing
      * WebSocketClient.WritableConnection; otherwise this operation is unsupported. send still
-     * supports legacy transports and can report Busy after this advisory observation.
-     * Timeout and interruption are reported as OpenAIIoException with the cause preserved.
+     * supports legacy transports and can report Busy after this advisory observation. Timeout and
+     * interruption are reported as OpenAIIoException with the cause preserved.
      */
     fun awaitWritable(timeout: Duration) {
         require(!timeout.isZero && !timeout.isNegative) {
@@ -418,29 +418,35 @@ private constructor(
         // CompletableFuture.get on a common-pool worker may itself execute unrelated queued
         // async tasks while waiting. Never allow the caller waiting on a deadline to pick up
         // this potentially blocking transport operation.
-        Thread({
-            var problem: Throwable? = null
-            try {
-                write(event, deadline)
-            } catch (error: Throwable) {
-                problem = error
-                if (error is TimeoutException) fail(error)
-            } finally {
-                // A returned send permits the next one. Release its admission before waking
-                // either that caller or finish; leave blocked, timed-out writers owned until done.
-                synchronized(lock) {
-                    sending = false
-                    lock.notifyAll()
-                }
+        Thread(
+                {
+                    var problem: Throwable? = null
+                    try {
+                        write(event, deadline)
+                    } catch (error: Throwable) {
+                        problem = error
+                        if (error is TimeoutException) fail(error)
+                    } finally {
+                        // A returned send permits the next one. Release its admission before waking
+                        // either that caller or finish; leave blocked, timed-out writers owned
+                        // until done.
+                        synchronized(lock) {
+                            sending = false
+                            lock.notifyAll()
+                        }
+                    }
+                    if (decided.compareAndSet(false, true)) {
+                        if (problem == null) result.complete(Unit)
+                        else result.completeExceptionally(problem)
+                    }
+                    alarm.cancel(false)
+                },
+                "openai-translation-send",
+            )
+            .apply {
+                isDaemon = true
+                start()
             }
-            if (decided.compareAndSet(false, true)) {
-                if (problem == null) result.complete(Unit) else result.completeExceptionally(problem)
-            }
-            alarm.cancel(false)
-        }, "openai-translation-send").apply {
-            isDaemon = true
-            start()
-        }
         try {
             await(result)
         } catch (error: RuntimeException) {
