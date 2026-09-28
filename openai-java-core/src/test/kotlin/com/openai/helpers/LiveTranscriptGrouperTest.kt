@@ -16,6 +16,7 @@ import java.util.Collections
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import java.util.function.Consumer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -102,6 +103,45 @@ internal class LiveTranscriptGrouperTest {
     }
 
     @Test
+    fun unequalInitialAssistantOverlapAlsoPrefersUser() {
+        val events = updates()
+        LiveTranscriptGrouper.create { events.add(it) }
+            .use { grouper ->
+                grouper.push(output("ack", "Okay", 0, 100))
+                grouper.push(input("speech", "I want", 0, 500))
+                grouper.push(input("continued", " to book", 500, 700))
+            }
+        assertThat(finalized(events).map { it.segment().speaker() }).containsExactly(Speaker.USER)
+        assertThat(finalized(events).single().segment().text()).isEqualTo("I want to book")
+    }
+
+    @Test
+    fun streamedDeltasReconstructNormalizedOverlapSnapshots() {
+        val events = updates()
+        val streamed = mutableMapOf<String, StringBuilder>()
+        LiveTranscriptGrouper.create { update ->
+                events.add(update)
+                streamed.getOrPut(update.segment().id()) { StringBuilder() }.append(update.delta())
+                if (update.closeReason().isPresent) {
+                    assertThat(streamed[update.segment().id()].toString())
+                        .isEqualTo(update.segment().text())
+                    assertThat(update.delta()).isEmpty()
+                }
+            }
+            .use { grouper ->
+                grouper.push(output("a1", " OKAY! ", 0, 80))
+                grouper.push(input("u1", "bon", 0, 200))
+                grouper.push(input("u2", "jour", 200, 300))
+                grouper.push(output("a2", "Your", 1900, 2100))
+                grouper.push(output("a3", " answer", 2100, 2200))
+            }
+        val segments = finalized(events).map { it.segment() }
+        assertThat(segments.map { it.text() }).containsExactly("bonjour", "Your answer")
+        assertThat(streamed.values.map { it.toString() }).containsExactly("bonjour", "Your answer")
+        assertThat(segments[1].previousId()).contains(segments[0].id())
+    }
+
+    @Test
     fun earlierStartingOppositeSpeakerDoesNotResetTheSession() {
         val events = updates()
         val grouper = LiveTranscriptGrouper.create { events.add(it) }
@@ -166,7 +206,11 @@ internal class LiveTranscriptGrouperTest {
     @Test
     fun overlappingPrefixCanCompleteAsSubstantiveTextOrAsAnAcknowledgment() {
         val substantive = updates()
-        LiveTranscriptGrouper.create { substantive.add(it) }
+        val streamed = mutableMapOf<String, StringBuilder>()
+        LiveTranscriptGrouper.create { update ->
+                substantive.add(update)
+                streamed.getOrPut(update.segment().id()) { StringBuilder() }.append(update.delta())
+            }
             .use { grouper ->
                 grouper.push(input("u1", "hel", 0, 100))
                 grouper.push(output("a1", "o", 0, 100))
@@ -175,6 +219,7 @@ internal class LiveTranscriptGrouperTest {
             }
         val segments = finalized(substantive).map { it.segment() }
         assertThat(segments.map { it.text() }).containsExactly("hello", "outstanding")
+        assertThat(streamed.values.map { it.toString() }).containsExactly("hello", "outstanding")
         assertThat(segments.map { it.speaker() }).containsExactly(Speaker.USER, Speaker.ASSISTANT)
         assertThat(segments[1].previousId()).contains(segments[0].id())
 
@@ -245,6 +290,117 @@ internal class LiveTranscriptGrouperTest {
     }
 
     @Test
+    fun blockedListenersDoNotPreventOtherSessionsFromFlushing() {
+        val entered = CountDownLatch(2)
+        val release = CountDownLatch(1)
+        val completed = CountDownLatch(1)
+        val blockers =
+            List(2) {
+                LiveTranscriptGrouper.create { update ->
+                    if (!update.closeReason().isPresent) {
+                        entered.countDown()
+                        assertThat(release.await(10, TimeUnit.SECONDS)).isTrue()
+                    }
+                }
+            }
+        val third =
+            LiveTranscriptGrouper.builder {
+                    if (it.closeReason().orElse(null) == CloseReason.INACTIVITY)
+                        completed.countDown()
+                }
+                .assistantSilence(Duration.ofMillis(20))
+                .build()
+        try {
+            blockers.forEachIndexed { index, grouper ->
+                grouper.push(input("blocked-$index", "waiting", 0, 100))
+            }
+            assertThat(entered.await(2, TimeUnit.SECONDS)).isTrue()
+            third.push(output("third", "independent", 0, 100))
+            assertThat(completed.await(2, TimeUnit.SECONDS)).isTrue()
+        } finally {
+            release.countDown()
+            blockers.forEach { it.close() }
+            third.close()
+        }
+    }
+
+    @Test
+    fun closeWaitsForAlreadyDispatchedCallbacksAndFinishesBeforeReturning() {
+        val entered = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        val events = updates()
+        val grouper =
+            LiveTranscriptGrouper.create { update ->
+                events.add(update)
+                if (!update.closeReason().isPresent) {
+                    entered.countDown()
+                    assertThat(release.await(10, TimeUnit.SECONDS)).isTrue()
+                }
+            }
+        try {
+            grouper.push(input("u", "pending", 0, 100))
+            assertThat(entered.await(2, TimeUnit.SECONDS)).isTrue()
+            val closed = FutureTask { grouper.close() }
+            Thread(closed, "test-close-live-grouper").apply { isDaemon = true }.start()
+            assertThatThrownBy { closed.get(100, TimeUnit.MILLISECONDS) }
+                .isInstanceOf(TimeoutException::class.java)
+            release.countDown()
+            closed.get(2, TimeUnit.SECONDS)
+            assertThat(finalized(events).single().segment().text()).isEqualTo("pending")
+            assertThat(finalized(events).single().closeReason()).contains(CloseReason.MANUAL)
+        } finally {
+            release.countDown()
+            grouper.close()
+        }
+    }
+
+    @Test
+    fun listenerCanDriveABurstWithoutRecursiveDelivery() {
+        val events = updates()
+        lateinit var grouper: LiveTranscriptGrouper
+        var depth = 0
+        var maxDepth = 0
+        var next = 2L
+        grouper =
+            LiveTranscriptGrouper.create { update ->
+                depth++
+                maxDepth = maxOf(maxDepth, depth)
+                try {
+                    events.add(update)
+                    if (!update.closeReason().isPresent && next < 512) {
+                        val start = next++
+                        grouper.push(input("i$start", "x", start, start + 1))
+                    }
+                } finally {
+                    depth--
+                }
+            }
+        grouper.use {
+            it.push(input("i0", "x", 0, 1))
+            it.push(input("i1", "x", 1, 2))
+        }
+        assertThat(maxDepth).isEqualTo(1)
+        assertThat(displayed(events).map { it.segment().endMs() })
+            .containsExactlyElementsOf(1L..512L)
+        assertThat(finalized(events).single().segment().text()).isEqualTo("x".repeat(512))
+    }
+
+    @Test
+    fun finalizedEventIdsAreRetiredWhileTheCurrentTurnStillDeduplicates() {
+        val events = updates()
+        LiveTranscriptGrouper.create { events.add(it) }
+            .use { grouper ->
+                grouper.push(input("retired", "first", 0, 100))
+                grouper.push(output("a1", "answer", 1200, 1300))
+                grouper.push(output("a2", " complete", 1300, 1400))
+                grouper.push(input("retired", "new turn", 3000, 3300))
+                grouper.push(input("retired", "duplicate", 3000, 3300))
+            }
+        assertThat(finalized(events).map { it.segment().text() })
+            .containsExactly("first", "answer complete", "new turn")
+    }
+
+    @Test
     fun substantiveOverlappingAssistantSpeechIsNotSuppressed() {
         val events = updates()
         val grouper = LiveTranscriptGrouper.create { events.add(it) }
@@ -294,9 +450,10 @@ internal class LiveTranscriptGrouperTest {
         grouper.push(input("good", "duplicate", 1, 100))
         grouper.push(input("bad", " fixed", 100, 200))
         grouper.push(input("empty", "", 900, 1000))
+        grouper.push(input("empty", " text", 200, 300))
         grouper.close()
-        assertThat(finalized(events).single().segment().text()).isEqualTo("original fixed")
-        assertThat(finalized(events).single().segment().endMs()).isEqualTo(200)
+        assertThat(finalized(events).single().segment().text()).isEqualTo("original fixed text")
+        assertThat(finalized(events).single().segment().endMs()).isEqualTo(300)
     }
 
     @Test

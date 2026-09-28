@@ -8,18 +8,22 @@ import java.time.Duration
 import java.util.ArrayDeque
 import java.util.Locale
 import java.util.Optional
+import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.locks.ReentrantLock
 import java.util.function.Consumer
+import kotlin.concurrent.withLock
 import kotlin.math.ceil
 
 /**
  * Groups Live transcript deltas into display segments. Pass raw events to [push]; the caller still
  * owns the raw event stream and connection. A segment is a local projection, not an API
- * conversation item, VAD, or audio playback state. Replace the displayed text on each update with
- * the same ID.
+ * conversation item, VAD, or audio playback state. For streaming display, append [Update.delta] to
+ * the text for that segment ID; the first update includes all text for a new segment. Read
+ * [Segment.text] when a complete immutable snapshot is needed.
  *
  * Brief, overlapping assistant acknowledgments may be suppressed. Set
  * [Builder.backchannelMaxDuration] to Duration.ZERO to disable suppression. Only the two transcript
@@ -30,6 +34,10 @@ import kotlin.math.ceil
  * and cancels only this helper's timer. Push after close fails. Callbacks are serialized outside
  * the state lock and may call push or close; timer-driven callbacks run on a daemon thread. Delayed
  * event delivery can affect grouping because inactivity uses the local monotonic clock.
+ *
+ * Duplicate event IDs are ignored while their turn is pending or active and released on
+ * finalization. Live deltas have no server turn identity, so this helper cannot identify arbitrary
+ * replays of finalized turns. Start a new instance for each server session.
  */
 class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseable {
     enum class Speaker {
@@ -75,8 +83,15 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
 
     /** A segment snapshot, optionally marked final with its close reason. */
     class Update
-    internal constructor(private val segment: Segment, private val reason: CloseReason? = null) {
+    internal constructor(
+        private val segment: Segment,
+        private val delta: String = "",
+        private val reason: CloseReason? = null,
+    ) {
         fun segment(): Segment = segment
+
+        /** Text added since the last update for this ID. Empty when the segment is finalized. */
+        fun delta(): String = delta
 
         fun closeReason(): Optional<CloseReason> = Optional.ofNullable(reason)
     }
@@ -139,6 +154,12 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
                     Thread(work, "openai-live-transcripts").apply { isDaemon = true }
                 }
                 .apply { removeOnCancelPolicy = true }
+        // Only active callbacks occupy a worker, and idle workers expire. User callbacks must not
+        // prevent the shared scheduler from advancing other sessions.
+        private val callbacks =
+            Executors.newCachedThreadPool { work ->
+                Thread(work, "openai-live-transcript-callbacks").apply { isDaemon = true }
+            }
         private val punctuation = ".,!?;:\"'()[]{}"
         private val whitespace =
             Regex(
@@ -152,6 +173,7 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
     }
 
     private data class Fragment(
+        val id: String,
         val speaker: Speaker,
         val text: String,
         val start: Long,
@@ -164,8 +186,10 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         val start = fragment.start
         var end = fragment.end
         val text = StringBuilder(fragment.text)
+        val eventIds = mutableSetOf(fragment.id)
         var previous: String? = null
         var emitted = false
+        var emittedLength = 0
         var canDrop = true
 
         fun snapshot() = Segment(id, previous, speaker, text, text.length, start, end)
@@ -211,8 +235,8 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
     private var timelineOrigin = 0L
     private val lastStarts = mutableMapOf<Speaker, Long>()
     private val lock = Any()
+    private val callbackLock = ReentrantLock()
     private val updates = ArrayDeque<Update>()
-    private var dispatching = false
     private var closed = false
     private var timerGeneration = 0L
     private var timer: ScheduledFuture<*>? = null
@@ -247,10 +271,17 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
             require(id.isNotEmpty() && start >= 0 && end >= start) {
                 "Invalid Live transcript delta ID or interval"
             }
-            if (!seen.add(id) || text.isEmpty()) return
-            val fragment = Fragment(speaker, text, start, end, now())
+            if (text.isEmpty() || !seen.add(id)) return
+            val fragment = Fragment(id, speaker, text, start, end, now())
             val first = pending.firstOrNull()
-            if (first != null && first.start == start && first.end == end) {
+            if (
+                first != null &&
+                    ((first.start == start && first.end == end) ||
+                        (current == null &&
+                            first.speaker != speaker &&
+                            first.start < end &&
+                            start < first.end))
+            ) {
                 pending.add(fragment)
                 if (pending.any { it.speaker != speaker }) flushPending()
             } else {
@@ -269,13 +300,14 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
             if (reason == CloseReason.SESSION_CLOSED) {
                 check(!closed) { "Transcript grouper is closed" }
             }
-            if (closed) return
-            closed = true
-            flushPending()
-            closeTurns(sourceNow(), reason)
-            seen.clear()
-            timerGeneration++
-            timer?.cancel(false)
+            if (!closed) {
+                closed = true
+                flushPending()
+                closeTurns(sourceNow(), reason)
+                seen.clear()
+                timerGeneration++
+                timer?.cancel(false)
+            }
         }
         dispatch()
     }
@@ -406,6 +438,7 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
 
     private fun append(turn: Turn, fragment: Fragment) {
         synchronized(turn.text) { turn.text.append(fragment.text) }
+        turn.eventIds.add(fragment.id)
         turn.end = maxOf(turn.end, fragment.end)
     }
 
@@ -428,8 +461,9 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
     }
 
     private fun finishTurn(turn: Turn, reason: CloseReason) {
+        seen.removeAll(turn.eventIds)
         if (turn.speaker == Speaker.ASSISTANT) lastAssistantEnd = turn.end
-        if (turn.emitted) updates.add(Update(turn.snapshot(), reason))
+        if (turn.emitted) updates.add(Update(turn.snapshot(), reason = reason))
     }
 
     private fun emit(turn: Turn) {
@@ -438,7 +472,9 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
             lastId = turn.id
             turn.emitted = true
         }
-        updates.add(Update(turn.snapshot()))
+        val delta = turn.text.substring(turn.emittedLength)
+        turn.emittedLength = turn.text.length
+        updates.add(Update(turn.snapshot(), delta))
     }
 
     private fun mightDrop(): Boolean {
@@ -469,12 +505,16 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
                 normalize(waiting.text.toString()) !in acknowledgments
         )
             return waiting
-        if (userContinued()) return null
+        if (userContinued()) {
+            seen.removeAll(waiting.eventIds)
+            return null
+        }
         if (recentAssistant()) return waiting
         if (next != null && next.start - waiting.end < isolation) return waiting
         if (next == null && (time == null || time < (waiting.end - timelineOrigin) + isolation))
             return waiting
-        return if (waiting.canDrop) null else waiting
+        seen.removeAll(waiting.eventIds)
+        return null
     }
 
     private fun closeTurns(time: Double, reason: CloseReason) {
@@ -506,7 +546,7 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
                         advance(sourceNow())
                         schedule()
                     }
-                    dispatch()
+                    callbacks.submit { dispatch() }
                 },
                 ceil(delay.coerceAtLeast(0.0)).toLong(),
                 TimeUnit.MILLISECONDS,
@@ -514,25 +554,14 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
     }
 
     private fun dispatch() {
-        synchronized(lock) {
-            if (dispatching) return
-            dispatching = true
-        }
-        try {
+        // Reentrant pushes queue their updates for the outer drain. Other threads still wait for
+        // that drain, including close() callers.
+        if (callbackLock.isHeldByCurrentThread) return
+        callbackLock.withLock {
             while (true) {
-                val update =
-                    synchronized(lock) {
-                        if (updates.isEmpty()) {
-                            dispatching = false
-                            return
-                        }
-                        updates.removeFirst()
-                    }
+                val update = synchronized(lock) { updates.pollFirst() } ?: return
                 listener.accept(update)
             }
-        } catch (t: Throwable) {
-            synchronized(lock) { dispatching = false }
-            throw t
         }
     }
 }
