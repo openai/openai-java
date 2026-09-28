@@ -139,6 +139,68 @@ internal class LiveTranscriptGrouperTest {
     }
 
     @Test
+    fun substantiveBufferedTurnPromotesAtTheExactSeparationDeadline() {
+        for (start in listOf(600L, 601L)) {
+            val events = updates()
+            LiveTranscriptGrouper.create { events.add(it) }
+                .use {
+                    it.push(input("u1", "first", 0, 100))
+                    it.push(output("a1", "a substantive answer", 0, 100))
+                    it.push(input("u2", "second", start, start + 100))
+                    it.push(input("u3", " continued", start + 100, start + 200))
+                }
+            val segments = finalized(events).map { it.segment() }
+            assertThat(segments.map { it.text() })
+                .containsExactly("first", "a substantive answer", "second continued")
+            assertThat(segments[1].previousId()).contains(segments[0].id())
+            assertThat(segments[2].previousId()).contains(segments[1].id())
+        }
+    }
+
+    @Test
+    fun userContinuationEndingWithAcknowledgmentSuppressesBeforeIsolationTimeout() {
+        val events = updates()
+        LiveTranscriptGrouper.create { events.add(it) }
+            .use {
+                it.push(input("u1", "hel", 0, 100))
+                it.push(output("a1", "okay", 0, 200))
+                it.push(input("u2", "lo", 100, 200))
+                it.push(ServerEvent.ofSessionClosed(closed()))
+            }
+        assertThat(finalized(events).single().segment().text()).isEqualTo("hello")
+        assertThat(finalized(events).single().closeReason()).contains(CloseReason.SESSION_CLOSED)
+    }
+
+    @Test
+    fun longTrimmedEdgesStillSuppressButInteriorPunctuationIsPreserved() {
+        val ack = updates()
+        LiveTranscriptGrouper.create { ack.add(it) }
+            .use { grouper ->
+                grouper.push(input("u", "question", 0, 10))
+                repeat(3000) { n ->
+                    grouper.push(output("before$n", " .", 0, (n % 2 + 1).toLong()))
+                }
+                grouper.push(output("word", "okay", 0, 5))
+                repeat(3000) { n -> grouper.push(output("after$n", " -", 0, (n % 2 + 6).toLong())) }
+                grouper.push(input("u2", " continues", 10, 20))
+            }
+        assertThat(finalized(ack).map { it.segment().text() }).containsExactly("question continues")
+
+        val interior = updates()
+        val punctuation = ".".repeat(3000)
+        LiveTranscriptGrouper.create { interior.add(it) }
+            .use {
+                it.push(input("u", "question", 0, 10))
+                it.push(output("a1", "o", 0, 3))
+                it.push(output("a2", punctuation, 0, 4))
+                it.push(output("a3", "kay", 0, 5))
+                it.push(input("u2", " continues", 10, 20))
+            }
+        assertThat(finalized(interior).map { it.segment().text() })
+            .containsExactly("question continues", "o" + punctuation + "kay")
+    }
+
+    @Test
     fun streamedDeltasReconstructNormalizedOverlapSnapshots() {
         val events = updates()
         val streamed = mutableMapOf<String, StringBuilder>()
