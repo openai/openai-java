@@ -1,5 +1,33 @@
 # Changelog
 
+## [4.70.0](https://github.com/openai/openai-java/compare/v4.69.3...v4.70.0) (2026-09-28)
+
+
+### Features
+
+* add typed Translation WebSocket connection and safe finish ([#1094](https://github.com/openai/openai-java/issues/1094)) ([e9f070f](https://github.com/openai/openai-java/commit/e9f070fa66bccde1b44be9a339532d9a95783963))
+* **api:** add access programs and credential metadata ([#1088](https://github.com/openai/openai-java/issues/1088)) ([c197342](https://github.com/openai/openai-java/commit/c1973427bddbab4d6bf8e1f91e9fe372415eadd1))
+* **live:** add managed primary WebSocket connections ([#1095](https://github.com/openai/openai-java/issues/1095)) ([56a2c4b](https://github.com/openai/openai-java/commit/56a2c4bed71e583c24391845fc94caf69ad505eb))
+* **live:** add typed WebSocket connections for stored session forks ([#1096](https://github.com/openai/openai-java/issues/1096)) ([16f53ca](https://github.com/openai/openai-java/commit/16f53caff29a9c0c912cd27cb864d2d71fdd9b24))
+* **live:** attach typed observers to eligible signaling sessions ([#1097](https://github.com/openai/openai-java/issues/1097)) ([aeae12d](https://github.com/openai/openai-java/commit/aeae12de892a159626efd7e74e2594e1cdcee248))
+* **live:** group typed transcript events into stable speaker turns ([#1092](https://github.com/openai/openai-java/issues/1092)) ([dd9c9a3](https://github.com/openai/openai-java/commit/dd9c9a35caae011e150299ed5960d41c7f4ff2be))
+* **realtime:** add optional managed GA WebSocket connections ([#1093](https://github.com/openai/openai-java/issues/1093)) ([80530c6](https://github.com/openai/openai-java/commit/80530c605b8679189cb3d1a3c839fa63a57ee7de))
+* **responses:** add opt-in incremental accumulator snapshots ([#1091](https://github.com/openai/openai-java/issues/1091)) ([c993f76](https://github.com/openai/openai-java/commit/c993f767ef922d765bc1c8945e92ab4905506fae))
+
+
+### Bug Fixes
+
+* **api:** correct file download response description ([#1090](https://github.com/openai/openai-java/issues/1090)) ([79c1a80](https://github.com/openai/openai-java/commit/79c1a80f8b85a34f1a62898e93eafb9fbed2ede3))
+* **api:** preserve plaintext and rich audio response models ([#1083](https://github.com/openai/openai-java/issues/1083)) ([59d019d](https://github.com/openai/openai-java/commit/59d019d42daf06d3369c76b7f98a00ee2c7c3d2f))
+
+
+### Chores
+
+* **api:** clarify documented API error responses ([#1089](https://github.com/openai/openai-java/issues/1089)) ([e929b50](https://github.com/openai/openai-java/commit/e929b504eb6314c33cebc15d206988bd79481797))
+* **api:** document batch error responses ([#1082](https://github.com/openai/openai-java/issues/1082)) ([840bb12](https://github.com/openai/openai-java/commit/840bb120c0d37313aa494ef2bd3a6981a2089341))
+* **api:** document fine-tuning and model errors ([#1087](https://github.com/openai/openai-java/issues/1087)) ([2bfb718](https://github.com/openai/openai-java/commit/2bfb7186eac7af18ba080eb3effd417a1ea44844))
+* **api:** document stored chat completion errors ([#1086](https://github.com/openai/openai-java/issues/1086)) ([20d1235](https://github.com/openai/openai-java/commit/20d1235befd2b4f9f2e8cd6923ca40c6801da126))
+
 ## [4.69.3](https://github.com/openai/openai-java/compare/v4.69.2...v4.69.3) (2026-09-25)
 
 
