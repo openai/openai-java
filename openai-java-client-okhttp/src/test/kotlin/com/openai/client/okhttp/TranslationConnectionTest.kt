@@ -701,6 +701,55 @@ class TranslationConnectionTest {
     }
 
     @Test
+    fun listenerFailureWhileUpgradeIsPendingRetainsTheCauseAndCancelsOnlyThatSocket() {
+        MockWebServer().use { server ->
+            val failing = Peer()
+            val other = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(failing))
+            server.enqueue(MockResponse().withWebSocketUpgrade(other))
+            OkHttpClient.builder().build().use { http ->
+                val error = IOException("synthetic upgrade listener failure")
+                val listenerReady = CompletableFuture<WebSocketClient.Listener>()
+                val native = CompletableFuture<WebSocketClient.Connection>()
+                val pending = CompletableFuture<WebSocketClient.Connection>()
+                pending.whenComplete { _, _ ->
+                    if (pending.isCancelled) native.thenAccept { it.close() }
+                }
+                val client =
+                    object : HttpClient by http, WebSocketClient {
+                        override fun connectWebSocket(
+                            request: HttpRequest,
+                            options: RequestOptions,
+                            maxMessageBytes: Int,
+                            listener: WebSocketClient.Listener,
+                        ): CompletableFuture<WebSocketClient.Connection> {
+                            listenerReady.complete(listener)
+                            http
+                                .connectWebSocket(request, options, maxMessageBytes, listener)
+                                .thenAccept { native.complete(it) }
+                            return pending
+                        }
+                    }
+                val opening = TranslationConnection.connectAsync(options(server, client))
+                native.get(5, TimeUnit.SECONDS)
+                TranslationConnection.connect(options(server, http)).use { unaffected ->
+                    listenerReady.get(5, TimeUnit.SECONDS).onFailure(error)
+                    assertThatThrownBy { opening.get(5, TimeUnit.SECONDS) }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .hasCause(error)
+                    assertThat(pending.isCancelled).isTrue()
+                    assertThat(failing.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(failing.messages).isEmpty()
+                    unaffected.send(audio("AQ=="))
+                    assertThat(other.next().path("audio").asText()).isEqualTo("AQ==")
+                }
+                assertThat(other.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                assertThat(server.requestCount).isEqualTo(2)
+            }
+        }
+    }
+
+    @Test
     fun attemptedSendThrowableLeavesTheSocketUnusableAndCannotReplayAudio() {
         MockWebServer().use { server ->
             val peer = Peer()
@@ -1188,6 +1237,49 @@ class TranslationConnectionTest {
                     assertThat(connection.receive().asSessionOutputAudioDelta().delta())
                         .isEqualTo("AQID")
                     assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
+                    assertThat(peer.messages).isEmpty()
+                    assertThat(server.requestCount).isEqualTo(1)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun terminalAlreadyReceivedAndReleasedNeedsNoCloseSerialization() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val configuration =
+                    options(server, http)
+                        .toBuilder()
+                        .jsonMapper(
+                            object : JsonMapper(mapper) {
+                                override fun writeValueAsString(value: Any): String {
+                                    if (
+                                        value is RealtimeTranslationClientEvent &&
+                                            value.isSessionClose()
+                                    )
+                                        throw AssertionError(
+                                            "close serializer must not run after peer ended"
+                                        )
+                                    return super.writeValueAsString(value)
+                                }
+                            }
+                        )
+                        .build()
+                TranslationConnection.connect(configuration).use { connection ->
+                    connection.send(audio("AA=="))
+                    assertThat(peer.next().path("audio").asText()).isEqualTo("AA==")
+                    finalEvents(peer.socket.get(5, TimeUnit.SECONDS))
+                    assertThat(connection.receive().asSessionOutputTranscriptDelta().delta())
+                        .isEqualTo("Hola")
+                    assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                        .isEqualTo("AQID")
+                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
+                    assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(connection.finishAsync(deadline).get(7, TimeUnit.SECONDS).eventId())
+                        .isEqualTo("done")
                     assertThat(peer.messages).isEmpty()
                     assertThat(server.requestCount).isEqualTo(1)
                 }

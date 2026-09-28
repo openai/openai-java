@@ -223,10 +223,10 @@ private constructor(
                     val problem =
                         synchronized(connection.lock) {
                             connection.opening = null
-                            if (error != null) error
-                            else if (connection.closed || connection.failure != null)
+                            if (connection.closed || connection.failure != null)
                                 connection.failure
                                     ?: CancellationException("Translation connection closed")
+                            else if (error != null) error
                             else {
                                 connection.socket = active
                                 null
@@ -427,28 +427,7 @@ private constructor(
         }
         CompletableFuture.runAsync {
             try {
-                lateinit var closeText: String
-                ForkJoinPool.managedBlock(
-                    object : ForkJoinPool.ManagedBlocker {
-                        private var prepared = false
-
-                        override fun isReleasable() = prepared
-
-                        override fun block(): Boolean {
-                            closeText =
-                                clientOptions.jsonMapper.writeValueAsString(
-                                    RealtimeTranslationClientEvent.ofSessionClose(
-                                        RealtimeTranslationSessionCloseEvent.builder().build()
-                                    )
-                                )
-                            prepared = true
-                            return true
-                        }
-                    }
-                )
-                require(utf8Size(closeText) <= options.maxMessageBytes) {
-                    "Translation close exceeds maxMessageBytes"
-                }
+                var closeText: String? = null
                 while (true) {
                     val active =
                         synchronized(lock) {
@@ -465,6 +444,31 @@ private constructor(
                             }
                         }
                     if (active == null) break
+                    if (closeText == null) {
+                        ForkJoinPool.managedBlock(
+                            object : ForkJoinPool.ManagedBlocker {
+                                override fun isReleasable() = closeText != null
+
+                                override fun block(): Boolean {
+                                    closeText =
+                                        clientOptions.jsonMapper.writeValueAsString(
+                                            RealtimeTranslationClientEvent.ofSessionClose(
+                                                RealtimeTranslationSessionCloseEvent.builder()
+                                                    .build()
+                                            )
+                                        )
+                                    return true
+                                }
+                            }
+                        )
+                        require(utf8Size(checkNotNull(closeText)) <= options.maxMessageBytes) {
+                            "Translation close exceeds maxMessageBytes"
+                        }
+                        // Serialization can block while the peer ends or the deadline expires.
+                        // Recheck before attempting the only write, and reuse on proven Busy.
+                        continue
+                    }
+                    val text = checkNotNull(closeText)
                     try {
                         // A custom write can wait for transport progress that needs another
                         // common-pool worker. Do not occupy its last worker unnoticed.
@@ -475,7 +479,7 @@ private constructor(
                                 override fun isReleasable() = sent
 
                                 override fun block(): Boolean {
-                                    active.send(closeText)
+                                    active.send(text)
                                     sent = true
                                     return true
                                 }
