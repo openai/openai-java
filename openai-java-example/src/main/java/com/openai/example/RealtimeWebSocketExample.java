@@ -15,10 +15,13 @@ public final class RealtimeWebSocketExample {
     private RealtimeWebSocketExample() {}
 
     public static void main(String[] args) throws Exception {
-        ClientOptions options =
-                ClientOptions.builder().fromEnv().httpClient(OkHttpClient.builder().build()).build();
+        ClientOptions options = ClientOptions.builder()
+                .fromEnv()
+                .httpClient(OkHttpClient.builder().build())
+                .build();
         try (RealtimeConnection connection = RealtimeConnection.connect(
-                options, RealtimeWebSocketOptions.builder().model("gpt-realtime-2.1").build())) {
+                options,
+                RealtimeWebSocketOptions.builder().model("gpt-realtime-2.1").build())) {
             while (true) {
                 RealtimeServerEvent event = connection.receiveAsync().get(20, TimeUnit.SECONDS);
                 if (event.isError()) {
@@ -32,8 +35,8 @@ public final class RealtimeWebSocketExample {
                                     .build())
                             .build()));
                 } else if (event.isResponseDone()) {
-                    System.out.println(
-                            "Realtime response: " + event.asResponseDone().response().status());
+                    System.out.println("Realtime response: "
+                            + event.asResponseDone().response().status());
                     break;
                 }
             }

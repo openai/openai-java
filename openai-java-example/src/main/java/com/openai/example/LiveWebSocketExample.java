@@ -18,8 +18,10 @@ public final class LiveWebSocketExample {
     private LiveWebSocketExample() {}
 
     public static void main(String[] args) throws Exception {
-        ClientOptions options =
-                ClientOptions.builder().fromEnv().httpClient(OkHttpClient.builder().build()).build();
+        ClientOptions options = ClientOptions.builder()
+                .fromEnv()
+                .httpClient(OkHttpClient.builder().build())
+                .build();
         try (LiveConnection connection = LiveConnection.connect(options)) {
             // Opening the transport does not start a Live session. Send the configuration explicitly.
             connection.send(ClientEvent.ofSessionStart(SessionStartEvent.builder()
