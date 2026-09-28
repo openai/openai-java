@@ -11,6 +11,7 @@ import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketWriteNotAttempted
+import com.openai.core.http.utf8Size
 import com.openai.core.prepare
 import com.openai.errors.OpenAIIoException
 import com.openai.models.realtime.RealtimeClientEvent
@@ -155,8 +156,27 @@ private constructor(
                     if (problem != null) {
                         active?.close()
                         connection.fail(problem)
-                        result.completeExceptionally(problem)
-                    } else if (!result.complete(connection)) connection.close()
+                    }
+                    connection.dispatch {
+                        // The owner or socket can close while completion waits on the executor.
+                        // Inspect state here, but keep user callbacks outside the lock.
+                        val completionError =
+                            problem
+                                ?: synchronized(connection.lock) {
+                                    when {
+                                        connection.failure != null -> connection.failure
+                                        connection.closed ->
+                                            CancellationException("Realtime connection closed")
+                                        clientOptions.isWebSocketClosed() ->
+                                            CancellationException("Client is closed")
+                                        else -> null
+                                    }
+                                }
+                        if (completionError != null) {
+                            connection.fail(completionError)
+                            result.completeExceptionally(completionError)
+                        } else if (!result.complete(connection)) connection.close()
+                    }
                 }
             } catch (error: Exception) {
                 connection.fail(error)
@@ -232,7 +252,7 @@ private constructor(
         }
         try {
             val text = clientOptions.jsonMapper.writeValueAsString(event)
-            require(text.toByteArray(Charsets.UTF_8).size <= options.maxMessageBytes) {
+            require(utf8Size(text) <= options.maxMessageBytes) {
                 "Realtime command exceeds maxMessageBytes"
             }
             val active =
@@ -301,7 +321,7 @@ private constructor(
             val event: RealtimeServerEvent = reader.readValue(text)
             if (requestOptions.responseValidation ?: clientOptions.responseValidation)
                 event.validate()
-            val bytes = text.toByteArray(Charsets.UTF_8).size.toLong()
+            val bytes = utf8Size(text)
             val target =
                 synchronized(lock) {
                     if (closed || failure != null) return

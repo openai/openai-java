@@ -63,6 +63,72 @@ class RealtimeConnectionTest {
             .build()
 
     @Test
+    fun blockingContinuationAfterHandshakeDoesNotBlockIncomingFrames() {
+        MockWebServer().use { server ->
+            val peer = Listener()
+            server.enqueue(
+                MockResponse()
+                    .setHeadersDelay(300, TimeUnit.MILLISECONDS)
+                    .withWebSocketUpgrade(peer)
+            )
+            OkHttpClient.builder().build().use { http ->
+                val configuration =
+                    ClientOptions.builder()
+                        .httpClient(http)
+                        .apiKey("fake-realtime-key")
+                        .baseUrl(server.url("/v1").toString())
+                        .streamHandlerExecutor { it.run() }
+                        .build()
+                try {
+                    val event =
+                        RealtimeConnection.connectAsync(configuration).thenApply { connection ->
+                            connection.use { it.receive() }
+                        }
+                    assertThat(
+                            peer.socket
+                                .get(8, TimeUnit.SECONDS)
+                                .send("""{"type":"future.ready","note":"hello"}""")
+                        )
+                        .isTrue()
+                    assertThat(event.get(8, TimeUnit.SECONDS)._json()).isPresent()
+                } finally {
+                    configuration.close()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun closingSharedClientWhileHandshakeCompletionIsQueuedRejectsTheConnection() {
+        MockWebServer().use { server ->
+            val peer = Listener()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val completions = LinkedBlockingQueue<Runnable>()
+                val configuration =
+                    ClientOptions.builder()
+                        .httpClient(http)
+                        .apiKey("fake-realtime-key")
+                        .baseUrl(server.url("/v1").toString())
+                        .streamHandlerExecutor { completions.add(it) }
+                        .build()
+                try {
+                    val opening = RealtimeConnection.connectAsync(configuration)
+                    peer.socket.get(8, TimeUnit.SECONDS)
+                    val complete = completions.poll(8, TimeUnit.SECONDS)
+                    assertThat(complete).isNotNull()
+                    configuration.close()
+                    complete!!.run()
+                    assertThat(opening).isCompletedExceptionally()
+                    assertThat(peer.terminated.await(8, TimeUnit.SECONDS)).isTrue()
+                } finally {
+                    configuration.close()
+                }
+            }
+        }
+    }
+
+    @Test
     fun typedSessionsAllowBlockingAndAsyncReceivesAndKeepErrorsNonterminal() {
         for (async in listOf(false, true)) {
             MockWebServer().use { server ->
