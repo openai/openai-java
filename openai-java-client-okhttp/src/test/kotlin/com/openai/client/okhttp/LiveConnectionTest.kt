@@ -10,6 +10,7 @@ import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketWriteNotAttempted
 import com.openai.core.jsonMapper
 import com.openai.helpers.LiveConnection
+import com.openai.helpers.LiveTranscriptGrouper
 import com.openai.helpers.LiveWebSocketOptions
 import com.openai.models.live.ClientEvent
 import com.openai.models.live.SessionCloseEvent
@@ -17,6 +18,7 @@ import com.openai.models.live.SessionConfig
 import com.openai.models.live.SessionStartEvent
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
@@ -149,6 +151,95 @@ class LiveConnectionTest {
                     assertThat(peer.closed.await(8, TimeUnit.SECONDS)).isTrue()
                     assertThat(peer.messages).isEmpty()
                 }
+            }
+        }
+    }
+
+    @Test
+    fun disposingOneTranscriptGrouperPreservesParsedLiveEventsAndPeer() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val firstUpdates = ConcurrentLinkedQueue<LiveTranscriptGrouper.Update>()
+                val secondUpdates = ConcurrentLinkedQueue<LiveTranscriptGrouper.Update>()
+                LiveTranscriptGrouper.create { firstUpdates.add(it) }
+                    .use { first ->
+                        LiveTranscriptGrouper.create { secondUpdates.add(it) }
+                            .use { second ->
+                                LiveConnection.connect(options(server, http)).use { live ->
+                                    live.send(start())
+                                    assertThat(
+                                            mapper
+                                                .readTree(peer.messages.poll(8, TimeUnit.SECONDS))
+                                                .path("type")
+                                                .asText()
+                                        )
+                                        .isEqualTo("session.start")
+                                    val socket = peer.socket.get(8, TimeUnit.SECONDS)
+                                    val beforeText =
+                                        """{"type":"session.input_transcript.delta","event_id":"t1","delta":"Hello","start_ms":0,"end_ms":100,"future":{"preserve":["yes",7]}}"""
+                                    socket.send(beforeText)
+                                    val before = live.receive()
+                                    assertThat(before.isSessionInputTranscriptDelta()).isTrue()
+                                    first.push(before)
+                                    second.push(before)
+                                    assertThat(mapper.readTree(mapper.writeValueAsString(before)))
+                                        .isEqualTo(mapper.readTree(beforeText))
+
+                                    first.close()
+                                    first.close()
+                                    val firstFinals =
+                                        firstUpdates.filter { it.closeReason().isPresent }
+                                    assertThat(firstFinals).hasSize(1)
+                                    assertThat(firstFinals.single().segment().text())
+                                        .isEqualTo("Hello")
+                                    assertThat(firstFinals.single().closeReason())
+                                        .contains(LiveTranscriptGrouper.CloseReason.MANUAL)
+                                    val savedFirstUpdates = firstUpdates.toList()
+
+                                    val unknownText =
+                                        """{"type":"live.future","event_id":"opaque","data":{"keep":[null,3,"future"]}}"""
+                                    socket.send(unknownText)
+                                    val unknown = live.receiveAsync().get(8, TimeUnit.SECONDS)
+                                    assertThat(unknown._json()).isPresent()
+                                    second.push(unknown)
+                                    assertThat(mapper.valueToTree<JsonNode>(unknown))
+                                        .isEqualTo(mapper.readTree(unknownText))
+                                    val afterText =
+                                        """{"type":"session.input_transcript.delta","event_id":"t2","delta":" world","start_ms":100,"end_ms":200}"""
+                                    socket.send(afterText)
+                                    val after = live.receive()
+                                    assertThat(after.isSessionInputTranscriptDelta()).isTrue()
+                                    second.push(after)
+                                    assertThat(mapper.readTree(mapper.writeValueAsString(after)))
+                                        .isEqualTo(mapper.readTree(afterText))
+                                    second.close()
+                                    val secondFinals =
+                                        secondUpdates.filter { it.closeReason().isPresent }
+                                    assertThat(secondFinals).hasSize(1)
+                                    assertThat(secondFinals.single().segment().text())
+                                        .isEqualTo("Hello world")
+                                    assertThat(secondFinals.single().closeReason())
+                                        .contains(LiveTranscriptGrouper.CloseReason.MANUAL)
+                                    assertThat(firstUpdates)
+                                        .containsExactlyElementsOf(savedFirstUpdates)
+                                    assertThat(peer.closed.count).isEqualTo(1)
+
+                                    live.send(finish())
+                                    assertThat(
+                                            mapper
+                                                .readTree(peer.messages.poll(8, TimeUnit.SECONDS))
+                                                .path("type")
+                                                .asText()
+                                        )
+                                        .isEqualTo("session.close")
+                                    assertThat(peer.closed.count).isEqualTo(1)
+                                }
+                            }
+                    }
+                assertThat(peer.closed.await(8, TimeUnit.SECONDS)).isTrue()
+                assertThat(peer.messages).isEmpty()
             }
         }
     }
