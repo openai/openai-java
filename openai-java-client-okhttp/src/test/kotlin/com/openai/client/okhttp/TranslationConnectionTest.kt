@@ -38,6 +38,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
 
@@ -781,12 +782,13 @@ class TranslationConnectionTest {
     }
 
     @Test
-    fun receiveReportsOriginalErrorWithSuppressedCleanupThrowable() {
+    fun failedReadCanReleaseBlockingCleanupAndRetainsLaterSuppressedThrowable() {
         MockWebServer().use { server ->
             val peer = Peer()
             server.enqueue(MockResponse().withWebSocketUpgrade(peer))
             OkHttpClient.builder().build().use { http ->
                 val closing = AssertionError("synthetic native close failure")
+                val observedError = CountDownLatch(1)
                 val client =
                     object : HttpClient by http, WebSocketClient {
                         override fun connectWebSocket(
@@ -800,7 +802,13 @@ class TranslationConnectionTest {
                                 .thenApply { native ->
                                     object : WebSocketClient.Connection by native {
                                         override fun close() {
-                                            native.close()
+                                            try {
+                                                check(observedError.await(9, TimeUnit.SECONDS)) {
+                                                    "Application cannot tear down before its read fails"
+                                                }
+                                            } finally {
+                                                native.close()
+                                            }
                                             throw closing
                                         }
                                     }
@@ -809,13 +817,26 @@ class TranslationConnectionTest {
                 TranslationConnection.connect(options(server, client)).use { connection ->
                     val read = connection.receiveAsync()
                     peer.socket.get(5, TimeUnit.SECONDS).send("""{"type":42}""")
-                    assertThatThrownBy { read.get(5, TimeUnit.SECONDS) }
-                        .isInstanceOf(ExecutionException::class.java)
-                        .cause()
-                        .isInstanceOf(IllegalArgumentException::class.java)
-                        .hasMessage("Invalid Translation event")
-                        .hasSuppressedException(closing)
+                    val original =
+                        try {
+                            val readError = catchThrowable { read.get(3, TimeUnit.SECONDS) }
+                            assertThat(readError).isInstanceOf(ExecutionException::class.java)
+                            checkNotNull(readError.cause).also {
+                                assertThat(it)
+                                    .isInstanceOf(IllegalArgumentException::class.java)
+                                    .hasMessage("Invalid Translation event")
+                            }
+                        } finally {
+                            observedError.countDown()
+                        }
                     assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                    // Cleanup can only finish after delivery; preserve its eventual error on the
+                    // same exception, without making read delivery depend on application teardown.
+                    val until = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+                    while (original.suppressed.isEmpty() && System.nanoTime() < until) Thread.sleep(
+                        10
+                    )
+                    assertThat(original).hasSuppressedException(closing)
                 }
             }
         }

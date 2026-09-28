@@ -685,10 +685,13 @@ private constructor(
                     opening = null
                 }
             }
-        // Failure can originate on the listener, and custom transports can join that reader
-        // during close. Release off-thread before completing the failed pending receive.
-        // Completing finish is independent of cleanup so even blocking transports cannot
-        // hold its deadline. Neither user callback nor transport close runs on the timer.
+        // Read and finish failures must be delivered independently of cleanup: a custom close
+        // can itself wait for application teardown after observing an error. Public callbacks
+        // still run off the listener/timer. A blocking read's private future has none.
+        detached.third?.let { read ->
+            if (read.blocking) read.completeExceptionally(error)
+            else dispatch { read.completeExceptionally(error) }
+        }
         finishing?.let { ending ->
             CompletableFuture.runAsync { ending.completeExceptionally(error) }
         }
@@ -698,11 +701,6 @@ private constructor(
                 detached.first?.let { closeTransport(it) }
             } catch (closing: Throwable) {
                 if (closing !== error) error.addSuppressed(closing)
-            } finally {
-                detached.third?.let { read ->
-                    if (read.blocking) read.completeExceptionally(error)
-                    else dispatch { read.completeExceptionally(error) }
-                }
             }
         }
     }
