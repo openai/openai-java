@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource
 internal class RetryDateOverflowTest {
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
-    fun extremeDatesFallBackAndCloseResponse(async: Boolean) {
+    fun extremeDatesAreBoundedAndCloseResponse(async: Boolean) {
         for (year in listOf(1, 9999)) {
             var closed = false
             var attempts = 0
@@ -86,7 +86,8 @@ internal class RetryDateOverflowTest {
                 .close()
             assertThat(attempts).isEqualTo(2)
             assertThat(durations).hasSize(1)
-            assertThat(durations.single()).isBetween(Duration.ofMillis(375), Duration.ofMillis(500))
+            assertThat(durations)
+                .containsExactly(if (year == 1) Duration.ZERO else Duration.ofSeconds(8))
         }
     }
 }
