@@ -1,7 +1,9 @@
 package com.openai.core.http
 
 import com.openai.core.RequestOptions
+import java.time.Duration
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeoutException
 
 /** Optional transport capability. HTTP-only clients need not implement this interface. */
 interface WebSocketClient {
@@ -33,6 +35,17 @@ interface WebSocketClient {
          * remains serialized after that listener returns.
          */
         override fun close()
+    }
+
+    /** Optional ability to observe capacity without enqueueing an application message. */
+    interface WritableConnection : Connection {
+        /**
+         * Wait until the transport can accept another complete message, or throw on timeout,
+         * interruption or closure. Readiness is advisory; another writer may win admission. Does
+         * not reserve capacity or consume any server event.
+         */
+        @Throws(TimeoutException::class, InterruptedException::class)
+        fun awaitWritable(timeout: Duration)
     }
 
     interface Listener {

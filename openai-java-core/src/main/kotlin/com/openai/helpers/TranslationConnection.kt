@@ -310,6 +310,39 @@ private constructor(
     fun receiveAsync(): CompletableFuture<RealtimeTranslationServerEvent> =
         receiveAsync(blocking = false)
 
+    /**
+     * Observes transport capacity without sending, receiving or reserving a message slot. The
+     * standard OkHttp transport supports it. A legacy custom transport can opt in by implementing
+     * WebSocketClient.WritableConnection; otherwise this operation is unsupported. send still
+     * supports legacy transports and can report Busy after this advisory observation.
+     * Timeout and interruption are reported as OpenAIIoException with the cause preserved.
+     */
+    fun awaitWritable(timeout: Duration) {
+        require(!timeout.isZero && !timeout.isNegative) {
+            "Translation writable timeout must be positive"
+        }
+        val active =
+            synchronized(lock) {
+                check(!closed && failure == null && finishing == null && terminal == null) {
+                    "Translation is not writable"
+                }
+                socket ?: throw IllegalStateException("Translation is not connected")
+            }
+        val writable =
+            active as? WebSocketClient.WritableConnection
+                ?: throw UnsupportedOperationException(
+                    "Transport cannot observe WebSocket capacity"
+                )
+        try {
+            writable.awaitWritable(timeout)
+        } catch (error: InterruptedException) {
+            Thread.currentThread().interrupt()
+            throw OpenAIIoException("Translation WebSocket operation interrupted", error)
+        } catch (error: TimeoutException) {
+            throw OpenAIIoException("Translation WebSocket operation failed", error)
+        }
+    }
+
     private fun receiveAsync(blocking: Boolean): CompletableFuture<RealtimeTranslationServerEvent> {
         synchronized(lock) {
             check(!closed) { "Translation connection is closed" }
@@ -353,26 +386,119 @@ private constructor(
             }
             sending = true
         }
-        try {
-            val text = clientOptions.jsonMapper.writeValueAsString(event)
-            require(utf8Size(text) <= options.maxMessageBytes) {
-                "Translation command exceeds maxMessageBytes"
+        val timeout = options.sendTimeout
+        if (timeout == null) {
+            try {
+                write(event, null)
+            } finally {
+                synchronized(lock) {
+                    sending = false
+                    lock.notifyAll()
+                }
             }
+            return
+        }
+        // This private future has no user callbacks. A blocked custom writer or mapper must
+        // not delay delivering its timeout to the caller or block the sole receive listener.
+        val result = CompletableFuture<Unit>()
+        val decided = AtomicBoolean()
+        val deadline = System.nanoTime() + timeout.toNanos()
+        val alarm =
+            finishTimer.schedule(
+                {
+                    val error = TimeoutException("Translation send timed out")
+                    if (decided.compareAndSet(false, true)) {
+                        fail(error)
+                        result.completeExceptionally(error)
+                    }
+                },
+                maxOf(0L, deadline - System.nanoTime()),
+                TimeUnit.NANOSECONDS,
+            )
+        CompletableFuture.runAsync {
+            var problem: Throwable? = null
+            try {
+                ForkJoinPool.managedBlock(
+                    object : ForkJoinPool.ManagedBlocker {
+                        private var sent = false
+
+                        override fun isReleasable() = sent
+
+                        override fun block(): Boolean {
+                            write(event, deadline)
+                            sent = true
+                            return true
+                        }
+                    }
+                )
+            } catch (error: Throwable) {
+                problem = error
+                if (error is TimeoutException) fail(error)
+            } finally {
+                // A returned send permits the next one. Release its admission before waking
+                // either that caller or finish; leave blocked, timed-out writers owned until done.
+                synchronized(lock) {
+                    sending = false
+                    lock.notifyAll()
+                }
+            }
+            if (decided.compareAndSet(false, true)) {
+                if (problem == null) result.complete(Unit) else result.completeExceptionally(problem)
+            }
+            alarm.cancel(false)
+        }
+        try {
+            await(result)
+        } catch (error: RuntimeException) {
+            // Interruption cancels the private wait. A writer may already have attempted I/O.
+            if (result.isCancelled) fail(error)
+            throw error
+        }
+    }
+
+    private fun write(event: RealtimeTranslationClientEvent, deadline: Long?) {
+        val text = clientOptions.jsonMapper.writeValueAsString(event)
+        require(utf8Size(text) <= options.maxMessageBytes) {
+            "Translation command exceeds maxMessageBytes"
+        }
+        while (true) {
             val active =
                 synchronized(lock) {
                     check(!closed && failure == null) { "Translation is not connected" }
+                    if (deadline != null && deadline - System.nanoTime() <= 0L)
+                        throw TimeoutException("Translation send timed out")
                     socket ?: throw IllegalStateException("Translation is not connected")
                 }
+            if (deadline != null && active is WebSocketClient.WritableConnection)
+                active.awaitWritable(Duration.ofNanos(maxOf(1L, deadline - System.nanoTime())))
+            // A caller's capacity check may block while timeout or close releases the socket.
+            synchronized(lock) {
+                check(!closed && failure == null && socket === active) {
+                    "Translation is not connected"
+                }
+                if (deadline != null && deadline - System.nanoTime() <= 0L)
+                    throw TimeoutException("Translation send timed out")
+            }
             try {
                 active.send(text)
+                return
+            } catch (busy: WebSocketWriteNotAttempted.Busy) {
+                if (deadline == null) throw busy
+                // Only Busy proves non-admission; a custom legacy transport can be retried on
+                // this marker without needing a new interface. It may not implement readiness.
+                synchronized(lock) {
+                    if (!closed && failure == null) {
+                        val remaining = deadline - System.nanoTime()
+                        if (remaining <= 0L) throw TimeoutException("Translation send timed out")
+                        TimeUnit.NANOSECONDS.timedWait(
+                            lock,
+                            minOf(remaining, TimeUnit.MILLISECONDS.toNanos(10)),
+                        )
+                    }
+                }
             } catch (error: Throwable) {
                 if (error !is WebSocketWriteNotAttempted) fail(error)
                 throw error
-            }
-        } finally {
-            synchronized(lock) {
-                sending = false
-                lock.notifyAll()
             }
         }
     }

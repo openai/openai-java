@@ -416,6 +416,288 @@ class TranslationConnectionTest {
         }
 
     @Test
+    fun nativeCapacityObservationPreservesPendingReadAndDoesNotSend() {
+        MockWebServer().use { server ->
+            val peer = Peer(::finalEvents)
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val settings = TranslationWebSocketOptions.builder().sendTimeout(deadline).build()
+                TranslationConnection.connect(options(server, http), settings).use { connection ->
+                    val reading = connection.receiveAsync()
+                    connection.awaitWritable(deadline)
+                    assertThat(peer.messages).isEmpty()
+                    peer.socket
+                        .get(5, TimeUnit.SECONDS)
+                        .send(
+                            """{"type":"session.output_transcript.delta","event_id":"t","delta":"Hola","elapsed_ms":200}"""
+                        )
+                    assertThat(
+                            reading
+                                .get(5, TimeUnit.SECONDS)
+                                .asSessionOutputTranscriptDelta()
+                                .delta()
+                        )
+                        .isEqualTo("Hola")
+                    connection.send(audio())
+                    connection.awaitWritable(deadline)
+                    assertThat(peer.next().path("type").asText()).isEqualTo(appended)
+                    assertThat(connection.finish(deadline).eventId()).isEqualTo("done")
+                    assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                    assertThat(peer.messages).isEmpty()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun timedSendsReleaseAdmissionBeforeReturningIncludingRecoverableMessageRejections() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val settings =
+                    TranslationWebSocketOptions.builder()
+                        .maxMessageBytes(256)
+                        .sendTimeout(deadline)
+                        .build()
+                TranslationConnection.connect(options(server, http), settings).use { connection ->
+                    repeat(40) {
+                        assertThatThrownBy { connection.send(audio("A".repeat(512))) }
+                            .isInstanceOf(IllegalArgumentException::class.java)
+                        connection.send(audio("AQID"))
+                        connection.send(audio("AAAB"))
+                        assertThat(peer.next().path("audio").asText()).isEqualTo("AQID")
+                        assertThat(peer.next().path("audio").asText()).isEqualTo("AAAB")
+                    }
+                    assertThat(peer.messages).isEmpty()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun legacyTransportKeepsDefaultImmediateBusyAndExplicitWaitReportsUnsupported() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val attempts = AtomicInteger()
+                val client =
+                    wrapping(http) { native, text ->
+                        if (attempts.getAndIncrement() == 0)
+                            throw WebSocketWriteNotAttempted.Busy("synthetic admission failure")
+                        native.send(text)
+                    }
+                val settings =
+                    TranslationWebSocketOptions.builder()
+                        .sendTimeout(deadline)
+                        .sendTimeout(null)
+                        .build()
+                TranslationConnection.connect(options(server, client), settings).use { connection ->
+                    assertThatThrownBy { connection.awaitWritable(deadline) }
+                        .isInstanceOf(UnsupportedOperationException::class.java)
+                    assertThatThrownBy { connection.send(audio()) }
+                        .isInstanceOf(WebSocketWriteNotAttempted.Busy::class.java)
+                    assertThat(peer.messages).isEmpty()
+                    connection.send(audio("AQID"))
+                    assertThat(peer.next().path("audio").asText()).isEqualTo("AQID")
+                    assertThat(peer.messages).isEmpty()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun timedLegacySendCanWaitThroughOnlyTypedBusyAndFinishCannotOvertakeIt() {
+        MockWebServer().use { server ->
+            val peer = Peer(::finalEvents)
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val admitted = CountDownLatch(1)
+                val release = CountDownLatch(1)
+                val client =
+                    wrapping(http) { native, text ->
+                        if (
+                            mapper.readTree(text).path("type").asText() == appended &&
+                                release.count > 0
+                        ) {
+                            admitted.countDown()
+                            throw WebSocketWriteNotAttempted.Busy("synthetic transport admission")
+                        }
+                        native.send(text)
+                    }
+                val settings = TranslationWebSocketOptions.builder().sendTimeout(deadline).build()
+                TranslationConnection.connect(options(server, client), settings).use { connection ->
+                    try {
+                        val reading = connection.receiveAsync()
+                        val input = CompletableFuture.runAsync { connection.send(audio()) }
+                        assertThat(admitted.await(5, TimeUnit.SECONDS)).isTrue()
+                        val end = connection.finishAsync(deadline)
+                        assertThat(peer.messages).isEmpty()
+                        release.countDown()
+                        input.get(5, TimeUnit.SECONDS)
+                        assertThat(end.get(5, TimeUnit.SECONDS).eventId()).isEqualTo("done")
+                        assertThat(peer.next().path("type").asText()).isEqualTo(appended)
+                        assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                        assertThat(
+                                reading
+                                    .get(5, TimeUnit.SECONDS)
+                                    .asSessionOutputTranscriptDelta()
+                                    .delta()
+                            )
+                            .isEqualTo("Hola")
+                        assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                            .isEqualTo("AQID")
+                        assertThat(connection.receive().asSessionClosed().eventId())
+                            .isEqualTo("done")
+                        assertThat(peer.messages).isEmpty()
+                    } finally {
+                        release.countDown()
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun timedCustomSendCanBlockWithoutPreventingTimeoutOrClosingSharedClient() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            val neighbor = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            server.enqueue(MockResponse().withWebSocketUpgrade(neighbor))
+            OkHttpClient.builder().build().use { http ->
+                val entered = CountDownLatch(1)
+                val release = CountDownLatch(1)
+                val client =
+                    wrapping(http) { native, text ->
+                        entered.countDown()
+                        check(release.await(7, TimeUnit.SECONDS))
+                        native.send(text)
+                    }
+                val settings =
+                    TranslationWebSocketOptions.builder()
+                        .sendTimeout(Duration.ofMillis(250))
+                        .build()
+                TranslationConnection.connect(options(server, client), settings).use { connection ->
+                    TranslationConnection.connect(options(server, http)).use { unaffected ->
+                        try {
+                            val reading = connection.receiveAsync()
+                            val input = CompletableFuture.runAsync { connection.send(audio()) }
+                            assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
+                            assertThatThrownBy { input.get(3, TimeUnit.SECONDS) }
+                                .hasRootCauseInstanceOf(TimeoutException::class.java)
+                            assertThatThrownBy { reading.get(3, TimeUnit.SECONDS) }
+                                .hasCauseInstanceOf(TimeoutException::class.java)
+                            assertThat(peer.terminated.await(3, TimeUnit.SECONDS)).isTrue()
+                            assertThat(peer.messages).isEmpty()
+                            unaffected.send(audio("AQID"))
+                            assertThat(neighbor.next().path("audio").asText()).isEqualTo("AQID")
+                            release.countDown()
+                            assertThatThrownBy { connection.send(audio()) }
+                                .hasMessageContaining("not connected")
+                        } finally {
+                            release.countDown()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun timeoutDuringCustomReadinessPreventsAnyLateSendAfterUnblocking() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val entered = CountDownLatch(1)
+                val release = CountDownLatch(1)
+                val finished = CountDownLatch(1)
+                val writes = AtomicInteger()
+                val client =
+                    object : HttpClient by http, WebSocketClient {
+                        override fun connectWebSocket(
+                            request: HttpRequest,
+                            requestOptions: RequestOptions,
+                            maxMessageBytes: Int,
+                            listener: WebSocketClient.Listener,
+                        ): CompletableFuture<WebSocketClient.Connection> =
+                            http
+                                .connectWebSocket(
+                                    request,
+                                    requestOptions,
+                                    maxMessageBytes,
+                                    listener,
+                                )
+                                .thenApply { native ->
+                                    object : WebSocketClient.WritableConnection {
+                                        override fun awaitWritable(timeout: Duration) {
+                                            entered.countDown()
+                                            try {
+                                                check(release.await(7, TimeUnit.SECONDS))
+                                            } finally {
+                                                finished.countDown()
+                                            }
+                                        }
+
+                                        override fun send(text: String) {
+                                            writes.incrementAndGet()
+                                            native.send(text)
+                                        }
+
+                                        override fun close() = native.close()
+                                    }
+                                }
+                    }
+                val settings =
+                    TranslationWebSocketOptions.builder()
+                        .sendTimeout(Duration.ofMillis(250))
+                        .build()
+                TranslationConnection.connect(options(server, client), settings).use { connection ->
+                    try {
+                        val input = CompletableFuture.runAsync { connection.send(audio()) }
+                        assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
+                        assertThatThrownBy { input.get(3, TimeUnit.SECONDS) }
+                            .hasRootCauseInstanceOf(TimeoutException::class.java)
+                        assertThat(peer.terminated.await(3, TimeUnit.SECONDS)).isTrue()
+                        release.countDown()
+                        assertThat(finished.await(3, TimeUnit.SECONDS)).isTrue()
+                        assertThat(writes.get()).isZero()
+                        assertThat(peer.messages).isEmpty()
+                    } finally {
+                        release.countDown()
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun possiblyAttemptedTimedWriteNeverRetriesOrReusesConnection() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val client =
+                    wrapping(http) { native, text ->
+                        native.send(text)
+                        throw IOException("synthetic error after write")
+                    }
+                val settings = TranslationWebSocketOptions.builder().sendTimeout(deadline).build()
+                TranslationConnection.connect(options(server, client), settings).use { connection ->
+                    assertThatThrownBy { connection.send(audio()) }
+                        .hasRootCauseMessage("synthetic error after write")
+                    assertThatThrownBy { connection.send(audio("AQID")) }
+                        .hasMessageContaining("not connected")
+                    assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(peer.messages.size).isLessThanOrEqualTo(1)
+                }
+            }
+        }
+    }
+
+    @Test
     fun finishFollowsAnAdmittedInFlightAppendAndOnlyRetriesTypedPrewriteBusy() {
         MockWebServer().use { server ->
             val peer = Peer(::finalEvents)
