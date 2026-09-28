@@ -307,30 +307,6 @@ private constructor(
         }
     }
 
-    // Match String's UTF-8 encoding, including its one-byte replacement for unpaired surrogates,
-    // without allocating a second payload while the parsed event is retained.
-    private fun utf8Size(text: String): Long {
-        var bytes = 0L
-        var index = 0
-        while (index < text.length) {
-            val char = text[index++]
-            bytes +=
-                when {
-                    char < '\u0080' -> 1
-                    char < '\u0800' -> 2
-                    char !in '\uD800'..'\uDFFF' -> 3
-                    char <= '\uDBFF' &&
-                        index < text.length &&
-                        text[index] in '\uDC00'..'\uDFFF' -> {
-                        index++
-                        4
-                    }
-                    else -> 1
-                }
-        }
-        return bytes
-    }
-
     private fun fail(generation: Long, error: Throwable) {
         val detached =
             synchronized(lock) {

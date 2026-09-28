@@ -1,5 +1,6 @@
 package com.openai.helpers
 
+import com.openai.core.JsonField
 import com.openai.core.JsonValue
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.responses.Response
@@ -40,8 +41,11 @@ import com.openai.models.responses.ResponseMcpCallInProgressEvent
 import com.openai.models.responses.ResponseMcpListToolsCompletedEvent
 import com.openai.models.responses.ResponseMcpListToolsFailedEvent
 import com.openai.models.responses.ResponseMcpListToolsInProgressEvent
+import com.openai.models.responses.ResponseOutputItem
 import com.openai.models.responses.ResponseOutputItemAddedEvent
 import com.openai.models.responses.ResponseOutputItemDoneEvent
+import com.openai.models.responses.ResponseOutputMessage
+import com.openai.models.responses.ResponseOutputText
 import com.openai.models.responses.ResponseOutputTextAnnotationAddedEvent
 import com.openai.models.responses.ResponseQueuedEvent
 import com.openai.models.responses.ResponseReasoningSummaryPartAddedEvent
@@ -64,6 +68,7 @@ import com.openai.models.responses.ResponseWebSearchCallCompletedEvent
 import com.openai.models.responses.ResponseWebSearchCallInProgressEvent
 import com.openai.models.responses.ResponseWebSearchCallSearchingEvent
 import com.openai.models.responses.StructuredResponse
+import java.util.Optional
 
 /**
  * An accumulator that constructs a [Response] from a sequence of streamed events. Pass all events
@@ -73,16 +78,106 @@ import com.openai.models.responses.StructuredResponse
  * A [ResponseAccumulator] may only be used to accumulate _one_ response. To accumulate another
  * response, create another instance of `ResponseAccumulator`.
  */
-class ResponseAccumulator private constructor() {
+class ResponseAccumulator private constructor(private val snapshotsEnabled: Boolean) {
 
     /**
      * The response accumulated from the event stream. This is set when a terminal event is
      * accumulated. That single event carries all the response details.
      */
     private var response: Response? = null
+    private var partial: Response? = null
+    private var materialized: Response? = null
+
+    private class PendingItem(val item: ResponseOutputItem) {
+        var input: StringBuilder? = null
+        val content =
+            item
+                .message()
+                .orElse(null)
+                ?._content()
+                ?.asKnown()
+                ?.orElse(null)
+                ?.map { PendingContent(it) }
+                ?.toMutableList()
+    }
+
+    private class PendingContent(var part: ResponseOutputMessage.Content) {
+        var text: StringBuilder? = null
+        var annotations: MutableList<ResponseOutputText.Annotation>? = null
+        var logprobs: MutableList<ResponseOutputText.Logprob>? = null
+    }
+
+    private var output: MutableList<PendingItem>? = null
 
     companion object {
-        @JvmStatic fun create() = ResponseAccumulator()
+        @JvmStatic fun create() = ResponseAccumulator(false)
+
+        /**
+         * Opts into incremental snapshots for this single response (or WebSocket lane). Raw events
+         * remain available from [accumulate]. Tool calls are data; this helper never executes them.
+         */
+        @JvmStatic fun createWithSnapshots() = ResponseAccumulator(true)
+    }
+
+    /**
+     * The most recently observed response, including incremental output text, refusal and function
+     * call arguments. Empty until a response-bearing event arrives. Fields the server omitted
+     * remain omitted. A snapshot is not a completed response: only [response] requires a terminal
+     * event. Failed and incomplete terminal events replace the snapshot with their full response.
+     * Other item kinds are retained when output-item events arrive and in the raw stream.
+     *
+     * Use [createWithSnapshots] to enable this method. One accumulator handles one response only.
+     */
+    fun snapshot(): Optional<Response> {
+        check(snapshotsEnabled) { "Snapshots require ResponseAccumulator.createWithSnapshots()." }
+        if (response != null) return Optional.ofNullable(response)
+        val current = partial ?: return Optional.empty()
+        materialized?.let {
+            return Optional.of(it)
+        }
+        val output = output ?: return Optional.of(current)
+        val items =
+            output.map { pending ->
+                val item = pending.item
+                val arguments = pending.input
+                val call = item.functionCall().orElse(null)
+                if (call != null && arguments != null) {
+                    return@map ResponseOutputItem.ofFunctionCall(
+                        call.toBuilder().arguments(arguments.toString()).build()
+                    )
+                }
+                val custom = item.customToolCall().orElse(null)
+                if (custom != null && arguments != null) {
+                    return@map ResponseOutputItem.ofCustomToolCall(
+                        custom.toBuilder().input(arguments.toString()).build()
+                    )
+                }
+                val message = item.message().orElse(null) ?: return@map item
+                val parts = pending.content ?: return@map item
+                val content =
+                    parts.map content@{ data ->
+                        val part = data.part
+                        val text = data.text
+                        val outputText = part.outputText().orElse(null)
+                        if (outputText != null) {
+                            if (text == null && data.annotations == null && data.logprobs == null)
+                                return@content part
+                            val builder = outputText.toBuilder()
+                            if (text != null) builder.text(text.toString())
+                            data.annotations?.let { builder.annotations(it) }
+                            data.logprobs?.let { builder.logprobs(it) }
+                            ResponseOutputMessage.Content.ofOutputText(builder.build())
+                        } else {
+                            val refusal = part.refusal().orElse(null)
+                            if (refusal == null || text == null) return@content part
+                            ResponseOutputMessage.Content.ofRefusal(
+                                refusal.toBuilder().refusal(text.toString()).build()
+                            )
+                        }
+                    }
+                ResponseOutputItem.ofMessage(message.toBuilder().content(content).build())
+            }
+        return Optional.of(current.toBuilder().output(items).build().also { materialized = it })
     }
 
     /**
@@ -122,6 +217,52 @@ class ResponseAccumulator private constructor() {
         event.responseCompleted().ifPresent { accumulate(ResponseStreamEvent.ofCompleted(it)) }
         event.responseFailed().ifPresent { accumulate(ResponseStreamEvent.ofFailed(it)) }
         event.responseIncomplete().ifPresent { accumulate(ResponseStreamEvent.ofIncomplete(it)) }
+        if (snapshotsEnabled && response == null) {
+            event.responseCreated().ifPresent { accumulate(ResponseStreamEvent.ofCreated(it)) }
+            event.responseInProgress().ifPresent {
+                accumulate(ResponseStreamEvent.ofInProgress(it))
+            }
+            event.responseQueued().ifPresent { accumulate(ResponseStreamEvent.ofQueued(it)) }
+            event.responseOutputItemAdded().ifPresent {
+                accumulate(ResponseStreamEvent.ofOutputItemAdded(it))
+            }
+            event.responseOutputItemDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofOutputItemDone(it))
+            }
+            event.responseContentPartAdded().ifPresent {
+                accumulate(ResponseStreamEvent.ofContentPartAdded(it))
+            }
+            event.responseContentPartDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofContentPartDone(it))
+            }
+            event.responseOutputTextDelta().ifPresent {
+                accumulate(ResponseStreamEvent.ofOutputTextDelta(it))
+            }
+            event.responseOutputTextDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofOutputTextDone(it))
+            }
+            event.responseOutputTextAnnotationAdded().ifPresent {
+                accumulate(ResponseStreamEvent.ofOutputTextAnnotationAdded(it))
+            }
+            event.responseRefusalDelta().ifPresent {
+                accumulate(ResponseStreamEvent.ofRefusalDelta(it))
+            }
+            event.responseRefusalDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofRefusalDone(it))
+            }
+            event.responseFunctionCallArgumentsDelta().ifPresent {
+                accumulate(ResponseStreamEvent.ofFunctionCallArgumentsDelta(it))
+            }
+            event.responseFunctionCallArgumentsDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofFunctionCallArgumentsDone(it))
+            }
+            event.responseCustomToolCallInputDelta().ifPresent {
+                accumulate(ResponseStreamEvent.ofCustomToolCallInputDelta(it))
+            }
+            event.responseCustomToolCallInputDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofCustomToolCallInputDone(it))
+            }
+        }
         return event
     }
 
@@ -148,7 +289,7 @@ class ResponseAccumulator private constructor() {
                 // The following events _all_ have a `response` property.
 
                 override fun visitCreated(created: ResponseCreatedEvent) {
-                    // The initial response (on creation) has no content, so it is not stored.
+                    if (snapshotsEnabled) replacePartial(created.response())
                 }
 
                 override fun visitCompleted(completed: ResponseCompletedEvent) {
@@ -156,21 +297,40 @@ class ResponseAccumulator private constructor() {
                 }
 
                 override fun visitInProgress(inProgress: ResponseInProgressEvent) {
-                    // An in-progress response is not complete, so it is not stored.
+                    if (snapshotsEnabled) replacePartial(inProgress.response())
                 }
 
                 override fun visitQueued(queued: ResponseQueuedEvent) {
-                    // A queued response that is awaiting processing is not complete, so it is not
-                    // stored.
+                    if (snapshotsEnabled) replacePartial(queued.response())
                 }
 
                 override fun visitCustomToolCallInputDelta(
                     customToolCallInputDelta: ResponseCustomToolCallInputDeltaEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    append(
+                        customToolCallInputDelta.outputIndex(),
+                        customToolCallInputDelta._itemId(),
+                        customToolCallInputDelta.delta(),
+                    ) { item ->
+                        item.customToolCall().orElse(null)?._input()?.asKnown()?.orElse(null)
+                    }
+                }
 
                 override fun visitCustomToolCallInputDone(
                     customToolCallInputDone: ResponseCustomToolCallInputDoneEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    updateItem(
+                        customToolCallInputDone.outputIndex(),
+                        customToolCallInputDone._itemId(),
+                    ) { item ->
+                        val call = item?.customToolCall()?.orElse(null) ?: return@updateItem null
+                        ResponseOutputItem.ofCustomToolCall(
+                            call.toBuilder().input(customToolCallInputDone.input()).build()
+                        )
+                    }
+                }
 
                 override fun visitFailed(failed: ResponseFailedEvent) {
                     // TODO: Confirm that this is a "terminal" event and will occur _instead of_
@@ -227,9 +387,51 @@ class ResponseAccumulator private constructor() {
 
                 override fun visitContentPartAdded(
                     contentPartAdded: ResponseContentPartAddedEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    val part = contentPartAdded.part()
+                    val content =
+                        part
+                            .outputText()
+                            .map(ResponseOutputMessage.Content::ofOutputText)
+                            .orElseGet {
+                                part
+                                    .refusal()
+                                    .map(ResponseOutputMessage.Content::ofRefusal)
+                                    .orElse(null)
+                            }
+                    if (content != null)
+                        updateContent(
+                            contentPartAdded.outputIndex(),
+                            contentPartAdded.contentIndex(),
+                            contentPartAdded._itemId(),
+                        ) {
+                            PendingContent(content)
+                        }
+                }
 
-                override fun visitContentPartDone(contentPartDone: ResponseContentPartDoneEvent) {}
+                override fun visitContentPartDone(contentPartDone: ResponseContentPartDoneEvent) {
+                    if (!snapshotsEnabled) return
+                    val part = contentPartDone.part()
+                    val content =
+                        part
+                            .outputText()
+                            .map(ResponseOutputMessage.Content::ofOutputText)
+                            .orElseGet {
+                                part
+                                    .refusal()
+                                    .map(ResponseOutputMessage.Content::ofRefusal)
+                                    .orElse(null)
+                            }
+                    if (content != null)
+                        updateContent(
+                            contentPartDone.outputIndex(),
+                            contentPartDone.contentIndex(),
+                            contentPartDone._itemId(),
+                        ) {
+                            PendingContent(content)
+                        }
+                }
 
                 override fun visitError(error: ResponseErrorEvent) {}
 
@@ -247,11 +449,36 @@ class ResponseAccumulator private constructor() {
 
                 override fun visitFunctionCallArgumentsDelta(
                     functionCallArgumentsDelta: ResponseFunctionCallArgumentsDeltaEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    append(
+                        functionCallArgumentsDelta.outputIndex(),
+                        functionCallArgumentsDelta._itemId(),
+                        functionCallArgumentsDelta.delta(),
+                    ) { item ->
+                        item.functionCall().orElse(null)?._arguments()?.asKnown()?.orElse(null)
+                    }
+                }
 
                 override fun visitFunctionCallArgumentsDone(
                     functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    updateItem(
+                        functionCallArgumentsDone.outputIndex(),
+                        functionCallArgumentsDone._itemId(),
+                    ) { item ->
+                        val call = item?.functionCall()?.orElse(null) ?: return@updateItem null
+                        val result =
+                            ResponseOutputItem.ofFunctionCall(
+                                call
+                                    .toBuilder()
+                                    .arguments(functionCallArgumentsDone.arguments())
+                                    .build()
+                            )
+                        result
+                    }
+                }
 
                 override fun visitShellCallCommandAdded(
                     shellCallCommandAdded: ResponseShellCallCommandAddedEvent
@@ -273,9 +500,15 @@ class ResponseAccumulator private constructor() {
                     shellCallOutputContentDone: ResponseShellCallOutputContentDoneEvent
                 ) {}
 
-                override fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent) {}
+                override fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent) {
+                    if (snapshotsEnabled)
+                        updateItem(outputItemAdded.outputIndex()) { outputItemAdded.item() }
+                }
 
-                override fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) {}
+                override fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) {
+                    if (snapshotsEnabled)
+                        updateItem(outputItemDone.outputIndex()) { outputItemDone.item() }
+                }
 
                 override fun visitReasoningSummaryPartAdded(
                     reasoningSummaryPartAdded: ResponseReasoningSummaryPartAddedEvent
@@ -301,13 +534,89 @@ class ResponseAccumulator private constructor() {
                     reasoningTextDone: ResponseReasoningTextDoneEvent
                 ) {}
 
-                override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) {}
+                override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) {
+                    if (!snapshotsEnabled) return
+                    appendContent(
+                        refusalDelta.outputIndex(),
+                        refusalDelta.contentIndex(),
+                        refusalDelta._itemId(),
+                        refusalDelta.delta(),
+                    ) { content ->
+                        content.refusal().orElse(null)?._refusal()?.asKnown()?.orElse(null)
+                    }
+                }
 
-                override fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent) {}
+                override fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent) {
+                    if (!snapshotsEnabled) return
+                    updateContent(
+                        refusalDone.outputIndex(),
+                        refusalDone.contentIndex(),
+                        refusalDone._itemId(),
+                    ) { content ->
+                        val refusal =
+                            content?.part?.refusal()?.orElse(null) ?: return@updateContent null
+                        val result =
+                            ResponseOutputMessage.Content.ofRefusal(
+                                refusal.toBuilder().refusal(refusalDone.refusal()).build()
+                            )
+                        content.part = result
+                        content.text = null
+                        content
+                    }
+                }
 
-                override fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent) {}
+                override fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent) {
+                    if (!snapshotsEnabled) return
+                    val part =
+                        appendContent(
+                            outputTextDelta.outputIndex(),
+                            outputTextDelta.contentIndex(),
+                            outputTextDelta._itemId(),
+                            outputTextDelta.delta(),
+                        ) { content ->
+                            content.outputText().orElse(null)?._text()?.asKnown()?.orElse(null)
+                        } ?: return
+                    val probabilities = outputTextDelta._logprobs().asKnown().orElse(null) ?: return
+                    val buffer =
+                        part.logprobs
+                            ?: part.part
+                                .asOutputText()
+                                ._logprobs()
+                                .asKnown()
+                                .orElse(emptyList())
+                                .toMutableList()
+                                .also { part.logprobs = it }
+                    probabilities.forEach {
+                        JsonValue.from(it)
+                            .convert(ResponseOutputText.Logprob::class.java)
+                            ?.let(buffer::add)
+                    }
+                }
 
-                override fun visitOutputTextDone(outputTextDone: ResponseTextDoneEvent) {}
+                override fun visitOutputTextDone(outputTextDone: ResponseTextDoneEvent) {
+                    if (!snapshotsEnabled) return
+                    updateContent(
+                        outputTextDone.outputIndex(),
+                        outputTextDone.contentIndex(),
+                        outputTextDone._itemId(),
+                    ) { content ->
+                        val outputText =
+                            content?.part?.outputText()?.orElse(null) ?: return@updateContent null
+                        val result =
+                            ResponseOutputMessage.Content.ofOutputText(
+                                outputText.toBuilder().text(outputTextDone.text()).build()
+                            )
+                        val probabilities = outputTextDone._logprobs().asKnown().orElse(null)
+                        val converted =
+                            probabilities?.mapNotNull {
+                                JsonValue.from(it).convert(ResponseOutputText.Logprob::class.java)
+                            }
+                        content.part = result
+                        content.text = null
+                        if (converted != null) content.logprobs = converted.toMutableList()
+                        content
+                    }
+                }
 
                 override fun visitWebSearchCallCompleted(
                     webSearchCallCompleted: ResponseWebSearchCallCompletedEvent
@@ -369,13 +678,141 @@ class ResponseAccumulator private constructor() {
 
                 override fun visitOutputTextAnnotationAdded(
                     outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    val annotation =
+                        outputTextAnnotationAdded._annotation().asKnown().orElse(null) ?: return
+                    val annotationIndex =
+                        outputTextAnnotationAdded._annotationIndex().asKnown().orElse(null)
+                            ?: return
+                    updateContent(
+                        outputTextAnnotationAdded.outputIndex(),
+                        outputTextAnnotationAdded.contentIndex(),
+                        outputTextAnnotationAdded._itemId(),
+                    ) { content ->
+                        val text =
+                            content?.part?.outputText()?.orElse(null) ?: return@updateContent null
+                        val previous =
+                            text._annotations().asKnown().orElse(null) ?: return@updateContent null
+                        if (
+                            annotationIndex < 0 ||
+                                annotationIndex > (content.annotations ?: previous).size.toLong()
+                        )
+                            return@updateContent null
+                        // The generated event and output unions are distinct Kotlin types with
+                        // the same wire form. Preserve additional fields, including future kinds.
+                        val converted =
+                            JsonValue.from(annotation)
+                                .convert(ResponseOutputText.Annotation::class.java)
+                                ?: return@updateContent null
+                        val annotations = content.annotations ?: previous.toMutableList()
+                        val index = annotationIndex.toInt()
+                        if (index == annotations.size) annotations.add(converted)
+                        else annotations[index] = converted
+                        content.annotations = annotations
+                        content
+                    }
+                }
 
                 // Ignore unknown variants for forwards compatibility.
                 override fun unknown(json: JsonValue?) {}
             }
         )
 
+        if (response != null) {
+            output = null
+            materialized = null
+            partial = null
+        }
         return event
+    }
+
+    private fun replacePartial(value: Response) {
+        partial = value
+        materialized = value
+        output = value._output().asKnown().orElse(null)?.map { PendingItem(it) }?.toMutableList()
+    }
+
+    private fun append(
+        outputIndex: Long,
+        expectedId: JsonField<String>,
+        delta: String,
+        initial: (ResponseOutputItem) -> String?,
+    ) {
+        val output = output ?: return
+        if (outputIndex < 0 || outputIndex >= output.size.toLong()) return
+        val data = output[outputIndex.toInt()]
+        if (!matchesId(data.item, expectedId)) return
+        val text = initial(data.item) ?: return
+        val buffer = data.input ?: StringBuilder(text).also { data.input = it }
+        buffer.append(delta)
+        materialized = null
+    }
+
+    private fun appendContent(
+        outputIndex: Long,
+        contentIndex: Long,
+        expectedId: JsonField<String>,
+        delta: String,
+        initial: (ResponseOutputMessage.Content) -> String?,
+    ): PendingContent? {
+        val output = output ?: return null
+        if (outputIndex < 0 || outputIndex >= output.size.toLong()) return null
+        val item = output[outputIndex.toInt()]
+        if (!matchesId(item.item, expectedId)) return null
+        val parts = item.content ?: return null
+        if (contentIndex < 0 || contentIndex >= parts.size.toLong()) return null
+        val part = parts[contentIndex.toInt()]
+        val text = initial(part.part) ?: return null
+        val buffer = part.text ?: StringBuilder(text).also { part.text = it }
+        buffer.append(delta)
+        materialized = null
+        return part
+    }
+
+    private fun matchesId(item: ResponseOutputItem?, expectedId: JsonField<String>): Boolean {
+        val expected = expectedId.asKnown().orElse(null) ?: return false
+        val actual =
+            item?.message()?.orElse(null)?._id()
+                ?: item?.functionCall()?.orElse(null)?._id()
+                ?: item?.customToolCall()?.orElse(null)?._id()
+        return actual?.asKnown()?.orElse(null) == expected
+    }
+
+    // Never allocate invented items/parts to fill a missing index. A missing output/content field
+    // likewise remains missing: only apply deltas for which the preceding data was observed.
+    private fun updateItem(
+        index: Long,
+        expectedId: JsonField<String>? = null,
+        update: (ResponseOutputItem?) -> ResponseOutputItem?,
+    ) {
+        val output = output ?: return
+        if (index < 0 || index > output.size.toLong()) return
+        val i = index.toInt()
+        val previous = output.getOrNull(i)?.item
+        // Full output-item events replace the index. Subsequent deltas/parts must name the
+        // current item; never let a late event for an older occupant change its replacement.
+        if (expectedId != null && !matchesId(previous, expectedId)) return
+        val item = update(previous) ?: return
+        if (i == output.size) output.add(PendingItem(item)) else output[i] = PendingItem(item)
+        materialized = null
+    }
+
+    private fun updateContent(
+        outputIndex: Long,
+        contentIndex: Long,
+        expectedId: JsonField<String>,
+        update: (PendingContent?) -> PendingContent?,
+    ) {
+        val output = output ?: return
+        if (outputIndex < 0 || outputIndex >= output.size.toLong()) return
+        val item = output[outputIndex.toInt()]
+        if (!matchesId(item.item, expectedId)) return
+        val content = item.content ?: return
+        if (contentIndex < 0 || contentIndex > content.size.toLong()) return
+        val i = contentIndex.toInt()
+        val part = update(content.getOrNull(i)) ?: return
+        if (i == content.size) content.add(part) else content[i] = part
+        materialized = null
     }
 }
