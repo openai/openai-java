@@ -125,8 +125,19 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
 
         fun backchannelIsolation(value: Duration) = apply { backchannelIsolation = checked(value) }
 
+        /**
+         * Additional brief backchannels. Each phrase may contain at most 128 Unicode code points
+         * after case, whitespace, and punctuation normalization.
+         */
         fun additionalAcknowledgments(value: List<String>) = apply {
-            acknowledgments = value.toList()
+            acknowledgments =
+                value.map { phrase ->
+                    val normalized = normalize(phrase)
+                    require(normalized.codePointCount(0, normalized.length) <= 128) {
+                        "Additional acknowledgments must be at most 128 normalized Unicode code points"
+                    }
+                    normalized
+                }
         }
 
         /**
@@ -258,7 +269,7 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
                 "yeah",
                 "yep",
                 "yes",
-            ) + builder.phrases().map(::normalize).filter(String::isNotEmpty))
+            ) + builder.phrases().filter(String::isNotEmpty))
             .toSet()
     private val prefix = "segment_${nextGrouper.getAndIncrement()}"
     private var nextId = 0L

@@ -320,6 +320,27 @@ internal class LiveTranscriptGrouperTest {
     }
 
     @Test
+    fun additionalAcknowledgmentsBoundNormalizedUnicodeRatherThanUtf16OrRawEdges() {
+        val phrase = "👍".repeat(128)
+        val events = updates()
+        LiveTranscriptGrouper.builder { events.add(it) }
+            .additionalAcknowledgments(listOf("((  $phrase  ))"))
+            .build()
+            .use {
+                it.push(input("u1", "hel", 0, 100))
+                it.push(output("a1", phrase, 0, 100))
+                it.push(input("u2", "lo", 100, 200))
+            }
+        assertThat(finalized(events).map { it.segment().text() }).containsExactly("hello")
+        assertThatThrownBy {
+                LiveTranscriptGrouper.builder { _ -> }
+                    .additionalAcknowledgments(listOf(phrase + "👍"))
+            }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessageContaining("128 normalized Unicode code points")
+    }
+
+    @Test
     fun overlappingPrefixCanCompleteAsSubstantiveTextOrAsAnAcknowledgment() {
         val substantive = updates()
         val streamed = mutableMapOf<String, StringBuilder>()
