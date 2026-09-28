@@ -190,7 +190,10 @@ class LiveForkConnectionTest {
             OkHttpClient.builder().build().use { http ->
                 LiveForkConnection.connect(options(server, http), "stored").use { fork ->
                     val raw =
-                        ForkClientEvent.ofJson(JsonValue.from(mapOf("type" to "session.reconnect")))
+                        mapper.readValue(
+                            """{"type":"session.reconnect"}""",
+                            ForkClientEvent::class.java,
+                        )
                     val known =
                         ForkClientEvent.ofSessionStart(
                             ForkSessionStartEvent.builder()
@@ -206,14 +209,13 @@ class LiveForkConnectionTest {
                     // Unknown future types, and nested strings resembling commands, stay supported.
                     val bytes = "x".repeat(12 * 1024 * 1024)
                     fork.send(
-                        ForkClientEvent.ofJson(
-                            JsonValue.from(
-                                mapOf(
-                                    "type" to "live.future",
-                                    "metadata" to mapOf("type" to "session.reconnect"),
-                                    "data" to bytes,
-                                )
-                            )
+                        mapper.convertValue(
+                            mapOf(
+                                "type" to "live.future",
+                                "metadata" to mapOf("type" to "session.reconnect"),
+                                "data" to bytes,
+                            ),
+                            ForkClientEvent::class.java,
                         )
                     )
                     val sent = mapper.readTree(peer.messages.poll(8, TimeUnit.SECONDS))
