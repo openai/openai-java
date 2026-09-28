@@ -483,6 +483,14 @@ private constructor(
                             if (terminal == null && failure == null)
                                 waitUntil(deadline, TimeUnit.MILLISECONDS.toNanos(10))
                         }
+                    } catch (error: Throwable) {
+                        synchronized(lock) {
+                            failure?.let { throw it }
+                            // Our own cleanup may close the selected socket after a valid wire
+                            // terminal. Await that cleanup and deadline; never retry this write.
+                            if (terminal == null) throw error
+                        }
+                        break
                     }
                 }
                 val end =
@@ -560,30 +568,35 @@ private constructor(
         val end: RealtimeTranslationSessionClosedEvent?
         try {
             // Reject malformed envelopes independently of lenient or user-supplied model readers.
-            clientOptions.jsonMapper.factory.createParser(text).use { parser ->
-                require(parser.nextToken() == JsonToken.START_OBJECT) {
-                    "Invalid Translation event"
+            val wireType =
+                clientOptions.jsonMapper.factory.createParser(text).use { parser ->
+                    require(parser.nextToken() == JsonToken.START_OBJECT) {
+                        "Invalid Translation event"
+                    }
+                    var type: String? = null
+                    while (parser.nextToken() == JsonToken.FIELD_NAME) {
+                        val name = parser.currentName
+                        val token = parser.nextToken()
+                        if (name == "type")
+                            type = if (token == JsonToken.VALUE_STRING) parser.text else null
+                        parser.skipChildren()
+                    }
+                    require(
+                        parser.currentToken() == JsonToken.END_OBJECT &&
+                            type != null &&
+                            parser.nextToken() == null
+                    ) {
+                        "Invalid Translation event"
+                    }
+                    type
                 }
-                var validType = false
-                while (parser.nextToken() == JsonToken.FIELD_NAME) {
-                    val name = parser.currentName
-                    val token = parser.nextToken()
-                    if (name == "type") validType = token == JsonToken.VALUE_STRING
-                    parser.skipChildren()
-                }
-                require(
-                    parser.currentToken() == JsonToken.END_OBJECT &&
-                        validType &&
-                        parser.nextToken() == null
-                ) {
-                    "Invalid Translation event"
-                }
-            }
             event = reader.readValue(text)
             if (requestOptions.responseValidation ?: clientOptions.responseValidation)
                 event.validate()
             // Even in lenient mode, incomplete/malformed terminal events cannot claim success.
-            end = event.sessionClosed().orElse(null)?.validate()
+            end =
+                if (wireType == "session.closed") event.sessionClosed().orElse(null)?.validate()
+                else null
         } catch (error: Throwable) {
             // Only parser/mapper/validation code is covered here, never user continuations.
             fail(error, unlessTerminal = true)

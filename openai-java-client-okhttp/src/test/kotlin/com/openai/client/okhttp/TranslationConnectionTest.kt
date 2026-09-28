@@ -19,6 +19,7 @@ import com.openai.helpers.TranslationWebSocketOptions
 import com.openai.models.realtime.RealtimeTranslationClientEvent
 import com.openai.models.realtime.RealtimeTranslationInputAudioBufferAppendEvent
 import com.openai.models.realtime.RealtimeTranslationServerEvent
+import com.openai.models.realtime.RealtimeTranslationSessionClosedEvent
 import java.io.IOException
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
@@ -1161,6 +1162,86 @@ class TranslationConnectionTest {
             } finally {
                 executor.shutdownNow().forEach { it.run() }
                 executor.awaitTermination(5, TimeUnit.SECONDS)
+            }
+        }
+    }
+
+    @Test
+    fun admittedTerminalWinsWhenItsCleanupClosesTransportBeforeFinishWrite() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val client =
+                    wrapping(http) { native, text ->
+                        // The peer ends the session after finish selected this active socket.
+                        finalEvents(peer.socket.get(5, TimeUnit.SECONDS))
+                        check(peer.terminated.await(5, TimeUnit.SECONDS))
+                        native.send(text)
+                    }
+                TranslationConnection.connect(options(server, client)).use { connection ->
+                    assertThat(connection.finishAsync(deadline).get(7, TimeUnit.SECONDS).eventId())
+                        .isEqualTo("done")
+                    assertThat(connection.receive().asSessionOutputTranscriptDelta().delta())
+                        .isEqualTo("Hola")
+                    assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                        .isEqualTo("AQID")
+                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
+                    assertThat(peer.messages).isEmpty()
+                    assertThat(server.requestCount).isEqualTo(1)
+                }
+            }
+        }
+    }
+
+    @JsonDeserialize(using = TerminalTranslationDeserializer::class)
+    private interface TerminalTranslationMixin
+
+    private class TerminalTranslationDeserializer :
+        JsonDeserializer<RealtimeTranslationServerEvent>() {
+        override fun deserialize(
+            parser: JsonParser,
+            context: DeserializationContext,
+        ): RealtimeTranslationServerEvent {
+            parser.skipChildren()
+            return RealtimeTranslationServerEvent.ofSessionClosed(
+                RealtimeTranslationSessionClosedEvent.builder().eventId("mapped").build()
+            )
+        }
+    }
+
+    @Test
+    fun customReaderCannotMakeErrorOrFutureWireTypeSatisfyFinish() {
+        for (wireType in listOf("error", "future.session.closed")) {
+            MockWebServer().use { server ->
+                val peer = Peer { socket ->
+                    socket.send("""{"type":"$wireType","event_id":"e"}""")
+                    socket.close(1000, "EOF without wire terminal")
+                }
+                server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+                OkHttpClient.builder().build().use { http ->
+                    val customMapper = mapper.copy()
+                    customMapper.addMixIn(
+                        RealtimeTranslationServerEvent::class.java,
+                        TerminalTranslationMixin::class.java,
+                    )
+                    val configuration =
+                        options(server, http).toBuilder().jsonMapper(customMapper).build()
+                    TranslationConnection.connect(configuration).use { connection ->
+                        assertThatThrownBy {
+                                connection.finishAsync(deadline).get(7, TimeUnit.SECONDS)
+                            }
+                            .isInstanceOf(ExecutionException::class.java)
+                            .hasCauseInstanceOf(IOException::class.java)
+                        // Expose what the configured reader returned without making it the
+                        // transport's successful terminal unless that type was actually on wire.
+                        assertThat(connection.receive().asSessionClosed().eventId())
+                            .isEqualTo("mapped")
+                        assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                        assertThat(peer.messages).isEmpty()
+                        assertThat(server.requestCount).isEqualTo(1)
+                    }
+                }
             }
         }
     }
