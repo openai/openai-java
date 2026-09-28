@@ -27,6 +27,7 @@ import java.util.ArrayDeque
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
+import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
@@ -140,10 +141,28 @@ private constructor(
                 ) {
                     "Translation WebSockets are not supported on Azure"
                 }
+                val baseUrl = URI(clientOptions.baseUrl())
+                val baseQuery = baseUrl.rawQuery?.split('&').orEmpty()
+                val route =
+                    if (options._queryParams().values("model").isEmpty()) clientOptions.baseUrl()
+                    else {
+                        val inherited =
+                            baseQuery.filter {
+                                URLDecoder.decode(it.substringBefore('='), "UTF-8") != "model"
+                            }
+                        buildString {
+                            append(
+                                baseUrl.toASCIIString().substringBefore('#').substringBefore('?')
+                            )
+                            if (inherited.isNotEmpty())
+                                append("?").append(inherited.joinToString("&"))
+                            baseUrl.rawFragment?.let { append("#").append(it) }
+                        }
+                    }
                 val request =
                     HttpRequest.builder()
                         .method(HttpMethod.GET)
-                        .baseUrl(clientOptions.baseUrl())
+                        .baseUrl(route)
                         .addPathSegment("realtime")
                         .addPathSegment("translations")
                         .build()
@@ -154,9 +173,9 @@ private constructor(
                         )
                 require(
                     request.queryParams.values("intent").isEmpty() &&
-                        URI(request.baseUrl).rawQuery?.split('&')?.none {
+                        baseQuery.none {
                             URLDecoder.decode(it.substringBefore('='), "UTF-8") == "intent"
-                        } != false
+                        }
                 ) {
                     "Translation does not accept the Realtime intent query parameter"
                 }
@@ -201,8 +220,15 @@ private constructor(
                             }
                         }
                     if (problem != null) {
-                        active?.close()
                         connection.fail(problem)
+                        if (active != null)
+                            CompletableFuture.runAsync {
+                                try {
+                                    active.close()
+                                } catch (closing: Exception) {
+                                    if (closing !== problem) problem.addSuppressed(closing)
+                                }
+                            }
                     } else connection.finishTerminal()
                     connection.dispatch {
                         // The owner or socket can close while completion waits on the executor.
@@ -401,7 +427,7 @@ private constructor(
                         checkNotNull(terminal)
                     }
                 result.complete(end)
-            } catch (error: Exception) {
+            } catch (error: Throwable) {
                 fail(error)
                 result.completeExceptionally(error)
             }
@@ -413,7 +439,21 @@ private constructor(
     private fun waitUntil(deadline: Long, maximumWait: Long = Long.MAX_VALUE) {
         val remaining = deadline - System.nanoTime()
         if (remaining <= 0L) throw TimeoutException("Translation finish timed out")
-        TimeUnit.NANOSECONDS.timedWait(lock, minOf(remaining, maximumWait))
+        // Independent sessions' waits must not occupy every worker needed for message delivery
+        // and terminal cleanup.
+        ForkJoinPool.managedBlock(
+            object : ForkJoinPool.ManagedBlocker {
+                private var waited = false
+
+                override fun isReleasable() = waited
+
+                override fun block(): Boolean {
+                    TimeUnit.NANOSECONDS.timedWait(lock, minOf(remaining, maximumWait))
+                    waited = true
+                    return true
+                }
+            }
+        )
     }
 
     /** Closes this socket and returns a new session. No input or session updates are replayed. */

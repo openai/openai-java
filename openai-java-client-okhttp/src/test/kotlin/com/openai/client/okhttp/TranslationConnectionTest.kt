@@ -545,6 +545,153 @@ class TranslationConnectionTest {
     }
 
     @Test
+    fun parallelFinishesAllowAllHealthySessionsToDrainBeforeTheirDeadlines() {
+        MockWebServer().use { server ->
+            val received = CountDownLatch(4)
+            val peers = (1..4).map { Peer { received.countDown() } }
+            peers.forEach { server.enqueue(MockResponse().withWebSocketUpgrade(it)) }
+            OkHttpClient.builder().build().use { http ->
+                val connections = peers.map { TranslationConnection.connect(options(server, http)) }
+                try {
+                    val finishes = connections.map { it.finishAsync(Duration.ofSeconds(9)) }
+                    assertThat(received.await(5, TimeUnit.SECONDS)).isTrue()
+                    peers.forEach { finalEvents(it.socket.get(7, TimeUnit.SECONDS)) }
+                    for (i in peers.indices) {
+                        assertThat(finishes[i].get(7, TimeUnit.SECONDS).eventId()).isEqualTo("done")
+                        assertThat(peers[i].next().path("type").asText()).isEqualTo(close)
+                        assertThat(
+                                connections[i].receive().asSessionOutputTranscriptDelta().delta()
+                            )
+                            .isEqualTo("Hola")
+                        assertThat(connections[i].receive().asSessionOutputAudioDelta().delta())
+                            .isEqualTo("AQID")
+                        assertThat(connections[i].receive().asSessionClosed().eventId())
+                            .isEqualTo("done")
+                        assertThat(peers[i].messages).isEmpty()
+                    }
+                } finally {
+                    connections.forEach { it.close() }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun transportThrowableReachesTheFinishFutureAndPendingReadWithoutReplay() {
+        MockWebServer().use { server ->
+            val peer = Peer { it.send("""{"type":"synthetic.transport_failure"}""") }
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val problem = AssertionError("reported from Translation transport")
+                val client =
+                    object : HttpClient by http, WebSocketClient {
+                        override fun connectWebSocket(
+                            request: HttpRequest,
+                            options: RequestOptions,
+                            maxMessageBytes: Int,
+                            listener: WebSocketClient.Listener,
+                        ): CompletableFuture<WebSocketClient.Connection> =
+                            http.connectWebSocket(
+                                request,
+                                options,
+                                maxMessageBytes,
+                                object : WebSocketClient.Listener by listener {
+                                    override fun onMessage(text: String) =
+                                        listener.onFailure(problem)
+                                },
+                            )
+                    }
+                TranslationConnection.connect(options(server, client)).use { connection ->
+                    val event = connection.receiveAsync()
+                    val end = connection.finishAsync(Duration.ofSeconds(2))
+                    assertThat(peer.next().path("type").asText()).isEqualTo(close)
+                    assertThatThrownBy { end.get(5, TimeUnit.SECONDS) }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .hasCause(problem)
+                    assertThatThrownBy { event.get(5, TimeUnit.SECONDS) }
+                        .isInstanceOf(ExecutionException::class.java)
+                        .hasCause(problem)
+                    assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(peer.messages).isEmpty()
+                    assertThat(server.requestCount).isEqualTo(1)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun perConnectionModelReplacesInheritedAndEncodedBaseUrlModels() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val configuration =
+                    options(server, http)
+                        .toBuilder()
+                        .baseUrl(server.url("/v1?model=old&%6Dodel=other&keep=a%2Fb").toString())
+                        .putQueryParam("model", "inherited")
+                        .build()
+                val settings = TranslationWebSocketOptions.builder().model("chosen").build()
+                TranslationConnection.connect(configuration, settings).use {
+                    val request = checkNotNull(server.takeRequest(7, TimeUnit.SECONDS))
+                    assertThat(request.requestUrl!!.encodedPath)
+                        .isEqualTo("/v1/realtime/translations")
+                    assertThat(request.requestUrl!!.queryParameterValues("model"))
+                        .containsExactly("chosen")
+                    assertThat(request.requestUrl!!.queryParameter("keep")).isEqualTo("a/b")
+                    it.send(audio())
+                    assertThat(peer.next().path("type").asText()).isEqualTo(appended)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun earlyFailedUpgradeReleasesSocketWithoutBlockingTheConnectCompletionThread() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                val completionReturned = CountDownLatch(1)
+                val problem = IOException("synthetic early listener failure")
+                val client =
+                    object : HttpClient by http, WebSocketClient {
+                        override fun connectWebSocket(
+                            request: HttpRequest,
+                            options: RequestOptions,
+                            maxMessageBytes: Int,
+                            listener: WebSocketClient.Listener,
+                        ): CompletableFuture<WebSocketClient.Connection> {
+                            val active =
+                                http
+                                    .connectWebSocket(request, options, maxMessageBytes, listener)
+                                    .get(7, TimeUnit.SECONDS)
+                            listener.onFailure(problem)
+                            return CompletableFuture.completedFuture(
+                                object : WebSocketClient.Connection by active {
+                                    override fun close() {
+                                        check(completionReturned.await(2, TimeUnit.SECONDS)) {
+                                            "Cannot join connect completion from its own thread"
+                                        }
+                                        active.close()
+                                    }
+                                }
+                            )
+                        }
+                    }
+                val opening = TranslationConnection.connectAsync(options(server, client))
+                completionReturned.countDown()
+                assertThatThrownBy { opening.get(5, TimeUnit.SECONDS) }
+                    .isInstanceOf(ExecutionException::class.java)
+                    .hasCause(problem)
+                assertThat(problem).hasNoSuppressedExceptions()
+                assertThat(peer.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                assertThat(server.requestCount).isEqualTo(1)
+            }
+        }
+    }
+
+    @Test
     fun reconnectIsCallerOwnedAndDoesNotResendCommandsOrTouchOtherSession() {
         MockWebServer().use { server ->
             val first = Peer()
