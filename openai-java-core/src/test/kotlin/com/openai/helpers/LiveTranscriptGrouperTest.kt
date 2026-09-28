@@ -1,0 +1,333 @@
+package com.openai.helpers
+
+import com.openai.core.JsonNull
+import com.openai.core.JsonValue
+import com.openai.core.jsonMapper
+import com.openai.helpers.LiveTranscriptGrouper.CloseReason
+import com.openai.helpers.LiveTranscriptGrouper.Speaker
+import com.openai.helpers.LiveTranscriptGrouper.Update
+import com.openai.models.live.InputTranscriptDeltaEvent
+import com.openai.models.live.OutputTranscriptDeltaEvent
+import com.openai.models.live.ServerEvent
+import com.openai.models.live.SessionClosedEvent
+import com.openai.models.live.forks.ForkServerEvent
+import java.time.Duration
+import java.util.Collections
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.FutureTask
+import java.util.concurrent.TimeUnit
+import java.util.function.Consumer
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Test
+
+internal class LiveTranscriptGrouperTest {
+    private fun input(id: String, text: String, start: Long, end: Long) =
+        InputTranscriptDeltaEvent.builder()
+            .eventId(id)
+            .delta(text)
+            .startMs(start)
+            .endMs(end)
+            .build()
+
+    private fun output(id: String, text: String, start: Long, end: Long) =
+        OutputTranscriptDeltaEvent.builder()
+            .eventId(id)
+            .delta(text)
+            .startMs(start)
+            .endMs(end)
+            .build()
+
+    private fun updates() = Collections.synchronizedList(mutableListOf<Update>())
+
+    private fun displayed(events: List<Update>) = events.filter { !it.closeReason().isPresent }
+
+    private fun finalized(events: List<Update>) = events.filter { it.closeReason().isPresent }
+
+    private fun closed() =
+        SessionClosedEvent.builder()
+            .eventId("close")
+            .reason(SessionClosedEvent.Reason.CLOSE_REQUESTED)
+            .session(JsonNull.of())
+            .usage(JsonNull.of())
+            .build()
+
+    @Test
+    fun stableIdsAndImmutableSnapshots() {
+        val events = updates()
+        val grouper = LiveTranscriptGrouper.create { events.add(it) }
+        grouper.push(ServerEvent.ofSessionInputTranscriptDelta(input("1", "Hello", 0, 100)))
+        grouper.push(input("2", " world", 100, 200))
+        assertThat(displayed(events)).hasSize(2)
+        val first = displayed(events)[0].segment()
+        val second = displayed(events)[1].segment()
+        assertThat(first.text()).isEqualTo("Hello")
+        assertThat(second.text()).isEqualTo("Hello world")
+        assertThat(first.id()).isEqualTo(second.id())
+        assertThat(first.endMs()).isEqualTo(100)
+        assertThat(second.endMs()).isEqualTo(200)
+        assertThat(first.previousId()).isEmpty
+        grouper.close()
+        assertThat(finalized(events)).hasSize(1)
+        assertThat(finalized(events)[0].segment().text()).isEqualTo("Hello world")
+        assertThat(finalized(events)[0].closeReason()).contains(CloseReason.MANUAL)
+    }
+
+    @Test
+    fun alternateSpeakerAndForkUseSamePreviousChain() {
+        val events = updates()
+        val grouper = LiveTranscriptGrouper.create { events.add(it) }
+        grouper.push(input("1", "question", 0, 50))
+        grouper.push(
+            ForkServerEvent.ofSessionOutputTranscriptDelta(output("2", "answer", 1500, 2000))
+        )
+        grouper.close()
+        val segments = finalized(events).map { it.segment() }
+        assertThat(segments.map { it.speaker() }).containsExactly(Speaker.USER, Speaker.ASSISTANT)
+        assertThat(segments.map { it.text() }).containsExactly("question", "answer")
+        assertThat(segments[1].previousId()).contains(segments[0].id())
+        assertThat(finalized(events)[0].closeReason()).contains(CloseReason.SPEAKER_CHANGE)
+    }
+
+    @Test
+    fun overlapPrefersUserEvenWhenAssistantArrivesFirst() {
+        val events = updates()
+        val grouper = LiveTranscriptGrouper.create { events.add(it) }
+        grouper.push(output("ack", "Okay", 0, 100))
+        grouper.push(input("speech", "I want", 0, 100))
+        grouper.push(input("continued", " to book", 100, 600))
+        grouper.close()
+        assertThat(finalized(events).map { it.segment().speaker() }).containsExactly(Speaker.USER)
+        assertThat(finalized(events).single().segment().text()).isEqualTo("I want to book")
+    }
+
+    @Test
+    fun earlierStartingOppositeSpeakerDoesNotResetTheSession() {
+        val events = updates()
+        val grouper = LiveTranscriptGrouper.create { events.add(it) }
+        grouper.push(input("u1", "I want", 1000, 1500))
+        grouper.push(input("u2", " to book", 1500, 1600))
+        val displayedId = displayed(events).first().segment().id()
+        // Different intervals (not a simultaneous batch). The ack belongs to the overlap.
+        grouper.push(output("delayed-ack", "okay", 900, 1100))
+        grouper.push(input("u3", " a table", 1600, 1700))
+        grouper.close()
+        assertThat(finalized(events)).hasSize(1)
+        assertThat(finalized(events).single().closeReason()).contains(CloseReason.MANUAL)
+        val final = finalized(events).single().segment()
+        assertThat(final.id()).isEqualTo(displayedId)
+        assertThat(final.text()).isEqualTo("I want to book a table")
+        assertThat(final.speaker()).isEqualTo(Speaker.USER)
+    }
+
+    @Test
+    fun suppressionCanBeDisabledAndIdsNeverReferenceSuppressedTurn() {
+        val withSuppression = updates()
+        val muted = LiveTranscriptGrouper.create { withSuppression.add(it) }
+        muted.push(input("u1", "continue", 0, 100))
+        muted.push(output("ack", "yeah", 0, 100))
+        muted.push(input("u2", " please", 101, 700))
+        muted.push(output("a2", "finished", 1800, 2500))
+        muted.close()
+        val mutedSegments = finalized(withSuppression).map { it.segment() }
+        assertThat(mutedSegments.map { it.text() }).containsExactly("continue please", "finished")
+        assertThat(mutedSegments.last().previousId()).contains(mutedSegments.first().id())
+
+        val withoutSuppression = updates()
+        val unmuted =
+            LiveTranscriptGrouper.builder { withoutSuppression.add(it) }
+                .backchannelMaxDuration(Duration.ZERO)
+                .build()
+        unmuted.push(input("u1", "continue", 0, 100))
+        unmuted.push(output("ack", "yeah", 0, 100))
+        unmuted.push(input("u2", " please", 101, 700))
+        unmuted.close()
+        assertThat(finalized(withoutSuppression).map { it.segment().text() })
+            .containsExactly("continue please", "yeah")
+    }
+
+    @Test
+    fun additionalAcknowledgmentsAreCopiedAndNormalized() {
+        val phrases = mutableListOf("  D'ACCORD! ")
+        val events = updates()
+        val grouper =
+            LiveTranscriptGrouper.builder { events.add(it) }
+                .additionalAcknowledgments(phrases)
+                .build()
+        phrases.clear()
+        grouper.push(input("u", "bon", 0, 100))
+        grouper.push(output("a", "D'ACCORD!", 0, 100))
+        grouper.push(input("u2", "jour", 100, 500))
+        grouper.close()
+        assertThat(finalized(events).map { it.segment().speaker() }).containsExactly(Speaker.USER)
+        assertThat(finalized(events).single().segment().text()).isEqualTo("bon jour")
+    }
+
+    @Test
+    fun substantiveOverlappingAssistantSpeechIsNotSuppressed() {
+        val events = updates()
+        val grouper = LiveTranscriptGrouper.create { events.add(it) }
+        grouper.push(input("u", "please", 0, 100))
+        grouper.push(output("a", "I need your date of birth", 0, 100))
+        grouper.push(input("u2", " continue", 100, 500))
+        grouper.close()
+        assertThat(finalized(events).map { it.segment().speaker() })
+            .containsExactly(Speaker.USER, Speaker.ASSISTANT)
+    }
+
+    @Test
+    fun sessionClosedFlushesOnceAndFurtherEventsFail() {
+        val events = updates()
+        val grouper = LiveTranscriptGrouper.create { events.add(it) }
+        grouper.push(input("u", "pending", 0, 500))
+        grouper.push(ServerEvent.ofSessionClosed(closed()))
+        val afterTerminal = events.toList()
+        grouper.close()
+        assertThat(events).containsExactlyElementsOf(afterTerminal)
+        assertThat(finalized(events).single().closeReason()).contains(CloseReason.SESSION_CLOSED)
+        assertThatThrownBy { grouper.push(input("late", "late", 501, 502)) }
+            .isInstanceOf(IllegalStateException::class.java)
+        assertThatThrownBy { grouper.push(ServerEvent.ofSessionClosed(closed())) }
+            .isInstanceOf(IllegalStateException::class.java)
+    }
+
+    @Test
+    fun forkClosedHasSameTerminalBehavior() {
+        val events = updates()
+        val grouper = LiveTranscriptGrouper.create { events.add(it) }
+        grouper.push(ForkServerEvent.ofSessionInputTranscriptDelta(input("u", "fork", 10, 15)))
+        grouper.push(ForkServerEvent.ofSessionClosed(closed()))
+        assertThat(finalized(events).single().segment().text()).isEqualTo("fork")
+        assertThat(finalized(events).single().closeReason()).contains(CloseReason.SESSION_CLOSED)
+    }
+
+    @Test
+    fun duplicatesInvalidFieldsAndEmptyTextDoNotCorruptState() {
+        val events = updates()
+        val grouper = LiveTranscriptGrouper.create { events.add(it) }
+        grouper.push(input("good", "original", 1, 100))
+        assertThatThrownBy { grouper.push(input("bad", "backwards", 9, 2)) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+        assertThatThrownBy { grouper.push(input("typed", "bad", -1, 10)) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+        grouper.push(input("good", "duplicate", 1, 100))
+        grouper.push(input("bad", " fixed", 100, 200))
+        grouper.push(input("empty", "", 900, 1000))
+        grouper.close()
+        assertThat(finalized(events).single().segment().text()).isEqualTo("original fixed")
+        assertThat(finalized(events).single().segment().endMs()).isEqualTo(200)
+    }
+
+    @Test
+    fun rawUnknownEventRemainsAvailableAfterHelperClose() {
+        val events = updates()
+        val mapper = jsonMapper()
+        val raw = """{"type":"session.future","future":{"extension":42}}"""
+        val unknown = mapper.readValue(raw, ServerEvent::class.java)
+        val retained = mapper.writeValueAsString(unknown)
+        LiveTranscriptGrouper.create { events.add(it) }
+            .use { grouper ->
+                grouper.push(unknown)
+                grouper.push(input("u", "text", 0, 100))
+            }
+        assertThat(mapper.writeValueAsString(unknown)).isEqualTo(retained)
+        assertThat(unknown._json())
+            .contains(
+                JsonValue.from(
+                    mapOf("type" to "session.future", "future" to mapOf("extension" to 42))
+                )
+            )
+        assertThat(finalized(events).single().segment().text()).isEqualTo("text")
+    }
+
+    @Test
+    fun timestampResetClosesPreviousProjectionWithCorrectReason() {
+        val events = updates()
+        val grouper = LiveTranscriptGrouper.create { events.add(it) }
+        grouper.push(input("first", "past", 1000, 1100))
+        grouper.push(input("reset", "new session time", 0, 100))
+        grouper.close()
+        assertThat(finalized(events).map { it.closeReason().get() })
+            .containsExactly(CloseReason.TIMESTAMP_RESET, CloseReason.MANUAL)
+        assertThat(finalized(events).map { it.segment().text() })
+            .containsExactly("past", "new session time")
+    }
+
+    @Test
+    fun fullRangeLongTimestampsKeepRelativeIntervalsAndDoNotSpin() {
+        val events = updates()
+        val grouper = LiveTranscriptGrouper.create { events.add(it) }
+        val offset = Long.MAX_VALUE - 10_000
+        grouper.push(input("u", "question", offset, offset + 100))
+        grouper.push(output("a", "answer", offset + 1500, offset + 2000))
+        grouper.close()
+        val segments = finalized(events).map { it.segment() }
+        assertThat(segments.map { it.text() }).containsExactly("question", "answer")
+        assertThat(segments[0].startMs()).isEqualTo(offset)
+        assertThat(segments[1].endMs()).isEqualTo(offset + 2000)
+    }
+
+    @Test
+    fun inactivityUsesFractionalThresholdAndCallbackMayReenterClose() {
+        val events = updates()
+        val final = CountDownLatch(1)
+        lateinit var grouper: LiveTranscriptGrouper
+        grouper =
+            LiveTranscriptGrouper.builder(
+                    Consumer {
+                        events.add(it)
+                        if (it.closeReason().orElse(null) == CloseReason.INACTIVITY) {
+                            grouper.close()
+                            final.countDown()
+                        }
+                    }
+                )
+                .assistantSilence(Duration.ofNanos(1_500_000))
+                .build()
+        grouper.push(output("assistant", "unprompted", 0, 0))
+        assertThat(final.await(2, TimeUnit.SECONDS)).isTrue()
+        val received = events.toList()
+        assertThat(finalized(received).single().closeReason()).contains(CloseReason.INACTIVITY)
+        grouper.close()
+        assertThat(events).containsExactlyElementsOf(received)
+    }
+
+    @Test
+    fun nanosecondThresholdAfterLargeElapsedTimeMakesSynchronousProgress() {
+        // Bound a regression that previously looped under the state lock. The daemon cannot keep
+        // a failed test JVM alive, and this calls only public events and APIs.
+        val task = FutureTask {
+            val events = updates()
+            val grouper =
+                LiveTranscriptGrouper.builder { events.add(it) }
+                    .assistantSilence(Duration.ofNanos(1))
+                    .build()
+            grouper.push(input("u0", "origin", 0, 1))
+            val longElapsed = 30_000_000_000L
+            grouper.push(output("a", "later answer", longElapsed, longElapsed + 10))
+            grouper.push(input("u1", "new question", longElapsed + 20, longElapsed + 21))
+            grouper.push(input("u2", " more", longElapsed + 22, longElapsed + 23))
+            grouper.close()
+            finalized(events)
+        }
+        Thread(task, "test-live-grouper-progress").apply { isDaemon = true }.start()
+        val complete = task.get(2, TimeUnit.SECONDS)
+        assertThat(complete.map { it.segment().text() })
+            .containsExactly("origin", "later answer", "new question more")
+        assertThat(complete.map { it.closeReason().get() })
+            .containsExactly(CloseReason.SPEAKER_CHANGE, CloseReason.INACTIVITY, CloseReason.MANUAL)
+    }
+
+    @Test
+    fun validatesNegativeAndOverflowingThresholds() {
+        assertThatThrownBy {
+                LiveTranscriptGrouper.builder {}.assistantSilence(Duration.ofNanos(-1))
+            }
+            .isInstanceOf(IllegalArgumentException::class.java)
+        assertThatThrownBy {
+                LiveTranscriptGrouper.builder {}
+                    .backchannelMaxDuration(Duration.ofSeconds(Long.MAX_VALUE))
+            }
+            .isInstanceOf(IllegalArgumentException::class.java)
+    }
+}
