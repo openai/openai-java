@@ -19,6 +19,7 @@ import com.openai.models.live.ServerEvent
 import java.io.IOException
 import java.net.URI
 import java.net.URLDecoder
+import java.net.URLEncoder
 import java.util.ArrayDeque
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
@@ -52,21 +53,78 @@ import java.util.concurrent.ExecutionException
  * }
  * </pre>
  */
-class LiveConnection
-private constructor(
+class LiveConnection private constructor(private val socket: LiveSocket<ClientEvent, ServerEvent>) :
+    AutoCloseable {
+    companion object {
+        @JvmStatic
+        @JvmOverloads
+        @MustBeClosed
+        fun connect(
+            clientOptions: ClientOptions,
+            options: LiveWebSocketOptions = LiveWebSocketOptions.defaults(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): LiveConnection = LiveSocket.await(open(clientOptions, options, requestOptions, true))
+
+        @JvmStatic
+        @JvmOverloads
+        fun connectAsync(
+            clientOptions: ClientOptions,
+            options: LiveWebSocketOptions = LiveWebSocketOptions.defaults(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<LiveConnection> = open(clientOptions, options, requestOptions, false)
+
+        private fun open(
+            clientOptions: ClientOptions,
+            options: LiveWebSocketOptions,
+            requestOptions: RequestOptions,
+            blocking: Boolean,
+        ) =
+            LiveSocket<ClientEvent, ServerEvent>(
+                    clientOptions,
+                    options,
+                    requestOptions,
+                    listOf("live", "sessions"),
+                    ServerEvent::class.java,
+                    { it.validate() },
+                )
+                .open(blocking, ::LiveConnection)
+    }
+
+    /** Returns one event, even if the peer closes immediately after it. */
+    fun receive(): ServerEvent = socket.receive()
+
+    /** Canceling an unassigned read leaves the session open for the next read. */
+    fun receiveAsync(): CompletableFuture<ServerEvent> = socket.receiveAsync()
+
+    /**
+     * Successful send means accepted by the transport, not acknowledged by the server. A failed
+     * write makes the connection unusable because the remote outcome is uncertain. The caller can
+     * explicitly open a fresh connection; no commands are replayed.
+     */
+    fun send(event: ClientEvent) = socket.send(event)
+
+    override fun close() = socket.close()
+}
+
+/** Physical connection ownership for the primary and fork Live event universes. */
+internal class LiveSocket<C : Any, S : Any>(
     private val clientOptions: ClientOptions,
     private val options: LiveWebSocketOptions,
     private val requestOptions: RequestOptions,
+    private val path: List<String>,
+    eventType: Class<S>,
+    private val validate: (S) -> Unit,
+    private val embedEncodedPath: Boolean = false,
 ) : AutoCloseable {
     private val lock = Any()
     private val reader =
         clientOptions.jsonMapper
-            .readerFor(ServerEvent::class.java)
+            .readerFor(eventType)
             .with(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
 
-    private class Item(val event: ServerEvent, val bytes: Long)
+    private class Item<S>(val event: S, val bytes: Long)
 
-    private val queue = ArrayDeque<Item>()
+    private val queue = ArrayDeque<Item<S>>()
     private var queuedBytes = 0L
     private var socket: WebSocketClient.Connection? = null
     private var opening: CompletableFuture<WebSocketClient.Connection>? = null
@@ -77,7 +135,7 @@ private constructor(
 
     // Assign a read without invoking arbitrary CompletableFuture callbacks while holding lock.
     // Once assigned it cannot be canceled and silently discard a server event.
-    private inner class ReadFuture(val blocking: Boolean) : CompletableFuture<ServerEvent>() {
+    private inner class ReadFuture(val blocking: Boolean) : CompletableFuture<S>() {
         var claimed = false
         var cancellationReserved = false
 
@@ -91,162 +149,156 @@ private constructor(
         }
     }
 
-    companion object {
-        @JvmStatic
-        @JvmOverloads
-        @MustBeClosed
-        fun connect(
-            clientOptions: ClientOptions,
-            options: LiveWebSocketOptions = LiveWebSocketOptions.defaults(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): LiveConnection = await(open(clientOptions, options, requestOptions, blocking = true))
-
-        @JvmStatic
-        @JvmOverloads
-        fun connectAsync(
-            clientOptions: ClientOptions,
-            options: LiveWebSocketOptions = LiveWebSocketOptions.defaults(),
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<LiveConnection> =
-            open(clientOptions, options, requestOptions, blocking = false)
-
-        private fun open(
-            clientOptions: ClientOptions,
-            options: LiveWebSocketOptions,
-            requestOptions: RequestOptions,
-            blocking: Boolean,
-        ): CompletableFuture<LiveConnection> {
-            val connection = LiveConnection(clientOptions, options, requestOptions)
-            val result = CompletableFuture<LiveConnection>()
-            result.whenComplete { _, _ -> if (result.isCancelled) connection.close() }
-            try {
-                clientOptions.requireWebSocketTransport()
-                val baseUrl = URI(clientOptions.baseUrl())
-                val requestBase = baseUrl.toASCIIString().substringBefore('#').substringBefore('?')
-                require(
-                    AzureUrlCategory.categorizeBaseUrl(
-                        requestBase,
-                        clientOptions.azureUrlPathMode,
-                    ) != AzureUrlCategory.AZURE_LEGACY
-                ) {
-                    "Live WebSockets require unified Azure routing"
-                }
-                // HttpRequest.url() appends segments to baseUrl. Canonicalize before both
-                // authentication and transport so custom WebSocketClient implementations see
-                // the same URL that OkHttp sends.
-                val request =
-                    HttpRequest.builder()
-                        .method(HttpMethod.GET)
-                        .baseUrl(requestBase)
-                        .addPathSegments("live", "sessions")
-                        .apply {
-                            baseUrl.rawQuery
-                                ?.split('&')
-                                ?.filter { it.isNotEmpty() }
-                                ?.forEach {
-                                    putQueryParam(
-                                        URLDecoder.decode(it.substringBefore('='), "UTF-8"),
-                                        URLDecoder.decode(it.substringAfter('=', ""), "UTF-8"),
-                                    )
-                                }
-                        }
-                        .build()
-                        .prepare(
-                            clientOptions,
-                            options,
-                            SecurityOptions.builder().bearerAuth(true).build(),
-                        )
-                        // Live requires unified routing as checked above. Shared request
-                        // preparation can still classify the original query-bearing base URL as
-                        // legacy; retain all prepared auth/defaults and this exact Live endpoint.
-                        .toBuilder()
-                        .pathSegments(listOf("live", "sessions"))
-                        .build()
-                val pending =
-                    clientOptions.connectWebSocket(
-                        request,
-                        requestOptions,
-                        options.maxMessageBytes,
-                        object : WebSocketClient.Listener {
-                            override fun onMessage(text: String) = connection.accept(text)
-
-                            override fun onClosed(code: Int) =
-                                connection.fail(IOException("Live WebSocket closed (code $code)"))
-
-                            override fun onFailure(error: Throwable) = connection.fail(error)
-                        },
-                    )
-                val shouldCancel =
-                    synchronized(connection.lock) {
-                        if (connection.closed || connection.failure != null) true
-                        else {
-                            connection.opening = pending
-                            false
-                        }
-                    }
-                if (shouldCancel) pending.cancel(true)
-                pending.whenComplete { active, error ->
-                    val problem =
-                        synchronized(connection.lock) {
-                            connection.opening = null
-                            if (error != null) error
-                            else if (connection.closed || connection.failure != null)
-                                connection.failure
-                                    ?: CancellationException("Live connection closed")
-                            else {
-                                connection.socket = active
-                                null
-                            }
-                        }
-                    val complete: () -> Unit = {
-                        // The owner or socket can close while completion waits on the executor.
-                        // Inspect state here, but keep user callbacks outside the lock.
-                        val completionError =
-                            problem
-                                ?: synchronized(connection.lock) {
-                                    when {
-                                        connection.failure != null -> connection.failure
-                                        connection.closed ->
-                                            CancellationException("Live connection closed")
-                                        clientOptions.isWebSocketClosed() ->
-                                            CancellationException("Client is closed")
-                                        else -> null
-                                    }
-                                }
-                        if (completionError != null) {
-                            connection.fail(completionError)
-                            result.completeExceptionally(completionError)
-                        } else if (!result.complete(connection)) connection.close()
-                    }
-                    if (problem != null) {
-                        connection.fail(problem)
-                        // The handshake produced a socket after cancellation or an early
-                        // listener failure. It was never stored in connection.socket.
-                        // Retire it off the completing/transport thread and settle opening even
-                        // if the transport's close throws.
-                        CompletableFuture.runAsync {
-                            try {
-                                active?.close()
-                            } catch (closing: Throwable) {
-                                if (closing !== problem) problem.addSuppressed(closing)
-                            } finally {
-                                if (blocking) complete() else connection.dispatch(complete)
-                            }
-                        }
-                    } else {
-                        // A synchronous open uses an unexposed future with no user callbacks.
-                        // It must not queue completion behind its blocking caller's executor.
-                        if (blocking) complete() else connection.dispatch(complete)
-                    }
-                }
-            } catch (error: Exception) {
-                connection.fail(error)
-                result.completeExceptionally(error)
+    fun <T : AutoCloseable> open(
+        blocking: Boolean,
+        create: (LiveSocket<C, S>) -> T,
+    ): CompletableFuture<T> {
+        val connection = this
+        val result = CompletableFuture<T>()
+        result.whenComplete { _, _ -> if (result.isCancelled) connection.close() }
+        try {
+            clientOptions.requireWebSocketTransport()
+            val baseUrl = URI(clientOptions.baseUrl())
+            val requestBase = baseUrl.toASCIIString().substringBefore('#').substringBefore('?')
+            require(
+                AzureUrlCategory.categorizeBaseUrl(requestBase, clientOptions.azureUrlPathMode) !=
+                    AzureUrlCategory.AZURE_LEGACY
+            ) {
+                "Live WebSockets require unified Azure routing"
             }
-            return result
-        }
+            // HttpRequest.url() appends segments to baseUrl. Canonicalize before both
+            // authentication and transport so custom WebSocketClient implementations see
+            // the same URL that OkHttp sends.
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(requestBase)
+                    .pathSegments(path)
+                    .apply {
+                        baseUrl.rawQuery
+                            ?.split('&')
+                            ?.filter { it.isNotEmpty() }
+                            ?.forEach {
+                                putQueryParam(
+                                    URLDecoder.decode(it.substringBefore('='), "UTF-8"),
+                                    URLDecoder.decode(it.substringAfter('=', ""), "UTF-8"),
+                                )
+                            }
+                    }
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        options,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+                    // Live requires unified routing as checked above. Shared request
+                    // preparation can still classify the original query-bearing base URL as
+                    // legacy; retain all prepared auth/defaults and this exact Live endpoint.
+                    .toBuilder()
+                    .pathSegments(path)
+                    .apply {
+                        if (embedEncodedPath) {
+                            // Fork IDs must address the same resource through request.url() and
+                            // OkHttp's addPathSegment. Validate the raw path in prepare() above,
+                            // then encode once as URL path (not form data) before authentication.
+                            // Keep the suffix in the base so neither transport encodes it again.
+                            val separator = if (requestBase.endsWith("/")) "" else "/"
+                            baseUrl(
+                                requestBase +
+                                    separator +
+                                    path.joinToString("/") {
+                                        URLEncoder.encode(it, "UTF-8").replace("+", "%20")
+                                    }
+                            )
+                            pathSegments(emptyList())
+                        }
+                    }
+                    .build()
+            val pending =
+                clientOptions.connectWebSocket(
+                    request,
+                    requestOptions,
+                    options.maxMessageBytes,
+                    object : WebSocketClient.Listener {
+                        override fun onMessage(text: String) = connection.accept(text)
 
-        private fun <T> await(future: CompletableFuture<T>): T {
+                        override fun onClosed(code: Int) =
+                            connection.fail(IOException("Live WebSocket closed (code $code)"))
+
+                        override fun onFailure(error: Throwable) = connection.fail(error)
+                    },
+                )
+            val shouldCancel =
+                synchronized(connection.lock) {
+                    if (connection.closed || connection.failure != null) true
+                    else {
+                        connection.opening = pending
+                        false
+                    }
+                }
+            if (shouldCancel) pending.cancel(true)
+            pending.whenComplete { active, error ->
+                val problem =
+                    synchronized(connection.lock) {
+                        connection.opening = null
+                        if (error != null) error
+                        else if (connection.closed || connection.failure != null)
+                            connection.failure ?: CancellationException("Live connection closed")
+                        else {
+                            connection.socket = active
+                            null
+                        }
+                    }
+                val complete: () -> Unit = {
+                    // The owner or socket can close while completion waits on the executor.
+                    // Inspect state here, but keep user callbacks outside the lock.
+                    val completionError =
+                        problem
+                            ?: synchronized(connection.lock) {
+                                when {
+                                    connection.failure != null -> connection.failure
+                                    connection.closed ->
+                                        CancellationException("Live connection closed")
+                                    clientOptions.isWebSocketClosed() ->
+                                        CancellationException("Client is closed")
+                                    else -> null
+                                }
+                            }
+                    if (completionError != null) {
+                        connection.fail(completionError)
+                        result.completeExceptionally(completionError)
+                    } else if (!result.complete(create(connection))) connection.close()
+                }
+                if (problem != null) {
+                    connection.fail(problem)
+                    // The handshake produced a socket after cancellation or an early
+                    // listener failure. It was never stored in connection.socket.
+                    // Retire it off the completing/transport thread and settle opening even
+                    // if the transport's close throws.
+                    CompletableFuture.runAsync {
+                        try {
+                            active?.close()
+                        } catch (closing: Throwable) {
+                            if (closing !== problem) problem.addSuppressed(closing)
+                        } finally {
+                            if (blocking) complete() else connection.dispatch(complete)
+                        }
+                    }
+                } else {
+                    // A synchronous open uses an unexposed future with no user callbacks.
+                    // It must not queue completion behind its blocking caller's executor.
+                    if (blocking) complete() else connection.dispatch(complete)
+                }
+            }
+        } catch (error: Exception) {
+            connection.fail(error)
+            result.completeExceptionally(error)
+        }
+        return result
+    }
+
+    companion object {
+        fun <T> await(future: CompletableFuture<T>): T {
             var interrupted = false
             try {
                 while (true) {
@@ -272,12 +324,12 @@ private constructor(
     }
 
     /** Returns one event, even if the peer closes immediately after it. */
-    fun receive(): ServerEvent = await(receiveFuture(blocking = true))
+    fun receive(): S = await(receiveFuture(blocking = true))
 
     /** Canceling an unassigned read leaves the session open for the next read. */
-    fun receiveAsync(): CompletableFuture<ServerEvent> = receiveFuture(blocking = false)
+    fun receiveAsync(): CompletableFuture<S> = receiveFuture(blocking = false)
 
-    private fun receiveFuture(blocking: Boolean): CompletableFuture<ServerEvent> {
+    private fun receiveFuture(blocking: Boolean): CompletableFuture<S> {
         synchronized(lock) {
             check(!closed) { "Live connection is closed" }
             if (waiter?.let { it.isDone || it.cancellationReserved } == true) waiter = null
@@ -288,7 +340,7 @@ private constructor(
                 return CompletableFuture.completedFuture(item.event)
             }
             failure?.let {
-                return CompletableFuture<ServerEvent>().apply { completeExceptionally(it) }
+                return CompletableFuture<S>().apply { completeExceptionally(it) }
             }
             return ReadFuture(blocking).also { next ->
                 waiter = next
@@ -304,7 +356,7 @@ private constructor(
      * write makes the connection unusable because the remote outcome is uncertain. The caller can
      * explicitly open a fresh connection; no commands are replayed.
      */
-    fun send(event: ClientEvent) {
+    fun send(event: C, checkCommand: (String) -> Unit = {}) {
         synchronized(lock) {
             check(!closed && failure == null && socket != null) { "Live is not connected" }
             check(!sending) { "A Live send is already pending; command was not sent" }
@@ -312,6 +364,7 @@ private constructor(
         }
         try {
             val text = clientOptions.jsonMapper.writeValueAsString(event)
+            checkCommand(text)
             require(utf8Size(text) <= options.maxMessageBytes) {
                 "Live command exceeds maxMessageBytes"
             }
@@ -361,9 +414,9 @@ private constructor(
                     "Invalid Live event"
                 }
             }
-            val event: ServerEvent = reader.readValue(text)
+            val event: S = reader.readValue(text)
             if (requestOptions.responseValidation ?: clientOptions.responseValidation)
-                event.validate()
+                validate(event)
             val bytes = utf8Size(text)
             val target =
                 synchronized(lock) {
