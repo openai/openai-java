@@ -139,6 +139,37 @@ internal class LiveTranscriptGrouperTest {
     }
 
     @Test
+    fun delayedAdjacentAcknowledgmentIsPreservedAfterIsolation() {
+        val events = updates()
+        LiveTranscriptGrouper.builder { events.add(it) }
+            .backchannelIsolation(Duration.ofMillis(10))
+            .build()
+            .use {
+                it.push(input("u1", "hello", 100, 500))
+                it.push(input("u2", " there", 500, 550))
+                it.push(output("a", "okay", 0, 100))
+                it.push(input("u3", "continue", 1500, 1550))
+            }
+        assertThat(finalized(events).map { it.segment().text() })
+            .containsExactly("hello there", "okay", "continue")
+    }
+
+    @Test
+    fun fragmentedInitialAcknowledgmentWaitsForAnOverlappingUser() {
+        for (userStart in listOf(0L, 60L)) {
+            val events = updates()
+            LiveTranscriptGrouper.create { events.add(it) }
+                .use {
+                    it.push(output("a1", "o", 0, 50))
+                    it.push(output("a2", "kay", 50, 100))
+                    it.push(input("u1", "hel", userStart, 500))
+                    it.push(input("u2", "lo", 500, 600))
+                }
+            assertThat(finalized(events).map { it.segment().text() }).containsExactly("hello")
+        }
+    }
+
+    @Test
     fun substantiveBufferedTurnPromotesAtTheExactSeparationDeadline() {
         for (start in listOf(600L, 601L)) {
             val events = updates()
@@ -416,7 +447,7 @@ internal class LiveTranscriptGrouperTest {
         val events = updates()
         LiveTranscriptGrouper.builder { events.add(it) }
             .assistantSilence(Duration.ofMillis(300))
-            .callbackExecutor {
+            .asyncCallbackExecutor {
                 queued.add(it)
                 submitted.countDown()
             }
@@ -443,7 +474,7 @@ internal class LiveTranscriptGrouperTest {
         val events = updates()
         LiveTranscriptGrouper.builder { events.add(it) }
             .assistantSilence(Duration.ofMillis(300))
-            .callbackExecutor {
+            .asyncCallbackExecutor {
                 attempts.countDown()
                 throw RejectedExecutionException()
             }
@@ -455,6 +486,31 @@ internal class LiveTranscriptGrouperTest {
             }
         assertThat(displayed(events).single().segment().text()).isEqualTo("answer")
         assertThat(finalized(events).single().closeReason()).contains(CloseReason.INACTIVITY)
+    }
+
+    @Test
+    fun pushAndCloseFlushBeforeADelayedAsyncDrainAndItCannotRedeliver() {
+        val queued = ConcurrentLinkedQueue<Runnable>()
+        val submitted = CountDownLatch(1)
+        val events = updates()
+        LiveTranscriptGrouper.builder { events.add(it) }
+            .assistantSilence(Duration.ofSeconds(10))
+            .asyncCallbackExecutor {
+                queued.add(it)
+                submitted.countDown()
+            }
+            .build()
+            .use {
+                it.push(output("a1", "first", 0, 100))
+                assertThat(submitted.await(2, TimeUnit.SECONDS)).isTrue()
+                it.push(output("a2", " second", 100, 200))
+            }
+        assertThat(displayed(events).map { it.segment().text() })
+            .containsExactly("first", "first second")
+        assertThat(finalized(events).single().segment().text()).isEqualTo("first second")
+        assertThat(finalized(events).single().closeReason()).contains(CloseReason.MANUAL)
+        while (queued.isNotEmpty()) queued.remove().run()
+        assertThat(events).hasSize(3)
     }
 
     @Test

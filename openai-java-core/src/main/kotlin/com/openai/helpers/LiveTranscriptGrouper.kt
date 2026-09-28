@@ -35,12 +35,16 @@ import kotlin.math.ceil
  *
  * Use one instance per session and close it on disconnect. Close flushes remaining segments once
  * and cancels only this helper's timer. Push after close fails. Callbacks are serialized outside
- * the state lock and may call push or close; timer-driven callbacks run on a daemon thread. Delayed
- * event delivery can affect grouping because inactivity uses the local monotonic clock. The default
- * callback executor allows four simultaneous timer-driven listeners across all groupers. Further
- * callbacks wait without blocking the timers. For independent capacity, supply
- * [Builder.callbackExecutor]; the caller owns that executor and must not run tasks inline.
- * Synchronous pushes and close still deliver on the calling thread.
+ * the state lock and may call push or close. Delayed event delivery can affect grouping because
+ * inactivity uses the local monotonic clock.
+ *
+ * The default executor allows four simultaneous asynchronous listener drains across all groupers.
+ * Further drains wait without blocking the timers. For independent asynchronous capacity, supply
+ * [Builder.asyncCallbackExecutor]; the caller owns that executor and must not run tasks inline.
+ * Updates are drained in order by whichever serialized drain owns them. A push or close may drain
+ * earlier timer updates, and an active asynchronous drain may deliver concurrently pushed updates.
+ * There is no per-event thread affinity. A close on another thread waits for an active drain and
+ * flushes before returning, even if a queued asynchronous drain has not run.
  *
  * Duplicate event IDs are ignored while their turn is pending or active and released on
  * finalization. Live deltas have no server turn identity, so this helper cannot identify arbitrary
@@ -125,8 +129,11 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
             acknowledgments = value.toList()
         }
 
-        /** Supplies asynchronous callback capacity. The grouper never shuts down this executor. */
-        fun callbackExecutor(value: Executor) = apply { executor = value }
+        /**
+         * Supplies asynchronous drain capacity, not callback thread affinity. Push and close may
+         * also drain queued updates. The grouper never shuts down this executor.
+         */
+        fun asyncCallbackExecutor(value: Executor) = apply { executor = value }
 
         fun build(): LiveTranscriptGrouper = LiveTranscriptGrouper(this)
 
@@ -313,8 +320,14 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
                 first != null &&
                     ((first.start == start && first.end == end) ||
                         (current == null &&
+                            speaker == Speaker.ASSISTANT &&
+                            first.speaker == speaker &&
+                            start in pending.last().start..pending.last().end) ||
+                        (current == null &&
                             first.speaker != speaker &&
-                            (first.start == start || (first.start < end && start < first.end))))
+                            pending.any {
+                                it.start == start || (it.start < end && start < it.end)
+                            }))
             ) {
                 pending.add(fragment)
                 if (pending.any { it.speaker != speaker }) flushPending()
@@ -525,7 +538,8 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         val waiting = buffered ?: return false
         return turn.speaker == Speaker.USER &&
             waiting.speaker == Speaker.ASSISTANT &&
-            waiting.end - waiting.start < maxDuration
+            waiting.end - waiting.start < maxDuration &&
+            (waiting.start == turn.start || (waiting.start < turn.end && turn.start < waiting.end))
     }
 
     private fun userContinued(): Boolean =
