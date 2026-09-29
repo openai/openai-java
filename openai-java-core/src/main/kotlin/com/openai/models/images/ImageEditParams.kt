@@ -1837,7 +1837,18 @@ private constructor(
         private val inputStream: InputStream? = null,
         private val inputStreams: List<InputStream>? = null,
         private val _json: JsonValue? = null,
-    ) {
+    ) : com.openai.core.http.MultipartInputStreamProvider {
+
+        @JvmSynthetic
+        override fun collectMultipartInputStreams(
+            consumer: (java.io.InputStream) -> kotlin.Unit
+        ): kotlin.Unit {
+            when {
+                this.inputStream != null -> consumer(this.inputStream)
+                this.inputStreams != null -> this.inputStreams.forEach(consumer)
+                else -> {}
+            }
+        }
 
         fun inputStream(): Optional<InputStream> = Optional.ofNullable(inputStream)
 
