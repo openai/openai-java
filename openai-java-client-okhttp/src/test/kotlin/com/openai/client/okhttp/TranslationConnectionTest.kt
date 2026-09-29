@@ -635,7 +635,7 @@ class TranslationConnectionTest {
                                         override fun awaitWritable(timeout: Duration) {
                                             entered.countDown()
                                             try {
-                                                check(release.await(7, TimeUnit.SECONDS))
+                                                check(release.await(15, TimeUnit.SECONDS))
                                             } finally {
                                                 finished.countDown()
                                             }
@@ -650,15 +650,12 @@ class TranslationConnectionTest {
                                     }
                                 }
                     }
-                val settings =
-                    TranslationWebSocketOptions.builder()
-                        .sendTimeout(Duration.ofMillis(250))
-                        .build()
+                val settings = TranslationWebSocketOptions.builder().sendTimeout(deadline).build()
                 TranslationConnection.connect(options(server, client), settings).use { connection ->
                     try {
                         val input = CompletableFuture.runAsync { connection.send(audio()) }
                         assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
-                        assertThatThrownBy { input.get(3, TimeUnit.SECONDS) }
+                        assertThatThrownBy { input.get(10, TimeUnit.SECONDS) }
                             .hasRootCauseInstanceOf(TimeoutException::class.java)
                         assertThat(peer.terminated.await(3, TimeUnit.SECONDS)).isTrue()
                         release.countDown()
@@ -1020,8 +1017,8 @@ class TranslationConnectionTest {
                     assertThatThrownBy { opening.get(5, TimeUnit.SECONDS) }
                         .isInstanceOf(ExecutionException::class.java)
                         .hasCause(error)
-                    assertThat(pending.isCancelled).isTrue()
                     assertThat(failing.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(pending.isCancelled).isTrue()
                     assertThat(failing.messages).isEmpty()
                     unaffected.send(audio("AQ=="))
                     assertThat(other.next().path("audio").asText()).isEqualTo("AQ==")

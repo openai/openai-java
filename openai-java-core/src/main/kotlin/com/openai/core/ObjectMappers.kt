@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.util.TokenBuffer
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.kotlinModule
+import com.openai.core.http.MultipartInputStreams
 import java.io.IOException
 import java.io.InputStream
 import java.time.DateTimeException
@@ -155,7 +156,11 @@ private object InputStreamSerializer : BaseSerializer<InputStream>(InputStream::
             gen.retainedStreams.add(value)
             gen.writeEmbeddedObject(value)
         } else {
-            value.use { gen?.writeBinary(it.readBytes()) }
+            try {
+                value.use { gen?.writeBinary(it.readBytes()) }
+            } finally {
+                MultipartInputStreams.closeAttempted(value)
+            }
         }
     }
 }

@@ -760,7 +760,18 @@ private constructor(
         private val stream: InputStream? = null,
         private val imageInputReferenceParam: ImageInputReferenceParam? = null,
         private val _json: JsonValue? = null,
-    ) {
+    ) : com.openai.core.http.MultipartInputStreamProvider {
+
+        @JvmSynthetic
+        override fun collectMultipartInputStreams(
+            consumer: (java.io.InputStream) -> kotlin.Unit
+        ): kotlin.Unit {
+            when {
+                this.stream != null -> consumer(this.stream)
+                this.imageInputReferenceParam != null -> {}
+                else -> {}
+            }
+        }
 
         /** Optional reference asset upload or reference object that guides generation. */
         fun stream(): Optional<InputStream> = Optional.ofNullable(stream)
