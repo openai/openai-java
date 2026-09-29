@@ -38,7 +38,7 @@ private constructor(
 
     override fun items(): List<Assistant> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): AssistantListParams =
         params.toBuilder().after(items().last()._id().getOptional("id")).build()

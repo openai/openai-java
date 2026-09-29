@@ -42,7 +42,8 @@ private constructor(
 
     override fun items(): List<OrganizationGroupUser> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty() && next().isPresent
+    override fun hasNextPage(): Boolean =
+        hasMore().orElse(true) && items().isNotEmpty() && next().isPresent
 
     fun nextPageParams(): UserListParams {
         val nextCursor =

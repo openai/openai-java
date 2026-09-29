@@ -34,7 +34,7 @@ private constructor(
 
     override fun items(): List<SkillVersion> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): VersionListParams =
         params.toBuilder().after(items().last()._id().getOptional("id")).build()

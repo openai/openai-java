@@ -42,7 +42,8 @@ private constructor(
 
     override fun items(): List<ProjectServiceAccount> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty() && lastId().isPresent
+    override fun hasNextPage(): Boolean =
+        hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent
 
     fun nextPageParams(): ServiceAccountListParams {
         val nextCursor =
