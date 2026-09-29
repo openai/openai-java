@@ -42,6 +42,7 @@ internal class EnvironmentTemplateTest {
                         .build()
                 )
                 .updatedAt(0L)
+                .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
                 .build()
 
         assertThat(environmentTemplate.id()).isEqualTo("id")
@@ -81,6 +82,8 @@ internal class EnvironmentTemplateTest {
                 )
             )
         assertThat(environmentTemplate.updatedAt()).isEqualTo(0L)
+        assertThat(environmentTemplate.desktop())
+            .contains(EnvironmentTemplate.Desktop.builder().enabled(true).build())
     }
 
     @Test
@@ -116,6 +119,7 @@ internal class EnvironmentTemplateTest {
                         .build()
                 )
                 .updatedAt(0L)
+                .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
                 .build()
 
         val roundtrippedEnvironmentTemplate =

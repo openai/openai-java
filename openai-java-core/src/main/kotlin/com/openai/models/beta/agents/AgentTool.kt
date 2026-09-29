@@ -39,6 +39,7 @@ private constructor(
     private val programmaticToolCalling: ProgrammaticToolCalling? = null,
     private val mcp: Mcp? = null,
     private val webSearch: WebSearch? = null,
+    private val computerUse: ComputerUse? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -55,6 +56,9 @@ private constructor(
     /** Web search. */
     fun webSearch(): Optional<WebSearch> = Optional.ofNullable(webSearch)
 
+    /** Browser use in an OpenAI-hosted session. */
+    fun computerUse(): Optional<ComputerUse> = Optional.ofNullable(computerUse)
+
     fun isFunction(): Boolean = function != null
 
     fun isProgrammaticToolCalling(): Boolean = programmaticToolCalling != null
@@ -62,6 +66,8 @@ private constructor(
     fun isMcp(): Boolean = mcp != null
 
     fun isWebSearch(): Boolean = webSearch != null
+
+    fun isComputerUse(): Boolean = computerUse != null
 
     /** A function defined by the application. */
     fun asFunction(): Function = function.getOrThrow("function")
@@ -75,6 +81,9 @@ private constructor(
 
     /** Web search. */
     fun asWebSearch(): WebSearch = webSearch.getOrThrow("webSearch")
+
+    /** Browser use in an OpenAI-hosted session. */
+    fun asComputerUse(): ComputerUse = computerUse.getOrThrow("computerUse")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -114,6 +123,7 @@ private constructor(
                 visitor.visitProgrammaticToolCalling(programmaticToolCalling)
             mcp != null -> visitor.visitMcp(mcp)
             webSearch != null -> visitor.visitWebSearch(webSearch)
+            computerUse != null -> visitor.visitComputerUse(computerUse)
             else -> visitor.unknown(_json)
         }
 
@@ -151,6 +161,10 @@ private constructor(
                 override fun visitWebSearch(webSearch: WebSearch) {
                     webSearch.validate()
                 }
+
+                override fun visitComputerUse(computerUse: ComputerUse) {
+                    computerUse.validate()
+                }
             }
         )
         validated = true
@@ -183,6 +197,8 @@ private constructor(
 
                 override fun visitWebSearch(webSearch: WebSearch) = webSearch.validity()
 
+                override fun visitComputerUse(computerUse: ComputerUse) = computerUse.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -196,10 +212,12 @@ private constructor(
             function == other.function &&
             programmaticToolCalling == other.programmaticToolCalling &&
             mcp == other.mcp &&
-            webSearch == other.webSearch
+            webSearch == other.webSearch &&
+            computerUse == other.computerUse
     }
 
-    override fun hashCode(): Int = Objects.hash(function, programmaticToolCalling, mcp, webSearch)
+    override fun hashCode(): Int =
+        Objects.hash(function, programmaticToolCalling, mcp, webSearch, computerUse)
 
     override fun toString(): String =
         when {
@@ -208,6 +226,7 @@ private constructor(
                 "AgentTool{programmaticToolCalling=$programmaticToolCalling}"
             mcp != null -> "AgentTool{mcp=$mcp}"
             webSearch != null -> "AgentTool{webSearch=$webSearch}"
+            computerUse != null -> "AgentTool{computerUse=$computerUse}"
             _json != null -> "AgentTool{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid AgentTool")
         }
@@ -227,6 +246,10 @@ private constructor(
 
         /** Web search. */
         @JvmStatic fun ofWebSearch(webSearch: WebSearch) = AgentTool(webSearch = webSearch)
+
+        /** Browser use in an OpenAI-hosted session. */
+        @JvmStatic
+        fun ofComputerUse(computerUse: ComputerUse) = AgentTool(computerUse = computerUse)
     }
 
     /** An interface that defines how to map each variant of [AgentTool] to a value of type [T]. */
@@ -243,6 +266,9 @@ private constructor(
 
         /** Web search. */
         fun visitWebSearch(webSearch: WebSearch): T
+
+        /** Browser use in an OpenAI-hosted session. */
+        fun visitComputerUse(computerUse: ComputerUse): T
 
         /**
          * Maps an unknown variant of [AgentTool] to a value of type [T].
@@ -285,6 +311,11 @@ private constructor(
                         AgentTool(webSearch = it, _json = json)
                     } ?: AgentTool(_json = json)
                 }
+                "computer_use" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ComputerUse>())?.let {
+                        AgentTool(computerUse = it, _json = json)
+                    } ?: AgentTool(_json = json)
+                }
             }
 
             return AgentTool(_json = json)
@@ -304,6 +335,7 @@ private constructor(
                     generator.writeObject(value.programmaticToolCalling)
                 value.mcp != null -> generator.writeObject(value.mcp)
                 value.webSearch != null -> generator.writeObject(value.webSearch)
+                value.computerUse != null -> generator.writeObject(value.computerUse)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid AgentTool")
             }
@@ -2727,5 +2759,225 @@ private constructor(
 
         override fun toString() =
             "WebSearch{allowedDomains=$allowedDomains, contextSize=$contextSize, location=$location, mode=$mode, type=$type, additionalProperties=$additionalProperties}"
+    }
+
+    /** Browser use in an OpenAI-hosted session. */
+    class ComputerUse
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val includeScreenshots: JsonField<Boolean>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("include_screenshots")
+            @ExcludeMissing
+            includeScreenshots: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(includeScreenshots, type, mutableMapOf())
+
+        /**
+         * Whether computer tool outputs include screenshots.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun includeScreenshots(): Boolean = includeScreenshots.getRequired("include_screenshots")
+
+        /**
+         * The type of the object. Always `computer_use`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("computer_use")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * Returns the raw JSON value of [includeScreenshots].
+         *
+         * Unlike [includeScreenshots], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("include_screenshots")
+        @ExcludeMissing
+        fun _includeScreenshots(): JsonField<Boolean> = includeScreenshots
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [ComputerUse].
+             *
+             * The following fields are required:
+             * ```java
+             * .includeScreenshots()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [ComputerUse]. */
+        class Builder internal constructor() {
+
+            private var includeScreenshots: JsonField<Boolean>? = null
+            private var type: JsonValue = JsonValue.from("computer_use")
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(computerUse: ComputerUse) = apply {
+                includeScreenshots = computerUse.includeScreenshots
+                type = computerUse.type
+                additionalProperties = computerUse.additionalProperties.toMutableMap()
+            }
+
+            /** Whether computer tool outputs include screenshots. */
+            fun includeScreenshots(includeScreenshots: Boolean) =
+                includeScreenshots(JsonField.of(includeScreenshots))
+
+            /**
+             * Sets [Builder.includeScreenshots] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.includeScreenshots] with a well-typed [Boolean]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun includeScreenshots(includeScreenshots: JsonField<Boolean>) = apply {
+                this.includeScreenshots = includeScreenshots
+            }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("computer_use")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [ComputerUse].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .includeScreenshots()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): ComputerUse =
+                ComputerUse(
+                    checkRequired("includeScreenshots", includeScreenshots),
+                    type,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): ComputerUse = apply {
+            if (validated) {
+                return@apply
+            }
+
+            includeScreenshots()
+            _type().let {
+                if (it != JsonValue.from("computer_use")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (includeScreenshots.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("computer_use")) 1 else 0 }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ComputerUse &&
+                includeScreenshots == other.includeScreenshots &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(includeScreenshots, type, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "ComputerUse{includeScreenshots=$includeScreenshots, type=$type, additionalProperties=$additionalProperties}"
     }
 }

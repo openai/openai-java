@@ -1289,6 +1289,10 @@ private constructor(
             fun addTool(webSearch: AgentToolParam.WebSearch) =
                 addTool(AgentToolParam.ofWebSearch(webSearch))
 
+            /** Alias for calling [addTool] with `AgentToolParam.ofComputerUse(computerUse)`. */
+            fun addTool(computerUse: AgentToolParam.ComputerUse) =
+                addTool(AgentToolParam.ofComputerUse(computerUse))
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)

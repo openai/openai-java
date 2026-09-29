@@ -64,10 +64,37 @@ internal class AgentSessionTest {
                         .build()
                 )
                 .addRequiredAction(
-                    AgentSession.RequiredAction.FunctionCall.builder()
-                        .arguments(JsonValue.from(mapOf<String, Any>()))
-                        .callId("call_id")
-                        .name("name")
+                    AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                        .request(
+                            AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
+                                .BrowserAuthentication
+                                .builder()
+                                .credentialOrigin("credential_origin")
+                                .addField(
+                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
+                                        .BrowserAuthentication
+                                        .Field
+                                        .builder()
+                                        .id("id")
+                                        .label("label")
+                                        .required(true)
+                                        .type("type")
+                                        .build()
+                                )
+                                .addOption(
+                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
+                                        .BrowserAuthentication
+                                        .Option
+                                        .builder()
+                                        .id("id")
+                                        .addFieldId("string")
+                                        .label("label")
+                                        .build()
+                                )
+                                .reason("reason")
+                                .build()
+                        )
+                        .requestId("request_id")
                         .turnId("turn_id")
                         .build()
                 )
@@ -135,11 +162,38 @@ internal class AgentSessionTest {
             )
         assertThat(agentSession.requiredActions())
             .containsExactly(
-                AgentSession.RequiredAction.ofFunctionCall(
-                    AgentSession.RequiredAction.FunctionCall.builder()
-                        .arguments(JsonValue.from(mapOf<String, Any>()))
-                        .callId("call_id")
-                        .name("name")
+                AgentSession.RequiredAction.ofComputerUseApprovalRequest(
+                    AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                        .request(
+                            AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
+                                .BrowserAuthentication
+                                .builder()
+                                .credentialOrigin("credential_origin")
+                                .addField(
+                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
+                                        .BrowserAuthentication
+                                        .Field
+                                        .builder()
+                                        .id("id")
+                                        .label("label")
+                                        .required(true)
+                                        .type("type")
+                                        .build()
+                                )
+                                .addOption(
+                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
+                                        .BrowserAuthentication
+                                        .Option
+                                        .builder()
+                                        .id("id")
+                                        .addFieldId("string")
+                                        .label("label")
+                                        .build()
+                                )
+                                .reason("reason")
+                                .build()
+                        )
+                        .requestId("request_id")
                         .turnId("turn_id")
                         .build()
                 )
@@ -217,10 +271,37 @@ internal class AgentSessionTest {
                         .build()
                 )
                 .addRequiredAction(
-                    AgentSession.RequiredAction.FunctionCall.builder()
-                        .arguments(JsonValue.from(mapOf<String, Any>()))
-                        .callId("call_id")
-                        .name("name")
+                    AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
+                        .request(
+                            AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
+                                .BrowserAuthentication
+                                .builder()
+                                .credentialOrigin("credential_origin")
+                                .addField(
+                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
+                                        .BrowserAuthentication
+                                        .Field
+                                        .builder()
+                                        .id("id")
+                                        .label("label")
+                                        .required(true)
+                                        .type("type")
+                                        .build()
+                                )
+                                .addOption(
+                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
+                                        .BrowserAuthentication
+                                        .Option
+                                        .builder()
+                                        .id("id")
+                                        .addFieldId("string")
+                                        .label("label")
+                                        .build()
+                                )
+                                .reason("reason")
+                                .build()
+                        )
+                        .requestId("request_id")
                         .turnId("turn_id")
                         .build()
                 )

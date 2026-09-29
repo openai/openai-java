@@ -4,7 +4,8 @@ package com.openai.services.blocking.beta.agents.sessions
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.beta.agents.AgentSessionInputMessageParam
+import com.openai.models.beta.agents.AgentBrowserAuthenticationSubmitParam
+import com.openai.models.beta.agents.AgentSessionInputParam
 import com.openai.models.beta.agents.sessions.events.EventCreateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -26,13 +27,22 @@ internal class EventServiceTest {
             EventCreateParams.builder()
                 .sessionId("session_id")
                 .idempotencyKey("x")
-                .addAgentSessionInputMessageEvent(
-                    listOf(
-                        AgentSessionInputMessageParam.builder()
-                            .addInputTextContent("text")
-                            .type(AgentSessionInputMessageParam.Type.MESSAGE)
-                            .build()
-                    )
+                .addEvent(
+                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
+                        .builder()
+                        .requestId("request_id")
+                        .response(
+                            AgentBrowserAuthenticationSubmitParam.builder()
+                                .addField(
+                                    AgentBrowserAuthenticationSubmitParam.Field.builder()
+                                        .fieldId("field_id")
+                                        .value("value")
+                                        .build()
+                                )
+                                .selectedOption("selected_option")
+                                .build()
+                        )
+                        .build()
                 )
                 .build()
         )
