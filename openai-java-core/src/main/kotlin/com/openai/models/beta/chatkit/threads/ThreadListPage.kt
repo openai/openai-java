@@ -42,7 +42,8 @@ private constructor(
 
     override fun items(): List<ChatKitThread> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty() && lastId().isPresent
+    override fun hasNextPage(): Boolean =
+        hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent
 
     fun nextPageParams(): ThreadListParams {
         val nextCursor =

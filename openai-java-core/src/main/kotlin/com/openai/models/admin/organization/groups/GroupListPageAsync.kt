@@ -44,7 +44,8 @@ private constructor(
 
     override fun items(): List<Group> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty() && next().isPresent
+    override fun hasNextPage(): Boolean =
+        hasMore().orElse(true) && items().isNotEmpty() && next().isPresent
 
     fun nextPageParams(): GroupListParams {
         val nextCursor =

@@ -55,7 +55,7 @@ private constructor(
 
     override fun items(): List<ResponseItem> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): InputItemListParams =
         params

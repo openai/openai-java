@@ -34,7 +34,7 @@ private constructor(
 
     override fun items(): List<Credential> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): CredentialListParams =
         params.toBuilder().after(items().last()._id().getOptional("id")).build()

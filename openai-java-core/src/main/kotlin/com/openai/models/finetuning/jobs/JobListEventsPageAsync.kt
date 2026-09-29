@@ -38,7 +38,7 @@ private constructor(
 
     override fun items(): List<FineTuningJobEvent> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): JobListEventsParams =
         params.toBuilder().after(items().last()._id().getOptional("id")).build()

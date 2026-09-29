@@ -59,7 +59,7 @@ private constructor(
 
     override fun items(): List<BetaResponseItem> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): InputItemListParams =
         params

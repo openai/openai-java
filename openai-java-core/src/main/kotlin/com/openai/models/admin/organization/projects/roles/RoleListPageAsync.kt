@@ -45,7 +45,8 @@ private constructor(
 
     override fun items(): List<Role> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty() && next().isPresent
+    override fun hasNextPage(): Boolean =
+        hasMore().orElse(true) && items().isNotEmpty() && next().isPresent
 
     fun nextPageParams(): RoleListParams {
         val nextCursor =
