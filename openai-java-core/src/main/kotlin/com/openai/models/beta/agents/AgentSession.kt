@@ -478,6 +478,17 @@ private constructor(
         }
 
         /**
+         * Alias for calling [addRequiredAction] with
+         * `RequiredAction.ofComputerUseApprovalRequest(computerUseApprovalRequest)`.
+         */
+        fun addRequiredAction(
+            computerUseApprovalRequest: RequiredAction.ComputerUseApprovalRequest
+        ) =
+            addRequiredAction(
+                RequiredAction.ofComputerUseApprovalRequest(computerUseApprovalRequest)
+            )
+
+        /**
          * Alias for calling [addRequiredAction] with `RequiredAction.ofFunctionCall(functionCall)`.
          */
         fun addRequiredAction(functionCall: RequiredAction.FunctionCall) =
@@ -1102,6 +1113,23 @@ private constructor(
             /** Alias for calling [addTool] with `AgentTool.ofWebSearch(webSearch)`. */
             fun addTool(webSearch: AgentTool.WebSearch) = addTool(AgentTool.ofWebSearch(webSearch))
 
+            /** Alias for calling [addTool] with `AgentTool.ofComputerUse(computerUse)`. */
+            fun addTool(computerUse: AgentTool.ComputerUse) =
+                addTool(AgentTool.ofComputerUse(computerUse))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * AgentTool.ComputerUse.builder()
+             *     .includeScreenshots(includeScreenshots)
+             *     .build()
+             * ```
+             */
+            fun addComputerUseTool(includeScreenshots: Boolean) =
+                addTool(
+                    AgentTool.ComputerUse.builder().includeScreenshots(includeScreenshots).build()
+                )
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -1529,10 +1557,15 @@ private constructor(
     @JsonSerialize(using = RequiredAction.Serializer::class)
     class RequiredAction
     private constructor(
+        private val computerUseApprovalRequest: ComputerUseApprovalRequest? = null,
         private val functionCall: FunctionCall? = null,
         private val environmentConnection: EnvironmentConnection? = null,
         private val _json: JsonValue? = null,
     ) {
+
+        /** Respond to a computer-use request. */
+        fun computerUseApprovalRequest(): Optional<ComputerUseApprovalRequest> =
+            Optional.ofNullable(computerUseApprovalRequest)
 
         /** Run a function tool and submit its result. */
         fun functionCall(): Optional<FunctionCall> = Optional.ofNullable(functionCall)
@@ -1541,9 +1574,15 @@ private constructor(
         fun environmentConnection(): Optional<EnvironmentConnection> =
             Optional.ofNullable(environmentConnection)
 
+        fun isComputerUseApprovalRequest(): Boolean = computerUseApprovalRequest != null
+
         fun isFunctionCall(): Boolean = functionCall != null
 
         fun isEnvironmentConnection(): Boolean = environmentConnection != null
+
+        /** Respond to a computer-use request. */
+        fun asComputerUseApprovalRequest(): ComputerUseApprovalRequest =
+            computerUseApprovalRequest.getOrThrow("computerUseApprovalRequest")
 
         /** Run a function tool and submit its result. */
         fun asFunctionCall(): FunctionCall = functionCall.getOrThrow("functionCall")
@@ -1566,8 +1605,8 @@ private constructor(
          *
          * Optional<String> result = requiredAction.accept(new RequiredAction.Visitor<Optional<String>>() {
          *     @Override
-         *     public Optional<String> visitFunctionCall(FunctionCall functionCall) {
-         *         return Optional.of(functionCall.toString());
+         *     public Optional<String> visitComputerUseApprovalRequest(ComputerUseApprovalRequest computerUseApprovalRequest) {
+         *         return Optional.of(computerUseApprovalRequest.toString());
          *     }
          *
          *     // ...
@@ -1585,6 +1624,8 @@ private constructor(
          */
         fun <T> accept(visitor: Visitor<T>): T =
             when {
+                computerUseApprovalRequest != null ->
+                    visitor.visitComputerUseApprovalRequest(computerUseApprovalRequest)
                 functionCall != null -> visitor.visitFunctionCall(functionCall)
                 environmentConnection != null ->
                     visitor.visitEnvironmentConnection(environmentConnection)
@@ -1609,6 +1650,12 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
+                    override fun visitComputerUseApprovalRequest(
+                        computerUseApprovalRequest: ComputerUseApprovalRequest
+                    ) {
+                        computerUseApprovalRequest.validate()
+                    }
+
                     override fun visitFunctionCall(functionCall: FunctionCall) {
                         functionCall.validate()
                     }
@@ -1641,6 +1688,10 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
+                    override fun visitComputerUseApprovalRequest(
+                        computerUseApprovalRequest: ComputerUseApprovalRequest
+                    ) = computerUseApprovalRequest.validity()
+
                     override fun visitFunctionCall(functionCall: FunctionCall) =
                         functionCall.validity()
 
@@ -1658,14 +1709,18 @@ private constructor(
             }
 
             return other is RequiredAction &&
+                computerUseApprovalRequest == other.computerUseApprovalRequest &&
                 functionCall == other.functionCall &&
                 environmentConnection == other.environmentConnection
         }
 
-        override fun hashCode(): Int = Objects.hash(functionCall, environmentConnection)
+        override fun hashCode(): Int =
+            Objects.hash(computerUseApprovalRequest, functionCall, environmentConnection)
 
         override fun toString(): String =
             when {
+                computerUseApprovalRequest != null ->
+                    "RequiredAction{computerUseApprovalRequest=$computerUseApprovalRequest}"
                 functionCall != null -> "RequiredAction{functionCall=$functionCall}"
                 environmentConnection != null ->
                     "RequiredAction{environmentConnection=$environmentConnection}"
@@ -1674,6 +1729,12 @@ private constructor(
             }
 
         companion object {
+
+            /** Respond to a computer-use request. */
+            @JvmStatic
+            fun ofComputerUseApprovalRequest(
+                computerUseApprovalRequest: ComputerUseApprovalRequest
+            ) = RequiredAction(computerUseApprovalRequest = computerUseApprovalRequest)
 
             /** Run a function tool and submit its result. */
             @JvmStatic
@@ -1691,6 +1752,11 @@ private constructor(
          * [T].
          */
         interface Visitor<out T> {
+
+            /** Respond to a computer-use request. */
+            fun visitComputerUseApprovalRequest(
+                computerUseApprovalRequest: ComputerUseApprovalRequest
+            ): T
 
             /** Run a function tool and submit its result. */
             fun visitFunctionCall(functionCall: FunctionCall): T
@@ -1720,6 +1786,11 @@ private constructor(
                 val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
                 when (type) {
+                    "computer_use_approval_request" -> {
+                        return tryDeserialize(node, jacksonTypeRef<ComputerUseApprovalRequest>())
+                            ?.let { RequiredAction(computerUseApprovalRequest = it, _json = json) }
+                            ?: RequiredAction(_json = json)
+                    }
                     "function_call" -> {
                         return tryDeserialize(node, jacksonTypeRef<FunctionCall>())?.let {
                             RequiredAction(functionCall = it, _json = json)
@@ -1744,6 +1815,8 @@ private constructor(
                 provider: SerializerProvider,
             ) {
                 when {
+                    value.computerUseApprovalRequest != null ->
+                        generator.writeObject(value.computerUseApprovalRequest)
                     value.functionCall != null -> generator.writeObject(value.functionCall)
                     value.environmentConnection != null ->
                         generator.writeObject(value.environmentConnection)
@@ -1751,6 +1824,1836 @@ private constructor(
                     else -> throw IllegalStateException("Invalid RequiredAction")
                 }
             }
+        }
+
+        /** Respond to a computer-use request. */
+        class ComputerUseApprovalRequest
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val request: JsonField<Request>,
+            private val requestId: JsonField<String>,
+            private val turnId: JsonField<String>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("request")
+                @ExcludeMissing
+                request: JsonField<Request> = JsonMissing.of(),
+                @JsonProperty("request_id")
+                @ExcludeMissing
+                requestId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("turn_id")
+                @ExcludeMissing
+                turnId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(request, requestId, turnId, type, mutableMapOf())
+
+            /**
+             * The information needed to render the request.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun request(): Request = request.getRequired("request")
+
+            /**
+             * The registered request ID to echo when responding.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun requestId(): String = requestId.getRequired("request_id")
+
+            /**
+             * The turn that requested approval.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun turnId(): String = turnId.getRequired("turn_id")
+
+            /**
+             * The type of the object. Always `computer_use_approval_request`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("computer_use_approval_request")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * Returns the raw JSON value of [request].
+             *
+             * Unlike [request], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("request") @ExcludeMissing fun _request(): JsonField<Request> = request
+
+            /**
+             * Returns the raw JSON value of [requestId].
+             *
+             * Unlike [requestId], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("request_id")
+            @ExcludeMissing
+            fun _requestId(): JsonField<String> = requestId
+
+            /**
+             * Returns the raw JSON value of [turnId].
+             *
+             * Unlike [turnId], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("turn_id") @ExcludeMissing fun _turnId(): JsonField<String> = turnId
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of
+                 * [ComputerUseApprovalRequest].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .request()
+                 * .requestId()
+                 * .turnId()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [ComputerUseApprovalRequest]. */
+            class Builder internal constructor() {
+
+                private var request: JsonField<Request>? = null
+                private var requestId: JsonField<String>? = null
+                private var turnId: JsonField<String>? = null
+                private var type: JsonValue = JsonValue.from("computer_use_approval_request")
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(computerUseApprovalRequest: ComputerUseApprovalRequest) = apply {
+                    request = computerUseApprovalRequest.request
+                    requestId = computerUseApprovalRequest.requestId
+                    turnId = computerUseApprovalRequest.turnId
+                    type = computerUseApprovalRequest.type
+                    additionalProperties =
+                        computerUseApprovalRequest.additionalProperties.toMutableMap()
+                }
+
+                /** The information needed to render the request. */
+                fun request(request: Request) = request(JsonField.of(request))
+
+                /**
+                 * Sets [Builder.request] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.request] with a well-typed [Request] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun request(request: JsonField<Request>) = apply { this.request = request }
+
+                /**
+                 * Alias for calling [request] with
+                 * `Request.ofBrowserAuthentication(browserAuthentication)`.
+                 */
+                fun request(browserAuthentication: Request.BrowserAuthentication) =
+                    request(Request.ofBrowserAuthentication(browserAuthentication))
+
+                /**
+                 * Alias for calling [request] with
+                 * `Request.ofBrowserOriginAccess(browserOriginAccess)`.
+                 */
+                fun request(browserOriginAccess: Request.BrowserOriginAccess) =
+                    request(Request.ofBrowserOriginAccess(browserOriginAccess))
+
+                /** The registered request ID to echo when responding. */
+                fun requestId(requestId: String) = requestId(JsonField.of(requestId))
+
+                /**
+                 * Sets [Builder.requestId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.requestId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun requestId(requestId: JsonField<String>) = apply { this.requestId = requestId }
+
+                /** The turn that requested approval. */
+                fun turnId(turnId: String) = turnId(JsonField.of(turnId))
+
+                /**
+                 * Sets [Builder.turnId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.turnId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun turnId(turnId: JsonField<String>) = apply { this.turnId = turnId }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("computer_use_approval_request")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [ComputerUseApprovalRequest].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .request()
+                 * .requestId()
+                 * .turnId()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): ComputerUseApprovalRequest =
+                    ComputerUseApprovalRequest(
+                        checkRequired("request", request),
+                        checkRequired("requestId", requestId),
+                        checkRequired("turnId", turnId),
+                        type,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): ComputerUseApprovalRequest = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                request().validate()
+                requestId()
+                turnId()
+                _type().let {
+                    if (it != JsonValue.from("computer_use_approval_request")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (request.asKnown().getOrNull()?.validity() ?: 0) +
+                    (if (requestId.asKnown().isPresent) 1 else 0) +
+                    (if (turnId.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("computer_use_approval_request")) 1 else 0 }
+
+            /** The information needed to render the request. */
+            @JsonDeserialize(using = Request.Deserializer::class)
+            @JsonSerialize(using = Request.Serializer::class)
+            class Request
+            private constructor(
+                private val browserAuthentication: BrowserAuthentication? = null,
+                private val browserOriginAccess: BrowserOriginAccess? = null,
+                private val _json: JsonValue? = null,
+            ) {
+
+                /** A registered form awaiting the application's response. */
+                fun browserAuthentication(): Optional<BrowserAuthentication> =
+                    Optional.ofNullable(browserAuthentication)
+
+                /** A browser origin awaiting the application's approval decision. */
+                fun browserOriginAccess(): Optional<BrowserOriginAccess> =
+                    Optional.ofNullable(browserOriginAccess)
+
+                fun isBrowserAuthentication(): Boolean = browserAuthentication != null
+
+                fun isBrowserOriginAccess(): Boolean = browserOriginAccess != null
+
+                /** A registered form awaiting the application's response. */
+                fun asBrowserAuthentication(): BrowserAuthentication =
+                    browserAuthentication.getOrThrow("browserAuthentication")
+
+                /** A browser origin awaiting the application's approval decision. */
+                fun asBrowserOriginAccess(): BrowserOriginAccess =
+                    browserOriginAccess.getOrThrow("browserOriginAccess")
+
+                fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                /**
+                 * Maps this instance's current variant to a value of type [T] using the given
+                 * [visitor].
+                 *
+                 * Note that this method is _not_ forwards compatible with new variants from the
+                 * API, unless [visitor] overrides [Visitor.unknown]. To handle variants not known
+                 * to this version of the SDK gracefully, consider overriding [Visitor.unknown]:
+                 * ```java
+                 * import com.openai.core.JsonValue;
+                 * import java.util.Optional;
+                 *
+                 * Optional<String> result = request.accept(new Request.Visitor<Optional<String>>() {
+                 *     @Override
+                 *     public Optional<String> visitBrowserAuthentication(BrowserAuthentication browserAuthentication) {
+                 *         return Optional.of(browserAuthentication.toString());
+                 *     }
+                 *
+                 *     // ...
+                 *
+                 *     @Override
+                 *     public Optional<String> unknown(JsonValue json) {
+                 *         // Or inspect the `json`.
+                 *         return Optional.empty();
+                 *     }
+                 * });
+                 * ```
+                 *
+                 * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+                 *   [visitor] and the current variant is unknown.
+                 */
+                fun <T> accept(visitor: Visitor<T>): T =
+                    when {
+                        browserAuthentication != null ->
+                            visitor.visitBrowserAuthentication(browserAuthentication)
+                        browserOriginAccess != null ->
+                            visitor.visitBrowserOriginAccess(browserOriginAccess)
+                        else -> visitor.unknown(_json)
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Request = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    accept(
+                        object : Visitor<Unit> {
+                            override fun visitBrowserAuthentication(
+                                browserAuthentication: BrowserAuthentication
+                            ) {
+                                browserAuthentication.validate()
+                            }
+
+                            override fun visitBrowserOriginAccess(
+                                browserOriginAccess: BrowserOriginAccess
+                            ) {
+                                browserOriginAccess.validate()
+                            }
+                        }
+                    )
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    accept(
+                        object : Visitor<Int> {
+                            override fun visitBrowserAuthentication(
+                                browserAuthentication: BrowserAuthentication
+                            ) = browserAuthentication.validity()
+
+                            override fun visitBrowserOriginAccess(
+                                browserOriginAccess: BrowserOriginAccess
+                            ) = browserOriginAccess.validity()
+
+                            override fun unknown(json: JsonValue?) = 0
+                        }
+                    )
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Request &&
+                        browserAuthentication == other.browserAuthentication &&
+                        browserOriginAccess == other.browserOriginAccess
+                }
+
+                override fun hashCode(): Int =
+                    Objects.hash(browserAuthentication, browserOriginAccess)
+
+                override fun toString(): String =
+                    when {
+                        browserAuthentication != null ->
+                            "Request{browserAuthentication=$browserAuthentication}"
+                        browserOriginAccess != null ->
+                            "Request{browserOriginAccess=$browserOriginAccess}"
+                        _json != null -> "Request{_unknown=$_json}"
+                        else -> throw IllegalStateException("Invalid Request")
+                    }
+
+                companion object {
+
+                    /** A registered form awaiting the application's response. */
+                    @JvmStatic
+                    fun ofBrowserAuthentication(browserAuthentication: BrowserAuthentication) =
+                        Request(browserAuthentication = browserAuthentication)
+
+                    /** A browser origin awaiting the application's approval decision. */
+                    @JvmStatic
+                    fun ofBrowserOriginAccess(browserOriginAccess: BrowserOriginAccess) =
+                        Request(browserOriginAccess = browserOriginAccess)
+                }
+
+                /**
+                 * An interface that defines how to map each variant of [Request] to a value of type
+                 * [T].
+                 */
+                interface Visitor<out T> {
+
+                    /** A registered form awaiting the application's response. */
+                    fun visitBrowserAuthentication(browserAuthentication: BrowserAuthentication): T
+
+                    /** A browser origin awaiting the application's approval decision. */
+                    fun visitBrowserOriginAccess(browserOriginAccess: BrowserOriginAccess): T
+
+                    /**
+                     * Maps an unknown variant of [Request] to a value of type [T].
+                     *
+                     * An instance of [Request] can contain an unknown variant if it was
+                     * deserialized from data that doesn't match any known variant. For example, if
+                     * the SDK is on an older version than the API, then the API may respond with
+                     * new variants that the SDK is unaware of.
+                     *
+                     * @throws OpenAIInvalidDataException in the default implementation.
+                     */
+                    fun unknown(json: JsonValue?): T {
+                        throw OpenAIInvalidDataException("Unknown Request")
+                    }
+                }
+
+                internal class Deserializer : BaseDeserializer<Request>(Request::class) {
+
+                    override fun ObjectCodec.deserialize(node: JsonNode): Request {
+                        val json = JsonValue.fromJsonNode(node)
+                        val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                        when (type) {
+                            "browser_authentication" -> {
+                                return tryDeserialize(node, jacksonTypeRef<BrowserAuthentication>())
+                                    ?.let { Request(browserAuthentication = it, _json = json) }
+                                    ?: Request(_json = json)
+                            }
+                            "browser_origin_access" -> {
+                                return tryDeserialize(node, jacksonTypeRef<BrowserOriginAccess>())
+                                    ?.let { Request(browserOriginAccess = it, _json = json) }
+                                    ?: Request(_json = json)
+                            }
+                        }
+
+                        return Request(_json = json)
+                    }
+                }
+
+                internal class Serializer : BaseSerializer<Request>(Request::class) {
+
+                    override fun serialize(
+                        value: Request,
+                        generator: JsonGenerator,
+                        provider: SerializerProvider,
+                    ) {
+                        when {
+                            value.browserAuthentication != null ->
+                                generator.writeObject(value.browserAuthentication)
+                            value.browserOriginAccess != null ->
+                                generator.writeObject(value.browserOriginAccess)
+                            value._json != null -> generator.writeObject(value._json)
+                            else -> throw IllegalStateException("Invalid Request")
+                        }
+                    }
+                }
+
+                /** A registered form awaiting the application's response. */
+                class BrowserAuthentication
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                private constructor(
+                    private val credentialOrigin: JsonField<String>,
+                    private val fields: JsonField<List<Field>>,
+                    private val options: JsonField<List<Option>>,
+                    private val reason: JsonField<String>,
+                    private val type: JsonValue,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("credential_origin")
+                        @ExcludeMissing
+                        credentialOrigin: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("fields")
+                        @ExcludeMissing
+                        fields: JsonField<List<Field>> = JsonMissing.of(),
+                        @JsonProperty("options")
+                        @ExcludeMissing
+                        options: JsonField<List<Option>> = JsonMissing.of(),
+                        @JsonProperty("reason")
+                        @ExcludeMissing
+                        reason: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                    ) : this(credentialOrigin, fields, options, reason, type, mutableMapOf())
+
+                    /**
+                     * The registered form or frame origin where values will be entered.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun credentialOrigin(): Optional<String> =
+                        credentialOrigin.getOptional("credential_origin")
+
+                    /**
+                     * Controls to render. All submitted values are sensitive.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun fields(): List<Field> = fields.getRequired("fields")
+
+                    /**
+                     * Sign-in methods. Empty for a plain form.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun options(): List<Option> = options.getRequired("options")
+
+                    /**
+                     * Why the agent needs the user to sign in.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun reason(): Optional<String> = reason.getOptional("reason")
+
+                    /**
+                     * The type of the object. Always `browser_authentication`.
+                     *
+                     * Expected to always return the following:
+                     * ```java
+                     * JsonValue.from("browser_authentication")
+                     * ```
+                     *
+                     * However, this method can be useful for debugging and logging (e.g. if the
+                     * server responded with an unexpected value).
+                     */
+                    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                    /**
+                     * Returns the raw JSON value of [credentialOrigin].
+                     *
+                     * Unlike [credentialOrigin], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("credential_origin")
+                    @ExcludeMissing
+                    fun _credentialOrigin(): JsonField<String> = credentialOrigin
+
+                    /**
+                     * Returns the raw JSON value of [fields].
+                     *
+                     * Unlike [fields], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("fields")
+                    @ExcludeMissing
+                    fun _fields(): JsonField<List<Field>> = fields
+
+                    /**
+                     * Returns the raw JSON value of [options].
+                     *
+                     * Unlike [options], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("options")
+                    @ExcludeMissing
+                    fun _options(): JsonField<List<Option>> = options
+
+                    /**
+                     * Returns the raw JSON value of [reason].
+                     *
+                     * Unlike [reason], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("reason")
+                    @ExcludeMissing
+                    fun _reason(): JsonField<String> = reason
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /**
+                         * Returns a mutable builder for constructing an instance of
+                         * [BrowserAuthentication].
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .credentialOrigin()
+                         * .fields()
+                         * .options()
+                         * .reason()
+                         * ```
+                         */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [BrowserAuthentication]. */
+                    class Builder internal constructor() {
+
+                        private var credentialOrigin: JsonField<String>? = null
+                        private var fields: JsonField<MutableList<Field>>? = null
+                        private var options: JsonField<MutableList<Option>>? = null
+                        private var reason: JsonField<String>? = null
+                        private var type: JsonValue = JsonValue.from("browser_authentication")
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(browserAuthentication: BrowserAuthentication) = apply {
+                            credentialOrigin = browserAuthentication.credentialOrigin
+                            fields = browserAuthentication.fields.map { it.toMutableList() }
+                            options = browserAuthentication.options.map { it.toMutableList() }
+                            reason = browserAuthentication.reason
+                            type = browserAuthentication.type
+                            additionalProperties =
+                                browserAuthentication.additionalProperties.toMutableMap()
+                        }
+
+                        /** The registered form or frame origin where values will be entered. */
+                        fun credentialOrigin(credentialOrigin: String?) =
+                            credentialOrigin(JsonField.ofNullable(credentialOrigin))
+
+                        /**
+                         * Alias for calling [Builder.credentialOrigin] with
+                         * `credentialOrigin.orElse(null)`.
+                         */
+                        fun credentialOrigin(credentialOrigin: Optional<String>) =
+                            credentialOrigin(credentialOrigin.getOrNull())
+
+                        /**
+                         * Sets [Builder.credentialOrigin] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.credentialOrigin] with a well-typed
+                         * [String] value instead. This method is primarily for setting the field to
+                         * an undocumented or not yet supported value.
+                         */
+                        fun credentialOrigin(credentialOrigin: JsonField<String>) = apply {
+                            this.credentialOrigin = credentialOrigin
+                        }
+
+                        /** Controls to render. All submitted values are sensitive. */
+                        fun fields(fields: List<Field>) = fields(JsonField.of(fields))
+
+                        /**
+                         * Sets [Builder.fields] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.fields] with a well-typed `List<Field>`
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun fields(fields: JsonField<List<Field>>) = apply {
+                            this.fields = fields.map { it.toMutableList() }
+                        }
+
+                        /**
+                         * Adds a single [Field] to [fields].
+                         *
+                         * @throws IllegalStateException if the field was previously set to a
+                         *   non-list.
+                         */
+                        fun addField(field: Field) = apply {
+                            fields =
+                                (fields ?: JsonField.of(mutableListOf())).also {
+                                    checkKnown("fields", it).add(field)
+                                }
+                        }
+
+                        /** Sign-in methods. Empty for a plain form. */
+                        fun options(options: List<Option>) = options(JsonField.of(options))
+
+                        /**
+                         * Sets [Builder.options] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.options] with a well-typed
+                         * `List<Option>` value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
+                        fun options(options: JsonField<List<Option>>) = apply {
+                            this.options = options.map { it.toMutableList() }
+                        }
+
+                        /**
+                         * Adds a single [Option] to [options].
+                         *
+                         * @throws IllegalStateException if the field was previously set to a
+                         *   non-list.
+                         */
+                        fun addOption(option: Option) = apply {
+                            options =
+                                (options ?: JsonField.of(mutableListOf())).also {
+                                    checkKnown("options", it).add(option)
+                                }
+                        }
+
+                        /** Why the agent needs the user to sign in. */
+                        fun reason(reason: String?) = reason(JsonField.ofNullable(reason))
+
+                        /** Alias for calling [Builder.reason] with `reason.orElse(null)`. */
+                        fun reason(reason: Optional<String>) = reason(reason.getOrNull())
+
+                        /**
+                         * Sets [Builder.reason] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.reason] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun reason(reason: JsonField<String>) = apply { this.reason = reason }
+
+                        /**
+                         * Sets the field to an arbitrary JSON value.
+                         *
+                         * It is usually unnecessary to call this method because the field defaults
+                         * to the following:
+                         * ```java
+                         * JsonValue.from("browser_authentication")
+                         * ```
+                         *
+                         * This method is primarily for setting the field to an undocumented or not
+                         * yet supported value.
+                         */
+                        fun type(type: JsonValue) = apply { this.type = type }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [BrowserAuthentication].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .credentialOrigin()
+                         * .fields()
+                         * .options()
+                         * .reason()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
+                        fun build(): BrowserAuthentication =
+                            BrowserAuthentication(
+                                checkRequired("credentialOrigin", credentialOrigin),
+                                checkRequired("fields", fields).map { it.toImmutable() },
+                                checkRequired("options", options).map { it.toImmutable() },
+                                checkRequired("reason", reason),
+                                type,
+                                additionalProperties.toMutableMap(),
+                            )
+                    }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): BrowserAuthentication = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        credentialOrigin()
+                        fields().forEach { it.validate() }
+                        options().forEach { it.validate() }
+                        reason()
+                        _type().let {
+                            if (it != JsonValue.from("browser_authentication")) {
+                                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                            }
+                        }
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        (if (credentialOrigin.asKnown().isPresent) 1 else 0) +
+                            (fields.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                            (options.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                            (if (reason.asKnown().isPresent) 1 else 0) +
+                            type.let {
+                                if (it == JsonValue.from("browser_authentication")) 1 else 0
+                            }
+
+                    /** A control in a registered browser-login form. */
+                    class Field
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                    private constructor(
+                        private val id: JsonField<String>,
+                        private val label: JsonField<String>,
+                        private val required: JsonField<Boolean>,
+                        private val type: JsonField<String>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
+                    ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("id")
+                            @ExcludeMissing
+                            id: JsonField<String> = JsonMissing.of(),
+                            @JsonProperty("label")
+                            @ExcludeMissing
+                            label: JsonField<String> = JsonMissing.of(),
+                            @JsonProperty("required")
+                            @ExcludeMissing
+                            required: JsonField<Boolean> = JsonMissing.of(),
+                            @JsonProperty("type")
+                            @ExcludeMissing
+                            type: JsonField<String> = JsonMissing.of(),
+                        ) : this(id, label, required, type, mutableMapOf())
+
+                        /**
+                         * The field ID to submit as field_id in a fields entry.
+                         *
+                         * @throws OpenAIInvalidDataException if the JSON field has an unexpected
+                         *   type or is unexpectedly missing or null (e.g. if the server responded
+                         *   with an unexpected value).
+                         */
+                        fun id(): String = id.getRequired("id")
+
+                        /**
+                         * The label to display beside the control.
+                         *
+                         * @throws OpenAIInvalidDataException if the JSON field has an unexpected
+                         *   type or is unexpectedly missing or null (e.g. if the server responded
+                         *   with an unexpected value).
+                         */
+                        fun label(): String = label.getRequired("label")
+
+                        /**
+                         * Whether this control requires a nonempty value.
+                         *
+                         * @throws OpenAIInvalidDataException if the JSON field has an unexpected
+                         *   type or is unexpectedly missing or null (e.g. if the server responded
+                         *   with an unexpected value).
+                         */
+                        fun required(): Boolean = required.getRequired("required")
+
+                        /**
+                         * The rendering type, such as email, password, or text.
+                         *
+                         * @throws OpenAIInvalidDataException if the JSON field has an unexpected
+                         *   type or is unexpectedly missing or null (e.g. if the server responded
+                         *   with an unexpected value).
+                         */
+                        fun type(): String = type.getRequired("type")
+
+                        /**
+                         * Returns the raw JSON value of [id].
+                         *
+                         * Unlike [id], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+                        /**
+                         * Returns the raw JSON value of [label].
+                         *
+                         * Unlike [label], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("label")
+                        @ExcludeMissing
+                        fun _label(): JsonField<String> = label
+
+                        /**
+                         * Returns the raw JSON value of [required].
+                         *
+                         * Unlike [required], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("required")
+                        @ExcludeMissing
+                        fun _required(): JsonField<Boolean> = required
+
+                        /**
+                         * Returns the raw JSON value of [type].
+                         *
+                         * Unlike [type], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
+
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
+                        @JsonAnyGetter
+                        @ExcludeMissing
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
+
+                        fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of [Field].
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .id()
+                             * .label()
+                             * .required()
+                             * .type()
+                             * ```
+                             */
+                            @JvmStatic fun builder() = Builder()
+                        }
+
+                        /** A builder for [Field]. */
+                        class Builder internal constructor() {
+
+                            private var id: JsonField<String>? = null
+                            private var label: JsonField<String>? = null
+                            private var required: JsonField<Boolean>? = null
+                            private var type: JsonField<String>? = null
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            @JvmSynthetic
+                            internal fun from(field: Field) = apply {
+                                id = field.id
+                                label = field.label
+                                required = field.required
+                                type = field.type
+                                additionalProperties = field.additionalProperties.toMutableMap()
+                            }
+
+                            /** The field ID to submit as field_id in a fields entry. */
+                            fun id(id: String) = id(JsonField.of(id))
+
+                            /**
+                             * Sets [Builder.id] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.id] with a well-typed [String] value
+                             * instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
+                            fun id(id: JsonField<String>) = apply { this.id = id }
+
+                            /** The label to display beside the control. */
+                            fun label(label: String) = label(JsonField.of(label))
+
+                            /**
+                             * Sets [Builder.label] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.label] with a well-typed [String]
+                             * value instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
+                            fun label(label: JsonField<String>) = apply { this.label = label }
+
+                            /** Whether this control requires a nonempty value. */
+                            fun required(required: Boolean) = required(JsonField.of(required))
+
+                            /**
+                             * Sets [Builder.required] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.required] with a well-typed
+                             * [Boolean] value instead. This method is primarily for setting the
+                             * field to an undocumented or not yet supported value.
+                             */
+                            fun required(required: JsonField<Boolean>) = apply {
+                                this.required = required
+                            }
+
+                            /** The rendering type, such as email, password, or text. */
+                            fun type(type: String) = type(JsonField.of(type))
+
+                            /**
+                             * Sets [Builder.type] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.type] with a well-typed [String]
+                             * value instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
+                            fun type(type: JsonField<String>) = apply { this.type = type }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            /**
+                             * Returns an immutable instance of [Field].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .id()
+                             * .label()
+                             * .required()
+                             * .type()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
+                            fun build(): Field =
+                                Field(
+                                    checkRequired("id", id),
+                                    checkRequired("label", label),
+                                    checkRequired("required", required),
+                                    checkRequired("type", type),
+                                    additionalProperties.toMutableMap(),
+                                )
+                        }
+
+                        private var validated: Boolean = false
+
+                        /**
+                         * Validates that the types of all values in this object match their
+                         * expected types recursively.
+                         *
+                         * This method is _not_ forwards compatible with new types from the API for
+                         * existing fields.
+                         *
+                         * @throws OpenAIInvalidDataException if any value type in this object
+                         *   doesn't match its expected type.
+                         */
+                        fun validate(): Field = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            id()
+                            label()
+                            required()
+                            type()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            (if (id.asKnown().isPresent) 1 else 0) +
+                                (if (label.asKnown().isPresent) 1 else 0) +
+                                (if (required.asKnown().isPresent) 1 else 0) +
+                                (if (type.asKnown().isPresent) 1 else 0)
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is Field &&
+                                id == other.id &&
+                                label == other.label &&
+                                required == other.required &&
+                                type == other.type &&
+                                additionalProperties == other.additionalProperties
+                        }
+
+                        private val hashCode: Int by lazy {
+                            Objects.hash(id, label, required, type, additionalProperties)
+                        }
+
+                        override fun hashCode(): Int = hashCode
+
+                        override fun toString() =
+                            "Field{id=$id, label=$label, required=$required, type=$type, additionalProperties=$additionalProperties}"
+                    }
+
+                    /** A sign-in method and the fields that belong to it. */
+                    class Option
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                    private constructor(
+                        private val id: JsonField<String>,
+                        private val fieldIds: JsonField<List<String>>,
+                        private val label: JsonField<String>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
+                    ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("id")
+                            @ExcludeMissing
+                            id: JsonField<String> = JsonMissing.of(),
+                            @JsonProperty("field_ids")
+                            @ExcludeMissing
+                            fieldIds: JsonField<List<String>> = JsonMissing.of(),
+                            @JsonProperty("label")
+                            @ExcludeMissing
+                            label: JsonField<String> = JsonMissing.of(),
+                        ) : this(id, fieldIds, label, mutableMapOf())
+
+                        /**
+                         * The option ID to submit as selected_option.
+                         *
+                         * @throws OpenAIInvalidDataException if the JSON field has an unexpected
+                         *   type or is unexpectedly missing or null (e.g. if the server responded
+                         *   with an unexpected value).
+                         */
+                        fun id(): String = id.getRequired("id")
+
+                        /**
+                         * IDs from the registered fields that this method accepts.
+                         *
+                         * @throws OpenAIInvalidDataException if the JSON field has an unexpected
+                         *   type or is unexpectedly missing or null (e.g. if the server responded
+                         *   with an unexpected value).
+                         */
+                        fun fieldIds(): List<String> = fieldIds.getRequired("field_ids")
+
+                        /**
+                         * The method label to display.
+                         *
+                         * @throws OpenAIInvalidDataException if the JSON field has an unexpected
+                         *   type or is unexpectedly missing or null (e.g. if the server responded
+                         *   with an unexpected value).
+                         */
+                        fun label(): String = label.getRequired("label")
+
+                        /**
+                         * Returns the raw JSON value of [id].
+                         *
+                         * Unlike [id], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+                        /**
+                         * Returns the raw JSON value of [fieldIds].
+                         *
+                         * Unlike [fieldIds], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("field_ids")
+                        @ExcludeMissing
+                        fun _fieldIds(): JsonField<List<String>> = fieldIds
+
+                        /**
+                         * Returns the raw JSON value of [label].
+                         *
+                         * Unlike [label], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("label")
+                        @ExcludeMissing
+                        fun _label(): JsonField<String> = label
+
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
+                        @JsonAnyGetter
+                        @ExcludeMissing
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
+
+                        fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of [Option].
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .id()
+                             * .fieldIds()
+                             * .label()
+                             * ```
+                             */
+                            @JvmStatic fun builder() = Builder()
+                        }
+
+                        /** A builder for [Option]. */
+                        class Builder internal constructor() {
+
+                            private var id: JsonField<String>? = null
+                            private var fieldIds: JsonField<MutableList<String>>? = null
+                            private var label: JsonField<String>? = null
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            @JvmSynthetic
+                            internal fun from(option: Option) = apply {
+                                id = option.id
+                                fieldIds = option.fieldIds.map { it.toMutableList() }
+                                label = option.label
+                                additionalProperties = option.additionalProperties.toMutableMap()
+                            }
+
+                            /** The option ID to submit as selected_option. */
+                            fun id(id: String) = id(JsonField.of(id))
+
+                            /**
+                             * Sets [Builder.id] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.id] with a well-typed [String] value
+                             * instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
+                            fun id(id: JsonField<String>) = apply { this.id = id }
+
+                            /** IDs from the registered fields that this method accepts. */
+                            fun fieldIds(fieldIds: List<String>) = fieldIds(JsonField.of(fieldIds))
+
+                            /**
+                             * Sets [Builder.fieldIds] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.fieldIds] with a well-typed
+                             * `List<String>` value instead. This method is primarily for setting
+                             * the field to an undocumented or not yet supported value.
+                             */
+                            fun fieldIds(fieldIds: JsonField<List<String>>) = apply {
+                                this.fieldIds = fieldIds.map { it.toMutableList() }
+                            }
+
+                            /**
+                             * Adds a single [String] to [fieldIds].
+                             *
+                             * @throws IllegalStateException if the field was previously set to a
+                             *   non-list.
+                             */
+                            fun addFieldId(fieldId: String) = apply {
+                                fieldIds =
+                                    (fieldIds ?: JsonField.of(mutableListOf())).also {
+                                        checkKnown("fieldIds", it).add(fieldId)
+                                    }
+                            }
+
+                            /** The method label to display. */
+                            fun label(label: String) = label(JsonField.of(label))
+
+                            /**
+                             * Sets [Builder.label] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.label] with a well-typed [String]
+                             * value instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
+                            fun label(label: JsonField<String>) = apply { this.label = label }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            /**
+                             * Returns an immutable instance of [Option].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .id()
+                             * .fieldIds()
+                             * .label()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
+                            fun build(): Option =
+                                Option(
+                                    checkRequired("id", id),
+                                    checkRequired("fieldIds", fieldIds).map { it.toImmutable() },
+                                    checkRequired("label", label),
+                                    additionalProperties.toMutableMap(),
+                                )
+                        }
+
+                        private var validated: Boolean = false
+
+                        /**
+                         * Validates that the types of all values in this object match their
+                         * expected types recursively.
+                         *
+                         * This method is _not_ forwards compatible with new types from the API for
+                         * existing fields.
+                         *
+                         * @throws OpenAIInvalidDataException if any value type in this object
+                         *   doesn't match its expected type.
+                         */
+                        fun validate(): Option = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            id()
+                            fieldIds()
+                            label()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            (if (id.asKnown().isPresent) 1 else 0) +
+                                (fieldIds.asKnown().getOrNull()?.size ?: 0) +
+                                (if (label.asKnown().isPresent) 1 else 0)
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is Option &&
+                                id == other.id &&
+                                fieldIds == other.fieldIds &&
+                                label == other.label &&
+                                additionalProperties == other.additionalProperties
+                        }
+
+                        private val hashCode: Int by lazy {
+                            Objects.hash(id, fieldIds, label, additionalProperties)
+                        }
+
+                        override fun hashCode(): Int = hashCode
+
+                        override fun toString() =
+                            "Option{id=$id, fieldIds=$fieldIds, label=$label, additionalProperties=$additionalProperties}"
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is BrowserAuthentication &&
+                            credentialOrigin == other.credentialOrigin &&
+                            fields == other.fields &&
+                            options == other.options &&
+                            reason == other.reason &&
+                            type == other.type &&
+                            additionalProperties == other.additionalProperties
+                    }
+
+                    private val hashCode: Int by lazy {
+                        Objects.hash(
+                            credentialOrigin,
+                            fields,
+                            options,
+                            reason,
+                            type,
+                            additionalProperties,
+                        )
+                    }
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() =
+                        "BrowserAuthentication{credentialOrigin=$credentialOrigin, fields=$fields, options=$options, reason=$reason, type=$type, additionalProperties=$additionalProperties}"
+                }
+
+                /** A browser origin awaiting the application's approval decision. */
+                class BrowserOriginAccess
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                private constructor(
+                    private val origin: JsonField<String>,
+                    private val reason: JsonField<String>,
+                    private val type: JsonValue,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("origin")
+                        @ExcludeMissing
+                        origin: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("reason")
+                        @ExcludeMissing
+                        reason: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                    ) : this(origin, reason, type, mutableMapOf())
+
+                    /**
+                     * The origin the browser needs permission to access.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun origin(): String = origin.getRequired("origin")
+
+                    /**
+                     * The browser's explanation for this request, or null when unavailable.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun reason(): Optional<String> = reason.getOptional("reason")
+
+                    /**
+                     * The type of the object. Always `browser_origin_access`.
+                     *
+                     * Expected to always return the following:
+                     * ```java
+                     * JsonValue.from("browser_origin_access")
+                     * ```
+                     *
+                     * However, this method can be useful for debugging and logging (e.g. if the
+                     * server responded with an unexpected value).
+                     */
+                    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                    /**
+                     * Returns the raw JSON value of [origin].
+                     *
+                     * Unlike [origin], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("origin")
+                    @ExcludeMissing
+                    fun _origin(): JsonField<String> = origin
+
+                    /**
+                     * Returns the raw JSON value of [reason].
+                     *
+                     * Unlike [reason], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("reason")
+                    @ExcludeMissing
+                    fun _reason(): JsonField<String> = reason
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /**
+                         * Returns a mutable builder for constructing an instance of
+                         * [BrowserOriginAccess].
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .origin()
+                         * .reason()
+                         * ```
+                         */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [BrowserOriginAccess]. */
+                    class Builder internal constructor() {
+
+                        private var origin: JsonField<String>? = null
+                        private var reason: JsonField<String>? = null
+                        private var type: JsonValue = JsonValue.from("browser_origin_access")
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(browserOriginAccess: BrowserOriginAccess) = apply {
+                            origin = browserOriginAccess.origin
+                            reason = browserOriginAccess.reason
+                            type = browserOriginAccess.type
+                            additionalProperties =
+                                browserOriginAccess.additionalProperties.toMutableMap()
+                        }
+
+                        /** The origin the browser needs permission to access. */
+                        fun origin(origin: String) = origin(JsonField.of(origin))
+
+                        /**
+                         * Sets [Builder.origin] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.origin] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun origin(origin: JsonField<String>) = apply { this.origin = origin }
+
+                        /** The browser's explanation for this request, or null when unavailable. */
+                        fun reason(reason: String?) = reason(JsonField.ofNullable(reason))
+
+                        /** Alias for calling [Builder.reason] with `reason.orElse(null)`. */
+                        fun reason(reason: Optional<String>) = reason(reason.getOrNull())
+
+                        /**
+                         * Sets [Builder.reason] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.reason] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun reason(reason: JsonField<String>) = apply { this.reason = reason }
+
+                        /**
+                         * Sets the field to an arbitrary JSON value.
+                         *
+                         * It is usually unnecessary to call this method because the field defaults
+                         * to the following:
+                         * ```java
+                         * JsonValue.from("browser_origin_access")
+                         * ```
+                         *
+                         * This method is primarily for setting the field to an undocumented or not
+                         * yet supported value.
+                         */
+                        fun type(type: JsonValue) = apply { this.type = type }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [BrowserOriginAccess].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .origin()
+                         * .reason()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
+                        fun build(): BrowserOriginAccess =
+                            BrowserOriginAccess(
+                                checkRequired("origin", origin),
+                                checkRequired("reason", reason),
+                                type,
+                                additionalProperties.toMutableMap(),
+                            )
+                    }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): BrowserOriginAccess = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        origin()
+                        reason()
+                        _type().let {
+                            if (it != JsonValue.from("browser_origin_access")) {
+                                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                            }
+                        }
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        (if (origin.asKnown().isPresent) 1 else 0) +
+                            (if (reason.asKnown().isPresent) 1 else 0) +
+                            type.let { if (it == JsonValue.from("browser_origin_access")) 1 else 0 }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is BrowserOriginAccess &&
+                            origin == other.origin &&
+                            reason == other.reason &&
+                            type == other.type &&
+                            additionalProperties == other.additionalProperties
+                    }
+
+                    private val hashCode: Int by lazy {
+                        Objects.hash(origin, reason, type, additionalProperties)
+                    }
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() =
+                        "BrowserOriginAccess{origin=$origin, reason=$reason, type=$type, additionalProperties=$additionalProperties}"
+                }
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is ComputerUseApprovalRequest &&
+                    request == other.request &&
+                    requestId == other.requestId &&
+                    turnId == other.turnId &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(request, requestId, turnId, type, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "ComputerUseApprovalRequest{request=$request, requestId=$requestId, turnId=$turnId, type=$type, additionalProperties=$additionalProperties}"
         }
 
         /** Run a function tool and submit its result. */

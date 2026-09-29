@@ -32,6 +32,7 @@ internal class TemplateServiceAsyncTest {
             templateServiceAsync.create(
                 TemplateCreateParams.builder()
                     .addCapabilityDirectory("string")
+                    .desktop(TemplateCreateParams.Desktop.builder().enabled(true).build())
                     .env(
                         TemplateCreateParams.Env.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -45,6 +46,7 @@ internal class TemplateServiceAsyncTest {
                         TemplateCreateParams.Network.builder()
                             .access(TemplateCreateParams.Network.Access.ENABLED)
                             .addAllowedDomain("string")
+                            .addBlockedDomain("string")
                             .build()
                     )
                     .packages(
@@ -108,6 +110,7 @@ internal class TemplateServiceAsyncTest {
                 TemplateUpdateParams.builder()
                     .environmentTemplateId("environment_template_id")
                     .addCapabilityDirectory("string")
+                    .desktop(TemplateUpdateParams.Desktop.builder().enabled(true).build())
                     .env(
                         TemplateUpdateParams.Env.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -121,6 +124,7 @@ internal class TemplateServiceAsyncTest {
                         TemplateUpdateParams.Network.builder()
                             .access(TemplateUpdateParams.Network.Access.ENABLED)
                             .addAllowedDomain("string")
+                            .addBlockedDomain("string")
                             .build()
                     )
                     .packages(

@@ -228,6 +228,32 @@ private constructor(
         /** Alias for calling [addData] with `AgentSessionItem.ofMcpCall(mcpCall)`. */
         fun addData(mcpCall: AgentMcpCallItem) = addData(AgentSessionItem.ofMcpCall(mcpCall))
 
+        /**
+         * Alias for calling [addData] with `AgentSessionItem.ofComputerUseCall(computerUseCall)`.
+         */
+        fun addData(computerUseCall: AgentSessionItem.ComputerUseCall) =
+            addData(AgentSessionItem.ofComputerUseCall(computerUseCall))
+
+        /**
+         * Alias for calling [addData] with
+         * `AgentSessionItem.ofComputerUseApprovalRequest(computerUseApprovalRequest)`.
+         */
+        fun addData(computerUseApprovalRequest: AgentSessionItem.ComputerUseApprovalRequest) =
+            addData(AgentSessionItem.ofComputerUseApprovalRequest(computerUseApprovalRequest))
+
+        /**
+         * Alias for calling [addData] with
+         * `AgentSessionItem.ofComputerUseApprovalRequestResult(computerUseApprovalRequestResult)`.
+         */
+        fun addData(
+            computerUseApprovalRequestResult: AgentSessionItem.ComputerUseApprovalRequestResult
+        ) =
+            addData(
+                AgentSessionItem.ofComputerUseApprovalRequestResult(
+                    computerUseApprovalRequestResult
+                )
+            )
+
         /** Alias for calling [addData] with `AgentSessionItem.ofWebSearchCall(webSearchCall)`. */
         fun addData(webSearchCall: AgentWebSearchCallItem) =
             addData(AgentSessionItem.ofWebSearchCall(webSearchCall))

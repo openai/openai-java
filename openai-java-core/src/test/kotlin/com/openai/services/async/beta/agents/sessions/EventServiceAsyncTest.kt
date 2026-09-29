@@ -9,7 +9,8 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
-import com.openai.models.beta.agents.AgentSessionInputMessageParam
+import com.openai.models.beta.agents.AgentBrowserAuthenticationSubmitParam
+import com.openai.models.beta.agents.AgentSessionInputParam
 import com.openai.models.beta.agents.sessions.events.EventCreateParams
 import com.openai.services.agentsStreamFixture
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -38,13 +39,22 @@ internal class EventServiceAsyncTest {
                 EventCreateParams.builder()
                     .sessionId("session_id")
                     .idempotencyKey("x")
-                    .addAgentSessionInputMessageEvent(
-                        listOf(
-                            AgentSessionInputMessageParam.builder()
-                                .addInputTextContent("text")
-                                .type(AgentSessionInputMessageParam.Type.MESSAGE)
-                                .build()
-                        )
+                    .addEvent(
+                        AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
+                            .builder()
+                            .requestId("request_id")
+                            .response(
+                                AgentBrowserAuthenticationSubmitParam.builder()
+                                    .addField(
+                                        AgentBrowserAuthenticationSubmitParam.Field.builder()
+                                            .fieldId("field_id")
+                                            .value("value")
+                                            .build()
+                                    )
+                                    .selectedOption("selected_option")
+                                    .build()
+                            )
+                            .build()
                     )
                     .build()
             )
