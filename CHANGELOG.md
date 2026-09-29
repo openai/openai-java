@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.72.0](https://github.com/openai/openai-java/compare/v4.71.0...v4.72.0) (2026-09-29)
+
+
+### Features
+
+* **api:** add computer use to beta agents ([#1110](https://github.com/openai/openai-java/issues/1110)) ([a9fba09](https://github.com/openai/openai-java/commit/a9fba0977e3921e772da23ffaea5b33a39e2262b))
+* **api:** add GPT-6.1 Sol model identifier ([#1109](https://github.com/openai/openai-java/issues/1109)) ([084c233](https://github.com/openai/openai-java/commit/084c233c5699f0fa8097cb3eef4f736029960ef2))
+
+
+### Bug Fixes
+
+* close multipart inputs after construction failures ([#1107](https://github.com/openai/openai-java/issues/1107)) ([6cb0f38](https://github.com/openai/openai-java/commit/6cb0f38fbfbf76ba1b8949cccd537d06975a2d32))
+
 ## [4.71.0](https://github.com/openai/openai-java/compare/v4.70.0...v4.71.0) (2026-09-29)
 
 
