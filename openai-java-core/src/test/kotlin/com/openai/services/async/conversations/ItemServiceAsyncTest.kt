@@ -2,6 +2,14 @@
 
 package com.openai.services.async.conversations
 
+import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
+import com.github.tomakehurst.wiremock.client.WireMock.findAll
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.okJson
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
+import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.models.conversations.items.ItemCreateParams
@@ -9,10 +17,15 @@ import com.openai.models.conversations.items.ItemDeleteParams
 import com.openai.models.conversations.items.ItemRetrieveParams
 import com.openai.models.responses.EasyInputMessage
 import com.openai.models.responses.ResponseIncludable
+import java.util.concurrent.atomic.AtomicInteger
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.parallel.ResourceLock
 
 @ExtendWith(TestServerExtension::class)
+@WireMockTest
+@ResourceLock("https://github.com/wiremock/wiremock/issues/169")
 internal class ItemServiceAsyncTest {
 
     @Test
@@ -66,6 +79,38 @@ internal class ItemServiceAsyncTest {
 
         val conversationItem = conversationItemFuture.get()
         conversationItem.validate()
+    }
+
+    @Test
+    fun listStopsOnExplicitFalse(wmRuntimeInfo: WireMockRuntimeInfo) {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(wmRuntimeInfo.httpBaseUrl)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        try {
+            // A terminal page can still contain items and a cursor
+            stubFor(
+                get(anyUrl())
+                    .willReturn(
+                        okJson(
+                            "{\"data\":[{\"id\":\"item_1\"}],\"has_more\":false,\"last_id\":\"item_1\"}"
+                        )
+                    )
+            )
+            val page = client.conversations().items().list("conv_123").get()
+            assertThat(page.items()).hasSize(1)
+            assertThat(page.hasNextPage()).isFalse()
+
+            val count = AtomicInteger()
+            page.autoPager().subscribe { count.incrementAndGet() }.onCompleteFuture().get()
+            assertThat(count.get()).isEqualTo(1)
+
+            assertThat(findAll(getRequestedFor(anyUrl()))).hasSize(1)
+        } finally {
+            client.close()
+        }
     }
 
     @Test
