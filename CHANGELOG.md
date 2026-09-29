@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.71.0](https://github.com/openai/openai-java/compare/v4.70.0...v4.71.0) (2026-09-29)
+
+
+### Features
+
+* **translation:** add opt-in send deadlines and capacity observation ([#1101](https://github.com/openai/openai-java/issues/1101)) ([900a553](https://github.com/openai/openai-java/commit/900a553b3245f787d77339b5d2352aae04e3674b))
+
+
+### Bug Fixes
+
+* cap server-directed retry delays at eight seconds ([#1104](https://github.com/openai/openai-java/issues/1104)) ([ea59064](https://github.com/openai/openai-java/commit/ea59064d5479f10086ba1af5a38ef4eba9dac638))
+* close non-success responses in error handler ([#1105](https://github.com/openai/openai-java/issues/1105)) ([9701a22](https://github.com/openai/openai-java/commit/9701a22c7d1b962e0dacdc3d267181010fd512b7))
+* **realtime:** unblock synchronous calls from async callbacks and preserve connection failures ([#1100](https://github.com/openai/openai-java/issues/1100)) ([8987843](https://github.com/openai/openai-java/commit/898784322b9d58e647c2c56679259416858e9f3d))
+
 ## [4.70.0](https://github.com/openai/openai-java/compare/v4.69.3...v4.70.0) (2026-09-28)
 
 
