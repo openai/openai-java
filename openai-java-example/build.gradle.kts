@@ -13,8 +13,6 @@ dependencies {
     // Keep Azure Identity's Netty runtime aligned on a secure release.
     implementation(platform("io.netty:netty-bom:4.1.137.Final"))
     implementation("com.azure:azure-identity:1.18.4")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 }
 
 tasks.withType<JavaCompile>().configureEach {
