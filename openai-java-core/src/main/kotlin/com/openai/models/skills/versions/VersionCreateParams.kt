@@ -503,7 +503,18 @@ private constructor(
         private val inputStreams: List<InputStream>? = null,
         private val inputStream: InputStream? = null,
         private val _json: JsonValue? = null,
-    ) {
+    ) : com.openai.core.http.MultipartInputStreamProvider {
+
+        @JvmSynthetic
+        override fun collectMultipartInputStreams(
+            consumer: (java.io.InputStream) -> kotlin.Unit
+        ): kotlin.Unit {
+            when {
+                this.inputStreams != null -> this.inputStreams.forEach(consumer)
+                this.inputStream != null -> consumer(this.inputStream)
+                else -> {}
+            }
+        }
 
         /** Skill files to upload (directory upload) or a single zip file. */
         fun inputStreams(): Optional<List<InputStream>> = Optional.ofNullable(inputStreams)

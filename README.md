@@ -1152,6 +1152,10 @@ FileCreateParams params = FileCreateParams.builder()
 FileObject fileObject = client.files().create(params);
 ```
 
+If serializing a multipart upload fails, the SDK attempts to close all of its input streams,
+including files it has not read yet. Rebuild the upload parameters with fresh streams before
+retrying after a serialization failure.
+
 ## Webhook Verification
 
 Verifying webhook signatures is _optional but encouraged_.

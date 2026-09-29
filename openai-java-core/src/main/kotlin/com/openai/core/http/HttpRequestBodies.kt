@@ -41,6 +41,12 @@ internal inline fun <reified T> json(jsonMapper: JsonMapper, value: T): HttpRequ
 internal fun multipartFormData(
     jsonMapper: JsonMapper,
     fields: Map<String, MultipartField<*>>,
+): HttpRequestBody =
+    MultipartInputStreams.withInputs(fields.values) { buildMultipartBody(jsonMapper, fields) }
+
+private fun buildMultipartBody(
+    jsonMapper: JsonMapper,
+    fields: Map<String, MultipartField<*>>,
 ): HttpRequestBody {
     // Only newly retained union/list streams need restoration of the serializer's abort cleanup.
     val retainedStreams = Collections.newSetFromMap(IdentityHashMap<InputStream, Boolean>())
@@ -49,7 +55,13 @@ internal fun multipartFormData(
             Collections.newSetFromMap(IdentityHashMap<InputStream, Boolean>())
         )
     fun closeStream(stream: InputStream) {
-        if (closeAttempts.add(stream)) stream.close()
+        if (closeAttempts.add(stream)) {
+            try {
+                stream.close()
+            } finally {
+                MultipartInputStreams.closeAttempted(stream)
+            }
+        }
     }
     try {
         return MultipartBody.Builder()
@@ -66,11 +78,17 @@ internal fun multipartFormData(
                             serializePart(name, node)
                         }
 
+                    val contentType = field.contentType
                     parts.forEach { (name, bytes) ->
                         val partBody =
                             if (bytes is ByteArrayInputStream) {
                                 retainedStreams.remove(bytes)
-                                val byteArray = bytes.use { it.readBytes() }
+                                val byteArray =
+                                    try {
+                                        bytes.use { it.readBytes() }
+                                    } finally {
+                                        MultipartInputStreams.closeAttempted(bytes)
+                                    }
 
                                 object : HttpRequestBody {
 
@@ -78,7 +96,7 @@ internal fun multipartFormData(
                                         outputStream.write(byteArray)
                                     }
 
-                                    override fun contentType(): String = field.contentType
+                                    override fun contentType(): String = contentType
 
                                     override fun contentLength(): Long = byteArray.size.toLong()
 
@@ -93,7 +111,7 @@ internal fun multipartFormData(
                                         bytes.copyTo(outputStream)
                                     }
 
-                                    override fun contentType(): String = field.contentType
+                                    override fun contentType(): String = contentType
 
                                     override fun contentLength(): Long = -1L
 
@@ -118,7 +136,7 @@ internal fun multipartFormData(
     } catch (failure: Throwable) {
         retainedStreams.forEach { stream ->
             try {
-                stream.close()
+                closeStream(stream)
             } catch (closeFailure: Throwable) {
                 if (closeFailure !== failure) failure.addSuppressed(closeFailure)
             }
