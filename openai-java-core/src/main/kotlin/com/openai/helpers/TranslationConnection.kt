@@ -28,7 +28,9 @@ import java.util.ArrayDeque
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executor
 import java.util.concurrent.ForkJoinPool
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -76,7 +78,16 @@ private constructor(
     private val clientOptions: ClientOptions,
     private val options: TranslationWebSocketOptions,
     private val requestOptions: RequestOptions,
+    private val timing: Timing,
 ) : AutoCloseable {
+    // Per-connection dependencies let lifecycle tests control expiry without changing global
+    // timers.
+    internal class Timing(
+        val nanoTime: () -> Long = System::nanoTime,
+        val scheduler: ScheduledExecutorService = finishTimer,
+        val finishExecutor: Executor = Executor { CompletableFuture.runAsync(it) },
+    )
+
     private val lock = Object()
     private val reader =
         clientOptions.jsonMapper
@@ -145,13 +156,22 @@ private constructor(
         ): CompletableFuture<TranslationConnection> =
             connectAsync(clientOptions, options, requestOptions, blocking = false)
 
+        @JvmSynthetic
+        internal fun connect(
+            clientOptions: ClientOptions,
+            options: TranslationWebSocketOptions,
+            timing: Timing,
+        ): TranslationConnection =
+            await(connectAsync(clientOptions, options, RequestOptions.none(), true, timing))
+
         private fun connectAsync(
             clientOptions: ClientOptions,
             options: TranslationWebSocketOptions,
             requestOptions: RequestOptions,
             blocking: Boolean,
+            timing: Timing = Timing(),
         ): CompletableFuture<TranslationConnection> {
-            val connection = TranslationConnection(clientOptions, options, requestOptions)
+            val connection = TranslationConnection(clientOptions, options, requestOptions, timing)
             val result = CompletableFuture<TranslationConnection>()
             result.whenComplete { _, _ -> if (result.isCancelled) connection.close() }
             try {
@@ -402,9 +422,9 @@ private constructor(
         // not delay delivering its timeout to the caller or block the sole receive listener.
         val result = CompletableFuture<Unit>()
         val decided = AtomicBoolean()
-        val deadline = System.nanoTime() + timeout.toNanos()
+        val deadline = timing.nanoTime() + timeout.toNanos()
         val alarm =
-            finishTimer.schedule(
+            timing.scheduler.schedule(
                 {
                     val error = TimeoutException("Translation send timed out")
                     if (decided.compareAndSet(false, true)) {
@@ -412,7 +432,7 @@ private constructor(
                         result.completeExceptionally(error)
                     }
                 },
-                maxOf(0L, deadline - System.nanoTime()),
+                maxOf(0L, deadline - timing.nanoTime()),
                 TimeUnit.NANOSECONDS,
             )
         // CompletableFuture.get on a common-pool worker may itself execute unrelated queued
@@ -465,18 +485,18 @@ private constructor(
             val active =
                 synchronized(lock) {
                     check(!closed && failure == null) { "Translation is not connected" }
-                    if (deadline != null && deadline - System.nanoTime() <= 0L)
+                    if (deadline != null && deadline - timing.nanoTime() <= 0L)
                         throw TimeoutException("Translation send timed out")
                     socket ?: throw IllegalStateException("Translation is not connected")
                 }
             if (deadline != null && active is WebSocketClient.WritableConnection)
-                active.awaitWritable(Duration.ofNanos(maxOf(1L, deadline - System.nanoTime())))
+                active.awaitWritable(Duration.ofNanos(maxOf(1L, deadline - timing.nanoTime())))
             // A caller's capacity check may block while timeout or close releases the socket.
             synchronized(lock) {
                 check(!closed && failure == null && socket === active) {
                     "Translation is not connected"
                 }
-                if (deadline != null && deadline - System.nanoTime() <= 0L)
+                if (deadline != null && deadline - timing.nanoTime() <= 0L)
                     throw TimeoutException("Translation send timed out")
             }
             try {
@@ -488,7 +508,7 @@ private constructor(
                 // this marker without needing a new interface. It may not implement readiness.
                 synchronized(lock) {
                     if (!closed && failure == null) {
-                        val remaining = deadline - System.nanoTime()
+                        val remaining = deadline - timing.nanoTime()
                         if (remaining <= 0L) throw TimeoutException("Translation send timed out")
                         TimeUnit.NANOSECONDS.timedWait(
                             lock,
@@ -519,7 +539,7 @@ private constructor(
             "Translation finish needs a positive timeout"
         }
         val nanos = timeout.toNanos()
-        val deadline = System.nanoTime() + nanos
+        val deadline = timing.nanoTime() + nanos
         val result: CompletableFuture<RealtimeTranslationSessionClosedEvent>
         synchronized(lock) {
             finishing?.let {
@@ -536,12 +556,12 @@ private constructor(
         }
         val decided = AtomicBoolean()
         val alarm =
-            finishTimer.schedule(
+            timing.scheduler.schedule(
                 {
                     if (decided.compareAndSet(false, true))
                         fail(TimeoutException("Translation finish timed out"))
                 },
-                maxOf(0L, deadline - System.nanoTime()),
+                maxOf(0L, deadline - timing.nanoTime()),
                 TimeUnit.NANOSECONDS,
             )
         result.whenComplete { _, _ ->
@@ -551,7 +571,7 @@ private constructor(
                 close()
             }
         }
-        CompletableFuture.runAsync {
+        timing.finishExecutor.execute {
             try {
                 var closeText: String? = null
                 while (true) {
@@ -563,7 +583,7 @@ private constructor(
                             failure?.let { throw it }
                             if (terminal != null) null
                             else {
-                                if (deadline - System.nanoTime() <= 0L)
+                                if (deadline - timing.nanoTime() <= 0L)
                                     throw TimeoutException("Translation finish timed out")
                                 socket
                                     ?: throw IllegalStateException("Translation is not connected")
@@ -633,7 +653,7 @@ private constructor(
                     synchronized(lock) {
                         while (!finished && failure == null) waitUntil(deadline)
                         failure?.let { throw it }
-                        if (deadline - System.nanoTime() <= 0L)
+                        if (deadline - timing.nanoTime() <= 0L)
                             throw TimeoutException("Translation finish timed out")
                         checkNotNull(terminal)
                     }
@@ -652,7 +672,7 @@ private constructor(
 
     // Must hold lock. Both calls and transport completion use the same bounded deadline.
     private fun waitUntil(deadline: Long, maximumWait: Long = Long.MAX_VALUE) {
-        val remaining = deadline - System.nanoTime()
+        val remaining = deadline - timing.nanoTime()
         if (remaining <= 0L) throw TimeoutException("Translation finish timed out")
         // Independent sessions' waits must not occupy every worker needed for message delivery
         // and terminal cleanup.
