@@ -554,6 +554,25 @@ private constructor(
         fun addTool(webSearch: PersistedAgentTool.WebSearch) =
             addTool(PersistedAgentTool.ofWebSearch(webSearch))
 
+        /** Alias for calling [addTool] with `PersistedAgentTool.ofComputerUse(computerUse)`. */
+        fun addTool(computerUse: PersistedAgentTool.ComputerUse) =
+            addTool(PersistedAgentTool.ofComputerUse(computerUse))
+
+        /**
+         * Alias for calling [addTool] with the following:
+         * ```java
+         * PersistedAgentTool.ComputerUse.builder()
+         *     .includeScreenshots(includeScreenshots)
+         *     .build()
+         * ```
+         */
+        fun addComputerUseTool(includeScreenshots: Boolean) =
+            addTool(
+                PersistedAgentTool.ComputerUse.builder()
+                    .includeScreenshots(includeScreenshots)
+                    .build()
+            )
+
         /** The Unix timestamp, in seconds, when the agent was last updated. */
         fun updatedAt(updatedAt: Long) = updatedAt(JsonField.of(updatedAt))
 

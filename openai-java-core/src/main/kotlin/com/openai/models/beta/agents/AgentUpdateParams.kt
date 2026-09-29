@@ -405,6 +405,13 @@ private constructor(
             body.addTool(webSearch)
         }
 
+        /**
+         * Alias for calling [addTool] with `PersistedAgentToolParam.ofComputerUse(computerUse)`.
+         */
+        fun addTool(computerUse: PersistedAgentToolParam.ComputerUse) = apply {
+            body.addTool(computerUse)
+        }
+
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -991,6 +998,13 @@ private constructor(
              */
             fun addTool(webSearch: PersistedAgentToolParam.WebSearch) =
                 addTool(PersistedAgentToolParam.ofWebSearch(webSearch))
+
+            /**
+             * Alias for calling [addTool] with
+             * `PersistedAgentToolParam.ofComputerUse(computerUse)`.
+             */
+            fun addTool(computerUse: PersistedAgentToolParam.ComputerUse) =
+                addTool(PersistedAgentToolParam.ofComputerUse(computerUse))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()

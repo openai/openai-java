@@ -84,6 +84,21 @@ private constructor(
                             override fun visitMcpCall(mcpCall: AgentMcpCallItem): Optional<String> =
                                 mcpCall._id().getOptional("id")
 
+                            override fun visitComputerUseCall(
+                                computerUseCall: AgentSessionItem.ComputerUseCall
+                            ): Optional<String> = computerUseCall._id().getOptional("id")
+
+                            override fun visitComputerUseApprovalRequest(
+                                computerUseApprovalRequest:
+                                    AgentSessionItem.ComputerUseApprovalRequest
+                            ): Optional<String> = computerUseApprovalRequest._id().getOptional("id")
+
+                            override fun visitComputerUseApprovalRequestResult(
+                                computerUseApprovalRequestResult:
+                                    AgentSessionItem.ComputerUseApprovalRequestResult
+                            ): Optional<String> =
+                                computerUseApprovalRequestResult._id().getOptional("id")
+
                             override fun visitWebSearchCall(
                                 webSearchCall: AgentWebSearchCallItem
                             ): Optional<String> = webSearchCall._id().getOptional("id")

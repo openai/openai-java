@@ -35,6 +35,7 @@ internal class AgentToolParamTest {
         assertThat(agentToolParam.programmaticToolCalling()).isEmpty
         assertThat(agentToolParam.mcp()).isEmpty
         assertThat(agentToolParam.webSearch()).isEmpty
+        assertThat(agentToolParam.computerUse()).isEmpty
     }
 
     @Test
@@ -73,6 +74,7 @@ internal class AgentToolParamTest {
         assertThat(agentToolParam.programmaticToolCalling()).isEmpty
         assertThat(agentToolParam.mcp()).isEmpty
         assertThat(agentToolParam.webSearch()).isEmpty
+        assertThat(agentToolParam.computerUse()).isEmpty
     }
 
     @Test
@@ -101,6 +103,7 @@ internal class AgentToolParamTest {
         assertThat(agentToolParam.programmaticToolCalling()).contains(programmaticToolCalling)
         assertThat(agentToolParam.mcp()).isEmpty
         assertThat(agentToolParam.webSearch()).isEmpty
+        assertThat(agentToolParam.computerUse()).isEmpty
     }
 
     @Test
@@ -154,6 +157,7 @@ internal class AgentToolParamTest {
         assertThat(agentToolParam.programmaticToolCalling()).isEmpty
         assertThat(agentToolParam.mcp()).contains(mcp)
         assertThat(agentToolParam.webSearch()).isEmpty
+        assertThat(agentToolParam.computerUse()).isEmpty
     }
 
     @Test
@@ -219,6 +223,7 @@ internal class AgentToolParamTest {
         assertThat(agentToolParam.programmaticToolCalling()).isEmpty
         assertThat(agentToolParam.mcp()).isEmpty
         assertThat(agentToolParam.webSearch()).contains(webSearch)
+        assertThat(agentToolParam.computerUse()).isEmpty
     }
 
     @Test
@@ -239,6 +244,37 @@ internal class AgentToolParamTest {
                     )
                     .mode(AgentToolParam.WebSearch.Mode.DISABLED)
                     .build()
+            )
+
+        val roundtrippedAgentToolParam =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(agentToolParam),
+                jacksonTypeRef<AgentToolParam>(),
+            )
+
+        assertThat(roundtrippedAgentToolParam).isEqualTo(agentToolParam)
+    }
+
+    @Test
+    fun ofComputerUse() {
+        val computerUse = AgentToolParam.ComputerUse.builder().includeScreenshots(true).build()
+
+        val agentToolParam = AgentToolParam.ofComputerUse(computerUse)
+
+        assertThat(agentToolParam.function()).isEmpty
+        assertThat(agentToolParam.toolSearch()).isEmpty
+        assertThat(agentToolParam.programmaticToolCalling()).isEmpty
+        assertThat(agentToolParam.mcp()).isEmpty
+        assertThat(agentToolParam.webSearch()).isEmpty
+        assertThat(agentToolParam.computerUse()).contains(computerUse)
+    }
+
+    @Test
+    fun ofComputerUseRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val agentToolParam =
+            AgentToolParam.ofComputerUse(
+                AgentToolParam.ComputerUse.builder().includeScreenshots(true).build()
             )
 
         val roundtrippedAgentToolParam =

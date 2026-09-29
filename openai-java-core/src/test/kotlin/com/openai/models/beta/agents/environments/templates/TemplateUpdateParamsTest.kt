@@ -19,6 +19,7 @@ internal class TemplateUpdateParamsTest {
         TemplateUpdateParams.builder()
             .environmentTemplateId("environment_template_id")
             .addCapabilityDirectory("string")
+            .desktop(TemplateUpdateParams.Desktop.builder().enabled(true).build())
             .env(
                 TemplateUpdateParams.Env.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -30,6 +31,7 @@ internal class TemplateUpdateParamsTest {
                 TemplateUpdateParams.Network.builder()
                     .access(TemplateUpdateParams.Network.Access.ENABLED)
                     .addAllowedDomain("string")
+                    .addBlockedDomain("string")
                     .build()
             )
             .packages(
@@ -69,6 +71,7 @@ internal class TemplateUpdateParamsTest {
             TemplateUpdateParams.builder()
                 .environmentTemplateId("environment_template_id")
                 .addCapabilityDirectory("string")
+                .desktop(TemplateUpdateParams.Desktop.builder().enabled(true).build())
                 .env(
                     TemplateUpdateParams.Env.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -80,6 +83,7 @@ internal class TemplateUpdateParamsTest {
                     TemplateUpdateParams.Network.builder()
                         .access(TemplateUpdateParams.Network.Access.ENABLED)
                         .addAllowedDomain("string")
+                        .addBlockedDomain("string")
                         .build()
                 )
                 .packages(
@@ -108,6 +112,8 @@ internal class TemplateUpdateParamsTest {
         val body = params._body()
 
         assertThat(body.capabilityDirectories().getOrNull()).containsExactly("string")
+        assertThat(body.desktop())
+            .contains(TemplateUpdateParams.Desktop.builder().enabled(true).build())
         assertThat(body.env())
             .contains(
                 TemplateUpdateParams.Env.builder()
@@ -126,6 +132,7 @@ internal class TemplateUpdateParamsTest {
                 TemplateUpdateParams.Network.builder()
                     .access(TemplateUpdateParams.Network.Access.ENABLED)
                     .addAllowedDomain("string")
+                    .addBlockedDomain("string")
                     .build()
             )
         assertThat(body.packages())
