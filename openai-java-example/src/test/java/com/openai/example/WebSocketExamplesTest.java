@@ -133,7 +133,8 @@ class WebSocketExamplesTest {
             assertEquals("session.input_audio.append", audio.path("type").asText());
             assertEquals(960, Base64.getDecoder().decode(audio.path("audio").asText()).length);
         }
-        assertEquals("session.close", json.readTree(commands.get(4)).path("type").asText());
+        assertEquals(
+                "session.close", json.readTree(commands.get(4)).path("type").asText());
     }
 
     private void assertPath(String path) throws Exception {
