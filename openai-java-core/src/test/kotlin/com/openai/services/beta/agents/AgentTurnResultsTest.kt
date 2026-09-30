@@ -185,6 +185,54 @@ internal class AgentTurnResultsTest {
         assertThat(failure.requiredActions()).hasSize(1)
     }
 
+    private fun manuallyResumedEvents(sessionId: String = "s") =
+        listOf(
+            turn("created"),
+            """{"type":"agent.session.requires_action","event_id":"action","session":{"id":"s","status":"requires_action","required_actions":[{"type":"function_call","name":"lookup","call_id":"call","turn_id":"root"}]}}""",
+            """{"type":"agent.session.in_progress","event_id":"resumed","session":{"id":"$sessionId","status":"in_progress"}}""",
+            message(),
+            turn("completed"),
+            idle(),
+        )
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `pending actions clear when a manually handled session resumes`(async: Boolean) {
+        Transport(manuallyResumedEvents()).client().useClient { client ->
+            if (async) {
+                val stream =
+                    AgentTurnResults.withResultCollection(
+                        client.async().beta().agents().sessions().createStreaming(createParams())
+                    )
+                val resumed = CompletableFuture<Void?>()
+                val result = resumed.thenCompose { AgentTurnResults.getFinalResult(stream) }
+                stream.subscribe { event -> if (event.isInProgress()) resumed.complete(null) }
+                assertThat(result.get(5, TimeUnit.SECONDS).outputText()).isEqualTo("Answer")
+            } else {
+                AgentTurnResults.withResultCollection(
+                        client.beta().agents().sessions().createStreaming(createParams())
+                    )
+                    .use { stream ->
+                        stream.stream().limit(3).forEach {}
+                        assertThat(AgentTurnResults.getFinalResult(stream).outputText())
+                            .isEqualTo("Answer")
+                    }
+            }
+        }
+    }
+
+    @Test
+    fun `pending actions remain when a different session resumes`() {
+        AgentTurnResults.withResultCollection(source(manuallyResumedEvents("other"))).use { stream
+            ->
+            stream.stream().limit(3).forEach {}
+            val failure =
+                catchThrowable { AgentTurnResults.getFinalResult(stream) }
+                    as AgentTurnResultException
+            assertThat(failure.reason()).isEqualTo(AgentTurnResultException.Reason.REQUIRES_ACTION)
+        }
+    }
+
     @Test
     fun `transport cause remains available`() {
         val cause = java.io.IOException("synthetic disconnect")

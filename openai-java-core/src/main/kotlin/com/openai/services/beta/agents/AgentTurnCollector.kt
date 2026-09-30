@@ -81,6 +81,9 @@ internal class AgentTurnCollector(
                             action.functionCall().getOrNull()?.name() !in handledTools
                         }
             }
+            event.inProgress().getOrNull()?.session()?.let {
+                if (it.id() == sessionId) pending = emptyList()
+            }
             event.failed().getOrNull()?.session()?.let {
                 if (sessionId == null || it.id() == sessionId) failure = error(Reason.TURN_FAILED)
             }
