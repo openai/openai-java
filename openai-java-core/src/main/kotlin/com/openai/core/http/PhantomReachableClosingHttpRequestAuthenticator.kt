@@ -12,9 +12,7 @@ import java.util.concurrent.CompletableFuture
 internal class PhantomReachableClosingHttpRequestAuthenticator(
     private val authenticator: HttpRequestAuthenticator
 ) : HttpRequestAuthenticator {
-    init {
-        closeWhenPhantomReachable(this, authenticator)
-    }
+    private val closeHandle = closeWhenPhantomReachable(this, authenticator)
 
     override fun authenticate(request: HttpRequest): HttpRequest =
         authenticator.authenticate(request)
@@ -22,5 +20,5 @@ internal class PhantomReachableClosingHttpRequestAuthenticator(
     override fun authenticateAsync(request: HttpRequest): CompletableFuture<HttpRequest> =
         authenticator.authenticateAsync(request)
 
-    override fun close() = authenticator.close()
+    override fun close() = closeHandle.close()
 }
