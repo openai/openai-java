@@ -6,7 +6,7 @@ import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.*
 import com.openai.core.jsonMapper
-import com.openai.lib.beta.agents.AgentFunctionTool
+import com.openai.helpers.beta.agents.AgentFunctionTool
 import com.openai.models.beta.agents.*
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream

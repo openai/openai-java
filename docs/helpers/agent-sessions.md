@@ -86,7 +86,7 @@ class-based SDK tools.
 ```java
 import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.openai.lib.beta.agents.AgentFunctionTool;
+import com.openai.helpers.beta.agents.AgentFunctionTool;
 
 @JsonTypeName("lookup_order")
 @JsonClassDescription("Look up an order.")
@@ -104,6 +104,7 @@ var params = AgentSessionStreamParams.builder()
 For callbacks returning a `CompletionStage`, use `AgentFunctionTool.ofAsync(...)`
 and register with `.asyncToolHandler(tool.name(), tool.handler())`. Attach either
 binding to an existing session using its hosted tool name. Application services
-and credentials stay in the closure or bound method. See
+and credentials stay in the closure or bound method. Use strings for exact decimal
+amounts, as the existing event decoder represents JSON fractions as doubles. See
 [`BetaAgentToolsExample`](../../openai-java-example/src/main/java/com/openai/example/BetaAgentToolsExample.java)
 for a read-only wallet action.

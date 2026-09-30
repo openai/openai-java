@@ -3,7 +3,7 @@ package com.openai.example;
 import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.openai.client.OpenAIClient;
-import com.openai.lib.beta.agents.AgentFunctionTool;
+import com.openai.helpers.beta.agents.AgentFunctionTool;
 import com.openai.models.beta.agents.AgentSessionStreamParams;
 import com.openai.models.beta.agents.sessions.SessionCreateParams;
 import java.util.Map;
