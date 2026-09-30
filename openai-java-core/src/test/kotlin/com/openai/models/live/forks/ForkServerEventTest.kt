@@ -1376,7 +1376,11 @@ internal class ForkServerEventTest {
     @Test
     fun ofTransportDtmfSend() {
         val transportDtmfSend =
-            ForkServerEvent.TransportDtmfSend.builder().event("#").eventId("event_id").build()
+            ForkServerEvent.TransportDtmfSend.builder()
+                .event("#")
+                .eventId("event_id")
+                .clientEventId("client_event_id")
+                .build()
 
         val forkServerEvent = ForkServerEvent.ofTransportDtmfSend(transportDtmfSend)
 
@@ -1409,7 +1413,11 @@ internal class ForkServerEventTest {
         val jsonMapper = jsonMapper()
         val forkServerEvent =
             ForkServerEvent.ofTransportDtmfSend(
-                ForkServerEvent.TransportDtmfSend.builder().event("#").eventId("event_id").build()
+                ForkServerEvent.TransportDtmfSend.builder()
+                    .event("#")
+                    .eventId("event_id")
+                    .clientEventId("client_event_id")
+                    .build()
             )
 
         val roundtrippedForkServerEvent =
