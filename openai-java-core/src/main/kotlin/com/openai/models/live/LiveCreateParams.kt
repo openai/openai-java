@@ -132,16 +132,6 @@ private constructor(
          */
         fun transport(transport: JsonField<Transport>) = apply { body.transport(transport) }
 
-        /**
-         * Alias for calling [transport] with the following:
-         * ```java
-         * Transport.builder()
-         *     .sdp(sdp)
-         *     .build()
-         * ```
-         */
-        fun webrtcTransport(sdp: String) = apply { body.webrtcTransport(sdp) }
-
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -403,16 +393,6 @@ private constructor(
              * supported value.
              */
             fun transport(transport: JsonField<Transport>) = apply { this.transport = transport }
-
-            /**
-             * Alias for calling [transport] with the following:
-             * ```java
-             * Transport.builder()
-             *     .sdp(sdp)
-             *     .build()
-             * ```
-             */
-            fun webrtcTransport(sdp: String) = transport(Transport.builder().sdp(sdp).build())
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
