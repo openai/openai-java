@@ -292,8 +292,8 @@ interface RunService {
         ): HttpResponseFor<RunDeleteResponse>
 
         /**
-         * Returns a raw HTTP response for `post /evals/{eval_id}/runs/{run_id}`, but is otherwise
-         * the same as [RunService.cancel].
+         * Returns a raw HTTP response for `post /evals/{eval_id}/runs/{run_id}/cancel`, but is
+         * otherwise the same as [RunService.cancel].
          */
         @MustBeClosed
         fun cancel(runId: String, params: RunCancelParams): HttpResponseFor<RunCancelResponse> =
