@@ -849,6 +849,64 @@ internal class LoggingHttpClientTest {
     }
 
     @Test
+    fun debugLevel_contentStreamsWithoutFallingBackToWriteTo() {
+        val bytes = "streaming body".toByteArray(StandardCharsets.UTF_8)
+        var contentCalls = 0
+        val requestBody =
+            object : HttpRequestBody {
+                override fun writeTo(outputStream: OutputStream) {
+                    error("writeTo must not be used by the content consumer")
+                }
+
+                override fun content(): InputStream {
+                    contentCalls++
+                    return bytes.inputStream()
+                }
+
+                override fun contentType(): String = "text/plain"
+
+                override fun contentLength(): Long = bytes.size.toLong()
+
+                override fun repeatable(): Boolean = false
+
+                override fun close() {}
+            }
+        val delegate =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse {
+                    request.body!!.content().use {
+                        assertThat(it.readBytes()).isEqualTo(bytes)
+                    }
+                    return fakeResponse(200, Headers.builder().build(), ByteArray(0))
+                }
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> =
+                    CompletableFuture.completedFuture(execute(request, requestOptions))
+
+                override fun close() {}
+            }
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.POST)
+                .baseUrl("https://api.example.com")
+                .addPathSegment("stream")
+                .body(requestBody)
+                .build()
+        val client = loggingClient(delegate, LogLevel.DEBUG)
+
+        client.execute(request, false).close()
+
+        assertThat(contentCalls).isEqualTo(1)
+        assertThat(stderrOutput()).contains("--> END POST (" + bytes.size + "-byte body)")
+    }
+
+    @Test
     fun builder_toBuilder_roundtrips() {
         val delegate = fakeHttpClient()
         val clock = Clock.fixed(Instant.parse("1998-04-21T00:00:00Z"), ZoneOffset.UTC)
