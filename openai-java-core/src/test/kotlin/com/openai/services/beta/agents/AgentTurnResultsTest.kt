@@ -323,6 +323,39 @@ internal class AgentTurnResultsTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
+    fun `throwing progress consumer closes source and never dispatches pending tool`(
+        collect: Boolean
+    ) {
+        val call =
+            """{"type":"agent.session.turn.item.added","event_id":"call","session_id":"s","turn_id":"root","output_index":0,"item":{"id":"call","type":"function_call","name":"lookup","call_id":"call","turn_id":"root","arguments":{},"status":"in_progress"}}"""
+        val transport =
+            Transport(listOf(turn("created"), call, message(), turn("completed"), idle()))
+        val calls = AtomicInteger()
+        val cause = IllegalStateException("consumer aborted")
+        transport.client().useClient { client ->
+            val params =
+                AgentSessionStreamParams.builder()
+                    .sessionId("s")
+                    .input("Question")
+                    .toolHandler("lookup") {
+                        calls.incrementAndGet()
+                        "Result"
+                    }
+                    .build()
+            val stream = client.beta().agents().sessions().stream(params)
+            if (collect) AgentTurnResults.withResultCollection(stream)
+            val closedBefore = transport.closed.get()
+            assertThatThrownBy { stream.stream().forEach { if (it.isTurnItemAdded()) throw cause } }
+                .isSameAs(cause)
+            assertThat(transport.closed.get()).isGreaterThan(closedBefore)
+            assertThatThrownBy { AgentTurnResults.getFinalResult(stream) }
+            assertThat(calls.get()).isZero()
+            assertThat(transport.posts.get()).isEqualTo(1)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
     fun `async creation supports getter only and subscription then getter`(subscribe: Boolean) {
         val transport = Transport()
         transport.client().useClient { client ->

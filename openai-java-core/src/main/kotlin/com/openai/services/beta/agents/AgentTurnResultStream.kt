@@ -28,7 +28,12 @@ internal class AgentTurnResultStream(
                     ) {
                     override fun tryAdvance(action: Consumer<in AgentSessionEvent>): Boolean {
                         val event = next() ?: return false
-                        action.accept(event)
+                        try {
+                            action.accept(event)
+                        } catch (cause: Throwable) {
+                            close()
+                            throw cause
+                        }
                         return true
                     }
                 },
