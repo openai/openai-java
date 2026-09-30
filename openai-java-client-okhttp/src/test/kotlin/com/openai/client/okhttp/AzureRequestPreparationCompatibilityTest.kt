@@ -4,11 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.openai.azure.AzureUrlPathMode
 import com.openai.client.OpenAIClient
 import com.openai.core.http.AsyncStreamResponse
+import com.openai.core.jsonMapper
 import com.openai.credential.BearerTokenCredential
 import com.openai.errors.InvalidResourceIdException
+import com.openai.models.ChatModel
+import com.openai.models.ResponsesModel
 import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionCreateParams
 import com.openai.models.embeddings.EmbeddingCreateParams
+import com.openai.models.responses.ResponseCreateParams
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
@@ -25,6 +29,104 @@ import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
 
 internal class AzureRequestPreparationCompatibilityTest {
+    @TestFactory
+    fun responsesModelVariantsPreserveWireNames() =
+        listOf(false, true).flatMap { async ->
+            listOf(AzureUrlPathMode.LEGACY, AzureUrlPathMode.UNIFIED).flatMap { mode ->
+                listOf(
+                        ResponseCreateParams.builder().model("gpt-5.4") to "gpt-5.4",
+                        ResponseCreateParams.builder().model(ChatModel.GPT_4O) to "gpt-4o",
+                        ResponseCreateParams.builder()
+                            .model(ResponsesModel.ResponsesOnlyModel.O1_PRO) to "o1-pro",
+                        ResponseCreateParams.builder().model(ChatModel.of("future-chat-model")) to
+                            "future-chat-model",
+                        ResponseCreateParams.builder()
+                            .model(
+                                ResponsesModel.ResponsesOnlyModel.of("future-responses-model")
+                            ) to "future-responses-model",
+                        ResponseCreateParams.builder().model("a/../b") to "a/../b",
+                        ResponseCreateParams.builder()
+                            .model(jsonMapper().readValue("123", ResponsesModel::class.java)) to
+                            null,
+                    )
+                    .map { (builder, modelName) ->
+                        dynamicTest("Responses model=$modelName mode=$mode async=$async") {
+                            withClient(mode) { server, client ->
+                                server.enqueue(
+                                    MockResponse()
+                                        .setHeader("Content-Type", "application/json")
+                                        .setBody("{}")
+                                )
+                                val params = builder.input("Hello").build()
+                                if (async) {
+                                    client
+                                        .async()
+                                        .responses()
+                                        .create(params)
+                                        .get(5, TimeUnit.SECONDS)
+                                } else {
+                                    client.responses().create(params)
+                                }
+                                val request = server.takeRequest(5, TimeUnit.SECONDS)!!
+                                val expectedSegments =
+                                    when {
+                                        mode == AzureUrlPathMode.UNIFIED ->
+                                            listOf("prefix", "responses")
+                                        modelName == null -> listOf("prefix", "openai", "responses")
+                                        else ->
+                                            listOf(
+                                                "prefix",
+                                                "openai",
+                                                "deployments",
+                                                modelName,
+                                                "responses",
+                                            )
+                                    }
+                                assertThat(request.method).isEqualTo("POST")
+                                assertThat(request.requestUrl!!.pathSegments)
+                                    .containsExactlyElementsOf(expectedSegments)
+                                val bodyModel =
+                                    ObjectMapper().readTree(request.body.readUtf8()).path("model")
+                                if (modelName == null) {
+                                    assertThat(bodyModel.isInt).isTrue()
+                                    assertThat(bodyModel.intValue()).isEqualTo(123)
+                                } else {
+                                    assertThat(bodyModel.isTextual).isTrue()
+                                    assertThat(bodyModel.asText()).isEqualTo(modelName)
+                                }
+                                assertThat(server.requestCount).isEqualTo(1)
+                            }
+                        }
+                    }
+            }
+        }
+
+    @TestFactory
+    fun invalidResponsesDeploymentIdsAreRejected() =
+        listOf(false, true).flatMap { async ->
+            listOf("", ".", "..").map { model ->
+                dynamicTest("invalid Responses deployment=$model async=$async") {
+                    withClient { server, client ->
+                        server.enqueue(
+                            MockResponse()
+                                .setHeader("Content-Type", "application/json")
+                                .setBody("{}")
+                        )
+                        val params =
+                            ResponseCreateParams.builder().model(model).input("Hello").build()
+                        if (async) {
+                            assertInvalidId(client.async().responses().create(params))
+                        } else {
+                            assertThrows<InvalidResourceIdException> {
+                                client.responses().create(params)
+                            }
+                        }
+                        assertThat(server.requestCount).isZero()
+                    }
+                }
+            }
+        }
+
     @TestFactory
     fun invalidDeploymentIdsAreRejected() =
         listOf(false, true).flatMap { async ->
