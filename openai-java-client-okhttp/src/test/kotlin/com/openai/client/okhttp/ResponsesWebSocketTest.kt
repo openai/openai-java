@@ -4028,15 +4028,24 @@ class ResponsesWebSocketTest {
             }
             .use { peer ->
                 val client =
-                    OpenAIOkHttpClient.builder()
+                    OpenAIOkHttpClientAsync.builder()
                         .apiKey("fake-key")
                         .baseUrl(peer.url)
                         .streamHandlerExecutor(java.util.concurrent.Executor { callbacks.add(it) })
                         .build()
                 try {
-                    val opening = CompletableFuture.supplyAsync { client.responses().connect() }
+                    // Control async completion timing for this interruption race. The public
+                    // blocking factory intentionally bypasses this callback executor.
+                    val opening = client.responses().connect()
                     callbacks.poll(5, TimeUnit.SECONDS)!!.run()
-                    opening.get(5, TimeUnit.SECONDS).use { connection ->
+                    val constructor =
+                        com.openai.core.http.ResponseConnection::class
+                            .java
+                            .getDeclaredConstructor(
+                                com.openai.core.http.AsyncResponseConnection::class.java
+                            )
+                    constructor.isAccessible = true
+                    constructor.newInstance(opening.get(5, TimeUnit.SECONDS)).use { connection ->
                         val received =
                             CompletableFuture<com.openai.models.responses.ResponsesServerEvent>()
                         val interruptPreserved = java.util.concurrent.atomic.AtomicBoolean()

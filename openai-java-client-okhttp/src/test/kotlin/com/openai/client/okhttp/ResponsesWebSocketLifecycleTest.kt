@@ -6,15 +6,21 @@ import com.openai.core.http.AsyncResponseConnection
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
+import com.openai.core.http.ResponseConnection
+import com.openai.core.http.ResponseWebSocketException
+import com.openai.core.http.ResponseWebSocketOptions
 import com.openai.core.http.WebSocketClient
 import com.openai.core.jsonMapper
+import com.openai.helpers.RealtimeConnection
 import com.openai.models.responses.ResponsesClientEvent
+import java.io.IOException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
 
@@ -26,6 +32,263 @@ class ResponsesWebSocketLifecycleTest {
                 """{"type":"response.create","model":"gpt-4o-mini","input":"hello"}""",
                 ResponsesClientEvent::class.java,
             )
+
+    @Test
+    fun `blocking operations can use the configured single-worker callback executor`() {
+        val executor = Executors.newSingleThreadExecutor()
+        val listener = AtomicReference<WebSocketClient.Listener>()
+        val transport = CallbackTransport(onListener = { listener.set(it) })
+        val options =
+            ClientOptions.builder()
+                .apiKey("fake-key")
+                .httpClient(transport)
+                .streamHandlerExecutor(executor)
+                .build()
+        try {
+            val worker = executor.submit<Thread> { Thread.currentThread() }.get(3, TimeUnit.SECONDS)
+            val connection =
+                executor
+                    .submit<ResponseConnection> { ResponseConnection.connect(options) }
+                    .get(3, TimeUnit.SECONDS)
+            connection.use {
+                for (lane in listOf(false, true)) {
+                    val stream = if (lane) connection.lane("lane") else null
+                    val started = CountDownLatch(1)
+                    val read =
+                        executor.submit<String> {
+                            started.countDown()
+                            val event =
+                                if (stream == null) connection.receive() else stream.receive()
+                            jsonMapper()
+                                .valueToTree<com.fasterxml.jackson.databind.JsonNode>(event)
+                                .path("marker")
+                                .asText()
+                        }
+                    assertThat(started.await(3, TimeUnit.SECONDS)).isTrue()
+                    val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(3)
+                    while (worker.state != Thread.State.WAITING && System.nanoTime() < deadline) {
+                        Thread.sleep(1)
+                    }
+                    assertThat(worker.state).isEqualTo(Thread.State.WAITING)
+                    assertThat(read.isDone).isFalse()
+                    listener
+                        .get()
+                        .onMessage(
+                            """{"type":"response.future","stream_id":"lane","marker":"event"}"""
+                        )
+                    assertThat(read.get(3, TimeUnit.SECONDS)).isEqualTo("event")
+                    // A buffered error must wake finalResponse on the same worker.
+                    listener
+                        .get()
+                        .onMessage(
+                            """{"type":"error","code":"fake_error","message":"test","param":null,"stream_id":"lane"}"""
+                        )
+                    val final =
+                        executor.submit<Any> {
+                            if (stream == null) connection.finalResponse()
+                            else stream.finalResponse()
+                        }
+                    assertThatThrownBy { final.get(3, TimeUnit.SECONDS) }
+                        .hasCauseInstanceOf(ResponseWebSocketException::class.java)
+                    val collecting = CountDownLatch(1)
+                    val completed =
+                        executor.submit<String> {
+                            collecting.countDown()
+                            (if (stream == null) connection.finalResponse()
+                                else stream.finalResponse())
+                                .id()
+                        }
+                    assertThat(collecting.await(3, TimeUnit.SECONDS)).isTrue()
+                    val finalDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(3)
+                    while (
+                        worker.state != Thread.State.WAITING && System.nanoTime() < finalDeadline
+                    ) {
+                        Thread.sleep(1)
+                    }
+                    assertThat(worker.state).isEqualTo(Thread.State.WAITING)
+                    assertThat(completed.isDone).isFalse()
+                    listener
+                        .get()
+                        .onMessage(
+                            """{"type":"response.completed","sequence_number":1,"stream_id":"lane","response":{"id":"resp_done","created_at":0,"object":"response","model":"gpt-4o-mini","output":[],"parallel_tool_calls":false,"tool_choice":"auto","tools":[],"status":"completed"}}"""
+                        )
+                    assertThat(completed.get(3, TimeUnit.SECONDS)).isEqualTo("resp_done")
+                    stream?.close()
+                }
+                executor.submit { connection.reconnect() }.get(3, TimeUnit.SECONDS)
+                executor
+                    .submit { connection.reconnect(ResponseWebSocketOptions.defaults()) }
+                    .get(3, TimeUnit.SECONDS)
+            }
+            assertThat(executor.submit<Int> { 42 }.get(3, TimeUnit.SECONDS)).isEqualTo(42)
+        } finally {
+            executor.shutdownNow()
+            assertThat(executor.awaitTermination(5, TimeUnit.SECONDS)).isTrue()
+        }
+    }
+
+    @Test
+    fun `uncertain sends retire readers and never send twice`() {
+        for (sendError in
+            listOf(IOException("write attempted"), AssertionError("write attempted"))) {
+            val sends = java.util.concurrent.atomic.AtomicInteger()
+            val closes = java.util.concurrent.atomic.AtomicInteger()
+            val cleanupDone = CountDownLatch(1)
+            val transport =
+                CallbackTransport(
+                    onSend = {
+                        sends.incrementAndGet()
+                        throw sendError
+                    },
+                    onClose = {
+                        closes.incrementAndGet()
+                        cleanupDone.countDown()
+                    },
+                )
+            connection(transport).use { connection ->
+                val unassigned = connection.receive()
+                val lane = connection.lane("lane")
+                val assigned = lane.receive()
+                assertThatThrownBy { lane.send(command()) }.isSameAs(sendError)
+                assertThatThrownBy { unassigned.get(3, TimeUnit.SECONDS) }.hasCause(sendError)
+                assertThatThrownBy { assigned.get(3, TimeUnit.SECONDS) }.hasCause(sendError)
+                assertThatThrownBy { connection.send(command()) }
+                    .isInstanceOf(IllegalStateException::class.java)
+                assertThat(sends.get()).isEqualTo(1)
+                assertThat(cleanupDone.await(3, TimeUnit.SECONDS)).isTrue()
+                assertThat(closes.get()).isEqualTo(1)
+            }
+        }
+    }
+
+    @Test
+    fun `failed send returns and fences reuse while its transport cleanup is held`() {
+        val cleanupEntered = CountDownLatch(1)
+        val sendReturned = CountDownLatch(1)
+        val cleanupDone = CountDownLatch(1)
+        val writer = Executors.newSingleThreadExecutor()
+        val failure = IOException("write attempted")
+        val transport =
+            CallbackTransport(
+                onSend = { throw failure },
+                onClose = {
+                    cleanupEntered.countDown()
+                    try {
+                        check(sendReturned.await(5, TimeUnit.SECONDS))
+                    } finally {
+                        cleanupDone.countDown()
+                    }
+                },
+            )
+        try {
+            connection(transport).use { connection ->
+                val pending = connection.receive()
+                val sent = writer.submit { connection.send(command()) }
+                try {
+                    assertThat(cleanupEntered.await(3, TimeUnit.SECONDS)).isTrue()
+                    assertThatThrownBy { sent.get(2, TimeUnit.SECONDS) }.hasCause(failure)
+                    assertThatThrownBy { pending.get(2, TimeUnit.SECONDS) }.hasCause(failure)
+                    assertThatThrownBy { connection.send(command()) }
+                        .isInstanceOf(IllegalStateException::class.java)
+                } finally {
+                    sendReturned.countDown()
+                }
+                assertThat(cleanupDone.await(3, TimeUnit.SECONDS)).isTrue()
+            }
+        } finally {
+            sendReturned.countDown()
+            writer.shutdownNow()
+            assertThat(writer.awaitTermination(5, TimeUnit.SECONDS)).isTrue()
+        }
+    }
+
+    @Test
+    fun `failed opening settles despite cleanup failure`() {
+        for (closeError in listOf(IOException("cleanup"), AssertionError("cleanup"))) {
+            val original = IOException("opening failed")
+            val closes = java.util.concurrent.atomic.AtomicInteger()
+            val transport =
+                CallbackTransport(
+                    onListener = { it.onFailure(original) },
+                    onClose = {
+                        closes.incrementAndGet()
+                        throw closeError
+                    },
+                )
+            val opening =
+                AsyncResponseConnection.connect(
+                    ClientOptions.builder().apiKey("fake-key").httpClient(transport).build()
+                )
+            assertThatThrownBy { opening.get(3, TimeUnit.SECONDS) }.hasCause(original)
+            assertThat(original.suppressed).containsExactly(closeError)
+            assertThat(closes.get()).isEqualTo(1)
+        }
+    }
+
+    @Test
+    fun `pending readers fail while transport cleanup is held`() {
+        val reader = Executors.newSingleThreadExecutor()
+        try {
+            for (realtime in listOf(true, false)) {
+                val listener = AtomicReference<WebSocketClient.Listener>()
+                val entered = CountDownLatch(1)
+                val released = CountDownLatch(1)
+                val transport =
+                    CallbackTransport(
+                        onListener = { listener.set(it) },
+                        onClose = {
+                            entered.countDown()
+                            check(released.await(5, TimeUnit.SECONDS))
+                        },
+                    )
+                try {
+                    val options =
+                        ClientOptions.builder().apiKey("fake-key").httpClient(transport).build()
+                    val managed =
+                        if (realtime) RealtimeConnection.connect(options)
+                        else AsyncResponseConnection.connect(options).get(3, TimeUnit.SECONDS)
+                    managed.use { connection ->
+                        val pending =
+                            if (connection is RealtimeConnection) connection.receiveAsync()
+                            else (connection as AsyncResponseConnection).receive()
+                        val failure = IOException("reader failed")
+                        val cleanup = reader.submit { listener.get().onFailure(failure) }
+                        try {
+                            assertThat(entered.await(3, TimeUnit.SECONDS)).isTrue()
+                            assertThatThrownBy { pending.get(2, TimeUnit.SECONDS) }
+                                .hasCause(failure)
+                        } finally {
+                            released.countDown()
+                        }
+                        cleanup.get(3, TimeUnit.SECONDS)
+                    }
+                } finally {
+                    released.countDown()
+                }
+            }
+        } finally {
+            reader.shutdownNow()
+            assertThat(reader.awaitTermination(5, TimeUnit.SECONDS)).isTrue()
+        }
+    }
+
+    @Test
+    fun `malformed frame fails the detached read even if close throws an error`() {
+        val listener = AtomicReference<WebSocketClient.Listener>()
+        val cleanup = AssertionError("cleanup")
+        val transport =
+            CallbackTransport(onListener = { listener.set(it) }, onClose = { throw cleanup })
+        connection(transport).use { connection ->
+            val pending = connection.receive()
+            listener.get().onMessage("{")
+            val error =
+                org.assertj.core.api.Assertions.catchThrowable { pending.get(3, TimeUnit.SECONDS) }
+            assertThat(error).hasCauseInstanceOf(IOException::class.java)
+            assertThat(error.cause!!.suppressed).containsExactly(cleanup)
+            connection.close()
+            assertThatThrownBy { pending.get(3, TimeUnit.SECONDS) }.hasCause(error.cause)
+        }
+    }
 
     @Test
     fun `close and reconnect allow transport callbacks to finish`() {
@@ -222,12 +485,17 @@ class ResponsesWebSocketLifecycleTest {
                     .httpClient(transport)
                     .streamHandlerExecutor { callbacks.add(it) }
                     .build()
-            val opening =
-                CompletableFuture.supplyAsync {
-                    com.openai.core.http.ResponseConnection.connect(options)
-                }
+            // Pause completions to force the claimed-read interruption race deterministically.
+            // Public blocking connect now deliberately bypasses the configured callback executor,
+            // so wrap a controlled async connection for these interruption-only checks.
+            val opening = AsyncResponseConnection.connect(options)
             callbacks.poll(5, TimeUnit.SECONDS)!!.run()
-            opening.get(5, TimeUnit.SECONDS).use { connection ->
+            val constructor =
+                ResponseConnection::class
+                    .java
+                    .getDeclaredConstructor(AsyncResponseConnection::class.java)
+            constructor.isAccessible = true
+            constructor.newInstance(opening.get(5, TimeUnit.SECONDS)).use { connection ->
                 val stream = if (lane) connection.lane("lane") else null
                 val received = CompletableFuture<Any>()
                 val interruptPreserved = java.util.concurrent.atomic.AtomicBoolean()
@@ -631,6 +899,7 @@ class ResponsesWebSocketLifecycleTest {
         private val onSend: (WebSocketClient.Listener) -> Unit = {},
         private val onClose: (WebSocketClient.Listener) -> Unit = {},
         private val onConnect: (HttpRequest) -> Unit = {},
+        private val onListener: (WebSocketClient.Listener) -> Unit = {},
     ) : HttpClient, WebSocketClient {
         override fun connectWebSocket(
             request: HttpRequest,
@@ -639,6 +908,7 @@ class ResponsesWebSocketLifecycleTest {
             listener: WebSocketClient.Listener,
         ): CompletableFuture<WebSocketClient.Connection> {
             onConnect(request)
+            onListener(listener)
             return CompletableFuture.completedFuture(
                 object : WebSocketClient.Connection {
                     override fun send(text: String) = onSend(listener)
