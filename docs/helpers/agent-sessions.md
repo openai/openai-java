@@ -76,3 +76,34 @@ String text = AgentSessionMessages.outputText(message);
 
 The raw `sessions().events().streamStreaming(...)` API remains available for
 following active sessions and advanced orchestration.
+
+## Typed application tools (beta)
+
+Bind an argument class and application callback once. Jackson's `@JsonTypeName`
+and `@JsonClassDescription` set the hosted name and description, as with other
+class-based SDK tools.
+
+```java
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.openai.lib.beta.agents.AgentFunctionTool;
+
+@JsonTypeName("lookup_order")
+@JsonClassDescription("Look up an order.")
+class LookupOrder { public String orderId; }
+
+var lookup = AgentFunctionTool.of(LookupOrder.class, args -> orderService.lookup(args.orderId));
+// Include lookup.definition() in the agent's tools when configuring the session.
+var params = AgentSessionStreamParams.builder()
+    .sessionId(sessionId)
+    .input("Where is order A123?")
+    .toolHandler(lookup.name(), lookup.handler())
+    .build();
+```
+
+For callbacks returning a `CompletionStage`, use `AgentFunctionTool.ofAsync(...)`
+and register with `.asyncToolHandler(tool.name(), tool.handler())`. Attach either
+binding to an existing session using its hosted tool name. Application services
+and credentials stay in the closure or bound method. See
+[`BetaAgentToolsExample`](../../openai-java-example/src/main/java/com/openai/example/BetaAgentToolsExample.java)
+for a read-only wallet action.

@@ -6,6 +6,7 @@ import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.*
 import com.openai.core.jsonMapper
+import com.openai.lib.beta.agents.AgentFunctionTool
 import com.openai.models.beta.agents.*
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -236,6 +237,62 @@ internal class AgentSessionStreamTest {
     }
 
     private fun params() = AgentSessionStreamParams.builder().sessionId("s").input("hello")
+
+    class WalletBalance(val asset: String)
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun typedActionsReuseTheDispatcher(async: Boolean) {
+        for (asyncHandler in listOf(false, true)) {
+            val calls = mutableListOf<String>()
+            val action = { args: WalletBalance ->
+                calls.add(args.asset)
+                mapOf("type" to "balance", "content" to args.asset)
+            }
+            val p = params().toolHandler("raw") { mapOf("raw" to it["asset"]) }
+            if (asyncHandler) {
+                val tool =
+                    AgentFunctionTool.ofAsync(WalletBalance::class.java) {
+                        CompletableFuture.completedFuture(action(it))
+                    }
+                p.asyncToolHandler(tool.name(), tool.handler())
+            } else {
+                val tool = AgentFunctionTool.of(WalletBalance::class.java, action)
+                p.toolHandler(tool.name(), tool.handler())
+            }
+            val t =
+                Transport(
+                    listOf(
+                        turn("created"),
+                        call(name = "WalletBalance", args = "{\"asset\":\"ETH\"}"),
+                        call(
+                            name = "WalletBalance",
+                            event = "redelivered",
+                            args = "{\"asset\":\"ETH\"}",
+                        ),
+                        call(
+                            id = "legacy",
+                            name = "WalletBalance",
+                            args = "\"{\\\"asset\\\":\\\"BTC\\\"}\"",
+                        ),
+                        call(id = "invalid", name = "WalletBalance", args = "{}"),
+                        call(id = "raw", name = "raw", args = "{\"asset\":\"USD\"}"),
+                        turn("completed"),
+                        idle(),
+                    )
+                )
+            consume(t, async, p.build())
+            assertThat(calls).containsExactly("ETH", "BTC")
+            val results = t.posts.drop(1).map { it.path("events").first() }
+            assertThat(results).hasSize(4)
+            assertThat(results[0].path("output").asText())
+                .isEqualTo("{\"type\":\"balance\",\"content\":\"ETH\"}")
+            assertThat(results[1].path("success").asBoolean()).isTrue()
+            assertThat(results[2].path("success").asBoolean()).isFalse()
+            assertThat(results[2].path("error").asText()).isEqualTo("Tool handler failed.")
+            assertThat(results[3].path("output").asText()).isEqualTo("{\"raw\":\"USD\"}")
+        }
+    }
 
     private fun consume(
         t: Transport,
