@@ -15,6 +15,8 @@ import java.util.function.Function
  * A beta Agent function definition and its local, typed application callback. Argument classes use
  * the SDK's class-based schema and Jackson deserialization conventions. Bind dependencies with a
  * closure or method reference; only the argument class becomes part of the hosted definition.
+ * Unsupported schema constraints are rejected at binding time; validate business rules in the
+ * callback.
  */
 class AgentFunctionTool<R>
 private constructor(
@@ -53,6 +55,7 @@ private constructor(
             require(info.schema.path("type").asText() == "object") {
                 "Function parameters must be an object class"
             }
+            requireSupportedConstraints(info.schema)
             val definition =
                 AgentToolParam.ofFunction(
                     AgentToolParam.Function.builder()
@@ -86,9 +89,36 @@ private constructor(
     }
 }
 
-// Check presence and JSON types before Jackson can supply POJO defaults or coerce scalar values.
-// Application validation remains responsible for business rules and schema format constraints.
+private fun requireSupportedConstraints(schema: JsonNode) {
+    for ((keyword, value) in schema.fields()) {
+        when (keyword) {
+            "properties",
+            "\$defs",
+            "anyOf" -> value.forEach(::requireSupportedConstraints)
+            "items" -> requireSupportedConstraints(value)
+            "\$schema",
+            "\$id",
+            "\$ref",
+            "type",
+            "required",
+            "description",
+            "title",
+            "additionalProperties",
+            "enum",
+            "const" -> Unit
+            else ->
+                throw IllegalArgumentException(
+                    "AgentFunctionTool does not support schema constraint '$keyword'; " +
+                        "remove the constraint annotation and validate it in your callback"
+                )
+        }
+    }
+}
+
+// Check declared values and JSON types before Jackson supplies defaults or coerces scalar values.
 private fun hasArgumentShape(value: JsonNode, schema: JsonNode, root: JsonNode): Boolean {
+    schema["enum"]?.let { if (value !in it) return false }
+    schema["const"]?.let { if (value != it) return false }
     schema["\$ref"]?.asText()?.let { reference ->
         if (reference != "#" && !reference.startsWith("#/")) return false
         val target = root.at(reference.substring(1))

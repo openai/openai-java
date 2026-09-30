@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.databind.JsonNode
 import com.openai.core.jsonMapper
 import com.openai.models.beta.agents.sessions.SessionCreateParams
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import org.assertj.core.api.Assertions.assertThat
@@ -35,6 +37,24 @@ internal class AgentFunctionToolTest {
         ETH,
         BTC,
     }
+
+    class LimitedAmount(@get:Schema(maximum = "10") val amount: Int)
+
+    class RestrictedAddress(@get:Schema(pattern = "^0x") val address: String)
+
+    class LimitedAssets(@get:ArraySchema(maxItems = 1) val assets: List<String>)
+
+    class FormattedAddress(@get:Schema(format = "email") val address: String)
+
+    class NestedConstraint(val wallets: List<LimitedAmount>)
+
+    class EnumAsset(val asset: Asset)
+
+    class AllowedAsset(@get:Schema(allowableValues = ["ETH", "BTC"]) val asset: String)
+
+    class ConstantAsset(@get:Schema(allowableValues = ["ETH"]) val asset: String)
+
+    class KeywordFields(val maximum: String, val pattern: String, val maxItems: Int)
 
     private class WalletActions(private val network: String) {
         fun balance(args: Balance): Map<String, String> =
@@ -148,5 +168,46 @@ internal class AgentFunctionToolTest {
                 .isInstanceOf(IllegalArgumentException::class.java)
                 .hasMessageContaining("object class")
         }
+    }
+
+    @Test
+    fun rejectsUnenforcedConstraintsBeforeBinding() {
+        for (type in
+            listOf(
+                LimitedAmount::class.java,
+                RestrictedAddress::class.java,
+                LimitedAssets::class.java,
+                FormattedAddress::class.java,
+                NestedConstraint::class.java,
+            )) {
+            assertThatThrownBy { AgentFunctionTool.of(type) { "unused" } }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessageContaining("does not support schema constraint")
+                .hasMessageContaining("validate it in your callback")
+        }
+        val tool = AgentFunctionTool.of(KeywordFields::class.java) { it.maximum }
+        assertThat(
+                tool
+                    .handler()
+                    .apply(mapOf("maximum" to "limit", "pattern" to "text", "maxItems" to 1))
+            )
+            .isEqualTo("limit")
+    }
+
+    @Test
+    fun enforcesEnumAndConstantValuesBeforeCallingApplication() {
+        var invocations = 0
+        for (type in
+            listOf(EnumAsset::class.java, AllowedAsset::class.java, ConstantAsset::class.java)) {
+            val tool =
+                AgentFunctionTool.of(type) {
+                    invocations++
+                    "valid"
+                }
+            assertThat(tool.handler().apply(mapOf("asset" to "ETH"))).isEqualTo("valid")
+            assertThatThrownBy { tool.handler().apply(mapOf("asset" to "invalid")) }
+                .hasMessageContaining("parameter shape")
+        }
+        assertThat(invocations).isEqualTo(3)
     }
 }
