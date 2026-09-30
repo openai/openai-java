@@ -43,7 +43,8 @@ object AgentTurnResults {
      * result is cached; repeated calls do not submit input or run handlers again.
      *
      * Accepts streams returned by beta agents sessions createStreaming() and stream(). The caller
-     * must not consume the stream concurrently with this method.
+     * must not consume the stream concurrently with this method. Creation streams require initial
+     * input; consume input-less creation as a raw stream.
      */
     @JvmStatic
     fun getFinalResult(stream: StreamResponse<AgentSessionEvent>): AgentTurnResult =
@@ -55,7 +56,9 @@ object AgentTurnResults {
     /**
      * Subscribes when needed, or joins an existing subscription. The returned future completes with
      * a final answer or an [AgentTurnResultException] retaining the available partial state.
-     * Cancelling the future closes observation without cancelling hosted execution.
+     * Cancelling the future closes observation without cancelling hosted execution. Creation
+     * streams require initial input; enable withResultCollection() before subscribing to progress
+     * events.
      */
     @JvmStatic
     fun getFinalResult(

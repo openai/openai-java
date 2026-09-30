@@ -201,6 +201,7 @@ internal class AgentTurnResultsTest {
         private val failure: Throwable? = null,
     ) : HttpClient {
         var responseReady = CompletableFuture.completedFuture<Void?>(null)
+        var executor: Executor = direct
         val posts = AtomicInteger()
         val closed = AtomicInteger()
 
@@ -258,7 +259,8 @@ internal class AgentTurnResultsTest {
                 ClientOptions.builder()
                     .httpClient(this)
                     .apiKey("synthetic")
-                    .streamHandlerExecutor(direct)
+                    .streamHandlerExecutor(executor)
+                    .maxRetries(0)
                     .build()
             )
     }
@@ -435,6 +437,47 @@ internal class AgentTurnResultsTest {
             stream.subscribe {}
             assertThatThrownBy { AgentTurnResults.getFinalResult(stream).get(5, TimeUnit.SECONDS) }
                 .hasCauseInstanceOf(AgentTurnResultException::class.java)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["transport", "parser", "handler"])
+    fun `raw async creation preserves exceptional source completion`(kind: String) {
+        val cause = java.io.IOException("synthetic failure")
+        val transport =
+            when (kind) {
+                "transport" -> Transport(emptyList(), cause)
+                "parser" -> Transport(listOf("invalid json"))
+                else -> Transport()
+            }
+        transport.client().useClient { client ->
+            val stream = client.async().beta().agents().sessions().createStreaming(createParams())
+            stream.subscribe { if (kind == "handler") throw cause }
+            assertThatThrownBy { stream.onCompleteFuture().get(5, TimeUnit.SECONDS) }
+                .isInstanceOf(java.util.concurrent.ExecutionException::class.java)
+            if (kind != "parser") {
+                assertThat(catchThrowable { stream.onCompleteFuture().join() }).hasRootCause(cause)
+            }
+        }
+    }
+
+    @Test
+    fun `fresh getter preserves a source failure before deferred subscription`() {
+        val cause = java.io.IOException("request failed before collection")
+        val transport =
+            Transport().apply {
+                responseReady = CompletableFuture<Void?>().apply { completeExceptionally(cause) }
+                executor = Executor { /* Deliberately defer subscription callbacks. */ }
+            }
+        transport.client().useClient { client ->
+            val stream = client.async().beta().agents().sessions().createStreaming(createParams())
+            assertThatThrownBy { stream.onCompleteFuture().get(5, TimeUnit.SECONDS) }
+                .hasRootCause(cause)
+            val failure =
+                catchThrowable { AgentTurnResults.getFinalResult(stream).get(5, TimeUnit.SECONDS) }
+                    .cause as AgentTurnResultException
+            assertThat(failure.reason()).isEqualTo(AgentTurnResultException.Reason.STREAM_ERROR)
+            assertThat(failure).hasRootCause(cause)
         }
     }
 

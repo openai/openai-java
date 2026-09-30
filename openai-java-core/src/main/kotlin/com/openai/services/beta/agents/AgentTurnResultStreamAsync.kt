@@ -55,7 +55,6 @@ internal class AgentTurnResultStreamAsync(
 
             override fun onComplete(error: Optional<Throwable>) {
                 synchronized(lock) { error.ifPresent(collector::failed) }
-                finish()
                 handler.onComplete(error)
             }
         }
@@ -76,7 +75,12 @@ internal class AgentTurnResultStreamAsync(
                 finish()
             }
         }
-        if (source.onCompleteFuture().isDone) complete()
+        if (source.onCompleteFuture().isDone) {
+            source.onCompleteFuture().whenComplete { _, cause ->
+                synchronized(lock) { if (cause != null) collector.failed(cause) }
+                complete()
+            }
+        }
         return result
     }
 
