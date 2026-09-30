@@ -2,7 +2,6 @@ package com.openai.services.beta.agents
 
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.models.beta.agents.AgentSessionEvent
-import com.openai.services.beta.agents.AgentTurnResultException.Reason
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
@@ -51,55 +50,56 @@ internal class AgentTurnResultStreamAsync(
                         requested.get() &&
                             (collector.isReady() || collector.stoppingError() != null)
                     }
-                if (stop) {
-                    complete()
-                    source.close()
-                }
+                if (stop) finish()
             }
 
             override fun onComplete(error: Optional<Throwable>) {
                 synchronized(lock) { error.ifPresent(collector::failed) }
-                complete()
+                finish()
                 handler.onComplete(error)
             }
         }
 
+    fun enableResultCollection() = synchronized(lock) { collector.enable() }
+
     fun finalResult(): CompletableFuture<AgentTurnResult> {
+        enableResultCollection()
+        if (closed.get()) synchronized(lock) { collector.closed() }
         requested.set(true)
         val stop = synchronized(lock) { collector.isReady() || collector.stoppingError() != null }
-        if (stop) {
-            complete()
-            source.close()
-        } else if (!closed.get() && subscribed.compareAndSet(false, true)) {
+        if (stop) finish()
+        else if (!closed.get() && subscribed.compareAndSet(false, true)) {
             try {
                 source.subscribe(observing(AsyncStreamResponse.Handler {}))
             } catch (cause: Throwable) {
                 synchronized(lock) { collector.failed(cause) }
-                complete()
-                source.close()
+                finish()
             }
         }
+        if (source.onCompleteFuture().isDone) complete()
         return result
     }
 
     /** Never invoke user future callbacks while holding the collector lock. */
     private fun complete() {
         if (result.isDone) return
-        val snapshot = synchronized(lock) { runCatching { collector.finalResult() } }
+        val snapshot =
+            synchronized(lock) {
+                if (!collector.isEnabled()) return
+                runCatching { collector.finalResult() }
+            }
         snapshot.fold(result::complete, result::completeExceptionally)
     }
 
     override fun onCompleteFuture(): CompletableFuture<Void?> = source.onCompleteFuture()
 
+    private fun finish() {
+        // Resolving the source future invokes complete(); result callbacks can safely await it.
+        if (closed.compareAndSet(false, true)) source.close()
+    }
+
     override fun close() {
-        if (closed.compareAndSet(false, true)) {
-            val failure =
-                synchronized(lock) {
-                    if (collector.isReady()) null
-                    else collector.stoppingError() ?: collector.error(Reason.CLOSED)
-                }
-            if (failure == null) complete() else result.completeExceptionally(failure)
-            source.close()
-        }
+        synchronized(lock) { if (!closed.get()) collector.closed() }
+        finish()
     }
 }

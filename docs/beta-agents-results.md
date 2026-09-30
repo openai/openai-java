@@ -11,7 +11,7 @@ try (var stream = client.beta().agents().sessions().createStreaming(params)) {
 }
 ```
 
-For follow-ups, the same helper consumes events and runs your registered tool handlers.
+For follow-ups, the same helper runs your tool handlers; enable collection before consuming progress.
 
 ```java
 var params = AgentSessionStreamParams.builder()
@@ -20,7 +20,8 @@ var params = AgentSessionStreamParams.builder()
     .toolHandler("lookup_order", arguments -> lookupOrder(arguments))
     .build();
 
-try (var stream = client.beta().agents().sessions().stream(params)) {
+try (var stream = AgentTurnResults.withResultCollection(
+        client.beta().agents().sessions().stream(params))) {
     stream.stream().forEach(event -> showProgress(event));
     var result = AgentTurnResults.getFinalResult(stream);
     System.out.println(result.outputText());
@@ -30,7 +31,8 @@ try (var stream = client.beta().agents().sessions().stream(params)) {
 Async streams return a `CompletableFuture<AgentTurnResult>`; subscribing to progress is optional.
 
 ```java
-var stream = client.async().beta().agents().sessions().createStreaming(params);
+var stream = AgentTurnResults.withResultCollection(
+    client.async().beta().agents().sessions().createStreaming(params));
 stream.subscribe(event -> showProgress(event)); // Optional.
 AgentTurnResults.getFinalResult(stream)
     .thenAccept(result -> System.out.println(result.outputText()));

@@ -5,17 +5,24 @@ import com.openai.models.beta.agents.sessions.turns.Turn
 import com.openai.services.beta.agents.AgentTurnResultException.Reason
 import kotlin.jvm.optionals.getOrNull
 
-/** Event reduction only: no input submission, tool execution or network requests. */
+/** Collects authoritative completed messages; no input submission or tool execution. */
 internal class AgentTurnCollector(
     private val handledTools: Set<String> = emptySet(),
     private var sessionId: String? = null,
 ) {
-    private data class Message(val index: Long, val value: AgentSessionMessage, val done: Boolean)
+    private var enabled = false
+    private var started = false
 
-    private val messages = linkedMapOf<String, Message>()
-    private val textItems = hashSetOf<String>()
-    private val commentaryIds = hashSetOf<String>()
-    private val completedIds = hashSetOf<String>()
+    fun enable() {
+        check(enabled || !started) {
+            "Enable AgentTurnResults.withResultCollection(stream) before consuming events"
+        }
+        enabled = true
+    }
+
+    fun isEnabled(): Boolean = enabled
+
+    private val messages = linkedMapOf<String, Pair<Long, AgentSessionMessage>>()
     private var turn: Turn? = null
     private var completed = false
     private var idle = false
@@ -24,7 +31,9 @@ internal class AgentTurnCollector(
     private var result: AgentTurnResult? = null
 
     fun accept(event: AgentSessionEvent) {
-        if (failure != null || result != null || idle) return
+        started = true
+        if (!enabled) return
+        if (failure != null || isReady()) return
         try {
             event.created().getOrNull()?.let {
                 if (sessionId == null) sessionId = it.session().id()
@@ -53,31 +62,17 @@ internal class AgentTurnCollector(
                 if (event.isTurnFailed()) failure = error(Reason.TURN_FAILED)
                 if (event.isTurnCancelled()) failure = error(Reason.TURN_CANCELLED)
             }
-            event.turnItemAdded().getOrNull()?.let {
-                record(
-                    it.sessionId(),
-                    it.turnId().orElse(null),
-                    it.outputIndex().orElse(Long.MAX_VALUE),
-                    it.item().message().orElse(null),
-                    false,
-                )
-            }
             event.turnItemDone().getOrNull()?.let {
-                record(
-                    it.sessionId(),
-                    it.turnId().orElse(null),
-                    it.outputIndex(),
-                    it.item().message().map(::normalize).orElse(null),
-                    true,
-                )
-            }
-            event.turnOutputTextDelta().getOrNull()?.let {
+                val message = it.item().message().getOrNull()
                 if (
-                    it.sessionId() == sessionId &&
-                        it.turnId().orElse(null) == turn?.id() &&
-                        turn != null
-                )
-                    if (it.itemId() !in commentaryIds) textItems.add(it.itemId())
+                    message != null && it.sessionId() == sessionId && message.turnId() == turn?.id()
+                ) {
+                    if (
+                        message.phase().getOrNull() == AgentSessionAssistantMessage.Phase.COMMENTARY
+                    )
+                        messages.remove(message.id())
+                    else messages[message.id()] = it.outputIndex() to normalize(message)
+                }
             }
             event.requiresAction().getOrNull()?.session()?.let {
                 if (it.id() == sessionId && !completed)
@@ -94,36 +89,8 @@ internal class AgentTurnCollector(
                 if (completed && it.id() == sessionId) idle = true
             }
         } catch (cause: Exception) {
-            failure = error(Reason.INCOMPLETE_OUTPUT, cause)
+            failure = error(Reason.STREAM_ERROR, cause)
         }
-    }
-
-    private fun record(
-        session: String,
-        id: String?,
-        index: Long,
-        message: AgentSessionMessage?,
-        done: Boolean,
-    ) {
-        if (message == null || message.role() != AgentSessionMessage.Role.ASSISTANT) return
-        if (
-            session != sessionId ||
-                (id != null && id != turn?.id()) ||
-                message.turnId() != turn?.id()
-        )
-            return
-        val itemId =
-            message.id().orElseThrow { IllegalStateException("Assistant message missing ID") }
-        if (!done && itemId in completedIds) return
-        if (done) completedIds.add(itemId)
-        if (message.phase().orElse(null) == AgentSessionMessage.Phase.COMMENTARY) {
-            messages.remove(itemId)
-            textItems.remove(itemId)
-            commentaryIds.add(itemId)
-            return
-        }
-        commentaryIds.remove(itemId)
-        messages[itemId] = Message(index, message, done)
     }
 
     private fun normalize(message: AgentSessionAssistantMessage): AgentSessionMessage =
@@ -151,8 +118,12 @@ internal class AgentTurnCollector(
     fun stoppingError(): AgentTurnResultException? =
         failure ?: if (pending.isNotEmpty()) error(Reason.REQUIRES_ACTION) else null
 
+    fun closed() {
+        if (enabled && !isReady() && stoppingError() == null) failure = error(Reason.CLOSED)
+    }
+
     fun failed(cause: Throwable) {
-        if (!isReady() && failure == null) failure = error(Reason.STREAM_ERROR, cause)
+        if (enabled && !isReady() && failure == null) failure = error(Reason.STREAM_ERROR, cause)
     }
 
     fun error(reason: Reason, cause: Throwable? = null): AgentTurnResultException =
@@ -164,41 +135,12 @@ internal class AgentTurnCollector(
         }
         stoppingError()?.let { throw it }
         if (!isReady()) throw error(Reason.INCOMPLETE_STREAM)
-        if (textItems.any { messages[it]?.done != true }) throw error(Reason.INCOMPLETE_OUTPUT)
-        if (
-            messages.values.any {
-                !it.value.phase().isPresent ||
-                    it.value.phase().get() !in
-                        setOf(
-                            AgentSessionMessage.Phase.COMMENTARY,
-                            AgentSessionMessage.Phase.FINAL_ANSWER,
-                        )
-            }
-        ) {
-            throw error(Reason.OUTPUT_SELECTION)
-        }
-        if (
-            messages.values.any {
-                it.value.phase().getOrNull() == AgentSessionMessage.Phase.FINAL_ANSWER &&
-                    (!it.done || it.value.status() != AgentOutputItemStatus.COMPLETED)
-            }
-        ) {
-            throw error(Reason.INCOMPLETE_OUTPUT)
-        }
-        val selected = requireNotNull(turn)
-        if (selected.status() != Turn.Status.COMPLETED) throw error(Reason.INCOMPLETE_OUTPUT)
-        return AgentTurnResult(selected, finalMessages()).also {
+        return AgentTurnResult(requireNotNull(turn), finalMessages()).also {
             result = it
             messages.clear()
-            textItems.clear()
-            commentaryIds.clear()
-            completedIds.clear()
         }
     }
 
     private fun finalMessages(): List<AgentSessionMessage> =
-        messages.values
-            .sortedBy { it.index }
-            .filter { it.value.phase().getOrNull() == AgentSessionMessage.Phase.FINAL_ANSWER }
-            .map { it.value }
+        messages.values.sortedBy { it.first }.map { it.second }
 }

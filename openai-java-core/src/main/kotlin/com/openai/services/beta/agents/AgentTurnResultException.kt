@@ -25,8 +25,6 @@ internal constructor(
         TURN_CANCELLED,
         REQUIRES_ACTION,
         INCOMPLETE_STREAM,
-        INCOMPLETE_OUTPUT,
-        OUTPUT_SELECTION,
         STREAM_ERROR,
         CLOSED,
     }
@@ -42,7 +40,7 @@ internal constructor(
 
     fun turnId(): Optional<String> = Optional.ofNullable(turn?.id())
 
-    /** Available final-message snapshots; these may still have in-progress status. */
+    /** Completed assistant messages available before collection stopped. */
     fun messages(): List<AgentSessionMessage> = messages
 
     fun requiredActions(): List<AgentSession.RequiredAction> = requiredActions

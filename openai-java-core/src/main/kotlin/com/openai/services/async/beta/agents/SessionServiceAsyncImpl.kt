@@ -125,7 +125,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
         // post /agents/sessions
         withRawResponse()
             .createStreaming(params, requestOptions)
-            .thenApply { it.parse() }
+            .thenApply { AgentTurnResults.uncollected(it.parse()) }
             .toAsync(clientOptions.streamHandlerExecutor)
             .let { AgentTurnResults.collecting(it) }
 

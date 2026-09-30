@@ -4,7 +4,6 @@ import com.openai.client.OpenAIClientImpl
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.*
-import com.openai.core.jsonMapper
 import com.openai.models.beta.agents.*
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import java.io.ByteArrayInputStream
@@ -18,7 +17,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 internal class AgentTurnResultsTest {
-    private val mapper = jsonMapper()
     private val direct = Executor { it.run() }
 
     private fun turn(kind: String, id: String = "root", subagent: String? = null) =
@@ -39,40 +37,37 @@ internal class AgentTurnResultsTest {
 
     private fun events() = listOf(turn("created"), message(), turn("completed"), idle())
 
-    private fun source(events: List<String>): StreamResponse<AgentSessionEvent> =
-        object : StreamResponse<AgentSessionEvent> {
-            var opened = false
-
-            override fun stream(): java.util.stream.Stream<AgentSessionEvent> {
-                check(!opened)
-                opened = true
-                return events.stream().map { mapper.readValue(it, AgentSessionEvent::class.java) }
-            }
-
-            override fun close() {}
-        }
+    private fun source(
+        events: List<String>,
+        failure: Throwable? = null,
+    ): StreamResponse<AgentSessionEvent> =
+        Transport(events, failure)
+            .client()
+            .beta()
+            .agents()
+            .sessions()
+            .createStreaming(createParams())
 
     @Test
     fun `collects all final messages in output order and caches result`() {
         val stream =
-            AgentTurnResults.collecting(
-                source(
-                    listOf(
-                        idle(),
-                        turn("created"),
-                        turn("created", "child", "worker"),
-                        message("child", text = "Excluded", turn = "child"),
-                        turn("completed", "child", "worker"),
-                        message("comment", text = "Thinking", phase = "\"commentary\""),
-                        message("a", 1, "partial", done = false),
-                        message("b", 2, "Second"),
-                        message("a", 1, "First"),
-                        message("a", 1, "First"),
-                        turn("completed"),
-                        idle(),
-                    )
+            source(
+                listOf(
+                    idle(),
+                    turn("created"),
+                    turn("created", "child", "worker"),
+                    message("child", text = "Excluded", turn = "child"),
+                    turn("completed", "child", "worker"),
+                    message("comment", text = "Thinking", phase = "\"commentary\""),
+                    message("a", 1, "partial", done = false),
+                    message("b", 2, "Second"),
+                    message("a", 1, "First"),
+                    message("a", 1, "First"),
+                    turn("completed"),
+                    idle(),
                 )
             )
+
         val result = AgentTurnResults.getFinalResult(stream)
         assertThat(result.outputText()).isEqualTo("FirstSecond")
         assertThat(result.turnId()).isEqualTo("root")
@@ -94,29 +89,9 @@ internal class AgentTurnResultsTest {
     @ParameterizedTest
     @ValueSource(ints = [1, 4])
     fun `iteration then getter consumes only remaining events`(consumed: Int) {
-        val stream = AgentTurnResults.collecting(source(events()))
+        val stream = AgentTurnResults.withResultCollection(source(events()))
         assertThat(stream.stream().limit(consumed.toLong()).count()).isEqualTo(consumed.toLong())
         assertThat(AgentTurnResults.getFinalResult(stream).outputText()).isEqualTo("Answer")
-    }
-
-    @Test
-    fun `nullable added envelopes cannot hide unfinished final messages`() {
-        val added =
-            message(done = false)
-                .replace(
-                    "\"turn_id\":\"root\",\"output_index\":0,\"item\"",
-                    "\"turn_id\":null,\"output_index\":null,\"item\"",
-                )
-        val stream =
-            AgentTurnResults.collecting(
-                source(listOf(turn("created"), added, turn("completed"), idle()))
-            )
-        assertThat(
-                (catchThrowable { AgentTurnResults.getFinalResult(stream) }
-                        as AgentTurnResultException)
-                    .reason()
-            )
-            .isEqualTo(AgentTurnResultException.Reason.INCOMPLETE_OUTPUT)
     }
 
     @Test
@@ -129,75 +104,53 @@ internal class AgentTurnResultsTest {
                     message("later-answer", text = "Wrong", turn = "later"),
                     turn("failed", "later"),
                 )
-        val source =
-            object : StreamResponse<AgentSessionEvent> {
-                override fun stream() =
-                    java.util.stream.Stream.concat(
-                        input.stream().map { mapper.readValue(it, AgentSessionEvent::class.java) },
-                        java.util.stream.Stream.generate<AgentSessionEvent> { throw cause },
-                    )
-
-                override fun close() {}
-            }
-        val stream = AgentTurnResults.collecting(source)
-        assertThatThrownBy { stream.stream().forEach {} }.isSameAs(cause)
+        val stream = AgentTurnResults.withResultCollection(source(input, cause))
+        assertThatThrownBy { stream.stream().forEach {} }.hasRootCause(cause)
         assertThat(AgentTurnResults.getFinalResult(stream).outputText()).isEqualTo("Answer")
     }
 
     @Test
     fun `unknown added phase can resolve to completed commentary`() {
         val stream =
-            AgentTurnResults.collecting(
-                source(
-                    listOf(
-                        turn("created"),
-                        message(phase = "null", done = false),
-                        message(phase = "\"commentary\""),
-                        turn("completed"),
-                        idle(),
-                    )
+            source(
+                listOf(
+                    turn("created"),
+                    message(phase = "null", done = false),
+                    message(phase = "\"commentary\""),
+                    turn("completed"),
+                    idle(),
                 )
             )
+
         assertThat(AgentTurnResults.getFinalResult(stream).outputText()).isEmpty()
     }
 
     @Test
-    fun `completed text free turn is a valid result`() {
+    fun `completed messages with an unspecified phase are included`() {
         val stream =
-            AgentTurnResults.collecting(source(listOf(turn("created"), turn("completed"), idle())))
+            source(listOf(turn("created"), message(phase = "null"), turn("completed"), idle()))
+
+        assertThat(AgentTurnResults.getFinalResult(stream).outputText()).isEqualTo("Answer")
+    }
+
+    @Test
+    fun `completed text free turn is a valid result`() {
+        val stream = source(listOf(turn("created"), turn("completed"), idle()))
         assertThat(AgentTurnResults.getFinalResult(stream).outputText()).isEmpty()
     }
 
     @Test
     fun `getter stops at idle without waiting for stream EOF`() {
-        val consumed = AtomicInteger()
-        val source =
-            object : StreamResponse<AgentSessionEvent> {
-                override fun stream() =
-                    java.util.stream.Stream.generate {
-                        val index = consumed.getAndIncrement()
-                        check(index < events().size) {
-                            "Read after the completed turn's idle boundary"
-                        }
-                        mapper.readValue(events()[index], AgentSessionEvent::class.java)
-                    }
-
-                override fun close() {}
-            }
-        assertThat(
-                AgentTurnResults.getFinalResult(AgentTurnResults.collecting(source)).outputText()
-            )
-            .isEqualTo("Answer")
-        assertThat(consumed.get()).isEqualTo(4)
+        val stream =
+            source(events(), AssertionError("Read after the completed turn's idle boundary"))
+        assertThat(AgentTurnResults.getFinalResult(stream).outputText()).isEqualTo("Answer")
     }
 
     @ParameterizedTest
     @ValueSource(strings = ["failed", "cancelled"])
     fun `unsuccessful turns preserve metadata and output`(status: String) {
-        val stream =
-            AgentTurnResults.collecting(
-                source(listOf(turn("created"), message(), turn(status), idle()))
-            )
+        val stream = source(listOf(turn("created"), message(), turn(status), idle()))
+
         val failure =
             catchThrowable { AgentTurnResults.getFinalResult(stream) } as AgentTurnResultException
         assertThat(failure.reason().name).isEqualTo("TURN_${status.uppercase()}")
@@ -207,11 +160,11 @@ internal class AgentTurnResultsTest {
 
     @Test
     fun `EOF and close do not claim final output`() {
-        val stream = AgentTurnResults.collecting(source(events().dropLast(1)))
+        val stream = source(events().dropLast(1))
         val eof =
             catchThrowable { AgentTurnResults.getFinalResult(stream) } as AgentTurnResultException
         assertThat(eof.reason()).isEqualTo(AgentTurnResultException.Reason.INCOMPLETE_STREAM)
-        val closed = AgentTurnResults.collecting(source(events()))
+        val closed = source(events())
         closed.close()
         assertThat(
                 (catchThrowable { AgentTurnResults.getFinalResult(closed) }
@@ -222,30 +175,10 @@ internal class AgentTurnResultsTest {
     }
 
     @Test
-    fun `unknown phase and unfinished final output are explicit failures`() {
-        for ((item, reason) in
-            listOf(
-                message(phase = "null") to AgentTurnResultException.Reason.OUTPUT_SELECTION,
-                message(done = false) to AgentTurnResultException.Reason.INCOMPLETE_OUTPUT,
-            )) {
-            val stream =
-                AgentTurnResults.collecting(
-                    source(listOf(turn("created"), item, turn("completed"), idle()))
-                )
-            assertThat(
-                    (catchThrowable { AgentTurnResults.getFinalResult(stream) }
-                            as AgentTurnResultException)
-                        .reason()
-                )
-                .isEqualTo(reason)
-        }
-    }
-
-    @Test
     fun `unhandled actions do not wait forever`() {
         val action =
             """{"type":"agent.session.requires_action","event_id":"action","session":{"id":"s","status":"requires_action","required_actions":[{"type":"function_call","name":"lookup","call_id":"call","turn_id":"root"}]}}"""
-        val stream = AgentTurnResults.collecting(source(listOf(turn("created"), action)))
+        val stream = source(listOf(turn("created"), action))
         val failure =
             catchThrowable { AgentTurnResults.getFinalResult(stream) } as AgentTurnResultException
         assertThat(failure.reason()).isEqualTo(AgentTurnResultException.Reason.REQUIRES_ACTION)
@@ -255,21 +188,19 @@ internal class AgentTurnResultsTest {
     @Test
     fun `transport cause remains available`() {
         val cause = java.io.IOException("synthetic disconnect")
-        val source =
-            object : StreamResponse<AgentSessionEvent> {
-                override fun stream(): java.util.stream.Stream<AgentSessionEvent> = throw cause
-
-                override fun close() {}
-            }
         val failure =
-            catchThrowable { AgentTurnResults.getFinalResult(AgentTurnResults.collecting(source)) }
+            catchThrowable { AgentTurnResults.getFinalResult(source(emptyList(), cause)) }
                 as AgentTurnResultException
         assertThat(failure.reason()).isEqualTo(AgentTurnResultException.Reason.STREAM_ERROR)
-        assertThat(failure.cause).isSameAs(cause)
+        assertThat(failure).hasRootCause(cause)
         assertThat(failure.turn()).isEmpty()
     }
 
-    private inner class Transport(var events: List<String> = events()) : HttpClient {
+    private inner class Transport(
+        var events: List<String> = events(),
+        private val failure: Throwable? = null,
+    ) : HttpClient {
+        var responseReady = CompletableFuture.completedFuture<Void?>(null)
         val posts = AtomicInteger()
         val closed = AtomicInteger()
 
@@ -294,7 +225,22 @@ internal class AgentTurnResultsTest {
                         )
                         .build()
 
-                override fun body() = ByteArrayInputStream(body.toByteArray())
+                override fun body() =
+                    object : ByteArrayInputStream(body.toByteArray()) {
+                        override fun read(): Int {
+                            if (available() == 0 && failure != null) throw failure
+                            return super.read()
+                        }
+
+                        // Limit read-ahead so a synthetic disconnect occurs only after queued
+                        // events.
+                        override fun read(bytes: ByteArray, offset: Int, length: Int): Int {
+                            val next = read()
+                            if (next == -1) return -1
+                            bytes[offset] = next.toByte()
+                            return 1
+                        }
+                    }
 
                 override fun close() {
                     closed.incrementAndGet()
@@ -303,7 +249,7 @@ internal class AgentTurnResultsTest {
         }
 
         override fun executeAsync(request: HttpRequest, requestOptions: RequestOptions) =
-            CompletableFuture.completedFuture(execute(request, requestOptions))
+            responseReady.thenApply { execute(request, requestOptions) }
 
         override fun close() {}
 
@@ -381,7 +327,10 @@ internal class AgentTurnResultsTest {
             val stream: AsyncStreamResponse<AgentSessionEvent> =
                 client.async().beta().agents().sessions().createStreaming(createParams())
             val observed = AtomicInteger()
-            if (subscribe) stream.subscribe { observed.incrementAndGet() }
+            if (subscribe)
+                AgentTurnResults.withResultCollection(stream).subscribe {
+                    observed.incrementAndGet()
+                }
             val result = AgentTurnResults.getFinalResult(stream).get(5, TimeUnit.SECONDS)
             assertThat(result.outputText()).isEqualTo("Answer")
             assertThat(AgentTurnResults.getFinalResult(stream).get()).isSameAs(result)
@@ -409,40 +358,102 @@ internal class AgentTurnResultsTest {
         }
     }
 
-    @Test
-    fun `async result callbacks can read the result from another thread`() {
-        val source =
-            object : AsyncStreamResponse<AgentSessionEvent> {
-                lateinit var handler: AsyncStreamResponse.Handler<AgentSessionEvent>
-                val completion = CompletableFuture<Void?>()
+    private fun assertNoCollectedPayload(stream: Any) {
+        val collectorField =
+            stream.javaClass.getDeclaredField("collector").apply { isAccessible = true }
+        val collector = collectorField.get(stream)
+        val messages =
+            collector.javaClass.getDeclaredField("messages").apply { isAccessible = true }
+        val turn = collector.javaClass.getDeclaredField("turn").apply { isAccessible = true }
+        assertThat(messages.get(collector) as Map<*, *>).isEmpty()
+        assertThat(turn.get(collector)).isNull()
+    }
 
-                override fun subscribe(
-                    handler: AsyncStreamResponse.Handler<AgentSessionEvent>
-                ): AsyncStreamResponse<AgentSessionEvent> = apply { this.handler = handler }
-
-                override fun subscribe(
-                    handler: AsyncStreamResponse.Handler<AgentSessionEvent>,
-                    executor: Executor,
-                ) = subscribe(handler)
-
-                override fun onCompleteFuture() = completion
-
-                override fun close() {
-                    completion.complete(null)
-                }
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `raw sync streams retain no result payload and reject late collection`(followUp: Boolean) {
+        val transport =
+            Transport(
+                listOf(turn("created")) +
+                    (0 until 1000).map { message("answer-$it", it) } +
+                    listOf(turn("completed"), idle())
+            )
+        transport.client().useClient { client ->
+            val sessions = client.beta().agents().sessions()
+            val stream =
+                if (followUp)
+                    sessions.stream(
+                        AgentSessionStreamParams.builder().sessionId("s").input("Question").build()
+                    )
+                else sessions.createStreaming(createParams())
+            stream.use {
+                assertThat(it.stream().count()).isEqualTo(1003)
+                assertNoCollectedPayload(it)
+                assertThatThrownBy { AgentTurnResults.getFinalResult(it) }
+                    .isInstanceOf(IllegalStateException::class.java)
+                    .hasMessageContaining("before consuming events")
             }
-        val stream = AgentTurnResults.collecting(source)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `raw async streams retain no result payload and reject late collection`(followUp: Boolean) {
+        val transport =
+            Transport(
+                listOf(turn("created")) +
+                    (0 until 1000).map { message("answer-$it", it) } +
+                    listOf(turn("completed"), idle())
+            )
+        transport.client().useClient { client ->
+            val sessions = client.async().beta().agents().sessions()
+            val stream =
+                if (followUp)
+                    sessions.stream(
+                        AgentSessionStreamParams.builder().sessionId("s").input("Question").build()
+                    )
+                else sessions.createStreaming(createParams())
+            if (followUp) stream.subscribe(AsyncStreamResponse.Handler {}, direct)
+            else stream.subscribe {}
+            stream.onCompleteFuture().get(5, TimeUnit.SECONDS)
+            assertNoCollectedPayload(stream)
+            assertThatThrownBy { AgentTurnResults.withResultCollection(stream) }
+                .isInstanceOf(IllegalStateException::class.java)
+                .hasMessageContaining("before consuming events")
+            assertThatThrownBy { AgentTurnResults.getFinalResult(stream) }
+                .isInstanceOf(IllegalStateException::class.java)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `getter after raw async completion without events does not hang`(failed: Boolean) {
+        val transport =
+            Transport(emptyList(), if (failed) java.io.IOException("early disconnect") else null)
+        transport.client().useClient { client ->
+            val stream = client.async().beta().agents().sessions().createStreaming(createParams())
+            stream.subscribe {}
+            assertThatThrownBy { AgentTurnResults.getFinalResult(stream).get(5, TimeUnit.SECONDS) }
+                .hasCauseInstanceOf(AgentTurnResultException::class.java)
+        }
+    }
+
+    @Test
+    fun `async result callbacks can await source completion and read the result`() {
+        val transport = Transport()
+        transport.responseReady = CompletableFuture()
+        val stream =
+            transport.client().async().beta().agents().sessions().createStreaming(createParams())
         val future = AgentTurnResults.getFinalResult(stream)
         val checked =
             future.thenApply {
+                stream.onCompleteFuture().get(5, TimeUnit.SECONDS)
                 CompletableFuture.supplyAsync {
                         AgentTurnResults.getFinalResult(stream).get().outputText()
                     }
                     .get(5, TimeUnit.SECONDS)
             }
-        events().forEach {
-            source.handler.onNext(mapper.readValue(it, AgentSessionEvent::class.java))
-        }
+        transport.responseReady.complete(null)
         assertThat(checked.get(5, TimeUnit.SECONDS)).isEqualTo("Answer")
     }
 }
