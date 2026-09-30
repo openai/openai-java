@@ -48,7 +48,7 @@ private constructor(
 
     override fun items(): List<AgentSessionItem> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): ItemListParams =
         params
@@ -80,6 +80,21 @@ private constructor(
 
                             override fun visitMcpCall(mcpCall: AgentMcpCallItem): Optional<String> =
                                 mcpCall._id().getOptional("id")
+
+                            override fun visitComputerUseCall(
+                                computerUseCall: AgentSessionItem.ComputerUseCall
+                            ): Optional<String> = computerUseCall._id().getOptional("id")
+
+                            override fun visitComputerUseApprovalRequest(
+                                computerUseApprovalRequest:
+                                    AgentSessionItem.ComputerUseApprovalRequest
+                            ): Optional<String> = computerUseApprovalRequest._id().getOptional("id")
+
+                            override fun visitComputerUseApprovalRequestResult(
+                                computerUseApprovalRequestResult:
+                                    AgentSessionItem.ComputerUseApprovalRequestResult
+                            ): Optional<String> =
+                                computerUseApprovalRequestResult._id().getOptional("id")
 
                             override fun visitWebSearchCall(
                                 webSearchCall: AgentWebSearchCallItem

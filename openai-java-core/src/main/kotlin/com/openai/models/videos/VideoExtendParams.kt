@@ -600,7 +600,18 @@ private constructor(
         private val inputStream: InputStream? = null,
         private val referenceInputParam: VideoReferenceInputParam? = null,
         private val _json: JsonValue? = null,
-    ) {
+    ) : com.openai.core.http.MultipartInputStreamProvider {
+
+        @JvmSynthetic
+        override fun collectMultipartInputStreams(
+            consumer: (java.io.InputStream) -> kotlin.Unit
+        ): kotlin.Unit {
+            when {
+                this.inputStream != null -> consumer(this.inputStream)
+                this.referenceInputParam != null -> {}
+                else -> {}
+            }
+        }
 
         /** Reference to the completed video to extend. */
         fun inputStream(): Optional<InputStream> = Optional.ofNullable(inputStream)

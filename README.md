@@ -15,7 +15,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.70.0")
+implementation("com.openai:openai-java:4.72.0")
 ```
 
 ### Maven
@@ -24,7 +24,7 @@ implementation("com.openai:openai-java:4.70.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.70.0</version>
+  <version>4.72.0</version>
 </dependency>
 ```
 
@@ -99,7 +99,7 @@ with normal AWS credentials:
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java-bedrock:4.70.0")
+implementation("com.openai:openai-java-bedrock:4.72.0")
 ```
 
 <!-- x-release-please-end -->
@@ -1151,6 +1151,10 @@ FileCreateParams params = FileCreateParams.builder()
     .build();
 FileObject fileObject = client.files().create(params);
 ```
+
+If serializing a multipart upload fails, the SDK attempts to close all of its input streams,
+including files it has not read yet. Rebuild the upload parameters with fresh streams before
+retrying after a serialization failure.
 
 ## Webhook Verification
 

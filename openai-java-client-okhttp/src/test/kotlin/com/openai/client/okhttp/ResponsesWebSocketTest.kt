@@ -2925,8 +2925,11 @@ class ResponsesWebSocketTest {
     @Test
     fun `control frames retain their protocol limit with a small message limit`() {
         for (closeCode in listOf(1000, null)) {
+            val connected = CountDownLatch(1)
             val payload = "x".repeat(125)
             Peer { socket, _ ->
+                    // Closing before async connection completion correctly rejects connect().
+                    assertThat(connected.await(5, TimeUnit.SECONDS)).isTrue()
                     val output = DataOutputStream(socket.getOutputStream())
                     // A legal maximum-size ping must receive its matching pong.
                     output.writeByte(0x89)
@@ -2968,6 +2971,7 @@ class ResponsesWebSocketTest {
                             .connect(ResponseWebSocketOptions.builder().maxMessageBytes(32).build())
                             .get(5, TimeUnit.SECONDS)
                             .use { connection ->
+                                connected.countDown()
                                 assertThat(connection.receive().get(5, TimeUnit.SECONDS)._json())
                                     .isPresent()
                                 assertThatThrownBy { connection.receive().get(5, TimeUnit.SECONDS) }
@@ -2977,6 +2981,7 @@ class ResponsesWebSocketTest {
                             }
                         peer.await()
                     } finally {
+                        connected.countDown()
                         client.close()
                     }
                 }

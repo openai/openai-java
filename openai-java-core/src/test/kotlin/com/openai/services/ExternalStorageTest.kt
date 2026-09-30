@@ -169,7 +169,7 @@ internal class ExternalStorageTest {
                 .build()
         val ids = mutableListOf<String>()
 
-        // Standard Java cursor pages terminate on the empty page after the final item.
+        // Stop on the populated final page when has_more is explicitly false.
         if (async) {
             client
                 .async()
@@ -191,7 +191,7 @@ internal class ExternalStorageTest {
 
         assertThat(ids).containsExactlyElementsOf(items)
         server.verify(
-            3,
+            2,
             getRequestedFor(urlPathEqualTo(COLLECTION))
                 .withQueryParam("project_id", equalTo("proj_test"))
                 .withQueryParam("order", equalTo("asc"))
@@ -199,7 +199,7 @@ internal class ExternalStorageTest {
                 .withHeader("x-pagination-test", equalTo("preserved"))
                 .withHeader("Authorization", equalTo(ADMIN_AUTH)),
         )
-        assertThat(server.allServeEvents).hasSize(3)
+        assertThat(server.allServeEvents).hasSize(2)
     }
 
     @ParameterizedTest

@@ -93,6 +93,7 @@ object CoreCompilationShards {
             "com/openai/core/http/AsyncStreamResponse.kt",
             "com/openai/core/http/HttpMethod.kt",
             "com/openai/core/http/HttpRequestBody.kt",
+            "com/openai/core/http/MultipartInputStreams.kt",
             "com/openai/core/http/PhantomReachableClosingAsyncStreamResponse.kt",
             "com/openai/core/http/PhantomReachableClosingStreamResponse.kt",
             "com/openai/core/http/SseMessage.kt",

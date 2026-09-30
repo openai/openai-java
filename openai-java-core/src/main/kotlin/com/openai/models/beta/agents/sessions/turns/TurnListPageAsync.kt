@@ -37,7 +37,7 @@ private constructor(
 
     override fun items(): List<Turn> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): TurnListParams =
         params.toBuilder().after(items().last()._id().getOptional("id")).build()

@@ -11,6 +11,7 @@ import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketWriteNotAttempted
 import com.openai.core.jsonMapper
@@ -23,14 +24,21 @@ import com.openai.models.realtime.RealtimeTranslationServerEvent
 import com.openai.models.realtime.RealtimeTranslationSessionClosedEvent
 import java.io.IOException
 import java.time.Duration
+import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Delayed
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
+import java.util.concurrent.FutureTask
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.RunnableScheduledFuture
+import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.AtomicReference
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -60,6 +68,83 @@ class TranslationConnectionTest {
             .apiKey("fake-translation-key")
             .baseUrl(server.url("/v1?inherited=1").toString())
             .build()
+
+    private fun options(http: HttpClient) =
+        ClientOptions.builder().httpClient(http).apiKey("fake-translation-key").build()
+
+    private abstract class FakeTranslationTransport : HttpClient, WebSocketClient {
+        override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
+            throw AssertionError("WebSocket request made as HTTP")
+
+        override fun executeAsync(
+            request: HttpRequest,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> = throw AssertionError("WebSocket request made as HTTP")
+
+        override fun close() {}
+
+        override fun connectWebSocket(
+            request: HttpRequest,
+            options: RequestOptions,
+            maxMessageBytes: Int,
+            listener: WebSocketClient.Listener,
+        ): CompletableFuture<WebSocketClient.Connection> =
+            CompletableFuture.completedFuture(connection(listener))
+
+        abstract fun connection(listener: WebSocketClient.Listener): WebSocketClient.Connection
+    }
+
+    private class ControlledTiming : AutoCloseable {
+        private val now = AtomicLong()
+        private val alarm = CompletableFuture<Alarm>()
+        private val worker = Executors.newSingleThreadExecutor()
+        private val scheduler =
+            object : ScheduledThreadPoolExecutor(1) {
+                override fun schedule(command: Runnable, delay: Long, unit: TimeUnit) =
+                    Alarm(command, now.get() + unit.toNanos(delay)).also {
+                        check(alarm.complete(it))
+                    }
+            }
+        val timing = TranslationConnection.Timing(now::get, scheduler, worker)
+
+        private class Alarm(command: Runnable, val deadline: Long) :
+            FutureTask<Unit>(command, Unit), RunnableScheduledFuture<Unit> {
+            override fun getDelay(unit: TimeUnit) = 0L
+
+            override fun compareTo(other: Delayed) = 0
+
+            override fun isPeriodic() = false
+        }
+
+        fun expire() {
+            val task = alarm.get(5, TimeUnit.SECONDS)
+            now.set(task.deadline)
+            check(!task.isCancelled)
+            task.run()
+            try {
+                task.get(5, TimeUnit.SECONDS)
+            } catch (_: CancellationException) {
+                // Finish completion cancels its alarm, possibly while the callback is running.
+            }
+        }
+
+        fun awaitFinishWorker() {
+            worker.submit {}.get(5, TimeUnit.SECONDS)
+        }
+
+        override fun close() {
+            worker.shutdownNow()
+            scheduler.shutdownNow()
+            check(worker.awaitTermination(5, TimeUnit.SECONDS))
+            check(scheduler.awaitTermination(5, TimeUnit.SECONDS))
+        }
+    }
+
+    private fun awaitWriter(writer: AtomicReference<Thread>) {
+        val thread = checkNotNull(writer.get())
+        thread.join(5000)
+        assertThat(thread.isAlive).isFalse()
+    }
 
     private inner class Peer(private val whenClosing: (WebSocket) -> Unit = {}) :
         WebSocketListener() {
@@ -569,8 +654,10 @@ class TranslationConnectionTest {
             OkHttpClient.builder().build().use { http ->
                 val entered = CountDownLatch(1)
                 val release = CountDownLatch(1)
+                val writer = AtomicReference<Thread>()
                 val client =
                     wrapping(http) { native, text ->
+                        writer.set(Thread.currentThread())
                         entered.countDown()
                         check(release.await(7, TimeUnit.SECONDS))
                         native.send(text)
@@ -579,95 +666,122 @@ class TranslationConnectionTest {
                     TranslationWebSocketOptions.builder()
                         .sendTimeout(Duration.ofMillis(250))
                         .build()
-                TranslationConnection.connect(options(server, client), settings).use { connection ->
-                    TranslationConnection.connect(options(server, http)).use { unaffected ->
-                        try {
-                            val reading = connection.receiveAsync()
-                            val input = CompletableFuture.runAsync { connection.send(audio()) }
-                            assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
-                            assertThatThrownBy { input.get(3, TimeUnit.SECONDS) }
-                                .hasRootCauseInstanceOf(TimeoutException::class.java)
-                            assertThatThrownBy { reading.get(3, TimeUnit.SECONDS) }
-                                .hasCauseInstanceOf(TimeoutException::class.java)
-                            assertThat(peer.terminated.await(3, TimeUnit.SECONDS)).isTrue()
-                            assertThat(peer.messages).isEmpty()
-                            unaffected.send(audio("AQID"))
-                            assertThat(neighbor.next().path("audio").asText()).isEqualTo("AQID")
-                            release.countDown()
-                            assertThatThrownBy { connection.send(audio()) }
-                                .hasMessageContaining("not connected")
-                        } finally {
-                            release.countDown()
+                ControlledTiming().use { clock ->
+                    TranslationConnection.connect(options(server, client), settings, clock.timing)
+                        .use { connection ->
+                            TranslationConnection.connect(options(server, http)).use { unaffected ->
+                                try {
+                                    val reading = connection.receiveAsync()
+                                    val input =
+                                        CompletableFuture.runAsync { connection.send(audio()) }
+                                    assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
+                                    assertThat(input.isDone).isFalse()
+                                    clock.expire()
+                                    assertThatThrownBy { input.get(3, TimeUnit.SECONDS) }
+                                        .hasRootCauseInstanceOf(TimeoutException::class.java)
+                                    assertThatThrownBy { reading.get(3, TimeUnit.SECONDS) }
+                                        .hasCauseInstanceOf(TimeoutException::class.java)
+                                    assertThat(peer.terminated.await(3, TimeUnit.SECONDS)).isTrue()
+                                    assertThat(peer.messages).isEmpty()
+                                    unaffected.send(audio("AQID"))
+                                    assertThat(neighbor.next().path("audio").asText())
+                                        .isEqualTo("AQID")
+                                    release.countDown()
+                                    awaitWriter(writer)
+                                    assertThat(peer.messages).isEmpty()
+                                    assertThatThrownBy { connection.send(audio()) }
+                                        .hasMessageContaining("not connected")
+                                } finally {
+                                    release.countDown()
+                                    if (writer.get() != null) awaitWriter(writer)
+                                }
+                            }
                         }
-                    }
                 }
             }
         }
     }
 
     @Test
-    fun timeoutDuringCustomReadinessPreventsAnyLateSendAfterUnblocking() {
-        MockWebServer().use { server ->
-            val peer = Peer()
-            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
-            OkHttpClient.builder().build().use { http ->
-                val entered = CountDownLatch(1)
-                val release = CountDownLatch(1)
-                val finished = CountDownLatch(1)
-                val writes = AtomicInteger()
-                val client =
-                    object : HttpClient by http, WebSocketClient {
-                        override fun connectWebSocket(
-                            request: HttpRequest,
-                            requestOptions: RequestOptions,
-                            maxMessageBytes: Int,
-                            listener: WebSocketClient.Listener,
-                        ): CompletableFuture<WebSocketClient.Connection> =
-                            http
-                                .connectWebSocket(
-                                    request,
-                                    requestOptions,
-                                    maxMessageBytes,
-                                    listener,
-                                )
-                                .thenApply { native ->
-                                    object : WebSocketClient.WritableConnection {
-                                        override fun awaitWritable(timeout: Duration) {
-                                            entered.countDown()
-                                            try {
-                                                check(release.await(7, TimeUnit.SECONDS))
-                                            } finally {
-                                                finished.countDown()
-                                            }
-                                        }
+    fun timeoutDuringCustomReadinessPreventsAnyLateSendAfterUnblocking() =
+        checkReadinessTimeout(duringSerialization = false)
 
-                                        override fun send(text: String) {
-                                            writes.incrementAndGet()
-                                            native.send(text)
-                                        }
+    @Test
+    fun timeoutDuringSerializationNeverEntersCustomReadiness() =
+        checkReadinessTimeout(duringSerialization = true)
 
-                                        override fun close() = native.close()
-                                    }
-                                }
+    private fun checkReadinessTimeout(duringSerialization: Boolean) {
+        val entered = CountDownLatch(1)
+        val serialized = CountDownLatch(1)
+        val readinessReturned = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        val writer = AtomicReference<Thread>()
+        val writes = AtomicInteger()
+        val closed = CountDownLatch(1)
+        val observedTimeout = AtomicReference<Duration>()
+        val client =
+            object : FakeTranslationTransport() {
+                override fun connection(listener: WebSocketClient.Listener) =
+                    object : WebSocketClient.WritableConnection {
+                        override fun awaitWritable(timeout: Duration) {
+                            observedTimeout.set(timeout)
+                            entered.countDown()
+                            check(release.await(10, TimeUnit.SECONDS))
+                            readinessReturned.countDown()
+                        }
+
+                        override fun send(text: String) {
+                            writes.incrementAndGet()
+                        }
+
+                        override fun close() {
+                            closed.countDown()
+                        }
                     }
-                val settings =
-                    TranslationWebSocketOptions.builder()
-                        .sendTimeout(Duration.ofMillis(250))
-                        .build()
-                TranslationConnection.connect(options(server, client), settings).use { connection ->
-                    try {
-                        val input = CompletableFuture.runAsync { connection.send(audio()) }
-                        assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
-                        assertThatThrownBy { input.get(3, TimeUnit.SECONDS) }
-                            .hasRootCauseInstanceOf(TimeoutException::class.java)
-                        assertThat(peer.terminated.await(3, TimeUnit.SECONDS)).isTrue()
-                        release.countDown()
-                        assertThat(finished.await(3, TimeUnit.SECONDS)).isTrue()
-                        assertThat(writes.get()).isZero()
-                        assertThat(peer.messages).isEmpty()
-                    } finally {
-                        release.countDown()
+            }
+        val settings =
+            TranslationWebSocketOptions.builder().sendTimeout(Duration.ofMillis(250)).build()
+        val clientOptions =
+            options(client)
+                .toBuilder()
+                .jsonMapper(
+                    object : JsonMapper(mapper) {
+                        override fun writeValueAsString(value: Any): String {
+                            writer.set(Thread.currentThread())
+                            serialized.countDown()
+                            if (duringSerialization) check(release.await(10, TimeUnit.SECONDS))
+                            return super.writeValueAsString(value)
+                        }
                     }
+                )
+                .build()
+        ControlledTiming().use { clock ->
+            TranslationConnection.connect(clientOptions, settings, clock.timing).use { connection ->
+                try {
+                    val input = CompletableFuture.runAsync { connection.send(audio()) }
+                    assertThat(
+                            (if (duringSerialization) serialized else entered).await(
+                                5,
+                                TimeUnit.SECONDS,
+                            )
+                        )
+                        .isTrue()
+                    assertThat(input.isDone).isFalse()
+                    clock.expire()
+                    assertThatThrownBy { input.get(3, TimeUnit.SECONDS) }
+                        .hasRootCauseInstanceOf(TimeoutException::class.java)
+                    assertThat(closed.await(3, TimeUnit.SECONDS)).isTrue()
+                    release.countDown()
+                    awaitWriter(writer)
+                    assertThat(entered.count).isEqualTo(if (duringSerialization) 1L else 0L)
+                    assertThat(readinessReturned.count)
+                        .isEqualTo(if (duringSerialization) 1L else 0L)
+                    if (!duringSerialization)
+                        assertThat(observedTimeout.get()).isEqualTo(Duration.ofMillis(250))
+                    assertThat(writes.get()).isZero()
+                } finally {
+                    release.countDown()
+                    if (writer.get() != null) awaitWriter(writer)
                 }
             }
         }
@@ -1020,8 +1134,8 @@ class TranslationConnectionTest {
                     assertThatThrownBy { opening.get(5, TimeUnit.SECONDS) }
                         .isInstanceOf(ExecutionException::class.java)
                         .hasCause(error)
-                    assertThat(pending.isCancelled).isTrue()
                     assertThat(failing.terminated.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(pending.isCancelled).isTrue()
                     assertThat(failing.messages).isEmpty()
                     unaffected.send(audio("AQ=="))
                     assertThat(other.next().path("audio").asText()).isEqualTo("AQ==")
@@ -1264,32 +1378,97 @@ class TranslationConnectionTest {
     }
 
     @Test
-    fun terminalCannotSucceedWhenAdmittedSendReturnsAfterDeadline() {
-        MockWebServer().use { server ->
-            val peer = Peer(::finalEvents)
-            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
-            OkHttpClient.builder().build().use { http ->
-                val client =
-                    wrapping(http) { native, text ->
-                        native.send(text)
-                        check(peer.terminated.await(5, TimeUnit.SECONDS))
-                        Thread.sleep(1200)
-                    }
-                TranslationConnection.connect(options(server, client)).use { connection ->
-                    assertThatThrownBy {
-                            connection.finishAsync(Duration.ofSeconds(1)).get(5, TimeUnit.SECONDS)
+    fun terminalCannotSucceedWhenAdmittedSendReturnsAfterDeadline() =
+        checkTerminalTimeout(lateEvents = false)
+
+    @Test
+    fun terminalEventsArrivingAfterDeadlineAreIgnored() = checkTerminalTimeout(lateEvents = true)
+
+    private fun checkTerminalTimeout(lateEvents: Boolean) {
+        val closeAccepted = CountDownLatch(1)
+        val sendEntered = CountDownLatch(1)
+        val releaseEvents = CountDownLatch(1)
+        val releaseSend = CountDownLatch(1)
+        val sendReturned = CountDownLatch(1)
+        val writes = LinkedBlockingQueue<JsonNode>()
+        val client =
+            object : FakeTranslationTransport() {
+                override fun connection(listener: WebSocketClient.Listener) =
+                    object : WebSocketClient.Connection {
+                        override fun send(text: String) {
+                            val json = mapper.readTree(text)
+                            writes.add(json)
+                            if (json.path("type").asText() == close) {
+                                sendEntered.countDown()
+                                if (lateEvents) check(releaseEvents.await(10, TimeUnit.SECONDS))
+                                listener.onMessage(
+                                    """{"type":"session.output_transcript.delta","event_id":"t","delta":"Hola","elapsed_ms":200}"""
+                                )
+                                listener.onMessage(
+                                    """{"type":"session.output_audio.delta","event_id":"a","delta":"AQID","sample_rate":24000}"""
+                                )
+                                listener.onMessage(
+                                    """{"type":"session.closed","event_id":"done"}"""
+                                )
+                                closeAccepted.countDown()
+                            }
+                            check(releaseSend.await(10, TimeUnit.SECONDS))
+                            sendReturned.countDown()
                         }
-                        .isInstanceOf(ExecutionException::class.java)
-                        .hasCauseInstanceOf(TimeoutException::class.java)
-                    assertThat(peer.next().path("type").asText()).isEqualTo(close)
-                    assertThat(peer.messages).isEmpty()
-                    assertThat(connection.receive().asSessionOutputTranscriptDelta().delta())
-                        .isEqualTo("Hola")
-                    assertThat(connection.receive().asSessionOutputAudioDelta().delta())
-                        .isEqualTo("AQID")
-                    assertThat(connection.receive().asSessionClosed().eventId()).isEqualTo("done")
-                }
+
+                        override fun close() {}
+                    }
             }
+        ControlledTiming().use { clock ->
+            TranslationConnection.connect(
+                    options(client),
+                    TranslationWebSocketOptions.defaults(),
+                    clock.timing,
+                )
+                .use { connection ->
+                    try {
+                        val finish = connection.finishAsync(Duration.ofSeconds(1))
+                        assertThat(
+                                (if (lateEvents) sendEntered else closeAccepted).await(
+                                    5,
+                                    TimeUnit.SECONDS,
+                                )
+                            )
+                            .isTrue()
+                        assertThat(finish.isDone).isFalse()
+                        assertThat(writes.poll(3, TimeUnit.SECONDS).path("type").asText())
+                            .isEqualTo(close)
+                        assertThat(writes).isEmpty()
+                        clock.expire()
+                        assertThatThrownBy { finish.get(5, TimeUnit.SECONDS) }
+                            .isInstanceOf(ExecutionException::class.java)
+                            .hasCauseInstanceOf(TimeoutException::class.java)
+                        releaseEvents.countDown()
+                        releaseSend.countDown()
+                        clock.awaitFinishWorker()
+                        assertThat(closeAccepted.count).isZero()
+                        assertThat(sendReturned.count).isZero()
+                        assertThatThrownBy { finish.get(5, TimeUnit.SECONDS) }
+                            .hasCauseInstanceOf(TimeoutException::class.java)
+                        if (lateEvents) {
+                            assertThatThrownBy { connection.receive() }
+                                .hasCauseInstanceOf(TimeoutException::class.java)
+                        } else {
+                            assertThat(
+                                    connection.receive().asSessionOutputTranscriptDelta().delta()
+                                )
+                                .isEqualTo("Hola")
+                            assertThat(connection.receive().asSessionOutputAudioDelta().delta())
+                                .isEqualTo("AQID")
+                            assertThat(connection.receive().asSessionClosed().eventId())
+                                .isEqualTo("done")
+                        }
+                    } finally {
+                        releaseEvents.countDown()
+                        releaseSend.countDown()
+                        clock.awaitFinishWorker()
+                    }
+                }
         }
     }
 

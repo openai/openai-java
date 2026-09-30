@@ -45,7 +45,8 @@ private constructor(
 
     override fun items(): List<ProjectRateLimit> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty() && lastId().isPresent
+    override fun hasNextPage(): Boolean =
+        hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent
 
     fun nextPageParams(): RateLimitListRateLimitsParams {
         val nextCursor =

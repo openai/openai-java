@@ -34,6 +34,7 @@ internal class AgentToolTest {
         assertThat(agentTool.programmaticToolCalling()).isEmpty
         assertThat(agentTool.mcp()).isEmpty
         assertThat(agentTool.webSearch()).isEmpty
+        assertThat(agentTool.computerUse()).isEmpty
     }
 
     @Test
@@ -73,6 +74,7 @@ internal class AgentToolTest {
         assertThat(agentTool.programmaticToolCalling()).contains(programmaticToolCalling)
         assertThat(agentTool.mcp()).isEmpty
         assertThat(agentTool.webSearch()).isEmpty
+        assertThat(agentTool.computerUse()).isEmpty
     }
 
     @Test
@@ -115,6 +117,7 @@ internal class AgentToolTest {
         assertThat(agentTool.programmaticToolCalling()).isEmpty
         assertThat(agentTool.mcp()).contains(mcp)
         assertThat(agentTool.webSearch()).isEmpty
+        assertThat(agentTool.computerUse()).isEmpty
     }
 
     @Test
@@ -169,6 +172,7 @@ internal class AgentToolTest {
         assertThat(agentTool.programmaticToolCalling()).isEmpty
         assertThat(agentTool.mcp()).isEmpty
         assertThat(agentTool.webSearch()).contains(webSearch)
+        assertThat(agentTool.computerUse()).isEmpty
     }
 
     @Test
@@ -189,6 +193,36 @@ internal class AgentToolTest {
                     )
                     .mode(AgentTool.WebSearch.Mode.DISABLED)
                     .build()
+            )
+
+        val roundtrippedAgentTool =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(agentTool),
+                jacksonTypeRef<AgentTool>(),
+            )
+
+        assertThat(roundtrippedAgentTool).isEqualTo(agentTool)
+    }
+
+    @Test
+    fun ofComputerUse() {
+        val computerUse = AgentTool.ComputerUse.builder().includeScreenshots(true).build()
+
+        val agentTool = AgentTool.ofComputerUse(computerUse)
+
+        assertThat(agentTool.function()).isEmpty
+        assertThat(agentTool.programmaticToolCalling()).isEmpty
+        assertThat(agentTool.mcp()).isEmpty
+        assertThat(agentTool.webSearch()).isEmpty
+        assertThat(agentTool.computerUse()).contains(computerUse)
+    }
+
+    @Test
+    fun ofComputerUseRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val agentTool =
+            AgentTool.ofComputerUse(
+                AgentTool.ComputerUse.builder().includeScreenshots(true).build()
             )
 
         val roundtrippedAgentTool =
