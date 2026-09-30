@@ -26,8 +26,9 @@ interface PartService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): PartService
 
     /**
-     * Adds a [Part](https://platform.openai.com/docs/api-reference/uploads/part-object) to an
-     * [Upload](https://platform.openai.com/docs/api-reference/uploads/object) object. A Part
+     * Adds a
+     * [Part](https://developers.openai.com/api/reference/resources/uploads/subresources/parts) to
+     * an [Upload](https://developers.openai.com/api/reference/resources/uploads) object. A Part
      * represents a chunk of bytes from the file you are trying to upload.
      *
      * Each Part can be at most 64 MB, and you can add Parts until you hit the Upload maximum of 8
@@ -35,7 +36,7 @@ interface PartService {
      *
      * It is possible to add multiple Parts in parallel. You can decide the intended order of the
      * Parts when you
-     * [complete the Upload](https://platform.openai.com/docs/api-reference/uploads/complete).
+     * [complete the Upload](https://developers.openai.com/api/reference/resources/uploads/methods/complete).
      */
     fun create(uploadId: String, params: PartCreateParams): UploadPart =
         create(uploadId, params, RequestOptions.none())

@@ -33,7 +33,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * A tool that searches for relevant content from uploaded files. Learn more about the
- * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
+ * [file search tool](https://developers.openai.com/api/docs/guides/tools-file-search).
  */
 class BetaFileSearchTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -559,7 +559,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Filters: $json")
+                throw OpenAIInvalidDataException("Unknown Filters")
             }
         }
 
@@ -1288,7 +1288,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
                     fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown Value: $json")
+                        throw OpenAIInvalidDataException("Unknown Value")
                     }
                 }
 
@@ -1517,9 +1517,7 @@ private constructor(
                          * @throws OpenAIInvalidDataException in the default implementation.
                          */
                         fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException(
-                                "Unknown ComparisonFilterValueItem: $json"
-                            )
+                            throw OpenAIInvalidDataException("Unknown ComparisonFilterValueItem")
                         }
                     }
 
@@ -2011,7 +2009,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
                     fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown Filter: $json")
+                        throw OpenAIInvalidDataException("Unknown Filter")
                     }
                 }
 
@@ -2769,7 +2767,7 @@ private constructor(
                              * @throws OpenAIInvalidDataException in the default implementation.
                              */
                             fun unknown(json: JsonValue?): T {
-                                throw OpenAIInvalidDataException("Unknown Value: $json")
+                                throw OpenAIInvalidDataException("Unknown Value")
                             }
                         }
 
@@ -3012,7 +3010,7 @@ private constructor(
                                  */
                                 fun unknown(json: JsonValue?): T {
                                     throw OpenAIInvalidDataException(
-                                        "Unknown ComparisonFilterValueItem: $json"
+                                        "Unknown ComparisonFilterValueItem"
                                     )
                                 }
                             }

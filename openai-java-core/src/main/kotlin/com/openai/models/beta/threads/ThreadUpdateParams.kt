@@ -847,8 +847,8 @@ private constructor(
             ) : this(fileIds, mutableMapOf())
 
             /**
-             * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-             * available to the `code_interpreter` tool. There can be a maximum of 20 files
+             * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
+             * made available to the `code_interpreter` tool. There can be a maximum of 20 files
              * associated with the tool.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -896,8 +896,8 @@ private constructor(
                 }
 
                 /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
+                 * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
+                 * made available to the `code_interpreter` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  */
                 fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
@@ -1030,7 +1030,7 @@ private constructor(
 
             /**
              * The
-             * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+             * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
              * attached to this thread. There can be a maximum of 1 vector store attached to the
              * thread.
              *
@@ -1082,7 +1082,7 @@ private constructor(
 
                 /**
                  * The
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
                  * attached to this thread. There can be a maximum of 1 vector store attached to the
                  * thread.
                  */

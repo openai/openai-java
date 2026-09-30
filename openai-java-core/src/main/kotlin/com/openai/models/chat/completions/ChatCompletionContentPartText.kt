@@ -17,7 +17,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+/** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
 class ChatCompletionContentPartText
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(

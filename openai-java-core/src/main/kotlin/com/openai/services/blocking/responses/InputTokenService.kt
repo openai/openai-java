@@ -10,6 +10,7 @@ import com.openai.models.responses.inputtokens.InputTokenCountParams
 import com.openai.models.responses.inputtokens.InputTokenCountResponse
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 interface InputTokenService {
 
     /**

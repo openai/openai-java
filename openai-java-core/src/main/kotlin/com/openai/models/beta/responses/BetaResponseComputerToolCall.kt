@@ -22,7 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * A tool call to a computer use tool. See the
- * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more
+ * [computer use guide](https://developers.openai.com/api/docs/guides/tools-computer-use) for more
  * information.
  */
 class BetaResponseComputerToolCall

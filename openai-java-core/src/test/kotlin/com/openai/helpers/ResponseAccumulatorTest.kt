@@ -7,6 +7,7 @@ import com.openai.core.http.map
 import com.openai.core.jsonMapper
 import com.openai.models.ResponsesModel
 import com.openai.models.responses.Response
+import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseCompletedEvent
 import com.openai.models.responses.ResponseCreatedEvent
 import com.openai.models.responses.ResponseFailedEvent
@@ -16,13 +17,377 @@ import com.openai.models.responses.ResponseOutputItem
 import com.openai.models.responses.ResponseOutputMessage
 import com.openai.models.responses.ResponseOutputText
 import com.openai.models.responses.ResponseStreamEvent
+import com.openai.models.responses.ResponsesServerEvent
 import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatNoException
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 internal class ResponseAccumulatorTest {
+
+    @Test
+    fun snapshotsRequireOptInAndNeverSupplyOmittedServerFields() {
+        val mapper = jsonMapper()
+        val terminalOnly = ResponseAccumulator.create()
+        assertThatThrownBy { terminalOnly.snapshot() }
+            .isInstanceOf(IllegalStateException::class.java)
+        val accumulator = ResponseAccumulator.createWithSnapshots()
+        assertThat(accumulator.snapshot()).isEmpty()
+        // The server did not provide output or status. An item at index zero is not permission
+        // to turn missing output into a list or turn a created response into a completed response.
+        val created =
+            mapper.readValue(
+                """{"type":"response.created","sequence_number":0,"response":{"id":"resp_partial","provider_metadata":{"trace":"kept"}}}""",
+                ResponseStreamEvent::class.java,
+            )
+        assertThat(accumulator.accumulate(created)).isSameAs(created)
+        val partial = accumulator.snapshot().get()
+        val added =
+            mapper.readValue(
+                """{"type":"response.output_item.added","sequence_number":1,"output_index":0,"item":{"id":"msg","type":"message","role":"assistant","status":"in_progress","content":[]}}""",
+                ResponseStreamEvent::class.java,
+            )
+        accumulator.accumulate(added)
+        assertThat(accumulator.snapshot().get()).isSameAs(partial)
+        assertThat(partial._output().isMissing()).isTrue()
+        assertThat(partial._status().isMissing()).isTrue()
+        assertThat(
+                mapper
+                    .valueToTree<com.fasterxml.jackson.databind.JsonNode>(partial)
+                    .path("provider_metadata")
+                    .path("trace")
+                    .asText()
+            )
+            .isEqualTo("kept")
+        assertThatThrownBy { accumulator.response() }
+            .isExactlyInstanceOf(IllegalStateException::class.java)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["completed", "failed", "incomplete"])
+    fun snapshotUsesOnlyAuthoritativeTerminalResponse(terminal: String) {
+        val mapper = jsonMapper()
+        val accumulator = ResponseAccumulator.createWithSnapshots()
+        val created =
+            mapper.readValue(
+                """{"type":"response.created","sequence_number":0,"response":{"id":"resp_start","output":[],"status":"in_progress"}}""",
+                ResponseStreamEvent::class.java,
+            )
+        accumulator.accumulate(created)
+        val originalPartial = accumulator.snapshot().get()
+        val authoritative =
+            mapper.readValue(
+                """{"type":"response.$terminal","sequence_number":2,"response":{"id":"resp_final","error":{"code":"model_error","message":"authoritative"},"incomplete_details":{"reason":"max_output_tokens"}}}""",
+                ResponseStreamEvent::class.java,
+            )
+        accumulator.accumulate(authoritative)
+        val result = accumulator.response()
+        assertThat(accumulator.snapshot().get()).isSameAs(result)
+        assertThat(result.id()).isEqualTo("resp_final")
+        assertThat(result._status().isMissing()).isTrue()
+        assertThat(result._output().isMissing()).isTrue()
+        assertThat(originalPartial.id()).isEqualTo("resp_start")
+        accumulator.accumulate(created)
+        assertThat(accumulator.snapshot().get()).isSameAs(result)
+    }
+
+    @Test
+    fun sseSnapshotsAreImmutableAndKeepTextAndRefusalPartsDistinct() {
+        val mapper = jsonMapper()
+        val accumulator = ResponseAccumulator.createWithSnapshots()
+        val frames =
+            listOf(
+                """{"type":"response.created","sequence_number":0,"response":{"id":"r","output":[],"status":"in_progress"}}""",
+                """{"type":"response.output_item.added","sequence_number":1,"output_index":0,"item":{"id":"m","type":"message","role":"assistant","status":"in_progress","content":[],"from_server":true}}""",
+                """{"type":"response.content_part.added","sequence_number":2,"output_index":0,"content_index":0,"item_id":"m","part":{"type":"output_text","text":"","annotations":[],"from_server":17}}""",
+                """{"type":"response.output_text.delta","sequence_number":3,"output_index":0,"content_index":0,"item_id":"m","delta":"hello"}""",
+                """{"type":"response.content_part.added","sequence_number":4,"output_index":0,"content_index":1,"item_id":"m","part":{"type":"refusal","refusal":""}}""",
+                """{"type":"response.refusal.delta","sequence_number":5,"output_index":0,"content_index":1,"item_id":"m","delta":"cannot"}""",
+            )
+        for (frame in frames) {
+            val event = mapper.readValue(frame, ResponseStreamEvent::class.java)
+            assertThat(accumulator.accumulate(event)).isSameAs(event)
+        }
+        val before = accumulator.snapshot().get()
+        val content = before.output().single().asMessage().content()
+        assertThat(content[0].asOutputText().text()).isEqualTo("hello")
+        assertThat(content[1].asRefusal().refusal()).isEqualTo("cannot")
+        val next =
+            mapper.readValue(
+                """{"type":"response.output_text.done","sequence_number":6,"output_index":0,"content_index":0,"item_id":"m","text":"hello final","logprobs":[]}""",
+                ResponseStreamEvent::class.java,
+            )
+        accumulator.accumulate(next)
+        val after = accumulator.snapshot().get()
+        assertThat(before.output().single().asMessage().content()[0].asOutputText().text())
+            .isEqualTo("hello")
+        assertThat(after.output().single().asMessage().content()[0].asOutputText().text())
+            .isEqualTo("hello final")
+        val tree = mapper.valueToTree<com.fasterxml.jackson.databind.JsonNode>(after)
+        assertThat(tree.path("output")[0].path("from_server").asBoolean()).isTrue()
+        assertThat(tree.path("output")[0].path("content")[0].path("from_server").asInt())
+            .isEqualTo(17)
+        assertThatThrownBy { accumulator.response() }
+            .isExactlyInstanceOf(IllegalStateException::class.java)
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun annotationSnapshotsKeepIdentityOrderAndSurviveErrors(websocket: Boolean) {
+        val mapper = jsonMapper()
+        val accumulator = ResponseAccumulator.createWithSnapshots()
+        fun send(frame: String) {
+            if (websocket) {
+                val event = mapper.readValue(frame, ResponsesServerEvent::class.java)
+                assertThat(accumulator.accumulate(event)).isSameAs(event)
+            } else {
+                val event = mapper.readValue(frame, ResponseStreamEvent::class.java)
+                assertThat(accumulator.accumulate(event)).isSameAs(event)
+            }
+        }
+        send(
+            """{"type":"response.created","sequence_number":0,"response":{"id":"r","output":[{"id":"m","type":"message","role":"assistant","status":"in_progress","content":[{"type":"output_text","text":"See ","annotations":[]},{"type":"refusal","refusal":""}]}]}}"""
+        )
+        send(
+            """{"type":"response.output_text.delta","sequence_number":1,"output_index":0,"content_index":0,"item_id":"m","delta":"references."}"""
+        )
+        val before = accumulator.snapshot().get()
+        fun annotation(item: String, content: Int, index: Long, title: String) =
+            """{"type":"response.output_text.annotation.added","sequence_number":2,"output_index":0,"content_index":$content,"item_id":"$item","annotation_index":$index,"annotation":{"type":"url_citation","url":"https://example.com/citation","title":"$title","start_index":4,"end_index":14,"provider_tag":"kept"}}"""
+
+        send(annotation("m", 0, 0, "original"))
+        send(annotation("m", 0, 1, "second"))
+        send(annotation("m", 0, 0, "updated"))
+        val valid = accumulator.snapshot().get()
+        send(annotation("old", 0, 0, "wrong item"))
+        send(annotation("m", 1, 0, "wrong part"))
+        send(annotation("m", 0, -1, "negative"))
+        send(annotation("m", 0, Long.MAX_VALUE, "sparse"))
+        send(
+            """{"type":"response.error","sequence_number":3,"code":"model_error","message":"offline test","param":null}"""
+        )
+        val last = accumulator.snapshot().get()
+        assertThat(last).isSameAs(valid)
+        val text = last.output().single().asMessage().content()[0].asOutputText()
+        assertThat(text.text()).isEqualTo("See references.")
+        assertThat(text.annotations().map { it.asUrlCitation().title() })
+            .containsExactly("updated", "second")
+        assertThat(
+                text
+                    .annotations()[0]
+                    .asUrlCitation()
+                    ._additionalProperties()["provider_tag"]
+                    ?.convert(String::class.java)
+            )
+            .isEqualTo("kept")
+        assertThat(before.output().single().asMessage().content()[0].asOutputText().annotations())
+            .isEmpty()
+        assertThatThrownBy { accumulator.response() }
+            .isExactlyInstanceOf(IllegalStateException::class.java)
+    }
+
+    @Test
+    fun manyFragmentedDeltasPreserveEarlierReadsAndAuthoritativeReplacements() {
+        val mapper = jsonMapper()
+        val accumulator = ResponseAccumulator.createWithSnapshots()
+        fun event(frame: String) = mapper.readValue(frame, ResponseStreamEvent::class.java)
+        accumulator.accumulate(
+            event(
+                """{"type":"response.created","sequence_number":0,"response":{"id":"r","output":[{"id":"m","type":"message","role":"assistant","status":"in_progress","content":[{"type":"output_text","text":"prefix","annotations":[]},{"type":"refusal","refusal":"sorry"}]},{"type":"function_call","id":"f","call_id":"c","name":"tool","arguments":"{"}]}}"""
+            )
+        )
+        val fragment = "x".repeat(128)
+        val text =
+            event(
+                """{"type":"response.output_text.delta","sequence_number":1,"output_index":0,"content_index":0,"item_id":"m","delta":"$fragment"}"""
+            )
+        val refusal =
+            event(
+                """{"type":"response.refusal.delta","sequence_number":2,"output_index":0,"content_index":1,"item_id":"m","delta":"$fragment"}"""
+            )
+        val args =
+            event(
+                """{"type":"response.function_call_arguments.delta","sequence_number":3,"output_index":1,"item_id":"f","delta":"$fragment"}"""
+            )
+        accumulator.accumulate(text)
+        accumulator.accumulate(refusal)
+        accumulator.accumulate(args)
+        val before = accumulator.snapshot().get()
+        // A real multi-megabyte response fragmented into small events, with no arbitrary API limit.
+        repeat(32_768) {
+            accumulator.accumulate(text)
+            accumulator.accumulate(refusal)
+            accumulator.accumulate(args)
+        }
+        val last = accumulator.snapshot().get()
+        assertThat(last.output()[0].asMessage().content()[0].asOutputText().text())
+            .isEqualTo("prefix" + fragment.repeat(32_769))
+        assertThat(last.output()[0].asMessage().content()[1].asRefusal().refusal())
+            .isEqualTo("sorry" + fragment.repeat(32_769))
+        assertThat(last.output()[1].asFunctionCall().arguments())
+            .isEqualTo("{" + fragment.repeat(32_769))
+        assertThat(before.output()[0].asMessage().content()[0].asOutputText().text())
+            .isEqualTo("prefix$fragment")
+        assertThat(before.output()[0].asMessage().content()[1].asRefusal().refusal())
+            .isEqualTo("sorry$fragment")
+        assertThat(before.output()[1].asFunctionCall().arguments()).isEqualTo("{$fragment")
+        accumulator.accumulate(
+            event(
+                """{"type":"response.output_item.done","sequence_number":4,"output_index":0,"item":{"id":"replacement","type":"message","role":"assistant","status":"completed","content":[{"type":"output_text","text":"authoritative","annotations":[]}]}}"""
+            )
+        )
+        accumulator.accumulate(text)
+        accumulator.accumulate(refusal)
+        accumulator.accumulate(
+            event(
+                """{"type":"response.function_call_arguments.done","sequence_number":5,"output_index":1,"item_id":"f","arguments":"{}"}"""
+            )
+        )
+        val replaced = accumulator.snapshot().get()
+        assertThat(replaced.output()[0].asMessage().content().single().asOutputText().text())
+            .isEqualTo("authoritative")
+        assertThat(replaced.output()[1].asFunctionCall().arguments()).isEqualTo("{}")
+        assertThat(last.output()[1].asFunctionCall().arguments()).endsWith(fragment)
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun customInputAndProbabilitiesAreObservedBeforeTerminalAndDoneReplacesOnlyItsFields(
+        websocket: Boolean
+    ) {
+        val mapper = jsonMapper()
+        val state = ResponseAccumulator.createWithSnapshots()
+        fun send(frame: String) {
+            if (websocket) {
+                val event = mapper.readValue(frame, ResponsesServerEvent::class.java)
+                assertThat(state.accumulate(event)).isSameAs(event)
+            } else {
+                val event = mapper.readValue(frame, ResponseStreamEvent::class.java)
+                assertThat(state.accumulate(event)).isSameAs(event)
+            }
+        }
+        send(
+            """{"type":"response.created","sequence_number":0,"response":{"id":"r","output":[{"id":"m","type":"message","role":"assistant","status":"in_progress","content":[{"type":"output_text","text":"","annotations":[]}]},{"type":"custom_tool_call","id":"custom","call_id":"c","name":"editor","input":"patch "}],"from_server":17}}"""
+        )
+        send(
+            """{"type":"response.custom_tool_call_input.delta","sequence_number":1,"output_index":1,"item_id":"custom","delta":"first"}"""
+        )
+        send(
+            """{"type":"response.output_text.delta","sequence_number":2,"output_index":0,"content_index":0,"item_id":"m","delta":"A","logprobs":[{"token":"A","logprob":-0.1,"top_logprobs":[{"token":"a","logprob":-1.2}],"provider_tag":"kept"}]}"""
+        )
+        send(
+            """{"type":"response.output_text.annotation.added","sequence_number":3,"output_index":0,"content_index":0,"item_id":"m","annotation_index":0,"annotation":{"type":"file_citation","file_id":"file-1","filename":"test","index":0}}"""
+        )
+        val first = state.snapshot().get()
+        val originalText = first.output()[0].asMessage().content()[0].asOutputText()
+        assertThat(first.output()[1].asCustomToolCall().input()).isEqualTo("patch first")
+        assertThat(originalText.logprobs().get().single().token()).isEqualTo("A")
+        assertThat(
+                originalText
+                    .logprobs()
+                    .get()
+                    .single()
+                    ._additionalProperties()["provider_tag"]
+                    ?.convert(String::class.java)
+            )
+            .isEqualTo("kept")
+        assertThat(originalText.annotations()).hasSize(1)
+        send(
+            """{"type":"response.custom_tool_call_input.delta","sequence_number":4,"output_index":1,"item_id":"old","delta":"incorrect"}"""
+        )
+        send(
+            """{"type":"response.output_text.delta","sequence_number":5,"output_index":0,"content_index":0,"item_id":"old","delta":"incorrect","logprobs":[{"token":"incorrect","logprob":0,"top_logprobs":[]}]}"""
+        )
+        assertThat(state.snapshot().get()).isSameAs(first)
+        send(
+            """{"type":"response.custom_tool_call_input.delta","sequence_number":6,"output_index":1,"item_id":"custom","delta":" second"}"""
+        )
+        send(
+            """{"type":"response.output_text.delta","sequence_number":7,"output_index":0,"content_index":0,"item_id":"m","delta":"B","logprobs":[{"token":"B","logprob":-0.2,"top_logprobs":[]}]}"""
+        )
+        val partial = state.snapshot().get()
+        assertThat(partial.output()[1].asCustomToolCall().input()).isEqualTo("patch first second")
+        assertThat(
+                partial.output()[0].asMessage().content()[0].asOutputText().logprobs().get().map {
+                    it.token()
+                }
+            )
+            .containsExactly("A", "B")
+        send(
+            """{"type":"response.custom_tool_call_input.done","sequence_number":8,"output_index":1,"item_id":"custom","input":"authoritative patch"}"""
+        )
+        send(
+            """{"type":"response.output_text.done","sequence_number":9,"output_index":0,"content_index":0,"item_id":"m","text":"final","logprobs":[{"token":"final","logprob":-0.3,"top_logprobs":[]}]}"""
+        )
+        val last = state.snapshot().get()
+        val text = last.output()[0].asMessage().content()[0].asOutputText()
+        assertThat(last.output()[1].asCustomToolCall().input()).isEqualTo("authoritative patch")
+        assertThat(text.text()).isEqualTo("final")
+        assertThat(text.logprobs().get().map { it.token() }).containsExactly("final")
+        assertThat(text.annotations()).hasSize(1)
+        assertThat(originalText.text()).isEqualTo("A")
+        assertThat(originalText.logprobs().get().map { it.token() }).containsExactly("A")
+        assertThat(first.output()[1].asCustomToolCall().input()).isEqualTo("patch first")
+        assertThatThrownBy { state.response() }
+            .isExactlyInstanceOf(IllegalStateException::class.java)
+    }
+
+    @Test
+    fun largeOutputAndCitationCollectionsRemainAvailableOnPartialReads() {
+        val mapper = jsonMapper()
+        val state = ResponseAccumulator.createWithSnapshots()
+        state.accumulate(
+            mapper.readValue(
+                """{"type":"response.created","sequence_number":0,"response":{"id":"r","output":[]}}""",
+                ResponseStreamEvent::class.java,
+            )
+        )
+        val item = ResponseOutputItem.ofMessage(responseOutputMessage())
+        // Received output indexes select already observed items, never placeholders or an API cap.
+        val count = 32_768
+        repeat(count) { index ->
+            state.accumulate(
+                ResponseStreamEvent.ofOutputItemAdded(
+                    com.openai.models.responses.ResponseOutputItemAddedEvent.builder()
+                        .sequenceNumber(index.toLong())
+                        .outputIndex(index.toLong())
+                        .item(item)
+                        .build()
+                )
+            )
+        }
+        val before = state.snapshot().get()
+        assertThat(before.output()).hasSize(count)
+        val sample =
+            mapper
+                .readValue(
+                    """{"type":"response.output_text.annotation.added","sequence_number":1,"output_index":32767,"content_index":0,"item_id":"message-id","annotation_index":0,"annotation":{"type":"file_citation","file_id":"file-1","filename":"test","index":0}}""",
+                    ResponseStreamEvent::class.java,
+                )
+                .asOutputTextAnnotationAdded()
+        repeat(count) { index ->
+            state.accumulate(
+                ResponseStreamEvent.ofOutputTextAnnotationAdded(
+                    sample.toBuilder().annotationIndex(index.toLong()).build()
+                )
+            )
+        }
+        val last = state.snapshot().get()
+        assertThat(last.output()).hasSize(count)
+        assertThat(last.output().last().asMessage().content().single().asOutputText().annotations())
+            .hasSize(count)
+        assertThat(
+                last.output().first().asMessage().content().single().asOutputText().annotations()
+            )
+            .isEmpty()
+        assertThat(
+                before.output().last().asMessage().content().single().asOutputText().annotations()
+            )
+            .isEmpty()
+    }
 
     @Test
     fun responseBeforeAccumulation() {
@@ -127,6 +492,46 @@ internal class ResponseAccumulatorTest {
         val response = accumulator.response()
 
         assertThat(response.id()).isEqualTo("response-id")
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = [0, 2])
+    fun compactionProgressPreservesFinalOutput(progressCount: Int) {
+        val accumulator = ResponseAccumulator.create()
+        accumulator.accumulate(ResponseStreamEvent.ofCreated(responseCreatedEvent()))
+
+        repeat(progressCount) { index ->
+            val progress =
+                jsonMapper()
+                    .readValue(
+                        """{"type":"response.compaction.compacting","item_id":"cmp_test","output_index":0,"sequence_number":${index + 2}}""",
+                        jacksonTypeRef<ResponseStreamEvent>(),
+                    )
+                    .validate()
+            assertThat(accumulator.accumulate(progress)).isSameAs(progress)
+        }
+        assertThatThrownBy { accumulator.response() }
+            .isExactlyInstanceOf(IllegalStateException::class.java)
+
+        val compaction =
+            ResponseCompactionItem.builder()
+                .id("cmp_test")
+                .encryptedContent("synthetic-encrypted-content")
+                .build()
+        val completed =
+            response()
+                .toBuilder()
+                .output(listOf(ResponseOutputItem.ofCompaction(compaction)))
+                .build()
+        accumulator.accumulate(
+            ResponseStreamEvent.ofCompleted(
+                ResponseCompletedEvent.builder().response(completed).sequenceNumber(4L).build()
+            )
+        )
+
+        assertThat(accumulator.response()).isSameAs(completed)
+        assertThat(accumulator.response().output())
+            .containsExactly(ResponseOutputItem.ofCompaction(compaction))
     }
 
     @Test

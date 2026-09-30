@@ -37,6 +37,7 @@ import kotlin.jvm.optionals.getOrNull
 class BetaResponsesClientEvent
 private constructor(
     private val responseCreate: ResponseCreate? = null,
+    private val responseSteer: BetaResponseSteerEvent? = null,
     private val responseInject: BetaResponseInjectEvent? = null,
     private val _json: JsonValue? = null,
 ) {
@@ -54,6 +55,35 @@ private constructor(
     fun responseCreate(): Optional<ResponseCreate> = Optional.ofNullable(responseCreate)
 
     /**
+     * Queues user input to steer a response on this WebSocket connection. Input can contain text,
+     * images, and files. Steering is supported only for single-agent responses on models and
+     * execution modes that support steering. Responses bound to a conversation or using automatic
+     * compaction do not support steering.
+     *
+     * A `response.steer.accepted` event acknowledges that the server owns the queued input, not
+     * that it has been applied. The successor's `response.created` event is the commit point. Input
+     * that cannot be committed is returned in `response.steer.failed`.
+     *
+     * Steering may cause the active response to finish at a safe output boundary with
+     * `response.incomplete` and `incomplete_details.reason` set to `steered`, followed
+     * automatically by a successor `response.created`. Normal completion can also be followed by an
+     * automatic successor. Automatic successors inherit the previous response's settings and
+     * continue from it with the queued input.
+     *
+     * If the response stops for client-owned tool output or approval, accepted steering input
+     * remains queued and `response.steer.pending` is emitted after `response.completed`. Fill the
+     * `required_input` stubs from that event with saved tool results or approval decisions, and
+     * send one explicit `response.create` per parent with the same `previous_response_id` and
+     * WebSocket lane. Do not rerun tools or resend accepted steering input. The queued input is
+     * prepended in submission order to that request's input, and the explicit request retains its
+     * own settings.
+     *
+     * This event accepts only `type`, `previous_response_id`, and `input`. Do not send `stream_id`;
+     * the target response determines the WebSocket lane.
+     */
+    fun responseSteer(): Optional<BetaResponseSteerEvent> = Optional.ofNullable(responseSteer)
+
+    /**
      * Injects input items into an active response over a WebSocket connection. The items are
      * validated and committed atomically. Currently, the server accepts client-owned tool outputs
      * that resume a waiting agent.
@@ -61,6 +91,8 @@ private constructor(
     fun responseInject(): Optional<BetaResponseInjectEvent> = Optional.ofNullable(responseInject)
 
     fun isResponseCreate(): Boolean = responseCreate != null
+
+    fun isResponseSteer(): Boolean = responseSteer != null
 
     fun isResponseInject(): Boolean = responseInject != null
 
@@ -75,6 +107,35 @@ private constructor(
      * - `stream_id` is WebSocket-only and is not part of `POST /v1/responses`.
      */
     fun asResponseCreate(): ResponseCreate = responseCreate.getOrThrow("responseCreate")
+
+    /**
+     * Queues user input to steer a response on this WebSocket connection. Input can contain text,
+     * images, and files. Steering is supported only for single-agent responses on models and
+     * execution modes that support steering. Responses bound to a conversation or using automatic
+     * compaction do not support steering.
+     *
+     * A `response.steer.accepted` event acknowledges that the server owns the queued input, not
+     * that it has been applied. The successor's `response.created` event is the commit point. Input
+     * that cannot be committed is returned in `response.steer.failed`.
+     *
+     * Steering may cause the active response to finish at a safe output boundary with
+     * `response.incomplete` and `incomplete_details.reason` set to `steered`, followed
+     * automatically by a successor `response.created`. Normal completion can also be followed by an
+     * automatic successor. Automatic successors inherit the previous response's settings and
+     * continue from it with the queued input.
+     *
+     * If the response stops for client-owned tool output or approval, accepted steering input
+     * remains queued and `response.steer.pending` is emitted after `response.completed`. Fill the
+     * `required_input` stubs from that event with saved tool results or approval decisions, and
+     * send one explicit `response.create` per parent with the same `previous_response_id` and
+     * WebSocket lane. Do not rerun tools or resend accepted steering input. The queued input is
+     * prepended in submission order to that request's input, and the explicit request retains its
+     * own settings.
+     *
+     * This event accepts only `type`, `previous_response_id`, and `input`. Do not send `stream_id`;
+     * the target response determines the WebSocket lane.
+     */
+    fun asResponseSteer(): BetaResponseSteerEvent = responseSteer.getOrThrow("responseSteer")
 
     /**
      * Injects input items into an active response over a WebSocket connection. The items are
@@ -117,6 +178,7 @@ private constructor(
     fun <T> accept(visitor: Visitor<T>): T =
         when {
             responseCreate != null -> visitor.visitResponseCreate(responseCreate)
+            responseSteer != null -> visitor.visitResponseSteer(responseSteer)
             responseInject != null -> visitor.visitResponseInject(responseInject)
             else -> visitor.unknown(_json)
         }
@@ -140,6 +202,10 @@ private constructor(
             object : Visitor<Unit> {
                 override fun visitResponseCreate(responseCreate: ResponseCreate) {
                     responseCreate.validate()
+                }
+
+                override fun visitResponseSteer(responseSteer: BetaResponseSteerEvent) {
+                    responseSteer.validate()
                 }
 
                 override fun visitResponseInject(responseInject: BetaResponseInjectEvent) {
@@ -170,6 +236,9 @@ private constructor(
                 override fun visitResponseCreate(responseCreate: ResponseCreate) =
                     responseCreate.validity()
 
+                override fun visitResponseSteer(responseSteer: BetaResponseSteerEvent) =
+                    responseSteer.validity()
+
                 override fun visitResponseInject(responseInject: BetaResponseInjectEvent) =
                     responseInject.validity()
 
@@ -184,14 +253,16 @@ private constructor(
 
         return other is BetaResponsesClientEvent &&
             responseCreate == other.responseCreate &&
+            responseSteer == other.responseSteer &&
             responseInject == other.responseInject
     }
 
-    override fun hashCode(): Int = Objects.hash(responseCreate, responseInject)
+    override fun hashCode(): Int = Objects.hash(responseCreate, responseSteer, responseInject)
 
     override fun toString(): String =
         when {
             responseCreate != null -> "BetaResponsesClientEvent{responseCreate=$responseCreate}"
+            responseSteer != null -> "BetaResponsesClientEvent{responseSteer=$responseSteer}"
             responseInject != null -> "BetaResponsesClientEvent{responseInject=$responseInject}"
             _json != null -> "BetaResponsesClientEvent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid BetaResponsesClientEvent")
@@ -212,6 +283,37 @@ private constructor(
         @JvmStatic
         fun ofResponseCreate(responseCreate: ResponseCreate) =
             BetaResponsesClientEvent(responseCreate = responseCreate)
+
+        /**
+         * Queues user input to steer a response on this WebSocket connection. Input can contain
+         * text, images, and files. Steering is supported only for single-agent responses on models
+         * and execution modes that support steering. Responses bound to a conversation or using
+         * automatic compaction do not support steering.
+         *
+         * A `response.steer.accepted` event acknowledges that the server owns the queued input, not
+         * that it has been applied. The successor's `response.created` event is the commit point.
+         * Input that cannot be committed is returned in `response.steer.failed`.
+         *
+         * Steering may cause the active response to finish at a safe output boundary with
+         * `response.incomplete` and `incomplete_details.reason` set to `steered`, followed
+         * automatically by a successor `response.created`. Normal completion can also be followed
+         * by an automatic successor. Automatic successors inherit the previous response's settings
+         * and continue from it with the queued input.
+         *
+         * If the response stops for client-owned tool output or approval, accepted steering input
+         * remains queued and `response.steer.pending` is emitted after `response.completed`. Fill
+         * the `required_input` stubs from that event with saved tool results or approval decisions,
+         * and send one explicit `response.create` per parent with the same `previous_response_id`
+         * and WebSocket lane. Do not rerun tools or resend accepted steering input. The queued
+         * input is prepended in submission order to that request's input, and the explicit request
+         * retains its own settings.
+         *
+         * This event accepts only `type`, `previous_response_id`, and `input`. Do not send
+         * `stream_id`; the target response determines the WebSocket lane.
+         */
+        @JvmStatic
+        fun ofResponseSteer(responseSteer: BetaResponseSteerEvent) =
+            BetaResponsesClientEvent(responseSteer = responseSteer)
 
         /**
          * Injects input items into an active response over a WebSocket connection. The items are
@@ -242,6 +344,35 @@ private constructor(
         fun visitResponseCreate(responseCreate: ResponseCreate): T
 
         /**
+         * Queues user input to steer a response on this WebSocket connection. Input can contain
+         * text, images, and files. Steering is supported only for single-agent responses on models
+         * and execution modes that support steering. Responses bound to a conversation or using
+         * automatic compaction do not support steering.
+         *
+         * A `response.steer.accepted` event acknowledges that the server owns the queued input, not
+         * that it has been applied. The successor's `response.created` event is the commit point.
+         * Input that cannot be committed is returned in `response.steer.failed`.
+         *
+         * Steering may cause the active response to finish at a safe output boundary with
+         * `response.incomplete` and `incomplete_details.reason` set to `steered`, followed
+         * automatically by a successor `response.created`. Normal completion can also be followed
+         * by an automatic successor. Automatic successors inherit the previous response's settings
+         * and continue from it with the queued input.
+         *
+         * If the response stops for client-owned tool output or approval, accepted steering input
+         * remains queued and `response.steer.pending` is emitted after `response.completed`. Fill
+         * the `required_input` stubs from that event with saved tool results or approval decisions,
+         * and send one explicit `response.create` per parent with the same `previous_response_id`
+         * and WebSocket lane. Do not rerun tools or resend accepted steering input. The queued
+         * input is prepended in submission order to that request's input, and the explicit request
+         * retains its own settings.
+         *
+         * This event accepts only `type`, `previous_response_id`, and `input`. Do not send
+         * `stream_id`; the target response determines the WebSocket lane.
+         */
+        fun visitResponseSteer(responseSteer: BetaResponseSteerEvent): T
+
+        /**
          * Injects input items into an active response over a WebSocket connection. The items are
          * validated and committed atomically. Currently, the server accepts client-owned tool
          * outputs that resume a waiting agent.
@@ -259,7 +390,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown BetaResponsesClientEvent: $json")
+            throw OpenAIInvalidDataException("Unknown BetaResponsesClientEvent")
         }
     }
 
@@ -274,6 +405,11 @@ private constructor(
                 "response.create" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseCreate>())?.let {
                         BetaResponsesClientEvent(responseCreate = it, _json = json)
+                    } ?: BetaResponsesClientEvent(_json = json)
+                }
+                "response.steer" -> {
+                    return tryDeserialize(node, jacksonTypeRef<BetaResponseSteerEvent>())?.let {
+                        BetaResponsesClientEvent(responseSteer = it, _json = json)
                     } ?: BetaResponsesClientEvent(_json = json)
                 }
                 "response.inject" -> {
@@ -297,6 +433,7 @@ private constructor(
         ) {
             when {
                 value.responseCreate != null -> generator.writeObject(value.responseCreate)
+                value.responseSteer != null -> generator.writeObject(value.responseSteer)
                 value.responseInject != null -> generator.writeObject(value.responseInject)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid BetaResponsesClientEvent")
@@ -318,6 +455,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonValue,
+        private val accessPrograms: JsonField<AccessPrograms>,
         private val background: JsonField<Boolean>,
         private val contextManagement: JsonField<List<ContextManagement>>,
         private val conversation: JsonField<Conversation>,
@@ -357,6 +495,9 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("access_programs")
+            @ExcludeMissing
+            accessPrograms: JsonField<AccessPrograms> = JsonMissing.of(),
             @JsonProperty("background")
             @ExcludeMissing
             background: JsonField<Boolean> = JsonMissing.of(),
@@ -446,6 +587,7 @@ private constructor(
             @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
         ) : this(
             type,
+            accessPrograms,
             background,
             contextManagement,
             conversation,
@@ -496,8 +638,17 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
+         * Domain-specific access programs to use for this request.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun accessPrograms(): Optional<AccessPrograms> =
+            accessPrograms.getOptional("access_programs")
+
+        /**
          * Whether to run the model response in the background.
-         * [Learn more](https://platform.openai.com/docs/guides/background).
+         * [Learn more](https://developers.openai.com/api/docs/guides/background).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -549,11 +700,11 @@ private constructor(
          * Text, image, or file inputs to the model, used to generate a response.
          *
          * Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Image inputs](https://platform.openai.com/docs/guides/images)
-         * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-         * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-         * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+         * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+         * - [Conversation state](https://developers.openai.com/api/docs/guides/conversation-state)
+         * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -575,7 +726,7 @@ private constructor(
         /**
          * An upper bound for the number of tokens that can be generated for a response, including
          * visible output tokens and
-         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -606,9 +757,9 @@ private constructor(
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
          * available models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -644,8 +795,8 @@ private constructor(
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
-         * be used in conjunction with `conversation`.
+         * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+         * Cannot be used in conjunction with `conversation`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -655,7 +806,7 @@ private constructor(
 
         /**
          * Reference to a prompt template and its variables.
-         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -665,7 +816,7 @@ private constructor(
         /**
          * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
          * Replaces the `user` field.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -680,7 +831,7 @@ private constructor(
          * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
          * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
          * supported value. See the
-         * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+         * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
          * current details.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -694,7 +845,7 @@ private constructor(
          *
          * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
          * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
          * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
          * expresses a minimum cache lifetime. The two fields are independent and do not interact.
          * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -713,10 +864,8 @@ private constructor(
             promptCacheRetention.getOptional("prompt_cache_retention")
 
         /**
-         * **gpt-5 and o-series models only**
-         *
          * Configuration options for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -728,7 +877,7 @@ private constructor(
          * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user,
          * with a maximum length of 64 characters. We recommend hashing their username or email
          * address, in order to avoid sending us any identifying information.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -741,12 +890,12 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
-         *   request will be processed with the Flex Processing service tier.
-         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         *   Completions. The response will show `service_tier=priority` regardless of if you
-         *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then
+         *   the request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at
+         *   the request level, include the `service_tier=fast` or `service_tier=priority` parameter
+         *   for Responses or Chat Completions. The response will show `service_tier=priority`
+         *   regardless of if you specify `service_tier=fast` or `priority` in your request.
          * - If set to 'ultrafast', then the request will be processed with the access-controlled
          *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`;
          *   a response served through it will show `service_tier=ultrafast`.
@@ -762,7 +911,10 @@ private constructor(
         fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
 
         /**
-         * Whether to store the generated model response for later retrieval via API.
+         * Whether to store the generated model response for later retrieval via API. Defaults to
+         * true when omitted. If set to true, response data will be stored for at least 30 days,
+         * subject to the
+         * [data retention exceptions](https://developers.openai.com/api/docs/guides/your-data#v1responses).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -774,7 +926,7 @@ private constructor(
          * using
          * [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).
          * See the
-         * [Streaming section below](https://platform.openai.com/docs/api-reference/responses-streaming)
+         * [Streaming section below](https://developers.openai.com/api/reference/resources/responses/streaming-events)
          * for more information.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -815,8 +967,8 @@ private constructor(
         /**
          * Configuration options for a text response from the model. Can be plain text or structured
          * JSON data. Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -839,16 +991,16 @@ private constructor(
          * We support the following categories of tools:
          * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
          *   capabilities, like
-         *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-         *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
-         *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
+         *   [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+         *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn
+         *   more about [built-in tools](https://developers.openai.com/api/docs/guides/tools).
          * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
          *   predefined connectors such as Google Drive and SharePoint. Learn more about
-         *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+         *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
          *   model to call your own code with strongly typed arguments and outputs. Learn more about
-         *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can
-         *   also use custom tools to call your own code.
+         *   [function calling](https://developers.openai.com/api/docs/guides/function-calling). You
+         *   can also use custom tools to call your own code.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -896,12 +1048,22 @@ private constructor(
          * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for
          * your end-users. Used to boost cache hit rates by better bucketing similar requests and to
          * help OpenAI detect and prevent abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         @Deprecated("deprecated") fun user(): Optional<String> = user.getOptional("user")
+
+        /**
+         * Returns the raw JSON value of [accessPrograms].
+         *
+         * Unlike [accessPrograms], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("access_programs")
+        @ExcludeMissing
+        fun _accessPrograms(): JsonField<AccessPrograms> = accessPrograms
 
         /**
          * Returns the raw JSON value of [background].
@@ -1219,6 +1381,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var type: JsonValue = JsonValue.from("response.create")
+            private var accessPrograms: JsonField<AccessPrograms> = JsonMissing.of()
             private var background: JsonField<Boolean> = JsonMissing.of()
             private var contextManagement: JsonField<MutableList<ContextManagement>>? = null
             private var conversation: JsonField<Conversation> = JsonMissing.of()
@@ -1257,6 +1420,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(responseCreate: ResponseCreate) = apply {
                 type = responseCreate.type
+                accessPrograms = responseCreate.accessPrograms
                 background = responseCreate.background
                 contextManagement = responseCreate.contextManagement.map { it.toMutableList() }
                 conversation = responseCreate.conversation
@@ -1307,9 +1471,24 @@ private constructor(
              */
             fun type(type: JsonValue) = apply { this.type = type }
 
+            /** Domain-specific access programs to use for this request. */
+            fun accessPrograms(accessPrograms: AccessPrograms) =
+                accessPrograms(JsonField.of(accessPrograms))
+
+            /**
+             * Sets [Builder.accessPrograms] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.accessPrograms] with a well-typed [AccessPrograms]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun accessPrograms(accessPrograms: JsonField<AccessPrograms>) = apply {
+                this.accessPrograms = accessPrograms
+            }
+
             /**
              * Whether to run the model response in the background.
-             * [Learn more](https://platform.openai.com/docs/guides/background).
+             * [Learn more](https://developers.openai.com/api/docs/guides/background).
              */
             fun background(background: Boolean?) = background(JsonField.ofNullable(background))
 
@@ -1453,11 +1632,12 @@ private constructor(
              * Text, image, or file inputs to the model, used to generate a response.
              *
              * Learn more:
-             * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-             * - [Image inputs](https://platform.openai.com/docs/guides/images)
-             * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-             * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-             * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+             * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+             * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+             * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+             * - [Conversation
+             *   state](https://developers.openai.com/api/docs/guides/conversation-state)
+             * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
              */
             fun input(input: Input) = input(JsonField.of(input))
 
@@ -1505,7 +1685,7 @@ private constructor(
             /**
              * An upper bound for the number of tokens that can be generated for a response,
              * including visible output tokens and
-             * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+             * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
              */
             fun maxOutputTokens(maxOutputTokens: Long?) =
                 maxOutputTokens(JsonField.ofNullable(maxOutputTokens))
@@ -1583,10 +1763,10 @@ private constructor(
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /**
-             * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
-             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
-             * and compare available models.
+             * points. Refer to the [model guide](https://developers.openai.com/api/docs/models) to
+             * browse and compare available models.
              */
             fun model(model: Model) = model(JsonField.of(model))
 
@@ -1674,7 +1854,7 @@ private constructor(
             /**
              * The unique ID of the previous response to the model. Use this to create multi-turn
              * conversations. Learn more about
-             * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+             * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
              * Cannot be used in conjunction with `conversation`.
              */
             fun previousResponseId(previousResponseId: String?) =
@@ -1700,7 +1880,7 @@ private constructor(
 
             /**
              * Reference to a prompt template and its variables.
-             * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+             * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
              */
             fun prompt(prompt: BetaResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
 
@@ -1719,7 +1899,7 @@ private constructor(
             /**
              * Used by OpenAI to cache responses for similar requests to optimize your cache hit
              * rates. Replaces the `user` field.
-             * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+             * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
              */
             fun promptCacheKey(promptCacheKey: String?) =
                 promptCacheKey(JsonField.ofNullable(promptCacheKey))
@@ -1747,8 +1927,8 @@ private constructor(
              * breakpoints in the conversation, without a content-block lookback limit. Set `mode`
              * to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which
              * is currently the only supported value. See the
-             * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
-             * current details.
+             * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching)
+             * for current details.
              */
             fun promptCacheOptions(promptCacheOptions: PromptCacheOptions) =
                 promptCacheOptions(JsonField.of(promptCacheOptions))
@@ -1769,7 +1949,7 @@ private constructor(
              *
              * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
              * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-             * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+             * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
              * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
              * expresses a minimum cache lifetime. The two fields are independent and do not
              * interact. For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -1806,10 +1986,8 @@ private constructor(
                 }
 
             /**
-             * **gpt-5 and o-series models only**
-             *
              * Configuration options for
-             * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+             * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
              */
             fun reasoning(reasoning: Reasoning?) = reasoning(JsonField.ofNullable(reasoning))
 
@@ -1831,7 +2009,7 @@ private constructor(
              * identifies each user, with a maximum length of 64 characters. We recommend hashing
              * their username or email address, in order to avoid sending us any identifying
              * information.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+             * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
              */
             fun safetyIdentifier(safetyIdentifier: String?) =
                 safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
@@ -1860,12 +2038,13 @@ private constructor(
              *   use 'default'.
              * - If set to 'default', then the request will be processed with the standard pricing
              *   and performance for the selected model.
-             * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then
-             *   the request will be processed with the Flex Processing service tier.
-             * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include
-             *   the `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-             *   Completions. The response will show `service_tier=priority` regardless of if you
-             *   specify `service_tier=fast` or `priority` in your request.
+             * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)',
+             *   then the request will be processed with the Flex Processing service tier.
+             * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode)
+             *   at the request level, include the `service_tier=fast` or `service_tier=priority`
+             *   parameter for Responses or Chat Completions. The response will show
+             *   `service_tier=priority` regardless of if you specify `service_tier=fast` or
+             *   `priority` in your request.
              * - If set to 'ultrafast', then the request will be processed with the
              *   access-controlled Ultrafast Processing service tier. This tier is currently
              *   available for `gpt-5.6-sol`; a response served through it will show
@@ -1894,7 +2073,12 @@ private constructor(
                 this.serviceTier = serviceTier
             }
 
-            /** Whether to store the generated model response for later retrieval via API. */
+            /**
+             * Whether to store the generated model response for later retrieval via API. Defaults
+             * to true when omitted. If set to true, response data will be stored for at least 30
+             * days, subject to the
+             * [data retention exceptions](https://developers.openai.com/api/docs/guides/your-data#v1responses).
+             */
             fun store(store: Boolean?) = store(JsonField.ofNullable(store))
 
             /**
@@ -1921,7 +2105,7 @@ private constructor(
              * generated using
              * [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).
              * See the
-             * [Streaming section below](https://platform.openai.com/docs/api-reference/responses-streaming)
+             * [Streaming section below](https://developers.openai.com/api/reference/resources/responses/streaming-events)
              * for more information.
              */
             fun stream(stream: Boolean?) = stream(JsonField.ofNullable(stream))
@@ -2013,8 +2197,9 @@ private constructor(
             /**
              * Configuration options for a text response from the model. Can be plain text or
              * structured JSON data. Learn more:
-             * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-             * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+             * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+             * - [Structured
+             *   Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
              */
             fun text(text: BetaResponseTextConfig) = text(JsonField.of(text))
 
@@ -2114,15 +2299,17 @@ private constructor(
              * We support the following categories of tools:
              * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
              *   capabilities, like
-             *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-             *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn
-             *   more about [built-in tools](https://platform.openai.com/docs/guides/tools).
+             *   [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+             *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search).
+             *   Learn more about
+             *   [built-in tools](https://developers.openai.com/api/docs/guides/tools).
              * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
              *   predefined connectors such as Google Drive and SharePoint. Learn more about
-             *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+             *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
              * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
              *   model to call your own code with strongly typed arguments and outputs. Learn more
-             *   about [function calling](https://platform.openai.com/docs/guides/function-calling).
+             *   about
+             *   [function calling](https://developers.openai.com/api/docs/guides/function-calling).
              *   You can also use custom tools to call your own code.
              */
             fun tools(tools: List<BetaTool>) = tools(JsonField.of(tools))
@@ -2353,7 +2540,7 @@ private constructor(
              * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for
              * your end-users. Used to boost cache hit rates by better bucketing similar requests
              * and to help OpenAI detect and prevent abuse.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+             * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
              */
             @Deprecated("deprecated") fun user(user: String) = user(JsonField.of(user))
 
@@ -2393,6 +2580,7 @@ private constructor(
             fun build(): ResponseCreate =
                 ResponseCreate(
                     type,
+                    accessPrograms,
                     background,
                     (contextManagement ?: JsonMissing.of()).map { it.toImmutable() },
                     conversation,
@@ -2451,6 +2639,7 @@ private constructor(
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
+            accessPrograms().ifPresent { it.validate() }
             background()
             contextManagement().ifPresent { it.forEach { it.validate() } }
             conversation().ifPresent { it.validate() }
@@ -2504,6 +2693,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             type.let { if (it == JsonValue.from("response.create")) 1 else 0 } +
+                (accessPrograms.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (background.asKnown().isPresent) 1 else 0) +
                 (contextManagement.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (conversation.asKnown().getOrNull()?.validity() ?: 0) +
@@ -2537,6 +2727,340 @@ private constructor(
                 (if (topP.asKnown().isPresent) 1 else 0) +
                 (truncation.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (user.asKnown().isPresent) 1 else 0)
+
+        /** Domain-specific access programs to use for this request. */
+        class AccessPrograms
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val cyber: JsonField<Cyber>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("cyber") @ExcludeMissing cyber: JsonField<Cyber> = JsonMissing.of()
+            ) : this(cyber, mutableMapOf())
+
+            /**
+             * The Cyber access program to use for this request. Supported values are `standard`,
+             * `daybreak_blue`, and `daybreak_red`. If omitted, the API resolves the program from
+             * the model's Cyber tier and your organization and project access, subject to
+             * model-specific eligibility restrictions. By default, models without a Cyber tier use
+             * Standard. Blue-tier models use Daybreak Blue when authorized; otherwise they fall
+             * back to Standard unless the model requires Daybreak access. Red-tier models use
+             * Daybreak Red and require authorization. Requests that require unavailable Daybreak
+             * access return 403. An implicit Standard fallback is represented by null in the
+             * response's access_programs field, rather than an explicit Standard selection.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun cyber(): Optional<Cyber> = cyber.getOptional("cyber")
+
+            /**
+             * Returns the raw JSON value of [cyber].
+             *
+             * Unlike [cyber], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("cyber") @ExcludeMissing fun _cyber(): JsonField<Cyber> = cyber
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [AccessPrograms]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [AccessPrograms]. */
+            class Builder internal constructor() {
+
+                private var cyber: JsonField<Cyber> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(accessPrograms: AccessPrograms) = apply {
+                    cyber = accessPrograms.cyber
+                    additionalProperties = accessPrograms.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * The Cyber access program to use for this request. Supported values are
+                 * `standard`, `daybreak_blue`, and `daybreak_red`. If omitted, the API resolves the
+                 * program from the model's Cyber tier and your organization and project access,
+                 * subject to model-specific eligibility restrictions. By default, models without a
+                 * Cyber tier use Standard. Blue-tier models use Daybreak Blue when authorized;
+                 * otherwise they fall back to Standard unless the model requires Daybreak access.
+                 * Red-tier models use Daybreak Red and require authorization. Requests that require
+                 * unavailable Daybreak access return 403. An implicit Standard fallback is
+                 * represented by null in the response's access_programs field, rather than an
+                 * explicit Standard selection.
+                 */
+                fun cyber(cyber: Cyber) = cyber(JsonField.of(cyber))
+
+                /**
+                 * Sets [Builder.cyber] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.cyber] with a well-typed [Cyber] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun cyber(cyber: JsonField<Cyber>) = apply { this.cyber = cyber }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [AccessPrograms].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): AccessPrograms =
+                    AccessPrograms(cyber, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): AccessPrograms = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                cyber().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int = (cyber.asKnown().getOrNull()?.validity() ?: 0)
+
+            /**
+             * The Cyber access program to use for this request. Supported values are `standard`,
+             * `daybreak_blue`, and `daybreak_red`. If omitted, the API resolves the program from
+             * the model's Cyber tier and your organization and project access, subject to
+             * model-specific eligibility restrictions. By default, models without a Cyber tier use
+             * Standard. Blue-tier models use Daybreak Blue when authorized; otherwise they fall
+             * back to Standard unless the model requires Daybreak access. Red-tier models use
+             * Daybreak Red and require authorization. Requests that require unavailable Daybreak
+             * access return 403. An implicit Standard fallback is represented by null in the
+             * response's access_programs field, rather than an explicit Standard selection.
+             */
+            class Cyber @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val STANDARD = of("standard")
+
+                    @JvmField val DAYBREAK_BLUE = of("daybreak_blue")
+
+                    @JvmField val DAYBREAK_RED = of("daybreak_red")
+
+                    @JvmStatic fun of(value: String) = Cyber(JsonField.of(value))
+                }
+
+                /** An enum containing [Cyber]'s known values. */
+                enum class Known {
+                    STANDARD,
+                    DAYBREAK_BLUE,
+                    DAYBREAK_RED,
+                }
+
+                /**
+                 * An enum containing [Cyber]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Cyber] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    STANDARD,
+                    DAYBREAK_BLUE,
+                    DAYBREAK_RED,
+                    /**
+                     * An enum member indicating that [Cyber] was instantiated with an unknown
+                     * value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        STANDARD -> Value.STANDARD
+                        DAYBREAK_BLUE -> Value.DAYBREAK_BLUE
+                        DAYBREAK_RED -> Value.DAYBREAK_RED
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        STANDARD -> Known.STANDARD
+                        DAYBREAK_BLUE -> Known.DAYBREAK_BLUE
+                        DAYBREAK_RED -> Known.DAYBREAK_RED
+                        else -> throw OpenAIInvalidDataException("Unknown Cyber: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Cyber = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Cyber && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is AccessPrograms &&
+                    cyber == other.cyber &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(cyber, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "AccessPrograms{cyber=$cyber, additionalProperties=$additionalProperties}"
+        }
 
         class ContextManagement
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -2963,7 +3487,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Conversation: $json")
+                    throw OpenAIInvalidDataException("Unknown Conversation")
                 }
             }
 
@@ -3026,11 +3550,11 @@ private constructor(
          * Text, image, or file inputs to the model, used to generate a response.
          *
          * Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Image inputs](https://platform.openai.com/docs/guides/images)
-         * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-         * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-         * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+         * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+         * - [Conversation state](https://developers.openai.com/api/docs/guides/conversation-state)
+         * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
          */
         @JsonDeserialize(using = Input.Deserializer::class)
         @JsonSerialize(using = Input.Serializer::class)
@@ -3215,7 +3739,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Input: $json")
+                    throw OpenAIInvalidDataException("Unknown Input")
                 }
             }
 
@@ -3386,9 +3910,9 @@ private constructor(
         }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
          * available models.
          */
         class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -3404,6 +3928,14 @@ private constructor(
             @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
+
+                @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
+
+                @JvmField val GPT_6_1_SOL = of("gpt-6.1-sol")
+
+                @JvmField val GPT_6_SOL = of("gpt-6-sol")
+
+                @JvmField val GPT_6_LUNA = of("gpt-6-luna")
 
                 @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
@@ -3504,6 +4036,10 @@ private constructor(
                 @JvmField val GPT_4O_2024_08_06 = of("gpt-4o-2024-08-06")
 
                 @JvmField val GPT_4O_2024_05_13 = of("gpt-4o-2024-05-13")
+
+                @JvmField val GPT_AUDIO_MINI = of("gpt-audio-mini")
+
+                @JvmField val GPT_AUDIO_MINI_2025_12_15 = of("gpt-audio-mini-2025-12-15")
 
                 @JvmField val GPT_4O_AUDIO_PREVIEW = of("gpt-4o-audio-preview")
 
@@ -3619,11 +4155,17 @@ private constructor(
 
                 @JvmField val GPT_5_6_CYBER = of("gpt-5.6-cyber")
 
+                @JvmField val GPT_ROSALIND_RESEARCH = of("gpt-rosalind-research")
+
                 @JvmStatic fun of(value: String) = Model(JsonField.of(value))
             }
 
             /** An enum containing [Model]'s known values. */
             enum class Known {
+                GPT_6_ASTRA,
+                GPT_6_1_SOL,
+                GPT_6_SOL,
+                GPT_6_LUNA,
                 GPT_5_6_SOL,
                 GPT_5_6_TERRA,
                 GPT_5_6_LUNA,
@@ -3674,6 +4216,8 @@ private constructor(
                 GPT_4O_2024_11_20,
                 GPT_4O_2024_08_06,
                 GPT_4O_2024_05_13,
+                GPT_AUDIO_MINI,
+                GPT_AUDIO_MINI_2025_12_15,
                 GPT_4O_AUDIO_PREVIEW,
                 GPT_4O_AUDIO_PREVIEW_2024_10_01,
                 GPT_4O_AUDIO_PREVIEW_2024_12_17,
@@ -3726,6 +4270,7 @@ private constructor(
                 GPT_DAYBREAK_BLUE_LATEST,
                 GPT_DAYBREAK_RED_LATEST,
                 GPT_5_6_CYBER,
+                GPT_ROSALIND_RESEARCH,
             }
 
             /**
@@ -3738,6 +4283,10 @@ private constructor(
              * - It was constructed with an arbitrary value using the [of] method.
              */
             enum class Value {
+                GPT_6_ASTRA,
+                GPT_6_1_SOL,
+                GPT_6_SOL,
+                GPT_6_LUNA,
                 GPT_5_6_SOL,
                 GPT_5_6_TERRA,
                 GPT_5_6_LUNA,
@@ -3788,6 +4337,8 @@ private constructor(
                 GPT_4O_2024_11_20,
                 GPT_4O_2024_08_06,
                 GPT_4O_2024_05_13,
+                GPT_AUDIO_MINI,
+                GPT_AUDIO_MINI_2025_12_15,
                 GPT_4O_AUDIO_PREVIEW,
                 GPT_4O_AUDIO_PREVIEW_2024_10_01,
                 GPT_4O_AUDIO_PREVIEW_2024_12_17,
@@ -3840,6 +4391,7 @@ private constructor(
                 GPT_DAYBREAK_BLUE_LATEST,
                 GPT_DAYBREAK_RED_LATEST,
                 GPT_5_6_CYBER,
+                GPT_ROSALIND_RESEARCH,
                 /**
                  * An enum member indicating that [Model] was instantiated with an unknown value.
                  */
@@ -3855,6 +4407,10 @@ private constructor(
              */
             fun value(): Value =
                 when (this) {
+                    GPT_6_ASTRA -> Value.GPT_6_ASTRA
+                    GPT_6_1_SOL -> Value.GPT_6_1_SOL
+                    GPT_6_SOL -> Value.GPT_6_SOL
+                    GPT_6_LUNA -> Value.GPT_6_LUNA
                     GPT_5_6_SOL -> Value.GPT_5_6_SOL
                     GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                     GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
@@ -3905,6 +4461,8 @@ private constructor(
                     GPT_4O_2024_11_20 -> Value.GPT_4O_2024_11_20
                     GPT_4O_2024_08_06 -> Value.GPT_4O_2024_08_06
                     GPT_4O_2024_05_13 -> Value.GPT_4O_2024_05_13
+                    GPT_AUDIO_MINI -> Value.GPT_AUDIO_MINI
+                    GPT_AUDIO_MINI_2025_12_15 -> Value.GPT_AUDIO_MINI_2025_12_15
                     GPT_4O_AUDIO_PREVIEW -> Value.GPT_4O_AUDIO_PREVIEW
                     GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Value.GPT_4O_AUDIO_PREVIEW_2024_10_01
                     GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Value.GPT_4O_AUDIO_PREVIEW_2024_12_17
@@ -3959,6 +4517,7 @@ private constructor(
                     GPT_DAYBREAK_BLUE_LATEST -> Value.GPT_DAYBREAK_BLUE_LATEST
                     GPT_DAYBREAK_RED_LATEST -> Value.GPT_DAYBREAK_RED_LATEST
                     GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
+                    GPT_ROSALIND_RESEARCH -> Value.GPT_ROSALIND_RESEARCH
                     else -> Value._UNKNOWN
                 }
 
@@ -3973,6 +4532,10 @@ private constructor(
              */
             fun known(): Known =
                 when (this) {
+                    GPT_6_ASTRA -> Known.GPT_6_ASTRA
+                    GPT_6_1_SOL -> Known.GPT_6_1_SOL
+                    GPT_6_SOL -> Known.GPT_6_SOL
+                    GPT_6_LUNA -> Known.GPT_6_LUNA
                     GPT_5_6_SOL -> Known.GPT_5_6_SOL
                     GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                     GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
@@ -4023,6 +4586,8 @@ private constructor(
                     GPT_4O_2024_11_20 -> Known.GPT_4O_2024_11_20
                     GPT_4O_2024_08_06 -> Known.GPT_4O_2024_08_06
                     GPT_4O_2024_05_13 -> Known.GPT_4O_2024_05_13
+                    GPT_AUDIO_MINI -> Known.GPT_AUDIO_MINI
+                    GPT_AUDIO_MINI_2025_12_15 -> Known.GPT_AUDIO_MINI_2025_12_15
                     GPT_4O_AUDIO_PREVIEW -> Known.GPT_4O_AUDIO_PREVIEW
                     GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Known.GPT_4O_AUDIO_PREVIEW_2024_10_01
                     GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Known.GPT_4O_AUDIO_PREVIEW_2024_12_17
@@ -4077,6 +4642,7 @@ private constructor(
                     GPT_DAYBREAK_BLUE_LATEST -> Known.GPT_DAYBREAK_BLUE_LATEST
                     GPT_DAYBREAK_RED_LATEST -> Known.GPT_DAYBREAK_RED_LATEST
                     GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
+                    GPT_ROSALIND_RESEARCH -> Known.GPT_ROSALIND_RESEARCH
                     else -> throw OpenAIInvalidDataException("Unknown Model: $value")
                 }
 
@@ -5446,22 +6012,40 @@ private constructor(
          * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
          * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
          * supported value. See the
-         * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+         * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
          * current details.
          */
         class PromptCacheOptions
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
+            private val comparisonResponseId: JsonField<String>,
             private val mode: JsonField<Mode>,
+            private val prewarm: JsonField<Boolean>,
             private val ttl: JsonField<Ttl>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
             @JsonCreator
             private constructor(
+                @JsonProperty("comparison_response_id")
+                @ExcludeMissing
+                comparisonResponseId: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
+                @JsonProperty("prewarm")
+                @ExcludeMissing
+                prewarm: JsonField<Boolean> = JsonMissing.of(),
                 @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
-            ) : this(mode, ttl, mutableMapOf())
+            ) : this(comparisonResponseId, mode, prewarm, ttl, mutableMapOf())
+
+            /**
+             * The ID of a response to compare when diagnosing prompt cache reuse. Supplying this
+             * field requests prompt cache diagnostics when the feature is enabled.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun comparisonResponseId(): Optional<String> =
+                comparisonResponseId.getOptional("comparison_response_id")
 
             /**
              * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults
@@ -5477,6 +6061,15 @@ private constructor(
             fun mode(): Optional<Mode> = mode.getOptional("mode")
 
             /**
+             * Prepares the prompt cache without generating output. Defaults to `false`. When set to
+             * `true`, overrides the `generate` field to `false`.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun prewarm(): Optional<Boolean> = prewarm.getOptional("prewarm")
+
+            /**
              * The minimum lifetime applied to every implicit and explicit cache breakpoint written
              * by the request. Defaults to `30m`, which is currently the only supported value. The
              * backend may retain cache entries for longer.
@@ -5487,11 +6080,28 @@ private constructor(
             fun ttl(): Optional<Ttl> = ttl.getOptional("ttl")
 
             /**
+             * Returns the raw JSON value of [comparisonResponseId].
+             *
+             * Unlike [comparisonResponseId], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("comparison_response_id")
+            @ExcludeMissing
+            fun _comparisonResponseId(): JsonField<String> = comparisonResponseId
+
+            /**
              * Returns the raw JSON value of [mode].
              *
              * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
+
+            /**
+             * Returns the raw JSON value of [prewarm].
+             *
+             * Unlike [prewarm], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("prewarm") @ExcludeMissing fun _prewarm(): JsonField<Boolean> = prewarm
 
             /**
              * Returns the raw JSON value of [ttl].
@@ -5523,15 +6133,44 @@ private constructor(
             /** A builder for [PromptCacheOptions]. */
             class Builder internal constructor() {
 
+                private var comparisonResponseId: JsonField<String> = JsonMissing.of()
                 private var mode: JsonField<Mode> = JsonMissing.of()
+                private var prewarm: JsonField<Boolean> = JsonMissing.of()
                 private var ttl: JsonField<Ttl> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
+                    comparisonResponseId = promptCacheOptions.comparisonResponseId
                     mode = promptCacheOptions.mode
+                    prewarm = promptCacheOptions.prewarm
                     ttl = promptCacheOptions.ttl
                     additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * The ID of a response to compare when diagnosing prompt cache reuse. Supplying
+                 * this field requests prompt cache diagnostics when the feature is enabled.
+                 */
+                fun comparisonResponseId(comparisonResponseId: String?) =
+                    comparisonResponseId(JsonField.ofNullable(comparisonResponseId))
+
+                /**
+                 * Alias for calling [Builder.comparisonResponseId] with
+                 * `comparisonResponseId.orElse(null)`.
+                 */
+                fun comparisonResponseId(comparisonResponseId: Optional<String>) =
+                    comparisonResponseId(comparisonResponseId.getOrNull())
+
+                /**
+                 * Sets [Builder.comparisonResponseId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.comparisonResponseId] with a well-typed [String]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun comparisonResponseId(comparisonResponseId: JsonField<String>) = apply {
+                    this.comparisonResponseId = comparisonResponseId
                 }
 
                 /**
@@ -5552,6 +6191,21 @@ private constructor(
                  * supported value.
                  */
                 fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
+
+                /**
+                 * Prepares the prompt cache without generating output. Defaults to `false`. When
+                 * set to `true`, overrides the `generate` field to `false`.
+                 */
+                fun prewarm(prewarm: Boolean) = prewarm(JsonField.of(prewarm))
+
+                /**
+                 * Sets [Builder.prewarm] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.prewarm] with a well-typed [Boolean] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun prewarm(prewarm: JsonField<Boolean>) = apply { this.prewarm = prewarm }
 
                 /**
                  * The minimum lifetime applied to every implicit and explicit cache breakpoint
@@ -5597,7 +6251,13 @@ private constructor(
                  * Further updates to this [Builder] will not mutate the returned instance.
                  */
                 fun build(): PromptCacheOptions =
-                    PromptCacheOptions(mode, ttl, additionalProperties.toMutableMap())
+                    PromptCacheOptions(
+                        comparisonResponseId,
+                        mode,
+                        prewarm,
+                        ttl,
+                        additionalProperties.toMutableMap(),
+                    )
             }
 
             private var validated: Boolean = false
@@ -5617,7 +6277,9 @@ private constructor(
                     return@apply
                 }
 
+                comparisonResponseId()
                 mode().ifPresent { it.validate() }
+                prewarm()
                 ttl().ifPresent { it.validate() }
                 validated = true
             }
@@ -5638,7 +6300,9 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                (mode.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (comparisonResponseId.asKnown().isPresent) 1 else 0) +
+                    (mode.asKnown().getOrNull()?.validity() ?: 0) +
+                    (if (prewarm.asKnown().isPresent) 1 else 0) +
                     (ttl.asKnown().getOrNull()?.validity() ?: 0)
 
             /**
@@ -5934,17 +6598,21 @@ private constructor(
                 }
 
                 return other is PromptCacheOptions &&
+                    comparisonResponseId == other.comparisonResponseId &&
                     mode == other.mode &&
+                    prewarm == other.prewarm &&
                     ttl == other.ttl &&
                     additionalProperties == other.additionalProperties
             }
 
-            private val hashCode: Int by lazy { Objects.hash(mode, ttl, additionalProperties) }
+            private val hashCode: Int by lazy {
+                Objects.hash(comparisonResponseId, mode, prewarm, ttl, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "PromptCacheOptions{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+                "PromptCacheOptions{comparisonResponseId=$comparisonResponseId, mode=$mode, prewarm=$prewarm, ttl=$ttl, additionalProperties=$additionalProperties}"
         }
 
         /**
@@ -5952,7 +6620,7 @@ private constructor(
          *
          * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
          * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
          * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
          * expresses a minimum cache lifetime. The two fields are independent and do not interact.
          * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -6109,10 +6777,8 @@ private constructor(
         }
 
         /**
-         * **gpt-5 and o-series models only**
-         *
          * Configuration options for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
          */
         class Reasoning
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -6160,7 +6826,7 @@ private constructor(
              * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning
              * effort can result in faster responses and fewer tokens used on reasoning in a
              * response. Not all reasoning models support every value. See the
-             * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+             * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
              * model-specific support.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -6309,7 +6975,7 @@ private constructor(
                  * are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing
                  * reasoning effort can result in faster responses and fewer tokens used on
                  * reasoning in a response. Not all reasoning models support every value. See the
-                 * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+                 * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
                  * model-specific support.
                  */
                 fun effort(effort: Effort?) = effort(JsonField.ofNullable(effort))
@@ -6648,7 +7314,7 @@ private constructor(
              * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning
              * effort can result in faster responses and fewer tokens used on reasoning in a
              * response. Not all reasoning models support every value. See the
-             * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+             * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
              * model-specific support.
              */
             class Effort @JsonCreator private constructor(private val value: JsonField<String>) :
@@ -7310,12 +7976,12 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
-         *   request will be processed with the Flex Processing service tier.
-         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         *   Completions. The response will show `service_tier=priority` regardless of if you
-         *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then
+         *   the request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at
+         *   the request level, include the `service_tier=fast` or `service_tier=priority` parameter
+         *   for Responses or Chat Completions. The response will show `service_tier=priority`
+         *   regardless of if you specify `service_tier=fast` or `priority` in your request.
          * - If set to 'ultrafast', then the request will be processed with the access-controlled
          *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`;
          *   a response served through it will show `service_tier=ultrafast`.
@@ -7715,7 +8381,7 @@ private constructor(
 
             /**
              * Indicates that the model should use a built-in tool to generate a response.
-             * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+             * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
              */
             fun betaToolChoiceTypes(): Optional<BetaToolChoiceTypes> =
                 Optional.ofNullable(betaToolChoiceTypes)
@@ -7783,7 +8449,7 @@ private constructor(
 
             /**
              * Indicates that the model should use a built-in tool to generate a response.
-             * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+             * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
              */
             fun asBetaToolChoiceTypes(): BetaToolChoiceTypes =
                 betaToolChoiceTypes.getOrThrow("betaToolChoiceTypes")
@@ -8097,7 +8763,7 @@ private constructor(
 
                 /**
                  * Indicates that the model should use a built-in tool to generate a response.
-                 * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+                 * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
                  */
                 @JvmStatic
                 fun ofBetaToolChoiceTypes(betaToolChoiceTypes: BetaToolChoiceTypes) =
@@ -8162,7 +8828,7 @@ private constructor(
 
                 /**
                  * Indicates that the model should use a built-in tool to generate a response.
-                 * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+                 * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
                  */
                 fun visitBetaToolChoiceTypes(betaToolChoiceTypes: BetaToolChoiceTypes): T
 
@@ -8201,7 +8867,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown ToolChoice: $json")
+                    throw OpenAIInvalidDataException("Unknown ToolChoice")
                 }
             }
 
@@ -8451,6 +9117,7 @@ private constructor(
 
             return other is ResponseCreate &&
                 type == other.type &&
+                accessPrograms == other.accessPrograms &&
                 background == other.background &&
                 contextManagement == other.contextManagement &&
                 conversation == other.conversation &&
@@ -8490,6 +9157,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 type,
+                accessPrograms,
                 background,
                 contextManagement,
                 conversation,
@@ -8530,6 +9198,6 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ResponseCreate{type=$type, background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, multiAgent=$multiAgent, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, stream=$stream, streamId=$streamId, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "ResponseCreate{type=$type, accessPrograms=$accessPrograms, background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, multiAgent=$multiAgent, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, stream=$stream, streamId=$streamId, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
     }
 }

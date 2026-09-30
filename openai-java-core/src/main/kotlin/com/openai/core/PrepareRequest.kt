@@ -5,6 +5,10 @@ package com.openai.core
 import com.openai.azure.addPathSegmentsForAzure
 import com.openai.azure.replaceBearerTokenForAzure
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.closeMultipartOnFailure
+import com.openai.errors.InvalidResourceIdException
+import com.openai.models.ChatModel
+import com.openai.models.ResponsesModel
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import kotlin.reflect.full.declaredFunctions
@@ -14,19 +18,33 @@ internal fun HttpRequest.prepare(
     clientOptions: ClientOptions,
     params: Params,
     security: SecurityOptions = SecurityOptions.all(),
-): HttpRequest =
-    toBuilder()
-        // Clear the path segments and add them back below after the Azure path segments.
-        .pathSegments(listOf())
-        .addPathSegmentsForAzure(clientOptions, params.modelNameOrNull())
-        .addPathSegments(*pathSegments.toTypedArray())
-        .putAllQueryParams(clientOptions.queryParams)
-        .replaceAllQueryParams(params._queryParams())
-        .putAllHeaders(clientOptions.securityHeaders(security))
-        .putAllHeaders(clientOptions.headers)
-        .replaceBearerTokenForAzure(clientOptions)
-        .replaceAllHeaders(params._headers())
-        .build()
+): HttpRequest {
+    try {
+        val routedRequest =
+            toBuilder()
+                // Include Azure deployment segments before validating the final resource path.
+                .pathSegments(listOf())
+                .addPathSegmentsForAzure(clientOptions, params.modelNameOrNull())
+                .addPathSegments(*pathSegments.toTypedArray())
+                .build()
+        if (routedRequest.pathSegments.any { it.isEmpty() || it == "." || it == ".." }) {
+            // Rejected requests never reach transport, which normally owns body cleanup.
+            routedRequest.body.use { throw InvalidResourceIdException() }
+        }
+        return routedRequest
+            .toBuilder()
+            .putAllQueryParams(clientOptions.queryParams)
+            .replaceAllQueryParams(params._queryParams())
+            .putAllHeaders(clientOptions.securityHeaders(security))
+            .putAllHeaders(clientOptions.headers)
+            .replaceBearerTokenForAzure(clientOptions)
+            .replaceAllHeaders(params._headers())
+            .build()
+    } catch (failure: Throwable) {
+        body.closeMultipartOnFailure(failure)
+        throw failure
+    }
+}
 
 @JvmSynthetic
 internal fun HttpRequest.prepareAsync(
@@ -34,9 +52,13 @@ internal fun HttpRequest.prepareAsync(
     params: Params,
     security: SecurityOptions = SecurityOptions.all(),
 ): CompletableFuture<HttpRequest> =
-    // This async version exists to make it easier to add async specific preparation logic in the
-    // future.
-    CompletableFuture.completedFuture(prepare(clientOptions, params, security))
+    try {
+        CompletableFuture.completedFuture(prepare(clientOptions, params, security))
+    } catch (failure: InvalidResourceIdException) {
+        // Deliver the new validation error through the future while preserving the existing
+        // synchronous behavior of unrelated preparation failures. Compatible with Java 8.
+        CompletableFuture<HttpRequest>().apply { completeExceptionally(failure) }
+    }
 
 @JvmSynthetic
 internal fun Params.modelNameOrNull(): String? {
@@ -49,8 +71,28 @@ internal fun Params.modelNameOrNull(): String? {
             null
         }
 
-    return when (modelName) {
-        is Optional<*> -> modelName.orElse(null)?.toString()
-        else -> modelName?.toString()
+    val unwrappedModelName =
+        when (modelName) {
+            is Optional<*> -> modelName.orElse(null)
+            else -> modelName
+        }
+
+    return when (unwrappedModelName) {
+        is ResponsesModel -> unwrappedModelName.modelNameOrNull()
+        else -> unwrappedModelName?.toString()
     }
 }
+
+private fun ResponsesModel.modelNameOrNull(): String? =
+    accept(
+        object : ResponsesModel.Visitor<String?> {
+            override fun visitString(string: String): String = string
+
+            override fun visitChat(chat: ChatModel): String? = chat._value().asString().orElse(null)
+
+            override fun visitOnly(only: ResponsesModel.ResponsesOnlyModel): String? =
+                only._value().asString().orElse(null)
+
+            override fun unknown(json: JsonValue?): String? = null
+        }
+    )

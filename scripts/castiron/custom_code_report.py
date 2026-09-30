@@ -22,6 +22,7 @@ import re
 import struct
 import subprocess
 import sys
+import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
@@ -766,6 +767,84 @@ def api(method: str, path: str, payload: dict[str, Any] | None = None) -> Any:
     return json.loads(result.stdout)
 
 
+def api_list(path: str) -> list[dict[str, Any]]:
+    """Read every GitHub REST list page or fail closed on malformed pagination."""
+    results: list[dict[str, Any]] = []
+    for page in range(1, 101):
+        suffix = "" if page == 1 else f"&page={page}"
+        entries = api("GET", path + suffix)
+        if not isinstance(entries, list):
+            raise ReportError("GitHub list response is invalid")
+        results.extend(entries)
+        if len(entries) < 100:
+            return results
+    raise ReportError("GitHub list pagination did not terminate")
+
+
+def current_pull_request(
+    root: str,
+    repository: str,
+    run: dict[str, Any],
+    branch: str,
+    main: str,
+) -> dict[str, Any] | None:
+    """Resolve one live PR from trusted run metadata, including fork runs."""
+    head = require_sha(run["head_sha"])
+    head_repository = run.get("head_repository")
+    if not isinstance(head_repository, dict):
+        raise ReportError("source run has no head repository")
+    head_repository_name = head_repository.get("full_name")
+    head_repository_id = head_repository.get("id")
+    owner = head_repository.get("owner")
+    owner_login = owner.get("login") if isinstance(owner, dict) else None
+    head_branch = run.get("head_branch")
+    if (
+        not isinstance(head_repository_name, str)
+        or not REPOSITORY.fullmatch(head_repository_name)
+        or type(head_repository_id) is not int
+        or head_repository_id <= 0
+        or not isinstance(owner_login, str)
+        or not owner_login
+        or not isinstance(head_branch, str)
+        or not head_branch
+    ):
+        raise ReportError("invalid source run head repository or branch")
+    associated = run["pull_requests"]
+    if not associated:
+        query = urllib.parse.urlencode(
+            {
+                "state": "open",
+                "head": f"{owner_login}:{head_branch}",
+                "base": branch,
+                "per_page": 100,
+            }
+        )
+        associated = api_list(f"{root}/pulls?{query}")
+    numbers = sorted({int(pull["number"]) for pull in associated})
+    current: list[dict[str, Any]] = []
+    for number in numbers:
+        if number <= 0:
+            raise ReportError("invalid associated pull request")
+        pull = api("GET", f"{root}/pulls/{number}")
+        pull_head_repository = pull["head"]["repo"]
+        if (
+            pull["state"] == "open"
+            and pull["head"]["sha"] == head
+            and pull["head"]["ref"] == head_branch
+            and pull_head_repository["id"] == head_repository_id
+            and pull_head_repository["full_name"] == head_repository_name
+            and pull["base"]["repo"]["full_name"] == repository
+            and pull["base"]["ref"] == branch
+            and pull["base"]["sha"] == main
+        ):
+            current.append(pull)
+    if not current:
+        return None
+    if len(current) != 1:
+        raise ReportError("workflow run has multiple current pull requests")
+    return current[0]
+
+
 def publish_comment(
     report: dict[str, Any],
     repository: str,
@@ -779,26 +858,22 @@ def publish_comment(
     if not REPOSITORY.fullmatch(repository) or min(number, run_id, run_attempt) <= 0:
         raise ReportError("invalid GitHub publication target")
     root = f"repos/{repository}"
-    pull = api("GET", f"{root}/pulls/{number}")
-    if (
-        pull["state"] != "open"
-        or pull["head"]["sha"] != report["head_sha"]
-        or pull["base"]["sha"] != report["target_base_sha"]
-    ):
-        return "Skipped stale report"
     run = api("GET", f"{root}/actions/runs/{run_id}")
     if (
         run["event"] != "pull_request"
         or run.get("path", "").split("@", 1)[0] != ".github/workflows/castiron-custom-code.yml"
         or run["head_sha"] != report["head_sha"]
+        or run["repository"]["full_name"] != repository
     ):
         raise ReportError("workflow run does not match report PR/head")
-    associated = run["pull_requests"]
-    if not associated:
-        # GitHub can omit the PR association on workflow runs from forks.
-        associated = api("GET", f"{root}/commits/{require_sha(run['head_sha'])}/pulls?per_page=100")
-    if not any(pr["number"] == number for pr in associated):
+    metadata = api("GET", root)
+    branch = metadata["default_branch"]
+    main = require_sha(api("GET", f"{root}/git/ref/heads/{branch}")["object"]["sha"])
+    pull = current_pull_request(root, repository, run, branch, main)
+    if pull is None or pull["number"] != number:
         raise ReportError("workflow run does not match report PR/head")
+    if pull["head"]["sha"] != report["head_sha"] or main != report["target_base_sha"]:
+        return "Skipped stale report"
     if run["run_attempt"] != run_attempt:
         return "Skipped stale report"
     artifact_run_id = artifact_run_id or run_id
@@ -829,12 +904,8 @@ def publish_comment(
         if found["body"] == body:
             return str(found["html_url"])
     # The workflow serializes publishers; recheck after pagination before writing.
-    pull = api("GET", f"{root}/pulls/{number}")
-    if (
-        pull["state"] != "open"
-        or pull["head"]["sha"] != report["head_sha"]
-        or pull["base"]["sha"] != report["target_base_sha"]
-    ):
+    pull = current_pull_request(root, repository, run, branch, main)
+    if pull is None or pull["number"] != number:
         return "Skipped stale report"
     if found is not None:
         result = api("PATCH", f"{root}/issues/comments/{found['id']}", {"body": body})
@@ -885,29 +956,21 @@ def trusted_report(repo: Path, repository: str, run_id: int, run_attempt: int, o
         run["event"] != "pull_request"
         or run.get("path", "").split("@", 1)[0] != ".github/workflows/castiron-custom-code.yml"
         or run["status"] != "completed"
+        or run["repository"]["full_name"] != repository
     ):
         raise ReportError("unexpected source workflow run")
     if run["run_attempt"] != run_attempt:
         return
     head = require_sha(run["head_sha"])
-    associated = run["pull_requests"] or api("GET", f"{root}/commits/{head}/pulls?per_page=100")
-    current: list[tuple[int, str]] = []
-    for number in sorted({int(pr["number"]) for pr in associated}):
-        if number <= 0:
-            raise ReportError("invalid associated pull request")
-        pull = api("GET", f"{root}/pulls/{number}")
-        if (
-            pull["state"] == "open"
-            and pull["head"]["sha"] == head
-            and pull["base"]["repo"]["full_name"] == repository
-        ):
-            current.append((number, require_sha(pull["base"]["sha"])))
-    if not current:
+    metadata = api("GET", root)
+    branch = metadata["default_branch"]
+    main = require_sha(api("GET", f"{root}/git/ref/heads/{branch}")["object"]["sha"])
+    pull = current_pull_request(root, repository, run, branch, main)
+    if pull is None:
         return
-    if len(current) != 1:
-        raise ReportError("workflow run has multiple current pull requests")
-    number, base = current[0]
-    public = not api("GET", root)["private"]
+    number = int(pull["number"])
+    base = main
+    public = not metadata["private"]
     # This must be a new, bare repository: no PR worktree, hooks, configuration,
     # submodules, or Python imports can affect the trusted reporter.
     repo.mkdir()

@@ -56,8 +56,8 @@ private constructor(
     fun expiresAfter(): Optional<ExpiresAfter> = body.expiresAfter()
 
     /**
-     * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the vector
-     * store should use. Useful for tools like `file_search` that can access files.
+     * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that the
+     * vector store should use. Useful for tools like `file_search` that can access files.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -246,8 +246,8 @@ private constructor(
         }
 
         /**
-         * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-         * vector store should use. Useful for tools like `file_search` that can access files.
+         * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that
+         * the vector store should use. Useful for tools like `file_search` that can access files.
          */
         fun fileIds(fileIds: List<String>) = apply { body.fileIds(fileIds) }
 
@@ -503,8 +503,8 @@ private constructor(
         fun expiresAfter(): Optional<ExpiresAfter> = expiresAfter.getOptional("expires_after")
 
         /**
-         * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-         * vector store should use. Useful for tools like `file_search` that can access files.
+         * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that
+         * the vector store should use. Useful for tools like `file_search` that can access files.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -698,8 +698,9 @@ private constructor(
             }
 
             /**
-             * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-             * vector store should use. Useful for tools like `file_search` that can access files.
+             * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs
+             * that the vector store should use. Useful for tools like `file_search` that can access
+             * files.
              */
             fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 

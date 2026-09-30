@@ -75,7 +75,7 @@ private constructor(
     )
 
     /**
-     * An annotation that applies to a span of output text.
+     * The annotation object being added. (See annotation schema for details.)
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -260,7 +260,7 @@ private constructor(
                 betaResponseOutputTextAnnotationAddedEvent.additionalProperties.toMutableMap()
         }
 
-        /** An annotation that applies to a span of output text. */
+        /** The annotation object being added. (See annotation schema for details.) */
         fun annotation(annotation: Annotation?) = annotation(JsonField.ofNullable(annotation))
 
         /** Alias for calling [Builder.annotation] with `annotation.orElse(null)`. */
@@ -490,7 +490,7 @@ private constructor(
             } +
             (agent.asKnown().getOrNull()?.validity() ?: 0)
 
-    /** An annotation that applies to a span of output text. */
+    /** The annotation object being added. (See annotation schema for details.) */
     @JsonDeserialize(using = Annotation.Deserializer::class)
     @JsonSerialize(using = Annotation.Serializer::class)
     class Annotation
@@ -723,7 +723,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Annotation: $json")
+                throw OpenAIInvalidDataException("Unknown Annotation")
             }
         }
 
@@ -821,7 +821,7 @@ private constructor(
             fun filename(): String = filename.getRequired("filename")
 
             /**
-             * The index of the file in the list of files.
+             * The index in the output text at which to insert the file citation.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -933,7 +933,7 @@ private constructor(
                  */
                 fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
-                /** The index of the file in the list of files. */
+                /** The index in the output text at which to insert the file citation. */
                 fun index(index: Long) = index(JsonField.of(index))
 
                 /**

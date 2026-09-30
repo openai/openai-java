@@ -20,6 +20,7 @@ import com.openai.models.responses.EasyInputMessage
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseCompactionItemParam
 import com.openai.models.responses.ResponseComputerToolCall
+import com.openai.models.responses.ResponseConfigurationUpdateItemParam
 import com.openai.models.responses.ResponseCustomToolCall
 import com.openai.models.responses.ResponseCustomToolCallOutput
 import com.openai.models.responses.ResponseFileSearchToolCall
@@ -284,6 +285,14 @@ private constructor(
          * ```
          */
         fun addAdditionalToolsItem(tools: List<Tool>) = apply { body.addAdditionalToolsItem(tools) }
+
+        /**
+         * Alias for calling [addItem] with
+         * `ResponseInputItem.ofConfigurationUpdate(configurationUpdate)`.
+         */
+        fun addItem(configurationUpdate: ResponseConfigurationUpdateItemParam) = apply {
+            body.addItem(configurationUpdate)
+        }
 
         /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
         fun addItem(reasoning: ResponseReasoningItem) = apply { body.addItem(reasoning) }
@@ -843,6 +852,13 @@ private constructor(
              */
             fun addAdditionalToolsItem(tools: List<Tool>) =
                 addItem(ResponseInputItem.AdditionalTools.builder().tools(tools).build())
+
+            /**
+             * Alias for calling [addItem] with
+             * `ResponseInputItem.ofConfigurationUpdate(configurationUpdate)`.
+             */
+            fun addItem(configurationUpdate: ResponseConfigurationUpdateItemParam) =
+                addItem(ResponseInputItem.ofConfigurationUpdate(configurationUpdate))
 
             /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
             fun addItem(reasoning: ResponseReasoningItem) =

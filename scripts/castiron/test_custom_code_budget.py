@@ -21,6 +21,11 @@ def source_run(head: str, event: str = "pull_request") -> dict[str, Any]:
         "event": event,
         "head_sha": head,
         "head_branch": "gh-readonly-queue/main/pr-7-example" if event == "merge_group" else "sdk",
+        "head_repository": {
+            "id": 7,
+            "full_name": "fork/example",
+            "owner": {"login": "fork"},
+        },
         "repository": {"full_name": "openai/example"},
         "path": ".github/workflows/castiron-custom-code.yml",
         "status": "completed",
@@ -331,9 +336,14 @@ class StatusPublisherTests(unittest.TestCase):
                 },
             },
             "run": {**source_run(head, event_name), **(run_overrides or {})},
+            "candidates": [{"number": 3}],
             "current": {
                 "state": "open",
-                "head": {"sha": "c" * 40 if head_changed else head},
+                "head": {
+                    "sha": "c" * 40 if head_changed else head,
+                    "ref": "sdk",
+                    "repo": {"id": 7, "full_name": "fork/example"},
+                },
                 "base": {
                     "sha": "c" * 40 if base_changed else base,
                     "ref": "main",
@@ -351,11 +361,20 @@ class StatusPublisherTests(unittest.TestCase):
           const fs = require('node:fs');
           const data = JSON.parse(fs.readFileSync(0, 'utf8'));
           const published = [];
-          const github = {rest: {
-            pulls: {get: async () => ({data: data.current})},
+          const github = {
+            paginate: async (_method, options) => {
+              if (options.head !== 'fork:sdk' || options.base !== 'main' ||
+                  options.state !== 'open') throw new Error('unsafe fork lookup');
+              return data.candidates;
+            },
+            rest: {
+            pulls: {list() {}, get: async () => ({data: data.current})},
             actions: {getWorkflowRun: async () => ({data: data.run})},
             git: {getRef: async () => ({data: {object: {sha: data.current.base.sha}}})},
-            repos: {createCommitStatus: async value => published.push(value)},
+            repos: {
+              get: async () => ({data: {default_branch: 'main'}}),
+              createCommitStatus: async value => published.push(value),
+            },
           }};
           const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
           new AsyncFunction('github','context','process', data.script)(github, data.context, {env:data.env})
@@ -382,6 +401,10 @@ class StatusPublisherTests(unittest.TestCase):
 
     def test_stale_pr_head_is_not_published(self) -> None:
         self.assertEqual(self.publish(head_changed=True), [])
+
+    def test_fork_run_without_association_uses_scoped_open_pr_lookup(self) -> None:
+        results = self.publish(run_overrides={"pull_requests": []})
+        self.assertEqual(len(results), 2)
 
     def test_stale_base_and_missing_evaluation_cannot_publish_success(self) -> None:
         for event in ("pull_request", "merge_group"):
@@ -465,7 +488,7 @@ class GitHubBudgetTests(unittest.TestCase):
         event = {"repository": {"full_name": "openai/example"}, "workflow_run": source_run(head)}
         pull = {
             "state": "open",
-            "head": {"sha": head},
+            "head": {"sha": head, "ref": "sdk", "repo": {"id": 7, "full_name": "fork/example"}},
             "base": {
                 "sha": base,
                 "ref": "main",
@@ -565,7 +588,7 @@ class GitHubBudgetTests(unittest.TestCase):
         }
         pull = {
             "state": "open",
-            "head": {"sha": head},
+            "head": {"sha": head, "ref": "sdk", "repo": {"id": 7, "full_name": "fork/example"}},
             "base": {"sha": base, "ref": "main", "repo": {"full_name": "openai/example"}},
         }
         responses = [
@@ -603,7 +626,7 @@ class GitHubBudgetTests(unittest.TestCase):
                 }
                 pull: dict[str, Any] = {
                     "state": "open",
-                    "head": {"sha": head},
+                    "head": {"sha": head, "ref": "sdk", "repo": {"id": 7, "full_name": "fork/example"}},
                     "base": {"sha": base, "ref": "main", "repo": {"full_name": "openai/example"}},
                 }
                 if kind == "head":

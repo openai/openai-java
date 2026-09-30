@@ -11,6 +11,7 @@ import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
+import com.openai.models.responses.ResponseConfigurationUpdateItem
 import com.openai.models.responses.ResponseCustomToolCallItem
 import com.openai.models.responses.ResponseCustomToolCallOutputItem
 import com.openai.models.responses.ResponseFileSearchToolCall
@@ -57,7 +58,7 @@ private constructor(
 
     override fun items(): List<ResponseItem> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): InputItemListParams =
         params
@@ -110,6 +111,10 @@ private constructor(
                             override fun visitAdditionalTools(
                                 additionalTools: ResponseItem.AdditionalTools
                             ): Optional<String> = additionalTools._id().getOptional("id")
+
+                            override fun visitConfigurationUpdate(
+                                configurationUpdate: ResponseConfigurationUpdateItem
+                            ): Optional<String> = configurationUpdate._id().getOptional("id")
 
                             override fun visitReasoning(
                                 reasoning: ResponseReasoningItem

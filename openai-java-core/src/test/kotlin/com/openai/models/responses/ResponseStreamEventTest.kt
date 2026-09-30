@@ -33,6 +33,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -116,6 +117,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -200,6 +202,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -287,6 +290,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -378,6 +382,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -474,6 +479,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -569,6 +575,7 @@ internal class ResponseStreamEventTest {
             .contains(codeInterpreterCallCompleted)
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -663,6 +670,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallInProgress())
             .contains(codeInterpreterCallInProgress)
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -757,6 +765,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting())
             .contains(codeInterpreterCallInterpreting)
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -830,17 +839,129 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofCompactionCompacting() {
+        val compactionCompacting =
+            ResponseCompactionCompactingEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responseStreamEvent = ResponseStreamEvent.ofCompactionCompacting(compactionCompacting)
+
+        assertThat(responseStreamEvent.audioDelta()).isEmpty
+        assertThat(responseStreamEvent.audioDone()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDelta()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).contains(compactionCompacting)
+        assertThat(responseStreamEvent.completed()).isEmpty
+        assertThat(responseStreamEvent.contentPartAdded()).isEmpty
+        assertThat(responseStreamEvent.contentPartDone()).isEmpty
+        assertThat(responseStreamEvent.created()).isEmpty
+        assertThat(responseStreamEvent.error()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallSearching()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDelta()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDone()).isEmpty
+        assertThat(responseStreamEvent.shellCallCommandAdded()).isEmpty
+        assertThat(responseStreamEvent.shellCallCommandDelta()).isEmpty
+        assertThat(responseStreamEvent.shellCallCommandDone()).isEmpty
+        assertThat(responseStreamEvent.shellCallOutputContentDelta()).isEmpty
+        assertThat(responseStreamEvent.shellCallOutputContentDone()).isEmpty
+        assertThat(responseStreamEvent.inProgress()).isEmpty
+        assertThat(responseStreamEvent.failed()).isEmpty
+        assertThat(responseStreamEvent.incomplete()).isEmpty
+        assertThat(responseStreamEvent.outputItemAdded()).isEmpty
+        assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningTextDone()).isEmpty
+        assertThat(responseStreamEvent.refusalDelta()).isEmpty
+        assertThat(responseStreamEvent.refusalDone()).isEmpty
+        assertThat(responseStreamEvent.outputTextDelta()).isEmpty
+        assertThat(responseStreamEvent.outputTextDone()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+        assertThat(responseStreamEvent.imageGenerationCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.imageGenerationCallGenerating()).isEmpty
+        assertThat(responseStreamEvent.imageGenerationCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.imageGenerationCallPartialImage()).isEmpty
+        assertThat(responseStreamEvent.mcpCallArgumentsDelta()).isEmpty
+        assertThat(responseStreamEvent.mcpCallArgumentsDone()).isEmpty
+        assertThat(responseStreamEvent.mcpCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.mcpCallFailed()).isEmpty
+        assertThat(responseStreamEvent.mcpCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.mcpListToolsCompleted()).isEmpty
+        assertThat(responseStreamEvent.mcpListToolsFailed()).isEmpty
+        assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
+        assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
+        assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
+    }
+
+    @Test
+    fun ofCompactionCompactingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofCompactionCompacting(
+                ResponseCompactionCompactingEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofCompleted() {
         val completed =
             ResponseCompletedEvent.builder()
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -854,7 +975,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -901,6 +1022,7 @@ internal class ResponseStreamEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -990,11 +1112,21 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -1034,7 +1166,6 @@ internal class ResponseStreamEventTest {
                                         .build()
                                 )
                                 .totalTokens(0L)
-                                .computeUnits(0L)
                                 .build()
                         )
                         .user("user-1234")
@@ -1054,6 +1185,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).contains(completed)
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -1114,11 +1246,30 @@ internal class ResponseStreamEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
                                     .code(ResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        ResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                ResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                ResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -1132,7 +1283,7 @@ internal class ResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_5_1)
+                            .model(ChatModel.GPT_6_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -1180,6 +1331,7 @@ internal class ResponseStreamEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -1277,11 +1429,22 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -1321,7 +1484,6 @@ internal class ResponseStreamEventTest {
                                             .build()
                                     )
                                     .totalTokens(0L)
-                                    .computeUnits(0L)
                                     .build()
                             )
                             .user("user-1234")
@@ -1387,6 +1549,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).contains(contentPartAdded)
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -1533,6 +1696,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).contains(contentPartDone)
@@ -1639,11 +1803,30 @@ internal class ResponseStreamEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -1657,7 +1840,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -1704,6 +1887,7 @@ internal class ResponseStreamEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -1793,11 +1977,21 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -1837,7 +2031,6 @@ internal class ResponseStreamEventTest {
                                         .build()
                                 )
                                 .totalTokens(0L)
-                                .computeUnits(0L)
                                 .build()
                         )
                         .user("user-1234")
@@ -1857,6 +2050,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -1917,11 +2111,30 @@ internal class ResponseStreamEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
                                     .code(ResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        ResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                ResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                ResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -1935,7 +2148,7 @@ internal class ResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_5_1)
+                            .model(ChatModel.GPT_6_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -1983,6 +2196,7 @@ internal class ResponseStreamEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -2080,11 +2294,22 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -2124,7 +2349,6 @@ internal class ResponseStreamEventTest {
                                             .build()
                                     )
                                     .totalTokens(0L)
-                                    .computeUnits(0L)
                                     .build()
                             )
                             .user("user-1234")
@@ -2164,6 +2388,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -2258,6 +2483,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -2351,6 +2577,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -2445,6 +2672,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -2539,6 +2767,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -2619,7 +2848,6 @@ internal class ResponseStreamEventTest {
             ResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
-                .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
@@ -2636,6 +2864,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -2696,7 +2925,6 @@ internal class ResponseStreamEventTest {
                 ResponseFunctionCallArgumentsDoneEvent.builder()
                     .arguments("arguments")
                     .itemId("item_id")
-                    .name("name")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .build()
@@ -2732,6 +2960,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -2827,6 +3056,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -2922,6 +3152,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -3023,6 +3254,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -3133,6 +3365,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -3222,11 +3455,30 @@ internal class ResponseStreamEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -3240,7 +3492,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -3287,6 +3539,7 @@ internal class ResponseStreamEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -3376,11 +3629,21 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -3420,7 +3683,6 @@ internal class ResponseStreamEventTest {
                                         .build()
                                 )
                                 .totalTokens(0L)
-                                .computeUnits(0L)
                                 .build()
                         )
                         .user("user-1234")
@@ -3440,6 +3702,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -3500,11 +3763,30 @@ internal class ResponseStreamEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
                                     .code(ResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        ResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                ResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                ResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -3518,7 +3800,7 @@ internal class ResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_5_1)
+                            .model(ChatModel.GPT_6_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -3566,6 +3848,7 @@ internal class ResponseStreamEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -3663,11 +3946,22 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -3707,7 +4001,6 @@ internal class ResponseStreamEventTest {
                                             .build()
                                     )
                                     .totalTokens(0L)
-                                    .computeUnits(0L)
                                     .build()
                             )
                             .user("user-1234")
@@ -3733,11 +4026,30 @@ internal class ResponseStreamEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -3751,7 +4063,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -3798,6 +4110,7 @@ internal class ResponseStreamEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -3887,11 +4200,21 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -3931,7 +4254,6 @@ internal class ResponseStreamEventTest {
                                         .build()
                                 )
                                 .totalTokens(0L)
-                                .computeUnits(0L)
                                 .build()
                         )
                         .user("user-1234")
@@ -3951,6 +4273,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -4011,11 +4334,30 @@ internal class ResponseStreamEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
                                     .code(ResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        ResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                ResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                ResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -4029,7 +4371,7 @@ internal class ResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_5_1)
+                            .model(ChatModel.GPT_6_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -4077,6 +4419,7 @@ internal class ResponseStreamEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -4174,11 +4517,22 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -4218,7 +4572,6 @@ internal class ResponseStreamEventTest {
                                             .build()
                                     )
                                     .totalTokens(0L)
-                                    .computeUnits(0L)
                                     .build()
                             )
                             .user("user-1234")
@@ -4244,11 +4597,30 @@ internal class ResponseStreamEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -4262,7 +4634,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -4309,6 +4681,7 @@ internal class ResponseStreamEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -4398,11 +4771,21 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -4442,7 +4825,6 @@ internal class ResponseStreamEventTest {
                                         .build()
                                 )
                                 .totalTokens(0L)
-                                .computeUnits(0L)
                                 .build()
                         )
                         .user("user-1234")
@@ -4462,6 +4844,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -4522,11 +4905,30 @@ internal class ResponseStreamEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
                                     .code(ResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        ResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                ResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                ResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -4540,7 +4942,7 @@ internal class ResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_5_1)
+                            .model(ChatModel.GPT_6_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -4588,6 +4990,7 @@ internal class ResponseStreamEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -4685,11 +5088,22 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -4729,7 +5143,6 @@ internal class ResponseStreamEventTest {
                                             .build()
                                     )
                                     .totalTokens(0L)
-                                    .computeUnits(0L)
                                     .build()
                             )
                             .user("user-1234")
@@ -4800,6 +5213,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -4956,6 +5370,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -5083,6 +5498,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -5184,6 +5600,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -5283,6 +5700,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -5381,6 +5799,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -5478,6 +5897,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -5574,6 +5994,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -5670,6 +6091,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -5766,6 +6188,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -5874,6 +6297,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -5994,6 +6418,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -6101,6 +6526,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -6194,6 +6620,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -6287,6 +6714,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -6380,6 +6808,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -6474,6 +6903,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -6568,6 +6998,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -6668,6 +7099,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -6768,6 +7200,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -6862,6 +7295,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -6955,6 +7389,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -7047,6 +7482,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -7139,6 +7575,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -7231,6 +7668,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -7323,6 +7761,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -7416,6 +7855,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -7518,6 +7958,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -7607,11 +8048,30 @@ internal class ResponseStreamEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
                                 .build()
                         )
                         .incompleteDetails(
@@ -7625,7 +8085,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -7672,6 +8132,7 @@ internal class ResponseStreamEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -7761,11 +8222,21 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -7805,7 +8276,6 @@ internal class ResponseStreamEventTest {
                                         .build()
                                 )
                                 .totalTokens(0L)
-                                .computeUnits(0L)
                                 .build()
                         )
                         .user("user-1234")
@@ -7825,6 +8295,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -7885,11 +8356,30 @@ internal class ResponseStreamEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
                                     .code(ResponseError.Code.SERVER_ERROR)
                                     .message("message")
+                                    .misalignment(
+                                        ResponseError.Misalignment.builder()
+                                            .detailedExplanation("detailed_explanation")
+                                            .errorType(
+                                                ResponseError.Misalignment.ErrorType
+                                                    .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                            )
+                                            .steer(
+                                                ResponseError.Misalignment.Steer.builder()
+                                                    .message("message")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
                                     .build()
                             )
                             .incompleteDetails(
@@ -7903,7 +8393,7 @@ internal class ResponseStreamEventTest {
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
-                            .model(ChatModel.GPT_5_1)
+                            .model(ChatModel.GPT_6_ASTRA)
                             .addOutput(
                                 ResponseOutputMessage.builder()
                                     .id("id")
@@ -7951,6 +8441,7 @@ internal class ResponseStreamEventTest {
                                     )
                                     .strict(true)
                                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                    .async(true)
                                     .deferLoading(true)
                                     .description("description")
                                     .outputSchema(
@@ -8048,11 +8539,22 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheDiagnostics(
+                                Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                    .cacheMissedTokens(0L)
+                                    .reason(
+                                        Response.PromptCacheDiagnostics.CacheMiss.Reason
+                                            .MODEL_CHANGED
+                                    )
+                                    .comparisonReusableTokens(0L)
+                                    .build()
+                            )
                             .promptCacheKey("prompt-cache-key-1234")
                             .promptCacheOptions(
                                 Response.PromptCacheOptions.builder()
                                     .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                     .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                    .comparisonResponseId("comparison_response_id")
                                     .build()
                             )
                             .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -8092,7 +8594,6 @@ internal class ResponseStreamEventTest {
                                             .build()
                                     )
                                     .totalTokens(0L)
-                                    .computeUnits(0L)
                                     .build()
                             )
                             .user("user-1234")
@@ -8133,6 +8634,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty
@@ -8229,6 +8731,7 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
         assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.compactionCompacting()).isEmpty
         assertThat(responseStreamEvent.completed()).isEmpty
         assertThat(responseStreamEvent.contentPartAdded()).isEmpty
         assertThat(responseStreamEvent.contentPartDone()).isEmpty

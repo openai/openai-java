@@ -3,6 +3,7 @@
 package com.openai.models.videos
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -11,16 +12,74 @@ internal class VideoCreateErrorTest {
 
     @Test
     fun create() {
-        val videoCreateError = VideoCreateError.builder().code("code").message("message").build()
+        val videoCreateError =
+            VideoCreateError.builder()
+                .code("code")
+                .message("message")
+                .headers(
+                    VideoCreateError.Headers.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
+                .misalignment(
+                    VideoCreateError.Misalignment.builder()
+                        .detailedExplanation("detailed_explanation")
+                        .errorType(
+                            VideoCreateError.Misalignment.ErrorType
+                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                        )
+                        .steer(
+                            VideoCreateError.Misalignment.Steer.builder().message("message").build()
+                        )
+                        .build()
+                )
+                .build()
 
         assertThat(videoCreateError.code()).isEqualTo("code")
         assertThat(videoCreateError.message()).isEqualTo("message")
+        assertThat(videoCreateError.headers())
+            .contains(
+                VideoCreateError.Headers.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
+            )
+        assertThat(videoCreateError.misalignment())
+            .contains(
+                VideoCreateError.Misalignment.builder()
+                    .detailedExplanation("detailed_explanation")
+                    .errorType(
+                        VideoCreateError.Misalignment.ErrorType.POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                    )
+                    .steer(VideoCreateError.Misalignment.Steer.builder().message("message").build())
+                    .build()
+            )
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val videoCreateError = VideoCreateError.builder().code("code").message("message").build()
+        val videoCreateError =
+            VideoCreateError.builder()
+                .code("code")
+                .message("message")
+                .headers(
+                    VideoCreateError.Headers.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
+                .misalignment(
+                    VideoCreateError.Misalignment.builder()
+                        .detailedExplanation("detailed_explanation")
+                        .errorType(
+                            VideoCreateError.Misalignment.ErrorType
+                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                        )
+                        .steer(
+                            VideoCreateError.Misalignment.Steer.builder().message("message").build()
+                        )
+                        .build()
+                )
+                .build()
 
         val roundtrippedVideoCreateError =
             jsonMapper.readValue(

@@ -59,7 +59,7 @@ private constructor(
 
     /**
      * The parameters the functions accepts, described as a JSON Schema object. See the
-     * [guide](https://platform.openai.com/docs/guides/function-calling) for examples, and the
+     * [guide](https://developers.openai.com/api/docs/guides/function-calling) for examples, and the
      * [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for documentation
      * about the format.
      *
@@ -74,7 +74,7 @@ private constructor(
      * Whether to enable strict schema adherence when generating the function call. If set to true,
      * the model will follow the exact schema defined in the `parameters` field. Only a subset of
      * JSON Schema is supported when `strict` is `true`. Learn more about Structured Outputs in the
-     * [function calling guide](https://platform.openai.com/docs/guides/function-calling).
+     * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -185,8 +185,8 @@ private constructor(
 
         /**
          * The parameters the functions accepts, described as a JSON Schema object. See the
-         * [guide](https://platform.openai.com/docs/guides/function-calling) for examples, and the
-         * [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for
+         * [guide](https://developers.openai.com/api/docs/guides/function-calling) for examples, and
+         * the [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for
          * documentation about the format.
          *
          * Omitting `parameters` defines a function with an empty parameter list.
@@ -209,7 +209,7 @@ private constructor(
          * true, the model will follow the exact schema defined in the `parameters` field. Only a
          * subset of JSON Schema is supported when `strict` is `true`. Learn more about Structured
          * Outputs in the
-         * [function calling guide](https://platform.openai.com/docs/guides/function-calling).
+         * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling).
          */
         fun strict(strict: Boolean?) = strict(JsonField.ofNullable(strict))
 

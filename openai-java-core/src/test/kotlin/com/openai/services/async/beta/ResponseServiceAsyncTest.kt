@@ -35,6 +35,11 @@ internal class ResponseServiceAsyncTest {
             responseServiceAsync.create(
                 ResponseCreateParams.builder()
                     .addBeta(ResponseCreateParams.Beta.RESPONSES_MULTI_AGENT_V1)
+                    .accessPrograms(
+                        ResponseCreateParams.AccessPrograms.builder()
+                            .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()
@@ -53,7 +58,7 @@ internal class ResponseServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ResponseCreateParams.Model.GPT_5_1)
+                    .model(ResponseCreateParams.Model.GPT_6_ASTRA)
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")
@@ -101,7 +106,9 @@ internal class ResponseServiceAsyncTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         ResponseCreateParams.PromptCacheOptions.builder()
+                            .comparisonResponseId("resp_123")
                             .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                            .prewarm(true)
                             .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                             .build()
                     )
@@ -141,6 +148,7 @@ internal class ResponseServiceAsyncTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -175,6 +183,11 @@ internal class ResponseServiceAsyncTest {
             responseServiceAsync.createStreaming(
                 ResponseCreateParams.builder()
                     .addBeta(ResponseCreateParams.Beta.RESPONSES_MULTI_AGENT_V1)
+                    .accessPrograms(
+                        ResponseCreateParams.AccessPrograms.builder()
+                            .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()
@@ -193,7 +206,7 @@ internal class ResponseServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ResponseCreateParams.Model.GPT_5_1)
+                    .model(ResponseCreateParams.Model.GPT_6_ASTRA)
                     .moderation(
                         ResponseCreateParams.Moderation.builder()
                             .model("model")
@@ -241,7 +254,9 @@ internal class ResponseServiceAsyncTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         ResponseCreateParams.PromptCacheOptions.builder()
+                            .comparisonResponseId("resp_123")
                             .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                            .prewarm(true)
                             .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                             .build()
                     )
@@ -281,6 +296,7 @@ internal class ResponseServiceAsyncTest {
                             )
                             .strict(true)
                             .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -411,7 +427,7 @@ internal class ResponseServiceAsyncTest {
             responseServiceAsync.compact(
                 ResponseCompactParams.builder()
                     .addBeta(ResponseCompactParams.Beta.RESPONSES_MULTI_AGENT_V1)
-                    .model(ResponseCompactParams.Model.GPT_5_6_SOL)
+                    .model(ResponseCompactParams.Model.GPT_6_ASTRA)
                     .input("string")
                     .instructions("instructions")
                     .previousResponseId("resp_123")

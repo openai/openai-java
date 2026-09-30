@@ -158,6 +158,7 @@ internal class UsageServiceAsyncTest {
                     .endTime(0L)
                     .addGroupBy(UsageCostsParams.GroupBy.PROJECT_ID)
                     .limit(0L)
+                    .addLineItem("string")
                     .page("page")
                     .addProjectId("string")
                     .build()

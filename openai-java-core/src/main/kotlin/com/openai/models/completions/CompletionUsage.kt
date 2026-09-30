@@ -25,7 +25,6 @@ private constructor(
     private val promptTokens: JsonField<Long>,
     private val totalTokens: JsonField<Long>,
     private val completionTokensDetails: JsonField<CompletionTokensDetails>,
-    private val computeUnits: JsonField<Long>,
     private val promptTokensDetails: JsonField<PromptTokensDetails>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -44,9 +43,6 @@ private constructor(
         @JsonProperty("completion_tokens_details")
         @ExcludeMissing
         completionTokensDetails: JsonField<CompletionTokensDetails> = JsonMissing.of(),
-        @JsonProperty("compute_units")
-        @ExcludeMissing
-        computeUnits: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("prompt_tokens_details")
         @ExcludeMissing
         promptTokensDetails: JsonField<PromptTokensDetails> = JsonMissing.of(),
@@ -55,7 +51,6 @@ private constructor(
         promptTokens,
         totalTokens,
         completionTokensDetails,
-        computeUnits,
         promptTokensDetails,
         mutableMapOf(),
     )
@@ -92,14 +87,6 @@ private constructor(
      */
     fun completionTokensDetails(): Optional<CompletionTokensDetails> =
         completionTokensDetails.getOptional("completion_tokens_details")
-
-    /**
-     * Compute units for the request. Currently null when available.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun computeUnits(): Optional<Long> = computeUnits.getOptional("compute_units")
 
     /**
      * Breakdown of tokens used in the prompt.
@@ -147,15 +134,6 @@ private constructor(
     fun _completionTokensDetails(): JsonField<CompletionTokensDetails> = completionTokensDetails
 
     /**
-     * Returns the raw JSON value of [computeUnits].
-     *
-     * Unlike [computeUnits], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("compute_units")
-    @ExcludeMissing
-    fun _computeUnits(): JsonField<Long> = computeUnits
-
-    /**
      * Returns the raw JSON value of [promptTokensDetails].
      *
      * Unlike [promptTokensDetails], this method doesn't throw if the JSON field has an unexpected
@@ -199,7 +177,6 @@ private constructor(
         private var promptTokens: JsonField<Long>? = null
         private var totalTokens: JsonField<Long>? = null
         private var completionTokensDetails: JsonField<CompletionTokensDetails> = JsonMissing.of()
-        private var computeUnits: JsonField<Long> = JsonMissing.of()
         private var promptTokensDetails: JsonField<PromptTokensDetails> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -209,7 +186,6 @@ private constructor(
             promptTokens = completionUsage.promptTokens
             totalTokens = completionUsage.totalTokens
             completionTokensDetails = completionUsage.completionTokensDetails
-            computeUnits = completionUsage.computeUnits
             promptTokensDetails = completionUsage.promptTokensDetails
             additionalProperties = completionUsage.additionalProperties.toMutableMap()
         }
@@ -269,28 +245,6 @@ private constructor(
                 this.completionTokensDetails = completionTokensDetails
             }
 
-        /** Compute units for the request. Currently null when available. */
-        fun computeUnits(computeUnits: Long?) = computeUnits(JsonField.ofNullable(computeUnits))
-
-        /**
-         * Alias for [Builder.computeUnits].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun computeUnits(computeUnits: Long) = computeUnits(computeUnits as Long?)
-
-        /** Alias for calling [Builder.computeUnits] with `computeUnits.orElse(null)`. */
-        fun computeUnits(computeUnits: Optional<Long>) = computeUnits(computeUnits.getOrNull())
-
-        /**
-         * Sets [Builder.computeUnits] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.computeUnits] with a well-typed [Long] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun computeUnits(computeUnits: JsonField<Long>) = apply { this.computeUnits = computeUnits }
-
         /** Breakdown of tokens used in the prompt. */
         fun promptTokensDetails(promptTokensDetails: PromptTokensDetails) =
             promptTokensDetails(JsonField.of(promptTokensDetails))
@@ -345,7 +299,6 @@ private constructor(
                 checkRequired("promptTokens", promptTokens),
                 checkRequired("totalTokens", totalTokens),
                 completionTokensDetails,
-                computeUnits,
                 promptTokensDetails,
                 additionalProperties.toMutableMap(),
             )
@@ -370,7 +323,6 @@ private constructor(
         promptTokens()
         totalTokens()
         completionTokensDetails().ifPresent { it.validate() }
-        computeUnits()
         promptTokensDetails().ifPresent { it.validate() }
         validated = true
     }
@@ -394,7 +346,6 @@ private constructor(
             (if (promptTokens.asKnown().isPresent) 1 else 0) +
             (if (totalTokens.asKnown().isPresent) 1 else 0) +
             (completionTokensDetails.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (computeUnits.asKnown().isPresent) 1 else 0) +
             (promptTokensDetails.asKnown().getOrNull()?.validity() ?: 0)
 
     /** Breakdown of tokens used in a completion. */
@@ -1103,7 +1054,6 @@ private constructor(
             promptTokens == other.promptTokens &&
             totalTokens == other.totalTokens &&
             completionTokensDetails == other.completionTokensDetails &&
-            computeUnits == other.computeUnits &&
             promptTokensDetails == other.promptTokensDetails &&
             additionalProperties == other.additionalProperties
     }
@@ -1114,7 +1064,6 @@ private constructor(
             promptTokens,
             totalTokens,
             completionTokensDetails,
-            computeUnits,
             promptTokensDetails,
             additionalProperties,
         )
@@ -1123,5 +1072,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CompletionUsage{completionTokens=$completionTokens, promptTokens=$promptTokens, totalTokens=$totalTokens, completionTokensDetails=$completionTokensDetails, computeUnits=$computeUnits, promptTokensDetails=$promptTokensDetails, additionalProperties=$additionalProperties}"
+        "CompletionUsage{completionTokens=$completionTokens, promptTokens=$promptTokens, totalTokens=$totalTokens, completionTokensDetails=$completionTokensDetails, promptTokensDetails=$promptTokensDetails, additionalProperties=$additionalProperties}"
 }

@@ -42,6 +42,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Create and manage model responses. */
 class ResponseServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ResponseServiceAsync {
 
@@ -62,8 +63,16 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseServiceAsync =
         ResponseServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun connect(
+        options: com.openai.core.http.ResponseWebSocketOptions,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<com.openai.core.http.AsyncResponseConnection> =
+        com.openai.core.http.AsyncResponseConnection.connect(clientOptions, options, requestOptions)
+
+    /** Create and manage model responses. */
     override fun inputItems(): InputItemServiceAsync = inputItems
 
+    /** Create and manage model responses. */
     override fun inputTokens(): InputTokenServiceAsync = inputTokens
 
     override fun create(
@@ -142,8 +151,10 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Create and manage model responses. */
         override fun inputItems(): InputItemServiceAsync.WithRawResponse = inputItems
 
+        /** Create and manage model responses. */
         override fun inputTokens(): InputTokenServiceAsync.WithRawResponse = inputTokens
 
         private val createHandler: Handler<Response> =

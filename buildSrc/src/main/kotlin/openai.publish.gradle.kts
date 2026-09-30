@@ -1,7 +1,7 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import com.vanniktech.maven.publish.SonatypeHost
+import org.gradle.plugins.signing.SigningExtension
 
 plugins {
     id("com.vanniktech.maven.publish")
@@ -23,14 +23,17 @@ repositories {
     mavenCentral()
 }
 
-extra["signingInMemoryKey"] = System.getenv("GPG_SIGNING_KEY")
-extra["signingInMemoryKeyId"] = System.getenv("GPG_SIGNING_KEY_ID")
-extra["signingInMemoryKeyPassword"] = System.getenv("GPG_SIGNING_PASSWORD")
-
 configure<MavenPublishBaseExtension> {
     if (!project.hasProperty("publishLocal")) {
         signAllPublications()
-        publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+        configure<SigningExtension> {
+            useInMemoryPgpKeys(
+                System.getenv("GPG_SIGNING_KEY_ID"),
+                System.getenv("GPG_SIGNING_KEY"),
+                System.getenv("GPG_SIGNING_PASSWORD"),
+            )
+        }
+        publishToMavenCentral()
     }
 
     coordinates(project.group.toString(), project.name, project.version.toString())
@@ -64,6 +67,13 @@ configure<MavenPublishBaseExtension> {
             developerConnection.set("scm:git:git://github.com/openai/openai-java.git")
             url.set("https://github.com/openai/openai-java")
         }
+    }
+}
+
+// Preserve Kotlin source paths when Maven Publish uses Gradle's Java sources task.
+tasks.named<Jar>("sourcesJar") {
+    filesMatching("**/*.kt") {
+        path = "main/$path"
     }
 }
 

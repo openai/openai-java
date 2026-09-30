@@ -32,7 +32,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * A tool call to a computer use tool. See the
- * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more
+ * [computer use guide](https://developers.openai.com/api/docs/guides/tools-computer-use) for more
  * information.
  */
 class ResponseComputerToolCall
@@ -1435,7 +1435,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Action: $json")
+                throw OpenAIInvalidDataException("Unknown Action")
             }
         }
 

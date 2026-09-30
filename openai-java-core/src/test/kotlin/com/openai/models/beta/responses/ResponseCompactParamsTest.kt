@@ -12,7 +12,7 @@ internal class ResponseCompactParamsTest {
     fun create() {
         ResponseCompactParams.builder()
             .addBeta(ResponseCompactParams.Beta.RESPONSES_MULTI_AGENT_V1)
-            .model(ResponseCompactParams.Model.GPT_5_6_SOL)
+            .model(ResponseCompactParams.Model.GPT_6_ASTRA)
             .input("string")
             .instructions("instructions")
             .previousResponseId("resp_123")
@@ -33,7 +33,7 @@ internal class ResponseCompactParamsTest {
         val params =
             ResponseCompactParams.builder()
                 .addBeta(ResponseCompactParams.Beta.RESPONSES_MULTI_AGENT_V1)
-                .model(ResponseCompactParams.Model.GPT_5_6_SOL)
+                .model(ResponseCompactParams.Model.GPT_6_ASTRA)
                 .input("string")
                 .instructions("instructions")
                 .previousResponseId("resp_123")
@@ -57,7 +57,7 @@ internal class ResponseCompactParamsTest {
     @Test
     fun headersWithoutOptionalFields() {
         val params =
-            ResponseCompactParams.builder().model(ResponseCompactParams.Model.GPT_5_6_SOL).build()
+            ResponseCompactParams.builder().model(ResponseCompactParams.Model.GPT_6_ASTRA).build()
 
         val headers = params._headers()
 
@@ -69,7 +69,7 @@ internal class ResponseCompactParamsTest {
         val params =
             ResponseCompactParams.builder()
                 .addBeta(ResponseCompactParams.Beta.RESPONSES_MULTI_AGENT_V1)
-                .model(ResponseCompactParams.Model.GPT_5_6_SOL)
+                .model(ResponseCompactParams.Model.GPT_6_ASTRA)
                 .input("string")
                 .instructions("instructions")
                 .previousResponseId("resp_123")
@@ -86,7 +86,7 @@ internal class ResponseCompactParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).contains(ResponseCompactParams.Model.GPT_5_6_SOL)
+        assertThat(body.model()).contains(ResponseCompactParams.Model.GPT_6_ASTRA)
         assertThat(body.input()).contains(ResponseCompactParams.Input.ofString("string"))
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.previousResponseId()).contains("resp_123")
@@ -106,10 +106,10 @@ internal class ResponseCompactParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params =
-            ResponseCompactParams.builder().model(ResponseCompactParams.Model.GPT_5_6_SOL).build()
+            ResponseCompactParams.builder().model(ResponseCompactParams.Model.GPT_6_ASTRA).build()
 
         val body = params._body()
 
-        assertThat(body.model()).contains(ResponseCompactParams.Model.GPT_5_6_SOL)
+        assertThat(body.model()).contains(ResponseCompactParams.Model.GPT_6_ASTRA)
     }
 }

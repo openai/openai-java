@@ -23,6 +23,7 @@ internal class FunctionToolTest {
                 )
                 .strict(true)
                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .outputSchema(
@@ -42,6 +43,7 @@ internal class FunctionToolTest {
         assertThat(functionTool.strict()).contains(true)
         assertThat(functionTool.allowedCallers().getOrNull())
             .containsExactly(FunctionTool.AllowedCaller.DIRECT)
+        assertThat(functionTool.async()).contains(true)
         assertThat(functionTool.deferLoading()).contains(true)
         assertThat(functionTool.description()).contains("description")
         assertThat(functionTool.outputSchema())
@@ -65,6 +67,7 @@ internal class FunctionToolTest {
                 )
                 .strict(true)
                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .outputSchema(

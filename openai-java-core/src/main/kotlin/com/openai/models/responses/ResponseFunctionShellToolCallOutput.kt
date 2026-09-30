@@ -956,7 +956,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Outcome: $json")
+                    throw OpenAIInvalidDataException("Unknown Outcome")
                 }
             }
 
@@ -1552,7 +1552,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Caller: $json")
+                throw OpenAIInvalidDataException("Unknown Caller")
             }
         }
 

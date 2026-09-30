@@ -18,7 +18,7 @@ import java.util.Objects
 /**
  * Emitted when a diarized transcription returns a completed segment with speaker information. Only
  * emitted when you
- * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+ * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
  * with `stream` set to `true` and `response_format` set to `diarized_json`.
  */
 class TranscriptionTextSegmentEvent

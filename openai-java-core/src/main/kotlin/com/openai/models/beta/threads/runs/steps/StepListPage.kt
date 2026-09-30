@@ -35,7 +35,7 @@ private constructor(
 
     override fun items(): List<RunStep> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): StepListParams =
         params.toBuilder().after(items().last()._id().getOptional("id")).build()

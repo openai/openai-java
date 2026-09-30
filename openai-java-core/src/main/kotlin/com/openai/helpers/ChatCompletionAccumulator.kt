@@ -48,13 +48,13 @@ class ChatCompletionAccumulator private constructor() {
      * The accumulated content for each message. The keys correspond to the indexes in
      * [messageBuilders].
      */
-    private val messageContents = mutableMapOf<Long, String>()
+    private val messageContents = mutableMapOf<Long, StringBuilder>()
 
     /**
      * The accumulated refusal for each message. The keys correspond to the indexes in
      * [messageBuilders].
      */
-    private val messageRefusals = mutableMapOf<Long, String>()
+    private val messageRefusals = mutableMapOf<Long, StringBuilder>()
 
     /**
      * The builders for the [ChatCompletion.Choice.Logprobs] of each choice. These are only
@@ -86,7 +86,7 @@ class ChatCompletionAccumulator private constructor() {
      * The accumulated tool call function arguments that will be set on the function builders when
      * completed. The entries correspond to those in [toolCallFunctionBuilders].
      */
-    private val toolCallFunctionArgs = mutableMapOf<Long, MutableMap<Long, String>>()
+    private val toolCallFunctionArgs = mutableMapOf<Long, MutableMap<Long, StringBuilder>>()
 
     /**
      * The finished status of each of the `n` completions. When a chunk with a `finishReason` is
@@ -219,12 +219,20 @@ class ChatCompletionAccumulator private constructor() {
                 // chunks have been received, presumptively build the `ChatCompletion`. (One further
                 // usage chunk _might_ be notified.)
                 isFinished[index] = true
-                if (choiceBuilders.keys.all { isFinished[it] == true }) {
-                    chatCompletion = ensureChatCompletionBuilder().choices(buildChoices()).build()
-                }
             } else {
                 choiceBuilder.finishReason(JsonNull.of())
             }
+        }
+
+        if (
+            chunk.choices().any { it.finishReason().isPresent } &&
+                choiceBuilders.keys.all { isFinished[it] == true }
+        ) {
+            chatCompletion = chatCompletionBuilder.choices(buildChoices()).build()
+            // Release mutable storage only after the whole chunk and final build succeed.
+            toolCallFunctionArgs.clear()
+            messageContents.clear()
+            messageRefusals.clear()
         }
 
         return chunk
@@ -262,8 +270,8 @@ class ChatCompletionAccumulator private constructor() {
     internal fun accumulateMessage(index: Long, delta: ChatCompletionChunk.Choice.Delta) {
         val messageBuilder = messageBuilders.getOrPut(index) { ChatCompletionMessage.builder() }
 
-        delta.content().ifPresent { messageContents[index] = (messageContents[index] ?: "") + it }
-        delta.refusal().ifPresent { messageRefusals[index] = (messageRefusals[index] ?: "") + it }
+        delta.content().ifPresent { messageContents.getOrPut(index) { StringBuilder() }.append(it) }
+        delta.refusal().ifPresent { messageRefusals.getOrPut(index) { StringBuilder() }.append(it) }
         // The `role` defaults to "assistant", so if no other `role` is set on the delta, there is
         // no need to set it explicitly to anything else.
         delta.role().ifPresent { messageBuilder.role(JsonValue.from(it.asString())) }
@@ -296,9 +304,11 @@ class ChatCompletionAccumulator private constructor() {
                 val messageToolCallFunctionArgs =
                     toolCallFunctionArgs.getOrPut(index) { mutableMapOf() }
 
-                messageToolCallFunctionArgs[deltaToolCall.index()] =
-                    (messageToolCallFunctionArgs[deltaToolCall.index()] ?: "") +
-                        (ensureFunction(deltaToolCall.function()).arguments().getOrNull() ?: "")
+                val fragment =
+                    ensureFunction(deltaToolCall.function()).arguments().getOrNull() ?: ""
+                messageToolCallFunctionArgs
+                    .getOrPut(deltaToolCall.index()) { StringBuilder() }
+                    .append(fragment)
             }
         }
 
@@ -325,8 +335,8 @@ class ChatCompletionAccumulator private constructor() {
             .getOrElse(index) {
                 throw OpenAIInvalidDataException("Missing message for index $index.")
             }
-            .content(messageContents[index])
-            .refusal(messageRefusals[index])
+            .content(messageContents[index]?.toString())
+            .refusal(messageRefusals[index]?.toString())
             .toolCalls(buildToolCalls(index))
             .build()
 
@@ -348,7 +358,7 @@ class ChatCompletionAccumulator private constructor() {
         toolCallFunctionBuilders[index]
             ?.get(toolCallIndex)
             ?.arguments(
-                toolCallFunctionArgs[index]?.get(toolCallIndex)
+                toolCallFunctionArgs[index]?.get(toolCallIndex)?.toString()
                     ?: throw OpenAIInvalidDataException(
                         "Missing function arguments for index $index.$toolCallIndex."
                     )

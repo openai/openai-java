@@ -2,6 +2,8 @@ package com.openai.core.http
 
 import com.openai.core.LogLevel
 import com.openai.core.RequestOptions
+import com.openai.core.handlers.sseHandler
+import com.openai.core.jsonMapper
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -521,6 +523,30 @@ internal class LoggingHttpClientTest {
                 |"""
                     .trimMargin()
             )
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun debugLevel_sseCompletionIsNotEarlyClose(consumeTerminal: Boolean) {
+        val client =
+            loggingClient(
+                fakeHttpClient(
+                    responseHeaders =
+                        Headers.builder().put("Content-Type", "text/event-stream").build(),
+                    responseBody = "data: {}\n\ndata: [DONE]\n\n".toByteArray(),
+                ),
+                LogLevel.DEBUG,
+            )
+        sseHandler(jsonMapper()).handle(client.execute(simpleGetRequest())).use {
+            if (consumeTerminal) it.stream().forEach {} else it.stream().findFirst()
+        }
+        val endings = stderrOutput().lines().filter { it.startsWith("<-- END HTTP") }
+        assertThat(endings).hasSize(1)
+        if (consumeTerminal) {
+            assertThat(endings.single()).doesNotContain("closed early")
+        } else {
+            assertThat(endings.single()).contains("closed early")
+        }
     }
 
     @ParameterizedTest

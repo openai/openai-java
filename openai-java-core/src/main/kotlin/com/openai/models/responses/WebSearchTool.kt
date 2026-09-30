@@ -22,7 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Search the Internet for sources related to the prompt. Learn more about the
- * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+ * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
  */
 class WebSearchTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -87,7 +87,9 @@ private constructor(
         searchContextSize.getOptional("search_context_size")
 
     /**
-     * The approximate location of the user.
+     * The approximate location of the user. If omitted or null, defaults to the United States. To
+     * avoid this fallback, pass `{"type": "approximate"}` without location fields. To localize
+     * results, provide the relevant location fields.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -243,7 +245,11 @@ private constructor(
             this.searchContextSize = searchContextSize
         }
 
-        /** The approximate location of the user. */
+        /**
+         * The approximate location of the user. If omitted or null, defaults to the United States.
+         * To avoid this fallback, pass `{"type": "approximate"}` without location fields. To
+         * localize results, provide the relevant location fields.
+         */
         fun userLocation(userLocation: UserLocation?) =
             userLocation(JsonField.ofNullable(userLocation))
 
@@ -819,7 +825,11 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The approximate location of the user. */
+    /**
+     * The approximate location of the user. If omitted or null, defaults to the United States. To
+     * avoid this fallback, pass `{"type": "approximate"}` without location fields. To localize
+     * results, provide the relevant location fields.
+     */
     class UserLocation
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -944,7 +954,7 @@ private constructor(
             private var country: JsonField<String> = JsonMissing.of()
             private var region: JsonField<String> = JsonMissing.of()
             private var timezone: JsonField<String> = JsonMissing.of()
-            private var type: JsonField<Type> = JsonMissing.of()
+            private var type: JsonField<Type> = JsonField.of(Type.APPROXIMATE)
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic

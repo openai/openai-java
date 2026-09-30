@@ -24,6 +24,7 @@ import com.openai.services.async.responses.InputTokenServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 interface ResponseServiceAsync {
 
     /**
@@ -38,20 +39,42 @@ interface ResponseServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseServiceAsync
 
+    /** Opens a managed Responses WebSocket. Close the returned connection when finished. */
+    fun connect(): CompletableFuture<com.openai.core.http.AsyncResponseConnection> =
+        connect(com.openai.core.http.ResponseWebSocketOptions.defaults(), RequestOptions.none())
+
+    /** @see connect */
+    fun connect(
+        options: com.openai.core.http.ResponseWebSocketOptions
+    ): CompletableFuture<com.openai.core.http.AsyncResponseConnection> =
+        connect(options, RequestOptions.none())
+
+    /** @see connect */
+    fun connect(
+        options: com.openai.core.http.ResponseWebSocketOptions,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<com.openai.core.http.AsyncResponseConnection> =
+        throw UnsupportedOperationException(
+            "This service implementation does not support WebSockets"
+        )
+
+    /** Create and manage model responses. */
     fun inputItems(): InputItemServiceAsync
 
+    /** Create and manage model responses. */
     fun inputTokens(): InputTokenServiceAsync
 
     /**
-     * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
-     * [image](https://platform.openai.com/docs/guides/images) inputs to generate
-     * [text](https://platform.openai.com/docs/guides/text) or
-     * [JSON](https://platform.openai.com/docs/guides/structured-outputs) outputs. Have the model
-     * call your own [custom code](https://platform.openai.com/docs/guides/function-calling) or use
-     * built-in [tools](https://platform.openai.com/docs/guides/tools) like
-     * [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-     * [file search](https://platform.openai.com/docs/guides/tools-file-search) to use your own data
-     * as input for the model's response.
+     * Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text)
+     * or [image](https://developers.openai.com/api/docs/guides/images-vision) inputs to generate
+     * [text](https://developers.openai.com/api/docs/guides/text) or
+     * [JSON](https://developers.openai.com/api/docs/guides/structured-outputs) outputs. Have the
+     * model call your own
+     * [custom code](https://developers.openai.com/api/docs/guides/function-calling) or use built-in
+     * [tools](https://developers.openai.com/api/docs/guides/tools) like
+     * [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+     * [file search](https://developers.openai.com/api/docs/guides/tools-file-search) to use your
+     * own data as input for the model's response.
      */
     fun create(): CompletableFuture<Response> = create(ResponseCreateParams.none())
 
@@ -95,15 +118,16 @@ interface ResponseServiceAsync {
         }
 
     /**
-     * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
-     * [image](https://platform.openai.com/docs/guides/images) inputs to generate
-     * [text](https://platform.openai.com/docs/guides/text) or
-     * [JSON](https://platform.openai.com/docs/guides/structured-outputs) outputs. Have the model
-     * call your own [custom code](https://platform.openai.com/docs/guides/function-calling) or use
-     * built-in [tools](https://platform.openai.com/docs/guides/tools) like
-     * [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-     * [file search](https://platform.openai.com/docs/guides/tools-file-search) to use your own data
-     * as input for the model's response.
+     * Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text)
+     * or [image](https://developers.openai.com/api/docs/guides/images-vision) inputs to generate
+     * [text](https://developers.openai.com/api/docs/guides/text) or
+     * [JSON](https://developers.openai.com/api/docs/guides/structured-outputs) outputs. Have the
+     * model call your own
+     * [custom code](https://developers.openai.com/api/docs/guides/function-calling) or use built-in
+     * [tools](https://developers.openai.com/api/docs/guides/tools) like
+     * [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+     * [file search](https://developers.openai.com/api/docs/guides/tools-file-search) to use your
+     * own data as input for the model's response.
      */
     fun createStreaming(): AsyncStreamResponse<ResponseStreamEvent> =
         createStreaming(ResponseCreateParams.none())
@@ -247,7 +271,7 @@ interface ResponseServiceAsync {
     /**
      * Cancels a model response with the given ID. Only responses created with the `background`
      * parameter set to `true` can be cancelled.
-     * [Learn more](https://platform.openai.com/docs/guides/background).
+     * [Learn more](https://developers.openai.com/api/docs/guides/background).
      */
     fun cancel(responseId: String): CompletableFuture<Response> =
         cancel(responseId, ResponseCancelParams.none())
@@ -284,9 +308,9 @@ interface ResponseServiceAsync {
      * Compact a conversation. Returns a compacted response object.
      *
      * Learn when and how to compact long-running conversations in the
-     * [conversation state guide](https://platform.openai.com/docs/guides/conversation-state#managing-the-context-window).
+     * [conversation state guide](https://developers.openai.com/api/docs/guides/conversation-state#managing-the-context-window).
      * For ZDR-compatible compaction details, see
-     * [Compaction (advanced)](https://platform.openai.com/docs/guides/conversation-state#compaction-advanced).
+     * [Compaction (advanced)](https://developers.openai.com/api/docs/guides/conversation-state#compaction-advanced).
      */
     fun compact(params: ResponseCompactParams): CompletableFuture<CompactedResponse> =
         compact(params, RequestOptions.none())
@@ -311,8 +335,10 @@ interface ResponseServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): ResponseServiceAsync.WithRawResponse
 
+        /** Create and manage model responses. */
         fun inputItems(): InputItemServiceAsync.WithRawResponse
 
+        /** Create and manage model responses. */
         fun inputTokens(): InputTokenServiceAsync.WithRawResponse
 
         /**

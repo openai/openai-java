@@ -167,7 +167,7 @@ class GradleCacheTrustPolicyTest {
 
         val restoreSteps = artifactRestoreActions(workflow)
 
-        assertEquals(3, restoreSteps.size, "All exact-run cache consumers must remain protected.")
+        assertEquals(4, restoreSteps.size, "All exact-run cache consumers must remain protected.")
         restoreSteps.forEach { restoreStep ->
             assertEquals(
                 "\${{ needs.build.outputs.gradle-cache-artifact-id }}",
@@ -193,7 +193,7 @@ class GradleCacheTrustPolicyTest {
         val cacheEntry = temporaryDirectory.resolve(cacheKey).apply { writeText("cached classes") }
         val restoreSteps = artifactRestoreActions(workflow)
 
-        assertEquals(3, restoreSteps.size)
+        assertEquals(4, restoreSteps.size)
         restoreSteps.forEachIndexed { index, restoreStep ->
             val mergeMultiple =
                 restoreStep.inputs["merge-multiple"].equals("true", ignoreCase = true)
@@ -622,14 +622,14 @@ class GradleCacheTrustPolicyTest {
 
     @Test
     fun `published Maven artifact provenance verification is documented`() {
-        val securityPolicy = Path.of("../SECURITY.md").readText()
+        val securityModel = Path.of("../docs/architecture/security-model.md").readText()
 
-        assertContains(securityPolicy, "## Maven Artifact Provenance")
+        assertContains(securityModel, "### Maven artifact provenance")
         assertContains(
-            securityPolicy,
+            securityModel,
             "gh attestation verify path/to/openai-java-VERSION.jar -R openai/openai-java",
         )
-        assertContains(securityPolicy, "not exposed to the attestation action")
+        assertContains(securityModel, "not exposed to the attestation action")
     }
 
     @Test
@@ -651,14 +651,14 @@ class GradleCacheTrustPolicyTest {
 
     @Test
     fun `documented cache trust boundary is enforced outside pull request code`() {
-        val securityPolicy = Path.of("../SECURITY.md").readText()
+        val securityModel = Path.of("../docs/architecture/security-model.md").readText()
 
-        assertContains(securityPolicy, "`refs/pull/<number>/merge`")
-        assertContains(securityPolicy, "cannot write to the default-branch cache scope")
-        assertContains(securityPolicy, "not a security boundary")
-        assertContains(securityPolicy, "base branch's CODEOWNERS")
+        assertContains(securityModel, "`refs/pull/<number>/merge`")
+        assertContains(securityModel, "cannot write to the default-branch cache scope")
+        assertContains(securityModel, "not a security boundary")
+        assertContains(securityModel, "base branch's CODEOWNERS")
         assertContains(
-            securityPolicy,
+            securityModel,
             "https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching",
         )
     }
@@ -796,8 +796,8 @@ class GradleCacheTrustPolicyTest {
                 ),
                 workflow.replaceFirst(javaSetup, "          cache: gradle\n$javaSetup"),
                 workflow.replaceFirst(
-                    "gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c",
-                    "gradle/actions/setup-gradle@v5",
+                    Regex("gradle/actions/setup-gradle@[0-9a-fA-F]{40}"),
+                    "gradle/actions/setup-gradle@v6",
                 ),
             )
             .forEach { poisonedWorkflow ->
@@ -885,7 +885,7 @@ class GradleCacheTrustPolicyTest {
             mapOf(
                 "actions/checkout" to setOf("persist-credentials", "ref"),
                 "actions/setup-java" to setOf("distribution", "java-version"),
-                "gradle/actions/setup-gradle" to setOf("cache-disabled"),
+                "gradle/actions/setup-gradle" to setOf("cache-disabled", "cache-provider"),
                 "graalvm/setup-graalvm" to setOf("distribution", "java-version"),
                 "actions/attest" to setOf("subject-path", "predicate-type", "predicate-path"),
             )

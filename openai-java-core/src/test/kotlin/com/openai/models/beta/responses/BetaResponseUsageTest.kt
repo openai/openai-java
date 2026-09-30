@@ -25,7 +25,6 @@ internal class BetaResponseUsageTest {
                     BetaResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                 )
                 .totalTokens(0L)
-                .computeUnits(0L)
                 .build()
 
         assertThat(betaResponseUsage.inputTokens()).isEqualTo(0L)
@@ -40,7 +39,6 @@ internal class BetaResponseUsageTest {
         assertThat(betaResponseUsage.outputTokensDetails())
             .isEqualTo(BetaResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
         assertThat(betaResponseUsage.totalTokens()).isEqualTo(0L)
-        assertThat(betaResponseUsage.computeUnits()).contains(0L)
     }
 
     @Test
@@ -60,7 +58,6 @@ internal class BetaResponseUsageTest {
                     BetaResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                 )
                 .totalTokens(0L)
-                .computeUnits(0L)
                 .build()
 
         val roundtrippedBetaResponseUsage =

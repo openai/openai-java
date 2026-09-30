@@ -15,7 +15,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.54.0")
+implementation("com.openai:openai-java:4.73.0")
 ```
 
 ### Maven
@@ -24,7 +24,7 @@ implementation("com.openai:openai-java:4.54.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.54.0</version>
+  <version>4.73.0</version>
 </dependency>
 ```
 
@@ -34,6 +34,18 @@ implementation("com.openai:openai-java:4.54.0")
 
 The framework-neutral SDK artifacts require Java 8 or later. Runtime floors and lifecycle states
 are declared per artifact in the [Java version support policy](docs/version-support-policy.md).
+
+### Local development
+
+Before building the repository, check that the local environment uses the development JDK declared
+by `build.jdk` in `gradle/version-support.properties`, then run lint:
+
+```sh
+./scripts/check-env
+./scripts/lint
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the complete development workflow.
 
 ## Usage
 
@@ -87,7 +99,7 @@ with normal AWS credentials:
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java-bedrock:4.54.0")
+implementation("com.openai:openai-java-bedrock:4.73.0")
 ```
 
 <!-- x-release-please-end -->
@@ -1010,7 +1022,7 @@ may make the process of function calling simpler to understand and implement.
 _Function Calling_ is also supported for the Responses API. The usage is the same as described
 except where the Responses API differs slightly from the Chat Completions API. Pass the top-level
 class to `addTool(Class<T>)` when building the parameters. In the response, look for
-[`RepoonseOutputItem`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseOutputItem.kt)
+[`ResponseOutputItem`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseOutputItem.kt)
 instances that are function calls. Parse the parameters to each function call to an instance of the
 class using
 [`ResponseFunctionToolCall.arguments(Class<T>)`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseFunctionToolCall.kt).
@@ -1139,6 +1151,10 @@ FileCreateParams params = FileCreateParams.builder()
     .build();
 FileObject fileObject = client.files().create(params);
 ```
+
+If serializing a multipart upload fails, the SDK attempts to close all of its input streams,
+including files it has not read yet. Rebuild the upload parameters with fresh streams before
+retrying after a serialization failure.
 
 ## Webhook Verification
 
@@ -1344,7 +1360,9 @@ The SDK throws custom unchecked exception types:
 
 - [`OpenAIInvalidDataException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIInvalidDataException.kt): Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
 
-- [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
+- [`InvalidResourceIdException`](openai-java-core/src/main/kotlin/com/openai/errors/InvalidResourceIdException.kt): Local rejection of an empty resource ID or one exactly equal to `.` or `..`. Extends `IllegalArgumentException`, not `OpenAIException`; no HTTP request is sent.
+
+- [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for SDK service, I/O, and data exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
 
 ## Pagination
 
@@ -1385,12 +1403,12 @@ import java.util.concurrent.CompletableFuture;
 
 CompletableFuture<JobListPageAsync> pageFuture = client.async().fineTuning().jobs().list();
 
-pageFuture.thenRun(page -> page.autoPager().subscribe(job -> {
+pageFuture.thenAccept(page -> page.autoPager().subscribe(job -> {
     System.out.println(job);
 }));
 
 // If you need to handle errors or completion of the stream
-pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
+pageFuture.thenAccept(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
     @Override
     public void onNext(FineTuningJob job) {
         System.out.println(job);
@@ -1408,7 +1426,7 @@ pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Ha
 }));
 
 // Or use futures
-pageFuture.thenRun(page -> page.autoPager()
+pageFuture.thenAccept(page -> page.autoPager()
     .subscribe(job -> {
         System.out.println(job);
     })
@@ -1803,10 +1821,10 @@ The SDK consists of three artifacts:
 
 - `openai-java-core`
   - Contains core SDK logic
-  - Does not depend on [OkHttp](https://square.github.io/okhttp)
+  - Does not depend on [OkHttp](https://lysine.dev/okhttp/)
   - Exposes [`OpenAIClient`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt), [`OpenAIClientAsync`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsync.kt), [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt), and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), all of which can work with any HTTP client
 - `openai-java-client-okhttp`
-  - Depends on [OkHttp](https://square.github.io/okhttp)
+  - Depends on [OkHttp](https://lysine.dev/okhttp/)
   - Exposes [`OpenAIOkHttpClient`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt) and [`OpenAIOkHttpClientAsync`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClientAsync.kt), which provide a way to construct [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt) and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), respectively, using OkHttp
 - `openai-java`
   - Depends on and exposes the APIs of both `openai-java-core` and `openai-java-client-okhttp`
@@ -1814,7 +1832,7 @@ The SDK consists of three artifacts:
 
 This structure allows replacing the SDK's default HTTP client without pulling in unnecessary dependencies.
 
-#### Customized [`OkHttpClient`](https://square.github.io/okhttp/3.x/okhttp/okhttp3/OkHttpClient.html)
+#### Customized [`OkHttpClient`](https://lysine.dev/okhttp/4.x/okhttp/okhttp3/-ok-http-client/)
 
 > [!TIP]
 > Try the available [network options](#network-options) before replacing the default client.
@@ -2073,3 +2091,10 @@ changing the last available artifact may be a minor release.
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
 We are keen for your feedback; please open an [issue](https://www.github.com/openai/openai-java/issues) with questions, bugs, or suggestions.
+
+## Contributing
+
+Please share bug reports and feature requests through [GitHub issues](https://github.com/openai/openai-java/issues).
+Pull requests are limited to repository collaborators; we do not accept pull requests from non-collaborators.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the contribution policy and development guide.
+For security vulnerabilities, follow [SECURITY.md](SECURITY.md).

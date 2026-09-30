@@ -55,6 +55,13 @@ head or merge-group SHA, after rechecking head/base freshness:
 - `Castiron / budget-only change`
 - `Castiron / custom-code budget`
 
+For fork PRs, GitHub can omit `workflow_run.pull_requests` while the PR is open.
+The trusted handler then uses the authenticated run's head repository owner and
+branch to list open PRs targeting the default branch, fetches every candidate,
+and accepts exactly one only after matching its head SHA, head repository and
+ref, base repository and ref, and current default-branch SHA. Missing,
+ambiguous, spoofed, or stale metadata still fails closed.
+
 The policy is read from the current base commit, not the PR or its merge base.
 Reporter changes in a PR cannot change the checker executing on that PR. Missing
 snapshots, invalid hashes, unavailable queue membership, and policy errors fail

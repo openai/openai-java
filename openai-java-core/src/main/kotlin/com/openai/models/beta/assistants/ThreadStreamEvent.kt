@@ -19,7 +19,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Occurs when a new [thread](https://platform.openai.com/docs/api-reference/threads/object) is
+ * Occurs when a new [thread](https://developers.openai.com/api/docs/assistants/migration) is
  * created.
  */
 class ThreadStreamEvent
@@ -40,7 +40,7 @@ private constructor(
 
     /**
      * Represents a thread that contains
-     * [messages](https://platform.openai.com/docs/api-reference/messages).
+     * [messages](https://developers.openai.com/api/docs/assistants/migration).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -123,7 +123,7 @@ private constructor(
 
         /**
          * Represents a thread that contains
-         * [messages](https://platform.openai.com/docs/api-reference/messages).
+         * [messages](https://developers.openai.com/api/docs/assistants/migration).
          */
         fun data(data: Thread) = data(JsonField.of(data))
 

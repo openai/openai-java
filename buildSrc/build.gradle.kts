@@ -1,7 +1,7 @@
 plugins {
     `kotlin-dsl`
-    kotlin("jvm") version "1.9.20"
-    id("com.vanniktech.maven.publish") version "0.28.0"
+    kotlin("jvm") version "2.2.21"
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
 repositories {
@@ -10,12 +10,12 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.20")
-    implementation("com.vanniktech:gradle-maven-publish-plugin:0.28.0")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21")
+    implementation("com.vanniktech:gradle-maven-publish-plugin:0.34.0")
 
     testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:6.1.2")
-    testImplementation("org.yaml:snakeyaml:2.6")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
+    testImplementation("org.yaml:snakeyaml:2.7")
 }
 
 tasks.test {
@@ -23,6 +23,13 @@ tasks.test {
     workingDir(layout.projectDirectory)
     inputs
         .file(layout.projectDirectory.file("../scripts/gradle"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .files(
+            layout.projectDirectory.file("../scripts/java-format"),
+            layout.projectDirectory.file("../scripts/lint"),
+            layout.projectDirectory.file("../scripts/format"),
+        )
         .withPathSensitivity(PathSensitivity.RELATIVE)
     inputs
         .files(
@@ -50,5 +57,8 @@ tasks.test {
         .withPathSensitivity(PathSensitivity.RELATIVE)
     inputs
         .file(layout.projectDirectory.file("../SECURITY.md"))
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs
+        .file(layout.projectDirectory.file("../docs/architecture/security-model.md"))
         .withPathSensitivity(PathSensitivity.RELATIVE)
 }

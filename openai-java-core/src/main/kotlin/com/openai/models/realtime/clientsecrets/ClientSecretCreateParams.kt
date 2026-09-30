@@ -44,7 +44,7 @@ import kotlin.jvm.optionals.getOrNull
  * connection.
  *
  * [Learn more about authentication with client secrets over
- * WebRTC](https://platform.openai.com/docs/guides/realtime-webrtc).
+ * WebRTC](https://developers.openai.com/api/docs/guides/realtime-webrtc).
  *
  * Returns the created client secret and the effective session object. The client secret is a string
  * that looks like `ek_1234`.
@@ -312,7 +312,7 @@ private constructor(
     /**
      * Create a session and client secret for the Realtime API. The request can specify either a
      * realtime or a transcription session configuration.
-     * [Learn more about the Realtime API](https://platform.openai.com/docs/guides/realtime).
+     * [Learn more about the Realtime API](https://developers.openai.com/api/docs/guides/realtime).
      */
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -603,7 +603,7 @@ private constructor(
         /** A builder for [ExpiresAfter]. */
         class Builder internal constructor() {
 
-            private var anchor: JsonField<Anchor> = JsonMissing.of()
+            private var anchor: JsonField<Anchor> = JsonField.of(Anchor.CREATED_AT)
             private var seconds: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -1054,7 +1054,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Session: $json")
+                throw OpenAIInvalidDataException("Unknown Session")
             }
         }
 

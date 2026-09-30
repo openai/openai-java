@@ -18,7 +18,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+/** Learn about [image inputs](https://developers.openai.com/api/docs/guides/images-vision). */
 class ChatCompletionContentPartImage
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -277,7 +277,7 @@ private constructor(
 
         /**
          * Specifies the detail level of the image. Learn more in the
-         * [Vision guide](https://platform.openai.com/docs/guides/vision#low-or-high-fidelity-image-understanding).
+         * [Vision guide](https://developers.openai.com/api/docs/guides/images-vision#choose-an-image-detail-level).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -351,7 +351,7 @@ private constructor(
 
             /**
              * Specifies the detail level of the image. Learn more in the
-             * [Vision guide](https://platform.openai.com/docs/guides/vision#low-or-high-fidelity-image-understanding).
+             * [Vision guide](https://developers.openai.com/api/docs/guides/images-vision#choose-an-image-detail-level).
              */
             fun detail(detail: Detail) = detail(JsonField.of(detail))
 
@@ -441,7 +441,7 @@ private constructor(
 
         /**
          * Specifies the detail level of the image. Learn more in the
-         * [Vision guide](https://platform.openai.com/docs/guides/vision#low-or-high-fidelity-image-understanding).
+         * [Vision guide](https://developers.openai.com/api/docs/guides/images-vision#choose-an-image-detail-level).
          */
         class Detail @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

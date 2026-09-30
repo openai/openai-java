@@ -109,7 +109,7 @@ private constructor(
     fun quality(): Quality = quality.getRequired("quality")
 
     /**
-     * The size of the requested edited image.
+     * The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -316,7 +316,7 @@ private constructor(
          */
         fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
 
-        /** The size of the requested edited image. */
+        /** The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. */
         fun size(size: Size) = size(JsonField.of(size))
 
         /**
@@ -326,6 +326,14 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun size(size: JsonField<Size>) = apply { this.size = size }
+
+        /**
+         * Sets [size] to an arbitrary [String].
+         *
+         * You should usually call [size] with a well-typed [Size] constant instead. This method is
+         * primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun size(value: String) = size(Size.of(value))
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -413,7 +421,7 @@ private constructor(
         outputFormat().validate()
         partialImageIndex()
         quality().validate()
-        size().validate()
+        size()
         _type().let {
             if (it != JsonValue.from("image_edit.partial_image")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -443,7 +451,7 @@ private constructor(
             (outputFormat.asKnown().getOrNull()?.validity() ?: 0) +
             (if (partialImageIndex.asKnown().isPresent) 1 else 0) +
             (quality.asKnown().getOrNull()?.validity() ?: 0) +
-            (size.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (size.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("image_edit.partial_image")) 1 else 0 }
 
     /** The background setting for the requested edited image. */
@@ -754,6 +762,10 @@ private constructor(
 
             @JvmField val HIGH = of("high")
 
+            @JvmField val XHIGH = of("xhigh")
+
+            @JvmField val MAX = of("max")
+
             @JvmField val AUTO = of("auto")
 
             @JvmStatic fun of(value: String) = Quality(JsonField.of(value))
@@ -764,6 +776,8 @@ private constructor(
             LOW,
             MEDIUM,
             HIGH,
+            XHIGH,
+            MAX,
             AUTO,
         }
 
@@ -780,6 +794,8 @@ private constructor(
             LOW,
             MEDIUM,
             HIGH,
+            XHIGH,
+            MAX,
             AUTO,
             /** An enum member indicating that [Quality] was instantiated with an unknown value. */
             _UNKNOWN,
@@ -797,6 +813,8 @@ private constructor(
                 LOW -> Value.LOW
                 MEDIUM -> Value.MEDIUM
                 HIGH -> Value.HIGH
+                XHIGH -> Value.XHIGH
+                MAX -> Value.MAX
                 AUTO -> Value.AUTO
                 else -> Value._UNKNOWN
             }
@@ -815,6 +833,8 @@ private constructor(
                 LOW -> Known.LOW
                 MEDIUM -> Known.MEDIUM
                 HIGH -> Known.HIGH
+                XHIGH -> Known.XHIGH
+                MAX -> Known.MAX
                 AUTO -> Known.AUTO
                 else -> throw OpenAIInvalidDataException("Unknown Quality: $value")
             }
@@ -880,7 +900,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The size of the requested edited image. */
+    /** The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. */
     class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**

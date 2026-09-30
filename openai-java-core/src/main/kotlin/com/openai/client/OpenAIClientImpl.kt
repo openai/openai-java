@@ -34,6 +34,8 @@ import com.openai.services.blocking.GraderService
 import com.openai.services.blocking.GraderServiceImpl
 import com.openai.services.blocking.ImageService
 import com.openai.services.blocking.ImageServiceImpl
+import com.openai.services.blocking.LiveService
+import com.openai.services.blocking.LiveServiceImpl
 import com.openai.services.blocking.ModelService
 import com.openai.services.blocking.ModelServiceImpl
 import com.openai.services.blocking.ModerationService
@@ -42,6 +44,8 @@ import com.openai.services.blocking.RealtimeService
 import com.openai.services.blocking.RealtimeServiceImpl
 import com.openai.services.blocking.ResponseService
 import com.openai.services.blocking.ResponseServiceImpl
+import com.openai.services.blocking.SafetyService
+import com.openai.services.blocking.SafetyServiceImpl
 import com.openai.services.blocking.SkillService
 import com.openai.services.blocking.SkillServiceImpl
 import com.openai.services.blocking.UploadService
@@ -107,6 +111,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         VectorStoreServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val safety: SafetyService by lazy { SafetyServiceImpl(clientOptionsWithUserAgent) }
+
     private val webhooks: WebhookService by lazy { WebhookServiceImpl(clientOptionsWithUserAgent) }
 
     private val beta: BetaService by lazy { BetaServiceImpl(clientOptionsWithUserAgent) }
@@ -120,6 +126,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     private val responses: ResponseService by lazy {
         ResponseServiceImpl(clientOptionsWithUserAgent)
     }
+
+    private val live: LiveService by lazy { LiveServiceImpl(clientOptionsWithUserAgent) }
 
     private val realtime: RealtimeService by lazy {
         RealtimeServiceImpl(clientOptionsWithUserAgent)
@@ -185,6 +193,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
     override fun vectorStores(): VectorStoreService = vectorStores
 
+    override fun safety(): SafetyService = safety
+
     override fun webhooks(): WebhookService = webhooks
 
     override fun beta(): BetaService = beta
@@ -197,7 +207,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
     override fun admin(): AdminService = admin
 
+    /** Create and manage model responses. */
     override fun responses(): ResponseService = responses
+
+    override fun live(): LiveService = live
 
     override fun realtime(): RealtimeService = realtime
 
@@ -266,6 +279,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             VectorStoreServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val safety: SafetyService.WithRawResponse by lazy {
+            SafetyServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val webhooks: WebhookService.WithRawResponse by lazy {
             WebhookServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -288,6 +305,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         private val responses: ResponseService.WithRawResponse by lazy {
             ResponseServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val live: LiveService.WithRawResponse by lazy {
+            LiveServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val realtime: RealtimeService.WithRawResponse by lazy {
@@ -361,6 +382,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         override fun vectorStores(): VectorStoreService.WithRawResponse = vectorStores
 
+        override fun safety(): SafetyService.WithRawResponse = safety
+
         override fun webhooks(): WebhookService.WithRawResponse = webhooks
 
         override fun beta(): BetaService.WithRawResponse = beta
@@ -373,7 +396,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         override fun admin(): AdminService.WithRawResponse = admin
 
+        /** Create and manage model responses. */
         override fun responses(): ResponseService.WithRawResponse = responses
+
+        override fun live(): LiveService.WithRawResponse = live
 
         override fun realtime(): RealtimeService.WithRawResponse = realtime
 

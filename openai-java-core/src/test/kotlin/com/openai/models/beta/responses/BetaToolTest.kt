@@ -26,6 +26,7 @@ internal class BetaToolTest {
                 )
                 .strict(true)
                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .outputSchema(
@@ -69,6 +70,7 @@ internal class BetaToolTest {
                     )
                     .strict(true)
                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                    .async(true)
                     .deferLoading(true)
                     .description("description")
                     .outputSchema(
@@ -675,6 +677,7 @@ internal class BetaToolTest {
             BetaCustomTool.builder()
                 .name("name")
                 .addAllowedCaller(BetaCustomTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .formatText()
@@ -708,6 +711,7 @@ internal class BetaToolTest {
                 BetaCustomTool.builder()
                     .name("name")
                     .addAllowedCaller(BetaCustomTool.AllowedCaller.DIRECT)
+                    .async(true)
                     .deferLoading(true)
                     .description("description")
                     .formatText()
@@ -733,6 +737,7 @@ internal class BetaToolTest {
                     BetaNamespaceTool.Tool.Function.builder()
                         .name("name")
                         .addAllowedCaller(BetaNamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -778,6 +783,7 @@ internal class BetaToolTest {
                         BetaNamespaceTool.Tool.Function.builder()
                             .name("name")
                             .addAllowedCaller(BetaNamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(

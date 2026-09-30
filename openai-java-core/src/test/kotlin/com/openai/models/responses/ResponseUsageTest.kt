@@ -25,7 +25,6 @@ internal class ResponseUsageTest {
                     ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                 )
                 .totalTokens(0L)
-                .computeUnits(0L)
                 .build()
 
         assertThat(responseUsage.inputTokens()).isEqualTo(0L)
@@ -40,7 +39,6 @@ internal class ResponseUsageTest {
         assertThat(responseUsage.outputTokensDetails())
             .isEqualTo(ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
         assertThat(responseUsage.totalTokens()).isEqualTo(0L)
-        assertThat(responseUsage.computeUnits()).contains(0L)
     }
 
     @Test
@@ -60,7 +58,6 @@ internal class ResponseUsageTest {
                     ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                 )
                 .totalTokens(0L)
-                .computeUnits(0L)
                 .build()
 
         val roundtrippedResponseUsage =

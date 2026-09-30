@@ -178,10 +178,12 @@ private constructor(
     interface Visitor<out T> {
 
         /** Emitted when a partial image is available during image editing streaming. */
-        fun visitPartialImage(partialImage: ImageEditPartialImageEvent): T
+        fun visitPartialImage(partialImage: ImageEditPartialImageEvent): T =
+            unknown(JsonValue.from(partialImage))
 
         /** Emitted when image editing has completed and the final image is available. */
-        fun visitCompleted(completed: ImageEditCompletedEvent): T
+        fun visitCompleted(completed: ImageEditCompletedEvent): T =
+            unknown(JsonValue.from(completed))
 
         /**
          * Maps an unknown variant of [ImageEditStreamEvent] to a value of type [T].
@@ -191,10 +193,13 @@ private constructor(
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
          *
+         * Recognized events also reach this method when their visit method is not overridden. This
+         * allows existing visitors to handle event variants added by newer SDK versions.
+         *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown ImageEditStreamEvent: $json")
+            throw OpenAIInvalidDataException("Unknown ImageEditStreamEvent")
         }
     }
 

@@ -46,7 +46,7 @@ import kotlin.jvm.optionals.getOrNull
  * evaluation is a set of testing criteria and the config for a data source, which dictates the
  * schema of the data used in the evaluation. After creating an evaluation, you can run it on
  * different models and model parameters. We support several types of graders and datasources. For
- * more information, see the [Evals guide](https://platform.openai.com/docs/guides/evals).
+ * more information, see the [Evals guide](https://developers.openai.com/api/docs/guides/evals).
  */
 class EvalCreateParams
 private constructor(
@@ -1098,7 +1098,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown DataSourceConfig: $json")
+                throw OpenAIInvalidDataException("Unknown DataSourceConfig")
             }
         }
 
@@ -2457,7 +2457,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown TestingCriterion: $json")
+                throw OpenAIInvalidDataException("Unknown TestingCriterion")
             }
         }
 
@@ -3138,7 +3138,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
                     fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown Input: $json")
+                        throw OpenAIInvalidDataException("Unknown Input")
                     }
                 }
 
@@ -3530,7 +3530,7 @@ private constructor(
 
                         private var content: JsonField<Content>? = null
                         private var role: JsonField<Role>? = null
-                        private var type: JsonField<Type> = JsonMissing.of()
+                        private var type: JsonField<Type> = JsonField.of(Type.MESSAGE)
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
@@ -4031,7 +4031,7 @@ private constructor(
                              * @throws OpenAIInvalidDataException in the default implementation.
                              */
                             fun unknown(json: JsonValue?): T {
-                                throw OpenAIInvalidDataException("Unknown Content: $json")
+                                throw OpenAIInvalidDataException("Unknown Content")
                             }
                         }
 
