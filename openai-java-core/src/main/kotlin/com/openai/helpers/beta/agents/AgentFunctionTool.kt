@@ -50,6 +50,9 @@ private constructor(
             handler: Function<T, R>,
         ): AgentFunctionTool<R> {
             val info = extractFunctionInfo(parametersType, JsonSchemaLocalValidation.YES)
+            require(info.schema.path("type").asText() == "object") {
+                "Function parameters must be an object class"
+            }
             val definition =
                 AgentToolParam.ofFunction(
                     AgentToolParam.Function.builder()

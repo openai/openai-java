@@ -31,6 +31,11 @@ internal class AgentFunctionToolTest {
         @JvmField var asset: Optional<String> = Optional.empty()
     }
 
+    enum class Asset {
+        ETH,
+        BTC,
+    }
+
     private class WalletActions(private val network: String) {
         fun balance(args: Balance): Map<String, String> =
             mapOf("type" to "balance", "content" to args.asset, "network" to network)
@@ -134,5 +139,14 @@ internal class AgentFunctionToolTest {
         assertThat(tool.handler().apply(mapOf("asset" to "ETH"))).isEqualTo("ETH")
         assertThatThrownBy { tool.handler().apply(emptyMap()) }
             .isInstanceOf(IllegalArgumentException::class.java)
+    }
+
+    @Test
+    fun rejectsParameterClassesThatCannotReceiveObjectArguments() {
+        for (type in listOf(String::class.java, Array<String>::class.java, Asset::class.java)) {
+            assertThatThrownBy { AgentFunctionTool.of(type) { "unused" } }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessageContaining("object class")
+        }
     }
 }
