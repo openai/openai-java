@@ -2,9 +2,12 @@ package com.openai.core
 
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.models.ChatModel
+import com.openai.models.ResponsesModel
 import com.openai.models.chat.completions.ChatCompletionListParams
 import com.openai.models.embeddings.EmbeddingCreateParams
 import com.openai.models.embeddings.EmbeddingModel
+import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.uploads.UploadCancelParams
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatNoException
@@ -105,5 +108,62 @@ internal class PrepareRequestTest {
 
         assertThatNoException().isThrownBy { params.modelNameOrNull() }
         assertThat(params.modelNameOrNull()).isNull()
+    }
+
+    @Test
+    fun modelUnionStringNotNull() {
+        val params = ResponseCreateParams.builder().model("my-model").input("Hello, world!").build()
+
+        assertThat(params.modelNameOrNull()).isEqualTo("my-model")
+    }
+
+    @Test
+    fun modelUnionChatNotNull() {
+        val params =
+            ResponseCreateParams.builder().model(ChatModel.GPT_4O).input("Hello, world!").build()
+
+        assertThat(params.modelNameOrNull()).isEqualTo("gpt-4o")
+    }
+
+    @Test
+    fun modelUnionOnlyNotNull() {
+        val params =
+            ResponseCreateParams.builder()
+                .model(ResponsesModel.ResponsesOnlyModel.O1_PRO)
+                .input("Hello, world!")
+                .build()
+
+        assertThat(params.modelNameOrNull()).isEqualTo("o1-pro")
+    }
+
+    @Test
+    fun modelUnionNonStringIsNull() {
+        val mapper = jsonMapper()
+        for (json in listOf("123", """{"future":"model"}""")) {
+            // Enum branches retain unrecognized JSON, so cover both arms explicitly as well as
+            // the union deserializer's preferred match.
+            for (model in
+                listOf(
+                    mapper.readValue(json, ResponsesModel::class.java),
+                    ResponsesModel.ofChat(mapper.readValue(json, ChatModel::class.java)),
+                    ResponsesModel.ofOnly(
+                        mapper.readValue(json, ResponsesModel.ResponsesOnlyModel::class.java)
+                    ),
+                )) {
+                val params = ResponseCreateParams.builder().model(model).input("Hello").build()
+
+                assertThat(params.model()).contains(model)
+                assertThat(params.modelNameOrNull()).isNull()
+            }
+        }
+    }
+
+    @Test
+    fun modelUnknownFieldIsNull() {
+        for (json in listOf(JsonValue.from(123), JsonValue.from(mapOf("future" to "model")))) {
+            val params = ResponseCreateParams.builder().model(json).input("Hello").build()
+
+            assertThat(params.modelNameOrNull()).isNull()
+        }
     }
 }
