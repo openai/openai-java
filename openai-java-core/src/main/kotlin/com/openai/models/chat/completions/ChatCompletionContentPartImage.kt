@@ -463,6 +463,8 @@ private constructor(
 
                 @JvmField val HIGH = of("high")
 
+                @JvmField val ORIGINAL = of("original")
+
                 @JvmStatic fun of(value: String) = Detail(JsonField.of(value))
             }
 
@@ -471,6 +473,7 @@ private constructor(
                 AUTO,
                 LOW,
                 HIGH,
+                ORIGINAL,
             }
 
             /**
@@ -486,6 +489,7 @@ private constructor(
                 AUTO,
                 LOW,
                 HIGH,
+                ORIGINAL,
                 /**
                  * An enum member indicating that [Detail] was instantiated with an unknown value.
                  */
@@ -504,6 +508,7 @@ private constructor(
                     AUTO -> Value.AUTO
                     LOW -> Value.LOW
                     HIGH -> Value.HIGH
+                    ORIGINAL -> Value.ORIGINAL
                     else -> Value._UNKNOWN
                 }
 
@@ -521,6 +526,7 @@ private constructor(
                     AUTO -> Known.AUTO
                     LOW -> Known.LOW
                     HIGH -> Known.HIGH
+                    ORIGINAL -> Known.ORIGINAL
                     else -> throw OpenAIInvalidDataException("Unknown Detail: $value")
                 }
 
