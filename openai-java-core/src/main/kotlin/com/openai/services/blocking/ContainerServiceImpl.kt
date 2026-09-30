@@ -70,7 +70,7 @@ class ContainerServiceImpl internal constructor(private val clientOptions: Clien
 
     override fun delete(params: ContainerDeleteParams, requestOptions: RequestOptions) {
         // delete /containers/{container_id}
-        withRawResponse().delete(params, requestOptions)
+        withRawResponse().delete(params, requestOptions).close()
     }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
