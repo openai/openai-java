@@ -186,7 +186,9 @@ private constructor(
                 synchronized(lock) { if (generation == epoch) openingTransport = null }
                 if (error != null) {
                     fail(generation, error)
-                    dispatch { result.completeExceptionally(error) }
+                    val openingError =
+                        synchronized(lock) { if (generation == epoch) failure ?: error else error }
+                    dispatch { result.completeExceptionally(openingError) }
                 } else {
                     val rejected =
                         synchronized(lock) {
@@ -198,7 +200,13 @@ private constructor(
                                 null
                             }
                         }
-                    if (rejected != null) connected.close()
+                    if (rejected != null) {
+                        try {
+                            connected.close()
+                        } catch (closeError: Throwable) {
+                            if (closeError !== rejected) rejected.addSuppressed(closeError)
+                        }
+                    }
                     dispatch {
                         // The connection may fail while this completion waits on the executor.
                         // Inspect state under lock, but run user continuations outside it.
@@ -337,13 +345,15 @@ private constructor(
     }
 
     private fun finish(detached: Detached) {
+        // A reader must observe the initiating failure even when transport cleanup blocks or
+        // throws.
+        detached.waiters.forEach { dispatch { it.completeExceptionally(detached.error) } }
         detached.opening?.cancel(true)
         try {
             detached.socket?.close()
-        } catch (closeError: Exception) {
+        } catch (closeError: Throwable) {
             if (closeError !== detached.error) detached.error.addSuppressed(closeError)
         }
-        detached.waiters.forEach { dispatch { it.completeExceptionally(detached.error) } }
     }
 
     /** Receives the next unassigned event; only one outstanding receive per lane is permitted. */
@@ -396,6 +406,7 @@ private constructor(
             generation = epoch
             maxMessageBytes = options.maxMessageBytes
         }
+        var detached: Detached? = null
         try {
             val raw = clientOptions.jsonMapper.valueToTree<ObjectNode>(event)
             if (id != null && raw.path("type").asText() == "response.create") {
@@ -412,10 +423,29 @@ private constructor(
                         check(generation == epoch) { "Connection replaced; command was not sent" }
                         socket ?: throw IllegalStateException("WebSocket is not connected", failure)
                     }
-                active.send(text)
+                try {
+                    active.send(text)
+                } catch (error: Throwable) {
+                    // Fence other writers before releasing the writer lock. Explicit transport
+                    // admission rejections prove no write occurred and keep the socket usable.
+                    detached =
+                        synchronized(lock) {
+                            if (
+                                error !is WebSocketWriteNotAttempted &&
+                                    generation == epoch &&
+                                    failure == null
+                            )
+                                detach(error)
+                            else null
+                        }
+                    throw error
+                }
             }
         } finally {
             synchronized(lock) { pendingSends -= 1 }
+            // Report an uncertain send immediately. A custom transport's close may wait for
+            // a listener that itself depends on this sender returning.
+            detached?.let { CompletableFuture.runAsync { finish(it) } }
         }
     }
 

@@ -21,7 +21,16 @@ class ResponseConnection private constructor(private val connection: AsyncRespon
             requestOptions: RequestOptions = RequestOptions.none(),
         ) =
             ResponseConnection(
-                await(AsyncResponseConnection.connect(clientOptions, options, requestOptions))
+                await(
+                    AsyncResponseConnection.connect(
+                        // The blocking view never exposes its futures to user callbacks. Completing
+                        // them must not depend on an executor its caller could already be using.
+                        // Derived options retain the same client lifecycle/transport owner.
+                        clientOptions.toBuilder().streamHandlerExecutor { it.run() }.build(),
+                        options,
+                        requestOptions,
+                    )
+                )
             )
 
         private fun <T> await(future: CompletableFuture<T>): T {
