@@ -43,6 +43,8 @@ import com.openai.services.blocking.beta.agents.sessions.ItemService
 import com.openai.services.blocking.beta.agents.sessions.ItemServiceImpl
 import com.openai.services.blocking.beta.agents.sessions.SubagentService
 import com.openai.services.blocking.beta.agents.sessions.SubagentServiceImpl
+import com.openai.services.blocking.beta.agents.sessions.TraceService
+import com.openai.services.blocking.beta.agents.sessions.TraceServiceImpl
 import com.openai.services.blocking.beta.agents.sessions.TurnService
 import com.openai.services.blocking.beta.agents.sessions.TurnServiceImpl
 import java.util.function.Consumer
@@ -68,6 +70,8 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
 
     private val events: EventService by lazy { EventServiceImpl(clientOptions) }
 
+    private val traces: TraceService by lazy { TraceServiceImpl(clientOptions) }
+
     private val turns: TurnService by lazy { TurnServiceImpl(clientOptions) }
 
     override fun stream(
@@ -88,6 +92,8 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
     override fun items(): ItemService = items
 
     override fun events(): EventService = events
+
+    override fun traces(): TraceService = traces
 
     override fun turns(): TurnService = turns
 
@@ -146,6 +152,10 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
             EventServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val traces: TraceService.WithRawResponse by lazy {
+            TraceServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val turns: TurnService.WithRawResponse by lazy {
             TurnServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -164,6 +174,8 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
         override fun items(): ItemService.WithRawResponse = items
 
         override fun events(): EventService.WithRawResponse = events
+
+        override fun traces(): TraceService.WithRawResponse = traces
 
         override fun turns(): TurnService.WithRawResponse = turns
 
