@@ -1,5 +1,26 @@
 # Changelog
 
+## [4.73.0](https://github.com/openai/openai-java/compare/v4.72.0...v4.73.0) (2026-09-30)
+
+
+### Features
+
+* **api:** add external storage provider callback handlers ([#1118](https://github.com/openai/openai-java/issues/1118)) ([eab351d](https://github.com/openai/openai-java/commit/eab351d9be2d94c7fc6c13c99859a731a27c60fb))
+* **api:** Add session traces and translation secrets ([#1117](https://github.com/openai/openai-java/issues/1117)) ([9d6bd03](https://github.com/openai/openai-java/commit/9d6bd037ac4a98917180686bd21707d2a5f40765))
+
+
+### Bug Fixes
+
+* **api:** Respect has_more when paginating list results ([#1112](https://github.com/openai/openai-java/issues/1112)) ([9f84f98](https://github.com/openai/openai-java/commit/9f84f98970dff3a7b1473c0a988c13eff837fb6f))
+* **azure:** resolve Responses deployment model names ([#1119](https://github.com/openai/openai-java/issues/1119)) ([4f5dddc](https://github.com/openai/openai-java/commit/4f5dddceb8d1e6d372a22c1fabb52f6604204491))
+* **build:** use package paths in the core sources JAR ([#1120](https://github.com/openai/openai-java/issues/1120)) ([cabb66e](https://github.com/openai/openai-java/commit/cabb66e814e5ae9a0530ee7c93bbab553d92c401))
+* **responses:** unblock calls and retire uncertain WebSocket sends ([#1116](https://github.com/openai/openai-java/issues/1116)) ([02fbaae](https://github.com/openai/openai-java/commit/02fbaae181a553b6133570234101b0f47d4d153e))
+
+
+### Documentation
+
+* add runnable Responses, Realtime and Live WebSocket examples ([#1106](https://github.com/openai/openai-java/issues/1106)) ([dd4a86e](https://github.com/openai/openai-java/commit/dd4a86eb8dc6845cd340a98a167c3bb83c7fd771))
+
 ## [4.72.0](https://github.com/openai/openai-java/compare/v4.71.0...v4.72.0) (2026-09-29)
 
 
