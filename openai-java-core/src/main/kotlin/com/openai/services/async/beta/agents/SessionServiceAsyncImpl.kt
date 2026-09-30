@@ -49,6 +49,7 @@ import com.openai.services.async.beta.agents.sessions.TraceServiceAsyncImpl
 import com.openai.services.async.beta.agents.sessions.TurnServiceAsync
 import com.openai.services.async.beta.agents.sessions.TurnServiceAsyncImpl
 import com.openai.services.beta.agents.AgentSessionStreamAsync
+import com.openai.services.beta.agents.AgentTurnResults
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -81,12 +82,16 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
         params: AgentSessionStreamParams,
         requestOptions: RequestOptions,
     ): AsyncStreamResponse<AgentSessionEvent> =
-        AgentSessionStreamAsync(
-            this,
-            params,
-            requestOptions,
-            clientOptions.streamHandlerExecutor,
-            clientOptions.sleeper,
+        AgentTurnResults.collecting(
+            AgentSessionStreamAsync(
+                this,
+                params,
+                requestOptions,
+                clientOptions.streamHandlerExecutor,
+                clientOptions.sleeper,
+            ),
+            params.handlers.keys,
+            params.sessionId,
         )
 
     override fun withRawResponse(): SessionServiceAsync.WithRawResponse = withRawResponse
@@ -122,6 +127,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
             .createStreaming(params, requestOptions)
             .thenApply { it.parse() }
             .toAsync(clientOptions.streamHandlerExecutor)
+            .let { AgentTurnResults.collecting(it) }
 
     override fun retrieve(
         params: SessionRetrieveParams,
@@ -280,6 +286,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
                                     streamResponse
                                 }
                             }
+                            .let { AgentTurnResults.collecting(it) }
                     }
                 }
         }

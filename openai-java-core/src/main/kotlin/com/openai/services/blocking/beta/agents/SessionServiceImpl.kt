@@ -35,6 +35,7 @@ import com.openai.models.beta.agents.sessions.SessionListParams
 import com.openai.models.beta.agents.sessions.SessionRetrieveParams
 import com.openai.models.beta.agents.sessions.SessionUpdateParams
 import com.openai.services.beta.agents.AgentSessionStream
+import com.openai.services.beta.agents.AgentTurnResults
 import com.openai.services.blocking.beta.agents.sessions.ArtifactService
 import com.openai.services.blocking.beta.agents.sessions.ArtifactServiceImpl
 import com.openai.services.blocking.beta.agents.sessions.EventService
@@ -78,7 +79,11 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
         params: AgentSessionStreamParams,
         requestOptions: RequestOptions,
     ): StreamResponse<AgentSessionEvent> =
-        AgentSessionStream(this, params, requestOptions, clientOptions.sleeper)
+        AgentTurnResults.collecting(
+            AgentSessionStream(this, params, requestOptions, clientOptions.sleeper),
+            params.handlers.keys,
+            params.sessionId,
+        )
 
     override fun withRawResponse(): SessionService.WithRawResponse = withRawResponse
 
@@ -254,6 +259,7 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
                             streamResponse
                         }
                     }
+                    .let { AgentTurnResults.collecting(it) }
             }
         }
 
