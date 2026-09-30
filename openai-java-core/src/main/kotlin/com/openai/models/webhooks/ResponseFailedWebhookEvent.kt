@@ -146,7 +146,7 @@ private constructor(
         private var createdAt: JsonField<Long>? = null
         private var data: JsonField<Data>? = null
         private var type: JsonValue = JsonValue.from("response.failed")
-        private var object_: JsonField<Object> = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonField.of(Object.EVENT)
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic

@@ -17,6 +17,7 @@ internal class EnvironmentTemplateTest {
                 .id("id")
                 .addCapabilityDirectory("string")
                 .createdAt(0L)
+                .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
                 .addFile(
                     EnvironmentTemplate.File.FileId.builder().fileId("file_id").path("path").build()
                 )
@@ -42,12 +43,13 @@ internal class EnvironmentTemplateTest {
                         .build()
                 )
                 .updatedAt(0L)
-                .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
                 .build()
 
         assertThat(environmentTemplate.id()).isEqualTo("id")
         assertThat(environmentTemplate.capabilityDirectories()).containsExactly("string")
         assertThat(environmentTemplate.createdAt()).isEqualTo(0L)
+        assertThat(environmentTemplate.desktop())
+            .contains(EnvironmentTemplate.Desktop.builder().enabled(true).build())
         assertThat(environmentTemplate.files())
             .containsExactly(
                 EnvironmentTemplate.File.ofId(
@@ -82,8 +84,6 @@ internal class EnvironmentTemplateTest {
                 )
             )
         assertThat(environmentTemplate.updatedAt()).isEqualTo(0L)
-        assertThat(environmentTemplate.desktop())
-            .contains(EnvironmentTemplate.Desktop.builder().enabled(true).build())
     }
 
     @Test
@@ -94,6 +94,7 @@ internal class EnvironmentTemplateTest {
                 .id("id")
                 .addCapabilityDirectory("string")
                 .createdAt(0L)
+                .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
                 .addFile(
                     EnvironmentTemplate.File.FileId.builder().fileId("file_id").path("path").build()
                 )
@@ -119,7 +120,6 @@ internal class EnvironmentTemplateTest {
                         .build()
                 )
                 .updatedAt(0L)
-                .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
                 .build()
 
         val roundtrippedEnvironmentTemplate =

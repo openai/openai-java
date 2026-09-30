@@ -1188,7 +1188,7 @@ private constructor(
                 class Builder internal constructor() {
 
                     private var text: JsonField<String> = JsonMissing.of()
-                    private var type: JsonField<Type> = JsonMissing.of()
+                    private var type: JsonField<Type> = JsonField.of(Type.TEXT)
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic

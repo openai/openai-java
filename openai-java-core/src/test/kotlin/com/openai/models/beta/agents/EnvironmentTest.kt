@@ -43,6 +43,7 @@ internal class EnvironmentTest {
             Environment.OpenAIHosted.builder()
                 .id("id")
                 .addCapabilityDirectory("string")
+                .desktop(Environment.OpenAIHosted.Desktop.builder().enabled(true).build())
                 .addFile(
                     HostedEnvironmentFileId.builder()
                         .id("id")
@@ -73,7 +74,7 @@ internal class EnvironmentTest {
                         .version("version")
                         .build()
                 )
-                .desktop(Environment.OpenAIHosted.Desktop.builder().enabled(true).build())
+                .containerSize(Environment.OpenAIHosted.ContainerSize.SMALL)
                 .build()
 
         val environment = Environment.ofOpenAIHosted(openaiHosted)
@@ -91,6 +92,7 @@ internal class EnvironmentTest {
                 Environment.OpenAIHosted.builder()
                     .id("id")
                     .addCapabilityDirectory("string")
+                    .desktop(Environment.OpenAIHosted.Desktop.builder().enabled(true).build())
                     .addFile(
                         HostedEnvironmentFileId.builder()
                             .id("id")
@@ -123,7 +125,7 @@ internal class EnvironmentTest {
                             .version("version")
                             .build()
                     )
-                    .desktop(Environment.OpenAIHosted.Desktop.builder().enabled(true).build())
+                    .containerSize(Environment.OpenAIHosted.ContainerSize.SMALL)
                     .build()
             )
 
