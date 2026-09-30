@@ -87,6 +87,10 @@ val coreJar = tasks.named<Jar>("jar") {
 
 val coreSourcesJar = tasks.named<Jar>("sourcesJar") {
     duplicatesStrategy = DuplicatesStrategy.FAIL
+    // Eclipse resolves sources from their package paths, without the Kotlin source-set prefix.
+    filesMatching("**/*.kt") {
+        path = path.removePrefix("main/")
+    }
 }
 
 val verifyCoreCompilationArtifact =
