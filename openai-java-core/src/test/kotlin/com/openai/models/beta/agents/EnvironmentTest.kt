@@ -73,6 +73,7 @@ internal class EnvironmentTest {
                         .version("version")
                         .build()
                 )
+                .containerSize(Environment.OpenAIHosted.ContainerSize.SMALL)
                 .desktop(Environment.OpenAIHosted.Desktop.builder().enabled(true).build())
                 .build()
 
@@ -123,6 +124,7 @@ internal class EnvironmentTest {
                             .version("version")
                             .build()
                     )
+                    .containerSize(Environment.OpenAIHosted.ContainerSize.SMALL)
                     .desktop(Environment.OpenAIHosted.Desktop.builder().enabled(true).build())
                     .build()
             )

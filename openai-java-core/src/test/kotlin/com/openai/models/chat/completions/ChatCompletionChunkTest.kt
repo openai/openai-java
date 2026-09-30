@@ -15,7 +15,7 @@ internal class ChatCompletionChunkTest {
     fun create() {
         val chatCompletionChunk =
             ChatCompletionChunk.builder()
-                .id("id")
+                .id("chatcmpl-123")
                 .addChoice(
                     ChatCompletionChunk.Choice.builder()
                         .delta(
@@ -83,8 +83,8 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
-                .created(0L)
-                .model("model")
+                .created(1694268190L)
+                .model("gpt-6-astra")
                 .moderation(
                     ChatCompletionChunk.Moderation.builder()
                         .input(
@@ -167,9 +167,9 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
-                .obfuscation("obfuscation")
+                .obfuscation("")
                 .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
-                .systemFingerprint("system_fingerprint")
+                .systemFingerprint("fp_44709d6fcb")
                 .usage(
                     CompletionUsage.builder()
                         .completionTokens(0L)
@@ -197,7 +197,7 @@ internal class ChatCompletionChunkTest {
                 )
                 .build()
 
-        assertThat(chatCompletionChunk.id()).isEqualTo("id")
+        assertThat(chatCompletionChunk.id()).isEqualTo("chatcmpl-123")
         assertThat(chatCompletionChunk.choices())
             .containsExactly(
                 ChatCompletionChunk.Choice.builder()
@@ -263,8 +263,8 @@ internal class ChatCompletionChunkTest {
                     )
                     .build()
             )
-        assertThat(chatCompletionChunk.created()).isEqualTo(0L)
-        assertThat(chatCompletionChunk.model()).isEqualTo("model")
+        assertThat(chatCompletionChunk.created()).isEqualTo(1694268190L)
+        assertThat(chatCompletionChunk.model()).isEqualTo("gpt-6-astra")
         assertThat(chatCompletionChunk.moderation())
             .contains(
                 ChatCompletionChunk.Moderation.builder()
@@ -348,9 +348,9 @@ internal class ChatCompletionChunkTest {
                     )
                     .build()
             )
-        assertThat(chatCompletionChunk.obfuscation()).contains("obfuscation")
+        assertThat(chatCompletionChunk.obfuscation()).contains("")
         assertThat(chatCompletionChunk.serviceTier()).contains(ChatCompletionChunk.ServiceTier.AUTO)
-        assertThat(chatCompletionChunk.systemFingerprint()).contains("system_fingerprint")
+        assertThat(chatCompletionChunk.systemFingerprint()).contains("fp_44709d6fcb")
         assertThat(chatCompletionChunk.usage())
             .contains(
                 CompletionUsage.builder()
@@ -384,7 +384,7 @@ internal class ChatCompletionChunkTest {
         val jsonMapper = jsonMapper()
         val chatCompletionChunk =
             ChatCompletionChunk.builder()
-                .id("id")
+                .id("chatcmpl-123")
                 .addChoice(
                     ChatCompletionChunk.Choice.builder()
                         .delta(
@@ -452,8 +452,8 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
-                .created(0L)
-                .model("model")
+                .created(1694268190L)
+                .model("gpt-6-astra")
                 .moderation(
                     ChatCompletionChunk.Moderation.builder()
                         .input(
@@ -536,9 +536,9 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
-                .obfuscation("obfuscation")
+                .obfuscation("")
                 .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
-                .systemFingerprint("system_fingerprint")
+                .systemFingerprint("fp_44709d6fcb")
                 .usage(
                     CompletionUsage.builder()
                         .completionTokens(0L)

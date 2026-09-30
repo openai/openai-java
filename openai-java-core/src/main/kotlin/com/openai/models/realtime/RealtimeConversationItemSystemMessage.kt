@@ -171,7 +171,7 @@ private constructor(
         private var role: JsonValue = JsonValue.from("system")
         private var type: JsonValue = JsonValue.from("message")
         private var id: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonField.of(Object.REALTIME_ITEM)
         private var status: JsonField<Status> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -444,7 +444,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var text: JsonField<String> = JsonMissing.of()
-            private var type: JsonField<Type> = JsonMissing.of()
+            private var type: JsonField<Type> = JsonField.of(Type.INPUT_TEXT)
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
