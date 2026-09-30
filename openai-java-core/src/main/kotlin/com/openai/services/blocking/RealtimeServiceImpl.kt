@@ -7,6 +7,8 @@ import com.openai.services.blocking.realtime.CallService
 import com.openai.services.blocking.realtime.CallServiceImpl
 import com.openai.services.blocking.realtime.ClientSecretService
 import com.openai.services.blocking.realtime.ClientSecretServiceImpl
+import com.openai.services.blocking.realtime.TranslationService
+import com.openai.services.blocking.realtime.TranslationServiceImpl
 import java.util.function.Consumer
 
 class RealtimeServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -22,6 +24,8 @@ class RealtimeServiceImpl internal constructor(private val clientOptions: Client
 
     private val calls: CallService by lazy { CallServiceImpl(clientOptions) }
 
+    private val translations: TranslationService by lazy { TranslationServiceImpl(clientOptions) }
+
     override fun withRawResponse(): RealtimeService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): RealtimeService =
@@ -30,6 +34,8 @@ class RealtimeServiceImpl internal constructor(private val clientOptions: Client
     override fun clientSecrets(): ClientSecretService = clientSecrets
 
     override fun calls(): CallService = calls
+
+    override fun translations(): TranslationService = translations
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         RealtimeService.WithRawResponse {
@@ -42,6 +48,10 @@ class RealtimeServiceImpl internal constructor(private val clientOptions: Client
             CallServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val translations: TranslationService.WithRawResponse by lazy {
+            TranslationServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): RealtimeService.WithRawResponse =
@@ -52,5 +62,7 @@ class RealtimeServiceImpl internal constructor(private val clientOptions: Client
         override fun clientSecrets(): ClientSecretService.WithRawResponse = clientSecrets
 
         override fun calls(): CallService.WithRawResponse = calls
+
+        override fun translations(): TranslationService.WithRawResponse = translations
     }
 }

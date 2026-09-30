@@ -38,6 +38,7 @@ private constructor(
     private val id: JsonField<String>,
     private val capabilityDirectories: JsonField<List<String>>,
     private val createdAt: JsonField<Long>,
+    private val desktop: JsonField<Desktop>,
     private val files: JsonField<List<File>>,
     private val name: JsonField<String>,
     private val network: JsonField<Network>,
@@ -46,7 +47,6 @@ private constructor(
     private val plugins: JsonField<List<HostedPlugin>>,
     private val skills: JsonField<List<Skill>>,
     private val updatedAt: JsonField<Long>,
-    private val desktop: JsonField<Desktop>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -57,6 +57,7 @@ private constructor(
         @ExcludeMissing
         capabilityDirectories: JsonField<List<String>> = JsonMissing.of(),
         @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("desktop") @ExcludeMissing desktop: JsonField<Desktop> = JsonMissing.of(),
         @JsonProperty("files") @ExcludeMissing files: JsonField<List<File>> = JsonMissing.of(),
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("network") @ExcludeMissing network: JsonField<Network> = JsonMissing.of(),
@@ -67,11 +68,11 @@ private constructor(
         plugins: JsonField<List<HostedPlugin>> = JsonMissing.of(),
         @JsonProperty("skills") @ExcludeMissing skills: JsonField<List<Skill>> = JsonMissing.of(),
         @JsonProperty("updated_at") @ExcludeMissing updatedAt: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("desktop") @ExcludeMissing desktop: JsonField<Desktop> = JsonMissing.of(),
     ) : this(
         id,
         capabilityDirectories,
         createdAt,
+        desktop,
         files,
         name,
         network,
@@ -80,7 +81,6 @@ private constructor(
         plugins,
         skills,
         updatedAt,
-        desktop,
         mutableMapOf(),
     )
 
@@ -108,6 +108,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun createdAt(): Long = createdAt.getRequired("created_at")
+
+    /**
+     * Desktop configuration for each OpenAI-hosted environment.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun desktop(): Desktop = desktop.getRequired("desktop")
 
     /**
      * Safe file metadata, excluding contents and session-scoped file IDs.
@@ -179,14 +187,6 @@ private constructor(
     fun updatedAt(): Long = updatedAt.getRequired("updated_at")
 
     /**
-     * Desktop configuration for each OpenAI-hosted environment.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun desktop(): Optional<Desktop> = desktop.getOptional("desktop")
-
-    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -209,6 +209,13 @@ private constructor(
      * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
+
+    /**
+     * Returns the raw JSON value of [desktop].
+     *
+     * Unlike [desktop], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("desktop") @ExcludeMissing fun _desktop(): JsonField<Desktop> = desktop
 
     /**
      * Returns the raw JSON value of [files].
@@ -259,13 +266,6 @@ private constructor(
      */
     @JsonProperty("updated_at") @ExcludeMissing fun _updatedAt(): JsonField<Long> = updatedAt
 
-    /**
-     * Returns the raw JSON value of [desktop].
-     *
-     * Unlike [desktop], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("desktop") @ExcludeMissing fun _desktop(): JsonField<Desktop> = desktop
-
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -288,6 +288,7 @@ private constructor(
          * .id()
          * .capabilityDirectories()
          * .createdAt()
+         * .desktop()
          * .files()
          * .name()
          * .network()
@@ -306,6 +307,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var capabilityDirectories: JsonField<MutableList<String>>? = null
         private var createdAt: JsonField<Long>? = null
+        private var desktop: JsonField<Desktop>? = null
         private var files: JsonField<MutableList<File>>? = null
         private var name: JsonField<String>? = null
         private var network: JsonField<Network>? = null
@@ -314,7 +316,6 @@ private constructor(
         private var plugins: JsonField<MutableList<HostedPlugin>>? = null
         private var skills: JsonField<MutableList<Skill>>? = null
         private var updatedAt: JsonField<Long>? = null
-        private var desktop: JsonField<Desktop> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -323,6 +324,7 @@ private constructor(
             capabilityDirectories =
                 environmentTemplate.capabilityDirectories.map { it.toMutableList() }
             createdAt = environmentTemplate.createdAt
+            desktop = environmentTemplate.desktop
             files = environmentTemplate.files.map { it.toMutableList() }
             name = environmentTemplate.name
             network = environmentTemplate.network
@@ -331,7 +333,6 @@ private constructor(
             plugins = environmentTemplate.plugins.map { it.toMutableList() }
             skills = environmentTemplate.skills.map { it.toMutableList() }
             updatedAt = environmentTemplate.updatedAt
-            desktop = environmentTemplate.desktop
             additionalProperties = environmentTemplate.additionalProperties.toMutableMap()
         }
 
@@ -383,6 +384,17 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
+
+        /** Desktop configuration for each OpenAI-hosted environment. */
+        fun desktop(desktop: Desktop) = desktop(JsonField.of(desktop))
+
+        /**
+         * Sets [Builder.desktop] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.desktop] with a well-typed [Desktop] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun desktop(desktop: JsonField<Desktop>) = apply { this.desktop = desktop }
 
         /** Safe file metadata, excluding contents and session-scoped file IDs. */
         fun files(files: List<File>) = files(JsonField.of(files))
@@ -534,17 +546,6 @@ private constructor(
          */
         fun updatedAt(updatedAt: JsonField<Long>) = apply { this.updatedAt = updatedAt }
 
-        /** Desktop configuration for each OpenAI-hosted environment. */
-        fun desktop(desktop: Desktop) = desktop(JsonField.of(desktop))
-
-        /**
-         * Sets [Builder.desktop] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.desktop] with a well-typed [Desktop] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun desktop(desktop: JsonField<Desktop>) = apply { this.desktop = desktop }
-
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -574,6 +575,7 @@ private constructor(
          * .id()
          * .capabilityDirectories()
          * .createdAt()
+         * .desktop()
          * .files()
          * .name()
          * .network()
@@ -592,6 +594,7 @@ private constructor(
                     it.toImmutable()
                 },
                 checkRequired("createdAt", createdAt),
+                checkRequired("desktop", desktop),
                 checkRequired("files", files).map { it.toImmutable() },
                 checkRequired("name", name),
                 checkRequired("network", network),
@@ -600,7 +603,6 @@ private constructor(
                 checkRequired("plugins", plugins).map { it.toImmutable() },
                 checkRequired("skills", skills).map { it.toImmutable() },
                 checkRequired("updatedAt", updatedAt),
-                desktop,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -623,6 +625,7 @@ private constructor(
         id()
         capabilityDirectories()
         createdAt()
+        desktop().validate()
         files().forEach { it.validate() }
         name()
         network().validate()
@@ -635,7 +638,6 @@ private constructor(
         plugins().forEach { it.validate() }
         skills().forEach { it.validate() }
         updatedAt()
-        desktop().ifPresent { it.validate() }
         validated = true
     }
 
@@ -657,6 +659,7 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (capabilityDirectories.asKnown().getOrNull()?.size ?: 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
+            (desktop.asKnown().getOrNull()?.validity() ?: 0) +
             (files.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (name.asKnown().isPresent) 1 else 0) +
             (network.asKnown().getOrNull()?.validity() ?: 0) +
@@ -664,8 +667,173 @@ private constructor(
             (packages.asKnown().getOrNull()?.validity() ?: 0) +
             (plugins.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (skills.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            (if (updatedAt.asKnown().isPresent) 1 else 0) +
-            (desktop.asKnown().getOrNull()?.validity() ?: 0)
+            (if (updatedAt.asKnown().isPresent) 1 else 0)
+
+    /** Desktop configuration for each OpenAI-hosted environment. */
+    class Desktop
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val enabled: JsonField<Boolean>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("enabled") @ExcludeMissing enabled: JsonField<Boolean> = JsonMissing.of()
+        ) : this(enabled, mutableMapOf())
+
+        /**
+         * Whether the environment provisions a desktop and browser proxy.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun enabled(): Boolean = enabled.getRequired("enabled")
+
+        /**
+         * Returns the raw JSON value of [enabled].
+         *
+         * Unlike [enabled], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("enabled") @ExcludeMissing fun _enabled(): JsonField<Boolean> = enabled
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Desktop].
+             *
+             * The following fields are required:
+             * ```java
+             * .enabled()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Desktop]. */
+        class Builder internal constructor() {
+
+            private var enabled: JsonField<Boolean>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(desktop: Desktop) = apply {
+                enabled = desktop.enabled
+                additionalProperties = desktop.additionalProperties.toMutableMap()
+            }
+
+            /** Whether the environment provisions a desktop and browser proxy. */
+            fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
+
+            /**
+             * Sets [Builder.enabled] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.enabled] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun enabled(enabled: JsonField<Boolean>) = apply { this.enabled = enabled }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Desktop].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .enabled()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Desktop =
+                Desktop(checkRequired("enabled", enabled), additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Desktop = apply {
+            if (validated) {
+                return@apply
+            }
+
+            enabled()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (if (enabled.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Desktop &&
+                enabled == other.enabled &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(enabled, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Desktop{enabled=$enabled, additionalProperties=$additionalProperties}"
+    }
 
     /** Safe metadata for a file configured by an environment template. */
     @JsonDeserialize(using = File.Deserializer::class)
@@ -2806,172 +2974,6 @@ private constructor(
         }
     }
 
-    /** Desktop configuration for each OpenAI-hosted environment. */
-    class Desktop
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val enabled: JsonField<Boolean>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("enabled") @ExcludeMissing enabled: JsonField<Boolean> = JsonMissing.of()
-        ) : this(enabled, mutableMapOf())
-
-        /**
-         * Whether the environment provisions a desktop and browser proxy.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun enabled(): Boolean = enabled.getRequired("enabled")
-
-        /**
-         * Returns the raw JSON value of [enabled].
-         *
-         * Unlike [enabled], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("enabled") @ExcludeMissing fun _enabled(): JsonField<Boolean> = enabled
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Desktop].
-             *
-             * The following fields are required:
-             * ```java
-             * .enabled()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Desktop]. */
-        class Builder internal constructor() {
-
-            private var enabled: JsonField<Boolean>? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(desktop: Desktop) = apply {
-                enabled = desktop.enabled
-                additionalProperties = desktop.additionalProperties.toMutableMap()
-            }
-
-            /** Whether the environment provisions a desktop and browser proxy. */
-            fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
-
-            /**
-             * Sets [Builder.enabled] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.enabled] with a well-typed [Boolean] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun enabled(enabled: JsonField<Boolean>) = apply { this.enabled = enabled }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Desktop].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .enabled()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Desktop =
-                Desktop(checkRequired("enabled", enabled), additionalProperties.toMutableMap())
-        }
-
-        private var validated: Boolean = false
-
-        /**
-         * Validates that the types of all values in this object match their expected types
-         * recursively.
-         *
-         * This method is _not_ forwards compatible with new types from the API for existing fields.
-         *
-         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-         *   expected type.
-         */
-        fun validate(): Desktop = apply {
-            if (validated) {
-                return@apply
-            }
-
-            enabled()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = (if (enabled.asKnown().isPresent) 1 else 0)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Desktop &&
-                enabled == other.enabled &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy { Objects.hash(enabled, additionalProperties) }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Desktop{enabled=$enabled, additionalProperties=$additionalProperties}"
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -2981,6 +2983,7 @@ private constructor(
             id == other.id &&
             capabilityDirectories == other.capabilityDirectories &&
             createdAt == other.createdAt &&
+            desktop == other.desktop &&
             files == other.files &&
             name == other.name &&
             network == other.network &&
@@ -2989,7 +2992,6 @@ private constructor(
             plugins == other.plugins &&
             skills == other.skills &&
             updatedAt == other.updatedAt &&
-            desktop == other.desktop &&
             additionalProperties == other.additionalProperties
     }
 
@@ -2998,6 +3000,7 @@ private constructor(
             id,
             capabilityDirectories,
             createdAt,
+            desktop,
             files,
             name,
             network,
@@ -3006,7 +3009,6 @@ private constructor(
             plugins,
             skills,
             updatedAt,
-            desktop,
             additionalProperties,
         )
     }
@@ -3014,5 +3016,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "EnvironmentTemplate{id=$id, capabilityDirectories=$capabilityDirectories, createdAt=$createdAt, files=$files, name=$name, network=$network, object_=$object_, packages=$packages, plugins=$plugins, skills=$skills, updatedAt=$updatedAt, desktop=$desktop, additionalProperties=$additionalProperties}"
+        "EnvironmentTemplate{id=$id, capabilityDirectories=$capabilityDirectories, createdAt=$createdAt, desktop=$desktop, files=$files, name=$name, network=$network, object_=$object_, packages=$packages, plugins=$plugins, skills=$skills, updatedAt=$updatedAt, additionalProperties=$additionalProperties}"
 }
