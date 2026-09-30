@@ -8959,6 +8959,74 @@ private constructor(
 
                 fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
+                /** Maps this value using an immutable callback registration snapshot. */
+                fun <T> match(handler: Handler<T>): T = handler.apply(this)
+
+                /**
+                 * SDK-owned dispatch. Omitted callbacks use [Builder.onDefault], or throw a
+                 * payload-free error. Callback return values (including null) and exceptions are
+                 * propagated unchanged. Immutable registration does not make callbacks or their
+                 * captured state thread-safe.
+                 */
+                class Handler<T>
+                private constructor(
+                    private val callbacks: Map<String, (Provider) -> T>,
+                    private val onDefault: java.util.function.Function<in Provider, out T>?,
+                ) {
+                    fun apply(value: Provider): T {
+                        val callback =
+                            when {
+                                value.aws != null -> callbacks["aws"]
+                                value.azure != null -> callbacks["azure"]
+                                else -> null
+                            }
+                        if (callback != null) return callback(value)
+                        if (onDefault != null) return onDefault.apply(value)
+                        throw OpenAIInvalidDataException("Unhandled Provider")
+                    }
+
+                    companion object {
+                        @JvmStatic fun <T> builder(): Builder<T> = Builder()
+                    }
+
+                    /**
+                     * Repeated setters replace earlier registrations. [build] copies the
+                     * registrations.
+                     */
+                    class Builder<T> internal constructor() {
+                        private val callbacks = mutableMapOf<String, (Provider) -> T>()
+                        private var onDefault: java.util.function.Function<in Provider, out T>? =
+                            null
+
+                        fun onAws(
+                            callback:
+                                java.util.function.Function<in AwsExternalStorageProvider, out T>
+                        ) = apply { callbacks["aws"] = { value -> callback.apply(value.aws!!) } }
+
+                        fun onAzure(
+                            callback:
+                                java.util.function.Function<in AzureExternalStorageProvider, out T>
+                        ) = apply {
+                            callbacks["azure"] = { value -> callback.apply(value.azure!!) }
+                        }
+
+                        /**
+                         * Receives this union for both unknown and recognized-but-unregistered
+                         * variants.
+                         */
+                        fun onDefault(callback: java.util.function.Function<in Provider, out T>) =
+                            apply {
+                                onDefault = callback
+                            }
+
+                        /**
+                         * Builds a snapshot; registration of every variant is intentionally
+                         * optional.
+                         */
+                        fun build(): Handler<T> = Handler(callbacks.toMap(), onDefault)
+                    }
+                }
+
                 /**
                  * Maps this instance's current variant to a value of type [T] using the given
                  * [visitor].
@@ -8989,6 +9057,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
                  *   [visitor] and the current variant is unknown.
                  */
+                @Deprecated("Use match with Handler.builder(); removed in 5.0")
                 fun <T> accept(visitor: Visitor<T>): T =
                     when {
                         aws != null -> visitor.visitAws(aws)
@@ -9084,6 +9153,7 @@ private constructor(
                  * An interface that defines how to map each variant of [Provider] to a value of
                  * type [T].
                  */
+                @Deprecated("Use Handler.builder(); removed in 5.0")
                 interface Visitor<out T> {
 
                     fun visitAws(aws: AwsExternalStorageProvider): T
