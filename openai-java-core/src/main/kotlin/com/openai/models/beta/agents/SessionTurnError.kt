@@ -15,7 +15,6 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
-import kotlin.jvm.optionals.getOrNull
 
 /** A customer-safe error describing why a session request failed. */
 class SessionTurnError
@@ -113,6 +112,14 @@ private constructor(
          */
         fun code(code: JsonField<Code>) = apply { this.code = code }
 
+        /**
+         * Sets [code] to an arbitrary [String].
+         *
+         * You should usually call [code] with a well-typed [Code] constant instead. This method is
+         * primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun code(value: String) = code(Code.of(value))
+
         /** A customer-safe explanation of the failure. */
         fun message(message: String) = message(JsonField.of(message))
 
@@ -179,7 +186,7 @@ private constructor(
             return@apply
         }
 
-        code().validate()
+        code()
         message()
         validated = true
     }
@@ -199,7 +206,7 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (code.asKnown().getOrNull()?.validity() ?: 0) + (if (message.asKnown().isPresent) 1 else 0)
+        (if (code.asKnown().isPresent) 1 else 0) + (if (message.asKnown().isPresent) 1 else 0)
 
     /** A stable, machine-readable failure category. */
     class Code @JsonCreator private constructor(private val value: JsonField<String>) : Enum {

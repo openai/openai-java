@@ -5,6 +5,7 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.services.async.realtime.CallServiceAsync
 import com.openai.services.async.realtime.ClientSecretServiceAsync
+import com.openai.services.async.realtime.TranslationServiceAsync
 import java.util.function.Consumer
 
 interface RealtimeServiceAsync {
@@ -25,6 +26,9 @@ interface RealtimeServiceAsync {
 
     fun calls(): CallServiceAsync
 
+    fun translations(): TranslationServiceAsync =
+        throw UnsupportedOperationException("Realtime translations unsupported by this service")
+
     /**
      * A view of [RealtimeServiceAsync] that provides access to raw HTTP responses for each method.
      */
@@ -42,5 +46,8 @@ interface RealtimeServiceAsync {
         fun clientSecrets(): ClientSecretServiceAsync.WithRawResponse
 
         fun calls(): CallServiceAsync.WithRawResponse
+
+        fun translations(): TranslationServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException("Realtime translations unsupported by this service")
     }
 }

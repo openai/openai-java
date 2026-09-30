@@ -201,8 +201,8 @@ private constructor(
         Optional.ofNullable(transportDtmfReceived)
 
     /**
-     * A SIP DTMF keypress successfully sent by the hosted tool. Delivered only to sideband
-     * observers; this is not a client command.
+     * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband observers;
+     * this is not a client command.
      */
     fun transportDtmfSend(): Optional<TransportDtmfSend> = Optional.ofNullable(transportDtmfSend)
 
@@ -388,8 +388,8 @@ private constructor(
         transportDtmfReceived.getOrThrow("transportDtmfReceived")
 
     /**
-     * A SIP DTMF keypress successfully sent by the hosted tool. Delivered only to sideband
-     * observers; this is not a client command.
+     * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband observers;
+     * this is not a client command.
      */
     fun asTransportDtmfSend(): TransportDtmfSend = transportDtmfSend.getOrThrow("transportDtmfSend")
 
@@ -953,7 +953,7 @@ private constructor(
             ForkServerEvent(transportDtmfReceived = transportDtmfReceived)
 
         /**
-         * A SIP DTMF keypress successfully sent by the hosted tool. Delivered only to sideband
+         * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband
          * observers; this is not a client command.
          */
         @JvmStatic
@@ -1121,7 +1121,7 @@ private constructor(
             unknown(JsonValue.from(transportDtmfReceived))
 
         /**
-         * A SIP DTMF keypress successfully sent by the hosted tool. Delivered only to sideband
+         * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband
          * observers; this is not a client command.
          */
         fun visitTransportDtmfSend(transportDtmfSend: TransportDtmfSend): T =
@@ -1795,8 +1795,8 @@ private constructor(
     }
 
     /**
-     * A SIP DTMF keypress successfully sent by the hosted tool. Delivered only to sideband
-     * observers; this is not a client command.
+     * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband observers;
+     * this is not a client command.
      */
     class TransportDtmfSend
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)

@@ -5,6 +5,7 @@ package com.openai.services.blocking
 import com.openai.core.ClientOptions
 import com.openai.services.blocking.realtime.CallService
 import com.openai.services.blocking.realtime.ClientSecretService
+import com.openai.services.blocking.realtime.TranslationService
 import java.util.function.Consumer
 
 interface RealtimeService {
@@ -25,6 +26,9 @@ interface RealtimeService {
 
     fun calls(): CallService
 
+    fun translations(): TranslationService =
+        throw UnsupportedOperationException("Realtime translations unsupported by this service")
+
     /** A view of [RealtimeService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -38,5 +42,8 @@ interface RealtimeService {
         fun clientSecrets(): ClientSecretService.WithRawResponse
 
         fun calls(): CallService.WithRawResponse
+
+        fun translations(): TranslationService.WithRawResponse =
+            throw UnsupportedOperationException("Realtime translations unsupported by this service")
     }
 }
