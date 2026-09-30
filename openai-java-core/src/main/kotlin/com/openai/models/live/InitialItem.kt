@@ -404,7 +404,7 @@ private constructor(
             private var role: JsonValue = JsonValue.from("developer")
             private var id: JsonField<String> = JsonMissing.of()
             private var status: JsonField<Status> = JsonMissing.of()
-            private var type: JsonField<Type> = JsonMissing.of()
+            private var type: JsonField<Type> = JsonField.of(Type.MESSAGE)
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -675,7 +675,7 @@ private constructor(
             class Builder internal constructor() {
 
                 private var text: JsonField<String>? = null
-                private var type: JsonField<Type> = JsonMissing.of()
+                private var type: JsonField<Type> = JsonField.of(Type.INPUT_TEXT)
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -1374,7 +1374,7 @@ private constructor(
             private var role: JsonValue = JsonValue.from("user")
             private var id: JsonField<String> = JsonMissing.of()
             private var status: JsonField<Status> = JsonMissing.of()
-            private var type: JsonField<Type> = JsonMissing.of()
+            private var type: JsonField<Type> = JsonField.of(Type.MESSAGE)
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1645,7 +1645,7 @@ private constructor(
             class Builder internal constructor() {
 
                 private var text: JsonField<String>? = null
-                private var type: JsonField<Type> = JsonMissing.of()
+                private var type: JsonField<Type> = JsonField.of(Type.INPUT_TEXT)
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -2344,7 +2344,7 @@ private constructor(
             private var role: JsonValue = JsonValue.from("assistant")
             private var id: JsonField<String> = JsonMissing.of()
             private var status: JsonField<Status> = JsonMissing.of()
-            private var type: JsonField<Type> = JsonMissing.of()
+            private var type: JsonField<Type> = JsonField.of(Type.MESSAGE)
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -2880,7 +2880,7 @@ private constructor(
                 class Builder internal constructor() {
 
                     private var text: JsonField<String>? = null
-                    private var type: JsonField<Type> = JsonMissing.of()
+                    private var type: JsonField<Type> = JsonField.of(Type.TEXT)
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic

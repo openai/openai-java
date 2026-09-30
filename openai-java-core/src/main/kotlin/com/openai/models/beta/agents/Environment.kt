@@ -283,13 +283,14 @@ private constructor(
     private constructor(
         private val id: JsonField<String>,
         private val capabilityDirectories: JsonField<List<String>>,
+        private val desktop: JsonField<Desktop>,
         private val files: JsonField<List<HostedEnvironmentFile>>,
         private val network: JsonField<Network>,
         private val packages: JsonField<Packages>,
         private val plugins: JsonField<List<HostedPlugin>>,
         private val skills: JsonField<List<HostedSkill>>,
         private val type: JsonValue,
-        private val desktop: JsonField<Desktop>,
+        private val containerSize: JsonField<ContainerSize>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -299,6 +300,7 @@ private constructor(
             @JsonProperty("capability_directories")
             @ExcludeMissing
             capabilityDirectories: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("desktop") @ExcludeMissing desktop: JsonField<Desktop> = JsonMissing.of(),
             @JsonProperty("files")
             @ExcludeMissing
             files: JsonField<List<HostedEnvironmentFile>> = JsonMissing.of(),
@@ -313,17 +315,20 @@ private constructor(
             @ExcludeMissing
             skills: JsonField<List<HostedSkill>> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-            @JsonProperty("desktop") @ExcludeMissing desktop: JsonField<Desktop> = JsonMissing.of(),
+            @JsonProperty("container_size")
+            @ExcludeMissing
+            containerSize: JsonField<ContainerSize> = JsonMissing.of(),
         ) : this(
             id,
             capabilityDirectories,
+            desktop,
             files,
             network,
             packages,
             plugins,
             skills,
             type,
-            desktop,
+            containerSize,
             mutableMapOf(),
         )
 
@@ -343,6 +348,13 @@ private constructor(
          */
         fun capabilityDirectories(): List<String> =
             capabilityDirectories.getRequired("capability_directories")
+
+        /**
+         * The effective desktop configuration.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type.
+         */
+        fun desktop(): Optional<Desktop> = desktop.getOptional("desktop")
 
         /**
          * Files available in the environment, excluding their contents.
@@ -398,12 +410,12 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
-         * The effective desktop configuration.
+         * The effective CPU and memory tier, or null when unknown or outside the public tiers.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun desktop(): Optional<Desktop> = desktop.getOptional("desktop")
+        fun containerSize(): Optional<ContainerSize> = containerSize.getOptional("container_size")
 
         /**
          * Returns the raw JSON value of [id].
@@ -421,6 +433,13 @@ private constructor(
         @JsonProperty("capability_directories")
         @ExcludeMissing
         fun _capabilityDirectories(): JsonField<List<String>> = capabilityDirectories
+
+        /**
+         * Returns the raw JSON value of [desktop].
+         *
+         * Unlike [desktop], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("desktop") @ExcludeMissing fun _desktop(): JsonField<Desktop> = desktop
 
         /**
          * Returns the raw JSON value of [files].
@@ -462,11 +481,14 @@ private constructor(
         @JsonProperty("skills") @ExcludeMissing fun _skills(): JsonField<List<HostedSkill>> = skills
 
         /**
-         * Returns the raw JSON value of [desktop].
+         * Returns the raw JSON value of [containerSize].
          *
-         * Unlike [desktop], this method doesn't throw if the JSON field has an unexpected type.
+         * Unlike [containerSize], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
-        @JsonProperty("desktop") @ExcludeMissing fun _desktop(): JsonField<Desktop> = desktop
+        @JsonProperty("container_size")
+        @ExcludeMissing
+        fun _containerSize(): JsonField<ContainerSize> = containerSize
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -489,6 +511,7 @@ private constructor(
              * ```java
              * .id()
              * .capabilityDirectories()
+             * .desktop()
              * .files()
              * .network()
              * .packages()
@@ -504,13 +527,14 @@ private constructor(
 
             private var id: JsonField<String>? = null
             private var capabilityDirectories: JsonField<MutableList<String>>? = null
+            private var desktop: JsonField<Desktop>? = null
             private var files: JsonField<MutableList<HostedEnvironmentFile>>? = null
             private var network: JsonField<Network>? = null
             private var packages: JsonField<Packages>? = null
             private var plugins: JsonField<MutableList<HostedPlugin>>? = null
             private var skills: JsonField<MutableList<HostedSkill>>? = null
             private var type: JsonValue = JsonValue.from("openai_hosted")
-            private var desktop: JsonField<Desktop> = JsonMissing.of()
+            private var containerSize: JsonField<ContainerSize> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -518,13 +542,14 @@ private constructor(
                 id = openaiHosted.id
                 capabilityDirectories =
                     openaiHosted.capabilityDirectories.map { it.toMutableList() }
+                desktop = openaiHosted.desktop
                 files = openaiHosted.files.map { it.toMutableList() }
                 network = openaiHosted.network
                 packages = openaiHosted.packages
                 plugins = openaiHosted.plugins.map { it.toMutableList() }
                 skills = openaiHosted.skills.map { it.toMutableList() }
                 type = openaiHosted.type
-                desktop = openaiHosted.desktop
+                containerSize = openaiHosted.containerSize
                 additionalProperties = openaiHosted.additionalProperties.toMutableMap()
             }
 
@@ -566,6 +591,18 @@ private constructor(
                         checkKnown("capabilityDirectories", it).add(capabilityDirectory)
                     }
             }
+
+            /** The effective desktop configuration. */
+            fun desktop(desktop: Desktop) = desktop(JsonField.of(desktop))
+
+            /**
+             * Sets [Builder.desktop] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.desktop] with a well-typed [Desktop] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun desktop(desktop: JsonField<Desktop>) = apply { this.desktop = desktop }
 
             /** Files available in the environment, excluding their contents. */
             fun files(files: List<HostedEnvironmentFile>) = files(JsonField.of(files))
@@ -698,17 +735,26 @@ private constructor(
              */
             fun type(type: JsonValue) = apply { this.type = type }
 
-            /** The effective desktop configuration. */
-            fun desktop(desktop: Desktop) = desktop(JsonField.of(desktop))
+            /**
+             * The effective CPU and memory tier, or null when unknown or outside the public tiers.
+             */
+            fun containerSize(containerSize: ContainerSize?) =
+                containerSize(JsonField.ofNullable(containerSize))
+
+            /** Alias for calling [Builder.containerSize] with `containerSize.orElse(null)`. */
+            fun containerSize(containerSize: Optional<ContainerSize>) =
+                containerSize(containerSize.getOrNull())
 
             /**
-             * Sets [Builder.desktop] to an arbitrary JSON value.
+             * Sets [Builder.containerSize] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.desktop] with a well-typed [Desktop] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.containerSize] with a well-typed [ContainerSize]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
-            fun desktop(desktop: JsonField<Desktop>) = apply { this.desktop = desktop }
+            fun containerSize(containerSize: JsonField<ContainerSize>) = apply {
+                this.containerSize = containerSize
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -738,6 +784,7 @@ private constructor(
              * ```java
              * .id()
              * .capabilityDirectories()
+             * .desktop()
              * .files()
              * .network()
              * .packages()
@@ -753,13 +800,14 @@ private constructor(
                     checkRequired("capabilityDirectories", capabilityDirectories).map {
                         it.toImmutable()
                     },
+                    checkRequired("desktop", desktop),
                     checkRequired("files", files).map { it.toImmutable() },
                     checkRequired("network", network),
                     checkRequired("packages", packages),
                     checkRequired("plugins", plugins).map { it.toImmutable() },
                     checkRequired("skills", skills).map { it.toImmutable() },
                     type,
-                    desktop,
+                    containerSize,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -782,6 +830,7 @@ private constructor(
 
             id()
             capabilityDirectories()
+            desktop.getRequired("desktop").validate()
             files().forEach { it.validate() }
             network().validate()
             packages().validate()
@@ -792,7 +841,7 @@ private constructor(
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
-            desktop().ifPresent { it.validate() }
+            containerSize().ifPresent { it.validate() }
             validated = true
         }
 
@@ -814,13 +863,187 @@ private constructor(
         internal fun validity(): Int =
             (if (id.asKnown().isPresent) 1 else 0) +
                 (capabilityDirectories.asKnown().getOrNull()?.size ?: 0) +
+                (desktop.asKnown().getOrNull()?.validity() ?: 0) +
                 (files.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (network.asKnown().getOrNull()?.validity() ?: 0) +
                 (packages.asKnown().getOrNull()?.validity() ?: 0) +
                 (plugins.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (skills.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 type.let { if (it == JsonValue.from("openai_hosted")) 1 else 0 } +
-                (desktop.asKnown().getOrNull()?.validity() ?: 0)
+                (containerSize.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** The effective desktop configuration. */
+        class Desktop
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val enabled: JsonField<Boolean>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("enabled")
+                @ExcludeMissing
+                enabled: JsonField<Boolean> = JsonMissing.of()
+            ) : this(enabled, mutableMapOf())
+
+            /**
+             * Whether the environment provisions a desktop and browser proxy.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun enabled(): Boolean = enabled.getRequired("enabled")
+
+            /**
+             * Returns the raw JSON value of [enabled].
+             *
+             * Unlike [enabled], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("enabled") @ExcludeMissing fun _enabled(): JsonField<Boolean> = enabled
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Desktop].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .enabled()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Desktop]. */
+            class Builder internal constructor() {
+
+                private var enabled: JsonField<Boolean>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(desktop: Desktop) = apply {
+                    enabled = desktop.enabled
+                    additionalProperties = desktop.additionalProperties.toMutableMap()
+                }
+
+                /** Whether the environment provisions a desktop and browser proxy. */
+                fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
+
+                /**
+                 * Sets [Builder.enabled] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.enabled] with a well-typed [Boolean] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun enabled(enabled: JsonField<Boolean>) = apply { this.enabled = enabled }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Desktop].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .enabled()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Desktop =
+                    Desktop(checkRequired("enabled", enabled), additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Desktop = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                enabled()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = (if (enabled.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Desktop &&
+                    enabled == other.enabled &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(enabled, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Desktop{enabled=$enabled, additionalProperties=$additionalProperties}"
+        }
 
         /** The effective network access policy for the environment. */
         class Network
@@ -1519,123 +1742,103 @@ private constructor(
                 "Packages{npm=$npm, python=$python, system=$system, additionalProperties=$additionalProperties}"
         }
 
-        /** The effective desktop configuration. */
-        class Desktop
-        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-        private constructor(
-            private val enabled: JsonField<Boolean>,
-            private val additionalProperties: MutableMap<String, JsonValue>,
-        ) {
-
-            @JsonCreator
-            private constructor(
-                @JsonProperty("enabled")
-                @ExcludeMissing
-                enabled: JsonField<Boolean> = JsonMissing.of()
-            ) : this(enabled, mutableMapOf())
+        /** The effective CPU and memory tier, or null when unknown or outside the public tiers. */
+        class ContainerSize @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
-             * Whether the environment provisions a desktop and browser proxy.
+             * Returns this class instance's raw value.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
              */
-            fun enabled(): Boolean = enabled.getRequired("enabled")
-
-            /**
-             * Returns the raw JSON value of [enabled].
-             *
-             * Unlike [enabled], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("enabled") @ExcludeMissing fun _enabled(): JsonField<Boolean> = enabled
-
-            @JsonAnySetter
-            private fun putAdditionalProperty(key: String, value: JsonValue) {
-                additionalProperties.put(key, value)
-            }
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
-
-            fun toBuilder() = Builder().from(this)
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
 
-                /**
-                 * Returns a mutable builder for constructing an instance of [Desktop].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .enabled()
-                 * ```
-                 */
-                @JvmStatic fun builder() = Builder()
+                @JvmField val SMALL = of("small")
+
+                @JvmField val MEDIUM = of("medium")
+
+                @JvmField val LARGE = of("large")
+
+                @JvmStatic fun of(value: String) = ContainerSize(JsonField.of(value))
             }
 
-            /** A builder for [Desktop]. */
-            class Builder internal constructor() {
-
-                private var enabled: JsonField<Boolean>? = null
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(desktop: Desktop) = apply {
-                    enabled = desktop.enabled
-                    additionalProperties = desktop.additionalProperties.toMutableMap()
-                }
-
-                /** Whether the environment provisions a desktop and browser proxy. */
-                fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
-
-                /**
-                 * Sets [Builder.enabled] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.enabled] with a well-typed [Boolean] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
-                 */
-                fun enabled(enabled: JsonField<Boolean>) = apply { this.enabled = enabled }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                /**
-                 * Returns an immutable instance of [Desktop].
-                 *
-                 * Further updates to this [Builder] will not mutate the returned instance.
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .enabled()
-                 * ```
-                 *
-                 * @throws IllegalStateException if any required field is unset.
-                 */
-                fun build(): Desktop =
-                    Desktop(checkRequired("enabled", enabled), additionalProperties.toMutableMap())
+            /** An enum containing [ContainerSize]'s known values. */
+            enum class Known {
+                SMALL,
+                MEDIUM,
+                LARGE,
             }
+
+            /**
+             * An enum containing [ContainerSize]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [ContainerSize] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                SMALL,
+                MEDIUM,
+                LARGE,
+                /**
+                 * An enum member indicating that [ContainerSize] was instantiated with an unknown
+                 * value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    SMALL -> Value.SMALL
+                    MEDIUM -> Value.MEDIUM
+                    LARGE -> Value.LARGE
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    SMALL -> Known.SMALL
+                    MEDIUM -> Known.MEDIUM
+                    LARGE -> Known.LARGE
+                    else -> throw OpenAIInvalidDataException("Unknown ContainerSize: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             private var validated: Boolean = false
 
@@ -1649,12 +1852,12 @@ private constructor(
              * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
              *   expected type.
              */
-            fun validate(): Desktop = apply {
+            fun validate(): ContainerSize = apply {
                 if (validated) {
                     return@apply
                 }
 
-                enabled()
+                known()
                 validated = true
             }
 
@@ -1672,24 +1875,19 @@ private constructor(
              *
              * Used for best match union deserialization.
              */
-            @JvmSynthetic internal fun validity(): Int = (if (enabled.asKnown().isPresent) 1 else 0)
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return other is Desktop &&
-                    enabled == other.enabled &&
-                    additionalProperties == other.additionalProperties
+                return other is ContainerSize && value == other.value
             }
 
-            private val hashCode: Int by lazy { Objects.hash(enabled, additionalProperties) }
+            override fun hashCode() = value.hashCode()
 
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "Desktop{enabled=$enabled, additionalProperties=$additionalProperties}"
+            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1700,13 +1898,14 @@ private constructor(
             return other is OpenAIHosted &&
                 id == other.id &&
                 capabilityDirectories == other.capabilityDirectories &&
+                desktop == other.desktop &&
                 files == other.files &&
                 network == other.network &&
                 packages == other.packages &&
                 plugins == other.plugins &&
                 skills == other.skills &&
                 type == other.type &&
-                desktop == other.desktop &&
+                containerSize == other.containerSize &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -1714,13 +1913,14 @@ private constructor(
             Objects.hash(
                 id,
                 capabilityDirectories,
+                desktop,
                 files,
                 network,
                 packages,
                 plugins,
                 skills,
                 type,
-                desktop,
+                containerSize,
                 additionalProperties,
             )
         }
@@ -1728,7 +1928,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "OpenAIHosted{id=$id, capabilityDirectories=$capabilityDirectories, files=$files, network=$network, packages=$packages, plugins=$plugins, skills=$skills, type=$type, desktop=$desktop, additionalProperties=$additionalProperties}"
+            "OpenAIHosted{id=$id, capabilityDirectories=$capabilityDirectories, desktop=$desktop, files=$files, network=$network, packages=$packages, plugins=$plugins, skills=$skills, type=$type, containerSize=$containerSize, additionalProperties=$additionalProperties}"
     }
 
     /** An environment hosted by the application. */

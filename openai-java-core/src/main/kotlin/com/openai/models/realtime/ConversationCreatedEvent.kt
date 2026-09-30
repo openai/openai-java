@@ -315,7 +315,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var id: JsonField<String> = JsonMissing.of()
-            private var object_: JsonField<Object> = JsonMissing.of()
+            private var object_: JsonField<Object> = JsonField.of(Object.REALTIME_CONVERSATION)
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic

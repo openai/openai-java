@@ -231,6 +231,9 @@ private constructor(
             /** The request exceeds the available rate limit. */
             @JvmField val RATE_LIMIT_EXCEEDED = of("rate_limit_exceeded")
 
+            /** Flex processing is temporarily unavailable. */
+            @JvmField val FLEX_UNAVAILABLE = of("flex_unavailable")
+
             /** The model service is temporarily overloaded. */
             @JvmField val SERVER_OVERLOADED = of("server_overloaded")
 
@@ -285,6 +288,8 @@ private constructor(
             CREDIT_BALANCE_EXHAUSTED,
             /** The request exceeds the available rate limit. */
             RATE_LIMIT_EXCEEDED,
+            /** Flex processing is temporarily unavailable. */
+            FLEX_UNAVAILABLE,
             /** The model service is temporarily overloaded. */
             SERVER_OVERLOADED,
             /** The request was rejected by a safety policy. */
@@ -333,6 +338,8 @@ private constructor(
             CREDIT_BALANCE_EXHAUSTED,
             /** The request exceeds the available rate limit. */
             RATE_LIMIT_EXCEEDED,
+            /** Flex processing is temporarily unavailable. */
+            FLEX_UNAVAILABLE,
             /** The model service is temporarily overloaded. */
             SERVER_OVERLOADED,
             /** The request was rejected by a safety policy. */
@@ -377,6 +384,7 @@ private constructor(
                 USAGE_LIMIT_EXCEEDED -> Value.USAGE_LIMIT_EXCEEDED
                 CREDIT_BALANCE_EXHAUSTED -> Value.CREDIT_BALANCE_EXHAUSTED
                 RATE_LIMIT_EXCEEDED -> Value.RATE_LIMIT_EXCEEDED
+                FLEX_UNAVAILABLE -> Value.FLEX_UNAVAILABLE
                 SERVER_OVERLOADED -> Value.SERVER_OVERLOADED
                 CYBER_POLICY -> Value.CYBER_POLICY
                 MISALIGNMENT_POLICY_VIOLATION -> Value.MISALIGNMENT_POLICY_VIOLATION
@@ -409,6 +417,7 @@ private constructor(
                 USAGE_LIMIT_EXCEEDED -> Known.USAGE_LIMIT_EXCEEDED
                 CREDIT_BALANCE_EXHAUSTED -> Known.CREDIT_BALANCE_EXHAUSTED
                 RATE_LIMIT_EXCEEDED -> Known.RATE_LIMIT_EXCEEDED
+                FLEX_UNAVAILABLE -> Known.FLEX_UNAVAILABLE
                 SERVER_OVERLOADED -> Known.SERVER_OVERLOADED
                 CYBER_POLICY -> Known.CYBER_POLICY
                 MISALIGNMENT_POLICY_VIOLATION -> Known.MISALIGNMENT_POLICY_VIOLATION

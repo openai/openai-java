@@ -19,6 +19,7 @@ internal class TemplateListPageResponseTest {
                         .id("id")
                         .addCapabilityDirectory("string")
                         .createdAt(0L)
+                        .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
                         .addFile(
                             EnvironmentTemplate.File.FileId.builder()
                                 .fileId("file_id")
@@ -49,7 +50,6 @@ internal class TemplateListPageResponseTest {
                                 .build()
                         )
                         .updatedAt(0L)
-                        .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
                         .build()
                 )
                 .firstId("first_id")
@@ -63,6 +63,7 @@ internal class TemplateListPageResponseTest {
                     .id("id")
                     .addCapabilityDirectory("string")
                     .createdAt(0L)
+                    .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
                     .addFile(
                         EnvironmentTemplate.File.FileId.builder()
                             .fileId("file_id")
@@ -93,7 +94,6 @@ internal class TemplateListPageResponseTest {
                             .build()
                     )
                     .updatedAt(0L)
-                    .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
                     .build()
             )
         assertThat(templateListPageResponse.firstId()).contains("first_id")
@@ -111,6 +111,7 @@ internal class TemplateListPageResponseTest {
                         .id("id")
                         .addCapabilityDirectory("string")
                         .createdAt(0L)
+                        .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
                         .addFile(
                             EnvironmentTemplate.File.FileId.builder()
                                 .fileId("file_id")
@@ -141,7 +142,6 @@ internal class TemplateListPageResponseTest {
                                 .build()
                         )
                         .updatedAt(0L)
-                        .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
                         .build()
                 )
                 .firstId("first_id")
