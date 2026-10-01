@@ -128,4 +128,4 @@ try (var stream = client.beta().agents().sessions().stream(params)) {
 }
 ```
 
-An already-idle session drains successfully but has no selected result; application-owned tool side effects still need their own recovery or idempotency.
+An already-idle session drains successfully but has no selected result. Reattachment uses at-least-once tool-call delivery: an unacknowledged call may be delivered again after reconnecting. Applications are responsible for idempotency when handlers perform mutations.
