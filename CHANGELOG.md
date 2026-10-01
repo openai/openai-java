@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.75.0](https://github.com/openai/openai-java/compare/v4.74.0...v4.75.0) (2026-10-01)
+
+
+### Features
+
+* **agents:** Prepare hosted files and download turn artifacts ([47add84](https://github.com/openai/openai-java/commit/47add844df665a2dcbcedf745eb6f95dedcc4e9a))
+
 ## [4.74.0](https://github.com/openai/openai-java/compare/v4.73.0...v4.74.0) (2026-10-01)
 
 
