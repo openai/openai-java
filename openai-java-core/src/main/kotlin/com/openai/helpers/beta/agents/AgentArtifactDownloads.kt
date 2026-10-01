@@ -50,13 +50,30 @@ private constructor(
         }
     }
 
-    /** Streams the exact turn/path artifact to the caller-selected file, replacing that file. */
+    /** Returns the exact turn/path response. The caller owns and must close it. */
+    @JvmOverloads
+    fun content(path: String, options: RequestOptions = RequestOptions.none()): HttpResponse =
+        openContent(findArtifact(path, options), options)
+
+    /** Streams to an application-owned destination, replacing that file. */
     @JvmOverloads
     fun download(
         path: String,
         destination: Path,
         options: RequestOptions = RequestOptions.none(),
     ): SessionArtifact {
+        val artifact = findArtifact(path, options)
+        openContent(artifact, options).use { Files.copy(it.body(), destination, REPLACE_EXISTING) }
+        return artifact
+    }
+
+    private fun openContent(artifact: SessionArtifact, options: RequestOptions) =
+        service.content(
+            ArtifactContentParams.builder().sessionId(sessionId).artifactId(artifact.id()).build(),
+            options,
+        )
+
+    private fun findArtifact(path: String, options: RequestOptions): SessionArtifact {
         var selected: SessionArtifact? = null
         var params = ArtifactListParams.builder().sessionId(sessionId).build()
         while (true) {
@@ -65,17 +82,7 @@ private constructor(
             if (!page.hasNextPage()) break
             params = page.nextPageParams()
         }
-        val artifact = checkNotNull(selected) { "No artifact matches this turn and path" }
-        service
-            .content(
-                ArtifactContentParams.builder()
-                    .sessionId(sessionId)
-                    .artifactId(artifact.id())
-                    .build(),
-                options,
-            )
-            .use { Files.copy(it.body(), destination, REPLACE_EXISTING) }
-        return artifact
+        return checkNotNull(selected) { "No artifact matches this turn and path" }
     }
 
     class Async
@@ -84,14 +91,34 @@ private constructor(
         private val sessionId: String,
         private val turnId: String,
     ) {
+        /** Returns the exact turn/path response. The caller owns and must close it. */
+        @JvmOverloads
+        fun content(
+            path: String,
+            options: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse> = withContent(path, options) { _, response -> response }
+
+        /** Streams to an application-owned destination, replacing that file. */
         @JvmOverloads
         fun download(
             path: String,
             destination: Path,
             options: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<SessionArtifact> {
-            val result = CompletableFuture<SessionArtifact>()
+        ): CompletableFuture<SessionArtifact> =
+            withContent(path, options) { artifact, response ->
+                response.use { Files.copy(it.body(), destination, REPLACE_EXISTING) }
+                artifact
+            }
+
+        private fun <T> withContent(
+            path: String,
+            options: RequestOptions,
+            consume: (SessionArtifact, HttpResponse) -> T,
+        ): CompletableFuture<T> {
+            val result = CompletableFuture<T>()
             val response = AtomicReference<HttpResponse?>()
+            // Native service futures are dependent stages: canceling them does not abort their
+            // transport and can suppress delivery of a response that still needs closing.
             result.whenComplete { _, _ -> if (result.isCancelled) response.get()?.close() }
             var selected: SessionArtifact? = null
             fun downloadSelected() {
@@ -110,12 +137,11 @@ private constructor(
                         else {
                             response.set(content)
                             try {
-                                content.use {
-                                    if (!result.isDone)
-                                        Files.copy(it.body(), destination, REPLACE_EXISTING)
-                                }
-                                result.complete(artifact)
+                                if (result.isDone) content.close()
+                                else if (!result.complete(consume(artifact, content)))
+                                    content.close()
                             } catch (error: Throwable) {
+                                runCatching { content.close() }
                                 result.completeExceptionally(error)
                             } finally {
                                 response.set(null)

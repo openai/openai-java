@@ -35,3 +35,14 @@ var docs = AgentEnvironmentFiles.prepareDirectory(client, Paths.get("docs"),
 var staged = AgentEnvironmentFiles.upload(client, environmentId,
     Paths.get("update.csv"), "/workspace/update.csv");
 ```
+
+Artifact content can be read in memory, or streamed to an application-owned, safe destination path. Both modes select the exact result turn and path; async service overloads return `CompletableFuture`.
+
+```java
+var artifacts = AgentArtifactDownloads.forResult(
+    client.beta().agents().sessions().artifacts(), result);
+try (var response = artifacts.content("/workspace/outputs/report.md")) {
+    byte[] report = response.body().readAllBytes();
+}
+artifacts.download("/workspace/outputs/report.md", Paths.get("downloaded-report.md"));
+```

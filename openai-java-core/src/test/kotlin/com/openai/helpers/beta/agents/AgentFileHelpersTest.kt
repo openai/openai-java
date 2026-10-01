@@ -442,6 +442,51 @@ internal class AgentFileHelpersTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
+    fun `content preserves exact scope options and caller ownership`(async: Boolean) {
+        val t =
+            Transport().apply {
+                pages =
+                    mutableListOf(
+                        page(artifact("old", "old"), more = true),
+                        page(artifact("selected")),
+                    )
+            }
+        val client = t.client()
+        try {
+            val response =
+                if (async)
+                    AgentArtifactDownloads.forResult(
+                            client.async().beta().agents().sessions().artifacts(),
+                            result(),
+                        )
+                        .content("/workspace/outputs/report.txt", options)
+                        .join()
+                else
+                    AgentArtifactDownloads.forResult(
+                            client.beta().agents().sessions().artifacts(),
+                            result(),
+                        )
+                        .content("/workspace/outputs/report.txt", options)
+            assertThat(t.contentClosed).isFalse()
+            assertThat(t.contentReads).isZero()
+            response.use {
+                val bytes = ByteArrayOutputStream()
+                it.body().copyTo(bytes)
+                assertThat(bytes.size()).isEqualTo(t.contentSize)
+            }
+            assertThat(t.contentClosed).isTrue()
+            assertThat(t.requests).hasSize(3)
+            assertThat(t.requests.last().pathSegments).contains("s", "selected")
+            assertThat(t.requestOptions).allSatisfy {
+                assertThat(it.timeout).isEqualTo(options.timeout)
+            }
+        } finally {
+            client.close()
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
     fun `artifact lookup reports missing and ambiguous matches without touching destination`(
         async: Boolean
     ) {
@@ -597,8 +642,11 @@ internal class AgentFileHelpersTest {
         }
     }
 
-    @Test
-    fun `cancelling an async download closes a late content response without writing`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `cancelling native async content closes a late response without writing`(
+        inMemory: Boolean
+    ) {
         val t = Transport()
         val client = t.client()
         val pending = CompletableFuture<HttpResponse>()
@@ -613,12 +661,14 @@ internal class AgentFileHelpersTest {
         }
         try {
             val destination = directory.resolve("cancelled.txt")
-            val download =
+            val scoped =
                 AgentArtifactDownloads.forResult(
-                        client.async().beta().agents().sessions().artifacts(),
-                        result(),
-                    )
-                    .download("/workspace/outputs/report.txt", destination)
+                    client.async().beta().agents().sessions().artifacts(),
+                    result(),
+                )
+            val download =
+                if (inMemory) scoped.content("/workspace/outputs/report.txt")
+                else scoped.download("/workspace/outputs/report.txt", destination)
             assertThat(requested.await(5, TimeUnit.SECONDS)).isTrue()
             assertThat(download.cancel(true)).isTrue()
             pending.complete(t.execute(requireNotNull(request), options))
