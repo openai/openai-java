@@ -64,12 +64,16 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
         if (turnId != null && turn.id() != turnId) return
         val terminal =
             turn.status() in setOf(Turn.Status.COMPLETED, Turn.Status.FAILED, Turn.Status.CANCELLED)
+        if (turnEnded && !terminal) return
         if (activeOnly && terminal) return
-        if (turnId == null && terminal && turn.id() == baselineRootId) return
+        if (turnId == null && !activeOnly && turn.id() == baselineRootId) return
         turnId = turn.id()
         selectedTurn = turn
         turnEnded = terminal
-        if (terminal) settled = true
+        if (terminal) {
+            settled = true
+            sessionFailed = false
+        }
     }
 
     fun observeSession(session: AgentSession) {
@@ -85,13 +89,17 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
         session: AgentSession,
         latestRootId: String? = null,
     ): List<AgentSession.RequiredAction> {
-        val selected = selectedTurn ?: return emptyList()
         if (
-            selected.status() != Turn.Status.WAITING ||
-                session.id() != params.sessionId ||
+            session.id() != params.sessionId ||
                 session.status() != AgentSession.Status.REQUIRES_ACTION
         )
             return emptyList()
+        val selected =
+            selectedTurn
+                ?: return if (latestRootId == null)
+                    session.requiredActions().filter { it.isEnvironmentConnection() }
+                else emptyList()
+        if (selected.status() != Turn.Status.WAITING) return emptyList()
         return session.requiredActions().filter {
             it.computerUseApprovalRequest().getOrNull()?.turnId() == selected.id() ||
                 (it.isEnvironmentConnection() && latestRootId == selected.id())
@@ -100,7 +108,8 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
 
     fun missingTurnId(event: AgentSessionEvent): String? {
         if (!attaching || turnId != null) return null
-        return event.turnItemAdded().getOrNull()?.item()?.functionCall()?.getOrNull()?.turnId()
+        return eventTurn(event)?.id()
+            ?: event.turnItemAdded().getOrNull()?.item()?.functionCall()?.getOrNull()?.turnId()
             ?: event.turnItemDone().getOrNull()?.item()?.message()?.getOrNull()?.turnId()
             ?: event
                 .requiresAction()
@@ -147,14 +156,7 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
                 it.next()
                 it.remove()
             }
-        if (attaching) {
-            (event.turnCreated().getOrNull()?.turn()
-                    ?: event.turnInProgress().getOrNull()?.turn()
-                    ?: event.turnCompleted().getOrNull()?.turn()
-                    ?: event.turnFailed().getOrNull()?.turn()
-                    ?: event.turnCancelled().getOrNull()?.turn())
-                ?.let { select(it) }
-        }
+        observeTurn(event)
         event.turnCreated().getOrNull()?.let {
             if (!attaching && turnId == null && !it.turn().subagentId().isPresent)
                 turnId = it.turnId()
@@ -165,16 +167,24 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
                 ?: event.turnCancelled().getOrNull()?.turnId()
         if (turnId != null && ended == turnId) turnEnded = true
         if (attaching) {
-            event.idle().getOrNull()?.session()?.let(::observeSession)
             event.failed().getOrNull()?.session()?.let(::observeSession)
         }
         return true
     }
 
+    fun observeTurn(event: AgentSessionEvent) {
+        if (attaching && selectedTurn != null) eventTurn(event)?.let { select(it) }
+    }
+
+    private fun eventTurn(event: AgentSessionEvent): Turn? =
+        event.turnCreated().getOrNull()?.turn()
+            ?: event.turnInProgress().getOrNull()?.turn()
+            ?: event.turnCompleted().getOrNull()?.turn()
+            ?: event.turnFailed().getOrNull()?.turn()
+            ?: event.turnCancelled().getOrNull()?.turn()
+
     fun terminal(event: AgentSessionEvent) =
-        (attaching && turnEnded) ||
-            event.isFailed() ||
-            (event.isIdle() && (turnEnded || (attaching && turnId == null)))
+        if (attaching) settled || turnEnded else event.isFailed() || (event.isIdle() && turnEnded)
 
     fun result(event: AgentSessionEvent): CompletableFuture<EventCreateParams?> {
         val call =

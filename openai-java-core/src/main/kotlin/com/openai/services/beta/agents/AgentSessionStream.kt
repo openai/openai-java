@@ -2,6 +2,7 @@ package com.openai.services.beta.agents
 
 import com.openai.core.RequestOptions
 import com.openai.core.http.StreamResponse
+import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionEvent
 import com.openai.models.beta.agents.AgentSessionStreamParams
 import com.openai.models.beta.agents.sessions.events.EventCreateParams
@@ -66,6 +67,8 @@ internal class AgentSessionStream(
             try {
                 refreshTurn()
                 val session = sessions.retrieve(support.retrieveParams(), options)
+                if (session.status() == AgentSession.Status.FAILED && support.selectedTurn != null)
+                    refreshTurn()
                 support.observeSession(session)
                 if (
                     collector.isEnabled() && session.requiredActions().any { !it.isFunctionCall() }
@@ -128,15 +131,19 @@ internal class AgentSessionStream(
                                         throw error
                                     }
                                 if (support.attaching) {
-                                    support.missingTurnId(event)?.let {
-                                        support.select(
-                                            sessions
-                                                .turns()
-                                                .retrieve(support.turnRetrieveParams(it), options)
+                                    support.missingTurnId(event)?.let { id ->
+                                        findLatestRoot()
+                                            ?.takeIf { it.id() == id }
+                                            ?.let { support.select(it) }
+                                    }
+                                    if (event.isFailed() && support.selectedTurn != null)
+                                        refreshTurn()
+                                    if (event.isIdle()) {
+                                        refreshTurn()
+                                        support.observeSession(
+                                            sessions.retrieve(support.retrieveParams(), options)
                                         )
                                     }
-                                    if (event.isIdle() && support.selectedTurn != null)
-                                        refreshTurn()
                                 }
                                 if (!support.accept(event)) continue
                                 if (support.attaching && collector.isEnabled()) {
@@ -149,8 +156,15 @@ internal class AgentSessionStream(
                                             refreshTurn()
                                             val latest = findLatestRoot()?.id()
                                             collector.selectAttachedTurn(support.selectedTurn)
+                                            val current =
+                                                if (support.selectedTurn == null)
+                                                    sessions.retrieve(
+                                                        support.retrieveParams(),
+                                                        options,
+                                                    )
+                                                else session
                                             collector.manualActions(
-                                                support.manualActions(session, latest)
+                                                support.manualActions(current, latest)
                                             )
                                         }
                                     }
@@ -227,16 +241,20 @@ internal class AgentSessionStream(
     }
 
     private fun reconcile() {
-        if (!collector.isEnabled()) return
+        if (!collector.isEnabled() || closed.get()) return
         collector.selectAttachedTurn(support.selectedTurn)
         if (
-            support.selectedTurn?.status() in
-                setOf(Turn.Status.COMPLETED, Turn.Status.FAILED, Turn.Status.CANCELLED)
+            support.selectedTurn != null &&
+                (support.sessionFailed ||
+                    support.selectedTurn?.status() in
+                        setOf(Turn.Status.COMPLETED, Turn.Status.FAILED, Turn.Status.CANCELLED))
         ) {
             var params = support.itemListParams()
             var index = 0L
             while (true) {
+                if (closed.get()) return
                 val page = sessions.items().list(params, options)
+                if (closed.get()) return
                 page.data().forEach { item ->
                     item.message().getOrNull()?.let { collector.reconcileMessage(it, index) }
                     index++
@@ -245,7 +263,7 @@ internal class AgentSessionStream(
                 params = page.nextPageParams()
             }
         }
-        collector.attachedIdle(support.sessionFailed)
+        if (!closed.get()) collector.attachedIdle(support.sessionFailed)
     }
 
     private fun submit(result: EventCreateParams) {

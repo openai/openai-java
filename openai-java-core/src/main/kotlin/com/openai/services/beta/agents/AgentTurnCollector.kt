@@ -46,7 +46,8 @@ internal class AgentTurnCollector(
             }
             event.turnCreated().getOrNull()?.turn()?.let {
                 if (
-                    turn == null &&
+                    !attachment &&
+                        turn == null &&
                         !it.subagentId().isPresent &&
                         (sessionId == null || sessionId == it.sessionId())
                 ) {
@@ -170,7 +171,7 @@ internal class AgentTurnCollector(
             Turn.Status.CANCELLED -> failure = error(Reason.TURN_CANCELLED)
         }
         if (sessionFailed) failure = error(Reason.TURN_FAILED)
-        else if (turn == null) failure = error(Reason.NO_SELECTED_TURN)
+        else if (turn == null && pending.isEmpty()) failure = error(Reason.NO_SELECTED_TURN)
         else if (completed) idle = true
     }
 

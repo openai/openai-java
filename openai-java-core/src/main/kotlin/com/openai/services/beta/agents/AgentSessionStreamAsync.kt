@@ -99,19 +99,28 @@ internal class AgentSessionStreamAsync(
             if (support.attaching)
                 refreshTurn {
                     await(sessions.retrieve(support.retrieveParams(), options)) { session ->
-                        support.observeSession(session)
-                        val enabled = synchronized(collector) { collector.isEnabled() }
-                        if (enabled && session.requiredActions().any { !it.isFunctionCall() })
-                            refreshTurn {
-                                if (session.requiredActions().any { it.isEnvironmentConnection() })
-                                    findLatestRoot { readyAttachment(session, it?.id()) }
-                                else readyAttachment(session)
-                            }
-                        else readyAttachment()
+                        if (
+                            session.status() == AgentSession.Status.FAILED &&
+                                support.selectedTurn != null
+                        )
+                            refreshTurn { observedSession(session) }
+                        else observedSession(session)
                     }
                 }
             else create(support.inputParams())?.let { await(it) { pump() } }
         }
+    }
+
+    private fun observedSession(session: AgentSession) {
+        support.observeSession(session)
+        val enabled = synchronized(collector) { collector.isEnabled() }
+        if (enabled && session.requiredActions().any { !it.isFunctionCall() })
+            refreshTurn {
+                if (session.requiredActions().any { it.isEnvironmentConnection() })
+                    findLatestRoot { readyAttachment(session, it?.id()) }
+                else readyAttachment(session)
+            }
+        else readyAttachment()
     }
 
     private fun readyAttachment(session: AgentSession? = null, latestRootId: String? = null) {
@@ -168,8 +177,10 @@ internal class AgentSessionStreamAsync(
             return
         }
         if (
-            support.selectedTurn?.status() !in
-                setOf(Turn.Status.COMPLETED, Turn.Status.FAILED, Turn.Status.CANCELLED)
+            support.selectedTurn == null ||
+                (!support.sessionFailed &&
+                    support.selectedTurn?.status() !in
+                        setOf(Turn.Status.COMPLETED, Turn.Status.FAILED, Turn.Status.CANCELLED))
         ) {
             synchronized(collector) { collector.attachedIdle(support.sessionFailed) }
             done()
@@ -270,16 +281,27 @@ internal class AgentSessionStreamAsync(
                 if (support.attaching) {
                     val missing = support.missingTurnId(event)
                     if (missing != null) {
-                        await(
-                            sessions.turns().retrieve(support.turnRetrieveParams(missing), options)
-                        ) {
-                            support.select(it)
+                        findLatestRoot { latest ->
+                            latest?.takeIf { it.id() == missing }?.let { support.select(it) }
+                            support.observeTurn(event)
                             deliver(event)
                         }
                         return
                     }
-                    if (event.isIdle() && support.selectedTurn != null) {
-                        refreshTurn { deliver(event) }
+                    if (event.isFailed() && support.selectedTurn != null) {
+                        refreshTurn {
+                            support.observeSession(event.asFailed().session())
+                            deliver(event)
+                        }
+                        return
+                    }
+                    if (event.isIdle()) {
+                        refreshTurn {
+                            await(sessions.retrieve(support.retrieveParams(), options)) { session ->
+                                support.observeSession(session)
+                                deliver(event)
+                            }
+                        }
                         return
                     }
                 }
@@ -325,11 +347,16 @@ internal class AgentSessionStreamAsync(
         ) {
             refreshTurn {
                 findLatestRoot { latest ->
-                    synchronized(collector) {
-                        collector.selectAttachedTurn(support.selectedTurn)
-                        collector.manualActions(support.manualActions(session, latest?.id()))
+                    fun diagnose(current: AgentSession) {
+                        synchronized(collector) {
+                            collector.selectAttachedTurn(support.selectedTurn)
+                            collector.manualActions(support.manualActions(current, latest?.id()))
+                        }
+                        deliverSelected(event)
                     }
-                    deliverSelected(event)
+                    if (support.selectedTurn == null)
+                        await(sessions.retrieve(support.retrieveParams(), options)) { diagnose(it) }
+                    else diagnose(session)
                 }
             }
         } else deliverSelected(event)

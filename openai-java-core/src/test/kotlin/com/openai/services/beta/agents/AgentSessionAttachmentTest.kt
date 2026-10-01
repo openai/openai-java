@@ -58,6 +58,7 @@ internal class AgentSessionAttachmentTest {
         var turnRequests = 0
         var itemRequests = 0
         var onOpen: () -> Unit = {}
+        var onItems: () -> Unit = {}
         val requests = mutableListOf<HttpRequest>()
         val requestOptions = mutableListOf<RequestOptions>()
         val posts = mutableListOf<JsonNode>()
@@ -134,6 +135,7 @@ internal class AgentSessionAttachmentTest {
                 }
                 path.last() == "items" -> {
                     itemRequests++
+                    onItems()
                     response(next(itemPages))
                 }
                 else ->
@@ -363,7 +365,7 @@ internal class AgentSessionAttachmentTest {
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
     fun `call first attachment identifies its root without a startup event`(async: Boolean) {
-        val t = Transport().apply { turnPages = mutableListOf(page()) }
+        val t = Transport().apply { turnPages = mutableListOf(page(), page(), page(turn())) }
         var calls = 0
         assertThat(
                 collect(
@@ -503,7 +505,7 @@ internal class AgentSessionAttachmentTest {
     ) {
         val t =
             Transport().apply {
-                turnPages = mutableListOf(page())
+                turnPages = mutableListOf(page(), page(), page(turn()))
                 events = listOf(requiresAction("root"))
             }
         assertThatThrownBy { collect(t, async) }.hasStackTraceContaining("REQUIRES_ACTION")
@@ -566,7 +568,8 @@ internal class AgentSessionAttachmentTest {
     fun `live environment action cannot select or block an unidentified root`(async: Boolean) {
         val t =
             Transport().apply {
-                turnPages = mutableListOf(page())
+                turnPages =
+                    mutableListOf(page(), page(), page(), page(), page(turn(status = "completed")))
                 events = listOf(environmentAction(), turnEvent())
             }
         assertThat(collect(t, async).turnId()).isEqualTo("root")
@@ -627,6 +630,153 @@ internal class AgentSessionAttachmentTest {
             assertThat(t.itemRequests).isEqualTo(2)
             assertThat(t.streamClosed).isTrue()
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `stale baseline and different historical roots cannot select a previous answer`(
+        async: Boolean
+    ) {
+        for (old in listOf("baseline", "older")) {
+            val t =
+                Transport().apply {
+                    turnPages =
+                        mutableListOf(
+                            page(turn("baseline", "completed")),
+                            page(turn("baseline", "completed")),
+                            page(turn("baseline", "completed")),
+                            page(turn(status = "completed")),
+                        )
+                    events = listOf(turnEvent("created", old), turnEvent("completed"))
+                }
+            assertThat(collect(t, async).turnId()).isEqualTo("root")
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `buffered idle cannot stop a nonidle attachment before root identification`(
+        async: Boolean
+    ) {
+        val t =
+            Transport().apply {
+                turnPages = mutableListOf(page(), page(), page(), page(turn()))
+                events =
+                    listOf(
+                        """{"type":"agent.session.idle","event_id":"old-idle","session":{"id":"s","status":"idle","required_actions":[]}}""",
+                        turnEvent(),
+                    )
+            }
+        assertThat(collect(t, async).outputText()).isEqualTo("Shipped")
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `session failure recovers earlier output even when cached turn has not settled`(
+        async: Boolean
+    ) {
+        for (snapshot in listOf(false, true)) {
+            val t =
+                Transport().apply {
+                    if (snapshot) {
+                        sessionStatus = "failed"
+                        forbidStreamRead = true
+                    } else
+                        events =
+                            listOf(
+                                """{"type":"agent.session.failed","event_id":"failed","session":{"id":"s","status":"failed","required_actions":[]}}"""
+                            )
+                }
+            val error = unwrap(catchThrowable { collect(t, async) }) as AgentTurnResultException
+            assertThat(error.reason()).isEqualTo(AgentTurnResultException.Reason.TURN_FAILED)
+            assertThat(error.messages()).hasSize(1)
+            assertThat(t.itemRequests).isEqualTo(1)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `environment connection before any root reports a manual diagnostic`(async: Boolean) {
+        val t =
+            Transport().apply {
+                turnPages = mutableListOf(page())
+                sessionStatus = "requires_action"
+                requiredActions = """[{"type":"environment_connection","environment_id":"env"}]"""
+                forbidStreamRead = true
+            }
+        val error = unwrap(catchThrowable { collect(t, async) }) as AgentTurnResultException
+        assertThat(error.reason()).isEqualTo(AgentTurnResultException.Reason.REQUIRES_ACTION)
+        assertThat(error.turnId()).isEmpty()
+        assertThat(error.sessionId()).contains("s")
+        assertThat(error.requiredActions()).hasSize(1)
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `closing during the first history page stops further reconciliation requests`(
+        async: Boolean
+    ) {
+        val t =
+            Transport().apply {
+                turnResponses = mutableListOf(turn(status = "completed"))
+                itemPages =
+                    mutableListOf(
+                        page(message("one", "One"), more = true),
+                        page(message("two", "Two")),
+                    )
+                forbidStreamRead = true
+            }
+        t.client().useClient { client ->
+            if (async) {
+                val stream =
+                    client.async().beta().agents().sessions().stream(params().build(), options)
+                t.onItems = { stream.close() }
+                assertThatThrownBy {
+                        AgentTurnResults.getFinalResult(stream).get(5, TimeUnit.SECONDS)
+                    }
+                    .hasStackTraceContaining("CLOSED")
+            } else {
+                val stream = client.beta().agents().sessions().stream(params().build(), options)
+                t.onItems = { stream.close() }
+                assertThatThrownBy { AgentTurnResults.getFinalResult(stream) }
+                    .hasStackTraceContaining("CLOSED")
+            }
+        }
+        assertThat(t.itemRequests).isEqualTo(1)
+        assertThat(t.streamClosed).isTrue()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `session failure cannot replace a completed selected root outcome`(async: Boolean) {
+        for (snapshot in listOf(false, true)) {
+            val t =
+                Transport().apply {
+                    turnResponses = mutableListOf(turn(), turn(status = "completed"))
+                    if (snapshot) {
+                        sessionStatus = "failed"
+                        forbidStreamRead = true
+                    } else
+                        events =
+                            listOf(
+                                """{"type":"agent.session.failed","event_id":"failed","session":{"id":"s","status":"failed","required_actions":[]}}"""
+                            )
+                }
+            assertThat(collect(t, async).outputText()).isEqualTo("Shipped")
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `failure without a selected root does not scan unrelated history`(async: Boolean) {
+        val t =
+            Transport().apply {
+                turnPages = mutableListOf(page())
+                sessionStatus = "failed"
+                forbidStreamRead = true
+            }
+        assertThatThrownBy { collect(t, async) }.hasStackTraceContaining("TURN_FAILED")
+        assertThat(t.itemRequests).isZero()
     }
 
     private fun approval(owner: String = "root", kind: String = "browser_authentication") =
