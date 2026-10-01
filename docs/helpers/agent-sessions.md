@@ -82,8 +82,8 @@ following active sessions and advanced orchestration.
 Bind an argument class and application callback once. Jackson's `@JsonTypeName`
 and `@JsonClassDescription` set the hosted name and description, as with other
 class-based SDK tools.
-Unsupported constraint annotations, such as `@Schema(maximum = "10")`, are rejected;
-validate those business rules in your callback instead.
+Schema annotations, such as `@Schema(maximum = "10")`, are preserved. Validate
+business rules in your callback.
 
 ```java
 import com.fasterxml.jackson.annotation.JsonClassDescription;

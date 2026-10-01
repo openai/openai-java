@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.databind.JsonNode
 import com.openai.core.jsonMapper
 import com.openai.models.beta.agents.sessions.SessionCreateParams
+import com.openai.models.responses.ResponseCreateParams
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Schema
 import java.util.Optional
@@ -173,7 +174,7 @@ internal class AgentFunctionToolTest {
     }
 
     @Test
-    fun rejectsUnenforcedConstraintsBeforeBinding() {
+    fun preservesResponsesConstraintsForTheApiAndApplication() {
         for (type in
             listOf(
                 LimitedAmount::class.java,
@@ -182,11 +183,20 @@ internal class AgentFunctionToolTest {
                 FormattedAddress::class.java,
                 NestedConstraint::class.java,
             )) {
-            assertThatThrownBy { AgentFunctionTool.of(type) { "unused" } }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessageContaining("does not support schema constraint")
-                .hasMessageContaining("validate it in your callback")
+            val tool = AgentFunctionTool.of(type) { "unused" }
+            val responses =
+                ResponseCreateParams.builder().addTool(type).build().tools().get().single()
+            assertThat(jsonMapper().valueToTree<JsonNode>(tool.definition()).path("parameters"))
+                .isEqualTo(jsonMapper().valueToTree<JsonNode>(responses).path("parameters"))
         }
+        val limited =
+            AgentFunctionTool.of(LimitedAmount::class.java) {
+                require(it.amount <= 10) { "Application limit exceeded" }
+                it.amount
+            }
+        assertThat(limited.handler().apply(mapOf("amount" to 10))).isEqualTo(10)
+        assertThatThrownBy { limited.handler().apply(mapOf("amount" to 11)) }
+            .hasMessageContaining("Application limit exceeded")
         val tool = AgentFunctionTool.of(KeywordFields::class.java) { it.maximum }
         assertThat(
                 tool

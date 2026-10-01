@@ -69,6 +69,27 @@ object AgentTurnResults {
             }
             .finalResult()
 
+    /** Collects a completed turn and parses it; the session must already use this output schema. */
+    @JvmStatic
+    fun <T : Any> getFinalResult(
+        stream: StreamResponse<AgentSessionEvent>,
+        outputType: AgentOutputType<T>,
+    ): ParsedAgentTurnResult<T> = outputType.parse(getFinalResult(stream))
+
+    /**
+     * Async typed collection; does not submit schema updates or change existing session settings.
+     */
+    @JvmStatic
+    fun <T : Any> getFinalResult(
+        stream: AsyncStreamResponse<AgentSessionEvent>,
+        outputType: AgentOutputType<T>,
+    ): CompletableFuture<ParsedAgentTurnResult<T>> {
+        val raw = getFinalResult(stream)
+        val parsed = raw.thenApply(outputType::parse)
+        parsed.whenComplete { _, _ -> if (parsed.isCancelled) raw.cancel(true) }
+        return parsed
+    }
+
     /** The async adapter installs its own collector; do not retain an unused sync collector. */
     @JvmSynthetic
     internal fun uncollected(

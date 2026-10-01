@@ -1,12 +1,21 @@
 package com.openai.services.beta.agents
 
+import com.fasterxml.jackson.annotation.JsonClassDescription
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.client.OpenAIClientImpl
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.*
+import com.openai.helpers.beta.agents.AgentFunctionTool
 import com.openai.models.beta.agents.*
 import com.openai.models.beta.agents.sessions.SessionCreateParams
+import com.openai.models.responses.ResponseOutputMessage
+import com.openai.models.responses.ResponseOutputText
+import com.openai.models.responses.ResponseTextConfig
+import com.openai.models.responses.StructuredResponseOutputMessage
+import io.swagger.v3.oas.annotations.media.Schema
 import java.io.ByteArrayInputStream
+import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
@@ -438,6 +447,372 @@ internal class AgentTurnResultsTest {
                     AgentTurnResults.getFinalResult(stream).get(5, TimeUnit.SECONDS).outputText()
                 )
                 .isEqualTo("Answer")
+        }
+    }
+
+    class Report {
+        @JvmField var summary: String = ""
+        @JvmField var findings: List<String> = emptyList()
+    }
+
+    enum class FindingState {
+        FOUND,
+        UNKNOWN,
+    }
+
+    class Finding(@get:JsonProperty("item_id") val itemId: String, val state: FindingState)
+
+    @JsonClassDescription("A report with optional follow-up")
+    class CompatibleReport(val findings: List<Finding>, val next: Optional<String>)
+
+    class UriFormat(@get:Schema(format = "uri") val address: String)
+
+    class NestedUriFormat(val addresses: List<UriFormat>)
+
+    class SupportedConstraints(
+        @get:Schema(format = "email", pattern = "@") val address: String,
+        @get:Schema(minimum = "0", maximum = "10") val score: Int,
+        val format: String,
+    )
+
+    @Test
+    fun `typed output shares existing structured output class and annotation conventions`() {
+        val output = AgentOutputType.of(CompatibleReport::class.java)
+        val existing = ResponseTextConfig.builder().format(CompatibleReport::class.java).build()
+        val mapper = com.openai.core.jsonMapper()
+        val schema =
+            mapper
+                .valueToTree<com.fasterxml.jackson.databind.JsonNode>(output.format())
+                .path("schema")
+        val existingSchema =
+            mapper
+                .valueToTree<com.fasterxml.jackson.databind.JsonNode>(existing.rawConfig)
+                .path("format")
+                .path("schema")
+        assertThat(schema).isEqualTo(existingSchema)
+        assertThat(schema.path("description").asText())
+            .isEqualTo("A report with optional follow-up")
+        val result =
+            AgentTurnResults.getFinalResult(
+                source(
+                    typedEvents("""{"findings":[{"item_id":"A123","state":"FOUND"}],"next":null}""")
+                ),
+                output,
+            )
+        assertThat(result.outputParsed().findings.single().itemId).isEqualTo("A123")
+        assertThat(result.outputParsed().findings.single().state).isEqualTo(FindingState.FOUND)
+        assertThat(result.outputParsed().next).isEmpty()
+    }
+
+    @Test
+    fun `typed tools and output share class conventions`() {
+        val tool = AgentFunctionTool.of(CompatibleReport::class.java) { it }
+        val output = AgentOutputType.of(CompatibleReport::class.java)
+        val arguments =
+            mapOf(
+                "findings" to listOf(mapOf("item_id" to "A123", "state" to "FOUND")),
+                "next" to null,
+            )
+        val report = tool.handler().apply(arguments) as CompatibleReport
+        val result =
+            AgentTurnResults.getFinalResult(
+                source(typedEvents(com.openai.core.jsonMapper().writeValueAsString(arguments))),
+                output,
+            )
+        assertThat(report.findings.single().itemId).isEqualTo("A123")
+        assertThat(result.outputParsed().findings.single().itemId)
+            .isEqualTo(report.findings.single().itemId)
+        assertThat(result.outputParsed().findings.single().state).isEqualTo(FindingState.FOUND)
+        assertThat(result.outputParsed().next).isEmpty()
+        assertThat(tool.definition().asFunction().description())
+            .contains("A report with optional follow-up")
+        assertThatThrownBy { tool.handler().apply(arguments - "next") }
+            .hasMessageContaining("parameter shape")
+    }
+
+    class NestedConstraints(val entries: List<SupportedConstraints>)
+
+    class CustomFormat(@get:Schema(format = "custom-format") val value: String)
+
+    class EmptyOutput
+
+    @Test
+    fun `typed output preserves native Responses schema constraints and formats`() {
+        for (type in
+            listOf(
+                UriFormat::class.java,
+                NestedUriFormat::class.java,
+                CustomFormat::class.java,
+                SupportedConstraints::class.java,
+                NestedConstraints::class.java,
+                String::class.java,
+                Array<String>::class.java,
+                FindingState::class.java,
+            )) {
+            val output = AgentOutputType.of(type)
+            val responses = ResponseTextConfig.builder().format(type).build()
+            val mapper = com.openai.core.jsonMapper()
+            assertThat(
+                    mapper
+                        .valueToTree<com.fasterxml.jackson.databind.JsonNode>(output.format())
+                        .path("schema")
+                )
+                .isEqualTo(
+                    mapper
+                        .valueToTree<com.fasterxml.jackson.databind.JsonNode>(responses.rawConfig)
+                        .path("format")
+                        .path("schema")
+                )
+        }
+        // Native model restrictions remain unchanged in both helpers.
+        assertThatThrownBy { ResponseTextConfig.builder().format(EmptyOutput::class.java) }
+            .hasMessageContaining("Local validation failed")
+        assertThatThrownBy { AgentOutputType.of(EmptyOutput::class.java) }
+            .hasMessageContaining("Local validation failed")
+    }
+
+    @Test
+    fun `typed output parses native scalar array and enum types`() {
+        assertThat(
+                AgentTurnResults.getFinalResult(
+                        source(typedEvents("\"Answer\"")),
+                        AgentOutputType.of(String::class.java),
+                    )
+                    .outputParsed()
+            )
+            .isEqualTo("Answer")
+        assertThat(
+                AgentTurnResults.getFinalResult(
+                        source(typedEvents("[\"Answer\"]")),
+                        AgentOutputType.of(Array<String>::class.java),
+                    )
+                    .outputParsed()
+            )
+            .containsExactly("Answer")
+        assertThat(
+                AgentTurnResults.getFinalResult(
+                        source(typedEvents("\"FOUND\"")),
+                        AgentOutputType.of(FindingState::class.java),
+                    )
+                    .outputParsed()
+            )
+            .isEqualTo(FindingState.FOUND)
+        assertThatThrownBy {
+                AgentTurnResults.getFinalResult(
+                    source(typedEvents("\"First\" \"Second\"")),
+                    AgentOutputType.of(String::class.java),
+                )
+            }
+            .isInstanceOf(AgentOutputParseException::class.java)
+    }
+
+    private fun typedEvents(text: String, id: String = "answer", index: Int = 0) =
+        listOf(
+            turn("created"),
+            message(
+                id = id,
+                index = index,
+                text = text.replace("\\", "\\\\").replace("\"", "\\\""),
+            ),
+            turn("completed"),
+            idle(),
+        )
+
+    @Test
+    fun `typed schema uses Agents envelope`() {
+        val output = AgentOutputType.of(Report::class.java)
+        val tree =
+            com.openai.core
+                .jsonMapper()
+                .valueToTree<com.fasterxml.jackson.databind.JsonNode>(output.text())
+        assertThat(tree.path("format").path("type").asText()).isEqualTo("json_schema")
+        assertThat(tree.path("format").has("name")).isFalse()
+        assertThat(tree.path("format").has("strict")).isFalse()
+        val schema = tree.path("format").path("schema")
+        assertThat(schema.path("type").asText()).isEqualTo("object")
+        assertThat(schema.path("additionalProperties").booleanValue()).isFalse()
+        assertThat(schema.path("required").map { it.asText() })
+            .containsExactlyInAnyOrder("summary", "findings")
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `typed creation and follow up retain raw result and do not update schema`(async: Boolean) {
+        val output = AgentOutputType.of(Report::class.java)
+        val transport = Transport(typedEvents("""{"summary":"Report","findings":["Finding"]}"""))
+        val params =
+            SessionCreateParams.builder()
+                .agent(
+                    SessionCreateParams.Agent.builder()
+                        .model("test-model")
+                        .text(output.text())
+                        .build()
+                )
+                .environmentNone()
+                .input("Question")
+                .build()
+        transport.client().useClient { client ->
+            val result =
+                if (async)
+                    AgentTurnResults.getFinalResult(
+                            client.async().beta().agents().sessions().createStreaming(params),
+                            output,
+                        )
+                        .get(5, TimeUnit.SECONDS)
+                else
+                    AgentTurnResults.getFinalResult(
+                        client.beta().agents().sessions().createStreaming(params),
+                        output,
+                    )
+            assertThat(result.outputParsed().summary).isEqualTo("Report")
+            assertThat(result.outputParsed().findings).containsExactly("Finding")
+            assertThat(result.messages()).isSameAs(result.rawResult().messages())
+            assertThat(result.sessionId()).isEqualTo("s")
+            val followup = AgentSessionStreamParams.builder().sessionId("s").input("Next").build()
+            val next =
+                if (async)
+                    AgentTurnResults.getFinalResult(
+                            client.async().beta().agents().sessions().stream(followup),
+                            output,
+                        )
+                        .get(5, TimeUnit.SECONDS)
+                else
+                    AgentTurnResults.getFinalResult(
+                        client.beta().agents().sessions().stream(followup),
+                        output,
+                    )
+            assertThat(next.outputParsed().summary).isEqualTo("Report")
+            assertThat(transport.posts.get()).isEqualTo(2)
+        }
+    }
+
+    @Test
+    fun `typed parse failure retains raw answer and differs from hosted failure`() {
+        val output = AgentOutputType.of(Report::class.java)
+        val stream = source(typedEvents("not json"))
+        val failure =
+            catchThrowable { AgentTurnResults.getFinalResult(stream, output) }
+                as AgentOutputParseException
+        assertThat(failure.rawResult().outputText()).isEqualTo("not json")
+        assertThat(failure.rawResult()).isSameAs(AgentTurnResults.getFinalResult(stream))
+        assertThatThrownBy {
+                AgentTurnResults.getFinalResult(
+                    source(listOf(turn("created"), turn("failed"))),
+                    output,
+                )
+            }
+            .isInstanceOf(AgentTurnResultException::class.java)
+    }
+
+    private fun messageWithTextParts(texts: List<String>): String {
+        val event = com.openai.core.jsonMapper().readTree(message())
+        val content =
+            event.path("item").path("content") as com.fasterxml.jackson.databind.node.ArrayNode
+        content.removeAll()
+        texts.forEach { content.addObject().put("type", "output_text").put("text", it) }
+        return event.toString()
+    }
+
+    private fun partEvents(texts: List<String>, oneMessage: Boolean): List<String> =
+        if (oneMessage)
+            listOf(turn("created"), messageWithTextParts(texts), turn("completed"), idle())
+        else
+            listOf(turn("created")) +
+                texts.mapIndexed { i, text -> typedEvents(text, "answer-$i", i)[1] } +
+                listOf(turn("completed"), idle())
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `typed parser handles each output text and exposes the first parsed value`(
+        oneMessage: Boolean
+    ) {
+        val first = """{"summary":"First","findings":["Finding"]}"""
+        val second = """{"summary":"Second","findings":[]}"""
+        val stream = source(partEvents(listOf(first, second), oneMessage))
+        val result = AgentTurnResults.getFinalResult(stream, AgentOutputType.of(Report::class.java))
+        val responsesPart =
+            StructuredResponseOutputMessage.Content(
+                Report::class.java,
+                ResponseOutputMessage.Content.ofOutputText(
+                    ResponseOutputText.builder().text(first).annotations(emptyList()).build()
+                ),
+            )
+        assertThat(result.outputParsed().summary)
+            .isEqualTo(responsesPart.outputText().get().summary)
+        assertThat(result.outputParsed().summary).isEqualTo("First")
+        assertThat(result.messages()).hasSize(if (oneMessage) 1 else 2)
+        assertThat(result.outputText()).isEqualTo(first + second)
+        assertThat(result.rawResult()).isSameAs(AgentTurnResults.getFinalResult(stream))
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `typed parser validates later text parts and retains the raw result`(oneMessage: Boolean) {
+        val text = """{"summary":"First","findings":[]}"""
+        val stream = source(partEvents(listOf(text, "not json"), oneMessage))
+        val failure =
+            catchThrowable {
+                AgentTurnResults.getFinalResult(stream, AgentOutputType.of(Report::class.java))
+            }
+                as AgentOutputParseException
+        assertThat(failure.rawResult()).isSameAs(AgentTurnResults.getFinalResult(stream))
+        assertThat(failure.rawResult().outputText()).isEqualTo(text + "not json")
+        assertThat(failure.cause).isNull()
+    }
+
+    @Test
+    fun `typed parser does not combine separate incomplete text parts or accept missing text`() {
+        val output = AgentOutputType.of(Report::class.java)
+        assertThatThrownBy {
+                AgentTurnResults.getFinalResult(
+                    source(
+                        partEvents(listOf("""{"summary":"Report",""", """"findings":[]}"""), false)
+                    ),
+                    output,
+                )
+            }
+            .isInstanceOf(AgentOutputParseException::class.java)
+        assertThatThrownBy {
+                AgentTurnResults.getFinalResult(
+                    source(listOf(turn("created"), turn("completed"), idle())),
+                    output,
+                )
+            }
+            .isInstanceOf(AgentOutputParseException::class.java)
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `typed parsing errors do not expose output through stack traces`(validJson: Boolean) {
+        val canary = "private-output-canary-4867"
+        val text = if (validJson) """{"summary":"$canary","findings":1}""" else canary
+        val failure =
+            catchThrowable {
+                AgentTurnResults.getFinalResult(
+                    source(typedEvents(text)),
+                    AgentOutputType.of(Report::class.java),
+                )
+            }
+                as AgentOutputParseException
+        val stack = java.io.StringWriter()
+        failure.printStackTrace(java.io.PrintWriter(stack))
+        assertThat(stack.toString()).doesNotContain(canary)
+        assertThat(failure.cause).isNull()
+        assertThat(failure.rawResult().outputText()).isEqualTo(text)
+    }
+
+    @Test
+    fun `cancelling typed async collection closes observation`() {
+        val transport = Transport().apply { responseReady = CompletableFuture() }
+        transport.client().useClient { client ->
+            val stream = client.async().beta().agents().sessions().createStreaming(createParams())
+            val result =
+                AgentTurnResults.getFinalResult(stream, AgentOutputType.of(Report::class.java))
+            assertThat(result.cancel(true)).isTrue()
+            stream.onCompleteFuture().get(5, TimeUnit.SECONDS)
+            assertThat(AgentTurnResults.getFinalResult(stream).isCancelled).isTrue()
+            transport.responseReady.complete(null)
+            assertThat(transport.closed.get()).isPositive()
         }
     }
 

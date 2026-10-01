@@ -15,8 +15,7 @@ import java.util.function.Function
  * A beta Agent function definition and its local, typed application callback. Argument classes use
  * the SDK's class-based schema and Jackson deserialization conventions. Bind dependencies with a
  * closure or method reference; only the argument class becomes part of the hosted definition.
- * Unsupported schema constraints are rejected at binding time; validate business rules in the
- * callback.
+ * Schema annotations are preserved; validate business rules in the callback.
  */
 class AgentFunctionTool<R>
 private constructor(
@@ -55,7 +54,6 @@ private constructor(
             require(info.schema.path("type").asText() == "object") {
                 "Function parameters must be an object class"
             }
-            requireSupportedConstraints(info.schema)
             val definition =
                 AgentToolParam.ofFunction(
                     AgentToolParam.Function.builder()
@@ -85,32 +83,6 @@ private constructor(
                     handler.apply(responseTypeFromJson(json, parametersType))
                 },
             )
-        }
-    }
-}
-
-private fun requireSupportedConstraints(schema: JsonNode) {
-    for ((keyword, value) in schema.fields()) {
-        when (keyword) {
-            "properties",
-            "\$defs",
-            "anyOf" -> value.forEach(::requireSupportedConstraints)
-            "items" -> requireSupportedConstraints(value)
-            "\$schema",
-            "\$id",
-            "\$ref",
-            "type",
-            "required",
-            "description",
-            "title",
-            "additionalProperties",
-            "enum",
-            "const" -> Unit
-            else ->
-                throw IllegalArgumentException(
-                    "AgentFunctionTool does not support schema constraint '$keyword'; " +
-                        "remove the constraint annotation and validate it in your callback"
-                )
         }
     }
 }
