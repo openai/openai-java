@@ -76010,8 +76010,6 @@ components:
       - workload_identity_provider_id
       - region
       - audience
-      x-stainless-skip:
-      - java
     provider:
       discriminator:
         propertyName: type
@@ -76775,8 +76773,6 @@ components:
       - workload_identity_project_number
       - workload_identity_pool_id
       - workload_identity_provider_id
-      x-stainless-skip:
-      - java
     CreateExternalStorageBody:
       properties:
         project_id:
