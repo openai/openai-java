@@ -66,8 +66,10 @@ internal class AgentSessionStream(
             collector.startAttachment()
             try {
                 refreshTurn()
+                if (closed.get()) return Stream.empty()
                 val session = sessions.retrieve(support.retrieveParams(), options)
                 observedSession(session)
+                if (closed.get()) return Stream.empty()
             } catch (error: Throwable) {
                 close()
                 throw error
@@ -122,6 +124,7 @@ internal class AgentSessionStream(
                                         findLatestRoot()
                                             ?.takeIf { it.id() == id }
                                             ?.let { support.select(it) }
+                                        if (closed.get()) return false
                                         if (collector.isEnabled() && support.selectedTurn != null)
                                             observedSession(
                                                 sessions.retrieve(support.retrieveParams(), options)
@@ -131,6 +134,7 @@ internal class AgentSessionStream(
                                         refreshTurn()
                                     if (event.isIdle()) {
                                         refreshTurn()
+                                        if (closed.get()) return false
                                         support.observeSession(
                                             sessions.retrieve(support.retrieveParams(), options)
                                         )
@@ -147,6 +151,7 @@ internal class AgentSessionStream(
                                         ) {
                                             refreshTurn()
                                             val latest = findLatestRoot()
+                                            if (closed.get()) return false
                                             collector.selectAttachedTurn(support.selectedTurn)
                                             val current =
                                                 if (support.selectedTurn == null)
@@ -190,8 +195,10 @@ internal class AgentSessionStream(
     }
 
     private fun observedSession(session: AgentSession) {
+        if (closed.get()) return
         if (session.status() == AgentSession.Status.FAILED && support.selectedTurn != null)
             refreshTurn()
+        if (closed.get()) return
         support.observeSession(session)
         diagnoseManual(session)
     }
@@ -200,6 +207,7 @@ internal class AgentSessionStream(
         if (!collector.isEnabled() || session.requiredActions().none { !it.isFunctionCall() })
             return
         refreshTurn()
+        if (closed.get()) return
         val latest =
             if (session.requiredActions().any { it.isEnvironmentConnection() }) findLatestRoot()
             else null
@@ -249,6 +257,7 @@ internal class AgentSessionStream(
     }
 
     private fun refreshTurn() {
+        if (closed.get()) return
         val selected = support.selectedTurn
         if (selected == null) findActiveTurn()
         else

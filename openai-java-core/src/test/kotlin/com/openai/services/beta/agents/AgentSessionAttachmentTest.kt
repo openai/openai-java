@@ -63,6 +63,7 @@ internal class AgentSessionAttachmentTest {
         var onItems: () -> Unit = {}
         var onTurns: () -> Unit = {}
         var onSession: () -> Unit = {}
+        var onTurn: () -> Unit = {}
         val requests = mutableListOf<HttpRequest>()
         val requestOptions = mutableListOf<RequestOptions>()
         val posts = mutableListOf<JsonNode>()
@@ -139,6 +140,7 @@ internal class AgentSessionAttachmentTest {
                 }
                 path[path.size - 2] == "turns" -> {
                     turnRequests++
+                    onTurn()
                     response(next(turnResponses))
                 }
                 path.last() == "items" -> {
@@ -981,5 +983,21 @@ internal class AgentSessionAttachmentTest {
         assertThatThrownBy { params().input("") }.isInstanceOf(IllegalArgumentException::class.java)
         assertThatThrownBy { params().input(emptyList()) }
             .isInstanceOf(IllegalArgumentException::class.java)
+    }
+
+    @Test
+    fun `closing during initial exact turn lookup prevents remaining handshake requests`() {
+        val t = Transport()
+        t.client().useClient { client ->
+            val stream = client.beta().agents().sessions().stream(params().build(), options)
+            val requestsBefore = t.sessionRequests
+            t.onTurn = { stream.close() }
+            assertThatThrownBy { AgentTurnResults.getFinalResult(stream) }
+                .hasStackTraceContaining("CLOSED")
+            assertThat(t.sessionRequests).isEqualTo(requestsBefore)
+            assertThat(t.turnRequests).isEqualTo(1)
+            assertThat(t.itemRequests).isZero()
+            assertThat(t.streamClosed).isTrue()
+        }
     }
 }
