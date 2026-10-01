@@ -81,43 +81,7 @@ internal class AgentTurnCollector(
                     else messages[message.id()] = it.outputIndex() to normalize(message)
                 }
             }
-            if (attachment)
-                event.turnItemAdded().getOrNull()?.item()?.functionCall()?.getOrNull()?.let { call
-                    ->
-                    if (call.turnId() == turn?.id() && call.name() !in handledTools) {
-                        pending =
-                            listOf(
-                                AgentSession.RequiredAction.ofFunctionCall(
-                                    AgentSession.RequiredAction.FunctionCall.builder()
-                                        .callId(call.callId())
-                                        .turnId(call.turnId())
-                                        .name(call.name())
-                                        .arguments(call._arguments())
-                                        .build()
-                                )
-                            )
-                    }
-                }
-            event.requiresAction().getOrNull()?.session()?.let {
-                if (it.id() == sessionId && !completed)
-                    pending =
-                        (if (attachment)
-                            pending.filter { action -> action.isEnvironmentConnection() }
-                        else emptyList()) +
-                            it.requiredActions().filter { action ->
-                                val call = action.functionCall().getOrNull()
-                                val owner =
-                                    if (attachment)
-                                        call?.turnId()
-                                            ?: action
-                                                .computerUseApprovalRequest()
-                                                .getOrNull()
-                                                ?.turnId()
-                                    else null
-                                call?.name() !in handledTools &&
-                                    (!attachment || (owner != null && owner == turn?.id()))
-                            }
-            }
+            if (!attachment) event.requiresAction().getOrNull()?.session()?.let(::requiredActions)
             event.inProgress().getOrNull()?.session()?.let {
                 if (it.id() == sessionId) pending = emptyList()
             }
@@ -131,6 +95,41 @@ internal class AgentTurnCollector(
         } catch (cause: Exception) {
             failure = error(Reason.STREAM_ERROR, cause)
         }
+    }
+
+    fun attachmentActions(event: AgentSessionEvent) {
+        if (!enabled || !attachment || failure != null || completed) return
+        event.turnItemAdded().getOrNull()?.item()?.functionCall()?.getOrNull()?.let { call ->
+            if (call.turnId() == turn?.id() && call.name() !in handledTools)
+                pending =
+                    listOf(
+                        AgentSession.RequiredAction.ofFunctionCall(
+                            AgentSession.RequiredAction.FunctionCall.builder()
+                                .callId(call.callId())
+                                .turnId(call.turnId())
+                                .name(call.name())
+                                .arguments(call._arguments())
+                                .build()
+                        )
+                    )
+        }
+        event.requiresAction().getOrNull()?.session()?.let(::requiredActions)
+    }
+
+    private fun requiredActions(session: AgentSession) {
+        if (session.id() != sessionId || completed) return
+        pending =
+            (if (attachment) pending.filter { it.isEnvironmentConnection() } else emptyList()) +
+                session.requiredActions().filter { action ->
+                    val call = action.functionCall().getOrNull()
+                    val owner =
+                        if (attachment)
+                            call?.turnId()
+                                ?: action.computerUseApprovalRequest().getOrNull()?.turnId()
+                        else null
+                    call?.name() !in handledTools &&
+                        (!attachment || (owner != null && owner == turn?.id()))
+                }
     }
 
     fun selectAttachedTurn(value: Turn?) {

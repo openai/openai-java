@@ -99,35 +99,49 @@ internal class AgentSessionStreamAsync(
             if (support.attaching)
                 refreshTurn {
                     await(sessions.retrieve(support.retrieveParams(), options)) { session ->
-                        if (
-                            session.status() == AgentSession.Status.FAILED &&
-                                support.selectedTurn != null
-                        )
-                            refreshTurn { observedSession(session) }
-                        else observedSession(session)
+                        observedSession(session) { readyAttachment() }
                     }
                 }
             else create(support.inputParams())?.let { await(it) { pump() } }
         }
     }
 
-    private fun observedSession(session: AgentSession) {
-        support.observeSession(session)
-        val enabled = synchronized(collector) { collector.isEnabled() }
-        if (enabled && session.requiredActions().any { !it.isFunctionCall() })
-            refreshTurn {
-                if (session.requiredActions().any { it.isEnvironmentConnection() })
-                    findLatestRoot { readyAttachment(session, it?.id()) }
-                else readyAttachment(session)
-            }
-        else readyAttachment()
+    private fun observedSession(session: AgentSession, done: () -> Unit) {
+        fun observed() {
+            support.observeSession(session)
+            diagnoseManual(session, done)
+        }
+        if (session.status() == AgentSession.Status.FAILED && support.selectedTurn != null)
+            refreshTurn { observed() }
+        else observed()
     }
 
-    private fun readyAttachment(session: AgentSession? = null, latestRootId: String? = null) {
+    private fun diagnoseManual(session: AgentSession, done: () -> Unit) {
+        if (
+            !synchronized(collector) { collector.isEnabled() } ||
+                session.requiredActions().none { !it.isFunctionCall() }
+        ) {
+            done()
+            return
+        }
+        fun diagnosed(latestRoot: Turn?) {
+            synchronized(collector) {
+                collector.selectAttachedTurn(support.selectedTurn)
+                collector.manualActions(support.manualActions(session, latestRoot))
+            }
+            done()
+        }
+        refreshTurn {
+            if (session.requiredActions().any { it.isEnvironmentConnection() })
+                findLatestRoot { diagnosed(it) }
+            else diagnosed(null)
+        }
+    }
+
+    private fun readyAttachment() {
         val stop =
             synchronized(collector) {
                 collector.selectAttachedTurn(support.selectedTurn)
-                session?.let { collector.manualActions(support.manualActions(it, latestRootId)) }
                 collector.stoppingError() != null
             }
         if (support.settled || stop) reconcile { finish(null) } else pump()
@@ -176,9 +190,15 @@ internal class AgentSessionStreamAsync(
             done()
             return
         }
+        val requiresAction =
+            synchronized(collector) {
+                collector.stoppingError()?.reason() ==
+                    AgentTurnResultException.Reason.REQUIRES_ACTION
+            }
         if (
             support.selectedTurn == null ||
                 (!support.sessionFailed &&
+                    !requiresAction &&
                     support.selectedTurn?.status() !in
                         setOf(Turn.Status.COMPLETED, Turn.Status.FAILED, Turn.Status.CANCELLED))
         ) {
@@ -284,7 +304,15 @@ internal class AgentSessionStreamAsync(
                         findLatestRoot { latest ->
                             latest?.takeIf { it.id() == missing }?.let { support.select(it) }
                             support.observeTurn(event)
-                            deliver(event)
+                            if (
+                                synchronized(collector) { collector.isEnabled() } &&
+                                    support.selectedTurn != null
+                            )
+                                await(sessions.retrieve(support.retrieveParams(), options)) {
+                                    session ->
+                                    observedSession(session) { deliver(event) }
+                                }
+                            else deliver(event)
                         }
                         return
                     }
@@ -350,7 +378,7 @@ internal class AgentSessionStreamAsync(
                     fun diagnose(current: AgentSession) {
                         synchronized(collector) {
                             collector.selectAttachedTurn(support.selectedTurn)
-                            collector.manualActions(support.manualActions(current, latest?.id()))
+                            collector.manualActions(support.manualActions(current, latest))
                         }
                         deliverSelected(event)
                     }
@@ -363,10 +391,16 @@ internal class AgentSessionStreamAsync(
     }
 
     private fun deliverSelected(event: AgentSessionEvent) {
-        if (support.attaching)
-            synchronized(collector) { collector.selectAttachedTurn(support.selectedTurn) }
+        val stop =
+            synchronized(collector) {
+                if (support.attaching) {
+                    collector.selectAttachedTurn(support.selectedTurn)
+                    collector.attachmentActions(event)
+                }
+                collector.stoppingError() != null
+            }
         val terminal = support.terminal(event)
-        if (terminal && support.attaching) reconcile { publish(event, terminal) }
+        if ((terminal || stop) && support.attaching) reconcile { publish(event, terminal) }
         else publish(event, terminal)
     }
 

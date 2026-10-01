@@ -87,7 +87,7 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
 
     fun manualActions(
         session: AgentSession,
-        latestRootId: String? = null,
+        latestRoot: Turn? = null,
     ): List<AgentSession.RequiredAction> {
         if (
             session.id() != params.sessionId ||
@@ -96,13 +96,17 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
             return emptyList()
         val selected =
             selectedTurn
-                ?: return if (latestRootId == null)
+                ?: return if (
+                    latestRoot == null ||
+                        latestRoot.status() in
+                            setOf(Turn.Status.COMPLETED, Turn.Status.FAILED, Turn.Status.CANCELLED)
+                )
                     session.requiredActions().filter { it.isEnvironmentConnection() }
                 else emptyList()
         if (selected.status() != Turn.Status.WAITING) return emptyList()
         return session.requiredActions().filter {
             it.computerUseApprovalRequest().getOrNull()?.turnId() == selected.id() ||
-                (it.isEnvironmentConnection() && latestRootId == selected.id())
+                (it.isEnvironmentConnection() && latestRoot?.id() == selected.id())
         }
     }
 
@@ -110,6 +114,13 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
         if (!attaching || turnId != null) return null
         return eventTurn(event)?.id()
             ?: event.turnItemAdded().getOrNull()?.item()?.functionCall()?.getOrNull()?.turnId()
+            ?: event
+                .turnItemAdded()
+                .getOrNull()
+                ?.item()
+                ?.computerUseApprovalRequest()
+                ?.getOrNull()
+                ?.turnId()
             ?: event.turnItemDone().getOrNull()?.item()?.message()?.getOrNull()?.turnId()
             ?: event
                 .requiresAction()
