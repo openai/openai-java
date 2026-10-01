@@ -1,10 +1,18 @@
 # Changelog
 
+## [4.75.0](https://github.com/openai/openai-java/compare/v4.74.0...v4.75.0) (2026-10-01)
+
+
+### Features
+
+* **agents:** Prepare hosted files and download turn artifacts ([47add84](https://github.com/openai/openai-java/commit/47add844df665a2dcbcedf745eb6f95dedcc4e9a))
+
 ## [4.74.0](https://github.com/openai/openai-java/compare/v4.73.0...v4.74.0) (2026-10-01)
 
 
 ### Features
 
+* **beta:** expose typed application actions as agent tools ([#1127](https://github.com/openai/openai-java/issues/1127)) ([36841ea](https://github.com/openai/openai-java/commit/36841eaa0534a932ef2f9674fb2299c7d75e8913))
 * **agents:** [1/n] Add typed final answers to beta Agents streams ([#1128](https://github.com/openai/openai-java/issues/1128)) ([b0b7b22](https://github.com/openai/openai-java/commit/b0b7b222db807bcf64004d43175f60af37b652d7))
 * **api:** add GCP external storage providers ([#1125](https://github.com/openai/openai-java/issues/1125)) ([5d7af58](https://github.com/openai/openai-java/commit/5d7af587352205e099eadceeecc09a584eaabcd5))
 * collect final output from beta Agents streams ([#1124](https://github.com/openai/openai-java/issues/1124)) ([328958a](https://github.com/openai/openai-java/commit/328958a26678492ff9dd9e1154ad6ad1fc7fddd8))
