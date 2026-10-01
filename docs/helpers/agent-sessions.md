@@ -128,4 +128,4 @@ try (var stream = client.beta().agents().sessions().stream(params)) {
 }
 ```
 
-An already-idle session drains successfully but has no selected result. Reattachment uses at-least-once tool-call delivery: an unacknowledged call may be delivered again after reconnecting. Applications are responsible for idempotency when handlers perform mutations.
+An already-idle session drains successfully but has no selected result. Reattachment provides at-least-once delivery with application-owned recovery: after process death, your application restarts the worker, recovers the saved session ID, and reattaches its handlers. An unacknowledged tool call may be delivered again, so applications must make mutating handlers idempotent.
