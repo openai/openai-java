@@ -1,6 +1,7 @@
 package com.openai.services.beta.agents
 
 import com.fasterxml.jackson.core.JsonToken
+import com.fasterxml.jackson.databind.JsonNode
 import com.openai.core.JsonSchemaLocalValidation
 import com.openai.core.JsonValue
 import com.openai.core.extractSchema
@@ -14,8 +15,34 @@ import com.openai.models.beta.agents.TextFormatParam
 class AgentOutputType<T : Any>
 private constructor(private val type: Class<T>, private val format: TextFormatParam) {
     companion object {
+        private val supportedFormats =
+            setOf(
+                "",
+                "date-time",
+                "time",
+                "date",
+                "duration",
+                "email",
+                "hostname",
+                "ipv4",
+                "ipv6",
+                "uuid",
+            )
+
+        private fun requireSupportedFormats(schema: JsonNode) {
+            schema["format"]?.let {
+                require(it.asText() in supportedFormats) {
+                    "Agents output schemas do not support format '${it.asText()}'"
+                }
+            }
+            listOf("properties", "\$defs", "anyOf").forEach { keyword ->
+                schema[keyword]?.forEach(::requireSupportedFormats)
+            }
+            schema["items"]?.let(::requireSupportedFormats)
+        }
+
         /**
-         * Derives and validates the same supported schema subset as existing structured outputs.
+         * Derives the existing structured-output schema and checks Agents-specific restrictions.
          */
         @JvmStatic
         fun <T : Any> of(type: Class<T>): AgentOutputType<T> {
@@ -26,6 +53,7 @@ private constructor(private val type: Class<T>, private val format: TextFormatPa
             require(listOf("oneOf", "anyOf", "allOf", "enum", "not").none(schema::has)) {
                 "Agents output schemas cannot use root composition or enum keywords"
             }
+            requireSupportedFormats(schema)
             return AgentOutputType(
                 type,
                 TextFormatParam.ofJsonSchema(

@@ -1,12 +1,17 @@
 package com.openai.services.beta.agents
 
+import com.fasterxml.jackson.annotation.JsonClassDescription
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.client.OpenAIClientImpl
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.*
 import com.openai.models.beta.agents.*
 import com.openai.models.beta.agents.sessions.SessionCreateParams
+import com.openai.models.responses.ResponseTextConfig
+import io.swagger.v3.oas.annotations.media.Schema
 import java.io.ByteArrayInputStream
+import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
@@ -444,6 +449,66 @@ internal class AgentTurnResultsTest {
     class Report {
         @JvmField var summary: String = ""
         @JvmField var findings: List<String> = emptyList()
+    }
+
+    enum class FindingState {
+        FOUND,
+        UNKNOWN,
+    }
+
+    class Finding(@get:JsonProperty("item_id") val itemId: String, val state: FindingState)
+
+    @JsonClassDescription("A report with optional follow-up")
+    class CompatibleReport(val findings: List<Finding>, val next: Optional<String>)
+
+    class UnsupportedFormat(@get:Schema(format = "uri") val address: String)
+
+    class NestedUnsupportedFormat(val addresses: List<UnsupportedFormat>)
+
+    class SupportedConstraints(
+        @get:Schema(format = "email", pattern = "@") val address: String,
+        @get:Schema(minimum = "0", maximum = "10") val score: Int,
+        val format: String,
+    )
+
+    @Test
+    fun `typed output shares existing structured output class and annotation conventions`() {
+        val output = AgentOutputType.of(CompatibleReport::class.java)
+        val existing = ResponseTextConfig.builder().format(CompatibleReport::class.java).build()
+        val mapper = com.openai.core.jsonMapper()
+        val schema =
+            mapper
+                .valueToTree<com.fasterxml.jackson.databind.JsonNode>(output.format())
+                .path("schema")
+        val existingSchema =
+            mapper
+                .valueToTree<com.fasterxml.jackson.databind.JsonNode>(existing.rawConfig)
+                .path("format")
+                .path("schema")
+        assertThat(schema).isEqualTo(existingSchema)
+        assertThat(schema.path("description").asText())
+            .isEqualTo("A report with optional follow-up")
+        val result =
+            AgentTurnResults.getFinalResult(
+                source(
+                    typedEvents("""{"findings":[{"item_id":"A123","state":"FOUND"}],"next":null}""")
+                ),
+                output,
+            )
+        assertThat(result.outputParsed().findings.single().itemId).isEqualTo("A123")
+        assertThat(result.outputParsed().findings.single().state).isEqualTo(FindingState.FOUND)
+        assertThat(result.outputParsed().next).isEmpty()
+    }
+
+    @Test
+    fun `typed output rejects backend unsupported formats including nested schemas`() {
+        listOf(UnsupportedFormat::class.java, NestedUnsupportedFormat::class.java).forEach {
+            assertThatThrownBy { AgentOutputType.of(it) }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessageContaining("format 'uri'")
+        }
+        // Ordinary constraints and a property named format remain supported, as in Responses.
+        AgentOutputType.of(SupportedConstraints::class.java)
     }
 
     private fun typedEvents(text: String, id: String = "answer", index: Int = 0) =
