@@ -1229,4 +1229,46 @@ internal class AgentFileHelpersTest {
         assertThat(prepare(t, true, mapOf("/workspace/Object.class" to source)).files()).hasSize(1)
         assertThat(t.bodies.single()).contains("Object.class")
     }
+
+    @Test
+    fun `cancelling queued artifact consumption closes the completed response immediately`() {
+        val t = Transport()
+        val pending = CompletableFuture<HttpResponse>()
+        val requested = CountDownLatch(1)
+        var request: HttpRequest? = null
+        t.asyncOverride = { candidate, _ ->
+            if (candidate.pathSegments.last() == "content") {
+                request = candidate
+                requested.countDown()
+                pending
+            } else null
+        }
+        withClient(t) { client ->
+            val destination = directory.resolve("cancelled.txt")
+            val download =
+                AgentArtifactDownloads.forResult(
+                        client.async().beta().agents().sessions().artifacts(),
+                        result(),
+                    )
+                    .download("/workspace/outputs/report.txt", destination)
+            assertThat(requested.await(5, TimeUnit.SECONDS)).isTrue()
+            var queued: Runnable? = null
+            org.mockito.Mockito.mockStatic(CompletableFuture::class.java) { invocation ->
+                    if (invocation.method.name == "runAsync") {
+                        queued = invocation.getArgument(0)
+                        CompletableFuture<Void>()
+                    } else invocation.callRealMethod()
+                }
+                .use {
+                    pending.complete(t.execute(requireNotNull(request), options))
+                    assertThat(queued).isNotNull()
+                    assertThat(download.cancel(true)).isTrue()
+                    assertThat(t.contentClosed).isTrue()
+                    assertThat(t.contentReads).isZero()
+                    queued!!.run()
+                    assertThat(t.contentReads).isZero()
+                    assertThat(Files.exists(destination)).isFalse()
+                }
+        }
+    }
 }

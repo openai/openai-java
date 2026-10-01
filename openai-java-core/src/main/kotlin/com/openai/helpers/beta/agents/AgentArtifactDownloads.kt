@@ -134,20 +134,27 @@ private constructor(
                             .build(),
                         options,
                     )
-                    .whenCompleteAsync { content, failure ->
+                    .whenComplete { content, failure ->
                         if (failure != null) result.completeExceptionally(failure)
                         else {
+                            // Publish before dispatch so cancellation also owns queued responses.
                             response.set(content)
-                            try {
-                                if (result.isDone) content.close()
-                                else if (!result.complete(consume(artifact, content)))
-                                    content.close()
-                            } catch (error: Throwable) {
+                            if (result.isDone) {
                                 runCatching { content.close() }
-                                result.completeExceptionally(error)
-                            } finally {
                                 response.set(null)
-                            }
+                            } else
+                                CompletableFuture.runAsync {
+                                    try {
+                                        if (result.isDone) content.close()
+                                        else if (!result.complete(consume(artifact, content)))
+                                            content.close()
+                                    } catch (error: Throwable) {
+                                        runCatching { content.close() }
+                                        result.completeExceptionally(error)
+                                    } finally {
+                                        response.set(null)
+                                    }
+                                }
                         }
                     }
             }
