@@ -100,16 +100,22 @@ internal class AgentTurnCollector(
             event.requiresAction().getOrNull()?.session()?.let {
                 if (it.id() == sessionId && !completed)
                     pending =
-                        it.requiredActions().filter { action ->
-                            val call = action.functionCall().getOrNull()
-                            val owner =
-                                if (attachment)
-                                    call?.turnId()
-                                        ?: action.computerUseApprovalRequest().getOrNull()?.turnId()
-                                else null
-                            call?.name() !in handledTools &&
-                                (!attachment || owner == null || owner == turn?.id())
-                        }
+                        (if (attachment)
+                            pending.filter { action -> action.isEnvironmentConnection() }
+                        else emptyList()) +
+                            it.requiredActions().filter { action ->
+                                val call = action.functionCall().getOrNull()
+                                val owner =
+                                    if (attachment)
+                                        call?.turnId()
+                                            ?: action
+                                                .computerUseApprovalRequest()
+                                                .getOrNull()
+                                                ?.turnId()
+                                    else null
+                                call?.name() !in handledTools &&
+                                    (!attachment || (owner != null && owner == turn?.id()))
+                            }
             }
             event.inProgress().getOrNull()?.session()?.let {
                 if (it.id() == sessionId) pending = emptyList()
@@ -159,6 +165,10 @@ internal class AgentTurnCollector(
 
     fun attachedIdle(sessionFailed: Boolean = false) {
         if (!enabled) return
+        when (turn?.status()) {
+            Turn.Status.FAILED -> failure = error(Reason.TURN_FAILED)
+            Turn.Status.CANCELLED -> failure = error(Reason.TURN_CANCELLED)
+        }
         if (sessionFailed) failure = error(Reason.TURN_FAILED)
         else if (turn == null) failure = error(Reason.NO_SELECTED_TURN)
         else if (completed) idle = true

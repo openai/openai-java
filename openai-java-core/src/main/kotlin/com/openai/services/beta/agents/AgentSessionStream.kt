@@ -139,6 +139,22 @@ internal class AgentSessionStream(
                                         refreshTurn()
                                 }
                                 if (!support.accept(event)) continue
+                                if (support.attaching && collector.isEnabled()) {
+                                    event.requiresAction().getOrNull()?.session()?.let { session ->
+                                        if (
+                                            session.requiredActions().any {
+                                                it.isEnvironmentConnection()
+                                            }
+                                        ) {
+                                            refreshTurn()
+                                            val latest = findLatestRoot()?.id()
+                                            collector.selectAttachedTurn(support.selectedTurn)
+                                            collector.manualActions(
+                                                support.manualActions(session, latest)
+                                            )
+                                        }
+                                    }
+                                }
                                 if (support.attaching)
                                     collector.selectAttachedTurn(support.selectedTurn)
                                 val terminal = support.terminal(event)
@@ -213,7 +229,10 @@ internal class AgentSessionStream(
     private fun reconcile() {
         if (!collector.isEnabled()) return
         collector.selectAttachedTurn(support.selectedTurn)
-        if (support.selectedTurn?.status() == Turn.Status.COMPLETED) {
+        if (
+            support.selectedTurn?.status() in
+                setOf(Turn.Status.COMPLETED, Turn.Status.FAILED, Turn.Status.CANCELLED)
+        ) {
             var params = support.itemListParams()
             var index = 0L
             while (true) {

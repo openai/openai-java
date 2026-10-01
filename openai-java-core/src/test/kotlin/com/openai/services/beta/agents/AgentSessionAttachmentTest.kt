@@ -558,6 +558,77 @@ internal class AgentSessionAttachmentTest {
         assertThat(t.streamClosed).isTrue()
     }
 
+    private fun environmentAction() =
+        """{"type":"agent.session.requires_action","event_id":"env-action","session":{"id":"s","status":"requires_action","required_actions":[{"type":"environment_connection","environment_id":"env"}]}}"""
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `live environment action cannot select or block an unidentified root`(async: Boolean) {
+        val t =
+            Transport().apply {
+                turnPages = mutableListOf(page())
+                events = listOf(environmentAction(), turnEvent())
+            }
+        assertThat(collect(t, async).turnId()).isEqualTo("root")
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `live environment action for successor settles the selected completed root`(
+        async: Boolean
+    ) {
+        val t =
+            Transport().apply {
+                turnPages = mutableListOf(page(turn()), page(turn("successor", "waiting")))
+                turnResponses = mutableListOf(turn(), turn(status = "completed"))
+                events = listOf(environmentAction(), call(owner = "successor"))
+            }
+        assertThat(collect(t, async).outputText()).isEqualTo("Shipped")
+        assertThat(t.posts).isEmpty()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `live environment action reports only the current selected waiting root`(async: Boolean) {
+        val t =
+            Transport().apply {
+                turnPages = mutableListOf(page(turn(status = "waiting")))
+                turnResponses = mutableListOf(turn(status = "waiting"))
+                events = listOf(environmentAction(), "invalid-json")
+            }
+        assertThatThrownBy { collect(t, async) }.hasStackTraceContaining("REQUIRES_ACTION")
+        assertThat(t.posts).isEmpty()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `failed and cancelled attachment errors retain paginated durable output`(async: Boolean) {
+        for (status in listOf("failed", "cancelled")) {
+            val t =
+                Transport().apply {
+                    turnResponses = mutableListOf(turn(status = status))
+                    forbidStreamRead = true
+                    itemPages =
+                        mutableListOf(
+                            page(message("old", "Old", owner = "other"), more = true),
+                            page(message("answer", "Partial answer")),
+                        )
+                }
+            val cause = catchThrowable { collect(t, async) }
+            val error = unwrap(cause) as AgentTurnResultException
+            assertThat(error.reason())
+                .isEqualTo(
+                    if (status == "failed") AgentTurnResultException.Reason.TURN_FAILED
+                    else AgentTurnResultException.Reason.TURN_CANCELLED
+                )
+            assertThat(error.messages()).hasSize(1)
+            assertThat(error.messages().single().content().single().asOutputText().text())
+                .isEqualTo("Partial answer")
+            assertThat(t.itemRequests).isEqualTo(2)
+            assertThat(t.streamClosed).isTrue()
+        }
+    }
+
     private fun approval(owner: String = "root", kind: String = "browser_authentication") =
         """{"type":"computer_use_approval_request","turn_id":"$owner","request_id":"approval","request":{"type":"$kind","origin":"https://example.com"}}"""
 

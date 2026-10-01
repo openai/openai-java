@@ -115,6 +115,8 @@ for a read-only catalog lookup.
 Omit input to attach the same handlers to the saved session without sending the prompt again. Final-result collection also retrieves the selected turn's earlier output.
 
 ```java
+import com.openai.services.beta.agents.AgentTurnResults;
+
 var params = AgentSessionStreamParams.builder()
     .sessionId(savedSessionId)
     .toolHandler("lookup_order", arguments -> orderService.lookup(arguments))

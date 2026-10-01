@@ -167,7 +167,10 @@ internal class AgentSessionStreamAsync(
             done()
             return
         }
-        if (support.selectedTurn?.status() != Turn.Status.COMPLETED) {
+        if (
+            support.selectedTurn?.status() !in
+                setOf(Turn.Status.COMPLETED, Turn.Status.FAILED, Turn.Status.CANCELLED)
+        ) {
             synchronized(collector) { collector.attachedIdle(support.sessionFailed) }
             done()
             return
@@ -314,6 +317,25 @@ internal class AgentSessionStreamAsync(
     }
 
     private fun deliver(event: AgentSessionEvent) {
+        val session = event.requiresAction().getOrNull()?.session()
+        if (
+            support.attaching &&
+                synchronized(collector) { collector.isEnabled() } &&
+                session?.requiredActions()?.any { it.isEnvironmentConnection() } == true
+        ) {
+            refreshTurn {
+                findLatestRoot { latest ->
+                    synchronized(collector) {
+                        collector.selectAttachedTurn(support.selectedTurn)
+                        collector.manualActions(support.manualActions(session, latest?.id()))
+                    }
+                    deliverSelected(event)
+                }
+            }
+        } else deliverSelected(event)
+    }
+
+    private fun deliverSelected(event: AgentSessionEvent) {
         if (support.attaching)
             synchronized(collector) { collector.selectAttachedTurn(support.selectedTurn) }
         val terminal = support.terminal(event)
