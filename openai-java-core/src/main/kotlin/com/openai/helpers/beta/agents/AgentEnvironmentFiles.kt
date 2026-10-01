@@ -12,9 +12,11 @@ import java.io.IOException
 import java.io.InputStream
 import java.nio.channels.Channels
 import java.nio.file.FileSystems
+import java.nio.file.FileVisitResult
 import java.nio.file.Files
 import java.nio.file.LinkOption.NOFOLLOW_LINKS
 import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
 import java.nio.file.StandardOpenOption.READ
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.CompletableFuture
@@ -408,22 +410,32 @@ object AgentEnvironmentFiles {
         val selectedDirectory = DirectoryRoot(root, selectedRoot)
         val matchers = include.map { root.fileSystem.getPathMatcher("glob:$it") }
         val files = linkedMapOf<String, Path>()
-        Files.walk(root).use { paths ->
-            paths.forEach { path ->
-                val relative = root.relativize(path)
-                if (
-                    path != root &&
-                        matchers.any { it.matches(relative) } &&
-                        !Files.isDirectory(path, NOFOLLOW_LINKS)
-                ) {
-                    require(!Files.isSymbolicLink(path)) {
-                        "Selected directory entries cannot be symlinks"
+        Files.walkFileTree(
+            root,
+            object : SimpleFileVisitor<Path>() {
+                override fun visitFile(path: Path, attrs: BasicFileAttributes): FileVisitResult {
+                    val relative = root.relativize(path)
+                    if (matchers.any { it.matches(relative) }) {
+                        require(!Files.isSymbolicLink(path)) {
+                            "Selected directory entries cannot be symlinks"
+                        }
+                        verifyDirectoryPath(path, selectedDirectory)
+                        files[destination.trimEnd('/') + "/" + relative.joinToString("/")] = path
                     }
-                    verifyDirectoryPath(path, selectedDirectory)
-                    files[destination.trimEnd('/') + "/" + relative.joinToString("/")] = path
+                    return FileVisitResult.CONTINUE
                 }
-            }
-        }
+
+                override fun visitFileFailed(path: Path, error: IOException): FileVisitResult {
+                    if (path == root) throw error
+                    return FileVisitResult.CONTINUE
+                }
+
+                override fun postVisitDirectory(path: Path, error: IOException?): FileVisitResult {
+                    if (path == root && error != null) throw error
+                    return FileVisitResult.CONTINUE
+                }
+            },
+        )
         val selected = preflight(files)
         require(sameIdentity(selectedRoot, attributes(root))) {
             "The selected directory changed during enumeration"

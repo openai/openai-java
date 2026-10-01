@@ -36,6 +36,8 @@ var staged = AgentEnvironmentFiles.upload(client, environmentId,
     Paths.get("update.csv"), "/workspace/update.csv");
 ```
 
+For simplicity, directory selection uses JDK walking and glob matching instead of custom glob pruning; it may traverse unrelated readable directories. Discovery errors below the source root are skipped; root access, selected-file validation, and upload failures still fail the operation.
+
 Artifact content can be read in memory, or streamed to an application-owned, safe destination path. Both modes select the exact result turn and path; async service overloads return `CompletableFuture`.
 
 ```java

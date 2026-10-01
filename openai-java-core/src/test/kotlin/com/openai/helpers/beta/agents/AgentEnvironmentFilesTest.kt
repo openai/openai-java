@@ -1,18 +1,9 @@
 package com.openai.helpers.beta.agents
 
-import com.openai.client.OpenAIClientImpl
-import com.openai.core.ClientOptions
-import com.openai.core.RequestOptions
 import com.openai.core.http.*
-import com.openai.core.jsonMapper
-import com.openai.models.beta.agents.sessions.turns.Turn
-import com.openai.services.beta.agents.AgentTurnResult
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
-import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 import java.util.concurrent.CountDownLatch
@@ -24,175 +15,54 @@ import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-internal class AgentFileHelpersTest {
+internal class AgentEnvironmentFilesTest {
     @TempDir lateinit var directory: Path
-    private val mapper = jsonMapper()
-    private val options =
-        RequestOptions.builder().timeout(Duration.ofSeconds(9)).responseValidation(false).build()
+    private val options = fileTestOptions
 
-    private fun artifact(
-        id: String,
-        turn: String = "root",
-        path: String = "/workspace/outputs/report.txt",
-    ) = """{"id":"$id","session_id":"s","turn_id":"$turn","path":"$path"}"""
-
-    private fun page(vararg items: String, more: Boolean = false) =
-        """{"object":"list","data":[${items.joinToString(",")}],"has_more":$more}"""
-
-    private fun result() =
-        AgentTurnResult(
-            mapper.readValue(
-                """{"id":"root","session_id":"s","status":"completed","subagent_id":null}""",
-                Turn::class.java,
-            ),
-            emptyList(),
-        )
+    private fun unwrapFileTestError(error: Throwable): Throwable =
+        if ((error is CompletionException || error is ExecutionException) && error.cause != null)
+            unwrapFileTestError(error.cause!!)
+        else error
 
     private fun file(name: String = "source.txt", text: String = "source") =
         directory.resolve(name).also { Files.write(it, text.toByteArray()) }
 
-    private fun unwrap(error: Throwable): Throwable =
-        if ((error is CompletionException || error is ExecutionException) && error.cause != null)
-            unwrap(error.cause!!)
-        else error
-
-    private inner class Transport : HttpClient {
-        val requests = mutableListOf<HttpRequest>()
-        val requestOptions = mutableListOf<RequestOptions>()
+    private class Transport : AgentFileTestTransport() {
         val bodies = mutableListOf<String>()
         var uploads = 0
         var discardUploadBody = false
         var uploadFailureAt = 0
         var beforeUpload: () -> Unit = {}
         var stageFailure = false
-        var pages = mutableListOf(page(artifact("artifact-one")))
-        var contentClosed = false
-        val contentClosedSignal = CountDownLatch(1)
-        var contentReads = 0
-        var contentSize = 64 * 1024
-        var onContent: () -> Unit = {}
-        var onList: () -> Unit = {}
-        var asyncOverride: ((HttpRequest, RequestOptions) -> CompletableFuture<HttpResponse>?)? =
-            null
 
-        private fun response(text: String, status: Int = 200): HttpResponse =
-            response(ByteArrayInputStream(text.toByteArray()), status)
-
-        private fun response(input: InputStream, status: Int = 200): HttpResponse =
-            object : HttpResponse {
-                override fun statusCode() = status
-
-                override fun headers() =
-                    Headers.builder().put("Content-Type", "application/json").build()
-
-                override fun body() = input
-
-                override fun close() = input.close()
-            }
-
-        override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
-            requests.add(request)
-            this.requestOptions.add(requestOptions)
+        override fun respond(request: HttpRequest): HttpResponse {
+            check(request.method == HttpMethod.POST) { "Unexpected endpoint" }
             val path = request.pathSegments
-            return when {
-                request.method == HttpMethod.POST -> {
-                    if (!path.contains("environments")) beforeUpload()
-                    val body = ByteArrayOutputStream()
-                    request.body!!.writeTo(
-                        if (discardUploadBody)
-                            object : java.io.OutputStream() {
-                                override fun write(value: Int) {}
+            if (!path.contains("environments")) beforeUpload()
+            val body = ByteArrayOutputStream()
+            request.body!!.writeTo(
+                if (discardUploadBody)
+                    object : java.io.OutputStream() {
+                        override fun write(value: Int) {}
 
-                                override fun write(bytes: ByteArray, offset: Int, length: Int) {}
-                            }
-                        else body
-                    )
-                    bodies.add(body.toString("UTF-8"))
-                    if (path.contains("environments")) {
-                        if (stageFailure)
-                            response(
-                                """{"error":{"message":"stage failed","type":"server_error"}}""",
-                                503,
-                            )
-                        else
-                            response(
-                                """{"path":"/workspace/source.txt","type":"file_id","file_id":"file-$uploads"}"""
-                            )
-                    } else {
-                        uploads++
-                        if (uploads == uploadFailureAt)
-                            response(
-                                """{"error":{"message":"upload failed","type":"server_error"}}""",
-                                503,
-                            )
-                        else response("""{"id":"file-$uploads"}""")
+                        override fun write(bytes: ByteArray, offset: Int, length: Int) {}
                     }
-                }
-                path.last() == "artifacts" -> {
-                    onList()
-                    response(if (pages.size > 1) pages.removeAt(0) else pages.single())
-                }
-                path.last() == "content" -> {
-                    onContent()
-                    response(
-                        object : InputStream() {
-                            var remaining = contentSize
-
-                            override fun read(): Int {
-                                contentReads++
-                                return if (remaining-- > 0) 'x'.code else -1
-                            }
-
-                            override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
-                                if (remaining == 0) return -1
-                                contentReads++
-                                val count = minOf(remaining, length, 4096)
-                                java.util.Arrays.fill(
-                                    buffer,
-                                    offset,
-                                    offset + count,
-                                    'x'.code.toByte(),
-                                )
-                                remaining -= count
-                                return count
-                            }
-
-                            override fun close() {
-                                contentClosed = true
-                                contentClosedSignal.countDown()
-                            }
-                        }
-                    )
-                }
-                else -> throw AssertionError("Unexpected endpoint")
-            }
-        }
-
-        override fun executeAsync(
-            request: HttpRequest,
-            requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> =
-            try {
-                asyncOverride?.invoke(request, requestOptions)
-                    ?: CompletableFuture.completedFuture(execute(request, requestOptions))
-            } catch (error: Throwable) {
-                CompletableFuture<HttpResponse>().apply { completeExceptionally(error) }
-            }
-
-        override fun close() {}
-
-        fun client() =
-            OpenAIClientImpl(
-                ClientOptions.builder().httpClient(this).apiKey("synthetic").maxRetries(0).build()
+                else body
             )
-    }
-
-    private fun <T> withClient(t: Transport, block: (OpenAIClientImpl) -> T): T {
-        val client = t.client()
-        return try {
-            block(client)
-        } finally {
-            client.close()
+            bodies.add(body.toString("UTF-8"))
+            return if (path.contains("environments")) {
+                if (stageFailure)
+                    response("""{"error":{"message":"stage failed","type":"server_error"}}""", 503)
+                else
+                    response(
+                        """{"path":"/workspace/source.txt","type":"file_id","file_id":"file-$uploads"}"""
+                    )
+            } else {
+                uploads++
+                if (uploads == uploadFailureAt)
+                    response("""{"error":{"message":"upload failed","type":"server_error"}}""", 503)
+                else response("""{"id":"file-$uploads"}""")
+            }
         }
     }
 
@@ -208,9 +78,71 @@ internal class AgentFileHelpersTest {
                     .get(5, TimeUnit.SECONDS)
             else AgentEnvironmentFiles.prepare(client, files, options)
         } catch (error: Exception) {
-            throw unwrap(error)
+            throw unwrapFileTestError(error)
         } finally {
             client.close()
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `directory selection skips unreadable neighbors but fails selected files and roots`(
+        async: Boolean
+    ) {
+        org.junit.jupiter.api.Assumptions.assumeTrue(
+            Files.getFileStore(directory).supportsFileAttributeView("posix")
+        )
+        val selected = file("one.txt")
+        val neighbor = Files.createDirectory(directory.resolve("private"))
+        val rootPermissions = Files.getPosixFilePermissions(directory)
+        val filePermissions = Files.getPosixFilePermissions(selected)
+        val neighborPermissions = Files.getPosixFilePermissions(neighbor)
+        fun select(t: Transport) =
+            withClient(t) { client ->
+                try {
+                    if (async)
+                        AgentEnvironmentFiles.prepareDirectory(
+                                client.async(),
+                                directory,
+                                "/workspace/docs",
+                                listOf("one.txt"),
+                            )
+                            .get(5, TimeUnit.SECONDS)
+                    else
+                        AgentEnvironmentFiles.prepareDirectory(
+                            client,
+                            directory,
+                            "/workspace/docs",
+                            listOf("one.txt"),
+                        )
+                } catch (error: Exception) {
+                    throw unwrapFileTestError(error)
+                }
+            }
+        try {
+            Files.setPosixFilePermissions(neighbor, emptySet())
+            org.junit.jupiter.api.Assumptions.assumeFalse(Files.isReadable(neighbor))
+            val successful = Transport()
+            assertThat(select(successful).files().map { it.asFileId().path() })
+                .containsExactly("/workspace/docs/one.txt")
+            assertThat(successful.uploads).isEqualTo(1)
+
+            Files.setPosixFilePermissions(selected, emptySet())
+            val unreadableFile = Transport()
+            assertThatThrownBy { select(unreadableFile) }
+                .isInstanceOf(AgentFilePreparationException::class.java)
+                .hasCauseInstanceOf(java.nio.file.AccessDeniedException::class.java)
+            assertThat(unreadableFile.requests).isEmpty()
+
+            Files.setPosixFilePermissions(directory, emptySet())
+            val unreadableRoot = Transport()
+            assertThatThrownBy { select(unreadableRoot) }
+                .isInstanceOf(java.nio.file.AccessDeniedException::class.java)
+            assertThat(unreadableRoot.requests).isEmpty()
+        } finally {
+            Files.setPosixFilePermissions(directory, rootPermissions)
+            Files.setPosixFilePermissions(selected, filePermissions)
+            Files.setPosixFilePermissions(neighbor, neighborPermissions)
         }
     }
 
@@ -302,7 +234,8 @@ internal class AgentFileHelpersTest {
                 }
                 .satisfies(
                     java.util.function.Consumer {
-                        assertThat(unwrap(it)).isInstanceOf(IllegalArgumentException::class.java)
+                        assertThat(unwrapFileTestError(it))
+                            .isInstanceOf(IllegalArgumentException::class.java)
                     }
                 )
             assertThat(t.requests).isEmpty()
@@ -322,7 +255,7 @@ internal class AgentFileHelpersTest {
     ) {
         val t = Transport().apply { uploadFailureAt = 2 }
         val error =
-            unwrap(
+            unwrapFileTestError(
                 catchThrowable {
                     prepare(
                         t,
@@ -338,7 +271,7 @@ internal class AgentFileHelpersTest {
         val client = staging.client()
         try {
             val failure =
-                unwrap(
+                unwrapFileTestError(
                     catchThrowable {
                         if (async)
                             AgentEnvironmentFiles.upload(
@@ -399,129 +332,6 @@ internal class AgentFileHelpersTest {
                 .containsExactlyInAnyOrder("/workspace/docs/a.txt", "/workspace/docs/nested/b.txt")
         } finally {
             client.close()
-        }
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun `artifact download selects exact turn and path across pages and streams immutable bytes`(
-        async: Boolean
-    ) {
-        val t =
-            Transport().apply {
-                pages =
-                    mutableListOf(
-                        page(artifact("old", "old"), more = true),
-                        page(artifact("selected")),
-                    )
-            }
-        val client = t.client()
-        val destination = directory.resolve("downloaded.txt")
-        try {
-            val artifact =
-                if (async)
-                    AgentArtifactDownloads.forResult(
-                            client.async().beta().agents().sessions().artifacts(),
-                            result(),
-                        )
-                        .download("/workspace/outputs/report.txt", destination, options)
-                        .join()
-                else
-                    AgentArtifactDownloads.forResult(
-                            client.beta().agents().sessions().artifacts(),
-                            result(),
-                        )
-                        .download("/workspace/outputs/report.txt", destination, options)
-            assertThat(artifact.id()).isEqualTo("selected")
-            assertThat(Files.size(destination)).isEqualTo(t.contentSize.toLong())
-            assertThat(t.contentReads).isGreaterThan(1)
-            assertThat(t.contentClosed).isTrue()
-            assertThat(t.requests.last().pathSegments).contains("selected")
-            assertThat(t.requestOptions).allSatisfy {
-                assertThat(it.timeout).isEqualTo(options.timeout)
-            }
-        } finally {
-            client.close()
-        }
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun `content preserves exact scope options and caller ownership`(async: Boolean) {
-        val t =
-            Transport().apply {
-                pages =
-                    mutableListOf(
-                        page(artifact("old", "old"), more = true),
-                        page(artifact("selected")),
-                    )
-            }
-        val client = t.client()
-        try {
-            val response =
-                if (async)
-                    AgentArtifactDownloads.forResult(
-                            client.async().beta().agents().sessions().artifacts(),
-                            result(),
-                        )
-                        .content("/workspace/outputs/report.txt", options)
-                        .join()
-                else
-                    AgentArtifactDownloads.forResult(
-                            client.beta().agents().sessions().artifacts(),
-                            result(),
-                        )
-                        .content("/workspace/outputs/report.txt", options)
-            assertThat(t.contentClosed).isFalse()
-            assertThat(t.contentReads).isZero()
-            response.use {
-                val bytes = ByteArrayOutputStream()
-                it.body().copyTo(bytes)
-                assertThat(bytes.size()).isEqualTo(t.contentSize)
-            }
-            assertThat(t.contentClosed).isTrue()
-            assertThat(t.requests).hasSize(3)
-            assertThat(t.requests.last().pathSegments).contains("s", "selected")
-            assertThat(t.requestOptions).allSatisfy {
-                assertThat(it.timeout).isEqualTo(options.timeout)
-            }
-        } finally {
-            client.close()
-        }
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun `artifact lookup reports missing and ambiguous matches without touching destination`(
-        async: Boolean
-    ) {
-        for (matches in listOf(page(), page(artifact("one"), artifact("two")))) {
-            val t = Transport().apply { pages = mutableListOf(matches) }
-            val client = t.client()
-            val destination = file("existing.txt", "keep")
-            try {
-                assertThatThrownBy {
-                    if (async)
-                        AgentArtifactDownloads.forResult(
-                                client.async().beta().agents().sessions().artifacts(),
-                                result(),
-                            )
-                            .download("/workspace/outputs/report.txt", destination)
-                            .join()
-                    else
-                        AgentArtifactDownloads.forResult(
-                                client.beta().agents().sessions().artifacts(),
-                                result(),
-                            )
-                            .download("/workspace/outputs/report.txt", destination)
-                }
-                assertThat(String(Files.readAllBytes(destination))).isEqualTo("keep")
-                assertThat(t.requests).noneSatisfy {
-                    assertThat(it.pathSegments.last()).isEqualTo("content")
-                }
-            } finally {
-                client.close()
-            }
         }
     }
 
@@ -597,7 +407,8 @@ internal class AgentFileHelpersTest {
                 }
                 .satisfies(
                     java.util.function.Consumer { error ->
-                        assertThat(unwrap(error)).isInstanceOf(IllegalArgumentException::class.java)
+                        assertThat(unwrapFileTestError(error))
+                            .isInstanceOf(IllegalArgumentException::class.java)
                     }
                 )
             Files.createSymbolicLink(root.resolve("selected.txt"), root.resolve("source.txt"))
@@ -620,111 +431,11 @@ internal class AgentFileHelpersTest {
                 }
                 .satisfies(
                     java.util.function.Consumer { error ->
-                        assertThat(unwrap(error)).isInstanceOf(IllegalArgumentException::class.java)
+                        assertThat(unwrapFileTestError(error))
+                            .isInstanceOf(IllegalArgumentException::class.java)
                     }
                 )
             assertThat(t.uploads).isEqualTo(1)
-        } finally {
-            client.close()
-        }
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun `download closes the response on destination failure`(async: Boolean) {
-        val t = Transport()
-        val client = t.client()
-        try {
-            val destination = directory.resolve("missing-parent/report.txt")
-            assertThatThrownBy {
-                if (async)
-                    AgentArtifactDownloads.forResult(
-                            client.async().beta().agents().sessions().artifacts(),
-                            result(),
-                        )
-                        .download("/workspace/outputs/report.txt", destination)
-                        .join()
-                else
-                    AgentArtifactDownloads.forResult(
-                            client.beta().agents().sessions().artifacts(),
-                            result(),
-                        )
-                        .download("/workspace/outputs/report.txt", destination)
-            }
-            assertThat(t.contentClosed).isTrue()
-        } finally {
-            client.close()
-        }
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun `cancelling native async content closes a late response without writing`(
-        inMemory: Boolean
-    ) {
-        val t = Transport()
-        val client = t.client()
-        val pending = CompletableFuture<HttpResponse>()
-        var request: HttpRequest? = null
-        val requested = CountDownLatch(1)
-        t.asyncOverride = { candidate, _ ->
-            if (candidate.pathSegments.last() == "content") {
-                request = candidate
-                requested.countDown()
-                pending
-            } else null
-        }
-        try {
-            val destination = directory.resolve("cancelled.txt")
-            val scoped =
-                AgentArtifactDownloads.forResult(
-                    client.async().beta().agents().sessions().artifacts(),
-                    result(),
-                )
-            val download =
-                if (inMemory) scoped.content("/workspace/outputs/report.txt")
-                else scoped.download("/workspace/outputs/report.txt", destination)
-            assertThat(requested.await(5, TimeUnit.SECONDS)).isTrue()
-            assertThat(download.cancel(true)).isTrue()
-            pending.complete(t.execute(requireNotNull(request), options))
-            assertThat(t.contentClosedSignal.await(5, TimeUnit.SECONDS)).isTrue()
-            assertThat(t.contentClosed).isTrue()
-            assertThat(Files.exists(destination)).isFalse()
-        } finally {
-            client.close()
-        }
-    }
-
-    @Test
-    fun `cancelling async lookup prevents the next page and content request`() {
-        val t =
-            Transport().apply {
-                pages =
-                    mutableListOf(
-                        page(artifact("old", "old"), more = true),
-                        page(artifact("selected")),
-                    )
-            }
-        val client = t.client()
-        val pending = CompletableFuture<HttpResponse>()
-        var request: HttpRequest? = null
-        val requested = CountDownLatch(1)
-        t.asyncOverride = { candidate, _ ->
-            request = candidate
-            requested.countDown()
-            pending
-        }
-        try {
-            val download =
-                AgentArtifactDownloads.forResult(
-                        client.async().beta().agents().sessions().artifacts(),
-                        result(),
-                    )
-                    .download("/workspace/outputs/report.txt", directory.resolve("cancelled.txt"))
-            assertThat(requested.await(5, TimeUnit.SECONDS)).isTrue()
-            download.cancel(true)
-            pending.complete(t.execute(requireNotNull(request), options))
-            assertThat(t.requests).hasSize(1)
         } finally {
             client.close()
         }
@@ -760,7 +471,7 @@ internal class AgentFileHelpersTest {
                     }
                 }
             val error =
-                unwrap(
+                unwrapFileTestError(
                     catchThrowable {
                         prepare(
                             t,
@@ -783,7 +494,9 @@ internal class AgentFileHelpersTest {
             val t =
                 Transport().apply { beforeUpload = { Files.write(source, contents.toByteArray()) } }
             val error =
-                unwrap(catchThrowable { prepare(t, async, mapOf("/workspace/source" to source)) })
+                unwrapFileTestError(
+                    catchThrowable { prepare(t, async, mapOf("/workspace/source" to source)) }
+                )
             assertThat(error).isInstanceOf(AgentFilePreparationException::class.java)
             assertThat(error).hasStackTraceContaining("during upload")
             assertThat(t.uploads).isZero()
@@ -977,76 +690,6 @@ internal class AgentFileHelpersTest {
         }
     }
 
-    @Test
-    fun `asynchronous artifact lookup handles many immediately completed pages`() {
-        val t =
-            Transport().apply {
-                pages =
-                    (1..2000).map { page(artifact("old-$it", "old"), more = true) }.toMutableList()
-                pages.add(page(artifact("selected")))
-            }
-        withClient(t) { client ->
-            AgentArtifactDownloads.forResult(
-                    client.async().beta().agents().sessions().artifacts(),
-                    result(),
-                )
-                .content("/workspace/outputs/report.txt")
-                .get(10, TimeUnit.SECONDS)
-                .close()
-            assertThat(t.requests).hasSize(2002)
-        }
-    }
-
-    @Test
-    fun `asynchronous artifact copying does not block transport completion`() {
-        val t = Transport()
-        val pending = CompletableFuture<HttpResponse>()
-        val requested = CountDownLatch(1)
-        t.asyncOverride = { request, _ ->
-            if (request.pathSegments.last() == "content") {
-                requested.countDown()
-                pending
-            } else null
-        }
-        val reading = CountDownLatch(1)
-        val release = CountDownLatch(1)
-        val content =
-            object : HttpResponse {
-                override fun statusCode() = 200
-
-                override fun headers() = Headers.builder().build()
-
-                override fun body() =
-                    object : InputStream() {
-                        override fun read(): Int {
-                            reading.countDown()
-                            check(release.await(5, TimeUnit.SECONDS))
-                            return -1
-                        }
-                    }
-
-                override fun close() {}
-            }
-        withClient(t) { client ->
-            val download =
-                AgentArtifactDownloads.forResult(
-                        client.async().beta().agents().sessions().artifacts(),
-                        result(),
-                    )
-                    .download("/workspace/outputs/report.txt", directory.resolve("async.txt"))
-            assertThat(requested.await(5, TimeUnit.SECONDS)).isTrue()
-            try {
-                val completion = CompletableFuture.runAsync { pending.complete(content) }
-                assertThat(reading.await(5, TimeUnit.SECONDS)).isTrue()
-                completion.get(1, TimeUnit.SECONDS)
-                assertThat(download.isDone).isFalse()
-            } finally {
-                release.countDown()
-            }
-            download.get(5, TimeUnit.SECONDS)
-        }
-    }
-
     @ParameterizedTest
     @ValueSource(strings = ["directory", "prepare", "upload"])
     fun `asynchronous file helpers do not inspect files on the caller thread`(operation: String) {
@@ -1234,47 +877,5 @@ internal class AgentFileHelpersTest {
         val t = Transport()
         assertThat(prepare(t, true, mapOf("/workspace/Object.class" to source)).files()).hasSize(1)
         assertThat(t.bodies.single()).contains("Object.class")
-    }
-
-    @Test
-    fun `cancelling queued artifact consumption closes the completed response immediately`() {
-        val t = Transport()
-        val pending = CompletableFuture<HttpResponse>()
-        val requested = CountDownLatch(1)
-        var request: HttpRequest? = null
-        t.asyncOverride = { candidate, _ ->
-            if (candidate.pathSegments.last() == "content") {
-                request = candidate
-                requested.countDown()
-                pending
-            } else null
-        }
-        withClient(t) { client ->
-            val destination = directory.resolve("cancelled.txt")
-            val download =
-                AgentArtifactDownloads.forResult(
-                        client.async().beta().agents().sessions().artifacts(),
-                        result(),
-                    )
-                    .download("/workspace/outputs/report.txt", destination)
-            assertThat(requested.await(5, TimeUnit.SECONDS)).isTrue()
-            var queued: Runnable? = null
-            org.mockito.Mockito.mockStatic(CompletableFuture::class.java) { invocation ->
-                    if (invocation.method.name == "runAsync") {
-                        queued = invocation.getArgument(0)
-                        CompletableFuture<Void>()
-                    } else invocation.callRealMethod()
-                }
-                .use {
-                    pending.complete(t.execute(requireNotNull(request), options))
-                    assertThat(queued).isNotNull()
-                    assertThat(download.cancel(true)).isTrue()
-                    assertThat(t.contentClosed).isTrue()
-                    assertThat(t.contentReads).isZero()
-                    queued!!.run()
-                    assertThat(t.contentReads).isZero()
-                    assertThat(Files.exists(destination)).isFalse()
-                }
-        }
     }
 }
