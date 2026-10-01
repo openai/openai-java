@@ -64,7 +64,10 @@ object AgentEnvironmentFiles {
         client: OpenAIClientAsync,
         files: Map<String, Path>,
         options: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<PreparedAgentFiles> = prepareAsync(client, options) { preflight(files) }
+    ): CompletableFuture<PreparedAgentFiles> {
+        val selectedFiles = files.toMap()
+        return prepareAsync(client, options) { preflight(selectedFiles) }
+    }
 
     private fun prepareAsync(
         client: OpenAIClientAsync,
@@ -150,8 +153,10 @@ object AgentEnvironmentFiles {
         destination: String,
         include: List<String>,
         options: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<PreparedAgentFiles> =
-        prepareAsync(client, options) { directoryFiles(source, destination, include) }
+    ): CompletableFuture<PreparedAgentFiles> {
+        val patterns = include.toList()
+        return prepareAsync(client, options) { directoryFiles(source, destination, patterns) }
+    }
 
     @JvmStatic
     @JvmOverloads

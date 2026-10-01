@@ -1,5 +1,6 @@
 package com.openai.helpers.beta.agents
 
+import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.models.beta.agents.sessions.artifacts.ArtifactContentParams
@@ -51,6 +52,7 @@ private constructor(
     }
 
     /** Returns the exact turn/path response. The caller owns and must close it. */
+    @MustBeClosed
     @JvmOverloads
     fun content(path: String, options: RequestOptions = RequestOptions.none()): HttpResponse =
         openContent(findArtifact(path, options), options)

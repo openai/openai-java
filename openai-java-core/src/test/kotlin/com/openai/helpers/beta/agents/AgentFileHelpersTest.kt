@@ -1154,4 +1154,67 @@ internal class AgentFileHelpersTest {
         assertThat(error.cause).isInstanceOf(com.openai.errors.InternalServerException::class.java)
         assertThat(t.uploads).isEqualTo(1)
     }
+
+    @Test
+    fun `async preparation snapshots a mutable selection before returning`() {
+        val original = file("original.txt")
+        val blocked = org.mockito.Mockito.mock(Path::class.java)
+        val entered = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        org.mockito.Mockito.`when`(blocked.toAbsolutePath()).thenAnswer {
+            entered.countDown()
+            check(release.await(5, TimeUnit.SECONDS))
+            original
+        }
+        val selected = linkedMapOf("/workspace/first" to blocked, "/workspace/second" to original)
+        val t = Transport()
+        withClient(t) { client ->
+            val pending = AgentEnvironmentFiles.prepare(client.async(), selected)
+            try {
+                assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
+                selected.clear()
+                selected["/workspace/replacement"] = file("replacement.txt")
+            } finally {
+                release.countDown()
+            }
+            assertThat(pending.get(5, TimeUnit.SECONDS).files().map { it.asFileId().path() })
+                .containsExactly("/workspace/first", "/workspace/second")
+        }
+    }
+
+    @Test
+    fun `async directory preparation snapshots mutable include patterns before returning`() {
+        file("selected.txt")
+        file("unselected.csv")
+        val blocked = org.mockito.Mockito.spy(directory)
+        val entered = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        org.mockito.Mockito.doAnswer {
+                entered.countDown()
+                check(release.await(5, TimeUnit.SECONDS))
+                directory.toRealPath()
+            }
+            .`when`(blocked)
+            .toRealPath()
+        val include = mutableListOf("*.txt")
+        val t = Transport()
+        withClient(t) { client ->
+            val pending =
+                AgentEnvironmentFiles.prepareDirectory(
+                    client.async(),
+                    blocked,
+                    "/workspace/docs",
+                    include,
+                )
+            try {
+                assertThat(entered.await(5, TimeUnit.SECONDS)).isTrue()
+                include.clear()
+                include.add("*.csv")
+            } finally {
+                release.countDown()
+            }
+            assertThat(pending.get(5, TimeUnit.SECONDS).files().map { it.asFileId().path() })
+                .containsExactly("/workspace/docs/selected.txt")
+        }
+    }
 }
