@@ -33,6 +33,48 @@ internal class AsyncRequestDispatchTest {
 
     @Test fun syncClientAsyncViewPreservesEachCallersContext() = verifyRequestDispatch(true)
 
+    @Test
+    fun queuedAsyncCallsPreserveEachCallersContext() {
+        val releaseResponse = CountDownLatch(1)
+        val server =
+            server(
+                releaseResponse,
+                """{"id":"model-test","object":"model","created":0,"owned_by":"test"}""",
+            )
+        val dispatcher = ContextExecutor("request-dispatcher", context)
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .apiKey("test-key")
+                .baseUrl(server.url("/").toString())
+                .dispatcherExecutorService(dispatcher)
+                .maxRetries(0)
+                .build()
+        val requestCount = 65
+        try {
+            val futures =
+                (0 until requestCount).map { index ->
+                    context.set("request-$index")
+                    client.models().retrieve("model-test")
+                }
+            context.remove()
+
+            // OkHttp's default dispatcher limit is 64. If it queues the 65th call,
+            // that call is later submitted from a completion thread and a
+            // context-capturing executor observes the wrong request context.
+            assertThat(dispatcher.submissions)
+                .containsExactlyElementsOf((0 until requestCount).map { "request-$it" })
+
+            releaseResponse.countDown()
+            CompletableFuture.allOf(*futures.toTypedArray()).get(15, TimeUnit.SECONDS)
+            assertThat(futures.map { it.get().id() }).containsOnly("model-test")
+        } finally {
+            context.remove()
+            releaseResponse.countDown()
+            client.close()
+            server.shutdown()
+        }
+    }
+
     private fun verifyRequestDispatch(fromSyncClient: Boolean) {
         val releaseResponse = CountDownLatch(1)
         val server =
