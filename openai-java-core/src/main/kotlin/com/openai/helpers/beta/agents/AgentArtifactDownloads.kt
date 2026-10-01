@@ -132,7 +132,7 @@ private constructor(
                             .build(),
                         options,
                     )
-                    .whenComplete { content, failure ->
+                    .whenCompleteAsync { content, failure ->
                         if (failure != null) result.completeExceptionally(failure)
                         else {
                             response.set(content)
@@ -152,7 +152,7 @@ private constructor(
             fun next(params: ArtifactListParams) {
                 if (result.isDone) return
                 try {
-                    service.list(params, options).whenComplete { page, failure ->
+                    service.list(params, options).whenCompleteAsync { page, failure ->
                         if (failure != null) result.completeExceptionally(failure)
                         else if (!result.isDone) {
                             try {

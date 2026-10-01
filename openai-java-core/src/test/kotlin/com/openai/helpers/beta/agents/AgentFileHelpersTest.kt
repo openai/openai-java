@@ -61,6 +61,7 @@ internal class AgentFileHelpersTest {
         val requestOptions = mutableListOf<RequestOptions>()
         val bodies = mutableListOf<String>()
         var uploads = 0
+        var discardUploadBody = false
         var uploadFailureAt = 0
         var beforeUpload: () -> Unit = {}
         var stageFailure = false
@@ -97,7 +98,15 @@ internal class AgentFileHelpersTest {
                 request.method == HttpMethod.POST -> {
                     if (!path.contains("environments")) beforeUpload()
                     val body = ByteArrayOutputStream()
-                    request.body!!.writeTo(body)
+                    request.body!!.writeTo(
+                        if (discardUploadBody)
+                            object : java.io.OutputStream() {
+                                override fun write(value: Int) {}
+
+                                override fun write(bytes: ByteArray, offset: Int, length: Int) {}
+                            }
+                        else body
+                    )
                     bodies.add(body.toString("UTF-8"))
                     if (path.contains("environments")) {
                         if (stageFailure)
@@ -176,6 +185,15 @@ internal class AgentFileHelpersTest {
             OpenAIClientImpl(
                 ClientOptions.builder().httpClient(this).apiKey("synthetic").maxRetries(0).build()
             )
+    }
+
+    private fun <T> withClient(t: Transport, block: (OpenAIClientImpl) -> T): T {
+        val client = t.client()
+        return try {
+            block(client)
+        } finally {
+            client.close()
+        }
     }
 
     private fun prepare(
@@ -269,21 +287,18 @@ internal class AgentFileHelpersTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
-    fun `limits are checked before uploading any member`(async: Boolean) {
+    fun `file count and size limits are left to the API`(async: Boolean) {
         val source = file()
+        val t = Transport().apply { discardUploadBody = true }
         val many = (1..51).associate { "/workspace/$it" to source }
-        val t = Transport()
-        assertThatThrownBy { prepare(t, async, many) }
-            .isInstanceOf(IllegalArgumentException::class.java)
+        assertThat(prepare(t, async, many).files()).hasSize(51)
         java.io.RandomAccessFile(source.toFile(), "rw").use { it.setLength(26L * 1024 * 1024) }
-        assertThatThrownBy {
-                prepare(t, async, mapOf("/workspace/a" to source, "/workspace/b" to source))
-            }
-            .isInstanceOf(IllegalArgumentException::class.java)
+        assertThat(
+                prepare(t, async, mapOf("/workspace/a" to source, "/workspace/b" to source)).files()
+            )
+            .hasSize(2)
         java.io.RandomAccessFile(source.toFile(), "rw").use { it.setLength(50L * 1024 * 1024 + 1) }
-        assertThatThrownBy { prepare(t, async, mapOf("/workspace/a" to source)) }
-            .isInstanceOf(IllegalArgumentException::class.java)
-        assertThat(t.requests).isEmpty()
+        assertThat(prepare(t, async, mapOf("/workspace/a" to source)).files()).hasSize(1)
     }
 
     @ParameterizedTest
@@ -576,11 +591,12 @@ internal class AgentFileHelpersTest {
             assertThatThrownBy {
                     if (async)
                         AgentEnvironmentFiles.prepareDirectory(
-                            client.async(),
-                            alias,
-                            "/workspace/docs",
-                            listOf("*.txt"),
-                        )
+                                client.async(),
+                                alias,
+                                "/workspace/docs",
+                                listOf("*.txt"),
+                            )
+                            .join()
                     else
                         AgentEnvironmentFiles.prepareDirectory(
                             client,
@@ -589,16 +605,21 @@ internal class AgentFileHelpersTest {
                             listOf("*.txt"),
                         )
                 }
-                .isInstanceOf(IllegalArgumentException::class.java)
+                .satisfies(
+                    java.util.function.Consumer { error ->
+                        assertThat(unwrap(error)).isInstanceOf(IllegalArgumentException::class.java)
+                    }
+                )
             Files.createSymbolicLink(root.resolve("selected.txt"), root.resolve("source.txt"))
             assertThatThrownBy {
                     if (async)
                         AgentEnvironmentFiles.prepareDirectory(
-                            client.async(),
-                            root,
-                            "/workspace/docs",
-                            listOf("*.txt"),
-                        )
+                                client.async(),
+                                root,
+                                "/workspace/docs",
+                                listOf("*.txt"),
+                            )
+                            .join()
                     else
                         AgentEnvironmentFiles.prepareDirectory(
                             client,
@@ -607,7 +628,11 @@ internal class AgentFileHelpersTest {
                             listOf("*.txt"),
                         )
                 }
-                .isInstanceOf(IllegalArgumentException::class.java)
+                .satisfies(
+                    java.util.function.Consumer { error ->
+                        assertThat(unwrap(error)).isInstanceOf(IllegalArgumentException::class.java)
+                    }
+                )
             assertThat(t.uploads).isEqualTo(1)
         } finally {
             client.close()
@@ -717,22 +742,14 @@ internal class AgentFileHelpersTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
-    fun `path limit counts Unicode code points before uploading any file`(async: Boolean) {
+    fun `long destination paths are preserved for API validation`(async: Boolean) {
         val source = file()
         val t = Transport()
-        val maximum = "/workspace/" + "😀".repeat(4085)
-        assertThat(prepare(t, async, mapOf(maximum to source)).files().single().asFileId().path())
-            .isEqualTo(maximum)
-        val rejected = Transport()
-        assertThatThrownBy {
-                prepare(
-                    rejected,
-                    async,
-                    linkedMapOf("/workspace/good" to source, maximum + "a" to source),
-                )
-            }
-            .isInstanceOf(IllegalArgumentException::class.java)
-        assertThat(rejected.requests).isEmpty()
+        val destination = "/workspace/" + "😀".repeat(5000)
+        assertThat(
+                prepare(t, async, mapOf(destination to source)).files().single().asFileId().path()
+            )
+            .isEqualTo(destination)
     }
 
     @ParameterizedTest
@@ -902,5 +919,212 @@ internal class AgentFileHelpersTest {
                     client.close()
                 }
             }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `regular ZIP filesystem sources work for preparation and staging`(async: Boolean) {
+        val uri = java.net.URI.create("jar:" + directory.resolve("sources.zip").toUri())
+        java.nio.file.FileSystems.newFileSystem(uri, mapOf("create" to "true")).use { fs ->
+            val source = fs.getPath("/source.txt")
+            Files.write(source, "zip contents".toByteArray())
+            val t = Transport()
+            assertThat(prepare(t, async, mapOf("/workspace/source.txt" to source)).files())
+                .hasSize(1)
+            withClient(t) { client ->
+                val staged =
+                    if (async)
+                        AgentEnvironmentFiles.upload(
+                                client.async(),
+                                "env",
+                                source,
+                                "/workspace/source.txt",
+                            )
+                            .join()
+                    else
+                        AgentEnvironmentFiles.upload(client, "env", source, "/workspace/source.txt")
+                assertThat(staged.uploadedFileId()).isEqualTo("file-2")
+            }
+            assertThat(t.bodies.take(2)).allSatisfy { assertThat(it).contains("zip contents") }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["prepare", "upload", "stage"])
+    fun `cancelling an upload keeps native response cleanup and stops subsequent work`(
+        mode: String
+    ) {
+        val t = Transport()
+        val pending = CompletableFuture<HttpResponse>()
+        var request: HttpRequest? = null
+        val requested = CountDownLatch(1)
+        val sourceClosed = CountDownLatch(1)
+        t.asyncOverride = { candidate, _ ->
+            if (mode != "stage" || candidate.pathSegments.contains("environments")) {
+                request = candidate
+                requested.countDown()
+                pending
+            } else null
+        }
+        withClient(t) { client ->
+            val source = file()
+            org.mockito.Mockito.mockStatic(
+                    Files::class.java,
+                    org.mockito.Mockito.CALLS_REAL_METHODS,
+                )
+                .use { mocked ->
+                    mocked
+                        .`when`<java.nio.channels.SeekableByteChannel> {
+                            Files.newByteChannel(
+                                source,
+                                setOf(
+                                    java.nio.file.StandardOpenOption.READ,
+                                    java.nio.file.LinkOption.NOFOLLOW_LINKS,
+                                ),
+                            )
+                        }
+                        .thenAnswer {
+                            val channel =
+                                it.callRealMethod() as java.nio.channels.SeekableByteChannel
+                            object : java.nio.channels.SeekableByteChannel by channel {
+                                override fun close() {
+                                    channel.close()
+                                    sourceClosed.countDown()
+                                }
+                            }
+                        }
+                    val operation =
+                        if (mode == "prepare")
+                            AgentEnvironmentFiles.prepare(
+                                client.async(),
+                                linkedMapOf("/workspace/a" to source, "/workspace/b" to source),
+                            )
+                        else
+                            AgentEnvironmentFiles.upload(
+                                client.async(),
+                                "env",
+                                source,
+                                "/workspace/source.txt",
+                            )
+                    assertThat(requested.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(operation.cancel(true)).isTrue()
+                    val response = t.execute(requireNotNull(request), options)
+                    val closed = CountDownLatch(1)
+                    pending.complete(
+                        object : HttpResponse by response {
+                            override fun close() {
+                                response.close()
+                                closed.countDown()
+                            }
+                        }
+                    )
+                    assertThat(closed.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(sourceClosed.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThat(t.uploads).isEqualTo(1)
+                    assertThat(t.requests).hasSize(if (mode == "stage") 2 else 1)
+                }
+        }
+    }
+
+    @Test
+    fun `asynchronous artifact lookup handles many immediately completed pages`() {
+        val t =
+            Transport().apply {
+                pages =
+                    (1..2000).map { page(artifact("old-$it", "old"), more = true) }.toMutableList()
+                pages.add(page(artifact("selected")))
+            }
+        withClient(t) { client ->
+            AgentArtifactDownloads.forResult(
+                    client.async().beta().agents().sessions().artifacts(),
+                    result(),
+                )
+                .content("/workspace/outputs/report.txt")
+                .get(10, TimeUnit.SECONDS)
+                .close()
+            assertThat(t.requests).hasSize(2002)
+        }
+    }
+
+    @Test
+    fun `asynchronous artifact copying does not block transport completion`() {
+        val t = Transport()
+        val pending = CompletableFuture<HttpResponse>()
+        val requested = CountDownLatch(1)
+        t.asyncOverride = { request, _ ->
+            if (request.pathSegments.last() == "content") {
+                requested.countDown()
+                pending
+            } else null
+        }
+        val reading = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        val content =
+            object : HttpResponse {
+                override fun statusCode() = 200
+
+                override fun headers() = Headers.builder().build()
+
+                override fun body() =
+                    object : InputStream() {
+                        override fun read(): Int {
+                            reading.countDown()
+                            check(release.await(5, TimeUnit.SECONDS))
+                            return -1
+                        }
+                    }
+
+                override fun close() {}
+            }
+        withClient(t) { client ->
+            val download =
+                AgentArtifactDownloads.forResult(
+                        client.async().beta().agents().sessions().artifacts(),
+                        result(),
+                    )
+                    .download("/workspace/outputs/report.txt", directory.resolve("async.txt"))
+            assertThat(requested.await(5, TimeUnit.SECONDS)).isTrue()
+            try {
+                val completion = CompletableFuture.runAsync { pending.complete(content) }
+                assertThat(reading.await(5, TimeUnit.SECONDS)).isTrue()
+                completion.get(1, TimeUnit.SECONDS)
+                assertThat(download.isDone).isFalse()
+            } finally {
+                release.countDown()
+            }
+            download.get(5, TimeUnit.SECONDS)
+        }
+    }
+
+    @Test
+    fun `asynchronous directory preparation does not inspect files on the caller thread`() {
+        file()
+        val t = Transport()
+        withClient(t) { client ->
+            org.mockito.Mockito.mockStatic(
+                    Files::class.java,
+                    org.mockito.Mockito.CALLS_REAL_METHODS,
+                )
+                .use { mocked ->
+                    mocked
+                        .`when`<java.nio.file.attribute.BasicFileAttributes> {
+                            Files.readAttributes(
+                                directory,
+                                java.nio.file.attribute.BasicFileAttributes::class.java,
+                                java.nio.file.LinkOption.NOFOLLOW_LINKS,
+                            )
+                        }
+                        .thenThrow(AssertionError("Filesystem work ran on the calling thread"))
+                    val prepared =
+                        AgentEnvironmentFiles.prepareDirectory(
+                                client.async(),
+                                directory,
+                                "/workspace/docs",
+                                listOf("*.txt"),
+                            )
+                            .get(5, TimeUnit.SECONDS)
+                    assertThat(prepared.files()).hasSize(1)
+                }
+        }
     }
 }

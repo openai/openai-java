@@ -11,7 +11,6 @@ import com.openai.models.files.FilePurpose
 import java.io.IOException
 import java.io.InputStream
 import java.nio.channels.Channels
-import java.nio.channels.FileChannel
 import java.nio.file.Files
 import java.nio.file.LinkOption.NOFOLLOW_LINKS
 import java.nio.file.Path
@@ -26,16 +25,13 @@ import java.util.concurrent.atomic.AtomicReference
  * application-owned and stable during preparation; this is not a filesystem sandbox.
  */
 object AgentEnvironmentFiles {
-    private const val MAX_FILES = 50
-    private const val MAX_BYTES = 50L * 1024 * 1024
-
     @JvmStatic
     @JvmOverloads
     fun prepare(
         client: OpenAIClient,
         files: Map<String, Path>,
         options: RequestOptions = RequestOptions.none(),
-    ): PreparedAgentFiles = prepare(client, preflight(files, initial = true), options)
+    ): PreparedAgentFiles = prepare(client, preflight(files), options)
 
     private fun prepare(
         client: OpenAIClient,
@@ -69,8 +65,7 @@ object AgentEnvironmentFiles {
         client: OpenAIClientAsync,
         files: Map<String, Path>,
         options: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<PreparedAgentFiles> =
-        prepare(client, preflight(files, initial = true), options)
+    ): CompletableFuture<PreparedAgentFiles> = prepare(client, preflight(files), options)
 
     private fun prepare(
         client: OpenAIClientAsync,
@@ -85,8 +80,6 @@ object AgentEnvironmentFiles {
             }
         val prepared = mutableListOf<HostedEnvironmentFileParam>()
         val result = CompletableFuture<PreparedAgentFiles>()
-        val active = AtomicReference<CompletableFuture<*>?>()
-        result.whenComplete { _, _ -> if (result.isCancelled) active.get()?.cancel(true) }
         fun next(index: Int) {
             if (result.isDone) return
             if (index == selected.size) {
@@ -103,9 +96,8 @@ object AgentEnvironmentFiles {
                         runCatching { params.file().close() }
                         throw error
                     }
-                active.set(request)
-                if (result.isCancelled) request.cancel(true)
-                request.whenComplete { uploaded, failure ->
+                // Keep the generated service future alive so late responses are parsed and closed.
+                request.whenCompleteAsync { uploaded, failure ->
                     try {
                         if (failure != null) throw failure
                         prepared.add(reference(destination, uploaded.id()))
@@ -150,8 +142,29 @@ object AgentEnvironmentFiles {
         destination: String,
         include: List<String>,
         options: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<PreparedAgentFiles> =
-        prepare(client, directoryFiles(source, destination, include), options)
+    ): CompletableFuture<PreparedAgentFiles> {
+        val result = CompletableFuture<PreparedAgentFiles>()
+        val preparation = AtomicReference<CompletableFuture<PreparedAgentFiles>?>()
+        result.whenComplete { _, _ -> if (result.isCancelled) preparation.get()?.cancel(true) }
+        CompletableFuture.supplyAsync { directoryFiles(source, destination, include) }
+            .whenComplete { selected, failure ->
+                if (failure != null) result.completeExceptionally(unwrap(failure))
+                else if (!result.isDone) {
+                    try {
+                        val pending = prepare(client, selected, options)
+                        preparation.set(pending)
+                        if (result.isCancelled) pending.cancel(true)
+                        pending.whenComplete { files, error ->
+                            if (error != null) result.completeExceptionally(unwrap(error))
+                            else result.complete(files)
+                        }
+                    } catch (error: Throwable) {
+                        result.completeExceptionally(error)
+                    }
+                }
+            }
+        return result
+    }
 
     @JvmStatic
     @JvmOverloads
@@ -162,7 +175,7 @@ object AgentEnvironmentFiles {
         destination: String,
         options: RequestOptions = RequestOptions.none(),
     ): StagedAgentFile {
-        val selected = preflight(mapOf(destination to source), initial = false).single()
+        val selected = preflight(mapOf(destination to source)).single()
         var id: String? = null
         try {
             val params = uploadParams(selected.second)
@@ -197,8 +210,7 @@ object AgentEnvironmentFiles {
     ): CompletableFuture<StagedAgentFile> {
         val prepared = prepare(client, mapOf(destination to source), options)
         val result = CompletableFuture<StagedAgentFile>()
-        val active = AtomicReference<CompletableFuture<*>>(prepared)
-        result.whenComplete { _, _ -> if (result.isCancelled) active.get().cancel(true) }
+        result.whenComplete { _, _ -> if (result.isCancelled) prepared.cancel(true) }
         prepared.whenComplete { inputs, failure ->
             if (failure != null) result.completeExceptionally(unwrap(failure))
             else if (!result.isDone) {
@@ -217,8 +229,6 @@ object AgentEnvironmentFiles {
                                     .build(),
                                 options,
                             )
-                    active.set(request)
-                    if (result.isCancelled) request.cancel(true)
                     request.whenComplete { file, error ->
                         if (error != null)
                             result.completeExceptionally(
@@ -270,7 +280,11 @@ object AgentEnvironmentFiles {
 
     private fun uploadParams(source: Source): FileCreateParams {
         verifySource(source)
-        val channel = FileChannel.open(source.path, READ, NOFOLLOW_LINKS)
+        // The JDK ZIP provider does not support symlinks and rejects NOFOLLOW_LINKS.
+        val openOptions =
+            if (source.path.fileSystem.provider().scheme == "jar") setOf(READ)
+            else setOf(READ, NOFOLLOW_LINKS)
+        val channel = Files.newByteChannel(source.path, openOptions)
         try {
             verifySource(source)
             require(channel.size() == source.attributes.size()) {
@@ -327,10 +341,7 @@ object AgentEnvironmentFiles {
     private fun unwrap(error: Throwable): Throwable =
         if (error is CompletionException && error.cause != null) unwrap(error.cause!!) else error
 
-    private fun preflight(files: Map<String, Path>, initial: Boolean): List<Pair<String, Source>> {
-        require(!initial || files.size <= MAX_FILES) {
-            "Hosted environment preparation supports at most 50 files"
-        }
+    private fun preflight(files: Map<String, Path>): List<Pair<String, Source>> {
         val destinations = files.keys.toList()
         destinations.forEach { destination ->
             validateDestination(destination)
@@ -338,25 +349,15 @@ object AgentEnvironmentFiles {
                 "Hosted destinations cannot overlap a parent file"
             }
         }
-        var total = 0L
         return files.map { (destination, input) ->
             val source = input.toAbsolutePath()
             val snapshot = attributes(source)
             require(snapshot.isRegularFile) { "Select a regular file, not a symlink" }
-            val size = snapshot.size()
-            require(size <= MAX_BYTES) { "A hosted file must be at most 50 MiB" }
-            total += size
-            require(!initial || total <= MAX_BYTES) {
-                "Prepared hosted files must total at most 50 MiB"
-            }
             destination to Source(source, snapshot)
         }
     }
 
     private fun validateDestination(path: String) {
-        require(path.codePointCount(0, path.length) <= 4096) {
-            "Hosted file paths must be at most 4096 characters"
-        }
         require(path.startsWith("/workspace/") && '\u0000' !in path && '\\' !in path) {
             "Hosted file paths must be absolute paths beneath /workspace"
         }
@@ -405,13 +406,10 @@ object AgentEnvironmentFiles {
                     }
                     verifyDirectoryPath(path, selectedDirectory)
                     files[destination.trimEnd('/') + "/" + relative.joinToString("/")] = path
-                    require(files.size <= MAX_FILES) {
-                        "Hosted environment preparation supports at most 50 files"
-                    }
                 }
             }
         }
-        val selected = preflight(files, initial = true)
+        val selected = preflight(files)
         require(sameIdentity(selectedRoot, attributes(root))) {
             "The selected directory changed during enumeration"
         }
