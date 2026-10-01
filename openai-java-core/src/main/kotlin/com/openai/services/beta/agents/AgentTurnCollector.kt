@@ -9,6 +9,7 @@ import kotlin.jvm.optionals.getOrNull
 internal class AgentTurnCollector(
     private val handledTools: Set<String> = emptySet(),
     private var sessionId: String? = null,
+    private val attachment: Boolean = false,
 ) {
     private var enabled = false
     private var started = false
@@ -21,6 +22,11 @@ internal class AgentTurnCollector(
     }
 
     fun isEnabled(): Boolean = enabled
+
+    // Attachment can finish from snapshots without emitting an SSE event.
+    fun startAttachment() {
+        started = true
+    }
 
     private val messages = linkedMapOf<String, Pair<Long, AgentSessionMessage>>()
     private var turn: Turn? = null
@@ -74,11 +80,35 @@ internal class AgentTurnCollector(
                     else messages[message.id()] = it.outputIndex() to normalize(message)
                 }
             }
+            if (attachment)
+                event.turnItemAdded().getOrNull()?.item()?.functionCall()?.getOrNull()?.let { call
+                    ->
+                    if (call.turnId() == turn?.id() && call.name() !in handledTools) {
+                        pending =
+                            listOf(
+                                AgentSession.RequiredAction.ofFunctionCall(
+                                    AgentSession.RequiredAction.FunctionCall.builder()
+                                        .callId(call.callId())
+                                        .turnId(call.turnId())
+                                        .name(call.name())
+                                        .arguments(call._arguments())
+                                        .build()
+                                )
+                            )
+                    }
+                }
             event.requiresAction().getOrNull()?.session()?.let {
                 if (it.id() == sessionId && !completed)
                     pending =
                         it.requiredActions().filter { action ->
-                            action.functionCall().getOrNull()?.name() !in handledTools
+                            val call = action.functionCall().getOrNull()
+                            val owner =
+                                if (attachment)
+                                    call?.turnId()
+                                        ?: action.computerUseApprovalRequest().getOrNull()?.turnId()
+                                else null
+                            call?.name() !in handledTools &&
+                                (!attachment || owner == null || owner == turn?.id())
                         }
             }
             event.inProgress().getOrNull()?.session()?.let {
@@ -94,6 +124,44 @@ internal class AgentTurnCollector(
         } catch (cause: Exception) {
             failure = error(Reason.STREAM_ERROR, cause)
         }
+    }
+
+    fun selectAttachedTurn(value: Turn?) {
+        if (!enabled || value == null || result != null) return
+        if (value.subagentId().isPresent || value.sessionId() != sessionId) return
+        if (turn != null && value.id() != turn?.id()) return
+        turn = value
+        when (value.status()) {
+            Turn.Status.COMPLETED -> {
+                completed = true
+                pending = emptyList()
+            }
+            Turn.Status.FAILED -> failure = error(Reason.TURN_FAILED)
+            Turn.Status.CANCELLED -> failure = error(Reason.TURN_CANCELLED)
+        }
+    }
+
+    fun reconcileMessage(message: AgentSessionMessage, index: Long) {
+        if (!enabled || result != null || message.turnId() != turn?.id()) return
+        if (
+            message.role() != AgentSessionMessage.Role.ASSISTANT ||
+                message.status() != AgentOutputItemStatus.COMPLETED
+        )
+            return
+        val id = message.id().orElse("history:$index")
+        if (message.phase().getOrNull() == AgentSessionMessage.Phase.COMMENTARY) messages.remove(id)
+        else messages[id] = index to message
+    }
+
+    fun manualActions(actions: List<AgentSession.RequiredAction>) {
+        if (enabled && !completed) pending = actions
+    }
+
+    fun attachedIdle(sessionFailed: Boolean = false) {
+        if (!enabled) return
+        if (sessionFailed) failure = error(Reason.TURN_FAILED)
+        else if (turn == null) failure = error(Reason.NO_SELECTED_TURN)
+        else if (completed) idle = true
     }
 
     private fun normalize(message: AgentSessionAssistantMessage): AgentSessionMessage =

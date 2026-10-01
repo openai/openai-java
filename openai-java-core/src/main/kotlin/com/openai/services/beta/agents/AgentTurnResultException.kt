@@ -25,6 +25,7 @@ internal constructor(
         TURN_CANCELLED,
         REQUIRES_ACTION,
         INCOMPLETE_STREAM,
+        NO_SELECTED_TURN,
         STREAM_ERROR,
         CLOSED,
     }

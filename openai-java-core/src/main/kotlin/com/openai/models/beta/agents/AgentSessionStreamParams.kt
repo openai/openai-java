@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 import java.util.function.Function
 
-/** Input and optional function handlers for one turn of an idle session. */
+/** Start a turn with input, or omit input to attach handlers to existing hosted work. */
 class AgentSessionStreamParams
 private constructor(
     val sessionId: String,
@@ -34,7 +34,10 @@ private constructor(
                 listOf(AgentSessionInputMessageParam.builder().addInputTextContent(value).build())
         }
 
-        fun input(value: List<AgentSessionInputMessageParam>) = apply { input = value.toList() }
+        fun input(value: List<AgentSessionInputMessageParam>) = apply {
+            require(value.isNotEmpty()) { "input must not be empty" }
+            input = value.toList()
+        }
 
         /** Applies only to the input POST. Each tool result receives a separate key. */
         fun idempotencyKey(value: String) = apply { idempotencyKey = value }
@@ -59,7 +62,6 @@ private constructor(
         ) = apply { handlers[name] = handler }
 
         fun build(): AgentSessionStreamParams {
-            require(input.isNotEmpty()) { "input must not be empty" }
             val allHeaders = headers.build()
             return AgentSessionStreamParams(
                 requireNotNull(sessionId) { "sessionId is required" },

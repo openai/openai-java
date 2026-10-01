@@ -1,10 +1,9 @@
 # Stream an Agent session turn
 
-Use `sessions().stream(...)` with an existing idle session and a single input
-writer. The helper opens the event subscription before posting input, yields the
-original `AgentSessionEvent` values, and finishes after the coordinator turn ends
-and the session becomes idle (or the session fails). Initial idle events and
-subagent completions do not end the stream. An unexpected EOF is an error.
+Use `sessions().stream(...)` with input to start a turn on an idle session, or omit
+input to attach to existing work. Input calls subscribe before posting and finish
+when their coordinator turn ends and the session becomes idle; attachments finish
+when their selected root turn settles. Subagent completions do not end observation.
 Closing a stream releases its connection and prevents new submissions from being
 claimed. A request already claimed may still arrive or finish at the server;
 closing is not backend cancellation.
@@ -75,7 +74,7 @@ String text = AgentSessionMessages.outputText(message);
 ```
 
 The raw `sessions().events().streamStreaming(...)` API remains available for
-following active sessions and advanced orchestration.
+low-level event handling and advanced orchestration.
 
 ## Typed application tools (beta)
 
@@ -110,3 +109,21 @@ and credentials stay in the closure or bound method. Use strings for exact decim
 amounts, as the existing event decoder represents JSON fractions as doubles. See
 [`BetaAgentToolsExample`](../../openai-java-example/src/main/java/com/openai/example/BetaAgentToolsExample.java)
 for a read-only catalog lookup.
+
+## Reattach after a disconnect
+
+Omit input to attach the same handlers to the saved session without sending the prompt again. Final-result collection also retrieves the selected turn's earlier output.
+
+```java
+var params = AgentSessionStreamParams.builder()
+    .sessionId(savedSessionId)
+    .toolHandler("lookup_order", arguments -> orderService.lookup(arguments))
+    .build();
+
+try (var stream = client.beta().agents().sessions().stream(params)) {
+    var result = AgentTurnResults.getFinalResult(stream);
+    System.out.println(result.outputText());
+}
+```
+
+An already-idle session drains successfully but has no selected result; application-owned tool side effects still need their own recovery or idempotency.

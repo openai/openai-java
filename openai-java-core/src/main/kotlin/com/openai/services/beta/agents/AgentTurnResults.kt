@@ -44,7 +44,8 @@ object AgentTurnResults {
      *
      * Accepts streams returned by beta agents sessions createStreaming() and stream(). The caller
      * must not consume the stream concurrently with this method. Creation streams require initial
-     * input; consume input-less creation as a raw stream.
+     * input; consume input-less creation as a raw stream. Input-less stream() attaches to existing
+     * work; an already-idle session without a selected turn has no final result.
      */
     @JvmStatic
     fun getFinalResult(stream: StreamResponse<AgentSessionEvent>): AgentTurnResult =
@@ -102,7 +103,11 @@ object AgentTurnResults {
         handledTools: Set<String> = emptySet(),
         sessionId: String? = null,
     ): StreamResponse<AgentSessionEvent> =
-        AgentTurnResultStream(stream, AgentTurnCollector(handledTools, sessionId))
+        AgentTurnResultStream(
+            stream,
+            (stream as? AgentSessionStream)?.collector
+                ?: AgentTurnCollector(handledTools, sessionId),
+        )
 
     @JvmSynthetic
     internal fun collecting(
@@ -110,5 +115,9 @@ object AgentTurnResults {
         handledTools: Set<String> = emptySet(),
         sessionId: String? = null,
     ): AsyncStreamResponse<AgentSessionEvent> =
-        AgentTurnResultStreamAsync(stream, AgentTurnCollector(handledTools, sessionId))
+        AgentTurnResultStreamAsync(
+            stream,
+            (stream as? AgentSessionStreamAsync)?.collector
+                ?: AgentTurnCollector(handledTools, sessionId),
+        )
 }

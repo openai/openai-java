@@ -15,7 +15,7 @@ internal class AgentTurnResultStreamAsync(
     private val closed = AtomicBoolean()
     private val requested = AtomicBoolean()
     private val result = CompletableFuture<AgentTurnResult>()
-    private val lock = Any()
+    private val lock = collector
 
     init {
         result.whenComplete { _, _ -> if (result.isCancelled) close() }

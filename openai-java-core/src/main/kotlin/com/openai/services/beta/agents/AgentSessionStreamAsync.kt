@@ -3,14 +3,17 @@ package com.openai.services.beta.agents
 import com.openai.core.RequestOptions
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.StreamResponse
+import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionEvent
 import com.openai.models.beta.agents.AgentSessionStreamParams
 import com.openai.models.beta.agents.sessions.events.EventCreateParams
+import com.openai.models.beta.agents.sessions.turns.Turn
 import com.openai.services.async.beta.agents.SessionServiceAsync
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.jvm.optionals.getOrNull
 
 /** Async one-turn stream; uses the SDK executor and never allocates a thread pool. */
 internal class AgentSessionStreamAsync(
@@ -21,6 +24,8 @@ internal class AgentSessionStreamAsync(
     private val sleeper: com.openai.core.Sleeper,
 ) : AsyncStreamResponse<AgentSessionEvent> {
     private val support = AgentSessionStreamSupport(params)
+    internal val collector =
+        AgentTurnCollector(params.handlers.keys, params.sessionId, support.attaching)
     private val subscribed = AtomicBoolean()
     private val closed = AtomicBoolean()
     private val submissionLock = Any()
@@ -54,36 +59,138 @@ internal class AgentSessionStreamAsync(
         }
         this.handler = handler
         this.executor = executor
+        if (support.attaching) synchronized(collector) { collector.startAttachment() }
         if (closed.get()) {
             execute { notifyComplete(null) }
             return@apply
         }
-        await(sessions.retrieve(support.retrieveParams(), options), cancelOnClose = false) { session
-            ->
-            support.checkIdle(session)
-            val opening =
-                sessions.events().withRawResponse().streamStreaming(support.streamParams(), options)
-            // Closing during an in-flight open must also close the eventual HTTP response.
-            opening.whenComplete { response, _ ->
-                openingResponse = response
-                if (closed.get()) response?.close()
+        if (support.attaching) findActiveTurn(beforeOpen = true) { open() }
+        else
+            await(sessions.retrieve(support.retrieveParams(), options), cancelOnClose = false) {
+                session ->
+                support.checkIdle(session)
+                open()
             }
-            await(opening, cancelOnClose = false) { response ->
-                openingResponse = response
-                val stream =
-                    try {
-                        response.parse()
-                    } catch (error: Throwable) {
-                        response.close()
-                        throw error
-                    }
-                source = stream
-                if (closed.get()) {
-                    stream.close()
-                    return@await
+    }
+
+    private fun open() {
+        val opening =
+            sessions.events().withRawResponse().streamStreaming(support.streamParams(), options)
+        // Closing during an in-flight open must also close the eventual HTTP response.
+        opening.whenComplete { response, _ ->
+            openingResponse = response
+            if (closed.get()) response?.close()
+        }
+        await(opening, cancelOnClose = false) { response ->
+            openingResponse = response
+            val stream =
+                try {
+                    response.parse()
+                } catch (error: Throwable) {
+                    response.close()
+                    throw error
                 }
-                iterator = stream.stream().iterator()
-                create(support.inputParams())?.let { await(it) { pump() } }
+            source = stream
+            if (closed.get()) {
+                stream.close()
+                return@await
+            }
+            iterator = stream.stream().iterator()
+            if (support.attaching)
+                refreshTurn {
+                    await(sessions.retrieve(support.retrieveParams(), options)) { session ->
+                        support.observeSession(session)
+                        val enabled = synchronized(collector) { collector.isEnabled() }
+                        if (enabled && session.requiredActions().any { !it.isFunctionCall() })
+                            refreshTurn {
+                                if (session.requiredActions().any { it.isEnvironmentConnection() })
+                                    findLatestRoot { readyAttachment(session, it?.id()) }
+                                else readyAttachment(session)
+                            }
+                        else readyAttachment()
+                    }
+                }
+            else create(support.inputParams())?.let { await(it) { pump() } }
+        }
+    }
+
+    private fun readyAttachment(session: AgentSession? = null, latestRootId: String? = null) {
+        val stop =
+            synchronized(collector) {
+                collector.selectAttachedTurn(support.selectedTurn)
+                session?.let { collector.manualActions(support.manualActions(it, latestRootId)) }
+                collector.stoppingError() != null
+            }
+        if (support.settled || stop) reconcile { finish(null) } else pump()
+    }
+
+    private fun findActiveTurn(beforeOpen: Boolean = false, done: () -> Unit) {
+        findLatestRoot { root ->
+            if (root != null) {
+                if (beforeOpen) support.baselineRootId = root.id()
+                support.select(root, activeOnly = beforeOpen)
+            }
+            done()
+        }
+    }
+
+    private fun findLatestRoot(after: String? = null, done: (Turn?) -> Unit) {
+        await(sessions.turns().list(support.turnListParams(after), options)) { page ->
+            val root = page.data().firstOrNull { !it.subagentId().isPresent }
+            if (root != null || !page.hasNextPage()) done(root)
+            else findLatestRoot(page.nextPageParams().after().getOrNull(), done)
+        }
+    }
+
+    private fun refreshTurn(done: () -> Unit) {
+        val selected = support.selectedTurn
+        if (selected == null) findActiveTurn(done = done)
+        else
+            await(sessions.turns().retrieve(support.turnRetrieveParams(selected.id()), options)) {
+                support.select(it)
+                done()
+            }
+    }
+
+    private fun reconcile(
+        after: String? = null,
+        index: Long = 0,
+        failed: (Throwable) -> Unit = { finish(it) },
+        done: () -> Unit,
+    ) {
+        val enabled =
+            synchronized(collector) {
+                collector.selectAttachedTurn(support.selectedTurn)
+                collector.isEnabled()
+            }
+        if (!enabled) {
+            done()
+            return
+        }
+        if (support.selectedTurn?.status() != Turn.Status.COMPLETED) {
+            synchronized(collector) { collector.attachedIdle(support.sessionFailed) }
+            done()
+            return
+        }
+        await(sessions.items().list(support.itemListParams(after), options), failed = failed) { page
+            ->
+            synchronized(collector) {
+                page.data().forEachIndexed { offset, item ->
+                    item.message().getOrNull()?.let {
+                        collector.reconcileMessage(it, index + offset)
+                    }
+                }
+            }
+            if (page.hasNextPage())
+                reconcile(
+                    page.nextPageParams().after().getOrNull(),
+                    index + page.data().size,
+                    failed,
+                    done,
+                )
+            else {
+                synchronized(collector) { collector.attachedIdle(support.sessionFailed) }
+                done()
             }
         }
     }
@@ -91,6 +198,7 @@ internal class AgentSessionStreamAsync(
     private fun <T> await(
         future: CompletableFuture<T>,
         cancelOnClose: Boolean = true,
+        failed: (Throwable) -> Unit = { finish(it) },
         next: (T) -> Unit,
     ) {
         active = if (cancelOnClose) future else null
@@ -102,12 +210,12 @@ internal class AgentSessionStreamAsync(
                     notifyComplete(null)
                     return@execute
                 }
-                if (error != null) finish(unwrap(error))
+                if (error != null) failed(unwrap(error))
                 else {
                     try {
                         next(value)
                     } catch (failure: Throwable) {
-                        finish(unwrap(failure))
+                        failed(unwrap(failure))
                     }
                 }
             }
@@ -141,43 +249,90 @@ internal class AgentSessionStreamAsync(
     private fun pump() {
         try {
             while (!closed.get()) {
-                val hasNext =
+                val event =
                     try {
-                        iterator.hasNext()
-                    } catch (error: Throwable) {
+                        val hasNext = iterator.hasNext()
                         if (closed.get()) {
                             notifyComplete(null)
                             return
                         }
-                        throw error
+                        if (!hasNext) throw support.unexpectedEnd()
+                        iterator.next()
+                    } catch (error: Throwable) {
+                        if (closed.get()) notifyComplete(null)
+                        else recoverObservation(unwrap(error))
+                        return
                     }
-                if (closed.get()) {
-                    notifyComplete(null)
-                    return
-                }
-                if (!hasNext) throw support.unexpectedEnd()
-                val event = iterator.next()
                 if (!support.accept(event)) continue
-                val terminal = support.terminal(event)
-                if (terminal) source?.close()
-                handler.onNext(event)
-                if (closed.get()) {
-                    notifyComplete(null)
-                    return
+                if (support.attaching) {
+                    val missing = support.missingTurnId(event)
+                    if (missing != null) {
+                        await(
+                            sessions.turns().retrieve(support.turnRetrieveParams(missing), options)
+                        ) {
+                            support.select(it)
+                            deliver(event)
+                        }
+                        return
+                    }
+                    if (event.isIdle() && support.selectedTurn != null) {
+                        refreshTurn { deliver(event) }
+                        return
+                    }
                 }
-                if (terminal) {
-                    finish(null)
-                    return
-                }
-                await(support.result(event)) { result ->
-                    if (result == null) pump() else submit(result, 0)
-                }
+                deliver(event)
                 return
             }
             notifyComplete(null)
         } catch (error: Throwable) {
             finish(unwrap(error))
         }
+    }
+
+    private fun recoverObservation(cause: Throwable) {
+        val selected = support.selectedTurn
+        if (!support.attaching || selected == null) {
+            finish(cause)
+            return
+        }
+        try {
+            await(
+                sessions.turns().retrieve(support.turnRetrieveParams(selected.id()), options),
+                failed = { finish(cause) },
+            ) { turn ->
+                support.select(turn)
+                if (
+                    support.selectedTurn?.status() in
+                        setOf(Turn.Status.COMPLETED, Turn.Status.FAILED, Turn.Status.CANCELLED)
+                )
+                    reconcile(failed = { finish(cause) }) { finish(null) }
+                else finish(cause)
+            }
+        } catch (_: Exception) {
+            finish(cause)
+        }
+    }
+
+    private fun deliver(event: AgentSessionEvent) {
+        if (support.attaching)
+            synchronized(collector) { collector.selectAttachedTurn(support.selectedTurn) }
+        val terminal = support.terminal(event)
+        if (terminal && support.attaching) reconcile { publish(event, terminal) }
+        else publish(event, terminal)
+    }
+
+    private fun publish(event: AgentSessionEvent, terminal: Boolean) {
+        if (terminal) source?.close()
+        handler.onNext(event)
+        if (closed.get()) {
+            notifyComplete(null)
+            return
+        }
+        if (terminal) {
+            finish(null)
+            return
+        }
+        await(support.result(event)) { result -> if (result == null) pump() else submit(result, 0) }
     }
 
     private fun create(params: EventCreateParams): CompletableFuture<Void?>? =
