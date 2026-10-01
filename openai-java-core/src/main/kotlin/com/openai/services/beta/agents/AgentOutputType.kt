@@ -44,20 +44,27 @@ private constructor(private val type: Class<T>, private val format: TextFormatPa
      */
     fun text(): AgentTextParam = AgentTextParam.builder().format(format).build()
 
-    /** Parses a completed result with the SDK's existing Java structured-output mapper. */
+    /** Parses every output-text part and returns the first parsed value in output order. */
     fun parse(result: AgentTurnResult): ParsedAgentTurnResult<T> =
         try {
-            val text = result.outputText()
-            jsonMapper().factory.createParser(text).use { parser ->
-                require(parser.nextToken() != null) {
-                    "Agents structured output must contain a JSON document"
-                }
-                parser.skipChildren()
-                require(parser.nextToken() == null) {
-                    "Agents structured output must contain exactly one JSON document"
+            var first: T? = null
+            for (message in result.messages()) {
+                for (content in message.content()) {
+                    val text = content.outputText().orElse(null)?.text() ?: continue
+                    jsonMapper().factory.createParser(text).use { parser ->
+                        require(parser.nextToken() != null) {
+                            "Agents structured output must contain a JSON document"
+                        }
+                        parser.skipChildren()
+                        require(parser.nextToken() == null) {
+                            "Agents structured output must contain exactly one JSON document"
+                        }
+                    }
+                    val parsed = requireNotNull(responseTypeFromJson(text, type))
+                    if (first == null) first = parsed
                 }
             }
-            ParsedAgentTurnResult(result, responseTypeFromJson(text, type))
+            ParsedAgentTurnResult(result, requireNotNull(first))
         } catch (_: Exception) {
             // Parser exception messages may include output; retain it only through rawResult().
             throw AgentOutputParseException(result)

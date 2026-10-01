@@ -9,7 +9,10 @@ import com.openai.core.http.*
 import com.openai.helpers.beta.agents.AgentFunctionTool
 import com.openai.models.beta.agents.*
 import com.openai.models.beta.agents.sessions.SessionCreateParams
+import com.openai.models.responses.ResponseOutputMessage
+import com.openai.models.responses.ResponseOutputText
 import com.openai.models.responses.ResponseTextConfig
+import com.openai.models.responses.StructuredResponseOutputMessage
 import io.swagger.v3.oas.annotations.media.Schema
 import java.io.ByteArrayInputStream
 import java.util.Optional
@@ -701,32 +704,81 @@ internal class AgentTurnResultsTest {
             .isInstanceOf(AgentTurnResultException::class.java)
     }
 
-    @Test
-    fun `typed parser rejects concatenated JSON documents and retains every raw message`() {
-        val text = """{"summary":"Report","findings":["Finding"]}"""
-        val events = typedEvents(text).toMutableList()
-        events.add(2, typedEvents(text, "second", 1)[1])
+    private fun messageWithTextParts(texts: List<String>): String {
+        val event = com.openai.core.jsonMapper().readTree(message())
+        val content =
+            event.path("item").path("content") as com.fasterxml.jackson.databind.node.ArrayNode
+        content.removeAll()
+        texts.forEach { content.addObject().put("type", "output_text").put("text", it) }
+        return event.toString()
+    }
+
+    private fun partEvents(texts: List<String>, oneMessage: Boolean): List<String> =
+        if (oneMessage)
+            listOf(turn("created"), messageWithTextParts(texts), turn("completed"), idle())
+        else
+            listOf(turn("created")) +
+                texts.mapIndexed { i, text -> typedEvents(text, "answer-$i", i)[1] } +
+                listOf(turn("completed"), idle())
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `typed parser handles each output text and exposes the first parsed value`(
+        oneMessage: Boolean
+    ) {
+        val first = """{"summary":"First","findings":["Finding"]}"""
+        val second = """{"summary":"Second","findings":[]}"""
+        val stream = source(partEvents(listOf(first, second), oneMessage))
+        val result = AgentTurnResults.getFinalResult(stream, AgentOutputType.of(Report::class.java))
+        val responsesPart =
+            StructuredResponseOutputMessage.Content(
+                Report::class.java,
+                ResponseOutputMessage.Content.ofOutputText(
+                    ResponseOutputText.builder().text(first).annotations(emptyList()).build()
+                ),
+            )
+        assertThat(result.outputParsed().summary)
+            .isEqualTo(responsesPart.outputText().get().summary)
+        assertThat(result.outputParsed().summary).isEqualTo("First")
+        assertThat(result.messages()).hasSize(if (oneMessage) 1 else 2)
+        assertThat(result.outputText()).isEqualTo(first + second)
+        assertThat(result.rawResult()).isSameAs(AgentTurnResults.getFinalResult(stream))
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `typed parser validates later text parts and retains the raw result`(oneMessage: Boolean) {
+        val text = """{"summary":"First","findings":[]}"""
+        val stream = source(partEvents(listOf(text, "not json"), oneMessage))
         val failure =
             catchThrowable {
-                AgentTurnResults.getFinalResult(
-                    source(events),
-                    AgentOutputType.of(Report::class.java),
-                )
+                AgentTurnResults.getFinalResult(stream, AgentOutputType.of(Report::class.java))
             }
                 as AgentOutputParseException
-        assertThat(failure.rawResult().messages()).hasSize(2)
-        assertThat(failure.rawResult().outputText()).isEqualTo(text + text)
+        assertThat(failure.rawResult()).isSameAs(AgentTurnResults.getFinalResult(stream))
+        assertThat(failure.rawResult().outputText()).isEqualTo(text + "not json")
         assertThat(failure.cause).isNull()
     }
 
     @Test
-    fun `typed parser permits a single JSON document split across final messages`() {
-        val events = typedEvents("""{"summary":"Report",""").toMutableList()
-        events.add(2, typedEvents(""""findings":["Finding"]}""", "second", 1)[1])
-        val result =
-            AgentTurnResults.getFinalResult(source(events), AgentOutputType.of(Report::class.java))
-        assertThat(result.messages()).hasSize(2)
-        assertThat(result.outputParsed().findings).containsExactly("Finding")
+    fun `typed parser does not combine separate incomplete text parts or accept missing text`() {
+        val output = AgentOutputType.of(Report::class.java)
+        assertThatThrownBy {
+                AgentTurnResults.getFinalResult(
+                    source(
+                        partEvents(listOf("""{"summary":"Report",""", """"findings":[]}"""), false)
+                    ),
+                    output,
+                )
+            }
+            .isInstanceOf(AgentOutputParseException::class.java)
+        assertThatThrownBy {
+                AgentTurnResults.getFinalResult(
+                    source(listOf(turn("created"), turn("completed"), idle())),
+                    output,
+                )
+            }
+            .isInstanceOf(AgentOutputParseException::class.java)
     }
 
     @ParameterizedTest

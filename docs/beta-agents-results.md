@@ -60,4 +60,4 @@ try (var stream = client.beta().agents().sessions().createStreaming(params)) {
 }
 ```
 
-`Report` is an ordinary Java class, as with Responses structured outputs; parsing errors expose the completed `rawResult()`.
+`Report` is an ordinary Java class, as with Responses structured outputs. Each output-text part is parsed separately; `outputParsed()` returns the first value. Parsing errors expose the completed `rawResult()`.
