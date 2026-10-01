@@ -13,6 +13,8 @@ import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 import org.assertj.core.api.Assertions.*
@@ -21,6 +23,11 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 internal class AgentSessionAttachmentTest {
+    private fun unwrap(error: Throwable): Throwable =
+        if ((error is CompletionException || error is ExecutionException) && error.cause != null)
+            unwrap(error.cause!!)
+        else error
+
     private val mapper = jsonMapper()
     private val options =
         RequestOptions.builder().timeout(Duration.ofSeconds(7)).responseValidation(false).build()
