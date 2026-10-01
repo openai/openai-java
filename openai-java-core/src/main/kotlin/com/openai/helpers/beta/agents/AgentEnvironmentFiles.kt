@@ -8,9 +8,15 @@ import com.openai.models.beta.agents.HostedEnvironmentFileParam
 import com.openai.models.beta.agents.environments.files.FileCreateParams as StageParams
 import com.openai.models.files.FileCreateParams
 import com.openai.models.files.FilePurpose
+import java.io.IOException
+import java.io.InputStream
+import java.nio.channels.Channels
+import java.nio.channels.FileChannel
 import java.nio.file.Files
 import java.nio.file.LinkOption.NOFOLLOW_LINKS
 import java.nio.file.Path
+import java.nio.file.StandardOpenOption.READ
+import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 import java.util.concurrent.atomic.AtomicReference
@@ -214,16 +220,69 @@ object AgentEnvironmentFiles {
         return result
     }
 
-    private fun uploadParams(source: Path): FileCreateParams =
-        FileCreateParams.builder()
-            .file(
-                MultipartField.builder<java.io.InputStream>()
-                    .value(Files.newInputStream(source, NOFOLLOW_LINKS))
-                    .filename(source.fileName.toString())
-                    .build()
-            )
-            .purpose(FilePurpose.USER_DATA)
-            .build()
+    private data class Source(val path: Path, val attributes: BasicFileAttributes)
+
+    private fun attributes(path: Path): BasicFileAttributes =
+        Files.readAttributes(path, BasicFileAttributes::class.java, NOFOLLOW_LINKS)
+
+    private fun sameIdentity(before: BasicFileAttributes, after: BasicFileAttributes): Boolean =
+        before.fileKey() == after.fileKey() &&
+            before.creationTime() == after.creationTime() &&
+            before.isRegularFile == after.isRegularFile &&
+            before.isDirectory == after.isDirectory
+
+    private fun uploadParams(source: Source): FileCreateParams {
+        require(sameIdentity(source.attributes, attributes(source.path))) {
+            "The selected file changed before upload"
+        }
+        val channel = FileChannel.open(source.path, READ, NOFOLLOW_LINKS)
+        try {
+            require(
+                sameIdentity(source.attributes, attributes(source.path)) &&
+                    channel.size() == source.attributes.size()
+            ) {
+                "The selected file changed before upload"
+            }
+            val input = Channels.newInputStream(channel)
+            val checked =
+                object : InputStream() {
+                    var remaining = source.attributes.size()
+
+                    override fun read(): Int {
+                        val one = ByteArray(1)
+                        return if (read(one, 0, 1) < 0) -1 else one[0].toInt() and 0xff
+                    }
+
+                    override fun read(bytes: ByteArray, offset: Int, length: Int): Int {
+                        if (length == 0) return 0
+                        if (remaining == 0L) {
+                            if (input.read() != -1)
+                                throw IOException("The selected file grew during upload")
+                            return -1
+                        }
+                        val read =
+                            input.read(bytes, offset, minOf(length.toLong(), remaining).toInt())
+                        if (read < 0) throw IOException("The selected file shrank during upload")
+                        remaining -= read
+                        return read
+                    }
+
+                    override fun close() = input.close()
+                }
+            return FileCreateParams.builder()
+                .file(
+                    MultipartField.builder<InputStream>()
+                        .value(checked)
+                        .filename(source.path.fileName.toString())
+                        .build()
+                )
+                .purpose(FilePurpose.USER_DATA)
+                .build()
+        } catch (error: Throwable) {
+            runCatching { channel.close() }
+            throw error
+        }
+    }
 
     private fun reference(destination: String, id: String) =
         HostedEnvironmentFileParam.ofFileId(
@@ -235,7 +294,7 @@ object AgentEnvironmentFiles {
     private fun unwrap(error: Throwable): Throwable =
         if (error is CompletionException && error.cause != null) unwrap(error.cause!!) else error
 
-    private fun preflight(files: Map<String, Path>, initial: Boolean): List<Pair<String, Path>> {
+    private fun preflight(files: Map<String, Path>, initial: Boolean): List<Pair<String, Source>> {
         require(!initial || files.size <= MAX_FILES) {
             "Hosted environment preparation supports at most 50 files"
         }
@@ -249,20 +308,22 @@ object AgentEnvironmentFiles {
         var total = 0L
         return files.map { (destination, input) ->
             val source = input.toAbsolutePath().normalize()
-            require(!Files.isSymbolicLink(source) && Files.isRegularFile(source, NOFOLLOW_LINKS)) {
-                "Select a regular file, not a symlink"
-            }
-            val size = Files.size(source)
+            val snapshot = attributes(source)
+            require(snapshot.isRegularFile) { "Select a regular file, not a symlink" }
+            val size = snapshot.size()
             require(size <= MAX_BYTES) { "A hosted file must be at most 50 MiB" }
             total += size
             require(!initial || total <= MAX_BYTES) {
                 "Prepared hosted files must total at most 50 MiB"
             }
-            destination to source
+            destination to Source(source, snapshot)
         }
     }
 
     private fun validateDestination(path: String) {
+        require(path.codePointCount(0, path.length) <= 4096) {
+            "Hosted file paths must be at most 4096 characters"
+        }
         require(path.startsWith("/workspace/") && '\u0000' !in path && '\\' !in path) {
             "Hosted file paths must be absolute paths beneath /workspace"
         }
@@ -286,10 +347,15 @@ object AgentEnvironmentFiles {
         include: List<String>,
     ): Map<String, Path> {
         require(include.isNotEmpty()) { "Specify at least one include glob" }
-        require(!Files.isSymbolicLink(source) && Files.isDirectory(source, NOFOLLOW_LINKS)) {
-            "Select a directory, not a symlink"
-        }
+        val selectedRoot = attributes(source)
+        require(selectedRoot.isDirectory) { "Select a directory, not a symlink" }
         val root = source.toRealPath()
+        require(
+            sameIdentity(selectedRoot, attributes(source)) &&
+                sameIdentity(selectedRoot, attributes(root))
+        ) {
+            "The selected directory changed during resolution"
+        }
         val matchers = include.map { root.fileSystem.getPathMatcher("glob:$it") }
         val files = linkedMapOf<String, Path>()
         Files.walk(root).use { paths ->
@@ -309,6 +375,9 @@ object AgentEnvironmentFiles {
                     }
                 }
             }
+        }
+        require(sameIdentity(selectedRoot, attributes(root))) {
+            "The selected directory changed during enumeration"
         }
         return files
     }

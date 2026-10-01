@@ -62,6 +62,7 @@ internal class AgentFileHelpersTest {
         val bodies = mutableListOf<String>()
         var uploads = 0
         var uploadFailureAt = 0
+        var beforeUpload: () -> Unit = {}
         var stageFailure = false
         var pages = mutableListOf(page(artifact("artifact-one")))
         var contentClosed = false
@@ -94,6 +95,7 @@ internal class AgentFileHelpersTest {
             val path = request.pathSegments
             return when {
                 request.method == HttpMethod.POST -> {
+                    if (!path.contains("environments")) beforeUpload()
                     val body = ByteArrayOutputStream()
                     request.body!!.writeTo(body)
                     bodies.add(body.toString("UTF-8"))
@@ -658,5 +660,123 @@ internal class AgentFileHelpersTest {
         } finally {
             client.close()
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `path limit counts Unicode code points before uploading any file`(async: Boolean) {
+        val source = file()
+        val t = Transport()
+        val maximum = "/workspace/" + "😀".repeat(4085)
+        assertThat(prepare(t, async, mapOf(maximum to source)).files().single().asFileId().path())
+            .isEqualTo(maximum)
+        val rejected = Transport()
+        assertThatThrownBy {
+                prepare(
+                    rejected,
+                    async,
+                    linkedMapOf("/workspace/good" to source, maximum + "a" to source),
+                )
+            }
+            .isInstanceOf(IllegalArgumentException::class.java)
+        assertThat(rejected.requests).isEmpty()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `later selected files are checked again after earlier uploads`(async: Boolean) {
+        for (replace in listOf(false, true)) {
+            val first = file("first")
+            val second = file("second", "old")
+            val t =
+                Transport().apply {
+                    beforeUpload = {
+                        if (uploads == 0) {
+                            if (replace) Files.delete(second)
+                            Files.write(
+                                second,
+                                (if (replace) "new" else "grown after preflight").toByteArray(),
+                            )
+                        }
+                    }
+                }
+            val error =
+                unwrap(
+                    catchThrowable {
+                        prepare(
+                            t,
+                            async,
+                            linkedMapOf("/workspace/first" to first, "/workspace/second" to second),
+                        )
+                    }
+                )
+                    as AgentFilePreparationException
+            assertThat(error.uploadedFileIds()).containsExactly("file-1")
+            assertThat(t.uploads).isEqualTo(1)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `opened upload detects size changes while streaming`(async: Boolean) {
+        for (contents in listOf("more bytes than before", "")) {
+            val source = file(text = "old")
+            val t =
+                Transport().apply { beforeUpload = { Files.write(source, contents.toByteArray()) } }
+            val error =
+                unwrap(catchThrowable { prepare(t, async, mapOf("/workspace/source" to source)) })
+            assertThat(error).isInstanceOf(AgentFilePreparationException::class.java)
+            assertThat(error).hasStackTraceContaining("during upload")
+            assertThat(t.uploads).isZero()
+        }
+    }
+
+    @Test
+    fun `directory replacement during resolution is rejected before uploads`() {
+        val root = Files.createDirectory(directory.resolve("selected"))
+        val outside = Files.createDirectory(directory.resolve("other"))
+        Files.write(outside.resolve("not-selected.txt"), byteArrayOf(1))
+        val original =
+            Files.readAttributes(
+                root,
+                java.nio.file.attribute.BasicFileAttributes::class.java,
+                java.nio.file.LinkOption.NOFOLLOW_LINKS,
+            )
+        val t = Transport()
+        val client = t.client()
+        var replaced = false
+        org.mockito.Mockito.mockStatic(Files::class.java, org.mockito.Mockito.CALLS_REAL_METHODS)
+            .use { mocked ->
+                mocked
+                    .`when`<java.nio.file.attribute.BasicFileAttributes> {
+                        Files.readAttributes(
+                            root,
+                            java.nio.file.attribute.BasicFileAttributes::class.java,
+                            java.nio.file.LinkOption.NOFOLLOW_LINKS,
+                        )
+                    }
+                    .thenAnswer {
+                        if (!replaced) {
+                            replaced = true
+                            Files.move(root, directory.resolve("original"))
+                            Files.createSymbolicLink(root, outside)
+                            original
+                        } else it.callRealMethod()
+                    }
+                try {
+                    assertThatThrownBy {
+                            AgentEnvironmentFiles.prepareDirectory(
+                                client,
+                                root,
+                                "/workspace/docs",
+                                listOf("*.txt"),
+                            )
+                        }
+                        .isInstanceOf(IllegalArgumentException::class.java)
+                    assertThat(t.requests).isEmpty()
+                } finally {
+                    client.close()
+                }
+            }
     }
 }
