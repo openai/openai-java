@@ -6,6 +6,7 @@ import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.*
 import com.openai.core.jsonMapper
+import com.openai.helpers.beta.agents.AgentFunctionTool
 import com.openai.models.beta.agents.*
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -236,6 +237,62 @@ internal class AgentSessionStreamTest {
     }
 
     private fun params() = AgentSessionStreamParams.builder().sessionId("s").input("hello")
+
+    class LookupItem(val itemId: String)
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun typedActionsReuseTheDispatcher(async: Boolean) {
+        for (asyncHandler in listOf(false, true)) {
+            val calls = mutableListOf<String>()
+            val action = { args: LookupItem ->
+                calls.add(args.itemId)
+                mapOf("type" to "item", "content" to args.itemId)
+            }
+            val p = params().toolHandler("raw") { mapOf("raw" to it["itemId"]) }
+            if (asyncHandler) {
+                val tool =
+                    AgentFunctionTool.ofAsync(LookupItem::class.java) {
+                        CompletableFuture.completedFuture(action(it))
+                    }
+                p.asyncToolHandler(tool.name(), tool.handler())
+            } else {
+                val tool = AgentFunctionTool.of(LookupItem::class.java, action)
+                p.toolHandler(tool.name(), tool.handler())
+            }
+            val t =
+                Transport(
+                    listOf(
+                        turn("created"),
+                        call(name = "LookupItem", args = "{\"itemId\":\"ITEM_A\"}"),
+                        call(
+                            name = "LookupItem",
+                            event = "redelivered",
+                            args = "{\"itemId\":\"ITEM_A\"}",
+                        ),
+                        call(
+                            id = "legacy",
+                            name = "LookupItem",
+                            args = "\"{\\\"itemId\\\":\\\"ITEM_B\\\"}\"",
+                        ),
+                        call(id = "invalid", name = "LookupItem", args = "{}"),
+                        call(id = "raw", name = "raw", args = "{\"itemId\":\"ITEM_C\"}"),
+                        turn("completed"),
+                        idle(),
+                    )
+                )
+            consume(t, async, p.build())
+            assertThat(calls).containsExactly("ITEM_A", "ITEM_B")
+            val results = t.posts.drop(1).map { it.path("events").first() }
+            assertThat(results).hasSize(4)
+            assertThat(results[0].path("output").asText())
+                .isEqualTo("{\"type\":\"item\",\"content\":\"ITEM_A\"}")
+            assertThat(results[1].path("success").asBoolean()).isTrue()
+            assertThat(results[2].path("success").asBoolean()).isFalse()
+            assertThat(results[2].path("error").asText()).isEqualTo("Tool handler failed.")
+            assertThat(results[3].path("output").asText()).isEqualTo("{\"raw\":\"ITEM_C\"}")
+        }
+    }
 
     private fun consume(
         t: Transport,
