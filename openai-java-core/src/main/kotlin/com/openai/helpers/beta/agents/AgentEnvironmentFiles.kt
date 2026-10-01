@@ -11,6 +11,7 @@ import com.openai.models.files.FilePurpose
 import java.io.IOException
 import java.io.InputStream
 import java.nio.channels.Channels
+import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.LinkOption.NOFOLLOW_LINKS
 import java.nio.file.Path
@@ -18,6 +19,7 @@ import java.nio.file.StandardOpenOption.READ
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Path-based file preparation and live staging for beta Agents hosted environments. Sources must be
@@ -75,6 +77,13 @@ object AgentEnvironmentFiles {
         select: () -> List<Pair<String, Source>>,
     ): CompletableFuture<PreparedAgentFiles> {
         val result = CompletableFuture<PreparedAgentFiles>()
+        val activeSource = AtomicReference<InputStream?>()
+        fun closeSource(input: InputStream) {
+            if (activeSource.compareAndSet(input, null)) input.close()
+        }
+        result.whenComplete { _, _ ->
+            if (result.isCancelled) runCatching { activeSource.getAndSet(null)?.close() }
+        }
         CompletableFuture.runAsync {
             try {
                 if (result.isDone) return@runAsync
@@ -95,11 +104,17 @@ object AgentEnvironmentFiles {
                     try {
                         val (destination, source) = selected[index]
                         val params = uploadParams(source)
+                        val input = params.file()
+                        activeSource.set(input)
+                        if (result.isDone) {
+                            closeSource(input)
+                            return
+                        }
                         val request =
                             try {
                                 client.files().create(params, options)
                             } catch (error: Throwable) {
-                                runCatching { params.file().close() }
+                                runCatching { closeSource(input) }
                                 throw error
                             }
                         // Keep the generated service future alive so late responses are parsed and
@@ -108,10 +123,10 @@ object AgentEnvironmentFiles {
                             try {
                                 if (failure != null) throw failure
                                 prepared.add(reference(destination, uploaded.id()))
-                                params.file().close()
+                                closeSource(input)
                                 next(index + 1)
                             } catch (error: Throwable) {
-                                runCatching { params.file().close() }
+                                runCatching { closeSource(input) }
                                 result.completeExceptionally(
                                     AgentFilePreparationException(ids(prepared), unwrap(error))
                                 )
@@ -272,10 +287,11 @@ object AgentEnvironmentFiles {
 
     private fun uploadParams(source: Source): FileCreateParams {
         verifySource(source)
-        // The JDK ZIP provider does not support symlinks and rejects NOFOLLOW_LINKS.
+        // Non-default providers may only support READ. Sources must remain application-owned
+        // and stable; the attribute checks below are not a filesystem sandbox.
         val openOptions =
-            if (source.path.fileSystem.provider().scheme == "jar") setOf(READ)
-            else setOf(READ, NOFOLLOW_LINKS)
+            if (source.path.fileSystem == FileSystems.getDefault()) setOf(READ, NOFOLLOW_LINKS)
+            else setOf(READ)
         val channel = Files.newByteChannel(source.path, openOptions)
         try {
             verifySource(source)

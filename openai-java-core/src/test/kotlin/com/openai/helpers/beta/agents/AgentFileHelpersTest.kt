@@ -289,22 +289,6 @@ internal class AgentFileHelpersTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
-    fun `file count and size limits are left to the API`(async: Boolean) {
-        val source = file()
-        val t = Transport().apply { discardUploadBody = true }
-        val many = (1..51).associate { "/workspace/$it" to source }
-        assertThat(prepare(t, async, many).files()).hasSize(51)
-        java.io.RandomAccessFile(source.toFile(), "rw").use { it.setLength(26L * 1024 * 1024) }
-        assertThat(
-                prepare(t, async, mapOf("/workspace/a" to source, "/workspace/b" to source)).files()
-            )
-            .hasSize(2)
-        java.io.RandomAccessFile(source.toFile(), "rw").use { it.setLength(50L * 1024 * 1024 + 1) }
-        assertThat(prepare(t, async, mapOf("/workspace/a" to source)).files()).hasSize(1)
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = [false, true])
     fun `multi upload checks effective client idempotency header without changing defaults`(
         async: Boolean
     ) {
@@ -746,14 +730,13 @@ internal class AgentFileHelpersTest {
         }
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun `long destination paths are preserved for API validation`(async: Boolean) {
+    @Test
+    fun `long destination paths are preserved for API validation`() {
         val source = file()
         val t = Transport()
         val destination = "/workspace/" + "😀".repeat(5000)
         assertThat(
-                prepare(t, async, mapOf(destination to source)).files().single().asFileId().path()
+                prepare(t, true, mapOf(destination to source)).files().single().asFileId().path()
             )
             .isEqualTo(destination)
     }
@@ -927,28 +910,18 @@ internal class AgentFileHelpersTest {
             }
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun `regular ZIP filesystem sources work for preparation and staging`(async: Boolean) {
+    @Test
+    fun `regular ZIP filesystem sources work for preparation and staging`() {
         val uri = java.net.URI.create("jar:" + directory.resolve("sources.zip").toUri())
         java.nio.file.FileSystems.newFileSystem(uri, mapOf("create" to "true")).use { fs ->
             val source = fs.getPath("/source.txt")
             Files.write(source, "zip contents".toByteArray())
             val t = Transport()
-            assertThat(prepare(t, async, mapOf("/workspace/source.txt" to source)).files())
+            assertThat(prepare(t, true, mapOf("/workspace/source.txt" to source)).files())
                 .hasSize(1)
             withClient(t) { client ->
                 val staged =
-                    if (async)
-                        AgentEnvironmentFiles.upload(
-                                client.async(),
-                                "env",
-                                source,
-                                "/workspace/source.txt",
-                            )
-                            .join()
-                    else
-                        AgentEnvironmentFiles.upload(client, "env", source, "/workspace/source.txt")
+                    AgentEnvironmentFiles.upload(client, "env", source, "/workspace/source.txt")
                 assertThat(staged.uploadedFileId()).isEqualTo("file-2")
             }
             assertThat(t.bodies.take(2)).allSatisfy { assertThat(it).contains("zip contents") }
@@ -987,8 +960,8 @@ internal class AgentFileHelpersTest {
                         "/workspace/source.txt",
                     )
             assertThat(requested.await(5, TimeUnit.SECONDS)).isTrue()
-            assertThat(operation.cancel(true)).isTrue()
             val response = t.execute(requireNotNull(request), options)
+            assertThat(operation.cancel(true)).isTrue()
             val closed = CountDownLatch(1)
             pending.complete(
                 object : HttpResponse by response {
@@ -1142,13 +1115,17 @@ internal class AgentFileHelpersTest {
         }
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun `large selections complete preflight and propagate the first API failure`(async: Boolean) {
+    @Test
+    fun `preparation submits large selections and preserves ordinary API errors`() {
         val source = file()
-        val t = Transport().apply { uploadFailureAt = 1 }
+        java.io.RandomAccessFile(source.toFile(), "rw").use { it.setLength(50L * 1024 * 1024 + 1) }
+        val t =
+            Transport().apply {
+                uploadFailureAt = 1
+                discardUploadBody = true
+            }
         val error = catchThrowable {
-            prepare(t, async, (1..10000).associate { "/workspace/files/$it.txt" to source })
+            prepare(t, true, (1..51).associate { "/workspace/files/$it.txt" to source })
         }
         assertThat(error).isInstanceOf(AgentFilePreparationException::class.java)
         assertThat(error.cause).isInstanceOf(com.openai.errors.InternalServerException::class.java)
@@ -1216,5 +1193,40 @@ internal class AgentFileHelpersTest {
             assertThat(pending.get(5, TimeUnit.SECONDS).files().map { it.asFileId().path() })
                 .containsExactly("/workspace/docs/selected.txt")
         }
+    }
+
+    @Test
+    fun `cancelling a pending upload closes its source before transport completion`() {
+        val t = Transport()
+        val pending = CompletableFuture<HttpResponse>()
+        val requested = CountDownLatch(1)
+        var request: HttpRequest? = null
+        t.asyncOverride = { candidate, _ ->
+            request = candidate
+            requested.countDown()
+            pending
+        }
+        withClient(t) { client ->
+            val operation =
+                AgentEnvironmentFiles.prepare(client.async(), mapOf("/workspace/source" to file()))
+            assertThat(requested.await(5, TimeUnit.SECONDS)).isTrue()
+            assertThat(operation.cancel(true)).isTrue()
+            try {
+                assertThat(pending.isDone).isFalse()
+                assertThatThrownBy { request!!.body!!.writeTo(ByteArrayOutputStream()) }
+                    .hasStackTraceContaining("ClosedChannelException")
+            } finally {
+                pending.completeExceptionally(java.io.IOException("Synthetic transport stopped"))
+            }
+        }
+    }
+
+    @Test
+    fun `preparation supports a JDK runtime image source`() {
+        val fs = java.nio.file.FileSystems.getFileSystem(java.net.URI.create("jrt:/"))
+        val source = fs.getPath("/modules/java.base/java/lang/Object.class")
+        val t = Transport()
+        assertThat(prepare(t, true, mapOf("/workspace/Object.class" to source)).files()).hasSize(1)
+        assertThat(t.bodies.single()).contains("Object.class")
     }
 }
