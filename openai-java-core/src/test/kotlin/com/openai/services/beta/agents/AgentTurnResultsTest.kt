@@ -446,10 +446,14 @@ internal class AgentTurnResultsTest {
         @JvmField var findings: List<String> = emptyList()
     }
 
-    private fun typedEvents(text: String) =
+    private fun typedEvents(text: String, id: String = "answer", index: Int = 0) =
         listOf(
             turn("created"),
-            message(text = text.replace("\\", "\\\\").replace("\"", "\\\"")),
+            message(
+                id = id,
+                index = index,
+                text = text.replace("\\", "\\\\").replace("\"", "\\\""),
+            ),
             turn("completed"),
             idle(),
         )
@@ -542,6 +546,54 @@ internal class AgentTurnResultsTest {
                 )
             }
             .isInstanceOf(AgentTurnResultException::class.java)
+    }
+
+    @Test
+    fun `typed parser rejects concatenated JSON documents and retains every raw message`() {
+        val text = """{"summary":"Report","findings":["Finding"]}"""
+        val events = typedEvents(text).toMutableList()
+        events.add(2, typedEvents(text, "second", 1)[1])
+        val failure =
+            catchThrowable {
+                AgentTurnResults.getFinalResult(
+                    source(events),
+                    AgentOutputType.of(Report::class.java),
+                )
+            }
+                as AgentOutputParseException
+        assertThat(failure.rawResult().messages()).hasSize(2)
+        assertThat(failure.rawResult().outputText()).isEqualTo(text + text)
+        assertThat(failure.cause).isNull()
+    }
+
+    @Test
+    fun `typed parser permits a single JSON document split across final messages`() {
+        val events = typedEvents("""{"summary":"Report",""").toMutableList()
+        events.add(2, typedEvents(""""findings":["Finding"]}""", "second", 1)[1])
+        val result =
+            AgentTurnResults.getFinalResult(source(events), AgentOutputType.of(Report::class.java))
+        assertThat(result.messages()).hasSize(2)
+        assertThat(result.outputParsed().findings).containsExactly("Finding")
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `typed parsing errors do not expose output through stack traces`(validJson: Boolean) {
+        val canary = "private-output-canary-4867"
+        val text = if (validJson) """{"summary":"$canary","findings":1}""" else canary
+        val failure =
+            catchThrowable {
+                AgentTurnResults.getFinalResult(
+                    source(typedEvents(text)),
+                    AgentOutputType.of(Report::class.java),
+                )
+            }
+                as AgentOutputParseException
+        val stack = java.io.StringWriter()
+        failure.printStackTrace(java.io.PrintWriter(stack))
+        assertThat(stack.toString()).doesNotContain(canary)
+        assertThat(failure.cause).isNull()
+        assertThat(failure.rawResult().outputText()).isEqualTo(text)
     }
 
     @Test

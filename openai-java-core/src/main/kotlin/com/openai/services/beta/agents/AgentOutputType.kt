@@ -1,8 +1,10 @@
 package com.openai.services.beta.agents
 
+import com.fasterxml.jackson.core.JsonToken
 import com.openai.core.JsonSchemaLocalValidation
 import com.openai.core.JsonValue
 import com.openai.core.extractSchema
+import com.openai.core.jsonMapper
 import com.openai.core.responseTypeFromJson
 import com.openai.core.validateSchema
 import com.openai.models.beta.agents.AgentTextParam
@@ -52,8 +54,19 @@ private constructor(private val type: Class<T>, private val format: TextFormatPa
     /** Parses a completed result with the SDK's existing Java structured-output mapper. */
     fun parse(result: AgentTurnResult): ParsedAgentTurnResult<T> =
         try {
-            ParsedAgentTurnResult(result, responseTypeFromJson(result.outputText(), type))
-        } catch (cause: Exception) {
-            throw AgentOutputParseException(result, cause)
+            val text = result.outputText()
+            jsonMapper().factory.createParser(text).use { parser ->
+                require(parser.nextToken() == JsonToken.START_OBJECT) {
+                    "Agents structured output must be a JSON object"
+                }
+                parser.skipChildren()
+                require(parser.nextToken() == null) {
+                    "Agents structured output must contain exactly one JSON document"
+                }
+            }
+            ParsedAgentTurnResult(result, responseTypeFromJson(text, type))
+        } catch (_: Exception) {
+            // Parser exception messages may include output; retain it only through rawResult().
+            throw AgentOutputParseException(result)
         }
 }
