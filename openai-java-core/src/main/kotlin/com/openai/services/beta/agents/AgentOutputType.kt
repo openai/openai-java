@@ -1,7 +1,6 @@
 package com.openai.services.beta.agents
 
 import com.fasterxml.jackson.core.JsonToken
-import com.fasterxml.jackson.databind.JsonNode
 import com.openai.core.JsonSchemaLocalValidation
 import com.openai.core.JsonValue
 import com.openai.core.extractSchema
@@ -29,18 +28,6 @@ private constructor(private val type: Class<T>, private val format: TextFormatPa
                 "uuid",
             )
 
-        private fun requireSupportedFormats(schema: JsonNode) {
-            schema["format"]?.let {
-                require(it.asText() in supportedFormats) {
-                    "Agents output schemas do not support format '${it.asText()}'"
-                }
-            }
-            listOf("properties", "\$defs", "anyOf").forEach { keyword ->
-                schema[keyword]?.forEach(::requireSupportedFormats)
-            }
-            schema["items"]?.let(::requireSupportedFormats)
-        }
-
         /**
          * Derives the existing structured-output schema and checks Agents-specific restrictions.
          */
@@ -53,7 +40,13 @@ private constructor(private val type: Class<T>, private val format: TextFormatPa
             require(listOf("oneOf", "anyOf", "allOf", "enum", "not").none(schema::has)) {
                 "Agents output schemas cannot use root composition or enum keywords"
             }
-            requireSupportedFormats(schema)
+            forEachAgentSchemaNode(schema) { node ->
+                node["format"]?.let {
+                    require(it.asText() in supportedFormats) {
+                        "Agents output schemas do not support format '${it.asText()}'"
+                    }
+                }
+            }
             return AgentOutputType(
                 type,
                 TextFormatParam.ofJsonSchema(

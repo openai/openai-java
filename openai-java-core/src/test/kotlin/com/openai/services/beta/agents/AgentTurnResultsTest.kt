@@ -6,6 +6,7 @@ import com.openai.client.OpenAIClientImpl
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.*
+import com.openai.helpers.beta.agents.AgentFunctionTool
 import com.openai.models.beta.agents.*
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.responses.ResponseTextConfig
@@ -499,6 +500,39 @@ internal class AgentTurnResultsTest {
         assertThat(result.outputParsed().findings.single().state).isEqualTo(FindingState.FOUND)
         assertThat(result.outputParsed().next).isEmpty()
     }
+
+    @Test
+    fun `typed tools and output share class conventions while keeping their own policies`() {
+        val tool = AgentFunctionTool.of(CompatibleReport::class.java) { it }
+        val output = AgentOutputType.of(CompatibleReport::class.java)
+        val arguments =
+            mapOf(
+                "findings" to listOf(mapOf("item_id" to "A123", "state" to "FOUND")),
+                "next" to null,
+            )
+        val report = tool.handler().apply(arguments) as CompatibleReport
+        val result =
+            AgentTurnResults.getFinalResult(
+                source(typedEvents(com.openai.core.toJsonString(report))),
+                output,
+            )
+        assertThat(result.outputParsed().findings.single().itemId).isEqualTo("A123")
+        assertThat(result.outputParsed().findings.single().state).isEqualTo(FindingState.FOUND)
+        assertThat(result.outputParsed().next).isEmpty()
+        assertThat(tool.definition().asFunction().description())
+            .contains("A report with optional follow-up")
+        assertThatThrownBy { tool.handler().apply(arguments - "next") }
+            .hasMessageContaining("parameter shape")
+
+        // These constraints belong to output schemas; tool callbacks own their business validation.
+        for (type in listOf(SupportedConstraints::class.java, NestedConstraints::class.java)) {
+            AgentOutputType.of(type)
+            assertThatThrownBy { AgentFunctionTool.of(type) { it } }
+                .hasMessageContaining("does not support schema constraint")
+        }
+    }
+
+    class NestedConstraints(val entries: List<SupportedConstraints>)
 
     @Test
     fun `typed output rejects backend unsupported formats including nested schemas`() {

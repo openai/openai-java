@@ -8,6 +8,7 @@ import com.openai.core.jsonMapper
 import com.openai.core.responseTypeFromJson
 import com.openai.core.toJsonString
 import com.openai.models.beta.agents.AgentToolParam
+import com.openai.services.beta.agents.forEachAgentSchemaNode
 import java.util.concurrent.CompletionStage
 import java.util.function.Function
 
@@ -55,7 +56,7 @@ private constructor(
             require(info.schema.path("type").asText() == "object") {
                 "Function parameters must be an object class"
             }
-            requireSupportedConstraints(info.schema)
+            forEachAgentSchemaNode(info.schema, ::requireSupportedConstraints)
             val definition =
                 AgentToolParam.ofFunction(
                     AgentToolParam.Function.builder()
@@ -90,12 +91,12 @@ private constructor(
 }
 
 private fun requireSupportedConstraints(schema: JsonNode) {
-    for ((keyword, value) in schema.fields()) {
+    for (keyword in schema.fieldNames()) {
         when (keyword) {
             "properties",
             "\$defs",
-            "anyOf" -> value.forEach(::requireSupportedConstraints)
-            "items" -> requireSupportedConstraints(value)
+            "anyOf",
+            "items",
             "\$schema",
             "\$id",
             "\$ref",
