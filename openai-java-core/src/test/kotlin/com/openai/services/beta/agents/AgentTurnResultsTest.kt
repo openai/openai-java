@@ -513,10 +513,12 @@ internal class AgentTurnResultsTest {
         val report = tool.handler().apply(arguments) as CompatibleReport
         val result =
             AgentTurnResults.getFinalResult(
-                source(typedEvents(com.openai.core.toJsonString(report))),
+                source(typedEvents(com.openai.core.jsonMapper().writeValueAsString(arguments))),
                 output,
             )
-        assertThat(result.outputParsed().findings.single().itemId).isEqualTo("A123")
+        assertThat(report.findings.single().itemId).isEqualTo("A123")
+        assertThat(result.outputParsed().findings.single().itemId)
+            .isEqualTo(report.findings.single().itemId)
         assertThat(result.outputParsed().findings.single().state).isEqualTo(FindingState.FOUND)
         assertThat(result.outputParsed().next).isEmpty()
         assertThat(tool.definition().asFunction().description())
