@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.74.0](https://github.com/openai/openai-java/compare/v4.73.0...v4.74.0) (2026-10-01)
+
+
+### Features
+
+* **agents:** [1/n] Add typed final answers to beta Agents streams ([#1128](https://github.com/openai/openai-java/issues/1128)) ([b0b7b22](https://github.com/openai/openai-java/commit/b0b7b222db807bcf64004d43175f60af37b652d7))
+* **api:** add GCP external storage providers ([#1125](https://github.com/openai/openai-java/issues/1125)) ([5d7af58](https://github.com/openai/openai-java/commit/5d7af587352205e099eadceeecc09a584eaabcd5))
+* collect final output from beta Agents streams ([#1124](https://github.com/openai/openai-java/issues/1124)) ([328958a](https://github.com/openai/openai-java/commit/328958a26678492ff9dd9e1154ad6ad1fc7fddd8))
+
+
+### Bug Fixes
+
+* **api:** allow original image detail in Chat Completions ([#1126](https://github.com/openai/openai-java/issues/1126)) ([4ae27f8](https://github.com/openai/openai-java/commit/4ae27f8b63192ef6c5c2d4103cdba7395a06f3f7))
+* **api:** correct the eval run cancellation endpoint ([#1122](https://github.com/openai/openai-java/issues/1122)) ([ab795dd](https://github.com/openai/openai-java/commit/ab795dd6f95dc3d890ecfd262dd4dd9a3eea44ef))
+
 ## [4.73.0](https://github.com/openai/openai-java/compare/v4.72.0...v4.73.0) (2026-09-30)
 
 
