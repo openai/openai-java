@@ -109,4 +109,4 @@ binding to an existing session using its hosted tool name. Application services
 and credentials stay in the closure or bound method. Use strings for exact decimal
 amounts, as the existing event decoder represents JSON fractions as doubles. See
 [`BetaAgentToolsExample`](../../openai-java-example/src/main/java/com/openai/example/BetaAgentToolsExample.java)
-for a read-only wallet action.
+for a read-only catalog lookup.

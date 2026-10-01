@@ -9,41 +9,41 @@ import com.openai.models.beta.agents.sessions.SessionCreateParams;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-/** Bind a read-only, Coinbase-style application action without exposing application dependencies. */
+/** Bind a read-only catalog lookup without exposing application dependencies. */
 public final class BetaAgentToolsExample {
-    @JsonTypeName("wallet_balance")
-    @JsonClassDescription("Look up a wallet balance.")
-    public static final class Balance {
-        public String asset;
+    @JsonTypeName("lookup_item")
+    @JsonClassDescription("Look up a catalog item.")
+    public static final class LookupItem {
+        public String itemId;
     }
 
-    public static final class WalletActions {
-        private final String network;
+    public static final class CatalogActions {
+        private final String catalogId;
 
-        public WalletActions(String network) {
-            this.network = network;
+        public CatalogActions(String catalogId) {
+            this.catalogId = catalogId;
         }
 
-        public Map<String, String> balance(Balance args) {
-            // Replace this synthetic response with your application's authorized wallet lookup.
-            return Map.of("asset", args.asset, "network", network, "balance", "0");
+        public Map<String, String> lookup(LookupItem args) {
+            // Replace this synthetic response with your application's authorized catalog lookup.
+            return Map.of("itemId", args.itemId, "catalogId", catalogId, "name", "Example item");
         }
     }
 
-    public static SessionCreateParams.Agent agent(String model, WalletActions wallet) {
-        var balance = AgentFunctionTool.of(Balance.class, wallet::balance);
+    public static SessionCreateParams.Agent agent(String model, CatalogActions catalog) {
+        var lookup = AgentFunctionTool.of(LookupItem.class, catalog::lookup);
         return SessionCreateParams.Agent.builder()
                 .model(model)
-                .addTool(balance.definition())
+                .addTool(lookup.definition())
                 .build();
     }
 
-    public static void followUp(OpenAIClient client, String sessionId, WalletActions wallet) {
-        var balance = AgentFunctionTool.of(Balance.class, wallet::balance);
+    public static void followUp(OpenAIClient client, String sessionId, CatalogActions catalog) {
+        var lookup = AgentFunctionTool.of(LookupItem.class, catalog::lookup);
         var params = AgentSessionStreamParams.builder()
                 .sessionId(sessionId)
-                .input("What is my ETH balance?")
-                .toolHandler(balance.name(), balance.handler())
+                .input("Look up item ITEM_A.")
+                .toolHandler(lookup.name(), lookup.handler())
                 .build();
         try (var stream = client.beta().agents().sessions().stream(params)) {
             stream.stream()
@@ -51,13 +51,13 @@ public final class BetaAgentToolsExample {
         }
     }
 
-    public static AgentSessionStreamParams asyncParams(String sessionId, WalletActions wallet) {
-        var balance = AgentFunctionTool.ofAsync(
-                Balance.class, args -> CompletableFuture.completedFuture(wallet.balance(args)));
+    public static AgentSessionStreamParams asyncParams(String sessionId, CatalogActions catalog) {
+        var lookup = AgentFunctionTool.ofAsync(
+                LookupItem.class, args -> CompletableFuture.completedFuture(catalog.lookup(args)));
         return AgentSessionStreamParams.builder()
                 .sessionId(sessionId)
-                .input("What is my ETH balance?")
-                .asyncToolHandler(balance.name(), balance.handler())
+                .input("Look up item ITEM_A.")
+                .asyncToolHandler(lookup.name(), lookup.handler())
                 .build();
     }
 }

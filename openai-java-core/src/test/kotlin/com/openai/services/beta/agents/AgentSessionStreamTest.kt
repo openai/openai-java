@@ -238,59 +238,59 @@ internal class AgentSessionStreamTest {
 
     private fun params() = AgentSessionStreamParams.builder().sessionId("s").input("hello")
 
-    class WalletBalance(val asset: String)
+    class LookupItem(val itemId: String)
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
     fun typedActionsReuseTheDispatcher(async: Boolean) {
         for (asyncHandler in listOf(false, true)) {
             val calls = mutableListOf<String>()
-            val action = { args: WalletBalance ->
-                calls.add(args.asset)
-                mapOf("type" to "balance", "content" to args.asset)
+            val action = { args: LookupItem ->
+                calls.add(args.itemId)
+                mapOf("type" to "item", "content" to args.itemId)
             }
-            val p = params().toolHandler("raw") { mapOf("raw" to it["asset"]) }
+            val p = params().toolHandler("raw") { mapOf("raw" to it["itemId"]) }
             if (asyncHandler) {
                 val tool =
-                    AgentFunctionTool.ofAsync(WalletBalance::class.java) {
+                    AgentFunctionTool.ofAsync(LookupItem::class.java) {
                         CompletableFuture.completedFuture(action(it))
                     }
                 p.asyncToolHandler(tool.name(), tool.handler())
             } else {
-                val tool = AgentFunctionTool.of(WalletBalance::class.java, action)
+                val tool = AgentFunctionTool.of(LookupItem::class.java, action)
                 p.toolHandler(tool.name(), tool.handler())
             }
             val t =
                 Transport(
                     listOf(
                         turn("created"),
-                        call(name = "WalletBalance", args = "{\"asset\":\"ETH\"}"),
+                        call(name = "LookupItem", args = "{\"itemId\":\"ITEM_A\"}"),
                         call(
-                            name = "WalletBalance",
+                            name = "LookupItem",
                             event = "redelivered",
-                            args = "{\"asset\":\"ETH\"}",
+                            args = "{\"itemId\":\"ITEM_A\"}",
                         ),
                         call(
                             id = "legacy",
-                            name = "WalletBalance",
-                            args = "\"{\\\"asset\\\":\\\"BTC\\\"}\"",
+                            name = "LookupItem",
+                            args = "\"{\\\"itemId\\\":\\\"ITEM_B\\\"}\"",
                         ),
-                        call(id = "invalid", name = "WalletBalance", args = "{}"),
-                        call(id = "raw", name = "raw", args = "{\"asset\":\"USD\"}"),
+                        call(id = "invalid", name = "LookupItem", args = "{}"),
+                        call(id = "raw", name = "raw", args = "{\"itemId\":\"ITEM_C\"}"),
                         turn("completed"),
                         idle(),
                     )
                 )
             consume(t, async, p.build())
-            assertThat(calls).containsExactly("ETH", "BTC")
+            assertThat(calls).containsExactly("ITEM_A", "ITEM_B")
             val results = t.posts.drop(1).map { it.path("events").first() }
             assertThat(results).hasSize(4)
             assertThat(results[0].path("output").asText())
-                .isEqualTo("{\"type\":\"balance\",\"content\":\"ETH\"}")
+                .isEqualTo("{\"type\":\"item\",\"content\":\"ITEM_A\"}")
             assertThat(results[1].path("success").asBoolean()).isTrue()
             assertThat(results[2].path("success").asBoolean()).isFalse()
             assertThat(results[2].path("error").asText()).isEqualTo("Tool handler failed.")
-            assertThat(results[3].path("output").asText()).isEqualTo("{\"raw\":\"USD\"}")
+            assertThat(results[3].path("output").asText()).isEqualTo("{\"raw\":\"ITEM_C\"}")
         }
     }
 
