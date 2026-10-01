@@ -462,9 +462,9 @@ internal class AgentTurnResultsTest {
     @JsonClassDescription("A report with optional follow-up")
     class CompatibleReport(val findings: List<Finding>, val next: Optional<String>)
 
-    class UnsupportedFormat(@get:Schema(format = "uri") val address: String)
+    class UriFormat(@get:Schema(format = "uri") val address: String)
 
-    class NestedUnsupportedFormat(val addresses: List<UnsupportedFormat>)
+    class NestedUriFormat(val addresses: List<UriFormat>)
 
     class SupportedConstraints(
         @get:Schema(format = "email", pattern = "@") val address: String,
@@ -502,7 +502,7 @@ internal class AgentTurnResultsTest {
     }
 
     @Test
-    fun `typed tools and output share class conventions while keeping their own policies`() {
+    fun `typed tools and output share class conventions`() {
         val tool = AgentFunctionTool.of(CompatibleReport::class.java) { it }
         val output = AgentOutputType.of(CompatibleReport::class.java)
         val arguments =
@@ -525,26 +525,82 @@ internal class AgentTurnResultsTest {
             .contains("A report with optional follow-up")
         assertThatThrownBy { tool.handler().apply(arguments - "next") }
             .hasMessageContaining("parameter shape")
-
-        // These constraints belong to output schemas; tool callbacks own their business validation.
-        for (type in listOf(SupportedConstraints::class.java, NestedConstraints::class.java)) {
-            AgentOutputType.of(type)
-            assertThatThrownBy { AgentFunctionTool.of(type) { it } }
-                .hasMessageContaining("does not support schema constraint")
-        }
     }
 
     class NestedConstraints(val entries: List<SupportedConstraints>)
 
+    class CustomFormat(@get:Schema(format = "custom-format") val value: String)
+
+    class EmptyOutput
+
     @Test
-    fun `typed output rejects backend unsupported formats including nested schemas`() {
-        listOf(UnsupportedFormat::class.java, NestedUnsupportedFormat::class.java).forEach {
-            assertThatThrownBy { AgentOutputType.of(it) }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessageContaining("format 'uri'")
+    fun `typed output preserves native Responses schema constraints and formats`() {
+        for (type in
+            listOf(
+                UriFormat::class.java,
+                NestedUriFormat::class.java,
+                CustomFormat::class.java,
+                SupportedConstraints::class.java,
+                NestedConstraints::class.java,
+                String::class.java,
+                Array<String>::class.java,
+                FindingState::class.java,
+            )) {
+            val output = AgentOutputType.of(type)
+            val responses = ResponseTextConfig.builder().format(type).build()
+            val mapper = com.openai.core.jsonMapper()
+            assertThat(
+                    mapper
+                        .valueToTree<com.fasterxml.jackson.databind.JsonNode>(output.format())
+                        .path("schema")
+                )
+                .isEqualTo(
+                    mapper
+                        .valueToTree<com.fasterxml.jackson.databind.JsonNode>(responses.rawConfig)
+                        .path("format")
+                        .path("schema")
+                )
         }
-        // Ordinary constraints and a property named format remain supported, as in Responses.
-        AgentOutputType.of(SupportedConstraints::class.java)
+        // Native model restrictions remain unchanged in both helpers.
+        assertThatThrownBy { ResponseTextConfig.builder().format(EmptyOutput::class.java) }
+            .hasMessageContaining("Local validation failed")
+        assertThatThrownBy { AgentOutputType.of(EmptyOutput::class.java) }
+            .hasMessageContaining("Local validation failed")
+    }
+
+    @Test
+    fun `typed output parses native scalar array and enum types`() {
+        assertThat(
+                AgentTurnResults.getFinalResult(
+                        source(typedEvents("\"Answer\"")),
+                        AgentOutputType.of(String::class.java),
+                    )
+                    .outputParsed()
+            )
+            .isEqualTo("Answer")
+        assertThat(
+                AgentTurnResults.getFinalResult(
+                        source(typedEvents("[\"Answer\"]")),
+                        AgentOutputType.of(Array<String>::class.java),
+                    )
+                    .outputParsed()
+            )
+            .containsExactly("Answer")
+        assertThat(
+                AgentTurnResults.getFinalResult(
+                        source(typedEvents("\"FOUND\"")),
+                        AgentOutputType.of(FindingState::class.java),
+                    )
+                    .outputParsed()
+            )
+            .isEqualTo(FindingState.FOUND)
+        assertThatThrownBy {
+                AgentTurnResults.getFinalResult(
+                    source(typedEvents("\"First\" \"Second\"")),
+                    AgentOutputType.of(String::class.java),
+                )
+            }
+            .isInstanceOf(AgentOutputParseException::class.java)
     }
 
     private fun typedEvents(text: String, id: String = "answer", index: Int = 0) =
@@ -560,7 +616,7 @@ internal class AgentTurnResultsTest {
         )
 
     @Test
-    fun `typed schema uses Agents envelope and rejects non object roots`() {
+    fun `typed schema uses Agents envelope`() {
         val output = AgentOutputType.of(Report::class.java)
         val tree =
             com.openai.core
@@ -574,10 +630,6 @@ internal class AgentTurnResultsTest {
         assertThat(schema.path("additionalProperties").booleanValue()).isFalse()
         assertThat(schema.path("required").map { it.asText() })
             .containsExactlyInAnyOrder("summary", "findings")
-        assertThatThrownBy { AgentOutputType.of(String::class.java) }
-            .isInstanceOf(IllegalArgumentException::class.java)
-        assertThatThrownBy { AgentOutputType.of(Array<String>::class.java) }
-            .isInstanceOf(IllegalArgumentException::class.java)
     }
 
     @ParameterizedTest

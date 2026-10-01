@@ -1,6 +1,5 @@
 package com.openai.services.beta.agents
 
-import com.fasterxml.jackson.core.JsonToken
 import com.openai.core.JsonSchemaLocalValidation
 import com.openai.core.JsonValue
 import com.openai.core.extractSchema
@@ -14,39 +13,12 @@ import com.openai.models.beta.agents.TextFormatParam
 class AgentOutputType<T : Any>
 private constructor(private val type: Class<T>, private val format: TextFormatParam) {
     companion object {
-        private val supportedFormats =
-            setOf(
-                "",
-                "date-time",
-                "time",
-                "date",
-                "duration",
-                "email",
-                "hostname",
-                "ipv4",
-                "ipv6",
-                "uuid",
-            )
-
         /**
-         * Derives the existing structured-output schema and checks Agents-specific restrictions.
+         * Derives and validates a class schema using the existing structured-output conventions.
          */
         @JvmStatic
         fun <T : Any> of(type: Class<T>): AgentOutputType<T> {
             val schema = validateSchema(extractSchema(type), type, JsonSchemaLocalValidation.YES)
-            require(schema.path("type").asText() == "object") {
-                "Agents output types must have an object root"
-            }
-            require(listOf("oneOf", "anyOf", "allOf", "enum", "not").none(schema::has)) {
-                "Agents output schemas cannot use root composition or enum keywords"
-            }
-            forEachAgentSchemaNode(schema) { node ->
-                node["format"]?.let {
-                    require(it.asText() in supportedFormats) {
-                        "Agents output schemas do not support format '${it.asText()}'"
-                    }
-                }
-            }
             return AgentOutputType(
                 type,
                 TextFormatParam.ofJsonSchema(
@@ -77,8 +49,8 @@ private constructor(private val type: Class<T>, private val format: TextFormatPa
         try {
             val text = result.outputText()
             jsonMapper().factory.createParser(text).use { parser ->
-                require(parser.nextToken() == JsonToken.START_OBJECT) {
-                    "Agents structured output must be a JSON object"
+                require(parser.nextToken() != null) {
+                    "Agents structured output must contain a JSON document"
                 }
                 parser.skipChildren()
                 require(parser.nextToken() == null) {
