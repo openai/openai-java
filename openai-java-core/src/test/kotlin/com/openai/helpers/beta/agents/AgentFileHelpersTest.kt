@@ -1100,7 +1100,13 @@ internal class AgentFileHelpersTest {
     fun `overlap validation handles interleaved names and preserves input order`(async: Boolean) {
         val source = file()
         val siblings =
-            listOf("/workspace/a-", "/workspace/a/b", "/workspace/a%2Fb", "/workspace/😀/b")
+            listOf(
+                "/workspace/a-",
+                "/workspace/a/b",
+                "/workspace/a%2Fb",
+                "/workspace/😀/b",
+                "/workspace/" + "deep/".repeat(4096) + "file.txt",
+            )
         val valid = Transport()
         val prepared = prepare(valid, async, siblings.associateWith { source })
         assertThat(prepared.files().map { it.asFileId().path() })

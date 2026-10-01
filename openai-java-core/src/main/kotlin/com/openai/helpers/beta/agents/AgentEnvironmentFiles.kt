@@ -350,15 +350,18 @@ object AgentEnvironmentFiles {
         if (error is CompletionException && error.cause != null) unwrap(error.cause!!) else error
 
     private fun preflight(files: Map<String, Path>): List<Pair<String, Source>> {
-        val destinations = files.keys.toHashSet()
-        destinations.forEach { destination ->
-            validateDestination(destination)
-            var separator = destination.indexOf('/', "/workspace/".length)
-            while (separator != -1) {
-                require(destination.substring(0, separator) !in destinations) {
-                    "Hosted destinations cannot overlap a parent file"
+        val destinations =
+            files.keys
+                .map { destination ->
+                    validateDestination(destination)
+                    // The slash keeps an ancestor adjacent to its first child even among names like
+                    // a-b.
+                    "$destination/"
                 }
-                separator = destination.indexOf('/', separator + 1)
+                .sorted()
+        destinations.zipWithNext { previous, next ->
+            require(!next.startsWith(previous)) {
+                "Hosted destinations cannot overlap a parent file"
             }
         }
         return files.map { (destination, input) ->
