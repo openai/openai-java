@@ -18,7 +18,6 @@ import java.nio.file.StandardOpenOption.READ
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
-import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Path-based file preparation and live staging for beta Agents hosted environments. Sources must be
@@ -65,58 +64,67 @@ object AgentEnvironmentFiles {
         client: OpenAIClientAsync,
         files: Map<String, Path>,
         options: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<PreparedAgentFiles> = prepare(client, preflight(files), options)
+    ): CompletableFuture<PreparedAgentFiles> = prepareAsync(client, options) { preflight(files) }
 
-    private fun prepare(
+    private fun prepareAsync(
         client: OpenAIClientAsync,
-        selected: List<Pair<String, Source>>,
         options: RequestOptions,
+        select: () -> List<Pair<String, Source>>,
     ): CompletableFuture<PreparedAgentFiles> {
-        if (selected.size > 1)
-            client.withOptions {
-                require(it.build().headers.values("Idempotency-Key").isEmpty()) {
-                    "A multi-file preparation cannot reuse an Idempotency-Key"
-                }
-            }
-        val prepared = mutableListOf<HostedEnvironmentFileParam>()
         val result = CompletableFuture<PreparedAgentFiles>()
-        fun next(index: Int) {
-            if (result.isDone) return
-            if (index == selected.size) {
-                result.complete(PreparedAgentFiles(prepared))
-                return
-            }
+        CompletableFuture.runAsync {
             try {
-                val (destination, source) = selected[index]
-                val params = uploadParams(source)
-                val request =
-                    try {
-                        client.files().create(params, options)
-                    } catch (error: Throwable) {
-                        runCatching { params.file().close() }
-                        throw error
+                if (result.isDone) return@runAsync
+                val selected = select()
+                if (selected.size > 1)
+                    client.withOptions {
+                        require(it.build().headers.values("Idempotency-Key").isEmpty()) {
+                            "A multi-file preparation cannot reuse an Idempotency-Key"
+                        }
                     }
-                // Keep the generated service future alive so late responses are parsed and closed.
-                request.whenCompleteAsync { uploaded, failure ->
+                val prepared = mutableListOf<HostedEnvironmentFileParam>()
+                fun next(index: Int) {
+                    if (result.isDone) return
+                    if (index == selected.size) {
+                        result.complete(PreparedAgentFiles(prepared))
+                        return
+                    }
                     try {
-                        if (failure != null) throw failure
-                        prepared.add(reference(destination, uploaded.id()))
-                        params.file().close()
-                        next(index + 1)
+                        val (destination, source) = selected[index]
+                        val params = uploadParams(source)
+                        val request =
+                            try {
+                                client.files().create(params, options)
+                            } catch (error: Throwable) {
+                                runCatching { params.file().close() }
+                                throw error
+                            }
+                        // Keep the generated service future alive so late responses are parsed and
+                        // closed.
+                        request.whenCompleteAsync { uploaded, failure ->
+                            try {
+                                if (failure != null) throw failure
+                                prepared.add(reference(destination, uploaded.id()))
+                                params.file().close()
+                                next(index + 1)
+                            } catch (error: Throwable) {
+                                runCatching { params.file().close() }
+                                result.completeExceptionally(
+                                    AgentFilePreparationException(ids(prepared), unwrap(error))
+                                )
+                            }
+                        }
                     } catch (error: Throwable) {
-                        runCatching { params.file().close() }
                         result.completeExceptionally(
                             AgentFilePreparationException(ids(prepared), unwrap(error))
                         )
                     }
                 }
+                next(0)
             } catch (error: Throwable) {
-                result.completeExceptionally(
-                    AgentFilePreparationException(ids(prepared), unwrap(error))
-                )
+                result.completeExceptionally(unwrap(error))
             }
         }
-        next(0)
         return result
     }
 
@@ -142,29 +150,8 @@ object AgentEnvironmentFiles {
         destination: String,
         include: List<String>,
         options: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<PreparedAgentFiles> {
-        val result = CompletableFuture<PreparedAgentFiles>()
-        val preparation = AtomicReference<CompletableFuture<PreparedAgentFiles>?>()
-        result.whenComplete { _, _ -> if (result.isCancelled) preparation.get()?.cancel(true) }
-        CompletableFuture.supplyAsync { directoryFiles(source, destination, include) }
-            .whenComplete { selected, failure ->
-                if (failure != null) result.completeExceptionally(unwrap(failure))
-                else if (!result.isDone) {
-                    try {
-                        val pending = prepare(client, selected, options)
-                        preparation.set(pending)
-                        if (result.isCancelled) pending.cancel(true)
-                        pending.whenComplete { files, error ->
-                            if (error != null) result.completeExceptionally(unwrap(error))
-                            else result.complete(files)
-                        }
-                    } catch (error: Throwable) {
-                        result.completeExceptionally(error)
-                    }
-                }
-            }
-        return result
-    }
+    ): CompletableFuture<PreparedAgentFiles> =
+        prepareAsync(client, options) { directoryFiles(source, destination, include) }
 
     @JvmStatic
     @JvmOverloads
@@ -342,11 +329,15 @@ object AgentEnvironmentFiles {
         if (error is CompletionException && error.cause != null) unwrap(error.cause!!) else error
 
     private fun preflight(files: Map<String, Path>): List<Pair<String, Source>> {
-        val destinations = files.keys.toList()
+        val destinations = files.keys.toHashSet()
         destinations.forEach { destination ->
             validateDestination(destination)
-            require(destinations.none { it != destination && destination.startsWith("$it/") }) {
-                "Hosted destinations cannot overlap a parent file"
+            var separator = destination.indexOf('/', "/workspace/".length)
+            while (separator != -1) {
+                require(destination.substring(0, separator) !in destinations) {
+                    "Hosted destinations cannot overlap a parent file"
+                }
+                separator = destination.indexOf('/', separator + 1)
             }
         }
         return files.map { (destination, input) ->
