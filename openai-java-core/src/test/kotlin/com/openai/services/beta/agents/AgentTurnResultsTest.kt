@@ -441,6 +441,124 @@ internal class AgentTurnResultsTest {
         }
     }
 
+    class Report {
+        @JvmField var summary: String = ""
+        @JvmField var findings: List<String> = emptyList()
+    }
+
+    private fun typedEvents(text: String) =
+        listOf(
+            turn("created"),
+            message(text = text.replace("\\", "\\\\").replace("\"", "\\\"")),
+            turn("completed"),
+            idle(),
+        )
+
+    @Test
+    fun `typed schema uses Agents envelope and rejects non object roots`() {
+        val output = AgentOutputType.of(Report::class.java)
+        val tree =
+            com.openai.core
+                .jsonMapper()
+                .valueToTree<com.fasterxml.jackson.databind.JsonNode>(output.text())
+        assertThat(tree.path("format").path("type").asText()).isEqualTo("json_schema")
+        assertThat(tree.path("format").has("name")).isFalse()
+        assertThat(tree.path("format").has("strict")).isFalse()
+        val schema = tree.path("format").path("schema")
+        assertThat(schema.path("type").asText()).isEqualTo("object")
+        assertThat(schema.path("additionalProperties").booleanValue()).isFalse()
+        assertThat(schema.path("required").map { it.asText() })
+            .containsExactlyInAnyOrder("summary", "findings")
+        assertThatThrownBy { AgentOutputType.of(String::class.java) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+        assertThatThrownBy { AgentOutputType.of(Array<String>::class.java) }
+            .isInstanceOf(IllegalArgumentException::class.java)
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `typed creation and follow up retain raw result and do not update schema`(async: Boolean) {
+        val output = AgentOutputType.of(Report::class.java)
+        val transport = Transport(typedEvents("""{"summary":"Report","findings":["Finding"]}"""))
+        val params =
+            SessionCreateParams.builder()
+                .agent(
+                    SessionCreateParams.Agent.builder()
+                        .model("test-model")
+                        .text(output.text())
+                        .build()
+                )
+                .environmentNone()
+                .input("Question")
+                .build()
+        transport.client().useClient { client ->
+            val result =
+                if (async)
+                    AgentTurnResults.getFinalResult(
+                            client.async().beta().agents().sessions().createStreaming(params),
+                            output,
+                        )
+                        .get(5, TimeUnit.SECONDS)
+                else
+                    AgentTurnResults.getFinalResult(
+                        client.beta().agents().sessions().createStreaming(params),
+                        output,
+                    )
+            assertThat(result.outputParsed().summary).isEqualTo("Report")
+            assertThat(result.outputParsed().findings).containsExactly("Finding")
+            assertThat(result.messages()).isSameAs(result.rawResult().messages())
+            assertThat(result.sessionId()).isEqualTo("s")
+            val followup = AgentSessionStreamParams.builder().sessionId("s").input("Next").build()
+            val next =
+                if (async)
+                    AgentTurnResults.getFinalResult(
+                            client.async().beta().agents().sessions().stream(followup),
+                            output,
+                        )
+                        .get(5, TimeUnit.SECONDS)
+                else
+                    AgentTurnResults.getFinalResult(
+                        client.beta().agents().sessions().stream(followup),
+                        output,
+                    )
+            assertThat(next.outputParsed().summary).isEqualTo("Report")
+            assertThat(transport.posts.get()).isEqualTo(2)
+        }
+    }
+
+    @Test
+    fun `typed parse failure retains raw answer and differs from hosted failure`() {
+        val output = AgentOutputType.of(Report::class.java)
+        val stream = source(typedEvents("not json"))
+        val failure =
+            catchThrowable { AgentTurnResults.getFinalResult(stream, output) }
+                as AgentOutputParseException
+        assertThat(failure.rawResult().outputText()).isEqualTo("not json")
+        assertThat(failure.rawResult()).isSameAs(AgentTurnResults.getFinalResult(stream))
+        assertThatThrownBy {
+                AgentTurnResults.getFinalResult(
+                    source(listOf(turn("created"), turn("failed"))),
+                    output,
+                )
+            }
+            .isInstanceOf(AgentTurnResultException::class.java)
+    }
+
+    @Test
+    fun `cancelling typed async collection closes observation`() {
+        val transport = Transport().apply { responseReady = CompletableFuture() }
+        transport.client().useClient { client ->
+            val stream = client.async().beta().agents().sessions().createStreaming(createParams())
+            val result =
+                AgentTurnResults.getFinalResult(stream, AgentOutputType.of(Report::class.java))
+            assertThat(result.cancel(true)).isTrue()
+            stream.onCompleteFuture().get(5, TimeUnit.SECONDS)
+            assertThat(AgentTurnResults.getFinalResult(stream).isCancelled).isTrue()
+            transport.responseReady.complete(null)
+            assertThat(transport.closed.get()).isPositive()
+        }
+    }
+
     private fun assertNoCollectedPayload(stream: Any) {
         val collectorField =
             stream.javaClass.getDeclaredField("collector").apply { isAccessible = true }
