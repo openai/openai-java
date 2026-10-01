@@ -1,5 +1,7 @@
 # Files for hosted Agents
 
+Use application-owned files and source directories that remain stable during preparation; these path helpers do not sandbox arbitrary user-supplied paths or hostile filesystem writers. The uploaded contents may come from users.
+
 Prepare selected files before creating a hosted session; the returned `files()` are ordinary API inputs. Keep `uploadedFileIds()` for explicit cleanup with the Files API, including IDs exposed by `AgentFilePreparationException` after a partial failure.
 
 ```java

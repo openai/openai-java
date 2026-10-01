@@ -21,7 +21,10 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 import java.util.concurrent.atomic.AtomicReference
 
-/** File preparation and live staging for beta Agents hosted environments. */
+/**
+ * Path-based file preparation and live staging for beta Agents hosted environments. Sources must be
+ * application-owned and stable during preparation; this is not a filesystem sandbox.
+ */
 object AgentEnvironmentFiles {
     private const val MAX_FILES = 50
     private const val MAX_BYTES = 50L * 1024 * 1024
@@ -32,8 +35,13 @@ object AgentEnvironmentFiles {
         client: OpenAIClient,
         files: Map<String, Path>,
         options: RequestOptions = RequestOptions.none(),
+    ): PreparedAgentFiles = prepare(client, preflight(files, initial = true), options)
+
+    private fun prepare(
+        client: OpenAIClient,
+        selected: List<Pair<String, Source>>,
+        options: RequestOptions,
     ): PreparedAgentFiles {
-        val selected = preflight(files, initial = true)
         if (selected.size > 1)
             client.withOptions {
                 require(it.build().headers.values("Idempotency-Key").isEmpty()) {
@@ -61,8 +69,14 @@ object AgentEnvironmentFiles {
         client: OpenAIClientAsync,
         files: Map<String, Path>,
         options: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<PreparedAgentFiles> =
+        prepare(client, preflight(files, initial = true), options)
+
+    private fun prepare(
+        client: OpenAIClientAsync,
+        selected: List<Pair<String, Source>>,
+        options: RequestOptions,
     ): CompletableFuture<PreparedAgentFiles> {
-        val selected = preflight(files, initial = true)
         if (selected.size > 1)
             client.withOptions {
                 require(it.build().headers.values("Idempotency-Key").isEmpty()) {
@@ -220,7 +234,30 @@ object AgentEnvironmentFiles {
         return result
     }
 
-    private data class Source(val path: Path, val attributes: BasicFileAttributes)
+    private data class DirectoryRoot(val path: Path, val attributes: BasicFileAttributes)
+
+    private data class Source(
+        val path: Path,
+        val attributes: BasicFileAttributes,
+        val root: DirectoryRoot? = null,
+    )
+
+    private fun verifyDirectoryPath(path: Path, root: DirectoryRoot) {
+        require(sameIdentity(root.attributes, attributes(root.path))) {
+            "The selected directory changed before upload"
+        }
+        val resolved = path.toRealPath()
+        require(resolved.startsWith(root.path) && resolved == path) {
+            "Selected directory entries cannot traverse a symlink"
+        }
+    }
+
+    private fun verifySource(source: Source) {
+        source.root?.let { verifyDirectoryPath(source.path, it) }
+        require(sameIdentity(source.attributes, attributes(source.path))) {
+            "The selected file changed before upload"
+        }
+    }
 
     private fun attributes(path: Path): BasicFileAttributes =
         Files.readAttributes(path, BasicFileAttributes::class.java, NOFOLLOW_LINKS)
@@ -232,15 +269,11 @@ object AgentEnvironmentFiles {
             before.isDirectory == after.isDirectory
 
     private fun uploadParams(source: Source): FileCreateParams {
-        require(sameIdentity(source.attributes, attributes(source.path))) {
-            "The selected file changed before upload"
-        }
+        verifySource(source)
         val channel = FileChannel.open(source.path, READ, NOFOLLOW_LINKS)
         try {
-            require(
-                sameIdentity(source.attributes, attributes(source.path)) &&
-                    channel.size() == source.attributes.size()
-            ) {
+            verifySource(source)
+            require(channel.size() == source.attributes.size()) {
                 "The selected file changed before upload"
             }
             val input = Channels.newInputStream(channel)
@@ -307,7 +340,7 @@ object AgentEnvironmentFiles {
         }
         var total = 0L
         return files.map { (destination, input) ->
-            val source = input.toAbsolutePath().normalize()
+            val source = input.toAbsolutePath()
             val snapshot = attributes(source)
             require(snapshot.isRegularFile) { "Select a regular file, not a symlink" }
             val size = snapshot.size()
@@ -345,7 +378,7 @@ object AgentEnvironmentFiles {
         source: Path,
         destination: String,
         include: List<String>,
-    ): Map<String, Path> {
+    ): List<Pair<String, Source>> {
         require(include.isNotEmpty()) { "Specify at least one include glob" }
         val selectedRoot = attributes(source)
         require(selectedRoot.isDirectory) { "Select a directory, not a symlink" }
@@ -356,6 +389,7 @@ object AgentEnvironmentFiles {
         ) {
             "The selected directory changed during resolution"
         }
+        val selectedDirectory = DirectoryRoot(root, selectedRoot)
         val matchers = include.map { root.fileSystem.getPathMatcher("glob:$it") }
         val files = linkedMapOf<String, Path>()
         Files.walk(root).use { paths ->
@@ -369,6 +403,7 @@ object AgentEnvironmentFiles {
                     require(!Files.isSymbolicLink(path)) {
                         "Selected directory entries cannot be symlinks"
                     }
+                    verifyDirectoryPath(path, selectedDirectory)
                     files[destination.trimEnd('/') + "/" + relative.joinToString("/")] = path
                     require(files.size <= MAX_FILES) {
                         "Hosted environment preparation supports at most 50 files"
@@ -376,9 +411,14 @@ object AgentEnvironmentFiles {
                 }
             }
         }
+        val selected = preflight(files, initial = true)
         require(sameIdentity(selectedRoot, attributes(root))) {
             "The selected directory changed during enumeration"
         }
-        return files
+        return selected.map { (destination, file) ->
+            val scoped = file.copy(root = selectedDirectory)
+            verifySource(scoped)
+            destination to scoped
+        }
     }
 }

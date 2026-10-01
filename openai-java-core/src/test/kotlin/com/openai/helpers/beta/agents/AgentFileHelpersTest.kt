@@ -643,8 +643,10 @@ internal class AgentFileHelpersTest {
         val client = t.client()
         val pending = CompletableFuture<HttpResponse>()
         var request: HttpRequest? = null
+        val requested = CountDownLatch(1)
         t.asyncOverride = { candidate, _ ->
             request = candidate
+            requested.countDown()
             pending
         }
         try {
@@ -654,6 +656,7 @@ internal class AgentFileHelpersTest {
                         result(),
                     )
                     .download("/workspace/outputs/report.txt", directory.resolve("cancelled.txt"))
+            assertThat(requested.await(5, TimeUnit.SECONDS)).isTrue()
             download.cancel(true)
             pending.complete(t.execute(requireNotNull(request), options))
             assertThat(t.requests).hasSize(1)
@@ -773,6 +776,77 @@ internal class AgentFileHelpersTest {
                             )
                         }
                         .isInstanceOf(IllegalArgumentException::class.java)
+                    assertThat(t.requests).isEmpty()
+                } finally {
+                    client.close()
+                }
+            }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `explicit source paths preserve symlink dotdot filesystem semantics`(async: Boolean) {
+        val target = Files.createDirectories(directory.resolve("target/child"))
+        val selected = file("target/source.txt", "selected filesystem contents")
+        file("source.txt", "unselected lexical sibling")
+        val alias = directory.resolve("alias")
+        Files.createSymbolicLink(alias, target)
+        val source = alias.resolve("../source.txt")
+        val t = Transport()
+        prepare(t, async, mapOf("/workspace/source.txt" to source))
+        assertThat(t.bodies.single())
+            .contains("selected filesystem contents")
+            .doesNotContain("unselected lexical sibling")
+        Files.delete(selected)
+        val missing = Transport()
+        assertThatThrownBy { prepare(missing, async, mapOf("/workspace/source.txt" to source)) }
+            .isInstanceOf(java.nio.file.NoSuchFileException::class.java)
+        assertThat(missing.requests).isEmpty()
+    }
+
+    @Test
+    fun `directory walk cannot authorize files outside a cached child directory`() {
+        val root = Files.createDirectory(directory.resolve("selected"))
+        val child = Files.createDirectory(root.resolve("nested"))
+        val outside = Files.createDirectory(directory.resolve("other"))
+        Files.write(outside.resolve("not-selected.txt"), "outside".toByteArray())
+        val original =
+            Files.readAttributes(
+                child,
+                java.nio.file.attribute.BasicFileAttributes::class.java,
+                java.nio.file.LinkOption.NOFOLLOW_LINKS,
+            )
+        val t = Transport()
+        val client = t.client()
+        var replaced = false
+        org.mockito.Mockito.mockStatic(Files::class.java, org.mockito.Mockito.CALLS_REAL_METHODS)
+            .use { mocked ->
+                mocked
+                    .`when`<java.nio.file.attribute.BasicFileAttributes> {
+                        Files.readAttributes(
+                            child,
+                            java.nio.file.attribute.BasicFileAttributes::class.java,
+                            java.nio.file.LinkOption.NOFOLLOW_LINKS,
+                        )
+                    }
+                    .thenAnswer {
+                        if (!replaced) {
+                            replaced = true
+                            Files.move(child, directory.resolve("original-child"))
+                            Files.createSymbolicLink(child, outside)
+                            original
+                        } else it.callRealMethod()
+                    }
+                try {
+                    catchThrowable {
+                        AgentEnvironmentFiles.prepareDirectory(
+                            client,
+                            root,
+                            "/workspace/docs",
+                            listOf("**/*.txt"),
+                        )
+                    }
+                    assertThat(replaced).isTrue()
                     assertThat(t.requests).isEmpty()
                 } finally {
                     client.close()
