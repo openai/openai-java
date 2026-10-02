@@ -231,6 +231,12 @@ if (project.hasProperty("graalvmAgent")) {
     }
 
     tasks.test {
+        // GraalVM's caller-based Byte Buddy names can contain <clinit>, preventing Mockito's
+        // module-aware accessor from initializing. Keep unique, reproducible names for tracing.
+        systemProperty("net.bytebuddy.naming", "0")
+        // One Gradle fork still runs concurrent JUnit methods. Trace them serially so agent
+        // overhead does not starve asynchronous fixtures with bounded waits.
+        systemProperty("junit.jupiter.execution.parallel.enabled", false)
         maxParallelForks = 1
         forkEvery = 0
         jvmArgs(
