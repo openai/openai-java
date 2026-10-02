@@ -129,15 +129,15 @@ internal class JsonSchemaValidator private constructor() {
          * The maximum total length of all strings used in the schema for property names, definition
          * names, enum values and const values. The OpenAI specification states:
          * > In a schema, total string length of all property names, definition names, enum values,
-         * > and const values cannot exceed 15,000 characters.
+         * > and const values cannot exceed 120,000 characters.
          */
-        private const val MAX_TOTAL_STRING_LENGTH = 15_000
+        private const val MAX_TOTAL_STRING_LENGTH = 120_000
 
         /** The maximum number of object properties allowed in a schema. */
-        private const val MAX_OBJECT_PROPERTIES = 100
+        private const val MAX_OBJECT_PROPERTIES = 5_000
 
         /** The maximum number of enum values across all enums in the schema. */
-        private const val MAX_ENUM_VALUES = 500
+        private const val MAX_ENUM_VALUES = 1_000
 
         /**
          * The number of enum values in any one enum with string values beyond which a limit of
@@ -150,7 +150,7 @@ internal class JsonSchemaValidator private constructor() {
          * The maximum total length of all string values of a single enum where the number of values
          * exceeds [UNRESTRICTED_ENUM_VALUES_LIMIT].
          */
-        private const val MAX_ENUM_TOTAL_STRING_LENGTH = 7_500
+        private const val MAX_ENUM_TOTAL_STRING_LENGTH = 15_000
 
         /** The maximum depth (number of levels) of nesting allowed in a schema. */
         private const val MAX_NESTING_DEPTH = 10
@@ -510,7 +510,7 @@ internal class JsonSchemaValidator private constructor() {
         val enumField = schema.get(ENUM)
 
         // OpenAI API specification: "For a single enum property with string values, the total
-        // string length of all enum values cannot exceed 7,500 characters when there are more than
+        // string length of all enum values cannot exceed 15,000 characters when there are more than
         // 250 enum values."
         val isString = typeName == TYPE_STRING
         var numEnumValues = 0
