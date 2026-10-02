@@ -21,7 +21,7 @@ private constructor(
             if (!endsWith("/")) {
                 append("/")
             }
-            append(URLEncoder.encode(segment, "UTF-8"))
+            append(URLEncoder.encode(segment, "UTF-8").replace("+", "%20"))
         }
 
         if (queryParams.isEmpty()) {
