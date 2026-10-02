@@ -12,6 +12,7 @@ import com.openai.core.LogLevel
 import com.openai.core.RequestOptions
 import com.openai.core.jsonMapper
 import com.openai.credential.WorkloadIdentityCredential
+import com.openai.models.audio.voices.VoiceCreateParams
 import com.openai.models.images.ImageCreateVariationParams
 import com.openai.models.images.ImageEditParams
 import com.openai.models.skills.SkillCreateParams
@@ -65,6 +66,71 @@ internal class UnionUploadStreamingTest {
                 if (async) it.async().images().edit(params).get(10, TimeUnit.SECONDS)
                 else it.images().withRawResponse().edit(params).close()
             }
+    }
+
+    @ParameterizedTest
+    @CsvSource("false,sample", "true,sample", "false,prompt", "true,prompt")
+    fun voiceUnionUploadsPreserveMultipartFieldsAndStreaming(async: Boolean, kind: String) {
+        val payload = byteArrayOf(0, 1, -1, 13, 10, 65, -128)
+        val stream = GuardedStream(payload)
+        val params =
+            if (kind == "sample") voiceParams(stream)
+            else
+                VoiceCreateParams.builder()
+                    .body(
+                        VoiceCreateParams.Body.Prompt.builder()
+                            .name("Synthetic voice")
+                            .prompt("A calm synthetic narrator")
+                            .model("auto")
+                            .scriptHint("Welcome aboard")
+                            .build()
+                    )
+                    .build()
+        client(
+                checkRequest = {
+                    assertThat(it.method).isEqualTo(HttpMethod.POST)
+                    assertThat(it.pathSegments).containsExactly("audio", "voices")
+                }
+            ) { body ->
+                assertThat(body.contentType()).startsWith("multipart/form-data; boundary=")
+                val output = ByteArrayOutputStream()
+                if (kind == "sample") {
+                    assertThat(stream.closed).isFalse()
+                    assertThat(body.contentLength()).isEqualTo(-1L)
+                    assertThat(body.repeatable()).isFalse()
+                    stream.allowReads = true
+                }
+                body.use { it.writeTo(output) }
+                val boundary = checkNotNull(body.contentType()).substringAfter("boundary=")
+                val parts = output.toString("ISO-8859-1").split("--$boundary")
+                fun value(name: String): String =
+                    parts
+                        .single { it.contains("name=\"$name\"") }
+                        .substringAfter("\r\n\r\n")
+                        .removeSuffix("\r\n")
+                assertThat(value("name")).isEqualTo("Synthetic voice")
+                if (kind == "sample") {
+                    assertThat(value("consent")).isEqualTo("cons_synthetic")
+                    assertThat(parts.single { it.contains("name=\"audio_sample\"") })
+                        .contains("Content-Type: application/octet-stream\r\n")
+                    assertThat(value("audio_sample").toByteArray(Charsets.ISO_8859_1))
+                        .isEqualTo(payload)
+                    assertThat(parts.none { it.contains("name=\"prompt\"") }).isTrue()
+                    assertThat(stream.closeCount).isEqualTo(1)
+                } else {
+                    assertThat(value("type")).isEqualTo("prompt")
+                    assertThat(value("prompt")).isEqualTo("A calm synthetic narrator")
+                    assertThat(value("model")).isEqualTo("auto")
+                    assertThat(value("script_hint")).isEqualTo("Welcome aboard")
+                    assertThat(parts.none { it.contains("name=\"audio_sample\"") }).isTrue()
+                    assertThat(parts.none { it.contains("name=\"consent\"") }).isTrue()
+                }
+            }
+            .useClient {
+                if (async) it.async().audio().voices().create(params).get(10, TimeUnit.SECONDS)
+                else it.audio().voices().withRawResponse().create(params).close()
+            }
+        if (kind == "sample") assertThat(stream.closeCount).isEqualTo(1)
     }
 
     @Test
@@ -281,6 +347,8 @@ internal class UnionUploadStreamingTest {
         "true,image,workload",
         "false,video,workload",
         "true,video,workload",
+        "false,voice,workload",
+        "true,voice,workload",
         "false,streaming,workload",
         "true,streaming,workload",
         "false,skill,workload",
@@ -338,6 +406,8 @@ internal class UnionUploadStreamingTest {
                         val result =
                             if (kind == "skill" || kind == "skill-version") {
                                 skillUpload(client, raw, kind, stream)
+                            } else if (kind == "voice") {
+                                voiceUpload(client, raw, stream)
                             } else if (kind.startsWith("variation")) {
                                 val params =
                                     ImageCreateVariationParams.builder().image(stream).build()
@@ -395,6 +465,8 @@ internal class UnionUploadStreamingTest {
         "true,skill",
         "false,skill-version",
         "true,skill-version",
+        "false,voice",
+        "true,voice",
     )
     fun cancelledPublicUploadsCloseLateResponses(raw: Boolean, kind: String) {
         val stream = GuardedStream(byteArrayOf(1))
@@ -408,6 +480,7 @@ internal class UnionUploadStreamingTest {
                 val result =
                     if (kind == "skill" || kind == "skill-version")
                         skillUpload(client, raw, kind, stream)
+                    else if (kind == "voice") voiceUpload(client, raw, stream)
                     else if (raw) client.async().images().withRawResponse().edit(params)
                     else client.async().images().edit(params)
                 assertThat(started.await(10, TimeUnit.SECONDS)).isTrue()
@@ -460,6 +533,27 @@ internal class UnionUploadStreamingTest {
             else client.async().skills().versions().create(params)
         }
 
+    private fun voiceParams(stream: InputStream): VoiceCreateParams =
+        VoiceCreateParams.builder()
+            .body(
+                VoiceCreateParams.Body.AudioSample.builder()
+                    .audioSample(stream)
+                    .consent("cons_synthetic")
+                    .name("Synthetic voice")
+                    .build()
+            )
+            .build()
+
+    private fun voiceUpload(
+        client: OpenAIClientImpl,
+        raw: Boolean,
+        stream: InputStream,
+    ): CompletableFuture<*> {
+        val params = voiceParams(stream)
+        return if (raw) client.async().audio().voices().withRawResponse().create(params)
+        else client.async().audio().voices().create(params)
+    }
+
     private fun OpenAIClientImpl.useClient(action: (OpenAIClientImpl) -> Unit) {
         try {
             action(this)
@@ -472,6 +566,7 @@ internal class UnionUploadStreamingTest {
         mapper: JsonMapper = jsonMapper(),
         configure: (ClientOptions.Builder) -> Unit = { it.apiKey("test-key") },
         asyncResponse: CompletableFuture<HttpResponse>? = null,
+        checkRequest: (HttpRequest) -> Unit = {},
         checkBody: (HttpRequestBody) -> Unit,
     ): OpenAIClientImpl =
         OpenAIClientImpl(
@@ -485,6 +580,7 @@ internal class UnionUploadStreamingTest {
                             request: HttpRequest,
                             requestOptions: RequestOptions,
                         ): HttpResponse {
+                            checkRequest(request)
                             checkBody(checkNotNull(request.body))
                             return object : HttpResponse {
                                 override fun statusCode() = 200

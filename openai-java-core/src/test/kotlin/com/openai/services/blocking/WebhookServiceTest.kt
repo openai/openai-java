@@ -86,29 +86,6 @@ internal class WebhookServiceTest {
     }
 
     @Test
-    fun unwrapWithoutSecretShouldThrow() {
-        val client =
-            OpenAIOkHttpClient.builder()
-                .apiKey("My API Key")
-                .adminApiKey("My Admin API Key")
-                .build()
-        val webhookService = client.webhooks()
-
-        val exception =
-            assertThrows<IllegalStateException> {
-                webhookService.unwrap(
-                    WebhookVerificationParams.builder()
-                        .payload(testPayload)
-                        .headers(Headers.builder().build())
-                        // No secret provided, should throw error
-                        .build()
-                )
-            }
-
-        assertTrue(exception.message!!.contains("The webhook secret must either be set"))
-    }
-
-    @Test
     fun create() {
         val client =
             OpenAIOkHttpClient.builder()
@@ -313,5 +290,28 @@ internal class WebhookServiceTest {
             )
 
         webhookEndpointTestResult.validate()
+    }
+
+    @Test
+    fun unwrapWithoutSecretShouldThrow() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val webhookService = client.webhooks()
+
+        val exception =
+            assertThrows<IllegalStateException> {
+                webhookService.unwrap(
+                    WebhookVerificationParams.builder()
+                        .payload(testPayload)
+                        .headers(Headers.builder().build())
+                        // No secret provided, should throw error
+                        .build()
+                )
+            }
+
+        assertTrue(exception.message!!.contains("The webhook secret must either be set"))
     }
 }

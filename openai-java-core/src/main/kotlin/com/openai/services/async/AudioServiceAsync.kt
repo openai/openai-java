@@ -6,6 +6,7 @@ import com.openai.core.ClientOptions
 import com.openai.services.async.audio.SpeechServiceAsync
 import com.openai.services.async.audio.TranscriptionServiceAsync
 import com.openai.services.async.audio.TranslationServiceAsync
+import com.openai.services.async.audio.VoiceServiceAsync
 import java.util.function.Consumer
 
 interface AudioServiceAsync {
@@ -31,6 +32,9 @@ interface AudioServiceAsync {
     /** Turn audio into text or text into audio. */
     fun speech(): SpeechServiceAsync
 
+    /** Turn audio into text or text into audio. */
+    fun voices(): VoiceServiceAsync
+
     /** A view of [AudioServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -51,5 +55,8 @@ interface AudioServiceAsync {
 
         /** Turn audio into text or text into audio. */
         fun speech(): SpeechServiceAsync.WithRawResponse
+
+        /** Turn audio into text or text into audio. */
+        fun voices(): VoiceServiceAsync.WithRawResponse
     }
 }

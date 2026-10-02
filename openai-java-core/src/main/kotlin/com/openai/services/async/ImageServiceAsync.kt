@@ -32,11 +32,17 @@ interface ImageServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ImageServiceAsync
 
-    /** Creates a variation of a given image. This endpoint only supports `dall-e-2`. */
+    /**
+     * This endpoint is retired and no longer available. Use the image edits endpoint with a GPT
+     * Image model and a prompt to create a variation of an image. The request and response schemas
+     * below describe the legacy contract.
+     */
+    @Deprecated("deprecated")
     fun createVariation(params: ImageCreateVariationParams): CompletableFuture<ImagesResponse> =
         createVariation(params, RequestOptions.none())
 
     /** @see createVariation */
+    @Deprecated("deprecated")
     fun createVariation(
         params: ImageCreateVariationParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -44,7 +50,7 @@ interface ImageServiceAsync {
 
     /**
      * Creates an edited or extended image given one or more source images and a prompt. This
-     * endpoint supports GPT Image models and `dall-e-2`.
+     * endpoint supports GPT Image models.
      */
     fun edit(params: ImageEditParams): CompletableFuture<ImagesResponse> =
         edit(params, RequestOptions.none())
@@ -57,7 +63,7 @@ interface ImageServiceAsync {
 
     /**
      * Creates an edited or extended image given one or more source images and a prompt. This
-     * endpoint supports GPT Image models and `dall-e-2`.
+     * endpoint supports GPT Image models.
      */
     fun editStreaming(params: ImageEditParams): AsyncStreamResponse<ImageEditStreamEvent> =
         editStreaming(params, RequestOptions.none())
@@ -69,7 +75,7 @@ interface ImageServiceAsync {
     ): AsyncStreamResponse<ImageEditStreamEvent>
 
     /**
-     * Creates an image given a prompt.
+     * Creates an image given a prompt using a GPT Image model.
      * [Learn more](https://developers.openai.com/api/docs/guides/images-vision).
      */
     fun generate(params: ImageGenerateParams): CompletableFuture<ImagesResponse> =
@@ -82,7 +88,7 @@ interface ImageServiceAsync {
     ): CompletableFuture<ImagesResponse>
 
     /**
-     * Creates an image given a prompt.
+     * Creates an image given a prompt using a GPT Image model.
      * [Learn more](https://developers.openai.com/api/docs/guides/images-vision).
      */
     fun generateStreaming(params: ImageGenerateParams): AsyncStreamResponse<ImageGenStreamEvent> =
@@ -110,12 +116,14 @@ interface ImageServiceAsync {
          * Returns a raw HTTP response for `post /images/variations`, but is otherwise the same as
          * [ImageServiceAsync.createVariation].
          */
+        @Deprecated("deprecated")
         fun createVariation(
             params: ImageCreateVariationParams
         ): CompletableFuture<HttpResponseFor<ImagesResponse>> =
             createVariation(params, RequestOptions.none())
 
         /** @see createVariation */
+        @Deprecated("deprecated")
         fun createVariation(
             params: ImageCreateVariationParams,
             requestOptions: RequestOptions = RequestOptions.none(),

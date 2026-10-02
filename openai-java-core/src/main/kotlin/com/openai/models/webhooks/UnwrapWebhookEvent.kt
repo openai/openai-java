@@ -18,11 +18,16 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Sent when a batch API request has been cancelled. */
+/** Sent when an agent session requires an action. Retrieve the session for action details. */
 @JsonDeserialize(using = UnwrapWebhookEvent.Deserializer::class)
 @JsonSerialize(using = UnwrapWebhookEvent.Serializer::class)
 class UnwrapWebhookEvent
 private constructor(
+    private val agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent? = null,
+    private val agentSessionCreated: AgentSessionCreatedWebhookEvent? = null,
+    private val agentSessionFailed: AgentSessionFailedWebhookEvent? = null,
+    private val agentSessionIdle: AgentSessionIdleWebhookEvent? = null,
+    private val agentSessionInProgress: AgentSessionInProgressWebhookEvent? = null,
     private val batchCancelled: BatchCancelledWebhookEvent? = null,
     private val batchCompleted: BatchCompletedWebhookEvent? = null,
     private val batchExpired: BatchExpiredWebhookEvent? = null,
@@ -46,6 +51,26 @@ private constructor(
     private val safetyWarningIssued: SafetyWarningIssuedWebhookEvent? = null,
     private val _json: JsonValue? = null,
 ) {
+
+    /** Sent when an agent session requires an action. Retrieve the session for action details. */
+    fun agentSessionActionRequired(): Optional<AgentSessionActionRequiredWebhookEvent> =
+        Optional.ofNullable(agentSessionActionRequired)
+
+    /** Sent when an agent session is created. */
+    fun agentSessionCreated(): Optional<AgentSessionCreatedWebhookEvent> =
+        Optional.ofNullable(agentSessionCreated)
+
+    /** Sent when an agent session fails. */
+    fun agentSessionFailed(): Optional<AgentSessionFailedWebhookEvent> =
+        Optional.ofNullable(agentSessionFailed)
+
+    /** Sent when an agent session becomes idle. */
+    fun agentSessionIdle(): Optional<AgentSessionIdleWebhookEvent> =
+        Optional.ofNullable(agentSessionIdle)
+
+    /** Sent when an agent session enters the in-progress state. */
+    fun agentSessionInProgress(): Optional<AgentSessionInProgressWebhookEvent> =
+        Optional.ofNullable(agentSessionInProgress)
 
     /** Sent when a batch API request has been cancelled. */
     fun batchCancelled(): Optional<BatchCancelledWebhookEvent> = Optional.ofNullable(batchCancelled)
@@ -140,6 +165,16 @@ private constructor(
     fun safetyWarningIssued(): Optional<SafetyWarningIssuedWebhookEvent> =
         Optional.ofNullable(safetyWarningIssued)
 
+    fun isAgentSessionActionRequired(): Boolean = agentSessionActionRequired != null
+
+    fun isAgentSessionCreated(): Boolean = agentSessionCreated != null
+
+    fun isAgentSessionFailed(): Boolean = agentSessionFailed != null
+
+    fun isAgentSessionIdle(): Boolean = agentSessionIdle != null
+
+    fun isAgentSessionInProgress(): Boolean = agentSessionInProgress != null
+
     fun isBatchCancelled(): Boolean = batchCancelled != null
 
     fun isBatchCompleted(): Boolean = batchCompleted != null
@@ -181,6 +216,26 @@ private constructor(
     fun isSafetyOrgAlertCreated(): Boolean = safetyOrgAlertCreated != null
 
     fun isSafetyWarningIssued(): Boolean = safetyWarningIssued != null
+
+    /** Sent when an agent session requires an action. Retrieve the session for action details. */
+    fun asAgentSessionActionRequired(): AgentSessionActionRequiredWebhookEvent =
+        agentSessionActionRequired.getOrThrow("agentSessionActionRequired")
+
+    /** Sent when an agent session is created. */
+    fun asAgentSessionCreated(): AgentSessionCreatedWebhookEvent =
+        agentSessionCreated.getOrThrow("agentSessionCreated")
+
+    /** Sent when an agent session fails. */
+    fun asAgentSessionFailed(): AgentSessionFailedWebhookEvent =
+        agentSessionFailed.getOrThrow("agentSessionFailed")
+
+    /** Sent when an agent session becomes idle. */
+    fun asAgentSessionIdle(): AgentSessionIdleWebhookEvent =
+        agentSessionIdle.getOrThrow("agentSessionIdle")
+
+    /** Sent when an agent session enters the in-progress state. */
+    fun asAgentSessionInProgress(): AgentSessionInProgressWebhookEvent =
+        agentSessionInProgress.getOrThrow("agentSessionInProgress")
 
     /** Sent when a batch API request has been cancelled. */
     fun asBatchCancelled(): BatchCancelledWebhookEvent = batchCancelled.getOrThrow("batchCancelled")
@@ -289,8 +344,8 @@ private constructor(
      *
      * Optional<String> result = unwrapWebhookEvent.accept(new UnwrapWebhookEvent.Visitor<Optional<String>>() {
      *     @Override
-     *     public Optional<String> visitBatchCancelled(BatchCancelledWebhookEvent batchCancelled) {
-     *         return Optional.of(batchCancelled.toString());
+     *     public Optional<String> visitAgentSessionActionRequired(AgentSessionActionRequiredWebhookEvent agentSessionActionRequired) {
+     *         return Optional.of(agentSessionActionRequired.toString());
      *     }
      *
      *     // ...
@@ -308,6 +363,13 @@ private constructor(
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
+            agentSessionActionRequired != null ->
+                visitor.visitAgentSessionActionRequired(agentSessionActionRequired)
+            agentSessionCreated != null -> visitor.visitAgentSessionCreated(agentSessionCreated)
+            agentSessionFailed != null -> visitor.visitAgentSessionFailed(agentSessionFailed)
+            agentSessionIdle != null -> visitor.visitAgentSessionIdle(agentSessionIdle)
+            agentSessionInProgress != null ->
+                visitor.visitAgentSessionInProgress(agentSessionInProgress)
             batchCancelled != null -> visitor.visitBatchCancelled(batchCancelled)
             batchCompleted != null -> visitor.visitBatchCompleted(batchCompleted)
             batchExpired != null -> visitor.visitBatchExpired(batchExpired)
@@ -354,6 +416,34 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
+                override fun visitAgentSessionActionRequired(
+                    agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
+                ) {
+                    agentSessionActionRequired.validate()
+                }
+
+                override fun visitAgentSessionCreated(
+                    agentSessionCreated: AgentSessionCreatedWebhookEvent
+                ) {
+                    agentSessionCreated.validate()
+                }
+
+                override fun visitAgentSessionFailed(
+                    agentSessionFailed: AgentSessionFailedWebhookEvent
+                ) {
+                    agentSessionFailed.validate()
+                }
+
+                override fun visitAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent) {
+                    agentSessionIdle.validate()
+                }
+
+                override fun visitAgentSessionInProgress(
+                    agentSessionInProgress: AgentSessionInProgressWebhookEvent
+                ) {
+                    agentSessionInProgress.validate()
+                }
+
                 override fun visitBatchCancelled(batchCancelled: BatchCancelledWebhookEvent) {
                     batchCancelled.validate()
                 }
@@ -483,6 +573,25 @@ private constructor(
     internal fun validity(): Int =
         accept(
             object : Visitor<Int> {
+                override fun visitAgentSessionActionRequired(
+                    agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
+                ) = agentSessionActionRequired.validity()
+
+                override fun visitAgentSessionCreated(
+                    agentSessionCreated: AgentSessionCreatedWebhookEvent
+                ) = agentSessionCreated.validity()
+
+                override fun visitAgentSessionFailed(
+                    agentSessionFailed: AgentSessionFailedWebhookEvent
+                ) = agentSessionFailed.validity()
+
+                override fun visitAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent) =
+                    agentSessionIdle.validity()
+
+                override fun visitAgentSessionInProgress(
+                    agentSessionInProgress: AgentSessionInProgressWebhookEvent
+                ) = agentSessionInProgress.validity()
+
                 override fun visitBatchCancelled(batchCancelled: BatchCancelledWebhookEvent) =
                     batchCancelled.validity()
 
@@ -568,6 +677,11 @@ private constructor(
         }
 
         return other is UnwrapWebhookEvent &&
+            agentSessionActionRequired == other.agentSessionActionRequired &&
+            agentSessionCreated == other.agentSessionCreated &&
+            agentSessionFailed == other.agentSessionFailed &&
+            agentSessionIdle == other.agentSessionIdle &&
+            agentSessionInProgress == other.agentSessionInProgress &&
             batchCancelled == other.batchCancelled &&
             batchCompleted == other.batchCompleted &&
             batchExpired == other.batchExpired &&
@@ -593,6 +707,11 @@ private constructor(
 
     override fun hashCode(): Int =
         Objects.hash(
+            agentSessionActionRequired,
+            agentSessionCreated,
+            agentSessionFailed,
+            agentSessionIdle,
+            agentSessionInProgress,
             batchCancelled,
             batchCompleted,
             batchExpired,
@@ -618,6 +737,15 @@ private constructor(
 
     override fun toString(): String =
         when {
+            agentSessionActionRequired != null ->
+                "UnwrapWebhookEvent{agentSessionActionRequired=$agentSessionActionRequired}"
+            agentSessionCreated != null ->
+                "UnwrapWebhookEvent{agentSessionCreated=$agentSessionCreated}"
+            agentSessionFailed != null ->
+                "UnwrapWebhookEvent{agentSessionFailed=$agentSessionFailed}"
+            agentSessionIdle != null -> "UnwrapWebhookEvent{agentSessionIdle=$agentSessionIdle}"
+            agentSessionInProgress != null ->
+                "UnwrapWebhookEvent{agentSessionInProgress=$agentSessionInProgress}"
             batchCancelled != null -> "UnwrapWebhookEvent{batchCancelled=$batchCancelled}"
             batchCompleted != null -> "UnwrapWebhookEvent{batchCompleted=$batchCompleted}"
             batchExpired != null -> "UnwrapWebhookEvent{batchExpired=$batchExpired}"
@@ -654,6 +782,34 @@ private constructor(
         }
 
     companion object {
+
+        /**
+         * Sent when an agent session requires an action. Retrieve the session for action details.
+         */
+        @JvmStatic
+        fun ofAgentSessionActionRequired(
+            agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
+        ) = UnwrapWebhookEvent(agentSessionActionRequired = agentSessionActionRequired)
+
+        /** Sent when an agent session is created. */
+        @JvmStatic
+        fun ofAgentSessionCreated(agentSessionCreated: AgentSessionCreatedWebhookEvent) =
+            UnwrapWebhookEvent(agentSessionCreated = agentSessionCreated)
+
+        /** Sent when an agent session fails. */
+        @JvmStatic
+        fun ofAgentSessionFailed(agentSessionFailed: AgentSessionFailedWebhookEvent) =
+            UnwrapWebhookEvent(agentSessionFailed = agentSessionFailed)
+
+        /** Sent when an agent session becomes idle. */
+        @JvmStatic
+        fun ofAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent) =
+            UnwrapWebhookEvent(agentSessionIdle = agentSessionIdle)
+
+        /** Sent when an agent session enters the in-progress state. */
+        @JvmStatic
+        fun ofAgentSessionInProgress(agentSessionInProgress: AgentSessionInProgressWebhookEvent) =
+            UnwrapWebhookEvent(agentSessionInProgress = agentSessionInProgress)
 
         /** Sent when a batch API request has been cancelled. */
         @JvmStatic
@@ -783,6 +939,30 @@ private constructor(
      */
     interface Visitor<out T> {
 
+        /**
+         * Sent when an agent session requires an action. Retrieve the session for action details.
+         */
+        fun visitAgentSessionActionRequired(
+            agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
+        ): T = unknown(JsonValue.from(agentSessionActionRequired))
+
+        /** Sent when an agent session is created. */
+        fun visitAgentSessionCreated(agentSessionCreated: AgentSessionCreatedWebhookEvent): T =
+            unknown(JsonValue.from(agentSessionCreated))
+
+        /** Sent when an agent session fails. */
+        fun visitAgentSessionFailed(agentSessionFailed: AgentSessionFailedWebhookEvent): T =
+            unknown(JsonValue.from(agentSessionFailed))
+
+        /** Sent when an agent session becomes idle. */
+        fun visitAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent): T =
+            unknown(JsonValue.from(agentSessionIdle))
+
+        /** Sent when an agent session enters the in-progress state. */
+        fun visitAgentSessionInProgress(
+            agentSessionInProgress: AgentSessionInProgressWebhookEvent
+        ): T = unknown(JsonValue.from(agentSessionInProgress))
+
         /** Sent when a batch API request has been cancelled. */
         fun visitBatchCancelled(batchCancelled: BatchCancelledWebhookEvent): T
 
@@ -890,6 +1070,37 @@ private constructor(
             val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
             when (type) {
+                "agent.session.action_required" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentSessionActionRequiredWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(agentSessionActionRequired = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.created" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AgentSessionCreatedWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(agentSessionCreated = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.failed" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AgentSessionFailedWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(agentSessionFailed = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.idle" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AgentSessionIdleWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(agentSessionIdle = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.in_progress" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentSessionInProgressWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(agentSessionInProgress = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
                 "batch.cancelled" -> {
                     return tryDeserialize(node, jacksonTypeRef<BatchCancelledWebhookEvent>())?.let {
                         UnwrapWebhookEvent(batchCancelled = it, _json = json)
@@ -1018,6 +1229,14 @@ private constructor(
             provider: SerializerProvider,
         ) {
             when {
+                value.agentSessionActionRequired != null ->
+                    generator.writeObject(value.agentSessionActionRequired)
+                value.agentSessionCreated != null ->
+                    generator.writeObject(value.agentSessionCreated)
+                value.agentSessionFailed != null -> generator.writeObject(value.agentSessionFailed)
+                value.agentSessionIdle != null -> generator.writeObject(value.agentSessionIdle)
+                value.agentSessionInProgress != null ->
+                    generator.writeObject(value.agentSessionInProgress)
                 value.batchCancelled != null -> generator.writeObject(value.batchCancelled)
                 value.batchCompleted != null -> generator.writeObject(value.batchCompleted)
                 value.batchExpired != null -> generator.writeObject(value.batchExpired)
