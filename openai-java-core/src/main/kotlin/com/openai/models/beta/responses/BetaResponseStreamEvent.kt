@@ -2524,8 +2524,8 @@ private constructor(
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
          *
-         * Recognized events also reach this method when their visit method is not overridden. This
-         * allows existing visitors to handle event variants added by newer SDK versions.
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */

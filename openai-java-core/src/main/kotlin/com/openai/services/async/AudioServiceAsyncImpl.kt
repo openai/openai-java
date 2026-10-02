@@ -9,6 +9,8 @@ import com.openai.services.async.audio.TranscriptionServiceAsync
 import com.openai.services.async.audio.TranscriptionServiceAsyncImpl
 import com.openai.services.async.audio.TranslationServiceAsync
 import com.openai.services.async.audio.TranslationServiceAsyncImpl
+import com.openai.services.async.audio.VoiceServiceAsync
+import com.openai.services.async.audio.VoiceServiceAsyncImpl
 import java.util.function.Consumer
 
 class AudioServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -28,6 +30,8 @@ class AudioServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     private val speech: SpeechServiceAsync by lazy { SpeechServiceAsyncImpl(clientOptions) }
 
+    private val voices: VoiceServiceAsync by lazy { VoiceServiceAsyncImpl(clientOptions) }
+
     override fun withRawResponse(): AudioServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AudioServiceAsync =
@@ -42,6 +46,9 @@ class AudioServiceAsyncImpl internal constructor(private val clientOptions: Clie
     /** Turn audio into text or text into audio. */
     override fun speech(): SpeechServiceAsync = speech
 
+    /** Turn audio into text or text into audio. */
+    override fun voices(): VoiceServiceAsync = voices
+
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         AudioServiceAsync.WithRawResponse {
 
@@ -55,6 +62,10 @@ class AudioServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         private val speech: SpeechServiceAsync.WithRawResponse by lazy {
             SpeechServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val voices: VoiceServiceAsync.WithRawResponse by lazy {
+            VoiceServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun withOptions(
@@ -72,5 +83,8 @@ class AudioServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         /** Turn audio into text or text into audio. */
         override fun speech(): SpeechServiceAsync.WithRawResponse = speech
+
+        /** Turn audio into text or text into audio. */
+        override fun voices(): VoiceServiceAsync.WithRawResponse = voices
     }
 }

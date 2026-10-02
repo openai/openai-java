@@ -22,7 +22,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Creates an image given a prompt.
+ * Creates an image given a prompt using a GPT Image model.
  * [Learn more](https://developers.openai.com/api/docs/guides/images-vision).
  */
 class ImageGenerateParams
@@ -33,8 +33,7 @@ private constructor(
 ) : Params {
 
     /**
-     * A text description of the desired image(s). The maximum length is 32000 characters for the
-     * GPT image models, 1000 characters for `dall-e-2` and 4000 characters for `dall-e-3`.
+     * A text description of the desired image(s). The maximum length is 32000 characters.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -57,11 +56,10 @@ private constructor(
     fun background(): Optional<Background> = body.background()
 
     /**
-     * The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image model
-     * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`,
-     * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-     * `gpt-image-2.5-flare-2026-09-08`). Defaults to `dall-e-2` unless a parameter specific to the
-     * GPT image models is used.
+     * The GPT image model to use for image generation. Specify a model explicitly. Supported models
+     * include `gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+     * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+     * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -78,8 +76,7 @@ private constructor(
     fun moderation(): Optional<Moderation> = body.moderation()
 
     /**
-     * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-     * supported.
+     * The number of images to generate. Must be between 1 and 10.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -123,8 +120,6 @@ private constructor(
      * - `high`, `medium` and `low` are supported for the GPT image models.
      * - `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08` snapshots,
      *   also support `xhigh` and `max`.
-     * - `hd` and `standard` are supported for `dall-e-3`.
-     * - `standard` is the only option for `dall-e-2`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -132,15 +127,13 @@ private constructor(
     fun quality(): Optional<Quality> = body.quality()
 
     /**
-     * The format in which generated images with `dall-e-2` and `dall-e-3` are returned. Must be one
-     * of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been
-     * generated. This parameter isn't supported for the GPT image models, which always return
-     * base64-encoded images.
+     * Legacy response format parameter for retired image models. Unsupported for GPT image models,
+     * which always return base64-encoded images.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
+    @Deprecated("deprecated") fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
     /**
      * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
@@ -151,8 +144,7 @@ private constructor(
      * experimental, and the maximum supported resolution is `3840x2160`. The requested size must
      * also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
      * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for
-     * models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or
-     * `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+     * models that allow automatic sizing.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -160,15 +152,13 @@ private constructor(
     fun size(): Optional<Size> = body.size()
 
     /**
-     * The style of the generated images. This parameter is only supported for `dall-e-3`. Must be
-     * one of `vivid` or `natural`. Vivid causes the model to lean towards generating hyper-real and
-     * dramatic images. Natural causes the model to produce more natural, less hyper-real looking
-     * images.
+     * Legacy style parameter for retired image models. Unsupported for GPT image models; describe
+     * the desired style in the prompt instead.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun style(): Optional<Style> = body.style()
+    @Deprecated("deprecated") fun style(): Optional<Style> = body.style()
 
     /**
      * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
@@ -249,6 +239,7 @@ private constructor(
      *
      * Unlike [responseFormat], this method doesn't throw if the JSON field has an unexpected type.
      */
+    @Deprecated("deprecated")
     fun _responseFormat(): JsonField<ResponseFormat> = body._responseFormat()
 
     /**
@@ -263,7 +254,7 @@ private constructor(
      *
      * Unlike [style], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _style(): JsonField<Style> = body._style()
+    @Deprecated("deprecated") fun _style(): JsonField<Style> = body._style()
 
     /**
      * Returns the raw JSON value of [user].
@@ -323,10 +314,7 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /**
-         * A text description of the desired image(s). The maximum length is 32000 characters for
-         * the GPT image models, 1000 characters for `dall-e-2` and 4000 characters for `dall-e-3`.
-         */
+        /** A text description of the desired image(s). The maximum length is 32000 characters. */
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
         /**
@@ -363,11 +351,10 @@ private constructor(
         fun background(background: JsonField<Background>) = apply { body.background(background) }
 
         /**
-         * The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image
-         * model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * The GPT image model to use for image generation. Specify a model explicitly. Supported
+         * models include `gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
          * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-         * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`). Defaults to `dall-e-2` unless a
-         * parameter specific to the GPT image models is used.
+         * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`.
          */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
@@ -409,10 +396,7 @@ private constructor(
          */
         fun moderation(moderation: JsonField<Moderation>) = apply { body.moderation(moderation) }
 
-        /**
-         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-         * supported.
-         */
+        /** The number of images to generate. Must be between 1 and 10. */
         fun n(n: Long?) = apply { body.n(n) }
 
         /**
@@ -522,8 +506,6 @@ private constructor(
          * - `high`, `medium` and `low` are supported for the GPT image models.
          * - `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
          *   snapshots, also support `xhigh` and `max`.
-         * - `hd` and `standard` are supported for `dall-e-3`.
-         * - `standard` is the only option for `dall-e-2`.
          */
         fun quality(quality: Quality?) = apply { body.quality(quality) }
 
@@ -539,16 +521,16 @@ private constructor(
         fun quality(quality: JsonField<Quality>) = apply { body.quality(quality) }
 
         /**
-         * The format in which generated images with `dall-e-2` and `dall-e-3` are returned. Must be
-         * one of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been
-         * generated. This parameter isn't supported for the GPT image models, which always return
-         * base64-encoded images.
+         * Legacy response format parameter for retired image models. Unsupported for GPT image
+         * models, which always return base64-encoded images.
          */
+        @Deprecated("deprecated")
         fun responseFormat(responseFormat: ResponseFormat?) = apply {
             body.responseFormat(responseFormat)
         }
 
         /** Alias for calling [Builder.responseFormat] with `responseFormat.orElse(null)`. */
+        @Deprecated("deprecated")
         fun responseFormat(responseFormat: Optional<ResponseFormat>) =
             responseFormat(responseFormat.getOrNull())
 
@@ -559,6 +541,7 @@ private constructor(
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
+        @Deprecated("deprecated")
         fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
             body.responseFormat(responseFormat)
         }
@@ -572,9 +555,7 @@ private constructor(
          * experimental, and the maximum supported resolution is `3840x2160`. The requested size
          * must also satisfy the model's current pixel and edge limits. The standard sizes
          * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
-         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
-         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-         * `1792x1024`, or `1024x1792`.
+         * is supported for models that allow automatic sizing.
          */
         fun size(size: Size?) = apply { body.size(size) }
 
@@ -598,15 +579,13 @@ private constructor(
         fun size(value: String) = apply { body.size(value) }
 
         /**
-         * The style of the generated images. This parameter is only supported for `dall-e-3`. Must
-         * be one of `vivid` or `natural`. Vivid causes the model to lean towards generating
-         * hyper-real and dramatic images. Natural causes the model to produce more natural, less
-         * hyper-real looking images.
+         * Legacy style parameter for retired image models. Unsupported for GPT image models;
+         * describe the desired style in the prompt instead.
          */
-        fun style(style: Style?) = apply { body.style(style) }
+        @Deprecated("deprecated") fun style(style: Style?) = apply { body.style(style) }
 
         /** Alias for calling [Builder.style] with `style.orElse(null)`. */
-        fun style(style: Optional<Style>) = style(style.getOrNull())
+        @Deprecated("deprecated") fun style(style: Optional<Style>) = style(style.getOrNull())
 
         /**
          * Sets [Builder.style] to an arbitrary JSON value.
@@ -614,7 +593,7 @@ private constructor(
          * You should usually call [Builder.style] with a well-typed [Style] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun style(style: JsonField<Style>) = apply { body.style(style) }
+        @Deprecated("deprecated") fun style(style: JsonField<Style>) = apply { body.style(style) }
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
@@ -838,8 +817,7 @@ private constructor(
         )
 
         /**
-         * A text description of the desired image(s). The maximum length is 32000 characters for
-         * the GPT image models, 1000 characters for `dall-e-2` and 4000 characters for `dall-e-3`.
+         * A text description of the desired image(s). The maximum length is 32000 characters.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -863,11 +841,10 @@ private constructor(
         fun background(): Optional<Background> = background.getOptional("background")
 
         /**
-         * The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image
-         * model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * The GPT image model to use for image generation. Specify a model explicitly. Supported
+         * models include `gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
          * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-         * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`). Defaults to `dall-e-2` unless a
-         * parameter specific to the GPT image models is used.
+         * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -884,8 +861,7 @@ private constructor(
         fun moderation(): Optional<Moderation> = moderation.getOptional("moderation")
 
         /**
-         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-         * supported.
+         * The number of images to generate. Must be between 1 and 10.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -930,8 +906,6 @@ private constructor(
          * - `high`, `medium` and `low` are supported for the GPT image models.
          * - `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
          *   snapshots, also support `xhigh` and `max`.
-         * - `hd` and `standard` are supported for `dall-e-3`.
-         * - `standard` is the only option for `dall-e-2`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -939,14 +913,13 @@ private constructor(
         fun quality(): Optional<Quality> = quality.getOptional("quality")
 
         /**
-         * The format in which generated images with `dall-e-2` and `dall-e-3` are returned. Must be
-         * one of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been
-         * generated. This parameter isn't supported for the GPT image models, which always return
-         * base64-encoded images.
+         * Legacy response format parameter for retired image models. Unsupported for GPT image
+         * models, which always return base64-encoded images.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        @Deprecated("deprecated")
         fun responseFormat(): Optional<ResponseFormat> =
             responseFormat.getOptional("response_format")
 
@@ -959,9 +932,7 @@ private constructor(
          * experimental, and the maximum supported resolution is `3840x2160`. The requested size
          * must also satisfy the model's current pixel and edge limits. The standard sizes
          * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
-         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
-         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-         * `1792x1024`, or `1024x1792`.
+         * is supported for models that allow automatic sizing.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -969,15 +940,13 @@ private constructor(
         fun size(): Optional<Size> = size.getOptional("size")
 
         /**
-         * The style of the generated images. This parameter is only supported for `dall-e-3`. Must
-         * be one of `vivid` or `natural`. Vivid causes the model to lean towards generating
-         * hyper-real and dramatic images. Natural causes the model to produce more natural, less
-         * hyper-real looking images.
+         * Legacy style parameter for retired image models. Unsupported for GPT image models;
+         * describe the desired style in the prompt instead.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun style(): Optional<Style> = style.getOptional("style")
+        @Deprecated("deprecated") fun style(): Optional<Style> = style.getOptional("style")
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
@@ -1071,6 +1040,7 @@ private constructor(
          * Unlike [responseFormat], this method doesn't throw if the JSON field has an unexpected
          * type.
          */
+        @Deprecated("deprecated")
         @JsonProperty("response_format")
         @ExcludeMissing
         fun _responseFormat(): JsonField<ResponseFormat> = responseFormat
@@ -1087,7 +1057,10 @@ private constructor(
          *
          * Unlike [style], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("style") @ExcludeMissing fun _style(): JsonField<Style> = style
+        @Deprecated("deprecated")
+        @JsonProperty("style")
+        @ExcludeMissing
+        fun _style(): JsonField<Style> = style
 
         /**
          * Returns the raw JSON value of [user].
@@ -1158,9 +1131,7 @@ private constructor(
             }
 
             /**
-             * A text description of the desired image(s). The maximum length is 32000 characters
-             * for the GPT image models, 1000 characters for `dall-e-2` and 4000 characters for
-             * `dall-e-3`.
+             * A text description of the desired image(s). The maximum length is 32000 characters.
              */
             fun prompt(prompt: String) = prompt(JsonField.of(prompt))
 
@@ -1201,12 +1172,11 @@ private constructor(
             }
 
             /**
-             * The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image
-             * model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * The GPT image model to use for image generation. Specify a model explicitly.
+             * Supported models include `gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
+             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`). Defaults to `dall-e-2` unless a parameter specific
-             * to the GPT image models is used.
+             * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`.
              */
             fun model(model: ImageModel?) = model(JsonField.ofNullable(model))
 
@@ -1251,10 +1221,7 @@ private constructor(
                 this.moderation = moderation
             }
 
-            /**
-             * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
-             * `n=1` is supported.
-             */
+            /** The number of images to generate. Must be between 1 and 10. */
             fun n(n: Long?) = n(JsonField.ofNullable(n))
 
             /**
@@ -1371,8 +1338,6 @@ private constructor(
              * - `high`, `medium` and `low` are supported for the GPT image models.
              * - `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
              *   snapshots, also support `xhigh` and `max`.
-             * - `hd` and `standard` are supported for `dall-e-3`.
-             * - `standard` is the only option for `dall-e-2`.
              */
             fun quality(quality: Quality?) = quality(JsonField.ofNullable(quality))
 
@@ -1389,15 +1354,15 @@ private constructor(
             fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
 
             /**
-             * The format in which generated images with `dall-e-2` and `dall-e-3` are returned.
-             * Must be one of `url` or `b64_json`. URLs are only valid for 60 minutes after the
-             * image has been generated. This parameter isn't supported for the GPT image models,
-             * which always return base64-encoded images.
+             * Legacy response format parameter for retired image models. Unsupported for GPT image
+             * models, which always return base64-encoded images.
              */
+            @Deprecated("deprecated")
             fun responseFormat(responseFormat: ResponseFormat?) =
                 responseFormat(JsonField.ofNullable(responseFormat))
 
             /** Alias for calling [Builder.responseFormat] with `responseFormat.orElse(null)`. */
+            @Deprecated("deprecated")
             fun responseFormat(responseFormat: Optional<ResponseFormat>) =
                 responseFormat(responseFormat.getOrNull())
 
@@ -1408,6 +1373,7 @@ private constructor(
              * value instead. This method is primarily for setting the field to an undocumented or
              * not yet supported value.
              */
+            @Deprecated("deprecated")
             fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
                 this.responseFormat = responseFormat
             }
@@ -1422,8 +1388,7 @@ private constructor(
              * is `3840x2160`. The requested size must also satisfy the model's current pixel and
              * edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are
              * supported by the GPT image models; `auto` is supported for models that allow
-             * automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
-             * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+             * automatic sizing.
              */
             fun size(size: Size?) = size(JsonField.ofNullable(size))
 
@@ -1448,15 +1413,13 @@ private constructor(
             fun size(value: String) = size(Size.of(value))
 
             /**
-             * The style of the generated images. This parameter is only supported for `dall-e-3`.
-             * Must be one of `vivid` or `natural`. Vivid causes the model to lean towards
-             * generating hyper-real and dramatic images. Natural causes the model to produce more
-             * natural, less hyper-real looking images.
+             * Legacy style parameter for retired image models. Unsupported for GPT image models;
+             * describe the desired style in the prompt instead.
              */
-            fun style(style: Style?) = style(JsonField.ofNullable(style))
+            @Deprecated("deprecated") fun style(style: Style?) = style(JsonField.ofNullable(style))
 
             /** Alias for calling [Builder.style] with `style.orElse(null)`. */
-            fun style(style: Optional<Style>) = style(style.getOrNull())
+            @Deprecated("deprecated") fun style(style: Optional<Style>) = style(style.getOrNull())
 
             /**
              * Sets [Builder.style] to an arbitrary JSON value.
@@ -1465,6 +1428,7 @@ private constructor(
              * method is primarily for setting the field to an undocumented or not yet supported
              * value.
              */
+            @Deprecated("deprecated")
             fun style(style: JsonField<Style>) = apply { this.style = style }
 
             /**
@@ -2087,8 +2051,6 @@ private constructor(
      * - `high`, `medium` and `low` are supported for the GPT image models.
      * - `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08` snapshots,
      *   also support `xhigh` and `max`.
-     * - `hd` and `standard` are supported for `dall-e-3`.
-     * - `standard` is the only option for `dall-e-2`.
      */
     class Quality @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -2104,10 +2066,6 @@ private constructor(
 
         companion object {
 
-            @JvmField val STANDARD = of("standard")
-
-            @JvmField val HD = of("hd")
-
             @JvmField val LOW = of("low")
 
             @JvmField val MEDIUM = of("medium")
@@ -2120,19 +2078,37 @@ private constructor(
 
             @JvmField val AUTO = of("auto")
 
+            @Deprecated(
+                "This quality was only supported by retired DALL·E models. Use a GPT image quality instead."
+            )
+            @JvmField
+            val STANDARD = of("standard")
+
+            @Deprecated(
+                "This quality was only supported by retired DALL·E models. Use a GPT image quality instead."
+            )
+            @JvmField
+            val HD = of("hd")
+
             @JvmStatic fun of(value: String) = Quality(JsonField.of(value))
         }
 
         /** An enum containing [Quality]'s known values. */
         enum class Known {
-            STANDARD,
-            HD,
             LOW,
             MEDIUM,
             HIGH,
             XHIGH,
             MAX,
             AUTO,
+            @Deprecated(
+                "This quality was only supported by retired DALL·E models. Use a GPT image quality instead."
+            )
+            STANDARD,
+            @Deprecated(
+                "This quality was only supported by retired DALL·E models. Use a GPT image quality instead."
+            )
+            HD,
         }
 
         /**
@@ -2145,14 +2121,20 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
-            STANDARD,
-            HD,
             LOW,
             MEDIUM,
             HIGH,
             XHIGH,
             MAX,
             AUTO,
+            @Deprecated(
+                "This quality was only supported by retired DALL·E models. Use a GPT image quality instead."
+            )
+            STANDARD,
+            @Deprecated(
+                "This quality was only supported by retired DALL·E models. Use a GPT image quality instead."
+            )
+            HD,
             /** An enum member indicating that [Quality] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -2166,14 +2148,14 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
-                STANDARD -> Value.STANDARD
-                HD -> Value.HD
                 LOW -> Value.LOW
                 MEDIUM -> Value.MEDIUM
                 HIGH -> Value.HIGH
                 XHIGH -> Value.XHIGH
                 MAX -> Value.MAX
                 AUTO -> Value.AUTO
+                STANDARD -> Value.STANDARD
+                HD -> Value.HD
                 else -> Value._UNKNOWN
             }
 
@@ -2188,14 +2170,14 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
-                STANDARD -> Known.STANDARD
-                HD -> Known.HD
                 LOW -> Known.LOW
                 MEDIUM -> Known.MEDIUM
                 HIGH -> Known.HIGH
                 XHIGH -> Known.XHIGH
                 MAX -> Known.MAX
                 AUTO -> Known.AUTO
+                STANDARD -> Known.STANDARD
+                HD -> Known.HD
                 else -> throw OpenAIInvalidDataException("Unknown Quality: $value")
             }
 
@@ -2261,11 +2243,10 @@ private constructor(
     }
 
     /**
-     * The format in which generated images with `dall-e-2` and `dall-e-3` are returned. Must be one
-     * of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been
-     * generated. This parameter isn't supported for the GPT image models, which always return
-     * base64-encoded images.
+     * Legacy response format parameter for retired image models. Unsupported for GPT image models,
+     * which always return base64-encoded images.
      */
+    @Deprecated("deprecated")
     class ResponseFormat @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
 
@@ -2413,8 +2394,7 @@ private constructor(
      * experimental, and the maximum supported resolution is `3840x2160`. The requested size must
      * also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
      * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for
-     * models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or
-     * `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+     * models that allow automatic sizing.
      */
     class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -2438,13 +2418,29 @@ private constructor(
 
             @JvmField val _1024X1536 = of("1024x1536")
 
-            @JvmField val _256X256 = of("256x256")
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
+            @JvmField
+            val _256X256 = of("256x256")
 
-            @JvmField val _512X512 = of("512x512")
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
+            @JvmField
+            val _512X512 = of("512x512")
 
-            @JvmField val _1792X1024 = of("1792x1024")
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
+            @JvmField
+            val _1792X1024 = of("1792x1024")
 
-            @JvmField val _1024X1792 = of("1024x1792")
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
+            @JvmField
+            val _1024X1792 = of("1024x1792")
 
             @JvmStatic fun of(value: String) = Size(JsonField.of(value))
         }
@@ -2455,9 +2451,21 @@ private constructor(
             _1024X1024,
             _1536X1024,
             _1024X1536,
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
             _256X256,
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
             _512X512,
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
             _1792X1024,
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
             _1024X1792,
         }
 
@@ -2475,9 +2483,21 @@ private constructor(
             _1024X1024,
             _1536X1024,
             _1024X1536,
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
             _256X256,
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
             _512X512,
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
             _1792X1024,
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
             _1024X1792,
             /** An enum member indicating that [Size] was instantiated with an unknown value. */
             _UNKNOWN,
@@ -2587,11 +2607,10 @@ private constructor(
     }
 
     /**
-     * The style of the generated images. This parameter is only supported for `dall-e-3`. Must be
-     * one of `vivid` or `natural`. Vivid causes the model to lean towards generating hyper-real and
-     * dramatic images. Natural causes the model to produce more natural, less hyper-real looking
-     * images.
+     * Legacy style parameter for retired image models. Unsupported for GPT image models; describe
+     * the desired style in the prompt instead.
      */
+    @Deprecated("deprecated")
     class Style @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**

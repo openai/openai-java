@@ -47,6 +47,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ImageServiceAsync =
         ImageServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    @Deprecated("deprecated")
     override fun createVariation(
         params: ImageCreateVariationParams,
         requestOptions: RequestOptions,
@@ -104,6 +105,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         private val createVariationHandler: Handler<ImagesResponse> =
             jsonHandler<ImagesResponse>(clientOptions.jsonMapper)
 
+        @Deprecated("deprecated")
         override fun createVariation(
             params: ImageCreateVariationParams,
             requestOptions: RequestOptions,
