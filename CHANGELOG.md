@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.75.1](https://github.com/openai/openai-java/compare/v4.75.0...v4.75.1) (2026-10-02)
+
+
+### Bug Fixes
+
+* **ci:** unblock Java releases during native-image tracing ([#1133](https://github.com/openai/openai-java/issues/1133)) ([a7fc8ba](https://github.com/openai/openai-java/commit/a7fc8bacefd5f1f7e075bb3200236bca9ae57539))
+
 ## [4.75.0](https://github.com/openai/openai-java/compare/v4.74.0...v4.75.0) (2026-10-01)
 
 
