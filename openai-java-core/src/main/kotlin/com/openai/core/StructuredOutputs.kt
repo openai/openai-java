@@ -203,9 +203,15 @@ internal fun extractSchema(type: Class<*>): ObjectNode {
             // Use `JacksonModule` to support the use of Jackson annotations to set property and
             // class names and descriptions and to mark fields with `@JsonIgnore`.
             .with(JacksonModule())
-            // Use `Swagger2Module` to support OpenAPI Swagger 2 `@Schema` annotations to set
-            // property constraints (e.g., a `"pattern"` constraint for a string property).
-            .with(Swagger2Module())
+
+    // Swagger annotations are compileOnly (not a transitive dependency) so consumers can use
+    // either swagger-annotations or swagger-annotations-jakarta. Swagger2Module hard-references
+    // those classes; only register it when they are loadable on the consumer classpath.
+    if (isSwaggerAnnotationsPresent()) {
+        // Use `Swagger2Module` to support OpenAPI Swagger 2 `@Schema` annotations to set
+        // property constraints (e.g., a `"pattern"` constraint for a string property).
+        configBuilder.with(Swagger2Module())
+    }
 
     configBuilder
         .forFields()
@@ -217,6 +223,10 @@ internal fun extractSchema(type: Class<*>): ObjectNode {
 
     return SchemaGenerator(configBuilder.build()).generateSchema(type)
 }
+
+/** True when javax or jakarta swagger-annotations are on the classpath (shared package). */
+private fun isSwaggerAnnotationsPresent(): Boolean =
+    runCatching { Class.forName("io.swagger.v3.oas.annotations.media.Schema") }.isSuccess
 
 /**
  * Creates an instance of a Java class using data from a JSON string. The JSON data should conform

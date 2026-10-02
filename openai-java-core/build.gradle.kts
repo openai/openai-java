@@ -171,6 +171,10 @@ dependencies {
     coreCompilationShardProjects.forEach { compileOnly(it) }
 
     CoreCompilationDependencies.publishedApiDependencies(jacksonPublishedVersion).forEach { api(it) }
+    // compileOnly: do not force javax swagger-annotations onto consumers. It conflicts with
+    // swagger-annotations-jakarta (same package). Consumers who use @Schema / @ArraySchema must
+    // declare either artifact themselves. See extractSchema() for optional Swagger2Module wiring.
+    compileOnly("io.swagger.core.v3:swagger-annotations:2.2.31")
     CoreCompilationDependencies.publishedImplementationDependencies(jacksonPublishedVersion).forEach {
         implementation(it)
     }
@@ -178,6 +182,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(project(":openai-java-client-okhttp"))
     testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
+    testImplementation("io.swagger.core.v3:swagger-annotations:2.2.31")
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.3")
