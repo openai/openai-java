@@ -76,29 +76,6 @@ internal class WebhookServiceAsyncTest {
     }
 
     @Test
-    fun unwrapWithoutSecretShouldThrow() {
-        val client =
-            OpenAIOkHttpClientAsync.builder()
-                .apiKey("My API Key")
-                .adminApiKey("My Admin API Key")
-                .build()
-        val webhookServiceAsync = client.webhooks()
-
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", validSignatureForSecret)
-                .put("webhook-timestamp", fixedTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        assertThrows<IllegalStateException> {
-            webhookServiceAsync.unwrap(
-                WebhookVerificationParams.builder().payload(testPayload).headers(headers).build()
-            )
-        }
-    }
-
-    @Test
     fun create() {
         val client =
             OpenAIOkHttpClientAsync.builder()
@@ -314,5 +291,28 @@ internal class WebhookServiceAsyncTest {
 
         val webhookEndpointTestResult = webhookEndpointTestResultFuture.get()
         webhookEndpointTestResult.validate()
+    }
+
+    @Test
+    fun unwrapWithoutSecretShouldThrow() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val webhookServiceAsync = client.webhooks()
+
+        val headers =
+            Headers.builder()
+                .put("webhook-signature", validSignatureForSecret)
+                .put("webhook-timestamp", fixedTimestamp)
+                .put("webhook-id", webhookId)
+                .build()
+
+        assertThrows<IllegalStateException> {
+            webhookServiceAsync.unwrap(
+                WebhookVerificationParams.builder().payload(testPayload).headers(headers).build()
+            )
+        }
     }
 }
