@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.76.0](https://github.com/openai/openai-java/compare/v4.75.1...v4.76.0) (2026-10-04)
+
+
+### Features
+
+* **api:** add custom voices and agent session webhook events ([#1135](https://github.com/openai/openai-java/issues/1135)) ([6a92077](https://github.com/openai/openai-java/commit/6a92077e25078d336964e5f42ba42886a64520d5))
+
 ## [4.75.1](https://github.com/openai/openai-java/compare/v4.75.0...v4.75.1) (2026-10-02)
 
 
