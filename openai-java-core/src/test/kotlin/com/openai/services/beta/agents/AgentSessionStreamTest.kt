@@ -406,6 +406,33 @@ internal class AgentSessionStreamTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `creation forwards unknown input shapes without typed decoding`(async: Boolean) {
+        val input = mapOf("future_input" to "value")
+        val params =
+            creationParams().toBuilder().input(com.openai.core.JsonValue.from(input)).build()
+        val handlers = AgentToolHandlers.builder().toolHandler("tool") { "Result" }.build()
+        val t = Transport(creationEvents())
+        val client = t.client()
+        if (async)
+            client
+                .async()
+                .beta()
+                .agents()
+                .sessions()
+                .createStreaming(params, handlers)
+                .subscribe {}
+                .onCompleteFuture()
+                .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        else
+            client.beta().agents().sessions().createStreaming(params, handlers).use {
+                it.stream().forEach {}
+            }
+        assertThat(t.creationBody!!.path("input")).isEqualTo(mapper.valueToTree<JsonNode>(input))
+        assertThat(t.posts).hasSize(1)
+    }
+
     private fun params() = AgentSessionStreamParams.builder().sessionId("s").input("hello")
 
     class LookupItem(val itemId: String)

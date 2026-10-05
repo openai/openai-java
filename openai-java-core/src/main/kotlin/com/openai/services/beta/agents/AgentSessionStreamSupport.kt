@@ -34,9 +34,10 @@ private constructor(
         null,
         handlers.handlers,
         creation._headers().toBuilder().remove("Idempotency-Key").build(),
-        creation.input().isPresent,
+        !creation._input().isMissing() && !creation._input().isNull(),
     )
 
+    private val onToolError = params?.onToolError
     private var sessionId = params?.sessionId
     private val mapper = jsonMapper()
     private val inputKey = params?.idempotencyKey ?: UUID.randomUUID().toString()
@@ -155,11 +156,11 @@ private constructor(
                         if (failure is AgentToolArgumentException) AgentToolError.Stage.ARGUMENTS
                         else stage
                     try {
-                        params.onToolError?.accept(
+                        onToolError?.accept(
                             AgentToolError(
                                 original,
                                 call.name(),
-                                params.sessionId,
+                                checkNotNull(sessionId),
                                 call.turnId(),
                                 call.callId(),
                                 failureStage,
