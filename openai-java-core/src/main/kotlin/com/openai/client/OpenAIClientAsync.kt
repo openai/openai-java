@@ -35,12 +35,11 @@ import java.util.function.Consumer
  * A client for interacting with the OpenAI REST API asynchronously. You can also switch to
  * synchronous execution via the [sync] method.
  *
- * This client performs best when you create a single instance and reuse it for interactions with
- * the REST API. Reusing the client allows requests to share underlying connections and threads,
- * reducing latency and saving memory. The client automatically retries certain failed requests when
- * retries are enabled, but it does not coordinate request rates across concurrent requests or
- * client instances. Applications should manage their request rate as needed to stay within API rate
- * limits.
+ * This client performs best when you create a single instance and reuse it for all interactions
+ * with the REST API. This is because each client holds its own connection pool and thread pools.
+ * Reusing connections and threads reduces latency and saves memory. The client also handles rate
+ * limiting per client. This means that creating and using multiple instances at the same time will
+ * not respect rate limits.
  *
  * The threads and connections that are held will be released automatically if they remain idle. But
  * if you are writing an application that needs to aggressively release unused resources, then you

@@ -44,7 +44,6 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ImageService =
         ImageServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    @Deprecated("deprecated")
     override fun createVariation(
         params: ImageCreateVariationParams,
         requestOptions: RequestOptions,
@@ -93,7 +92,6 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
         private val createVariationHandler: Handler<ImagesResponse> =
             jsonHandler<ImagesResponse>(clientOptions.jsonMapper)
 
-        @Deprecated("deprecated")
         override fun createVariation(
             params: ImageCreateVariationParams,
             requestOptions: RequestOptions,

@@ -79,7 +79,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
         params: RunCancelParams,
         requestOptions: RequestOptions,
     ): RunCancelResponse =
-        // post /evals/{eval_id}/runs/{run_id}/cancel
+        // post /evals/{eval_id}/runs/{run_id}
         withRawResponse().cancel(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -261,13 +261,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
-                    .addPathSegments(
-                        "evals",
-                        params._pathParam(0),
-                        "runs",
-                        params._pathParam(1),
-                        "cancel",
-                    )
+                    .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(

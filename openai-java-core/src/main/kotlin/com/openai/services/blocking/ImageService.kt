@@ -30,17 +30,11 @@ interface ImageService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ImageService
 
-    /**
-     * This endpoint is retired and no longer available. Use the image edits endpoint with a GPT
-     * Image model and a prompt to create a variation of an image. The request and response schemas
-     * below describe the legacy contract.
-     */
-    @Deprecated("deprecated")
+    /** Creates a variation of a given image. This endpoint only supports `dall-e-2`. */
     fun createVariation(params: ImageCreateVariationParams): ImagesResponse =
         createVariation(params, RequestOptions.none())
 
     /** @see createVariation */
-    @Deprecated("deprecated")
     fun createVariation(
         params: ImageCreateVariationParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -48,7 +42,7 @@ interface ImageService {
 
     /**
      * Creates an edited or extended image given one or more source images and a prompt. This
-     * endpoint supports GPT Image models.
+     * endpoint supports GPT Image models and `dall-e-2`.
      */
     fun edit(params: ImageEditParams): ImagesResponse = edit(params, RequestOptions.none())
 
@@ -60,7 +54,7 @@ interface ImageService {
 
     /**
      * Creates an edited or extended image given one or more source images and a prompt. This
-     * endpoint supports GPT Image models.
+     * endpoint supports GPT Image models and `dall-e-2`.
      */
     @MustBeClosed
     fun editStreaming(params: ImageEditParams): StreamResponse<ImageEditStreamEvent> =
@@ -74,7 +68,7 @@ interface ImageService {
     ): StreamResponse<ImageEditStreamEvent>
 
     /**
-     * Creates an image given a prompt using a GPT Image model.
+     * Creates an image given a prompt.
      * [Learn more](https://developers.openai.com/api/docs/guides/images-vision).
      */
     fun generate(params: ImageGenerateParams): ImagesResponse =
@@ -87,7 +81,7 @@ interface ImageService {
     ): ImagesResponse
 
     /**
-     * Creates an image given a prompt using a GPT Image model.
+     * Creates an image given a prompt.
      * [Learn more](https://developers.openai.com/api/docs/guides/images-vision).
      */
     @MustBeClosed
@@ -115,13 +109,11 @@ interface ImageService {
          * Returns a raw HTTP response for `post /images/variations`, but is otherwise the same as
          * [ImageService.createVariation].
          */
-        @Deprecated("deprecated")
         @MustBeClosed
         fun createVariation(params: ImageCreateVariationParams): HttpResponseFor<ImagesResponse> =
             createVariation(params, RequestOptions.none())
 
         /** @see createVariation */
-        @Deprecated("deprecated")
         @MustBeClosed
         fun createVariation(
             params: ImageCreateVariationParams,

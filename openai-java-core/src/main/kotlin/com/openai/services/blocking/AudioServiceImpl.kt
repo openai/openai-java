@@ -9,8 +9,6 @@ import com.openai.services.blocking.audio.TranscriptionService
 import com.openai.services.blocking.audio.TranscriptionServiceImpl
 import com.openai.services.blocking.audio.TranslationService
 import com.openai.services.blocking.audio.TranslationServiceImpl
-import com.openai.services.blocking.audio.VoiceService
-import com.openai.services.blocking.audio.VoiceServiceImpl
 import java.util.function.Consumer
 
 class AudioServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -28,8 +26,6 @@ class AudioServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     private val speech: SpeechService by lazy { SpeechServiceImpl(clientOptions) }
 
-    private val voices: VoiceService by lazy { VoiceServiceImpl(clientOptions) }
-
     override fun withRawResponse(): AudioService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AudioService =
@@ -44,9 +40,6 @@ class AudioServiceImpl internal constructor(private val clientOptions: ClientOpt
     /** Turn audio into text or text into audio. */
     override fun speech(): SpeechService = speech
 
-    /** Turn audio into text or text into audio. */
-    override fun voices(): VoiceService = voices
-
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         AudioService.WithRawResponse {
 
@@ -60,10 +53,6 @@ class AudioServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         private val speech: SpeechService.WithRawResponse by lazy {
             SpeechServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val voices: VoiceService.WithRawResponse by lazy {
-            VoiceServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun withOptions(
@@ -81,8 +70,5 @@ class AudioServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         /** Turn audio into text or text into audio. */
         override fun speech(): SpeechService.WithRawResponse = speech
-
-        /** Turn audio into text or text into audio. */
-        override fun voices(): VoiceService.WithRawResponse = voices
     }
 }

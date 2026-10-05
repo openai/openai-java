@@ -7,8 +7,6 @@ import com.openai.services.async.realtime.CallServiceAsync
 import com.openai.services.async.realtime.CallServiceAsyncImpl
 import com.openai.services.async.realtime.ClientSecretServiceAsync
 import com.openai.services.async.realtime.ClientSecretServiceAsyncImpl
-import com.openai.services.async.realtime.TranslationServiceAsync
-import com.openai.services.async.realtime.TranslationServiceAsyncImpl
 import java.util.function.Consumer
 
 class RealtimeServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -24,10 +22,6 @@ class RealtimeServiceAsyncImpl internal constructor(private val clientOptions: C
 
     private val calls: CallServiceAsync by lazy { CallServiceAsyncImpl(clientOptions) }
 
-    private val translations: TranslationServiceAsync by lazy {
-        TranslationServiceAsyncImpl(clientOptions)
-    }
-
     override fun withRawResponse(): RealtimeServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): RealtimeServiceAsync =
@@ -36,8 +30,6 @@ class RealtimeServiceAsyncImpl internal constructor(private val clientOptions: C
     override fun clientSecrets(): ClientSecretServiceAsync = clientSecrets
 
     override fun calls(): CallServiceAsync = calls
-
-    override fun translations(): TranslationServiceAsync = translations
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         RealtimeServiceAsync.WithRawResponse {
@@ -50,10 +42,6 @@ class RealtimeServiceAsyncImpl internal constructor(private val clientOptions: C
             CallServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val translations: TranslationServiceAsync.WithRawResponse by lazy {
-            TranslationServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): RealtimeServiceAsync.WithRawResponse =
@@ -64,7 +52,5 @@ class RealtimeServiceAsyncImpl internal constructor(private val clientOptions: C
         override fun clientSecrets(): ClientSecretServiceAsync.WithRawResponse = clientSecrets
 
         override fun calls(): CallServiceAsync.WithRawResponse = calls
-
-        override fun translations(): TranslationServiceAsync.WithRawResponse = translations
     }
 }

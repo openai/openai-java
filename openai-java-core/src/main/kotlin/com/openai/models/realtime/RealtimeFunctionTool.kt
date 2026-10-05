@@ -117,7 +117,7 @@ private constructor(
         private var description: JsonField<String> = JsonMissing.of()
         private var name: JsonField<String> = JsonMissing.of()
         private var parameters: JsonValue = JsonMissing.of()
-        private var type: JsonField<Type> = JsonField.of(Type.FUNCTION)
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic

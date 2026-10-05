@@ -201,8 +201,8 @@ private constructor(
         Optional.ofNullable(transportDtmfReceived)
 
     /**
-     * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband observers;
-     * this is not a client command.
+     * A SIP DTMF keypress successfully sent by the hosted tool. Delivered only to sideband
+     * observers; this is not a client command.
      */
     fun transportDtmfSend(): Optional<TransportDtmfSend> = Optional.ofNullable(transportDtmfSend)
 
@@ -388,8 +388,8 @@ private constructor(
         transportDtmfReceived.getOrThrow("transportDtmfReceived")
 
     /**
-     * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband observers;
-     * this is not a client command.
+     * A SIP DTMF keypress successfully sent by the hosted tool. Delivered only to sideband
+     * observers; this is not a client command.
      */
     fun asTransportDtmfSend(): TransportDtmfSend = transportDtmfSend.getOrThrow("transportDtmfSend")
 
@@ -953,7 +953,7 @@ private constructor(
             ForkServerEvent(transportDtmfReceived = transportDtmfReceived)
 
         /**
-         * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband
+         * A SIP DTMF keypress successfully sent by the hosted tool. Delivered only to sideband
          * observers; this is not a client command.
          */
         @JvmStatic
@@ -1121,7 +1121,7 @@ private constructor(
             unknown(JsonValue.from(transportDtmfReceived))
 
         /**
-         * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband
+         * A SIP DTMF keypress successfully sent by the hosted tool. Delivered only to sideband
          * observers; this is not a client command.
          */
         fun visitTransportDtmfSend(transportDtmfSend: TransportDtmfSend): T =
@@ -1153,8 +1153,8 @@ private constructor(
          * version than the API, then the API may respond with new variants that the SDK is unaware
          * of.
          *
-         * Recognized variants also reach this method when their visit method is not overridden.
-         * This allows existing visitors to handle variants added by newer SDK versions.
+         * Recognized events also reach this method when their visit method is not overridden. This
+         * allows existing visitors to handle event variants added by newer SDK versions.
          *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
@@ -1795,8 +1795,8 @@ private constructor(
     }
 
     /**
-     * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband observers;
-     * this is not a client command.
+     * A SIP DTMF keypress successfully sent by the hosted tool. Delivered only to sideband
+     * observers; this is not a client command.
      */
     class TransportDtmfSend
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -1804,7 +1804,6 @@ private constructor(
         private val event: JsonField<String>,
         private val eventId: JsonField<String>,
         private val type: JsonValue,
-        private val clientEventId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -1813,10 +1812,7 @@ private constructor(
             @JsonProperty("event") @ExcludeMissing event: JsonField<String> = JsonMissing.of(),
             @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-            @JsonProperty("client_event_id")
-            @ExcludeMissing
-            clientEventId: JsonField<String> = JsonMissing.of(),
-        ) : this(event, eventId, type, clientEventId, mutableMapOf())
+        ) : this(event, eventId, type, mutableMapOf())
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -1842,14 +1838,6 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
-         * The event_id of the client command, when supplied.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun clientEventId(): Optional<String> = clientEventId.getOptional("client_event_id")
-
-        /**
          * Returns the raw JSON value of [event].
          *
          * Unlike [event], this method doesn't throw if the JSON field has an unexpected type.
@@ -1862,16 +1850,6 @@ private constructor(
          * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("event_id") @ExcludeMissing fun _eventId(): JsonField<String> = eventId
-
-        /**
-         * Returns the raw JSON value of [clientEventId].
-         *
-         * Unlike [clientEventId], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("client_event_id")
-        @ExcludeMissing
-        fun _clientEventId(): JsonField<String> = clientEventId
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1905,7 +1883,6 @@ private constructor(
             private var event: JsonField<String>? = null
             private var eventId: JsonField<String>? = null
             private var type: JsonValue = JsonValue.from("transport.dtmf.send")
-            private var clientEventId: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1913,7 +1890,6 @@ private constructor(
                 event = transportDtmfSend.event
                 eventId = transportDtmfSend.eventId
                 type = transportDtmfSend.type
-                clientEventId = transportDtmfSend.clientEventId
                 additionalProperties = transportDtmfSend.additionalProperties.toMutableMap()
             }
 
@@ -1953,20 +1929,6 @@ private constructor(
              */
             fun type(type: JsonValue) = apply { this.type = type }
 
-            /** The event_id of the client command, when supplied. */
-            fun clientEventId(clientEventId: String) = clientEventId(JsonField.of(clientEventId))
-
-            /**
-             * Sets [Builder.clientEventId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.clientEventId] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun clientEventId(clientEventId: JsonField<String>) = apply {
-                this.clientEventId = clientEventId
-            }
-
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -2004,7 +1966,6 @@ private constructor(
                     checkRequired("event", event),
                     checkRequired("eventId", eventId),
                     type,
-                    clientEventId,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -2032,7 +1993,6 @@ private constructor(
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
-            clientEventId()
             validated = true
         }
 
@@ -2054,8 +2014,7 @@ private constructor(
         internal fun validity(): Int =
             (if (event.asKnown().isPresent) 1 else 0) +
                 (if (eventId.asKnown().isPresent) 1 else 0) +
-                type.let { if (it == JsonValue.from("transport.dtmf.send")) 1 else 0 } +
-                (if (clientEventId.asKnown().isPresent) 1 else 0)
+                type.let { if (it == JsonValue.from("transport.dtmf.send")) 1 else 0 }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -2066,18 +2025,17 @@ private constructor(
                 event == other.event &&
                 eventId == other.eventId &&
                 type == other.type &&
-                clientEventId == other.clientEventId &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(event, eventId, type, clientEventId, additionalProperties)
+            Objects.hash(event, eventId, type, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "TransportDtmfSend{event=$event, eventId=$eventId, type=$type, clientEventId=$clientEventId, additionalProperties=$additionalProperties}"
+            "TransportDtmfSend{event=$event, eventId=$eventId, type=$type, additionalProperties=$additionalProperties}"
     }
 
     /**

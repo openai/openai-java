@@ -20,7 +20,6 @@ import com.openai.services.blocking.beta.agents.sessions.ArtifactService
 import com.openai.services.blocking.beta.agents.sessions.EventService
 import com.openai.services.blocking.beta.agents.sessions.ItemService
 import com.openai.services.blocking.beta.agents.sessions.SubagentService
-import com.openai.services.blocking.beta.agents.sessions.TraceService
 import com.openai.services.blocking.beta.agents.sessions.TurnService
 import java.util.function.Consumer
 
@@ -45,8 +44,6 @@ interface SessionService {
     fun items(): ItemService
 
     fun events(): EventService
-
-    fun traces(): TraceService
 
     fun turns(): TurnService
 
@@ -220,8 +217,6 @@ interface SessionService {
         fun items(): ItemService.WithRawResponse
 
         fun events(): EventService.WithRawResponse
-
-        fun traces(): TraceService.WithRawResponse
 
         fun turns(): TurnService.WithRawResponse
 

@@ -42,7 +42,6 @@ internal class EnvironmentParamTest {
         val openaiHosted =
             EnvironmentParam.OpenAIHosted.builder()
                 .addCapabilityDirectory("string")
-                .containerSize(EnvironmentParam.OpenAIHosted.ContainerSize.SMALL)
                 .desktop(EnvironmentParam.OpenAIHosted.Desktop.builder().enabled(true).build())
                 .env(
                     EnvironmentParam.OpenAIHosted.Env.builder()
@@ -95,7 +94,6 @@ internal class EnvironmentParamTest {
             EnvironmentParam.ofOpenAIHosted(
                 EnvironmentParam.OpenAIHosted.builder()
                     .addCapabilityDirectory("string")
-                    .containerSize(EnvironmentParam.OpenAIHosted.ContainerSize.SMALL)
                     .desktop(EnvironmentParam.OpenAIHosted.Desktop.builder().enabled(true).build())
                     .env(
                         EnvironmentParam.OpenAIHosted.Env.builder()

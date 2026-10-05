@@ -603,7 +603,7 @@ private constructor(
         /** A builder for [ExpiresAfter]. */
         class Builder internal constructor() {
 
-            private var anchor: JsonField<Anchor> = JsonField.of(Anchor.CREATED_AT)
+            private var anchor: JsonField<Anchor> = JsonMissing.of()
             private var seconds: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 

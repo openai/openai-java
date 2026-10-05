@@ -68,8 +68,6 @@ private constructor(
      * `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id":
      * "voice_1234" }`. Previews of the voices are available in the
      * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
-     * Custom voices must be created from audio samples. Voices created from text prompts are
-     * supported only in Live.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -253,8 +251,6 @@ private constructor(
          * and `cedar`. You may also provide a custom voice object with an `id`, for example `{
          * "id": "voice_1234" }`. Previews of the voices are available in the
          * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
-         * Custom voices must be created from audio samples. Voices created from text prompts are
-         * supported only in Live.
          */
         fun voice(voice: Voice) = apply { body.voice(voice) }
 
@@ -550,8 +546,6 @@ private constructor(
          * and `cedar`. You may also provide a custom voice object with an `id`, for example `{
          * "id": "voice_1234" }`. Previews of the voices are available in the
          * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
-         * Custom voices must be created from audio samples. Voices created from text prompts are
-         * supported only in Live.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -748,8 +742,6 @@ private constructor(
              * `id`, for example `{ "id": "voice_1234" }`. Previews of the voices are available in
              * the
              * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
-             * Custom voices must be created from audio samples. Voices created from text prompts
-             * are supported only in Live.
              */
             fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -975,8 +967,6 @@ private constructor(
      * `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id":
      * "voice_1234" }`. Previews of the voices are available in the
      * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
-     * Custom voices must be created from audio samples. Voices created from text prompts are
-     * supported only in Live.
      */
     @JsonDeserialize(using = Voice.Deserializer::class)
     @JsonSerialize(using = Voice.Serializer::class)
@@ -996,8 +986,6 @@ private constructor(
          * and `cedar`. You may also provide a custom voice object with an `id`, for example `{
          * "id": "voice_1234" }`. Previews of the voices are available in the
          * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
-         * Custom voices must be created from audio samples. Voices created from text prompts are
-         * supported only in Live.
          */
         fun unionMember1(): Optional<UnionMember1> = Optional.ofNullable(unionMember1)
 
@@ -1018,8 +1006,6 @@ private constructor(
          * and `cedar`. You may also provide a custom voice object with an `id`, for example `{
          * "id": "voice_1234" }`. Previews of the voices are available in the
          * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
-         * Custom voices must be created from audio samples. Voices created from text prompts are
-         * supported only in Live.
          */
         fun asUnionMember1(): UnionMember1 = unionMember1.getOrThrow("unionMember1")
 
@@ -1159,8 +1145,6 @@ private constructor(
              * `id`, for example `{ "id": "voice_1234" }`. Previews of the voices are available in
              * the
              * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
-             * Custom voices must be created from audio samples. Voices created from text prompts
-             * are supported only in Live.
              */
             @JvmStatic
             fun ofUnionMember1(unionMember1: UnionMember1) = Voice(unionMember1 = unionMember1)
@@ -1181,8 +1165,6 @@ private constructor(
              * `id`, for example `{ "id": "voice_1234" }`. Previews of the voices are available in
              * the
              * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
-             * Custom voices must be created from audio samples. Voices created from text prompts
-             * are supported only in Live.
              */
             fun visitUnionMember1(unionMember1: UnionMember1): T
 
@@ -1260,8 +1242,6 @@ private constructor(
          * and `cedar`. You may also provide a custom voice object with an `id`, for example `{
          * "id": "voice_1234" }`. Previews of the voices are available in the
          * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
-         * Custom voices must be created from audio samples. Voices created from text prompts are
-         * supported only in Live.
          */
         class UnionMember1 @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {

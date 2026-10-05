@@ -1337,11 +1337,7 @@ internal class ServerEventTest {
     @Test
     fun ofTransportDtmfSend() {
         val transportDtmfSend =
-            ServerEvent.TransportDtmfSend.builder()
-                .event("#")
-                .eventId("event_id")
-                .clientEventId("client_event_id")
-                .build()
+            ServerEvent.TransportDtmfSend.builder().event("#").eventId("event_id").build()
 
         val serverEvent = ServerEvent.ofTransportDtmfSend(transportDtmfSend)
 
@@ -1374,11 +1370,7 @@ internal class ServerEventTest {
         val jsonMapper = jsonMapper()
         val serverEvent =
             ServerEvent.ofTransportDtmfSend(
-                ServerEvent.TransportDtmfSend.builder()
-                    .event("#")
-                    .eventId("event_id")
-                    .clientEventId("client_event_id")
-                    .build()
+                ServerEvent.TransportDtmfSend.builder().event("#").eventId("event_id").build()
             )
 
         val roundtrippedServerEvent =

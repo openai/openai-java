@@ -15,391 +15,6 @@ import org.junit.jupiter.params.provider.EnumSource
 internal class UnwrapWebhookEventTest {
 
     @Test
-    fun ofAgentSessionActionRequired() {
-        val agentSessionActionRequired =
-            AgentSessionActionRequiredWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(
-                    AgentSessionActionRequiredWebhookEvent.Data.builder()
-                        .id("id")
-                        .requiredAction(
-                            AgentSessionActionRequiredWebhookEvent.Data.RequiredAction.builder()
-                                .type(
-                                    AgentSessionActionRequiredWebhookEvent.Data.RequiredAction.Type
-                                        .COMPUTER_USE_APPROVAL_REQUEST
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
-
-        val unwrapWebhookEvent =
-            UnwrapWebhookEvent.ofAgentSessionActionRequired(agentSessionActionRequired)
-
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired())
-            .contains(agentSessionActionRequired)
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
-        assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
-        assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
-        assertThat(unwrapWebhookEvent.batchFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunCanceled()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunSucceeded()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
-        assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
-        assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyAlertCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyDeactivationIssued()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyOrgAlertCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyWarningIssued()).isEmpty
-    }
-
-    @Test
-    fun ofAgentSessionActionRequiredRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val unwrapWebhookEvent =
-            UnwrapWebhookEvent.ofAgentSessionActionRequired(
-                AgentSessionActionRequiredWebhookEvent.builder()
-                    .id("id")
-                    .createdAt(0L)
-                    .data(
-                        AgentSessionActionRequiredWebhookEvent.Data.builder()
-                            .id("id")
-                            .requiredAction(
-                                AgentSessionActionRequiredWebhookEvent.Data.RequiredAction.builder()
-                                    .type(
-                                        AgentSessionActionRequiredWebhookEvent.Data.RequiredAction
-                                            .Type
-                                            .COMPUTER_USE_APPROVAL_REQUEST
-                                    )
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            )
-
-        val roundtrippedUnwrapWebhookEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(unwrapWebhookEvent),
-                jacksonTypeRef<UnwrapWebhookEvent>(),
-            )
-
-        assertThat(roundtrippedUnwrapWebhookEvent).isEqualTo(unwrapWebhookEvent)
-    }
-
-    @Test
-    fun ofAgentSessionCreated() {
-        val agentSessionCreated =
-            AgentSessionCreatedWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(
-                    AgentSessionCreatedWebhookEvent.Data.builder()
-                        .id("id")
-                        .environmentType("environment_type")
-                        .connect(
-                            AgentSessionCreatedWebhookEvent.Data.Connect.builder()
-                                .remoteUrl("remote_url")
-                                .build()
-                        )
-                        .environmentId("environment_id")
-                        .build()
-                )
-                .build()
-
-        val unwrapWebhookEvent = UnwrapWebhookEvent.ofAgentSessionCreated(agentSessionCreated)
-
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).contains(agentSessionCreated)
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
-        assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
-        assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
-        assertThat(unwrapWebhookEvent.batchFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunCanceled()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunSucceeded()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
-        assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
-        assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyAlertCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyDeactivationIssued()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyOrgAlertCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyWarningIssued()).isEmpty
-    }
-
-    @Test
-    fun ofAgentSessionCreatedRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val unwrapWebhookEvent =
-            UnwrapWebhookEvent.ofAgentSessionCreated(
-                AgentSessionCreatedWebhookEvent.builder()
-                    .id("id")
-                    .createdAt(0L)
-                    .data(
-                        AgentSessionCreatedWebhookEvent.Data.builder()
-                            .id("id")
-                            .environmentType("environment_type")
-                            .connect(
-                                AgentSessionCreatedWebhookEvent.Data.Connect.builder()
-                                    .remoteUrl("remote_url")
-                                    .build()
-                            )
-                            .environmentId("environment_id")
-                            .build()
-                    )
-                    .build()
-            )
-
-        val roundtrippedUnwrapWebhookEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(unwrapWebhookEvent),
-                jacksonTypeRef<UnwrapWebhookEvent>(),
-            )
-
-        assertThat(roundtrippedUnwrapWebhookEvent).isEqualTo(unwrapWebhookEvent)
-    }
-
-    @Test
-    fun ofAgentSessionFailed() {
-        val agentSessionFailed =
-            AgentSessionFailedWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(
-                    AgentSessionFailedWebhookEvent.Data.builder()
-                        .id("id")
-                        .environmentType("environment_type")
-                        .environmentId("environment_id")
-                        .build()
-                )
-                .build()
-
-        val unwrapWebhookEvent = UnwrapWebhookEvent.ofAgentSessionFailed(agentSessionFailed)
-
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).contains(agentSessionFailed)
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
-        assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
-        assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
-        assertThat(unwrapWebhookEvent.batchFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunCanceled()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunSucceeded()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
-        assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
-        assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyAlertCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyDeactivationIssued()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyOrgAlertCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyWarningIssued()).isEmpty
-    }
-
-    @Test
-    fun ofAgentSessionFailedRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val unwrapWebhookEvent =
-            UnwrapWebhookEvent.ofAgentSessionFailed(
-                AgentSessionFailedWebhookEvent.builder()
-                    .id("id")
-                    .createdAt(0L)
-                    .data(
-                        AgentSessionFailedWebhookEvent.Data.builder()
-                            .id("id")
-                            .environmentType("environment_type")
-                            .environmentId("environment_id")
-                            .build()
-                    )
-                    .build()
-            )
-
-        val roundtrippedUnwrapWebhookEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(unwrapWebhookEvent),
-                jacksonTypeRef<UnwrapWebhookEvent>(),
-            )
-
-        assertThat(roundtrippedUnwrapWebhookEvent).isEqualTo(unwrapWebhookEvent)
-    }
-
-    @Test
-    fun ofAgentSessionIdle() {
-        val agentSessionIdle =
-            AgentSessionIdleWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(
-                    AgentSessionIdleWebhookEvent.Data.builder()
-                        .id("id")
-                        .environmentType("environment_type")
-                        .environmentId("environment_id")
-                        .build()
-                )
-                .build()
-
-        val unwrapWebhookEvent = UnwrapWebhookEvent.ofAgentSessionIdle(agentSessionIdle)
-
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).contains(agentSessionIdle)
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
-        assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
-        assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
-        assertThat(unwrapWebhookEvent.batchFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunCanceled()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunSucceeded()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
-        assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
-        assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyAlertCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyDeactivationIssued()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyOrgAlertCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyWarningIssued()).isEmpty
-    }
-
-    @Test
-    fun ofAgentSessionIdleRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val unwrapWebhookEvent =
-            UnwrapWebhookEvent.ofAgentSessionIdle(
-                AgentSessionIdleWebhookEvent.builder()
-                    .id("id")
-                    .createdAt(0L)
-                    .data(
-                        AgentSessionIdleWebhookEvent.Data.builder()
-                            .id("id")
-                            .environmentType("environment_type")
-                            .environmentId("environment_id")
-                            .build()
-                    )
-                    .build()
-            )
-
-        val roundtrippedUnwrapWebhookEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(unwrapWebhookEvent),
-                jacksonTypeRef<UnwrapWebhookEvent>(),
-            )
-
-        assertThat(roundtrippedUnwrapWebhookEvent).isEqualTo(unwrapWebhookEvent)
-    }
-
-    @Test
-    fun ofAgentSessionInProgress() {
-        val agentSessionInProgress =
-            AgentSessionInProgressWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(
-                    AgentSessionInProgressWebhookEvent.Data.builder()
-                        .id("id")
-                        .environmentType("environment_type")
-                        .environmentId("environment_id")
-                        .build()
-                )
-                .build()
-
-        val unwrapWebhookEvent = UnwrapWebhookEvent.ofAgentSessionInProgress(agentSessionInProgress)
-
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).contains(agentSessionInProgress)
-        assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
-        assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
-        assertThat(unwrapWebhookEvent.batchFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunCanceled()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.evalRunSucceeded()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.fineTuningJobSucceeded()).isEmpty
-        assertThat(unwrapWebhookEvent.liveCallIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.liveTransportIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.realtimeCallIncoming()).isEmpty
-        assertThat(unwrapWebhookEvent.responseCancelled()).isEmpty
-        assertThat(unwrapWebhookEvent.responseCompleted()).isEmpty
-        assertThat(unwrapWebhookEvent.responseFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.responseIncomplete()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyAlertCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyDeactivationIssued()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyOrgAlertCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.safetyWarningIssued()).isEmpty
-    }
-
-    @Test
-    fun ofAgentSessionInProgressRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val unwrapWebhookEvent =
-            UnwrapWebhookEvent.ofAgentSessionInProgress(
-                AgentSessionInProgressWebhookEvent.builder()
-                    .id("id")
-                    .createdAt(0L)
-                    .data(
-                        AgentSessionInProgressWebhookEvent.Data.builder()
-                            .id("id")
-                            .environmentType("environment_type")
-                            .environmentId("environment_id")
-                            .build()
-                    )
-                    .build()
-            )
-
-        val roundtrippedUnwrapWebhookEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(unwrapWebhookEvent),
-                jacksonTypeRef<UnwrapWebhookEvent>(),
-            )
-
-        assertThat(roundtrippedUnwrapWebhookEvent).isEqualTo(unwrapWebhookEvent)
-    }
-
-    @Test
     fun ofBatchCancelled() {
         val batchCancelled =
             BatchCancelledWebhookEvent.builder()
@@ -411,11 +26,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofBatchCancelled(batchCancelled)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).contains(batchCancelled)
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -473,11 +83,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofBatchCompleted(batchCompleted)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).contains(batchCompleted)
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -535,11 +140,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofBatchExpired(batchExpired)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).contains(batchExpired)
@@ -597,11 +197,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofBatchFailed(batchFailed)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -659,11 +254,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofEvalRunCanceled(evalRunCanceled)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -721,11 +311,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofEvalRunFailed(evalRunFailed)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -783,11 +368,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofEvalRunSucceeded(evalRunSucceeded)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -845,11 +425,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofFineTuningJobCancelled(fineTuningJobCancelled)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -907,11 +482,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofFineTuningJobFailed(fineTuningJobFailed)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -969,11 +539,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofFineTuningJobSucceeded(fineTuningJobSucceeded)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -1042,11 +607,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofLiveCallIncoming(liveCallIncoming)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -1130,11 +690,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofLiveTransportIncoming(liveTransportIncoming)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -1218,11 +773,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofRealtimeCallIncoming(realtimeCallIncoming)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -1293,11 +843,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofResponseCancelled(responseCancelled)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -1355,11 +900,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofResponseCompleted(responseCompleted)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -1417,11 +957,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofResponseFailed(responseFailed)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -1479,11 +1014,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofResponseIncomplete(responseIncomplete)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -1544,11 +1074,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofSafetyAlertCreated(safetyAlertCreated)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -1609,11 +1134,6 @@ internal class UnwrapWebhookEventTest {
         val unwrapWebhookEvent =
             UnwrapWebhookEvent.ofSafetyDeactivationIssued(safetyDeactivationIssued)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -1673,11 +1193,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofSafetyOrgAlertCreated(safetyOrgAlertCreated)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty
@@ -1737,11 +1252,6 @@ internal class UnwrapWebhookEventTest {
 
         val unwrapWebhookEvent = UnwrapWebhookEvent.ofSafetyWarningIssued(safetyWarningIssued)
 
-        assertThat(unwrapWebhookEvent.agentSessionActionRequired()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionCreated()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionFailed()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionIdle()).isEmpty
-        assertThat(unwrapWebhookEvent.agentSessionInProgress()).isEmpty
         assertThat(unwrapWebhookEvent.batchCancelled()).isEmpty
         assertThat(unwrapWebhookEvent.batchCompleted()).isEmpty
         assertThat(unwrapWebhookEvent.batchExpired()).isEmpty

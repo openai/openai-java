@@ -954,7 +954,7 @@ private constructor(
             private var country: JsonField<String> = JsonMissing.of()
             private var region: JsonField<String> = JsonMissing.of()
             private var timezone: JsonField<String> = JsonMissing.of()
-            private var type: JsonField<Type> = JsonField.of(Type.APPROXIMATE)
+            private var type: JsonField<Type> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic

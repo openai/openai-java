@@ -668,7 +668,7 @@ private constructor(
             fun filename(): String = filename.getRequired("filename")
 
             /**
-             * The index in the output text at which to insert the file citation.
+             * The index of the file in the list of files.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -780,7 +780,7 @@ private constructor(
                  */
                 fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
-                /** The index in the output text at which to insert the file citation. */
+                /** The index of the file in the list of files. */
                 fun index(index: Long) = index(JsonField.of(index))
 
                 /**

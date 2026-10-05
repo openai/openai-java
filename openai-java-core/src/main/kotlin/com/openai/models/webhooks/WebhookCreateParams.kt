@@ -625,16 +625,6 @@ private constructor(
 
             @JvmField val VIDEO_FAILED = of("video.failed")
 
-            @JvmField val AGENT_SESSION_CREATED = of("agent.session.created")
-
-            @JvmField val AGENT_SESSION_ACTION_REQUIRED = of("agent.session.action_required")
-
-            @JvmField val AGENT_SESSION_IN_PROGRESS = of("agent.session.in_progress")
-
-            @JvmField val AGENT_SESSION_IDLE = of("agent.session.idle")
-
-            @JvmField val AGENT_SESSION_FAILED = of("agent.session.failed")
-
             @JvmField val SAFETY_ALERT_CREATED = of("safety.alert.created")
 
             @JvmStatic fun of(value: String) = EventType(JsonField.of(value))
@@ -659,11 +649,6 @@ private constructor(
             REALTIME_CALL_INCOMING,
             VIDEO_COMPLETED,
             VIDEO_FAILED,
-            AGENT_SESSION_CREATED,
-            AGENT_SESSION_ACTION_REQUIRED,
-            AGENT_SESSION_IN_PROGRESS,
-            AGENT_SESSION_IDLE,
-            AGENT_SESSION_FAILED,
             SAFETY_ALERT_CREATED,
         }
 
@@ -694,11 +679,6 @@ private constructor(
             REALTIME_CALL_INCOMING,
             VIDEO_COMPLETED,
             VIDEO_FAILED,
-            AGENT_SESSION_CREATED,
-            AGENT_SESSION_ACTION_REQUIRED,
-            AGENT_SESSION_IN_PROGRESS,
-            AGENT_SESSION_IDLE,
-            AGENT_SESSION_FAILED,
             SAFETY_ALERT_CREATED,
             /**
              * An enum member indicating that [EventType] was instantiated with an unknown value.
@@ -732,11 +712,6 @@ private constructor(
                 REALTIME_CALL_INCOMING -> Value.REALTIME_CALL_INCOMING
                 VIDEO_COMPLETED -> Value.VIDEO_COMPLETED
                 VIDEO_FAILED -> Value.VIDEO_FAILED
-                AGENT_SESSION_CREATED -> Value.AGENT_SESSION_CREATED
-                AGENT_SESSION_ACTION_REQUIRED -> Value.AGENT_SESSION_ACTION_REQUIRED
-                AGENT_SESSION_IN_PROGRESS -> Value.AGENT_SESSION_IN_PROGRESS
-                AGENT_SESSION_IDLE -> Value.AGENT_SESSION_IDLE
-                AGENT_SESSION_FAILED -> Value.AGENT_SESSION_FAILED
                 SAFETY_ALERT_CREATED -> Value.SAFETY_ALERT_CREATED
                 else -> Value._UNKNOWN
             }
@@ -769,11 +744,6 @@ private constructor(
                 REALTIME_CALL_INCOMING -> Known.REALTIME_CALL_INCOMING
                 VIDEO_COMPLETED -> Known.VIDEO_COMPLETED
                 VIDEO_FAILED -> Known.VIDEO_FAILED
-                AGENT_SESSION_CREATED -> Known.AGENT_SESSION_CREATED
-                AGENT_SESSION_ACTION_REQUIRED -> Known.AGENT_SESSION_ACTION_REQUIRED
-                AGENT_SESSION_IN_PROGRESS -> Known.AGENT_SESSION_IN_PROGRESS
-                AGENT_SESSION_IDLE -> Known.AGENT_SESSION_IDLE
-                AGENT_SESSION_FAILED -> Known.AGENT_SESSION_FAILED
                 SAFETY_ALERT_CREATED -> Known.SAFETY_ALERT_CREATED
                 else -> throw OpenAIInvalidDataException("Unknown EventType: $value")
             }

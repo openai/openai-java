@@ -21,7 +21,6 @@ import com.openai.services.async.beta.agents.sessions.ArtifactServiceAsync
 import com.openai.services.async.beta.agents.sessions.EventServiceAsync
 import com.openai.services.async.beta.agents.sessions.ItemServiceAsync
 import com.openai.services.async.beta.agents.sessions.SubagentServiceAsync
-import com.openai.services.async.beta.agents.sessions.TraceServiceAsync
 import com.openai.services.async.beta.agents.sessions.TurnServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -47,8 +46,6 @@ interface SessionServiceAsync {
     fun items(): ItemServiceAsync
 
     fun events(): EventServiceAsync
-
-    fun traces(): TraceServiceAsync
 
     fun turns(): TurnServiceAsync
 
@@ -237,8 +234,6 @@ interface SessionServiceAsync {
         fun items(): ItemServiceAsync.WithRawResponse
 
         fun events(): EventServiceAsync.WithRawResponse
-
-        fun traces(): TraceServiceAsync.WithRawResponse
 
         fun turns(): TurnServiceAsync.WithRawResponse
 

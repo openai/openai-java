@@ -165,7 +165,7 @@ private constructor(
         private var role: JsonValue = JsonValue.from("user")
         private var type: JsonValue = JsonValue.from("message")
         private var id: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonField.of(Object.REALTIME_ITEM)
+        private var object_: JsonField<Object> = JsonMissing.of()
         private var status: JsonField<Status> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 

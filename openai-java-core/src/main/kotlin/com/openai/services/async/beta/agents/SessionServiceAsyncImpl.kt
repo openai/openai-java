@@ -43,8 +43,6 @@ import com.openai.services.async.beta.agents.sessions.ItemServiceAsync
 import com.openai.services.async.beta.agents.sessions.ItemServiceAsyncImpl
 import com.openai.services.async.beta.agents.sessions.SubagentServiceAsync
 import com.openai.services.async.beta.agents.sessions.SubagentServiceAsyncImpl
-import com.openai.services.async.beta.agents.sessions.TraceServiceAsync
-import com.openai.services.async.beta.agents.sessions.TraceServiceAsyncImpl
 import com.openai.services.async.beta.agents.sessions.TurnServiceAsync
 import com.openai.services.async.beta.agents.sessions.TurnServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
@@ -71,8 +69,6 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
     private val events: EventServiceAsync by lazy { EventServiceAsyncImpl(clientOptions) }
 
-    private val traces: TraceServiceAsync by lazy { TraceServiceAsyncImpl(clientOptions) }
-
     private val turns: TurnServiceAsync by lazy { TurnServiceAsyncImpl(clientOptions) }
 
     override fun withRawResponse(): SessionServiceAsync.WithRawResponse = withRawResponse
@@ -87,8 +83,6 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun items(): ItemServiceAsync = items
 
     override fun events(): EventServiceAsync = events
-
-    override fun traces(): TraceServiceAsync = traces
 
     override fun turns(): TurnServiceAsync = turns
 
@@ -159,10 +153,6 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
             EventServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val traces: TraceServiceAsync.WithRawResponse by lazy {
-            TraceServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
         private val turns: TurnServiceAsync.WithRawResponse by lazy {
             TurnServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -181,8 +171,6 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
         override fun items(): ItemServiceAsync.WithRawResponse = items
 
         override fun events(): EventServiceAsync.WithRawResponse = events
-
-        override fun traces(): TraceServiceAsync.WithRawResponse = traces
 
         override fun turns(): TurnServiceAsync.WithRawResponse = turns
 

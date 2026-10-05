@@ -186,7 +186,7 @@ private constructor(
         private var type: JsonValue = JsonValue.from("session.output_audio.delta")
         private var channels: JsonField<Long> = JsonMissing.of()
         private var elapsedMs: JsonField<Long> = JsonMissing.of()
-        private var format: JsonField<Format> = JsonField.of(Format.PCM16)
+        private var format: JsonField<Format> = JsonMissing.of()
         private var sampleRate: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 

@@ -256,7 +256,7 @@ private constructor(
         private var callId: JsonField<String> = JsonMissing.of()
         private var content: JsonField<MutableList<Content>>? = null
         private var name: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonField.of(Object.REALTIME_ITEM)
+        private var object_: JsonField<Object> = JsonMissing.of()
         private var output: JsonField<String> = JsonMissing.of()
         private var role: JsonField<Role> = JsonMissing.of()
         private var status: JsonField<Status> = JsonMissing.of()

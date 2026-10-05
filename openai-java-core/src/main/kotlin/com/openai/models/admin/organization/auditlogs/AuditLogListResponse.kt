@@ -27,7 +27,6 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.admin.organization.externalstorage.AwsExternalStorageProvider
 import com.openai.models.admin.organization.externalstorage.AzureExternalStorageProvider
-import com.openai.models.admin.organization.externalstorage.GcpExternalStorageProvider
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -8865,9 +8864,6 @@ private constructor(
                 fun provider(azure: AzureExternalStorageProvider) =
                     provider(Provider.ofAzure(azure))
 
-                /** Alias for calling [provider] with `Provider.ofGcp(gcp)`. */
-                fun provider(gcp: GcpExternalStorageProvider) = provider(Provider.ofGcp(gcp))
-
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
                     putAllAdditionalProperties(additionalProperties)
@@ -8946,7 +8942,6 @@ private constructor(
             private constructor(
                 private val aws: AwsExternalStorageProvider? = null,
                 private val azure: AzureExternalStorageProvider? = null,
-                private val gcp: GcpExternalStorageProvider? = null,
                 private val _json: JsonValue? = null,
             ) {
 
@@ -8954,103 +8949,15 @@ private constructor(
 
                 fun azure(): Optional<AzureExternalStorageProvider> = Optional.ofNullable(azure)
 
-                fun gcp(): Optional<GcpExternalStorageProvider> = Optional.ofNullable(gcp)
-
                 fun isAws(): Boolean = aws != null
 
                 fun isAzure(): Boolean = azure != null
-
-                fun isGcp(): Boolean = gcp != null
 
                 fun asAws(): AwsExternalStorageProvider = aws.getOrThrow("aws")
 
                 fun asAzure(): AzureExternalStorageProvider = azure.getOrThrow("azure")
 
-                fun asGcp(): GcpExternalStorageProvider = gcp.getOrThrow("gcp")
-
                 fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-                /** Maps this value using an immutable callback registration snapshot. */
-                fun <T> match(handler: Handler<T>): T = handler.apply(this)
-
-                /**
-                 * SDK-owned dispatch. Omitted callbacks use [Builder.onDefault], or throw a
-                 * payload-free error. Callback return values (including null) and exceptions are
-                 * propagated unchanged. Immutable registration does not make callbacks or their
-                 * captured state thread-safe.
-                 */
-                class Handler<T>
-                private constructor(
-                    private val callbacks: Map<String, (Provider) -> T>,
-                    private val onDefault: java.util.function.Function<in Provider, out T>?,
-                ) {
-                    fun apply(value: Provider): T {
-                        val callback =
-                            when {
-                                value.aws != null -> callbacks["aws"]
-                                value.azure != null -> callbacks["azure"]
-                                value.gcp != null -> callbacks["gcp"]
-                                else -> null
-                            }
-                        if (callback != null) return callback(value)
-                        if (onDefault != null) return onDefault.apply(value)
-                        throw OpenAIInvalidDataException("Unhandled Provider")
-                    }
-
-                    companion object {
-                        @JvmStatic fun <T> builder(): Builder<T> = Builder()
-                    }
-
-                    /**
-                     * Repeated setters replace earlier registrations. [build] copies the
-                     * registrations.
-                     */
-                    class Builder<T> internal constructor() {
-                        private val callbacks = mutableMapOf<String, (Provider) -> T>()
-                        private var onDefault: java.util.function.Function<in Provider, out T>? =
-                            null
-
-                        fun onAws(
-                            callback:
-                                java.util.function.Function<in AwsExternalStorageProvider, out T>
-                        ) = apply { callbacks["aws"] = { value -> callback.apply(value.aws!!) } }
-
-                        fun onAzure(
-                            callback:
-                                java.util.function.Function<in AzureExternalStorageProvider, out T>
-                        ) = apply {
-                            callbacks["azure"] = { value -> callback.apply(value.azure!!) }
-                        }
-
-                        fun onGcp(
-                            callback:
-                                java.util.function.Function<in GcpExternalStorageProvider, out T>
-                        ) = apply { callbacks["gcp"] = { value -> callback.apply(value.gcp!!) } }
-
-                        /**
-                         * Receives this union for both unknown and recognized-but-unregistered
-                         * variants.
-                         */
-                        fun onDefault(callback: java.util.function.Function<in Provider, out T>) =
-                            apply {
-                                onDefault = callback
-                            }
-
-                        /**
-                         * Builds a snapshot; registration of every variant is intentionally
-                         * optional.
-                         */
-                        fun build(): Handler<T> = Handler(callbacks.toMap(), onDefault)
-                    }
-                }
-
-                private fun <T> dispatchCurrent(visitor: CurrentVisitor<T>): T =
-                    when {
-                        aws != null -> visitor.visitAws(aws)
-                        azure != null -> visitor.visitAzure(azure)
-                        gcp != null -> visitor.visitGcp(gcp)
-                        else -> visitor.unknown(_json)
-                    }
 
                 /**
                  * Maps this instance's current variant to a value of type [T] using the given
@@ -9082,12 +8989,11 @@ private constructor(
                  * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
                  *   [visitor] and the current variant is unknown.
                  */
-                @Deprecated("Use match with Handler.builder(); removed in 5.0")
                 fun <T> accept(visitor: Visitor<T>): T =
                     when {
                         aws != null -> visitor.visitAws(aws)
                         azure != null -> visitor.visitAzure(azure)
-                        else -> visitor.unknown(_json ?: JsonValue.from(this))
+                        else -> visitor.unknown(_json)
                     }
 
                 private var validated: Boolean = false
@@ -9107,18 +9013,14 @@ private constructor(
                         return@apply
                     }
 
-                    dispatchCurrent(
-                        object : CurrentVisitor<Unit> {
+                    accept(
+                        object : Visitor<Unit> {
                             override fun visitAws(aws: AwsExternalStorageProvider) {
                                 aws.validate()
                             }
 
                             override fun visitAzure(azure: AzureExternalStorageProvider) {
                                 azure.validate()
-                            }
-
-                            override fun visitGcp(gcp: GcpExternalStorageProvider) {
-                                gcp.validate()
                             }
                         }
                     )
@@ -9141,14 +9043,12 @@ private constructor(
                  */
                 @JvmSynthetic
                 internal fun validity(): Int =
-                    dispatchCurrent(
-                        object : CurrentVisitor<Int> {
+                    accept(
+                        object : Visitor<Int> {
                             override fun visitAws(aws: AwsExternalStorageProvider) = aws.validity()
 
                             override fun visitAzure(azure: AzureExternalStorageProvider) =
                                 azure.validity()
-
-                            override fun visitGcp(gcp: GcpExternalStorageProvider) = gcp.validity()
 
                             override fun unknown(json: JsonValue?) = 0
                         }
@@ -9159,19 +9059,15 @@ private constructor(
                         return true
                     }
 
-                    return other is Provider &&
-                        aws == other.aws &&
-                        azure == other.azure &&
-                        gcp == other.gcp
+                    return other is Provider && aws == other.aws && azure == other.azure
                 }
 
-                override fun hashCode(): Int = Objects.hash(aws, azure, gcp)
+                override fun hashCode(): Int = Objects.hash(aws, azure)
 
                 override fun toString(): String =
                     when {
                         aws != null -> "Provider{aws=$aws}"
                         azure != null -> "Provider{azure=$azure}"
-                        gcp != null -> "Provider{gcp=$gcp}"
                         _json != null -> "Provider{_unknown=$_json}"
                         else -> throw IllegalStateException("Invalid Provider")
                     }
@@ -9182,47 +9078,17 @@ private constructor(
 
                     @JvmStatic
                     fun ofAzure(azure: AzureExternalStorageProvider) = Provider(azure = azure)
-
-                    @JvmStatic fun ofGcp(gcp: GcpExternalStorageProvider) = Provider(gcp = gcp)
                 }
 
                 /**
                  * An interface that defines how to map each variant of [Provider] to a value of
                  * type [T].
                  */
-                @Deprecated("Use Handler.builder(); removed in 5.0")
                 interface Visitor<out T> {
 
                     fun visitAws(aws: AwsExternalStorageProvider): T
 
                     fun visitAzure(azure: AzureExternalStorageProvider): T
-
-                    /**
-                     * Maps an unknown variant of [Provider] to a value of type [T].
-                     *
-                     * An instance of [Provider] can contain an unknown variant if it was
-                     * deserialized from data that doesn't match any known variant. For example, if
-                     * the SDK is on an older version than the API, then the API may respond with
-                     * new variants that the SDK is unaware of.
-                     *
-                     * @throws OpenAIInvalidDataException in the default implementation.
-                     */
-                    fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown Provider")
-                    }
-                }
-
-                /**
-                 * An interface that defines how to map each variant of [Provider] to a value of
-                 * type [T].
-                 */
-                private interface CurrentVisitor<out T> {
-
-                    fun visitAws(aws: AwsExternalStorageProvider): T
-
-                    fun visitAzure(azure: AzureExternalStorageProvider): T
-
-                    fun visitGcp(gcp: GcpExternalStorageProvider): T
 
                     /**
                      * Maps an unknown variant of [Provider] to a value of type [T].
@@ -9262,14 +9128,6 @@ private constructor(
                                     ?.let { Provider(azure = it, _json = json) }
                                     ?: Provider(_json = json)
                             }
-                            "gcp" -> {
-                                return tryDeserialize(
-                                        node,
-                                        jacksonTypeRef<GcpExternalStorageProvider>(),
-                                    )
-                                    ?.let { Provider(gcp = it, _json = json) }
-                                    ?: Provider(_json = json)
-                            }
                         }
 
                         return Provider(_json = json)
@@ -9286,7 +9144,6 @@ private constructor(
                         when {
                             value.aws != null -> generator.writeObject(value.aws)
                             value.azure != null -> generator.writeObject(value.azure)
-                            value.gcp != null -> generator.writeObject(value.gcp)
                             value._json != null -> generator.writeObject(value._json)
                             else -> throw IllegalStateException("Invalid Provider")
                         }

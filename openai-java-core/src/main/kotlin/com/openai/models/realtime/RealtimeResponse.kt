@@ -309,7 +309,7 @@ private constructor(
         private var conversationId: JsonField<String> = JsonMissing.of()
         private var maxOutputTokens: JsonField<MaxOutputTokens> = JsonMissing.of()
         private var metadata: JsonField<Metadata> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonField.of(Object.REALTIME_RESPONSE)
+        private var object_: JsonField<Object> = JsonMissing.of()
         private var output: JsonField<MutableList<ConversationItem>>? = null
         private var outputModalities: JsonField<MutableList<OutputModality>>? = null
         private var status: JsonField<Status> = JsonMissing.of()

@@ -300,8 +300,8 @@ interface RunServiceAsync {
         ): CompletableFuture<HttpResponseFor<RunDeleteResponse>>
 
         /**
-         * Returns a raw HTTP response for `post /evals/{eval_id}/runs/{run_id}/cancel`, but is
-         * otherwise the same as [RunServiceAsync.cancel].
+         * Returns a raw HTTP response for `post /evals/{eval_id}/runs/{run_id}`, but is otherwise
+         * the same as [RunServiceAsync.cancel].
          */
         fun cancel(
             runId: String,

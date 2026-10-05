@@ -26,12 +26,7 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * This endpoint is retired and no longer available. Use the image edits endpoint with a GPT Image
- * model and a prompt to create a variation of an image. The request and response schemas below
- * describe the legacy contract.
- */
-@Deprecated("deprecated")
+/** Creates a variation of a given image. This endpoint only supports `dall-e-2`. */
 class ImageCreateVariationParams
 private constructor(
     private val body: Body,
@@ -49,8 +44,7 @@ private constructor(
     fun image(): InputStream = body.image()
 
     /**
-     * The legacy model used by the retired image variations endpoint. This endpoint no longer
-     * accepts requests.
+     * The model to use for image generation. Only `dall-e-2` is supported at this time.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -213,10 +207,7 @@ private constructor(
          */
         fun image(path: Path) = apply { body.image(path) }
 
-        /**
-         * The legacy model used by the retired image variations endpoint. This endpoint no longer
-         * accepts requests.
-         */
+        /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
         /** Alias for calling [Builder.model] with `model.orElse(null)`. */
@@ -466,7 +457,6 @@ private constructor(
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
-    /** Legacy request for the retired image variations endpoint. */
     class Body
     private constructor(
         private val image: MultipartField<InputStream>,
@@ -488,8 +478,7 @@ private constructor(
         fun image(): InputStream = image.value.getRequired("image")
 
         /**
-         * The legacy model used by the retired image variations endpoint. This endpoint no longer
-         * accepts requests.
+         * The model to use for image generation. Only `dall-e-2` is supported at this time.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -657,10 +646,7 @@ private constructor(
                         .build()
                 )
 
-            /**
-             * The legacy model used by the retired image variations endpoint. This endpoint no
-             * longer accepts requests.
-             */
+            /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
             fun model(model: ImageModel?) = model(MultipartField.of(model))
 
             /** Alias for calling [Builder.model] with `model.orElse(null)`. */

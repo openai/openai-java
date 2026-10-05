@@ -191,8 +191,7 @@ private constructor(
          * `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. You may also
          * provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Voice
          * cannot be changed during the session once the model has responded with audio at least
-         * once. Custom voices must be created from audio samples. Voices created from text prompts
-         * are supported only in Live. We recommend `marin` and `cedar` for best quality.
+         * once. We recommend `marin` and `cedar` for best quality.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -276,9 +275,7 @@ private constructor(
              * `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. You may
              * also provide a custom voice object with an `id`, for example `{ "id": "voice_1234"
              * }`. Voice cannot be changed during the session once the model has responded with
-             * audio at least once. Custom voices must be created from audio samples. Voices created
-             * from text prompts are supported only in Live. We recommend `marin` and `cedar` for
-             * best quality.
+             * audio at least once. We recommend `marin` and `cedar` for best quality.
              */
             fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -372,8 +369,7 @@ private constructor(
          * `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`. You may also
          * provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Voice
          * cannot be changed during the session once the model has responded with audio at least
-         * once. Custom voices must be created from audio samples. Voices created from text prompts
-         * are supported only in Live. We recommend `marin` and `cedar` for best quality.
+         * once. We recommend `marin` and `cedar` for best quality.
          */
         @JsonDeserialize(using = Voice.Deserializer::class)
         @JsonSerialize(using = Voice.Serializer::class)

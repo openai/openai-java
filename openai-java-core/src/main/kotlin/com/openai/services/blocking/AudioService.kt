@@ -6,7 +6,6 @@ import com.openai.core.ClientOptions
 import com.openai.services.blocking.audio.SpeechService
 import com.openai.services.blocking.audio.TranscriptionService
 import com.openai.services.blocking.audio.TranslationService
-import com.openai.services.blocking.audio.VoiceService
 import java.util.function.Consumer
 
 interface AudioService {
@@ -32,9 +31,6 @@ interface AudioService {
     /** Turn audio into text or text into audio. */
     fun speech(): SpeechService
 
-    /** Turn audio into text or text into audio. */
-    fun voices(): VoiceService
-
     /** A view of [AudioService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -53,8 +49,5 @@ interface AudioService {
 
         /** Turn audio into text or text into audio. */
         fun speech(): SpeechService.WithRawResponse
-
-        /** Turn audio into text or text into audio. */
-        fun voices(): VoiceService.WithRawResponse
     }
 }
