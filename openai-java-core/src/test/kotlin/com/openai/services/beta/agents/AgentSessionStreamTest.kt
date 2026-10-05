@@ -415,11 +415,15 @@ internal class AgentSessionStreamTest {
     fun typedActionsReuseTheDispatcher(async: Boolean) {
         for (asyncHandler in listOf(false, true)) {
             val calls = mutableListOf<String>()
+            val failures = mutableListOf<AgentToolError>()
             val action = { args: LookupItem ->
                 calls.add(args.itemId)
                 mapOf("type" to "item", "content" to args.itemId)
             }
-            val p = params().toolHandler("raw") { mapOf("raw" to it["itemId"]) }
+            val p =
+                params()
+                    .toolHandler("raw") { mapOf("raw" to it["itemId"]) }
+                    .onToolError { failures.add(it) }
             if (asyncHandler) {
                 val tool =
                     AgentFunctionTool.ofAsync(LookupItem::class.java) {
@@ -453,6 +457,11 @@ internal class AgentSessionStreamTest {
                 )
             consume(t, async, p.build())
             assertThat(calls).containsExactly("ITEM_A", "ITEM_B")
+            assertThat(failures).hasSize(1)
+            assertThat(failures.single().stage()).isEqualTo(AgentToolError.Stage.ARGUMENTS)
+            assertThat(failures.single().error())
+                .isExactlyInstanceOf(IllegalArgumentException::class.java)
+            assertThat(failures.single().error()).hasMessageContaining("parameter shape")
             val results = t.posts.drop(1).map { it.path("events").first() }
             assertThat(results).hasSize(4)
             assertThat(results[0].path("output").asText())
@@ -585,6 +594,7 @@ internal class AgentSessionStreamTest {
             params()
                 .putAdditionalHeader("Idempotency-Key", "input")
                 .putAdditionalHeader("x-context", "kept")
+                .onToolError { throw AssertionError("Successful tools must not notify") }
                 .toolHandler("tool") { args ->
                     count.incrementAndGet()
                     @Suppress("UNCHECKED_CAST")
@@ -623,18 +633,87 @@ internal class AgentSessionStreamTest {
     @ValueSource(booleans = [false, true])
     fun invalidArgumentsAndHandlerFailuresAreRedacted(async: Boolean) {
         for (args in listOf("[]", "\"bad json\"", "null", "{\"valid\":true}")) {
+            val original = IllegalStateException("secret fixture")
+            val failures = mutableListOf<AgentToolError>()
             val t = Transport(listOf(turn("created"), call(args = args), turn("completed"), idle()))
             consume(
                 t,
                 async,
                 params()
-                    .toolHandler("tool") { throw IllegalStateException("secret fixture") }
+                    .toolHandler("tool") { throw original }
+                    .onToolError { failures.add(it) }
                     .build(),
             )
             val result = t.posts.last().path("events").first()
             assertThat(result.path("success").asBoolean()).isFalse()
             assertThat(result.path("error").asText()).isEqualTo("Tool handler failed.")
             assertThat(result.toString()).doesNotContain("secret fixture")
+            assertThat(failures).hasSize(1)
+            if (args.startsWith("{")) {
+                assertThat(failures.single().error()).isSameAs(original)
+                assertThat(failures.single().stage()).isEqualTo(AgentToolError.Stage.EXECUTION)
+            } else assertThat(failures.single().stage()).isEqualTo(AgentToolError.Stage.ARGUMENTS)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun observesLocalFailuresOnceWithoutExposingThemToTheModel(async: Boolean) {
+        for (stage in AgentToolError.Stage.values()) {
+            val original = IllegalStateException("synthetic private diagnostic")
+            val failures = mutableListOf<AgentToolError>()
+            val t =
+                Transport(
+                        listOf(
+                            turn("created"),
+                            call(
+                                args = if (stage == AgentToolError.Stage.ARGUMENTS) "[]" else "{}"
+                            ),
+                            call(event = "redelivery"),
+                            turn("completed"),
+                            idle(),
+                        )
+                    )
+                    .apply {
+                        ambiguousFromPost = 2
+                        ambiguousRemaining = 1
+                    }
+            consume(
+                t,
+                async,
+                params()
+                    .asyncToolHandler("tool") {
+                        if (stage == AgentToolError.Stage.EXECUTION)
+                            CompletableFuture<Any?>().apply {
+                                completeExceptionally(
+                                    java.util.concurrent.CompletionException(original)
+                                )
+                            }
+                        else CompletableFuture.completedFuture(42)
+                    }
+                    .onToolError {
+                        failures.add(it)
+                        throw IllegalStateException("synthetic observer diagnostic")
+                    }
+                    .build(),
+            )
+            assertThat(failures).hasSize(1)
+            val failure = failures.single()
+            assertThat(failure.stage()).isEqualTo(stage)
+            assertThat(failure.toolName()).isEqualTo("tool")
+            assertThat(failure.sessionId()).isEqualTo("s")
+            assertThat(failure.turnId()).isEqualTo("root")
+            assertThat(failure.callId()).isEqualTo("call")
+            if (stage == AgentToolError.Stage.EXECUTION)
+                assertThat(failure.error()).isSameAs(original)
+            else assertThat(failure.error()).isInstanceOf(IllegalArgumentException::class.java)
+            assertThat(t.posts).hasSize(3)
+            for (post in t.posts.drop(1)) {
+                val result = post.path("events").first()
+                assertThat(result.path("success").asBoolean()).isFalse()
+                assertThat(result.path("error").asText()).isEqualTo("Tool handler failed.")
+                assertThat(post.toString()).doesNotContain("diagnostic")
+            }
         }
     }
 
@@ -1173,18 +1252,44 @@ internal class AgentSessionStreamTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
-    fun cancelledHandlerStageProducesRedactedFailure(async: Boolean) {
+    fun exceptionalHandlerStagesProduceRedactedFailures(async: Boolean) {
+        for (error in
+            listOf(java.util.concurrent.CancellationException(), AssertionError("private"))) {
+            val t = Transport(listOf(turn("created"), call(), turn("completed"), idle()))
+            val failures = mutableListOf<AgentToolError>()
+            consume(
+                t,
+                async,
+                params()
+                    .asyncToolHandler("tool") {
+                        CompletableFuture<String>().apply { completeExceptionally(error) }
+                    }
+                    .onToolError { failures.add(it) }
+                    .build(),
+            )
+            assertThat(failures).hasSize(1)
+            assertThat(failures.single().error()).isSameAs(error)
+            assertThat(failures.single().stage()).isEqualTo(AgentToolError.Stage.EXECUTION)
+            val result = t.posts.last().path("events").first()
+            assertThat(result.path("success").asBoolean()).isFalse()
+            assertThat(result.path("error").asText()).isEqualTo("Tool handler failed.")
+            assertThat(t.streamClosed).isTrue()
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun directlyThrownErrorsStillPropagate(async: Boolean) {
         val t = Transport(listOf(turn("created"), call(), turn("completed"), idle()))
-        consume(
-            t,
-            async,
+        val failures = mutableListOf<AgentToolError>()
+        val p =
             params()
-                .asyncToolHandler("tool") { CompletableFuture<String>().apply { cancel(false) } }
-                .build(),
-        )
-        val result = t.posts.last().path("events").first()
-        assertThat(result.path("success").asBoolean()).isFalse()
-        assertThat(result.path("error").asText()).isEqualTo("Tool handler failed.")
+                .toolHandler("tool") { throw AssertionError("direct tool failure") }
+                .onToolError { failures.add(it) }
+                .build()
+        assertThatThrownBy { consume(t, async, p) }.hasStackTraceContaining("direct tool failure")
+        assertThat(failures).isEmpty()
+        assertThat(t.posts).hasSize(1)
         assertThat(t.streamClosed).isTrue()
     }
 

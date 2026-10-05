@@ -134,3 +134,23 @@ and credentials stay in the closure or bound method. Use strings for exact decim
 amounts, as the existing event decoder represents JSON fractions as doubles. See
 [`BetaAgentToolsExample`](../../openai-java-example/src/main/java/com/openai/example/BetaAgentToolsExample.java)
 for a read-only catalog lookup.
+
+### Observing local tool errors
+
+Use `onToolError` to send local failures to your logger or monitoring system:
+
+```java
+var params = AgentSessionStreamParams.builder()
+    .sessionId(sessionId)
+    .input("Look up order A123.")
+    .toolHandler("lookup_order", arguments -> orderService.lookup(arguments))
+    .onToolError(failure -> logger.error(
+        "Tool {} failed during {}", failure.toolName(), failure.stage()))
+    .build();
+```
+
+The original error may contain application data; redact it before forwarding to logs or monitoring.
+The observer receives the original error and call IDs for argument decoding, callback execution,
+or output conversion failures. Errors remain local; the model receives `Tool handler failed.`.
+The SDK does not log these failures automatically. Ordinary observer exceptions are ignored so
+that the tool failure can still be submitted. Request failures continue to propagate normally.

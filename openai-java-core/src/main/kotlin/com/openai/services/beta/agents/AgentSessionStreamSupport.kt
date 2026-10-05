@@ -102,6 +102,7 @@ private constructor(
         checkNotNull(sessionId) { "Creation stream has not identified its session" }
         if (!handledCalls.add(call.turnId() to call.callId()))
             return CompletableFuture.completedFuture(null)
+        var stage = AgentToolError.Stage.ARGUMENTS
         val output =
             try {
                 val raw = mapper.valueToTree<JsonNode>(call._arguments())
@@ -110,6 +111,7 @@ private constructor(
                 // convertValue recursively copies objects and lists so handlers cannot mutate
                 // events.
                 val copy = mapper.convertValue(args, object : TypeReference<Map<String, Any?>>() {})
+                stage = AgentToolError.Stage.EXECUTION
                 handler.apply(copy).toCompletableFuture()
             } catch (error: Exception) {
                 CompletableFuture<Any?>().apply { completeExceptionally(error) }
@@ -120,28 +122,52 @@ private constructor(
                     AgentSessionInputParam.AgentSessionInputToolResult.builder()
                         .turnId(call.turnId())
                         .callId(call.callId())
-                try {
-                    if (error != null) throw IllegalStateException()
-                    result
-                        .success(true)
-                        .output(
-                            when (value) {
-                                null -> null
-                                is String -> AgentFunctionCallOutputParam.ofString(value)
-                                is Map<*, *> ->
-                                    AgentFunctionCallOutputParam.ofString(
-                                        mapper.writeValueAsString(value)
-                                    )
-                                is AgentFunctionCallOutputParam -> value
-                                is List<*> ->
-                                    AgentFunctionCallOutputParam.ofInputContentParams(
-                                        value.map { it as InputContentParam }
-                                    )
-                                else -> throw IllegalArgumentException()
-                            }
+                var failure = error?.let(::unwrap)
+                if (failure == null)
+                    try {
+                        stage = AgentToolError.Stage.OUTPUT
+                        result
+                            .success(true)
+                            .output(
+                                when (value) {
+                                    null -> null
+                                    is String -> AgentFunctionCallOutputParam.ofString(value)
+                                    is Map<*, *> ->
+                                        AgentFunctionCallOutputParam.ofString(
+                                            mapper.writeValueAsString(value)
+                                        )
+                                    is AgentFunctionCallOutputParam -> value
+                                    is List<*> ->
+                                        AgentFunctionCallOutputParam.ofInputContentParams(
+                                            value.map { it as InputContentParam }
+                                        )
+                                    else -> throw IllegalArgumentException()
+                                }
+                            )
+                        mapper.writeValueAsString(result.build())
+                    } catch (conversionError: Exception) {
+                        failure = conversionError
+                    }
+                failure?.let { failure ->
+                    val original =
+                        if (failure is AgentToolArgumentException) failure.original else failure
+                    val failureStage =
+                        if (failure is AgentToolArgumentException) AgentToolError.Stage.ARGUMENTS
+                        else stage
+                    try {
+                        params.onToolError?.accept(
+                            AgentToolError(
+                                original,
+                                call.name(),
+                                params.sessionId,
+                                call.turnId(),
+                                call.callId(),
+                                failureStage,
+                            )
                         )
-                    mapper.writeValueAsString(result.build())
-                } catch (failure: Exception) {
+                    } catch (_: Exception) {
+                        // An observer cannot prevent delivery of the original tool failure.
+                    }
                     result
                         .success(false)
                         .output(null as AgentFunctionCallOutputParam?)
