@@ -565,24 +565,33 @@ internal class LiveTranscriptGrouperTest {
     fun closeWaitsForAlreadyDispatchedCallbacksAndFinishesBeforeReturning() {
         val entered = CountDownLatch(1)
         val release = CountDownLatch(1)
+        val closing = CountDownLatch(1)
         val events = updates()
         val grouper =
             LiveTranscriptGrouper.create { update ->
                 events.add(update)
                 if (!update.closeReason().isPresent) {
                     entered.countDown()
-                    assertThat(release.await(10, TimeUnit.SECONDS)).isTrue()
+                    // Only the test may release the callback, even if CI pauses the test thread.
+                    release.await()
                 }
             }
+        val pushed = FutureTask { grouper.push(input("u", "pending", 0, 100)) }
+        val closed = FutureTask {
+            closing.countDown()
+            grouper.close()
+        }
         try {
-            grouper.push(input("u", "pending", 0, 100))
-            assertThat(entered.await(2, TimeUnit.SECONDS)).isTrue()
-            val closed = FutureTask { grouper.close() }
+            // push() can itself wait for a callback already dispatched by the timer.
+            Thread(pushed, "test-push-live-grouper").apply { isDaemon = true }.start()
+            assertThat(entered.await(10, TimeUnit.SECONDS)).isTrue()
             Thread(closed, "test-close-live-grouper").apply { isDaemon = true }.start()
+            assertThat(closing.await(10, TimeUnit.SECONDS)).isTrue()
             assertThatThrownBy { closed.get(100, TimeUnit.MILLISECONDS) }
                 .isInstanceOf(TimeoutException::class.java)
             release.countDown()
-            closed.get(2, TimeUnit.SECONDS)
+            pushed.get(10, TimeUnit.SECONDS)
+            closed.get(10, TimeUnit.SECONDS)
             assertThat(finalized(events).single().segment().text()).isEqualTo("pending")
             assertThat(finalized(events).single().closeReason()).contains(CloseReason.MANUAL)
         } finally {
