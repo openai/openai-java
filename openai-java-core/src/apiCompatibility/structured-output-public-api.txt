@@ -343,6 +343,8 @@ com.openai.models.responses.StructuredResponseCreateParams$Builder#addTool (Lcom
 com.openai.models.responses.StructuredResponseCreateParams$Builder#addTool (Lcom/openai/models/responses/WebSearchTool;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#addTool (Ljava/lang/Class;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#addTool (Ljava/lang/Class;Lcom/openai/core/JsonSchemaLocalValidation;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
+com.openai.models.responses.StructuredResponseCreateParams$Builder#addTool (Ljava/lang/Class;Lcom/openai/core/JsonSchemaLocalValidation;Ljava/util/function/Consumer;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
+com.openai.models.responses.StructuredResponseCreateParams$Builder#addTool (Ljava/lang/Class;Ljava/util/function/Consumer;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#addToolLocalShell ()Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#addToolProgrammaticToolCalling ()Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#additionalBodyProperties (Ljava/util/Map;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;

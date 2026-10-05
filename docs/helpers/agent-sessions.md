@@ -135,6 +135,17 @@ amounts, as the existing event decoder represents JSON fractions as doubles. See
 [`BetaAgentToolsExample`](../../openai-java-example/src/main/java/com/openai/example/BetaAgentToolsExample.java)
 for a read-only catalog lookup.
 
+For deferred discovery, configure an immutable copy of a typed binding and include a tool-search
+tool in the agent definition:
+
+```java
+var lookup = AgentFunctionTool.of(LookupOrder.class, args -> orderService.lookup(args.orderId))
+    .withDeferLoading(true);
+```
+
+Submit `lookup.definition()` and register `lookup.handler()` as usual. `ofAsync(...)` bindings
+support the same option; the original binding and handler behavior remain unchanged.
+
 ### Observing local tool errors
 
 Use `onToolError` to send local failures to your logger or monitoring system:

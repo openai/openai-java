@@ -1036,6 +1036,21 @@ For a full example of the usage of _Function Calling_ with the Responses API usi
 define and parse function parameters, see
 [`ResponsesFunctionCallingExample`](openai-java-example/src/main/java/com/openai/example/ResponsesFunctionCallingExample.java).
 
+Configure a class-derived Responses tool with an optional builder callback, including when using
+structured responses or streaming:
+
+```java
+var params = ResponseCreateParams.builder()
+    .model(MODEL)
+    .input("Look up item A123.")
+    .addTool(ToolSearchTool.builder().build())
+    .addTool(LookupItem.class, tool -> tool.deferLoading(true))
+    .build();
+```
+
+The callback runs after the usual schema generation and local validation. Function arguments still
+parse with `call.arguments(LookupItem.class)`; the API validates tool-search configuration.
+
 ### Local function JSON schema validation
 
 Like for _Structured Outputs_, you can perform local validation to check that the JSON schema

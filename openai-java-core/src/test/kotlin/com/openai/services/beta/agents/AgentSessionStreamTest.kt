@@ -456,10 +456,10 @@ internal class AgentSessionStreamTest {
                     AgentFunctionTool.ofAsync(LookupItem::class.java) {
                         CompletableFuture.completedFuture(action(it))
                     }
-                p.asyncToolHandler(tool.name(), tool.handler())
+                p.asyncToolHandler(tool.name(), tool.withDeferLoading(true).handler())
             } else {
                 val tool = AgentFunctionTool.of(LookupItem::class.java, action)
-                p.toolHandler(tool.name(), tool.handler())
+                p.toolHandler(tool.name(), tool.withDeferLoading(true).handler())
             }
             val t =
                 Transport(
