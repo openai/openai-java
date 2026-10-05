@@ -7,6 +7,8 @@ import com.openai.core.extractFunctionInfo
 import com.openai.core.jsonMapper
 import com.openai.core.responseTypeFromJson
 import com.openai.core.toJsonString
+import com.openai.models.beta.agents.AgentToolArgumentException
+import com.openai.models.beta.agents.AgentToolHandler
 import com.openai.models.beta.agents.AgentToolParam
 import java.util.concurrent.CompletionStage
 import java.util.function.Function
@@ -29,6 +31,15 @@ private constructor(
 
     /** Register with `toolHandler`, or `asyncToolHandler` for a binding created by [ofAsync]. */
     fun handler(): Function<Map<String, Any?>, R> = handler
+
+    /** Returns a new binding with deferred loading configured; the typed handler is unchanged. */
+    fun withDeferLoading(value: Boolean): AgentFunctionTool<R> =
+        AgentFunctionTool(
+            AgentToolParam.ofFunction(
+                definition.asFunction().toBuilder().deferLoading(value).build()
+            ),
+            handler,
+        )
 
     companion object {
         /**
@@ -73,14 +84,29 @@ private constructor(
                 )
             return AgentFunctionTool(
                 definition,
-                Function { arguments ->
-                    val json = toJsonString(arguments)
-                    require(
-                        hasArgumentShape(jsonMapper().readTree(json), info.schema, info.schema)
-                    ) {
-                        "Function arguments do not match the declared parameter shape"
+                object : AgentToolHandler<R> {
+                    private fun parse(arguments: Map<String, Any?>): T {
+                        val json = toJsonString(arguments)
+                        require(
+                            hasArgumentShape(jsonMapper().readTree(json), info.schema, info.schema)
+                        ) {
+                            "Function arguments do not match the declared parameter shape"
+                        }
+                        return responseTypeFromJson(json, parametersType)
                     }
-                    handler.apply(responseTypeFromJson(json, parametersType))
+
+                    override fun apply(arguments: Map<String, Any?>): R =
+                        handler.apply(parse(arguments))
+
+                    override fun applyWithDiagnostics(arguments: Map<String, Any?>): R {
+                        val parsed =
+                            try {
+                                parse(arguments)
+                            } catch (error: Exception) {
+                                throw AgentToolArgumentException(error)
+                            }
+                        return handler.apply(parsed)
+                    }
                 },
             )
         }

@@ -29,6 +29,7 @@ import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionDeleted
 import com.openai.models.beta.agents.AgentSessionEvent
 import com.openai.models.beta.agents.AgentSessionStreamParams
+import com.openai.models.beta.agents.AgentToolHandlers
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.SessionDeleteParams
 import com.openai.models.beta.agents.sessions.SessionListPageAsync
@@ -128,6 +129,24 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
             .thenApply { AgentTurnResults.uncollected(it.parse()) }
             .toAsync(clientOptions.streamHandlerExecutor)
             .let { AgentTurnResults.collecting(it) }
+
+    override fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<AgentSessionEvent> =
+        AgentTurnResults.collecting(
+            AgentSessionStreamAsync(
+                this,
+                null,
+                requestOptions,
+                clientOptions.streamHandlerExecutor,
+                clientOptions.sleeper,
+                params,
+                handlers,
+            ),
+            handlers.handlers.keys,
+        )
 
     override fun retrieve(
         params: SessionRetrieveParams,

@@ -3,6 +3,7 @@ package com.openai.models.beta.agents
 import com.openai.core.http.Headers
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
+import java.util.function.Consumer
 import java.util.function.Function
 
 /** Input and optional function handlers for one turn of an idle session. */
@@ -12,6 +13,7 @@ private constructor(
     val input: List<AgentSessionInputMessageParam>,
     val headers: Headers,
     val idempotencyKey: String?,
+    internal val onToolError: Consumer<AgentToolError>?,
     internal val handlers: Map<String, Function<Map<String, Any?>, CompletionStage<*>>>,
 ) {
     companion object {
@@ -23,6 +25,7 @@ private constructor(
         private var input: List<AgentSessionInputMessageParam> = emptyList()
         private val headers = Headers.builder()
         private var idempotencyKey: String? = null
+        private var onToolError: Consumer<AgentToolError>? = null
         private val handlers =
             linkedMapOf<String, Function<Map<String, Any?>, CompletionStage<*>>>()
 
@@ -49,14 +52,24 @@ private constructor(
          * redacted.
          */
         fun toolHandler(name: String, handler: Function<Map<String, Any?>, Any?>) = apply {
-            handlers[name] = Function { CompletableFuture.completedFuture(handler.apply(it)) }
+            handlers[name] = Function {
+                CompletableFuture.completedFuture(invokeToolHandler(handler, it))
+            }
         }
 
         /** Completion is awaited before reading the next event or invoking another handler. */
         fun asyncToolHandler(
             name: String,
             handler: Function<Map<String, Any?>, CompletionStage<*>>,
-        ) = apply { handlers[name] = handler }
+        ) = apply { handlers[name] = Function { invokeToolHandler(handler, it) } }
+
+        /**
+         * Use alongside [toolHandler] or [asyncToolHandler] to log or monitor local argument
+         * validation, handler execution, and output serialization failures. This is not a general
+         * API or stream error handler. The model still receives a sanitized failure; ordinary
+         * observer exceptions are ignored.
+         */
+        fun onToolError(observer: Consumer<AgentToolError>) = apply { onToolError = observer }
 
         fun build(): AgentSessionStreamParams {
             require(input.isNotEmpty()) { "input must not be empty" }
@@ -66,6 +79,7 @@ private constructor(
                 input.toList(),
                 allHeaders.toBuilder().remove("Idempotency-Key").build(),
                 allHeaders.values("Idempotency-Key").firstOrNull() ?: idempotencyKey,
+                onToolError,
                 handlers.toMap(),
             )
         }

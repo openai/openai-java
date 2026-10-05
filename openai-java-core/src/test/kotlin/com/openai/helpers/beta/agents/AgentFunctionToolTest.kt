@@ -88,6 +88,27 @@ internal class AgentFunctionToolTest {
     }
 
     @Test
+    fun deferredBindingsPreserveDefinitionsAndHandlers() {
+        val tool = AgentFunctionTool.of(LookupItem::class.java) { it.itemId }
+        val async =
+            AgentFunctionTool.ofAsync(LookupItem::class.java) {
+                CompletableFuture.completedFuture(it.itemId)
+            }
+        for (original in listOf(tool, async)) {
+            assertThat(original.definition().asFunction().deferLoading()).contains(false)
+            for (value in listOf(true, false)) {
+                val configured = original.withDeferLoading(value)
+                assertThat(configured.handler()).isSameAs(original.handler())
+                assertThat(configured.definition().asFunction().deferLoading()).contains(value)
+                assertThat(configured.definition().asFunction().parameters())
+                    .isEqualTo(original.definition().asFunction().parameters())
+                assertThat(configured.name()).isEqualTo(original.name())
+            }
+            assertThat(original.definition().asFunction().deferLoading()).contains(false)
+        }
+    }
+
+    @Test
     fun supportsUnannotatedClassesAndAsyncStages() {
         val pending = CompletableFuture<String>()
         val tool =

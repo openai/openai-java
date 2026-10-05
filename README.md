@@ -15,7 +15,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.74.0")
+implementation("com.openai:openai-java:4.76.0")
 ```
 
 ### Maven
@@ -24,7 +24,7 @@ implementation("com.openai:openai-java:4.74.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.74.0</version>
+  <version>4.76.0</version>
 </dependency>
 ```
 
@@ -99,7 +99,7 @@ with normal AWS credentials:
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java-bedrock:4.74.0")
+implementation("com.openai:openai-java-bedrock:4.76.0")
 ```
 
 <!-- x-release-please-end -->
@@ -1035,6 +1035,21 @@ API to define and parse function parameters, see
 For a full example of the usage of _Function Calling_ with the Responses API using Java classes to
 define and parse function parameters, see
 [`ResponsesFunctionCallingExample`](openai-java-example/src/main/java/com/openai/example/ResponsesFunctionCallingExample.java).
+
+Configure a class-derived Responses tool with an optional builder callback, including when using
+structured responses or streaming:
+
+```java
+var params = ResponseCreateParams.builder()
+    .model(MODEL)
+    .input("Look up item A123.")
+    .addTool(ToolSearchTool.builder().build())
+    .addTool(LookupItem.class, tool -> tool.deferLoading(true))
+    .build();
+```
+
+The callback runs after the usual schema generation and local validation. Function arguments still
+parse with `call.arguments(LookupItem.class)`; the API validates tool-search configuration.
 
 ### Local function JSON schema validation
 

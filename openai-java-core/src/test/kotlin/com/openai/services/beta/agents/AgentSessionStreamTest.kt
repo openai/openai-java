@@ -8,6 +8,7 @@ import com.openai.core.http.*
 import com.openai.core.jsonMapper
 import com.openai.helpers.beta.agents.AgentFunctionTool
 import com.openai.models.beta.agents.*
+import com.openai.models.beta.agents.sessions.SessionCreateParams
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.time.Duration
@@ -72,6 +73,7 @@ internal class AgentSessionStreamTest {
         var inputResponse: HttpResponse? = null
         val requests = java.util.Collections.synchronizedList(mutableListOf<HttpRequest>())
         val options = java.util.Collections.synchronizedList(mutableListOf<RequestOptions>())
+        var creationBody: JsonNode? = null
         val posts = java.util.Collections.synchronizedList(mutableListOf<JsonNode>())
         var status = "idle"
         var postError: String? = null
@@ -155,6 +157,13 @@ internal class AgentSessionStreamTest {
             requests.add(request)
             options.add(requestOptions)
             return when {
+                request.pathSegments.last() == "sessions" && request.method == HttpMethod.POST -> {
+                    val bytes = ByteArrayOutputStream()
+                    request.body!!.writeTo(bytes)
+                    creationBody = mapper.readTree(bytes.toByteArray())
+                    opened = true
+                    response(events.joinToString("") { "data: $it\n\n" }, stream = true)
+                }
                 request.method == HttpMethod.POST -> {
                     check(opened) { "input submitted before subscription" }
                     val bytes = ByteArrayOutputStream()
@@ -236,6 +245,194 @@ internal class AgentSessionStreamTest {
                 .also { clients.add(it) }
     }
 
+    private fun creationParams() =
+        SessionCreateParams.builder()
+            .agentId("agent")
+            .environmentNone()
+            .input("Question")
+            .putAdditionalHeader("X-Request-Context", "test")
+            .putAdditionalHeader("Idempotency-Key", "creation-key")
+            .build()
+
+    private fun creationEvents() =
+        listOf(
+            """{"type":"agent.session.created","event_id":"created-session","session":{"id":"s","status":"in_progress"}}""",
+            """{"type":"agent.session.turn.created","event_id":"created-root","session_id":"s","turn_id":"root","turn":{"id":"root","session_id":"s","subagent_id":null}}""",
+            call(args = "{}"),
+            call(args = "{}", event = "duplicate-call"),
+            """{"type":"agent.session.requires_action","event_id":"action","session":{"id":"s","status":"requires_action","required_actions":[{"type":"function_call","name":"tool","call_id":"call","turn_id":"root"}]}}""",
+            """{"type":"agent.session.turn.item.done","event_id":"answer","session_id":"s","turn_id":"root","output_index":0,"item":{"id":"answer","type":"message","role":"assistant","turn_id":"root","phase":"final_answer","status":"completed","content":[{"type":"output_text","text":"Answer","annotations":[]}]}}""",
+            """{"type":"agent.session.turn.completed","event_id":"completed-root","session_id":"s","turn_id":"root","turn":{"id":"root","session_id":"s","subagent_id":null}}""",
+            """{"type":"agent.session.idle","event_id":"idle","session":{"id":"s","status":"idle"}}""",
+        )
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `creation dispatches initial tools using shared retries and collects final output`(
+        async: Boolean
+    ) {
+        val t = Transport(creationEvents())
+        t.postError =
+            """{"error":{"code":"invalid_request_error","message":"Unknown pending tool call: call"}}"""
+        t.postErrors = 1
+        val calls = AtomicInteger()
+        val handlers =
+            AgentToolHandlers.builder()
+                .asyncToolHandler("tool") {
+                    calls.incrementAndGet()
+                    CompletableFuture.completedFuture("Result")
+                }
+                .build()
+        val client = t.client()
+        val result =
+            if (async) {
+                val stream =
+                    client
+                        .async()
+                        .beta()
+                        .agents()
+                        .sessions()
+                        .createStreaming(creationParams(), handlers)
+                AgentTurnResults.getFinalResult(stream).get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            } else
+                client.beta().agents().sessions().createStreaming(creationParams(), handlers).use {
+                    AgentTurnResults.getFinalResult(it)
+                }
+        assertThat(result.outputText()).isEqualTo("Answer")
+        assertThat(result.sessionId()).isEqualTo("s")
+        assertThat(calls.get()).isEqualTo(1)
+        assertThat(t.creationBody!!.path("input").asText()).isEqualTo("Question")
+        assertThat(t.creationBody!!.has("handlers")).isFalse()
+        assertThat(t.requests).hasSize(3).allSatisfy {
+            assertThat(it.method).isEqualTo(HttpMethod.POST)
+        }
+        assertThat(t.requests.drop(1)).allSatisfy {
+            assertThat(it.pathSegments).endsWith("s", "events")
+            assertThat(it.headers.values("X-Request-Context")).containsExactly("test")
+            assertThat(it.headers.values("Idempotency-Key")).doesNotContain("creation-key")
+        }
+        assertThat(t.requests[1].headers.values("Idempotency-Key"))
+            .isEqualTo(t.requests[2].headers.values("Idempotency-Key"))
+        assertThat(t.posts).hasSize(2).allSatisfy {
+            assertThat(it.path("events").first().path("output").asText()).isEqualTo("Result")
+        }
+        assertThat(t.streamClosed).isTrue()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `closing creation stream on call delivery does not run pending callback`(async: Boolean) {
+        val t = Transport(creationEvents())
+        val calls = AtomicInteger()
+        val handlers =
+            AgentToolHandlers.builder().toolHandler("tool") { calls.incrementAndGet() }.build()
+        val client = t.client()
+        if (async) {
+            val stream =
+                client
+                    .async()
+                    .beta()
+                    .agents()
+                    .sessions()
+                    .createStreaming(creationParams(), handlers)
+            stream
+                .subscribe { if (it.isTurnItemAdded()) stream.close() }
+                .onCompleteFuture()
+                .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        } else
+            client.beta().agents().sessions().createStreaming(creationParams(), handlers).use {
+                stream ->
+                stream.stream().forEach { if (it.isTurnItemAdded()) stream.close() }
+            }
+        assertThat(calls.get()).isZero()
+        assertThat(t.posts).isEmpty()
+        assertThat(t.streamClosed).isTrue()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `inputless self hosted creation ends at idle without fabricating a turn`(async: Boolean) {
+        val params =
+            SessionCreateParams.builder()
+                .agentId("agent")
+                .selfHostedEnvironment("/workspace")
+                .build()
+        val handlers =
+            AgentToolHandlers.builder()
+                .toolHandler("tool") { error("No function call was received") }
+                .build()
+        for (collect in listOf(false, true)) {
+            val t = Transport(listOf(creationEvents().first(), creationEvents().last()))
+            val client = t.client()
+            val seen = mutableListOf<AgentSessionEvent>()
+            val failure =
+                if (async) {
+                    val stream =
+                        client.async().beta().agents().sessions().createStreaming(params, handlers)
+                    if (collect)
+                        runCatching {
+                                AgentTurnResults.getFinalResult(stream)
+                                    .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                            }
+                            .exceptionOrNull()
+                            ?.cause
+                    else {
+                        stream
+                            .subscribe { seen.add(it) }
+                            .onCompleteFuture()
+                            .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                        null
+                    }
+                } else
+                    client.beta().agents().sessions().createStreaming(params, handlers).use { stream
+                        ->
+                        if (collect)
+                            runCatching { AgentTurnResults.getFinalResult(stream) }
+                                .exceptionOrNull()
+                        else {
+                            stream.stream().forEach { seen.add(it) }
+                            null
+                        }
+                    }
+            if (collect) {
+                assertThat(failure).isInstanceOf(AgentTurnResultException::class.java)
+                assertThat((failure as AgentTurnResultException).reason())
+                    .isEqualTo(AgentTurnResultException.Reason.INCOMPLETE_STREAM)
+            } else
+                assertThat(seen.map { it.isCreated() || it.isIdle() }).containsExactly(true, true)
+            assertThat(t.requests).hasSize(1)
+            assertThat(t.posts).isEmpty()
+            assertThat(t.streamClosed).isTrue()
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `creation forwards unknown input shapes without typed decoding`(async: Boolean) {
+        val input = mapOf("future_input" to "value")
+        val params =
+            creationParams().toBuilder().input(com.openai.core.JsonValue.from(input)).build()
+        val handlers = AgentToolHandlers.builder().toolHandler("tool") { "Result" }.build()
+        val t = Transport(creationEvents())
+        val client = t.client()
+        if (async)
+            client
+                .async()
+                .beta()
+                .agents()
+                .sessions()
+                .createStreaming(params, handlers)
+                .subscribe {}
+                .onCompleteFuture()
+                .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        else
+            client.beta().agents().sessions().createStreaming(params, handlers).use {
+                it.stream().forEach {}
+            }
+        assertThat(t.creationBody!!.path("input")).isEqualTo(mapper.valueToTree<JsonNode>(input))
+        assertThat(t.posts).hasSize(1)
+    }
+
     private fun params() = AgentSessionStreamParams.builder().sessionId("s").input("hello")
 
     class LookupItem(val itemId: String)
@@ -245,20 +442,24 @@ internal class AgentSessionStreamTest {
     fun typedActionsReuseTheDispatcher(async: Boolean) {
         for (asyncHandler in listOf(false, true)) {
             val calls = mutableListOf<String>()
+            val failures = mutableListOf<AgentToolError>()
             val action = { args: LookupItem ->
                 calls.add(args.itemId)
                 mapOf("type" to "item", "content" to args.itemId)
             }
-            val p = params().toolHandler("raw") { mapOf("raw" to it["itemId"]) }
+            val p =
+                params()
+                    .toolHandler("raw") { mapOf("raw" to it["itemId"]) }
+                    .onToolError { failures.add(it) }
             if (asyncHandler) {
                 val tool =
                     AgentFunctionTool.ofAsync(LookupItem::class.java) {
                         CompletableFuture.completedFuture(action(it))
                     }
-                p.asyncToolHandler(tool.name(), tool.handler())
+                p.asyncToolHandler(tool.name(), tool.withDeferLoading(true).handler())
             } else {
                 val tool = AgentFunctionTool.of(LookupItem::class.java, action)
-                p.toolHandler(tool.name(), tool.handler())
+                p.toolHandler(tool.name(), tool.withDeferLoading(true).handler())
             }
             val t =
                 Transport(
@@ -283,6 +484,11 @@ internal class AgentSessionStreamTest {
                 )
             consume(t, async, p.build())
             assertThat(calls).containsExactly("ITEM_A", "ITEM_B")
+            assertThat(failures).hasSize(1)
+            assertThat(failures.single().stage()).isEqualTo(AgentToolError.Stage.ARGUMENTS)
+            assertThat(failures.single().error())
+                .isExactlyInstanceOf(IllegalArgumentException::class.java)
+            assertThat(failures.single().error()).hasMessageContaining("parameter shape")
             val results = t.posts.drop(1).map { it.path("events").first() }
             assertThat(results).hasSize(4)
             assertThat(results[0].path("output").asText())
@@ -415,6 +621,7 @@ internal class AgentSessionStreamTest {
             params()
                 .putAdditionalHeader("Idempotency-Key", "input")
                 .putAdditionalHeader("x-context", "kept")
+                .onToolError { throw AssertionError("Successful tools must not notify") }
                 .toolHandler("tool") { args ->
                     count.incrementAndGet()
                     @Suppress("UNCHECKED_CAST")
@@ -453,18 +660,87 @@ internal class AgentSessionStreamTest {
     @ValueSource(booleans = [false, true])
     fun invalidArgumentsAndHandlerFailuresAreRedacted(async: Boolean) {
         for (args in listOf("[]", "\"bad json\"", "null", "{\"valid\":true}")) {
+            val original = IllegalStateException("secret fixture")
+            val failures = mutableListOf<AgentToolError>()
             val t = Transport(listOf(turn("created"), call(args = args), turn("completed"), idle()))
             consume(
                 t,
                 async,
                 params()
-                    .toolHandler("tool") { throw IllegalStateException("secret fixture") }
+                    .toolHandler("tool") { throw original }
+                    .onToolError { failures.add(it) }
                     .build(),
             )
             val result = t.posts.last().path("events").first()
             assertThat(result.path("success").asBoolean()).isFalse()
             assertThat(result.path("error").asText()).isEqualTo("Tool handler failed.")
             assertThat(result.toString()).doesNotContain("secret fixture")
+            assertThat(failures).hasSize(1)
+            if (args.startsWith("{")) {
+                assertThat(failures.single().error()).isSameAs(original)
+                assertThat(failures.single().stage()).isEqualTo(AgentToolError.Stage.EXECUTION)
+            } else assertThat(failures.single().stage()).isEqualTo(AgentToolError.Stage.ARGUMENTS)
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun observesLocalFailuresOnceWithoutExposingThemToTheModel(async: Boolean) {
+        for (stage in AgentToolError.Stage.values()) {
+            val original = IllegalStateException("synthetic private diagnostic")
+            val failures = mutableListOf<AgentToolError>()
+            val t =
+                Transport(
+                        listOf(
+                            turn("created"),
+                            call(
+                                args = if (stage == AgentToolError.Stage.ARGUMENTS) "[]" else "{}"
+                            ),
+                            call(event = "redelivery"),
+                            turn("completed"),
+                            idle(),
+                        )
+                    )
+                    .apply {
+                        ambiguousFromPost = 2
+                        ambiguousRemaining = 1
+                    }
+            consume(
+                t,
+                async,
+                params()
+                    .asyncToolHandler("tool") {
+                        if (stage == AgentToolError.Stage.EXECUTION)
+                            CompletableFuture<Any?>().apply {
+                                completeExceptionally(
+                                    java.util.concurrent.CompletionException(original)
+                                )
+                            }
+                        else CompletableFuture.completedFuture(42)
+                    }
+                    .onToolError {
+                        failures.add(it)
+                        throw IllegalStateException("synthetic observer diagnostic")
+                    }
+                    .build(),
+            )
+            assertThat(failures).hasSize(1)
+            val failure = failures.single()
+            assertThat(failure.stage()).isEqualTo(stage)
+            assertThat(failure.toolName()).isEqualTo("tool")
+            assertThat(failure.sessionId()).isEqualTo("s")
+            assertThat(failure.turnId()).isEqualTo("root")
+            assertThat(failure.callId()).isEqualTo("call")
+            if (stage == AgentToolError.Stage.EXECUTION)
+                assertThat(failure.error()).isSameAs(original)
+            else assertThat(failure.error()).isInstanceOf(IllegalArgumentException::class.java)
+            assertThat(t.posts).hasSize(3)
+            for (post in t.posts.drop(1)) {
+                val result = post.path("events").first()
+                assertThat(result.path("success").asBoolean()).isFalse()
+                assertThat(result.path("error").asText()).isEqualTo("Tool handler failed.")
+                assertThat(post.toString()).doesNotContain("diagnostic")
+            }
         }
     }
 
@@ -1003,18 +1279,44 @@ internal class AgentSessionStreamTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
-    fun cancelledHandlerStageProducesRedactedFailure(async: Boolean) {
+    fun exceptionalHandlerStagesProduceRedactedFailures(async: Boolean) {
+        for (error in
+            listOf(java.util.concurrent.CancellationException(), AssertionError("private"))) {
+            val t = Transport(listOf(turn("created"), call(), turn("completed"), idle()))
+            val failures = mutableListOf<AgentToolError>()
+            consume(
+                t,
+                async,
+                params()
+                    .asyncToolHandler("tool") {
+                        CompletableFuture<String>().apply { completeExceptionally(error) }
+                    }
+                    .onToolError { failures.add(it) }
+                    .build(),
+            )
+            assertThat(failures).hasSize(1)
+            assertThat(failures.single().error()).isSameAs(error)
+            assertThat(failures.single().stage()).isEqualTo(AgentToolError.Stage.EXECUTION)
+            val result = t.posts.last().path("events").first()
+            assertThat(result.path("success").asBoolean()).isFalse()
+            assertThat(result.path("error").asText()).isEqualTo("Tool handler failed.")
+            assertThat(t.streamClosed).isTrue()
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun directlyThrownErrorsStillPropagate(async: Boolean) {
         val t = Transport(listOf(turn("created"), call(), turn("completed"), idle()))
-        consume(
-            t,
-            async,
+        val failures = mutableListOf<AgentToolError>()
+        val p =
             params()
-                .asyncToolHandler("tool") { CompletableFuture<String>().apply { cancel(false) } }
-                .build(),
-        )
-        val result = t.posts.last().path("events").first()
-        assertThat(result.path("success").asBoolean()).isFalse()
-        assertThat(result.path("error").asText()).isEqualTo("Tool handler failed.")
+                .toolHandler("tool") { throw AssertionError("direct tool failure") }
+                .onToolError { failures.add(it) }
+                .build()
+        assertThatThrownBy { consume(t, async, p) }.hasStackTraceContaining("direct tool failure")
+        assertThat(failures).isEmpty()
+        assertThat(t.posts).hasSize(1)
         assertThat(t.streamClosed).isTrue()
     }
 
