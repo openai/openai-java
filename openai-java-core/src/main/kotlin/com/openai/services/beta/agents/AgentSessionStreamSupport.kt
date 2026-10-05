@@ -2,21 +2,45 @@ package com.openai.services.beta.agents
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
+import com.openai.core.http.Headers
 import com.openai.core.jsonMapper
 import com.openai.errors.BadRequestException
 import com.openai.models.beta.agents.*
+import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.SessionRetrieveParams
 import com.openai.models.beta.agents.sessions.events.EventCreateParams
 import com.openai.models.beta.agents.sessions.events.EventStreamParams
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
+import java.util.concurrent.CompletionStage
 import java.util.concurrent.ExecutionException
+import java.util.function.Function
 import kotlin.jvm.optionals.getOrNull
 
-internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
+internal class AgentSessionStreamSupport
+private constructor(
+    private val params: AgentSessionStreamParams?,
+    private val handlers: Map<String, Function<Map<String, Any?>, CompletionStage<*>>>,
+    private val headers: Headers,
+    private val expectsTurn: Boolean = true,
+) {
+    constructor(params: AgentSessionStreamParams) : this(params, params.handlers, params.headers)
+
+    constructor(
+        handlers: AgentToolHandlers,
+        creation: SessionCreateParams,
+    ) : this(
+        null,
+        handlers.handlers,
+        creation._headers().toBuilder().remove("Idempotency-Key").build(),
+        !creation._input().isMissing() && !creation._input().isNull(),
+    )
+
+    private val onToolError = params?.onToolError
+    private var sessionId = params?.sessionId
     private val mapper = jsonMapper()
-    private val inputKey = params.idempotencyKey ?: UUID.randomUUID().toString()
+    private val inputKey = params?.idempotencyKey ?: UUID.randomUUID().toString()
     private val eventIds = linkedSetOf<String>()
     private val handledCalls = hashSetOf<Pair<String, String>>()
     private var turnId: String? = null
@@ -24,22 +48,22 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
 
     fun retrieveParams() =
         SessionRetrieveParams.builder()
-            .sessionId(params.sessionId)
-            .putAllAdditionalHeaders(params.headers)
+            .sessionId(checkNotNull(sessionId) { "Creation stream has not identified its session" })
+            .putAllAdditionalHeaders(headers)
             .build()
 
     fun streamParams() =
         EventStreamParams.builder()
-            .sessionId(params.sessionId)
-            .putAllAdditionalHeaders(params.headers)
+            .sessionId(checkNotNull(sessionId) { "Creation stream has not identified its session" })
+            .putAllAdditionalHeaders(headers)
             .build()
 
     fun inputParams() =
         EventCreateParams.builder()
-            .sessionId(params.sessionId)
+            .sessionId(checkNotNull(sessionId) { "Creation stream has not identified its session" })
             .idempotencyKey(inputKey)
-            .putAllAdditionalHeaders(params.headers)
-            .addAgentSessionInputMessageEvent(params.input)
+            .putAllAdditionalHeaders(headers)
+            .addAgentSessionInputMessageEvent(checkNotNull(params).input)
             .build()
 
     fun checkIdle(session: AgentSession) {
@@ -49,6 +73,7 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
     }
 
     fun accept(event: AgentSessionEvent): Boolean {
+        event.created().getOrNull()?.let { if (sessionId == null) sessionId = it.session().id() }
         val id = mapper.valueToTree<JsonNode>(event).path("event_id").asText()
         if (!eventIds.add(id)) return false
         if (eventIds.size > 1024)
@@ -67,13 +92,15 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
         return true
     }
 
-    fun terminal(event: AgentSessionEvent) = event.isFailed() || (event.isIdle() && turnEnded)
+    fun terminal(event: AgentSessionEvent) =
+        event.isFailed() || (event.isIdle() && (!expectsTurn || turnEnded))
 
     fun result(event: AgentSessionEvent): CompletableFuture<EventCreateParams?> {
         val call =
             event.turnItemAdded().getOrNull()?.item()?.functionCall()?.getOrNull()
                 ?: return CompletableFuture.completedFuture(null)
-        val handler = params.handlers[call.name()] ?: return CompletableFuture.completedFuture(null)
+        val handler = handlers[call.name()] ?: return CompletableFuture.completedFuture(null)
+        checkNotNull(sessionId) { "Creation stream has not identified its session" }
         if (!handledCalls.add(call.turnId() to call.callId()))
             return CompletableFuture.completedFuture(null)
         var stage = AgentToolError.Stage.ARGUMENTS
@@ -129,11 +156,11 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
                         if (failure is AgentToolArgumentException) AgentToolError.Stage.ARGUMENTS
                         else stage
                     try {
-                        params.onToolError?.accept(
+                        onToolError?.accept(
                             AgentToolError(
                                 original,
                                 call.name(),
-                                params.sessionId,
+                                checkNotNull(sessionId),
                                 call.turnId(),
                                 call.callId(),
                                 failureStage,
@@ -148,9 +175,11 @@ internal class AgentSessionStreamSupport(val params: AgentSessionStreamParams) {
                         .error("Tool handler failed.")
                 }
                 EventCreateParams.builder()
-                    .sessionId(params.sessionId)
+                    .sessionId(
+                        checkNotNull(sessionId) { "Creation stream has not identified its session" }
+                    )
                     .idempotencyKey(UUID.randomUUID().toString())
-                    .putAllAdditionalHeaders(params.headers)
+                    .putAllAdditionalHeaders(headers)
                     .addEvent(result.build())
                     .build()
             }

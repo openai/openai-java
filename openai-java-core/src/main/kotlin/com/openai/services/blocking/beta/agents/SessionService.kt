@@ -11,6 +11,7 @@ import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionDeleted
 import com.openai.models.beta.agents.AgentSessionEvent
 import com.openai.models.beta.agents.AgentSessionStreamParams
+import com.openai.models.beta.agents.AgentToolHandlers
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.SessionDeleteParams
 import com.openai.models.beta.agents.sessions.SessionListPage
@@ -94,6 +95,24 @@ interface SessionService {
         params: SessionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<AgentSessionEvent>
+
+    /** Creates and handles the initial turn using local function callbacks. */
+    @MustBeClosed
+    fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+    ): StreamResponse<AgentSessionEvent> = createStreaming(params, handlers, RequestOptions.none())
+
+    /** @see createStreaming */
+    @MustBeClosed
+    fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+        requestOptions: RequestOptions,
+    ): StreamResponse<AgentSessionEvent> =
+        throw UnsupportedOperationException(
+            "This service does not implement creation tool handlers"
+        )
 
     /**
      * Retrieves the current state of a managed agent session. See

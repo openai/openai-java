@@ -27,6 +27,7 @@ import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionDeleted
 import com.openai.models.beta.agents.AgentSessionEvent
 import com.openai.models.beta.agents.AgentSessionStreamParams
+import com.openai.models.beta.agents.AgentToolHandlers
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.SessionDeleteParams
 import com.openai.models.beta.agents.sessions.SessionListPage
@@ -112,6 +113,16 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
     ): StreamResponse<AgentSessionEvent> =
         // post /agents/sessions
         withRawResponse().createStreaming(params, requestOptions).parse()
+
+    override fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+        requestOptions: RequestOptions,
+    ): StreamResponse<AgentSessionEvent> =
+        AgentTurnResults.collecting(
+            AgentSessionStream(this, null, requestOptions, clientOptions.sleeper, params, handlers),
+            handlers.handlers.keys,
+        )
 
     override fun retrieve(
         params: SessionRetrieveParams,
