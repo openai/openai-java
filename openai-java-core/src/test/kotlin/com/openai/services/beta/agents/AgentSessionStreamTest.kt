@@ -375,7 +375,7 @@ internal class AgentSessionStreamTest {
                                     .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                             }
                             .exceptionOrNull()
-                            ?.let(::unwrap)
+                            ?.cause
                     else {
                         stream
                             .subscribe { seen.add(it) }
