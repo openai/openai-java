@@ -32,7 +32,7 @@ internal class AgentSessionStream(
 ) : StreamResponse<AgentSessionEvent> {
     private val support =
         if (creation == null) AgentSessionStreamSupport(checkNotNull(params))
-        else AgentSessionStreamSupport(checkNotNull(handlers), creation._headers())
+        else AgentSessionStreamSupport(checkNotNull(handlers), creation)
     private val closed = AtomicBoolean()
     private val submissionLock = Any()
     private val consumed = AtomicBoolean()

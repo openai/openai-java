@@ -349,6 +349,63 @@ internal class AgentSessionStreamTest {
         assertThat(t.streamClosed).isTrue()
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `inputless self hosted creation ends at idle without fabricating a turn`(async: Boolean) {
+        val params =
+            SessionCreateParams.builder()
+                .agentId("agent")
+                .selfHostedEnvironment("/workspace")
+                .build()
+        val handlers =
+            AgentToolHandlers.builder()
+                .toolHandler("tool") { error("No function call was received") }
+                .build()
+        for (collect in listOf(false, true)) {
+            val t = Transport(listOf(creationEvents().first(), creationEvents().last()))
+            val client = t.client()
+            val seen = mutableListOf<AgentSessionEvent>()
+            val failure =
+                if (async) {
+                    val stream =
+                        client.async().beta().agents().sessions().createStreaming(params, handlers)
+                    if (collect)
+                        runCatching {
+                                AgentTurnResults.getFinalResult(stream)
+                                    .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                            }
+                            .exceptionOrNull()
+                            ?.let(::unwrap)
+                    else {
+                        stream
+                            .subscribe { seen.add(it) }
+                            .onCompleteFuture()
+                            .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                        null
+                    }
+                } else
+                    client.beta().agents().sessions().createStreaming(params, handlers).use { stream
+                        ->
+                        if (collect)
+                            runCatching { AgentTurnResults.getFinalResult(stream) }
+                                .exceptionOrNull()
+                        else {
+                            stream.stream().forEach { seen.add(it) }
+                            null
+                        }
+                    }
+            if (collect) {
+                assertThat(failure).isInstanceOf(AgentTurnResultException::class.java)
+                assertThat((failure as AgentTurnResultException).reason())
+                    .isEqualTo(AgentTurnResultException.Reason.INCOMPLETE_STREAM)
+            } else
+                assertThat(seen.map { it.isCreated() || it.isIdle() }).containsExactly(true, true)
+            assertThat(t.requests).hasSize(1)
+            assertThat(t.posts).isEmpty()
+            assertThat(t.streamClosed).isTrue()
+        }
+    }
+
     private fun params() = AgentSessionStreamParams.builder().sessionId("s").input("hello")
 
     class LookupItem(val itemId: String)

@@ -6,6 +6,7 @@ import com.openai.core.http.Headers
 import com.openai.core.jsonMapper
 import com.openai.errors.BadRequestException
 import com.openai.models.beta.agents.*
+import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.SessionRetrieveParams
 import com.openai.models.beta.agents.sessions.events.EventCreateParams
 import com.openai.models.beta.agents.sessions.events.EventStreamParams
@@ -22,13 +23,19 @@ private constructor(
     private val params: AgentSessionStreamParams?,
     private val handlers: Map<String, Function<Map<String, Any?>, CompletionStage<*>>>,
     private val headers: Headers,
+    private val expectsTurn: Boolean = true,
 ) {
     constructor(params: AgentSessionStreamParams) : this(params, params.handlers, params.headers)
 
     constructor(
         handlers: AgentToolHandlers,
-        headers: Headers,
-    ) : this(null, handlers.handlers, headers.toBuilder().remove("Idempotency-Key").build())
+        creation: SessionCreateParams,
+    ) : this(
+        null,
+        handlers.handlers,
+        creation._headers().toBuilder().remove("Idempotency-Key").build(),
+        creation.input().isPresent,
+    )
 
     private var sessionId = params?.sessionId
     private val mapper = jsonMapper()
@@ -84,7 +91,8 @@ private constructor(
         return true
     }
 
-    fun terminal(event: AgentSessionEvent) = event.isFailed() || (event.isIdle() && turnEnded)
+    fun terminal(event: AgentSessionEvent) =
+        event.isFailed() || (event.isIdle() && (!expectsTurn || turnEnded))
 
     fun result(event: AgentSessionEvent): CompletableFuture<EventCreateParams?> {
         val call =
