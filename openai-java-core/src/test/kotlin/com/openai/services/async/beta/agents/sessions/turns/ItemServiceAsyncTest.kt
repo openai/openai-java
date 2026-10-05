@@ -36,7 +36,11 @@ internal class ItemServiceAsyncTest {
             // A terminal page can still contain items and a cursor
             stubFor(
                 get(anyUrl())
-                    .willReturn(okJson("{\"data\":[{\"id\":\"item_1\"}],\"has_more\":false}"))
+                    .willReturn(
+                        okJson(
+                            "{\"data\":[{\"id\":\"item_1\"}],\"has_more\":false,\"last_id\":\"item_1\"}"
+                        )
+                    )
             )
             val page =
                 client

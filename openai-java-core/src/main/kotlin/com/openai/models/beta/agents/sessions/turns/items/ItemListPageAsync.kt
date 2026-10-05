@@ -5,19 +5,7 @@ package com.openai.models.beta.agents.sessions.turns.items
 import com.openai.core.AutoPagerAsync
 import com.openai.core.PageAsync
 import com.openai.core.checkRequired
-import com.openai.models.beta.agents.AgentCloseSubagentCallItem
-import com.openai.models.beta.agents.AgentCommandExecutionItem
-import com.openai.models.beta.agents.AgentCreateSubagentCallItem
-import com.openai.models.beta.agents.AgentFunctionCallItem
-import com.openai.models.beta.agents.AgentInterruptSubagentCallItem
-import com.openai.models.beta.agents.AgentMcpCallItem
-import com.openai.models.beta.agents.AgentReasoningItem
-import com.openai.models.beta.agents.AgentResumeSubagentCallItem
-import com.openai.models.beta.agents.AgentSendSubagentInputCallItem
 import com.openai.models.beta.agents.AgentSessionItem
-import com.openai.models.beta.agents.AgentSessionMessage
-import com.openai.models.beta.agents.AgentWaitForSubagentsCallItem
-import com.openai.models.beta.agents.AgentWebSearchCallItem
 import com.openai.services.async.beta.agents.sessions.turns.ItemServiceAsync
 import java.util.Objects
 import java.util.Optional
@@ -49,91 +37,23 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
+    /**
+     * Delegates to [ItemListPageResponse], but gracefully handles missing data.
+     *
+     * @see ItemListPageResponse.lastId
+     */
+    fun lastId(): Optional<String> = response._lastId().getOptional("last_id")
+
     override fun items(): List<AgentSessionItem> = data()
 
-    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
+    override fun hasNextPage(): Boolean =
+        hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent
 
-    fun nextPageParams(): ItemListParams =
-        params
-            .toBuilder()
-            .after(
-                items()
-                    .last()
-                    .accept(
-                        object : AgentSessionItem.Visitor<Optional<String>> {
-                            override fun visitMessage(
-                                message: AgentSessionMessage
-                            ): Optional<String> = message._id().getOptional("id")
-
-                            override fun visitReasoning(
-                                reasoning: AgentReasoningItem
-                            ): Optional<String> = reasoning._id().getOptional("id")
-
-                            override fun visitFunctionCall(
-                                functionCall: AgentFunctionCallItem
-                            ): Optional<String> = functionCall._id().getOptional("id")
-
-                            override fun visitFunctionCallOutput(
-                                functionCallOutput: AgentSessionItem.FunctionCallOutput
-                            ): Optional<String> = functionCallOutput._id().getOptional("id")
-
-                            override fun visitAgentMessage(
-                                agentMessage: AgentSessionItem.AgentMessage
-                            ): Optional<String> = agentMessage._id().getOptional("id")
-
-                            override fun visitMcpCall(mcpCall: AgentMcpCallItem): Optional<String> =
-                                mcpCall._id().getOptional("id")
-
-                            override fun visitComputerUseCall(
-                                computerUseCall: AgentSessionItem.ComputerUseCall
-                            ): Optional<String> = computerUseCall._id().getOptional("id")
-
-                            override fun visitComputerUseApprovalRequest(
-                                computerUseApprovalRequest:
-                                    AgentSessionItem.ComputerUseApprovalRequest
-                            ): Optional<String> = computerUseApprovalRequest._id().getOptional("id")
-
-                            override fun visitComputerUseApprovalRequestResult(
-                                computerUseApprovalRequestResult:
-                                    AgentSessionItem.ComputerUseApprovalRequestResult
-                            ): Optional<String> =
-                                computerUseApprovalRequestResult._id().getOptional("id")
-
-                            override fun visitWebSearchCall(
-                                webSearchCall: AgentWebSearchCallItem
-                            ): Optional<String> = webSearchCall._id().getOptional("id")
-
-                            override fun visitCommandExecution(
-                                commandExecution: AgentCommandExecutionItem
-                            ): Optional<String> = commandExecution._id().getOptional("id")
-
-                            override fun visitCreateSubagentCall(
-                                createSubagentCall: AgentCreateSubagentCallItem
-                            ): Optional<String> = createSubagentCall._id().getOptional("id")
-
-                            override fun visitSendSubagentInputCall(
-                                sendSubagentInputCall: AgentSendSubagentInputCallItem
-                            ): Optional<String> = sendSubagentInputCall._id().getOptional("id")
-
-                            override fun visitResumeSubagentCall(
-                                resumeSubagentCall: AgentResumeSubagentCallItem
-                            ): Optional<String> = resumeSubagentCall._id().getOptional("id")
-
-                            override fun visitWaitForSubagentsCall(
-                                waitForSubagentsCall: AgentWaitForSubagentsCallItem
-                            ): Optional<String> = waitForSubagentsCall._id().getOptional("id")
-
-                            override fun visitInterruptSubagentCall(
-                                interruptSubagentCall: AgentInterruptSubagentCallItem
-                            ): Optional<String> = interruptSubagentCall._id().getOptional("id")
-
-                            override fun visitCloseSubagentCall(
-                                closeSubagentCall: AgentCloseSubagentCallItem
-                            ): Optional<String> = closeSubagentCall._id().getOptional("id")
-                        }
-                    )
-            )
-            .build()
+    fun nextPageParams(): ItemListParams {
+        val nextCursor =
+            lastId().getOrNull() ?: throw IllegalStateException("Cannot construct next page params")
+        return params.toBuilder().after(nextCursor).build()
+    }
 
     override fun nextPage(): CompletableFuture<ItemListPageAsync> = service.list(nextPageParams())
 
