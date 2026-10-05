@@ -37,6 +37,7 @@ import com.openai.models.ResponsesModel
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -1485,6 +1486,23 @@ private constructor(
             localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
         ) = apply {
             body.addTool(responseFunctionToolFromClass(functionParametersType, localValidation))
+        }
+
+        /**
+         * Derives a function schema from [functionParametersType], then customizes its definition.
+         * Use this to set options such as `deferLoading` without rebuilding the generated schema.
+         * Schema generation and [localValidation] behave as in the class-only overload.
+         */
+        @JvmOverloads
+        fun addTool(
+            functionParametersType: Class<*>,
+            localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
+            customize: Consumer<FunctionTool.Builder>,
+        ) = apply {
+            val tool =
+                responseFunctionToolFromClass(functionParametersType, localValidation).toBuilder()
+            customize.accept(tool)
+            body.addTool(tool.build())
         }
 
         /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */

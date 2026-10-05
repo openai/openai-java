@@ -32,6 +32,15 @@ private constructor(
     /** Register with `toolHandler`, or `asyncToolHandler` for a binding created by [ofAsync]. */
     fun handler(): Function<Map<String, Any?>, R> = handler
 
+    /** Returns a new binding with deferred loading configured; the typed handler is unchanged. */
+    fun withDeferLoading(value: Boolean): AgentFunctionTool<R> =
+        AgentFunctionTool(
+            AgentToolParam.ofFunction(
+                definition.asFunction().toBuilder().deferLoading(value).build()
+            ),
+            handler,
+        )
+
     companion object {
         /**
          * The callback returns the same string, map, content list, or null as a raw tool handler.

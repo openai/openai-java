@@ -31,6 +31,7 @@ import com.openai.models.ChatModel
 import com.openai.models.Reasoning
 import com.openai.models.ResponsesModel
 import java.util.Optional
+import java.util.function.Consumer
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -238,6 +239,12 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("addTool", NAMESPACE_TOOL),
                 DelegationWriteTestCase("addTool", TOOL_SEARCH_TOOL),
                 DelegationWriteTestCase("addTool", CLASS, VALIDATION),
+                DelegationWriteTestCase(
+                    "addTool",
+                    CLASS,
+                    VALIDATION,
+                    Consumer<FunctionTool.Builder> {},
+                ),
                 DelegationWriteTestCase("addTool", FILE_SEARCH_TOOL),
                 DelegationWriteTestCase("addFileSearchTool", LIST),
                 DelegationWriteTestCase("addTool", COMPUTER_TOOL),
