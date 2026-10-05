@@ -12,7 +12,6 @@ import com.openai.helpers.ResponseAccumulator
 import com.openai.helpers.beta.agents.AgentFunctionTool
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.responses.*
-import com.openai.services.blocking.ResponseServiceImpl
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -34,7 +33,7 @@ internal class DeferredFunctionToolsTest {
                 val options =
                     ClientOptions.builder().apiKey("test-key").httpClient(transport).build()
                 try {
-                    val service = ResponseServiceImpl(options)
+                    val service = OpenAIClientImpl(options).responses()
                     val builder =
                         ResponseCreateParams.builder()
                             .model("test-model")
