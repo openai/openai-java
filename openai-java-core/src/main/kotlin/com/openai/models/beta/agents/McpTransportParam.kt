@@ -555,6 +555,11 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /** Adds a string-valued property. */
+                fun putProperty(key: String, value: String) = apply {
+                    putAdditionalProperty(key, JsonValue.from(value))
+                }
+
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
@@ -1055,6 +1060,11 @@ private constructor(
 
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                     additionalProperties.put(key, value)
+                }
+
+                /** Adds a string-valued property. */
+                fun putProperty(key: String, value: String) = apply {
+                    putAdditionalProperty(key, JsonValue.from(value))
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =

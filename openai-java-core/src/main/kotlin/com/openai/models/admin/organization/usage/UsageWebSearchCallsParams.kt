@@ -53,7 +53,9 @@ private constructor(
 
     /**
      * Group the usage data by the specified fields. Support fields include `project_id`, `user_id`,
-     * `api_key_id`, `model`, `context_level` or any combination of them.
+     * `api_key_id`, `model`, `context_level`, `api_source` or any combination of them. When grouped
+     * by `api_source`, results use `agents_api` for attributed Agents API activity and `unlabeled`
+     * for all other activity. Without source grouping, `api_source` is null.
      */
     fun groupBy(): Optional<List<GroupBy>> = Optional.ofNullable(groupBy)
 
@@ -197,7 +199,10 @@ private constructor(
 
         /**
          * Group the usage data by the specified fields. Support fields include `project_id`,
-         * `user_id`, `api_key_id`, `model`, `context_level` or any combination of them.
+         * `user_id`, `api_key_id`, `model`, `context_level`, `api_source` or any combination of
+         * them. When grouped by `api_source`, results use `agents_api` for attributed Agents API
+         * activity and `unlabeled` for all other activity. Without source grouping, `api_source` is
+         * null.
          */
         fun groupBy(groupBy: List<GroupBy>?) = apply { this.groupBy = groupBy?.toMutableList() }
 
@@ -749,6 +754,8 @@ private constructor(
 
             @JvmField val CONTEXT_LEVEL = of("context_level")
 
+            @JvmField val API_SOURCE = of("api_source")
+
             @JvmStatic fun of(value: String) = GroupBy(JsonField.of(value))
         }
 
@@ -759,6 +766,7 @@ private constructor(
             API_KEY_ID,
             MODEL,
             CONTEXT_LEVEL,
+            API_SOURCE,
         }
 
         /**
@@ -776,6 +784,7 @@ private constructor(
             API_KEY_ID,
             MODEL,
             CONTEXT_LEVEL,
+            API_SOURCE,
             /** An enum member indicating that [GroupBy] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -794,6 +803,7 @@ private constructor(
                 API_KEY_ID -> Value.API_KEY_ID
                 MODEL -> Value.MODEL
                 CONTEXT_LEVEL -> Value.CONTEXT_LEVEL
+                API_SOURCE -> Value.API_SOURCE
                 else -> Value._UNKNOWN
             }
 
@@ -813,6 +823,7 @@ private constructor(
                 API_KEY_ID -> Known.API_KEY_ID
                 MODEL -> Known.MODEL
                 CONTEXT_LEVEL -> Known.CONTEXT_LEVEL
+                API_SOURCE -> Known.API_SOURCE
                 else -> throw OpenAIInvalidDataException("Unknown GroupBy: $value")
             }
 

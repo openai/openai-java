@@ -98,7 +98,7 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * The range of the score. Defaults to `[0, 1]`.
+     * The service requires two numbers for the score range. Defaults to `[0, 1]`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -264,7 +264,7 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
-        /** The range of the score. Defaults to `[0, 1]`. */
+        /** The service requires two numbers for the score range. Defaults to `[0, 1]`. */
         fun range(range: List<Double>) = range(JsonField.of(range))
 
         /**

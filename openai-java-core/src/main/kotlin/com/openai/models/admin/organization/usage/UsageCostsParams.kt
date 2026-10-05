@@ -44,8 +44,12 @@ private constructor(
     fun endTime(): Optional<Long> = Optional.ofNullable(endTime)
 
     /**
-     * Group the costs by the specified fields. Support fields include `project_id`, `line_item`,
-     * `api_key_id` and any combination of them.
+     * Group the costs by the specified fields. Supported fields include `project_id`, `user_id`,
+     * `line_item`, `api_key_id`, and `api_source`. Support for combining `user_id` with
+     * `project_id` grouping or the `project_ids` filter depends on the organization and requested
+     * time range. Unsupported combinations return HTTP 400. When grouped by `api_source`, results
+     * use `agents_api` for attributed Agents API activity and `unlabeled` for all other activity.
+     * Without source grouping, `api_source` is null.
      */
     fun groupBy(): Optional<List<GroupBy>> = Optional.ofNullable(groupBy)
 
@@ -163,8 +167,12 @@ private constructor(
         fun endTime(endTime: Optional<Long>) = endTime(endTime.getOrNull())
 
         /**
-         * Group the costs by the specified fields. Support fields include `project_id`,
-         * `line_item`, `api_key_id` and any combination of them.
+         * Group the costs by the specified fields. Supported fields include `project_id`,
+         * `user_id`, `line_item`, `api_key_id`, and `api_source`. Support for combining `user_id`
+         * with `project_id` grouping or the `project_ids` filter depends on the organization and
+         * requested time range. Unsupported combinations return HTTP 400. When grouped by
+         * `api_source`, results use `agents_api` for attributed Agents API activity and `unlabeled`
+         * for all other activity. Without source grouping, `api_source` is null.
          */
         fun groupBy(groupBy: List<GroupBy>?) = apply { this.groupBy = groupBy?.toMutableList() }
 
@@ -534,9 +542,13 @@ private constructor(
 
             @JvmField val PROJECT_ID = of("project_id")
 
+            @JvmField val USER_ID = of("user_id")
+
             @JvmField val LINE_ITEM = of("line_item")
 
             @JvmField val API_KEY_ID = of("api_key_id")
+
+            @JvmField val API_SOURCE = of("api_source")
 
             @JvmStatic fun of(value: String) = GroupBy(JsonField.of(value))
         }
@@ -544,8 +556,10 @@ private constructor(
         /** An enum containing [GroupBy]'s known values. */
         enum class Known {
             PROJECT_ID,
+            USER_ID,
             LINE_ITEM,
             API_KEY_ID,
+            API_SOURCE,
         }
 
         /**
@@ -559,8 +573,10 @@ private constructor(
          */
         enum class Value {
             PROJECT_ID,
+            USER_ID,
             LINE_ITEM,
             API_KEY_ID,
+            API_SOURCE,
             /** An enum member indicating that [GroupBy] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -575,8 +591,10 @@ private constructor(
         fun value(): Value =
             when (this) {
                 PROJECT_ID -> Value.PROJECT_ID
+                USER_ID -> Value.USER_ID
                 LINE_ITEM -> Value.LINE_ITEM
                 API_KEY_ID -> Value.API_KEY_ID
+                API_SOURCE -> Value.API_SOURCE
                 else -> Value._UNKNOWN
             }
 
@@ -592,8 +610,10 @@ private constructor(
         fun known(): Known =
             when (this) {
                 PROJECT_ID -> Known.PROJECT_ID
+                USER_ID -> Known.USER_ID
                 LINE_ITEM -> Known.LINE_ITEM
                 API_KEY_ID -> Known.API_KEY_ID
+                API_SOURCE -> Known.API_SOURCE
                 else -> throw OpenAIInvalidDataException("Unknown GroupBy: $value")
             }
 

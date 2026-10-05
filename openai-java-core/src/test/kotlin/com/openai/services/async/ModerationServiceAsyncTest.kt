@@ -26,7 +26,7 @@ internal class ModerationServiceAsyncTest {
             moderationServiceAsync.create(
                 ModerationCreateParams.builder()
                     .input("I want to kill them.")
-                    .model(ModerationModel.OMNI_MODERATION_LATEST)
+                    .model(ModerationModel.OMNI_MODERATION_2024_09_26)
                     .build()
             )
 

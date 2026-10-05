@@ -499,6 +499,29 @@ private constructor(
         /** Alias for calling [addTool] with `Tool.ofWebSearch()`. */
         fun addToolWebSearch() = addTool(Tool.ofWebSearch())
 
+        /** Alias for calling [addTool] with `Tool.ofFileSearch()`. */
+        fun addToolFileSearch() = addTool(Tool.ofFileSearch())
+
+        /** Alias for calling [addTool] with `Tool.ofCodeInterpreter()`. */
+        fun addToolCodeInterpreter() = addTool(Tool.ofCodeInterpreter())
+
+        /** Alias for calling [addTool] with `Tool.ofShell(shell)`. */
+        fun addTool(shell: Tool.Shell) = addTool(Tool.ofShell(shell))
+
+        /**
+         * Alias for calling [addTool] with the following:
+         * ```java
+         * Tool.Shell.builder()
+         *     .environment(environment)
+         *     .build()
+         * ```
+         */
+        fun addShellTool(environment: Tool.Shell.Environment) =
+            addTool(Tool.Shell.builder().environment(environment).build())
+
+        /** Alias for calling [addTool] with `Tool.ofImageGeneration()`. */
+        fun addToolImageGeneration() = addTool(Tool.ofImageGeneration())
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -2484,6 +2507,10 @@ private constructor(
     private constructor(
         private val function: FunctionTool? = null,
         private val webSearch: JsonValue? = null,
+        private val fileSearch: JsonValue? = null,
+        private val codeInterpreter: JsonValue? = null,
+        private val shell: Shell? = null,
+        private val imageGeneration: JsonValue? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -2495,9 +2522,29 @@ private constructor(
         /** A web search tool available to the Live session’s Responses backend. */
         fun webSearch(): Optional<JsonValue> = Optional.ofNullable(webSearch)
 
+        fun fileSearch(): Optional<JsonValue> = Optional.ofNullable(fileSearch)
+
+        fun codeInterpreter(): Optional<JsonValue> = Optional.ofNullable(codeInterpreter)
+
+        /**
+         * A Responses shell tool with a container_auto or container_reference environment. Local
+         * execution and domain secrets are not supported.
+         */
+        fun shell(): Optional<Shell> = Optional.ofNullable(shell)
+
+        fun imageGeneration(): Optional<JsonValue> = Optional.ofNullable(imageGeneration)
+
         fun isFunction(): Boolean = function != null
 
         fun isWebSearch(): Boolean = webSearch != null
+
+        fun isFileSearch(): Boolean = fileSearch != null
+
+        fun isCodeInterpreter(): Boolean = codeInterpreter != null
+
+        fun isShell(): Boolean = shell != null
+
+        fun isImageGeneration(): Boolean = imageGeneration != null
 
         /**
          * A function tool available to the Responses backend when the Live model delegates a task.
@@ -2506,6 +2553,18 @@ private constructor(
 
         /** A web search tool available to the Live session’s Responses backend. */
         fun asWebSearch(): JsonValue = webSearch.getOrThrow("webSearch")
+
+        fun asFileSearch(): JsonValue = fileSearch.getOrThrow("fileSearch")
+
+        fun asCodeInterpreter(): JsonValue = codeInterpreter.getOrThrow("codeInterpreter")
+
+        /**
+         * A Responses shell tool with a container_auto or container_reference environment. Local
+         * execution and domain secrets are not supported.
+         */
+        fun asShell(): Shell = shell.getOrThrow("shell")
+
+        fun asImageGeneration(): JsonValue = imageGeneration.getOrThrow("imageGeneration")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -2542,6 +2601,10 @@ private constructor(
             when {
                 function != null -> visitor.visitFunction(function)
                 webSearch != null -> visitor.visitWebSearch(webSearch)
+                fileSearch != null -> visitor.visitFileSearch(fileSearch)
+                codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
+                shell != null -> visitor.visitShell(shell)
+                imageGeneration != null -> visitor.visitImageGeneration(imageGeneration)
                 else -> visitor.unknown(_json)
             }
 
@@ -2576,6 +2639,40 @@ private constructor(
                             }
                         }
                     }
+
+                    override fun visitFileSearch(fileSearch: JsonValue) {
+                        fileSearch.let {
+                            if (it != JsonValue.from(mapOf("type" to "file_search"))) {
+                                throw OpenAIInvalidDataException(
+                                    "'fileSearch' is invalid, received $it"
+                                )
+                            }
+                        }
+                    }
+
+                    override fun visitCodeInterpreter(codeInterpreter: JsonValue) {
+                        codeInterpreter.let {
+                            if (it != JsonValue.from(mapOf("type" to "code_interpreter"))) {
+                                throw OpenAIInvalidDataException(
+                                    "'codeInterpreter' is invalid, received $it"
+                                )
+                            }
+                        }
+                    }
+
+                    override fun visitShell(shell: Shell) {
+                        shell.validate()
+                    }
+
+                    override fun visitImageGeneration(imageGeneration: JsonValue) {
+                        imageGeneration.let {
+                            if (it != JsonValue.from(mapOf("type" to "image_generation"))) {
+                                throw OpenAIInvalidDataException(
+                                    "'imageGeneration' is invalid, received $it"
+                                )
+                            }
+                        }
+                    }
                 }
             )
             validated = true
@@ -2606,6 +2703,23 @@ private constructor(
                             if (it == JsonValue.from(mapOf("type" to "web_search"))) 1 else 0
                         }
 
+                    override fun visitFileSearch(fileSearch: JsonValue) =
+                        fileSearch.let {
+                            if (it == JsonValue.from(mapOf("type" to "file_search"))) 1 else 0
+                        }
+
+                    override fun visitCodeInterpreter(codeInterpreter: JsonValue) =
+                        codeInterpreter.let {
+                            if (it == JsonValue.from(mapOf("type" to "code_interpreter"))) 1 else 0
+                        }
+
+                    override fun visitShell(shell: Shell) = shell.validity()
+
+                    override fun visitImageGeneration(imageGeneration: JsonValue) =
+                        imageGeneration.let {
+                            if (it == JsonValue.from(mapOf("type" to "image_generation"))) 1 else 0
+                        }
+
                     override fun unknown(json: JsonValue?) = 0
                 }
             )
@@ -2615,15 +2729,26 @@ private constructor(
                 return true
             }
 
-            return other is Tool && function == other.function && webSearch == other.webSearch
+            return other is Tool &&
+                function == other.function &&
+                webSearch == other.webSearch &&
+                fileSearch == other.fileSearch &&
+                codeInterpreter == other.codeInterpreter &&
+                shell == other.shell &&
+                imageGeneration == other.imageGeneration
         }
 
-        override fun hashCode(): Int = Objects.hash(function, webSearch)
+        override fun hashCode(): Int =
+            Objects.hash(function, webSearch, fileSearch, codeInterpreter, shell, imageGeneration)
 
         override fun toString(): String =
             when {
                 function != null -> "Tool{function=$function}"
                 webSearch != null -> "Tool{webSearch=$webSearch}"
+                fileSearch != null -> "Tool{fileSearch=$fileSearch}"
+                codeInterpreter != null -> "Tool{codeInterpreter=$codeInterpreter}"
+                shell != null -> "Tool{shell=$shell}"
+                imageGeneration != null -> "Tool{imageGeneration=$imageGeneration}"
                 _json != null -> "Tool{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Tool")
             }
@@ -2639,6 +2764,23 @@ private constructor(
             /** A web search tool available to the Live session’s Responses backend. */
             @JvmStatic
             fun ofWebSearch() = Tool(webSearch = JsonValue.from(mapOf("type" to "web_search")))
+
+            @JvmStatic
+            fun ofFileSearch() = Tool(fileSearch = JsonValue.from(mapOf("type" to "file_search")))
+
+            @JvmStatic
+            fun ofCodeInterpreter() =
+                Tool(codeInterpreter = JsonValue.from(mapOf("type" to "code_interpreter")))
+
+            /**
+             * A Responses shell tool with a container_auto or container_reference environment.
+             * Local execution and domain secrets are not supported.
+             */
+            @JvmStatic fun ofShell(shell: Shell) = Tool(shell = shell)
+
+            @JvmStatic
+            fun ofImageGeneration() =
+                Tool(imageGeneration = JsonValue.from(mapOf("type" to "image_generation")))
         }
 
         /** An interface that defines how to map each variant of [Tool] to a value of type [T]. */
@@ -2652,6 +2794,18 @@ private constructor(
 
             /** A web search tool available to the Live session’s Responses backend. */
             fun visitWebSearch(webSearch: JsonValue): T
+
+            fun visitFileSearch(fileSearch: JsonValue): T
+
+            fun visitCodeInterpreter(codeInterpreter: JsonValue): T
+
+            /**
+             * A Responses shell tool with a container_auto or container_reference environment.
+             * Local execution and domain secrets are not supported.
+             */
+            fun visitShell(shell: Shell): T
+
+            fun visitImageGeneration(imageGeneration: JsonValue): T
 
             /**
              * Maps an unknown variant of [Tool] to a value of type [T].
@@ -2684,6 +2838,26 @@ private constructor(
                             ?.let { Tool(webSearch = it, _json = json) }
                             ?.takeIf { it.isValid() } ?: Tool(_json = json)
                     }
+                    "file_search" -> {
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { Tool(fileSearch = it, _json = json) }
+                            ?.takeIf { it.isValid() } ?: Tool(_json = json)
+                    }
+                    "code_interpreter" -> {
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { Tool(codeInterpreter = it, _json = json) }
+                            ?.takeIf { it.isValid() } ?: Tool(_json = json)
+                    }
+                    "shell" -> {
+                        return tryDeserialize(node, jacksonTypeRef<Shell>())?.let {
+                            Tool(shell = it, _json = json)
+                        } ?: Tool(_json = json)
+                    }
+                    "image_generation" -> {
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { Tool(imageGeneration = it, _json = json) }
+                            ?.takeIf { it.isValid() } ?: Tool(_json = json)
+                    }
                 }
 
                 return Tool(_json = json)
@@ -2700,10 +2874,351 @@ private constructor(
                 when {
                     value.function != null -> generator.writeObject(value.function)
                     value.webSearch != null -> generator.writeObject(value.webSearch)
+                    value.fileSearch != null -> generator.writeObject(value.fileSearch)
+                    value.codeInterpreter != null -> generator.writeObject(value.codeInterpreter)
+                    value.shell != null -> generator.writeObject(value.shell)
+                    value.imageGeneration != null -> generator.writeObject(value.imageGeneration)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Tool")
                 }
             }
+        }
+
+        /**
+         * A Responses shell tool with a container_auto or container_reference environment. Local
+         * execution and domain secrets are not supported.
+         */
+        class Shell
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val environment: JsonField<Environment>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("environment")
+                @ExcludeMissing
+                environment: JsonField<Environment> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(environment, type, mutableMapOf())
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun environment(): Environment = environment.getRequired("environment")
+
+            /**
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("shell")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * Returns the raw JSON value of [environment].
+             *
+             * Unlike [environment], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("environment")
+            @ExcludeMissing
+            fun _environment(): JsonField<Environment> = environment
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Shell].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .environment()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Shell]. */
+            class Builder internal constructor() {
+
+                private var environment: JsonField<Environment>? = null
+                private var type: JsonValue = JsonValue.from("shell")
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(shell: Shell) = apply {
+                    environment = shell.environment
+                    type = shell.type
+                    additionalProperties = shell.additionalProperties.toMutableMap()
+                }
+
+                fun environment(environment: Environment) = environment(JsonField.of(environment))
+
+                /**
+                 * Sets [Builder.environment] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.environment] with a well-typed [Environment]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun environment(environment: JsonField<Environment>) = apply {
+                    this.environment = environment
+                }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("shell")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Shell].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .environment()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Shell =
+                    Shell(
+                        checkRequired("environment", environment),
+                        type,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Shell = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                environment().validate()
+                _type().let {
+                    if (it != JsonValue.from("shell")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (environment.asKnown().getOrNull()?.validity() ?: 0) +
+                    type.let { if (it == JsonValue.from("shell")) 1 else 0 }
+
+            class Environment
+            @JsonCreator
+            private constructor(
+                @com.fasterxml.jackson.annotation.JsonValue
+                private val additionalProperties: Map<String, JsonValue>
+            ) {
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /** Returns a mutable builder for constructing an instance of [Environment]. */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Environment]. */
+                class Builder internal constructor() {
+
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(environment: Environment) = apply {
+                        additionalProperties = environment.additionalProperties.toMutableMap()
+                    }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Environment].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
+                    fun build(): Environment = Environment(additionalProperties.toImmutable())
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Environment = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    additionalProperties.count { (_, value) ->
+                        !value.isNull() && !value.isMissing()
+                    }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Environment &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() = "Environment{additionalProperties=$additionalProperties}"
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Shell &&
+                    environment == other.environment &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(environment, type, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Shell{environment=$environment, type=$type, additionalProperties=$additionalProperties}"
         }
     }
 

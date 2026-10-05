@@ -69,7 +69,8 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
-     * The size of the file, in bytes.
+     * The size of the file, in bytes. In a completed file upload response, this can be null when
+     * the file size is not yet available.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -124,7 +125,8 @@ private constructor(
     @Deprecated("deprecated") fun status(): Status = status.getRequired("status")
 
     /**
-     * The Unix timestamp (in seconds) for when the file will expire.
+     * The Unix timestamp (in seconds) for when the file will expire. In a completed file upload
+     * response, this can be null when no expiry is set.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -133,7 +135,8 @@ private constructor(
 
     /**
      * Deprecated. For details on why a fine-tuning training file failed validation, see the `error`
-     * field on `fine_tuning.job`.
+     * field on `fine_tuning.job`. Completed file upload responses can return null when these
+     * details are unset.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -272,7 +275,10 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** The size of the file, in bytes. */
+        /**
+         * The size of the file, in bytes. In a completed file upload response, this can be null
+         * when the file size is not yet available.
+         */
         fun bytes(bytes: Long) = bytes(JsonField.of(bytes))
 
         /**
@@ -348,7 +354,10 @@ private constructor(
         @Deprecated("deprecated")
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
-        /** The Unix timestamp (in seconds) for when the file will expire. */
+        /**
+         * The Unix timestamp (in seconds) for when the file will expire. In a completed file upload
+         * response, this can be null when no expiry is set.
+         */
         fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
 
         /**
@@ -361,7 +370,8 @@ private constructor(
 
         /**
          * Deprecated. For details on why a fine-tuning training file failed validation, see the
-         * `error` field on `fine_tuning.job`.
+         * `error` field on `fine_tuning.job`. Completed file upload responses can return null when
+         * these details are unset.
          */
         @Deprecated("deprecated")
         fun statusDetails(statusDetails: String) = statusDetails(JsonField.of(statusDetails))

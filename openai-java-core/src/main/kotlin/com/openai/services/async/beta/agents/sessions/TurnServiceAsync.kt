@@ -9,6 +9,7 @@ import com.openai.models.beta.agents.sessions.turns.Turn
 import com.openai.models.beta.agents.sessions.turns.TurnListPageAsync
 import com.openai.models.beta.agents.sessions.turns.TurnListParams
 import com.openai.models.beta.agents.sessions.turns.TurnRetrieveParams
+import com.openai.services.async.beta.agents.sessions.turns.ItemServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -25,6 +26,8 @@ interface TurnServiceAsync {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurnServiceAsync
+
+    fun items(): ItemServiceAsync
 
     /**
      * Retrieves a turn's current status, timestamps, usage, and error. Returns 404 if the turn does
@@ -98,6 +101,8 @@ interface TurnServiceAsync {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurnServiceAsync.WithRawResponse
+
+        fun items(): ItemServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `get /agents/sessions/{session_id}/turns/{turn_id}`, but

@@ -10,6 +10,7 @@ import com.openai.models.beta.agents.sessions.turns.Turn
 import com.openai.models.beta.agents.sessions.turns.TurnListPage
 import com.openai.models.beta.agents.sessions.turns.TurnListParams
 import com.openai.models.beta.agents.sessions.turns.TurnRetrieveParams
+import com.openai.services.blocking.beta.agents.sessions.turns.ItemService
 import java.util.function.Consumer
 
 interface TurnService {
@@ -25,6 +26,8 @@ interface TurnService {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurnService
+
+    fun items(): ItemService
 
     /**
      * Retrieves a turn's current status, timestamps, usage, and error. Returns 404 if the turn does
@@ -90,6 +93,8 @@ interface TurnService {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurnService.WithRawResponse
+
+        fun items(): ItemService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `get /agents/sessions/{session_id}/turns/{turn_id}`, but

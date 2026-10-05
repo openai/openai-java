@@ -22,6 +22,8 @@ import com.openai.models.beta.agents.sessions.turns.TurnListPage
 import com.openai.models.beta.agents.sessions.turns.TurnListPageResponse
 import com.openai.models.beta.agents.sessions.turns.TurnListParams
 import com.openai.models.beta.agents.sessions.turns.TurnRetrieveParams
+import com.openai.services.blocking.beta.agents.sessions.turns.ItemService
+import com.openai.services.blocking.beta.agents.sessions.turns.ItemServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -36,10 +38,14 @@ class TurnServiceImpl internal constructor(private val clientOptions: ClientOpti
         WithRawResponseImpl(clientOptions)
     }
 
+    private val items: ItemService by lazy { ItemServiceImpl(clientOptions) }
+
     override fun withRawResponse(): TurnService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurnService =
         TurnServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun items(): ItemService = items
 
     override fun retrieve(params: TurnRetrieveParams, requestOptions: RequestOptions): Turn =
         // get /agents/sessions/{session_id}/turns/{turn_id}
@@ -55,12 +61,18 @@ class TurnServiceImpl internal constructor(private val clientOptions: ClientOpti
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
+        private val items: ItemService.WithRawResponse by lazy {
+            ItemServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): TurnService.WithRawResponse =
             TurnServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun items(): ItemService.WithRawResponse = items
 
         private val retrieveHandler: Handler<Turn> = jsonHandler<Turn>(clientOptions.jsonMapper)
 

@@ -42,7 +42,7 @@ internal class AssistantServiceTest {
         val assistant =
             assistantService.create(
                 AssistantCreateParams.builder()
-                    .model(ChatModel.GPT_5)
+                    .model(ChatModel.GPT_4_1)
                     .description("description")
                     .instructions("instructions")
                     .metadata(
