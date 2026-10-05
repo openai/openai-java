@@ -2786,7 +2786,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Content: $json")
+                    throw OpenAIInvalidDataException("Unknown Content")
                 }
             }
 
@@ -3370,7 +3370,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
                     fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown Tool: $json")
+                        throw OpenAIInvalidDataException("Unknown Tool")
                     }
                 }
 

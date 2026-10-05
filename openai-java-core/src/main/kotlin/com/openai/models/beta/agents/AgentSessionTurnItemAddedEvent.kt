@@ -230,6 +230,30 @@ private constructor(
         /** Alias for calling [item] with `AgentSessionItem.ofMcpCall(mcpCall)`. */
         fun item(mcpCall: AgentMcpCallItem) = item(AgentSessionItem.ofMcpCall(mcpCall))
 
+        /** Alias for calling [item] with `AgentSessionItem.ofComputerUseCall(computerUseCall)`. */
+        fun item(computerUseCall: AgentSessionItem.ComputerUseCall) =
+            item(AgentSessionItem.ofComputerUseCall(computerUseCall))
+
+        /**
+         * Alias for calling [item] with
+         * `AgentSessionItem.ofComputerUseApprovalRequest(computerUseApprovalRequest)`.
+         */
+        fun item(computerUseApprovalRequest: AgentSessionItem.ComputerUseApprovalRequest) =
+            item(AgentSessionItem.ofComputerUseApprovalRequest(computerUseApprovalRequest))
+
+        /**
+         * Alias for calling [item] with
+         * `AgentSessionItem.ofComputerUseApprovalRequestResult(computerUseApprovalRequestResult)`.
+         */
+        fun item(
+            computerUseApprovalRequestResult: AgentSessionItem.ComputerUseApprovalRequestResult
+        ) =
+            item(
+                AgentSessionItem.ofComputerUseApprovalRequestResult(
+                    computerUseApprovalRequestResult
+                )
+            )
+
         /** Alias for calling [item] with `AgentSessionItem.ofWebSearchCall(webSearchCall)`. */
         fun item(webSearchCall: AgentWebSearchCallItem) =
             item(AgentSessionItem.ofWebSearchCall(webSearchCall))

@@ -190,7 +190,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown ChatCompletionTool: $json")
+            throw OpenAIInvalidDataException("Unknown ChatCompletionTool")
         }
     }
 

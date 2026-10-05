@@ -51,7 +51,7 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
-     * An action performed by the web search tool.
+     * The action performed by the web search tool.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -174,7 +174,7 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** An action performed by the web search tool. */
+        /** The action performed by the web search tool. */
         fun action(action: WebSearchAction?) = action(JsonField.ofNullable(action))
 
         /** Alias for calling [Builder.action] with `action.orElse(null)`. */

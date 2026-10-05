@@ -997,7 +997,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Environment: $json")
+                throw OpenAIInvalidDataException("Unknown Environment")
             }
         }
 
@@ -1520,7 +1520,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Caller: $json")
+                throw OpenAIInvalidDataException("Unknown Caller")
             }
         }
 

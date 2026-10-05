@@ -1344,7 +1344,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
                     fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown Voice: $json")
+                        throw OpenAIInvalidDataException("Unknown Voice")
                     }
                 }
 
@@ -1621,7 +1621,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Delegation: $json")
+                throw OpenAIInvalidDataException("Unknown Delegation")
             }
         }
 

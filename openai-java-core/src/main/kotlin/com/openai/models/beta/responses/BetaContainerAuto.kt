@@ -709,7 +709,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown NetworkPolicy: $json")
+                throw OpenAIInvalidDataException("Unknown NetworkPolicy")
             }
         }
 
@@ -918,7 +918,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Skill: $json")
+                throw OpenAIInvalidDataException("Unknown Skill")
             }
         }
 

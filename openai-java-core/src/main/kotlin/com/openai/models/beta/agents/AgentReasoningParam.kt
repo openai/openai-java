@@ -33,7 +33,7 @@ private constructor(
     ) : this(effort, summary, mutableMapOf())
 
     /**
-     * The amount of reasoning effort the model should use.
+     * The amount of reasoning effort the model should use. Omission lets the model select it.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -41,7 +41,7 @@ private constructor(
     fun effort(): Optional<Effort> = effort.getOptional("effort")
 
     /**
-     * The reasoning summary format requested from the model.
+     * Controls whether the response includes a reasoning summary.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -94,7 +94,9 @@ private constructor(
             additionalProperties = agentReasoningParam.additionalProperties.toMutableMap()
         }
 
-        /** The amount of reasoning effort the model should use. */
+        /**
+         * The amount of reasoning effort the model should use. Omission lets the model select it.
+         */
         fun effort(effort: Effort?) = effort(JsonField.ofNullable(effort))
 
         /** Alias for calling [Builder.effort] with `effort.orElse(null)`. */
@@ -108,7 +110,7 @@ private constructor(
          */
         fun effort(effort: JsonField<Effort>) = apply { this.effort = effort }
 
-        /** The reasoning summary format requested from the model. */
+        /** Controls whether the response includes a reasoning summary. */
         fun summary(summary: Summary?) = summary(JsonField.ofNullable(summary))
 
         /** Alias for calling [Builder.summary] with `summary.orElse(null)`. */
@@ -188,7 +190,7 @@ private constructor(
         (effort.asKnown().getOrNull()?.validity() ?: 0) +
             (summary.asKnown().getOrNull()?.validity() ?: 0)
 
-    /** The amount of reasoning effort the model should use. */
+    /** The amount of reasoning effort the model should use. Omission lets the model select it. */
     class Effort @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -353,7 +355,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The reasoning summary format requested from the model. */
+    /** Controls whether the response includes a reasoning summary. */
     class Summary @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**

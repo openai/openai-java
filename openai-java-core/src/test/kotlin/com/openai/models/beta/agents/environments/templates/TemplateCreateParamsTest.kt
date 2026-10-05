@@ -18,6 +18,7 @@ internal class TemplateCreateParamsTest {
     fun create() {
         TemplateCreateParams.builder()
             .addCapabilityDirectory("string")
+            .desktop(TemplateCreateParams.Desktop.builder().enabled(true).build())
             .env(
                 TemplateCreateParams.Env.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -29,6 +30,7 @@ internal class TemplateCreateParamsTest {
                 TemplateCreateParams.Network.builder()
                     .access(TemplateCreateParams.Network.Access.ENABLED)
                     .addAllowedDomain("string")
+                    .addBlockedDomain("string")
                     .build()
             )
             .packages(
@@ -57,6 +59,7 @@ internal class TemplateCreateParamsTest {
         val params =
             TemplateCreateParams.builder()
                 .addCapabilityDirectory("string")
+                .desktop(TemplateCreateParams.Desktop.builder().enabled(true).build())
                 .env(
                     TemplateCreateParams.Env.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -68,6 +71,7 @@ internal class TemplateCreateParamsTest {
                     TemplateCreateParams.Network.builder()
                         .access(TemplateCreateParams.Network.Access.ENABLED)
                         .addAllowedDomain("string")
+                        .addBlockedDomain("string")
                         .build()
                 )
                 .packages(
@@ -96,6 +100,8 @@ internal class TemplateCreateParamsTest {
         val body = params._body()
 
         assertThat(body.capabilityDirectories().getOrNull()).containsExactly("string")
+        assertThat(body.desktop())
+            .contains(TemplateCreateParams.Desktop.builder().enabled(true).build())
         assertThat(body.env())
             .contains(
                 TemplateCreateParams.Env.builder()
@@ -114,6 +120,7 @@ internal class TemplateCreateParamsTest {
                 TemplateCreateParams.Network.builder()
                     .access(TemplateCreateParams.Network.Access.ENABLED)
                     .addAllowedDomain("string")
+                    .addBlockedDomain("string")
                     .build()
             )
         assertThat(body.packages())

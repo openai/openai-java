@@ -225,14 +225,23 @@ private constructor(
             /** The organization has reached a usage, plan, or billing limit. */
             @JvmField val USAGE_LIMIT_EXCEEDED = of("usage_limit_exceeded")
 
+            /** The organization has no API credits remaining. */
+            @JvmField val CREDIT_BALANCE_EXHAUSTED = of("credit_balance_exhausted")
+
             /** The request exceeds the available rate limit. */
             @JvmField val RATE_LIMIT_EXCEEDED = of("rate_limit_exceeded")
+
+            /** Flex processing is temporarily unavailable. */
+            @JvmField val FLEX_UNAVAILABLE = of("flex_unavailable")
 
             /** The model service is temporarily overloaded. */
             @JvmField val SERVER_OVERLOADED = of("server_overloaded")
 
             /** The request was rejected by a safety policy. */
             @JvmField val CYBER_POLICY = of("cyber_policy")
+
+            /** The request was blocked by the safety systems. */
+            @JvmField val MISALIGNMENT_POLICY_VIOLATION = of("misalignment_policy_violation")
 
             /** The request could not connect to the model service. */
             @JvmField val CONNECTION_FAILED = of("connection_failed")
@@ -275,12 +284,18 @@ private constructor(
             SESSION_BUDGET_EXCEEDED,
             /** The organization has reached a usage, plan, or billing limit. */
             USAGE_LIMIT_EXCEEDED,
+            /** The organization has no API credits remaining. */
+            CREDIT_BALANCE_EXHAUSTED,
             /** The request exceeds the available rate limit. */
             RATE_LIMIT_EXCEEDED,
+            /** Flex processing is temporarily unavailable. */
+            FLEX_UNAVAILABLE,
             /** The model service is temporarily overloaded. */
             SERVER_OVERLOADED,
             /** The request was rejected by a safety policy. */
             CYBER_POLICY,
+            /** The request was blocked by the safety systems. */
+            MISALIGNMENT_POLICY_VIOLATION,
             /** The request could not connect to the model service. */
             CONNECTION_FAILED,
             /** The model service encountered an unexpected error. */
@@ -319,12 +334,18 @@ private constructor(
             SESSION_BUDGET_EXCEEDED,
             /** The organization has reached a usage, plan, or billing limit. */
             USAGE_LIMIT_EXCEEDED,
+            /** The organization has no API credits remaining. */
+            CREDIT_BALANCE_EXHAUSTED,
             /** The request exceeds the available rate limit. */
             RATE_LIMIT_EXCEEDED,
+            /** Flex processing is temporarily unavailable. */
+            FLEX_UNAVAILABLE,
             /** The model service is temporarily overloaded. */
             SERVER_OVERLOADED,
             /** The request was rejected by a safety policy. */
             CYBER_POLICY,
+            /** The request was blocked by the safety systems. */
+            MISALIGNMENT_POLICY_VIOLATION,
             /** The request could not connect to the model service. */
             CONNECTION_FAILED,
             /** The model service encountered an unexpected error. */
@@ -361,9 +382,12 @@ private constructor(
                 CONTEXT_LENGTH_EXCEEDED -> Value.CONTEXT_LENGTH_EXCEEDED
                 SESSION_BUDGET_EXCEEDED -> Value.SESSION_BUDGET_EXCEEDED
                 USAGE_LIMIT_EXCEEDED -> Value.USAGE_LIMIT_EXCEEDED
+                CREDIT_BALANCE_EXHAUSTED -> Value.CREDIT_BALANCE_EXHAUSTED
                 RATE_LIMIT_EXCEEDED -> Value.RATE_LIMIT_EXCEEDED
+                FLEX_UNAVAILABLE -> Value.FLEX_UNAVAILABLE
                 SERVER_OVERLOADED -> Value.SERVER_OVERLOADED
                 CYBER_POLICY -> Value.CYBER_POLICY
+                MISALIGNMENT_POLICY_VIOLATION -> Value.MISALIGNMENT_POLICY_VIOLATION
                 CONNECTION_FAILED -> Value.CONNECTION_FAILED
                 SERVER_ERROR -> Value.SERVER_ERROR
                 AUTHENTICATION_ERROR -> Value.AUTHENTICATION_ERROR
@@ -391,9 +415,12 @@ private constructor(
                 CONTEXT_LENGTH_EXCEEDED -> Known.CONTEXT_LENGTH_EXCEEDED
                 SESSION_BUDGET_EXCEEDED -> Known.SESSION_BUDGET_EXCEEDED
                 USAGE_LIMIT_EXCEEDED -> Known.USAGE_LIMIT_EXCEEDED
+                CREDIT_BALANCE_EXHAUSTED -> Known.CREDIT_BALANCE_EXHAUSTED
                 RATE_LIMIT_EXCEEDED -> Known.RATE_LIMIT_EXCEEDED
+                FLEX_UNAVAILABLE -> Known.FLEX_UNAVAILABLE
                 SERVER_OVERLOADED -> Known.SERVER_OVERLOADED
                 CYBER_POLICY -> Known.CYBER_POLICY
+                MISALIGNMENT_POLICY_VIOLATION -> Known.MISALIGNMENT_POLICY_VIOLATION
                 CONNECTION_FAILED -> Known.CONNECTION_FAILED
                 SERVER_ERROR -> Known.SERVER_ERROR
                 AUTHENTICATION_ERROR -> Known.AUTHENTICATION_ERROR

@@ -683,7 +683,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Value: $json")
+                throw OpenAIInvalidDataException("Unknown Value")
             }
         }
 
@@ -902,7 +902,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown ComparisonFilterValueItem: $json")
+                    throw OpenAIInvalidDataException("Unknown ComparisonFilterValueItem")
                 }
             }
 

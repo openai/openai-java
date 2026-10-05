@@ -44,23 +44,26 @@ private constructor(private val firstPage: PageAsync<T>, private val defaultExec
         }
 
         executor.execute {
-            firstPage.handle().whenComplete { _, error ->
-                val actualError =
-                    if (error is CompletionException && error.cause != null) error.cause else error
-                try {
-                    handler.onComplete(Optional.ofNullable(actualError))
-                } finally {
+            CompletableFuture.completedFuture(firstPage)
+                .thenCompose { it.handle() }
+                .whenComplete { _, error ->
+                    val actualError =
+                        if (error is CompletionException && error.cause != null) error.cause
+                        else error
                     try {
-                        if (actualError == null) {
-                            onCompleteFuture.complete(null)
-                        } else {
-                            onCompleteFuture.completeExceptionally(actualError)
-                        }
+                        handler.onComplete(Optional.ofNullable(actualError))
                     } finally {
-                        close()
+                        try {
+                            if (actualError == null) {
+                                onCompleteFuture.complete(null)
+                            } else {
+                                onCompleteFuture.completeExceptionally(actualError)
+                            }
+                        } finally {
+                            close()
+                        }
                     }
                 }
-            }
         }
     }
 

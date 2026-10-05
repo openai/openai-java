@@ -688,7 +688,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown Tool: $json")
+            throw OpenAIInvalidDataException("Unknown Tool")
         }
     }
 
@@ -951,6 +951,9 @@ private constructor(
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
          * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
          *
+         * This field is deprecated for models released after September 1, 2026. Use `server_url` to
+         * connect to a remote MCP server, or `tunnel_id` to connect through a Secure MCP Tunnel.
+         *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`
          * - Gmail: `connector_gmail`
@@ -964,6 +967,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        @Deprecated("deprecated")
         fun connectorId(): Optional<ConnectorId> = connectorId.getOptional("connector_id")
 
         /**
@@ -1063,6 +1067,7 @@ private constructor(
          *
          * Unlike [connectorId], this method doesn't throw if the JSON field has an unexpected type.
          */
+        @Deprecated("deprecated")
         @JsonProperty("connector_id")
         @ExcludeMissing
         fun _connectorId(): JsonField<ConnectorId> = connectorId
@@ -1288,6 +1293,10 @@ private constructor(
              * service connectors
              * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
              *
+             * This field is deprecated for models released after September 1, 2026. Use
+             * `server_url` to connect to a remote MCP server, or `tunnel_id` to connect through a
+             * Secure MCP Tunnel.
+             *
              * Currently supported `connector_id` values are:
              * - Dropbox: `connector_dropbox`
              * - Gmail: `connector_gmail`
@@ -1298,6 +1307,7 @@ private constructor(
              * - Outlook Email: `connector_outlookemail`
              * - SharePoint: `connector_sharepoint`
              */
+            @Deprecated("deprecated")
             fun connectorId(connectorId: ConnectorId) = connectorId(JsonField.of(connectorId))
 
             /**
@@ -1307,6 +1317,7 @@ private constructor(
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
+            @Deprecated("deprecated")
             fun connectorId(connectorId: JsonField<ConnectorId>) = apply {
                 this.connectorId = connectorId
             }
@@ -1850,7 +1861,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown AllowedTools: $json")
+                    throw OpenAIInvalidDataException("Unknown AllowedTools")
                 }
             }
 
@@ -2138,6 +2149,9 @@ private constructor(
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
          * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
          *
+         * This field is deprecated for models released after September 1, 2026. Use `server_url` to
+         * connect to a remote MCP server, or `tunnel_id` to connect through a Secure MCP Tunnel.
+         *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`
          * - Gmail: `connector_gmail`
@@ -2148,6 +2162,7 @@ private constructor(
          * - Outlook Email: `connector_outlookemail`
          * - SharePoint: `connector_sharepoint`
          */
+        @Deprecated("deprecated")
         class ConnectorId @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
 
@@ -2664,7 +2679,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown RequireApproval: $json")
+                    throw OpenAIInvalidDataException("Unknown RequireApproval")
                 }
             }
 
@@ -4061,7 +4076,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Container: $json")
+                    throw OpenAIInvalidDataException("Unknown Container")
                 }
             }
 
@@ -4777,7 +4792,7 @@ private constructor(
                          * @throws OpenAIInvalidDataException in the default implementation.
                          */
                         fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException("Unknown NetworkPolicy: $json")
+                            throw OpenAIInvalidDataException("Unknown NetworkPolicy")
                         }
                     }
 
@@ -5118,10 +5133,9 @@ private constructor(
         fun background(): Optional<Background> = background.getOptional("background")
 
         /**
-         * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. This parameter is only supported for `gpt-image-1` and
-         * `gpt-image-1.5` and later models, unsupported for `gpt-image-1-mini`. Supports `high` and
-         * `low`. Defaults to `low`.
+         * Controls fidelity to the original input image(s). This parameter is supported for GPT
+         * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
+         * ignore this parameter.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5202,9 +5216,7 @@ private constructor(
          * experimental, and the maximum supported resolution is `3840x2160`. The requested size
          * must also satisfy the model's current pixel and edge limits. The standard sizes
          * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
-         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
-         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-         * `1792x1024`, or `1024x1792`.
+         * is supported for models that allow automatic sizing.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5410,10 +5422,9 @@ private constructor(
             }
 
             /**
-             * Control how much effort the model will exert to match the style and features,
-             * especially facial features, of input images. This parameter is only supported for
-             * `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for
-             * `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
+             * Controls fidelity to the original input image(s). This parameter is supported for GPT
+             * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
+             * ignore this parameter.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(JsonField.ofNullable(inputFidelity))
@@ -5565,8 +5576,7 @@ private constructor(
              * is `3840x2160`. The requested size must also satisfy the model's current pixel and
              * edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are
              * supported by the GPT image models; `auto` is supported for models that allow
-             * automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
-             * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+             * automatic sizing.
              */
             fun size(size: Size) = size(JsonField.of(size))
 
@@ -5998,10 +6008,9 @@ private constructor(
         }
 
         /**
-         * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. This parameter is only supported for `gpt-image-1` and
-         * `gpt-image-1.5` and later models, unsupported for `gpt-image-1-mini`. Supports `high` and
-         * `low`. Defaults to `low`.
+         * Controls fidelity to the original input image(s). This parameter is supported for GPT
+         * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
+         * ignore this parameter.
          */
         class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
@@ -7011,9 +7020,7 @@ private constructor(
          * experimental, and the maximum supported resolution is `3840x2160`. The requested size
          * must also satisfy the model's current pixel and edge limits. The standard sizes
          * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
-         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
-         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-         * `1792x1024`, or `1024x1792`.
+         * is supported for models that allow automatic sizing.
          */
         class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

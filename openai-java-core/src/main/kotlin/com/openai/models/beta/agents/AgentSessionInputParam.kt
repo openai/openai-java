@@ -19,6 +19,7 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
@@ -34,11 +35,19 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = AgentSessionInputParam.Serializer::class)
 class AgentSessionInputParam
 private constructor(
+    private val agentSessionInputComputerUseApprovalRequestResult:
+        AgentSessionInputComputerUseApprovalRequestResult? =
+        null,
     private val agentSessionInputMessage: AgentSessionInputMessage? = null,
     private val agentSessionInputCancel: JsonValue? = null,
     private val agentSessionInputToolResult: AgentSessionInputToolResult? = null,
     private val _json: JsonValue? = null,
 ) {
+
+    /** Responds to a pending Computer Use approval request. */
+    fun agentSessionInputComputerUseApprovalRequestResult():
+        Optional<AgentSessionInputComputerUseApprovalRequestResult> =
+        Optional.ofNullable(agentSessionInputComputerUseApprovalRequestResult)
 
     /** Adds one or more user messages and starts a turn. */
     fun agentSessionInputMessage(): Optional<AgentSessionInputMessage> =
@@ -52,11 +61,21 @@ private constructor(
     fun agentSessionInputToolResult(): Optional<AgentSessionInputToolResult> =
         Optional.ofNullable(agentSessionInputToolResult)
 
+    fun isAgentSessionInputComputerUseApprovalRequestResult(): Boolean =
+        agentSessionInputComputerUseApprovalRequestResult != null
+
     fun isAgentSessionInputMessage(): Boolean = agentSessionInputMessage != null
 
     fun isAgentSessionInputCancel(): Boolean = agentSessionInputCancel != null
 
     fun isAgentSessionInputToolResult(): Boolean = agentSessionInputToolResult != null
+
+    /** Responds to a pending Computer Use approval request. */
+    fun asAgentSessionInputComputerUseApprovalRequestResult():
+        AgentSessionInputComputerUseApprovalRequestResult =
+        agentSessionInputComputerUseApprovalRequestResult.getOrThrow(
+            "agentSessionInputComputerUseApprovalRequestResult"
+        )
 
     /** Adds one or more user messages and starts a turn. */
     fun asAgentSessionInputMessage(): AgentSessionInputMessage =
@@ -84,8 +103,8 @@ private constructor(
      *
      * Optional<String> result = agentSessionInputParam.accept(new AgentSessionInputParam.Visitor<Optional<String>>() {
      *     @Override
-     *     public Optional<String> visitAgentSessionInputMessage(AgentSessionInputMessage agentSessionInputMessage) {
-     *         return Optional.of(agentSessionInputMessage.toString());
+     *     public Optional<String> visitAgentSessionInputComputerUseApprovalRequestResult(AgentSessionInputComputerUseApprovalRequestResult agentSessionInputComputerUseApprovalRequestResult) {
+     *         return Optional.of(agentSessionInputComputerUseApprovalRequestResult.toString());
      *     }
      *
      *     // ...
@@ -103,6 +122,10 @@ private constructor(
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
+            agentSessionInputComputerUseApprovalRequestResult != null ->
+                visitor.visitAgentSessionInputComputerUseApprovalRequestResult(
+                    agentSessionInputComputerUseApprovalRequestResult
+                )
             agentSessionInputMessage != null ->
                 visitor.visitAgentSessionInputMessage(agentSessionInputMessage)
             agentSessionInputCancel != null ->
@@ -129,6 +152,13 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
+                override fun visitAgentSessionInputComputerUseApprovalRequestResult(
+                    agentSessionInputComputerUseApprovalRequestResult:
+                        AgentSessionInputComputerUseApprovalRequestResult
+                ) {
+                    agentSessionInputComputerUseApprovalRequestResult.validate()
+                }
+
                 override fun visitAgentSessionInputMessage(
                     agentSessionInputMessage: AgentSessionInputMessage
                 ) {
@@ -172,6 +202,11 @@ private constructor(
     internal fun validity(): Int =
         accept(
             object : Visitor<Int> {
+                override fun visitAgentSessionInputComputerUseApprovalRequestResult(
+                    agentSessionInputComputerUseApprovalRequestResult:
+                        AgentSessionInputComputerUseApprovalRequestResult
+                ) = agentSessionInputComputerUseApprovalRequestResult.validity()
+
                 override fun visitAgentSessionInputMessage(
                     agentSessionInputMessage: AgentSessionInputMessage
                 ) = agentSessionInputMessage.validity()
@@ -196,16 +231,25 @@ private constructor(
         }
 
         return other is AgentSessionInputParam &&
+            agentSessionInputComputerUseApprovalRequestResult ==
+                other.agentSessionInputComputerUseApprovalRequestResult &&
             agentSessionInputMessage == other.agentSessionInputMessage &&
             agentSessionInputCancel == other.agentSessionInputCancel &&
             agentSessionInputToolResult == other.agentSessionInputToolResult
     }
 
     override fun hashCode(): Int =
-        Objects.hash(agentSessionInputMessage, agentSessionInputCancel, agentSessionInputToolResult)
+        Objects.hash(
+            agentSessionInputComputerUseApprovalRequestResult,
+            agentSessionInputMessage,
+            agentSessionInputCancel,
+            agentSessionInputToolResult,
+        )
 
     override fun toString(): String =
         when {
+            agentSessionInputComputerUseApprovalRequestResult != null ->
+                "AgentSessionInputParam{agentSessionInputComputerUseApprovalRequestResult=$agentSessionInputComputerUseApprovalRequestResult}"
             agentSessionInputMessage != null ->
                 "AgentSessionInputParam{agentSessionInputMessage=$agentSessionInputMessage}"
             agentSessionInputCancel != null ->
@@ -217,6 +261,17 @@ private constructor(
         }
 
     companion object {
+
+        /** Responds to a pending Computer Use approval request. */
+        @JvmStatic
+        fun ofAgentSessionInputComputerUseApprovalRequestResult(
+            agentSessionInputComputerUseApprovalRequestResult:
+                AgentSessionInputComputerUseApprovalRequestResult
+        ) =
+            AgentSessionInputParam(
+                agentSessionInputComputerUseApprovalRequestResult =
+                    agentSessionInputComputerUseApprovalRequestResult
+            )
 
         /** Adds one or more user messages and starts a turn. */
         @JvmStatic
@@ -244,6 +299,12 @@ private constructor(
      */
     interface Visitor<out T> {
 
+        /** Responds to a pending Computer Use approval request. */
+        fun visitAgentSessionInputComputerUseApprovalRequestResult(
+            agentSessionInputComputerUseApprovalRequestResult:
+                AgentSessionInputComputerUseApprovalRequestResult
+        ): T
+
         /** Adds one or more user messages and starts a turn. */
         fun visitAgentSessionInputMessage(agentSessionInputMessage: AgentSessionInputMessage): T
 
@@ -266,7 +327,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown AgentSessionInputParam: $json")
+            throw OpenAIInvalidDataException("Unknown AgentSessionInputParam")
         }
     }
 
@@ -278,6 +339,18 @@ private constructor(
             val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
             when (type) {
+                "agent.session.input.computer_use_approval_request_result" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentSessionInputComputerUseApprovalRequestResult>(),
+                        )
+                        ?.let {
+                            AgentSessionInputParam(
+                                agentSessionInputComputerUseApprovalRequestResult = it,
+                                _json = json,
+                            )
+                        } ?: AgentSessionInputParam(_json = json)
+                }
                 "agent.session.input.message" -> {
                     return tryDeserialize(node, jacksonTypeRef<AgentSessionInputMessage>())?.let {
                         AgentSessionInputParam(agentSessionInputMessage = it, _json = json)
@@ -309,6 +382,8 @@ private constructor(
             provider: SerializerProvider,
         ) {
             when {
+                value.agentSessionInputComputerUseApprovalRequestResult != null ->
+                    generator.writeObject(value.agentSessionInputComputerUseApprovalRequestResult)
                 value.agentSessionInputMessage != null ->
                     generator.writeObject(value.agentSessionInputMessage)
                 value.agentSessionInputCancel != null ->
@@ -319,6 +394,681 @@ private constructor(
                 else -> throw IllegalStateException("Invalid AgentSessionInputParam")
             }
         }
+    }
+
+    /** Responds to a pending Computer Use approval request. */
+    class AgentSessionInputComputerUseApprovalRequestResult
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val requestId: JsonField<String>,
+        private val response: JsonField<Response>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("request_id")
+            @ExcludeMissing
+            requestId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("response")
+            @ExcludeMissing
+            response: JsonField<Response> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(requestId, response, type, mutableMapOf())
+
+        /**
+         * The registered request ID from the required action.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun requestId(): String = requestId.getRequired("request_id")
+
+        /**
+         * The response for this request type.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun response(): Response = response.getRequired("response")
+
+        /**
+         * The type of the object. Always
+         * `agent.session.input.computer_use_approval_request_result`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("agent.session.input.computer_use_approval_request_result")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * Returns the raw JSON value of [requestId].
+         *
+         * Unlike [requestId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("request_id") @ExcludeMissing fun _requestId(): JsonField<String> = requestId
+
+        /**
+         * Returns the raw JSON value of [response].
+         *
+         * Unlike [response], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("response") @ExcludeMissing fun _response(): JsonField<Response> = response
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [AgentSessionInputComputerUseApprovalRequestResult].
+             *
+             * The following fields are required:
+             * ```java
+             * .requestId()
+             * .response()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [AgentSessionInputComputerUseApprovalRequestResult]. */
+        class Builder internal constructor() {
+
+            private var requestId: JsonField<String>? = null
+            private var response: JsonField<Response>? = null
+            private var type: JsonValue =
+                JsonValue.from("agent.session.input.computer_use_approval_request_result")
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(
+                agentSessionInputComputerUseApprovalRequestResult:
+                    AgentSessionInputComputerUseApprovalRequestResult
+            ) = apply {
+                requestId = agentSessionInputComputerUseApprovalRequestResult.requestId
+                response = agentSessionInputComputerUseApprovalRequestResult.response
+                type = agentSessionInputComputerUseApprovalRequestResult.type
+                additionalProperties =
+                    agentSessionInputComputerUseApprovalRequestResult.additionalProperties
+                        .toMutableMap()
+            }
+
+            /** The registered request ID from the required action. */
+            fun requestId(requestId: String) = requestId(JsonField.of(requestId))
+
+            /**
+             * Sets [Builder.requestId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.requestId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun requestId(requestId: JsonField<String>) = apply { this.requestId = requestId }
+
+            /** The response for this request type. */
+            fun response(response: Response) = response(JsonField.of(response))
+
+            /**
+             * Sets [Builder.response] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.response] with a well-typed [Response] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun response(response: JsonField<Response>) = apply { this.response = response }
+
+            /**
+             * Alias for calling [response] with
+             * `Response.ofAgentBrowserAuthenticationSubmitParam(agentBrowserAuthenticationSubmitParam)`.
+             */
+            fun response(
+                agentBrowserAuthenticationSubmitParam: AgentBrowserAuthenticationSubmitParam
+            ) =
+                response(
+                    Response.ofAgentBrowserAuthenticationSubmitParam(
+                        agentBrowserAuthenticationSubmitParam
+                    )
+                )
+
+            /**
+             * Alias for calling [response] with the following:
+             * ```java
+             * AgentBrowserAuthenticationSubmitParam.builder()
+             *     .fields(fields)
+             *     .build()
+             * ```
+             */
+            fun agentBrowserAuthenticationSubmitParamResponse(
+                fields: List<AgentBrowserAuthenticationSubmitParam.Field>
+            ) = response(AgentBrowserAuthenticationSubmitParam.builder().fields(fields).build())
+
+            /**
+             * Alias for calling [response] with
+             * `Response.ofAgentBrowserAuthenticationCancelParam(agentBrowserAuthenticationCancelParam)`.
+             */
+            fun response(
+                agentBrowserAuthenticationCancelParam: AgentBrowserAuthenticationCancelParam
+            ) =
+                response(
+                    Response.ofAgentBrowserAuthenticationCancelParam(
+                        agentBrowserAuthenticationCancelParam
+                    )
+                )
+
+            /**
+             * Alias for calling [response] with
+             * `Response.ofBrowserOriginAccess(browserOriginAccess)`.
+             */
+            fun response(browserOriginAccess: AgentBrowserOriginAccessParam) =
+                response(Response.ofBrowserOriginAccess(browserOriginAccess))
+
+            /**
+             * Alias for calling [response] with the following:
+             * ```java
+             * AgentBrowserOriginAccessParam.builder()
+             *     .decision(decision)
+             *     .build()
+             * ```
+             */
+            fun browserOriginAccessResponse(decision: AgentBrowserOriginAccessParam.Decision) =
+                response(AgentBrowserOriginAccessParam.builder().decision(decision).build())
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("agent.session.input.computer_use_approval_request_result")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [AgentSessionInputComputerUseApprovalRequestResult].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .requestId()
+             * .response()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): AgentSessionInputComputerUseApprovalRequestResult =
+                AgentSessionInputComputerUseApprovalRequestResult(
+                    checkRequired("requestId", requestId),
+                    checkRequired("response", response),
+                    type,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): AgentSessionInputComputerUseApprovalRequestResult = apply {
+            if (validated) {
+                return@apply
+            }
+
+            requestId()
+            response().validate()
+            _type().let {
+                if (
+                    it != JsonValue.from("agent.session.input.computer_use_approval_request_result")
+                ) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (requestId.asKnown().isPresent) 1 else 0) +
+                (response.asKnown().getOrNull()?.validity() ?: 0) +
+                type.let {
+                    if (
+                        it ==
+                            JsonValue.from(
+                                "agent.session.input.computer_use_approval_request_result"
+                            )
+                    )
+                        1
+                    else 0
+                }
+
+        /** The response for this request type. */
+        @JsonDeserialize(using = Response.Deserializer::class)
+        @JsonSerialize(using = Response.Serializer::class)
+        class Response
+        private constructor(
+            private val agentBrowserAuthenticationSubmitParam:
+                AgentBrowserAuthenticationSubmitParam? =
+                null,
+            private val agentBrowserAuthenticationCancelParam:
+                AgentBrowserAuthenticationCancelParam? =
+                null,
+            private val browserOriginAccess: AgentBrowserOriginAccessParam? = null,
+            private val _json: JsonValue? = null,
+        ) {
+
+            fun agentBrowserAuthenticationSubmitParam():
+                Optional<AgentBrowserAuthenticationSubmitParam> =
+                Optional.ofNullable(agentBrowserAuthenticationSubmitParam)
+
+            fun agentBrowserAuthenticationCancelParam():
+                Optional<AgentBrowserAuthenticationCancelParam> =
+                Optional.ofNullable(agentBrowserAuthenticationCancelParam)
+
+            fun browserOriginAccess(): Optional<AgentBrowserOriginAccessParam> =
+                Optional.ofNullable(browserOriginAccess)
+
+            fun isAgentBrowserAuthenticationSubmitParam(): Boolean =
+                agentBrowserAuthenticationSubmitParam != null
+
+            fun isAgentBrowserAuthenticationCancelParam(): Boolean =
+                agentBrowserAuthenticationCancelParam != null
+
+            fun isBrowserOriginAccess(): Boolean = browserOriginAccess != null
+
+            fun asAgentBrowserAuthenticationSubmitParam(): AgentBrowserAuthenticationSubmitParam =
+                agentBrowserAuthenticationSubmitParam.getOrThrow(
+                    "agentBrowserAuthenticationSubmitParam"
+                )
+
+            fun asAgentBrowserAuthenticationCancelParam(): AgentBrowserAuthenticationCancelParam =
+                agentBrowserAuthenticationCancelParam.getOrThrow(
+                    "agentBrowserAuthenticationCancelParam"
+                )
+
+            fun asBrowserOriginAccess(): AgentBrowserOriginAccessParam =
+                browserOriginAccess.getOrThrow("browserOriginAccess")
+
+            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+            /**
+             * Maps this instance's current variant to a value of type [T] using the given
+             * [visitor].
+             *
+             * Note that this method is _not_ forwards compatible with new variants from the API,
+             * unless [visitor] overrides [Visitor.unknown]. To handle variants not known to this
+             * version of the SDK gracefully, consider overriding [Visitor.unknown]:
+             * ```java
+             * import com.openai.core.JsonValue;
+             * import java.util.Optional;
+             *
+             * Optional<String> result = response.accept(new Response.Visitor<Optional<String>>() {
+             *     @Override
+             *     public Optional<String> visitAgentBrowserAuthenticationSubmitParam(AgentBrowserAuthenticationSubmitParam agentBrowserAuthenticationSubmitParam) {
+             *         return Optional.of(agentBrowserAuthenticationSubmitParam.toString());
+             *     }
+             *
+             *     // ...
+             *
+             *     @Override
+             *     public Optional<String> unknown(JsonValue json) {
+             *         // Or inspect the `json`.
+             *         return Optional.empty();
+             *     }
+             * });
+             * ```
+             *
+             * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+             *   [visitor] and the current variant is unknown.
+             */
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
+                    agentBrowserAuthenticationSubmitParam != null ->
+                        visitor.visitAgentBrowserAuthenticationSubmitParam(
+                            agentBrowserAuthenticationSubmitParam
+                        )
+                    agentBrowserAuthenticationCancelParam != null ->
+                        visitor.visitAgentBrowserAuthenticationCancelParam(
+                            agentBrowserAuthenticationCancelParam
+                        )
+                    browserOriginAccess != null ->
+                        visitor.visitBrowserOriginAccess(browserOriginAccess)
+                    else -> visitor.unknown(_json)
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Response = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitAgentBrowserAuthenticationSubmitParam(
+                            agentBrowserAuthenticationSubmitParam:
+                                AgentBrowserAuthenticationSubmitParam
+                        ) {
+                            agentBrowserAuthenticationSubmitParam.validate()
+                        }
+
+                        override fun visitAgentBrowserAuthenticationCancelParam(
+                            agentBrowserAuthenticationCancelParam:
+                                AgentBrowserAuthenticationCancelParam
+                        ) {
+                            agentBrowserAuthenticationCancelParam.validate()
+                        }
+
+                        override fun visitBrowserOriginAccess(
+                            browserOriginAccess: AgentBrowserOriginAccessParam
+                        ) {
+                            browserOriginAccess.validate()
+                        }
+                    }
+                )
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitAgentBrowserAuthenticationSubmitParam(
+                            agentBrowserAuthenticationSubmitParam:
+                                AgentBrowserAuthenticationSubmitParam
+                        ) = agentBrowserAuthenticationSubmitParam.validity()
+
+                        override fun visitAgentBrowserAuthenticationCancelParam(
+                            agentBrowserAuthenticationCancelParam:
+                                AgentBrowserAuthenticationCancelParam
+                        ) = agentBrowserAuthenticationCancelParam.validity()
+
+                        override fun visitBrowserOriginAccess(
+                            browserOriginAccess: AgentBrowserOriginAccessParam
+                        ) = browserOriginAccess.validity()
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Response &&
+                    agentBrowserAuthenticationSubmitParam ==
+                        other.agentBrowserAuthenticationSubmitParam &&
+                    agentBrowserAuthenticationCancelParam ==
+                        other.agentBrowserAuthenticationCancelParam &&
+                    browserOriginAccess == other.browserOriginAccess
+            }
+
+            override fun hashCode(): Int =
+                Objects.hash(
+                    agentBrowserAuthenticationSubmitParam,
+                    agentBrowserAuthenticationCancelParam,
+                    browserOriginAccess,
+                )
+
+            override fun toString(): String =
+                when {
+                    agentBrowserAuthenticationSubmitParam != null ->
+                        "Response{agentBrowserAuthenticationSubmitParam=$agentBrowserAuthenticationSubmitParam}"
+                    agentBrowserAuthenticationCancelParam != null ->
+                        "Response{agentBrowserAuthenticationCancelParam=$agentBrowserAuthenticationCancelParam}"
+                    browserOriginAccess != null ->
+                        "Response{browserOriginAccess=$browserOriginAccess}"
+                    _json != null -> "Response{_unknown=$_json}"
+                    else -> throw IllegalStateException("Invalid Response")
+                }
+
+            companion object {
+
+                @JvmStatic
+                fun ofAgentBrowserAuthenticationSubmitParam(
+                    agentBrowserAuthenticationSubmitParam: AgentBrowserAuthenticationSubmitParam
+                ) =
+                    Response(
+                        agentBrowserAuthenticationSubmitParam =
+                            agentBrowserAuthenticationSubmitParam
+                    )
+
+                @JvmStatic
+                fun ofAgentBrowserAuthenticationCancelParam(
+                    agentBrowserAuthenticationCancelParam: AgentBrowserAuthenticationCancelParam
+                ) =
+                    Response(
+                        agentBrowserAuthenticationCancelParam =
+                            agentBrowserAuthenticationCancelParam
+                    )
+
+                @JvmStatic
+                fun ofBrowserOriginAccess(browserOriginAccess: AgentBrowserOriginAccessParam) =
+                    Response(browserOriginAccess = browserOriginAccess)
+            }
+
+            /**
+             * An interface that defines how to map each variant of [Response] to a value of type
+             * [T].
+             */
+            interface Visitor<out T> {
+
+                fun visitAgentBrowserAuthenticationSubmitParam(
+                    agentBrowserAuthenticationSubmitParam: AgentBrowserAuthenticationSubmitParam
+                ): T
+
+                fun visitAgentBrowserAuthenticationCancelParam(
+                    agentBrowserAuthenticationCancelParam: AgentBrowserAuthenticationCancelParam
+                ): T
+
+                fun visitBrowserOriginAccess(browserOriginAccess: AgentBrowserOriginAccessParam): T
+
+                /**
+                 * Maps an unknown variant of [Response] to a value of type [T].
+                 *
+                 * An instance of [Response] can contain an unknown variant if it was deserialized
+                 * from data that doesn't match any known variant. For example, if the SDK is on an
+                 * older version than the API, then the API may respond with new variants that the
+                 * SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
+                fun unknown(json: JsonValue?): T {
+                    throw OpenAIInvalidDataException("Unknown Response")
+                }
+            }
+
+            internal class Deserializer : BaseDeserializer<Response>(Response::class) {
+
+                override fun ObjectCodec.deserialize(node: JsonNode): Response {
+                    val json = JsonValue.fromJsonNode(node)
+                    val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                    when (type) {
+                        "browser_authentication" -> {
+                            val bestMatches =
+                                sequenceOf(
+                                        tryDeserialize(
+                                                node,
+                                                jacksonTypeRef<
+                                                    AgentBrowserAuthenticationSubmitParam
+                                                >(),
+                                            )
+                                            ?.let {
+                                                Response(
+                                                    agentBrowserAuthenticationSubmitParam = it,
+                                                    _json = json,
+                                                )
+                                            },
+                                        tryDeserialize(
+                                                node,
+                                                jacksonTypeRef<
+                                                    AgentBrowserAuthenticationCancelParam
+                                                >(),
+                                            )
+                                            ?.let {
+                                                Response(
+                                                    agentBrowserAuthenticationCancelParam = it,
+                                                    _json = json,
+                                                )
+                                            },
+                                    )
+                                    .filterNotNull()
+                                    .allMaxBy { it.validity() }
+                                    .toList()
+                            return when (bestMatches.size) {
+                                // This can happen if what we're deserializing is completely
+                                // incompatible with all the possible variants (e.g. deserializing
+                                // from boolean).
+                                0 -> Response(_json = json)
+                                1 -> bestMatches.single()
+                                // If there's more than one match with the highest validity, then
+                                // use the first completely valid match, or simply the first match
+                                // if none are completely valid.
+                                else ->
+                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                            }
+                        }
+                        "browser_origin_access" -> {
+                            return tryDeserialize(
+                                    node,
+                                    jacksonTypeRef<AgentBrowserOriginAccessParam>(),
+                                )
+                                ?.let { Response(browserOriginAccess = it, _json = json) }
+                                ?: Response(_json = json)
+                        }
+                    }
+
+                    return Response(_json = json)
+                }
+            }
+
+            internal class Serializer : BaseSerializer<Response>(Response::class) {
+
+                override fun serialize(
+                    value: Response,
+                    generator: JsonGenerator,
+                    provider: SerializerProvider,
+                ) {
+                    when {
+                        value.agentBrowserAuthenticationSubmitParam != null ->
+                            generator.writeObject(value.agentBrowserAuthenticationSubmitParam)
+                        value.agentBrowserAuthenticationCancelParam != null ->
+                            generator.writeObject(value.agentBrowserAuthenticationCancelParam)
+                        value.browserOriginAccess != null ->
+                            generator.writeObject(value.browserOriginAccess)
+                        value._json != null -> generator.writeObject(value._json)
+                        else -> throw IllegalStateException("Invalid Response")
+                    }
+                }
+            }
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is AgentSessionInputComputerUseApprovalRequestResult &&
+                requestId == other.requestId &&
+                response == other.response &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(requestId, response, type, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "AgentSessionInputComputerUseApprovalRequestResult{requestId=$requestId, response=$response, type=$type, additionalProperties=$additionalProperties}"
     }
 
     /** Adds one or more user messages and starts a turn. */
@@ -620,7 +1370,7 @@ private constructor(
         fun error(): Optional<String> = error.getOptional("error")
 
         /**
-         * A function result represented as text or supported model-input content.
+         * The function result when the call succeeded.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -780,7 +1530,7 @@ private constructor(
              */
             fun error(error: JsonField<String>) = apply { this.error = error }
 
-            /** A function result represented as text or supported model-input content. */
+            /** The function result when the call succeeded. */
             fun output(output: AgentFunctionCallOutputParam?) = output(JsonField.ofNullable(output))
 
             /** Alias for calling [Builder.output] with `output.orElse(null)`. */

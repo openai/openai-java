@@ -42,7 +42,8 @@ private constructor(
 
     override fun items(): List<Video> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty() && lastId().isPresent
+    override fun hasNextPage(): Boolean =
+        hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent
 
     fun nextPageParams(): VideoListParams {
         val nextCursor =

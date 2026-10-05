@@ -46,7 +46,7 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
-     * An error reported while preparing a session environment.
+     * The error reported while preparing the environment, if any.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -154,7 +154,7 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** An error reported while preparing a session environment. */
+        /** The error reported while preparing the environment, if any. */
         fun error(error: Error?) = error(JsonField.ofNullable(error))
 
         /** Alias for calling [Builder.error] with `error.orElse(null)`. */
@@ -276,7 +276,7 @@ private constructor(
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (if (type.asKnown().isPresent) 1 else 0)
 
-    /** An error reported while preparing a session environment. */
+    /** The error reported while preparing the environment, if any. */
     class Error
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(

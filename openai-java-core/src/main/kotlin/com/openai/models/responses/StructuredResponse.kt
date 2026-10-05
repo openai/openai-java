@@ -22,6 +22,12 @@ class StructuredResponse<T : Any>(
     /** @see Response.id */
     fun id(): String = rawResponse.id()
 
+    /** @see Response.accessPrograms */
+    fun accessPrograms(): Optional<Response.AccessPrograms> = rawResponse.accessPrograms()
+
+    /** @see Response._accessPrograms */
+    fun _accessPrograms(): JsonField<Response.AccessPrograms> = rawResponse._accessPrograms()
+
     /** @see Response.createdAt */
     fun createdAt(): Double = rawResponse.createdAt()
 

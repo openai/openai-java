@@ -1723,7 +1723,7 @@ private constructor(
                     private var index: JsonField<Long>? = null
                     private var id: JsonField<String> = JsonMissing.of()
                     private var function: JsonField<Function> = JsonMissing.of()
-                    private var type: JsonField<Type> = JsonMissing.of()
+                    private var type: JsonField<Type> = JsonField.of(Type.FUNCTION)
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -3102,7 +3102,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Input: $json")
+                    throw OpenAIInvalidDataException("Unknown Input")
                 }
             }
 
@@ -4676,7 +4676,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Output: $json")
+                    throw OpenAIInvalidDataException("Unknown Output")
                 }
             }
 

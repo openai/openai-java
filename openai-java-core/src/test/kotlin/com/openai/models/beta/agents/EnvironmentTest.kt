@@ -73,6 +73,8 @@ internal class EnvironmentTest {
                         .version("version")
                         .build()
                 )
+                .containerSize(Environment.OpenAIHosted.ContainerSize.SMALL)
+                .desktop(Environment.OpenAIHosted.Desktop.builder().enabled(true).build())
                 .build()
 
         val environment = Environment.ofOpenAIHosted(openaiHosted)
@@ -122,6 +124,8 @@ internal class EnvironmentTest {
                             .version("version")
                             .build()
                     )
+                    .containerSize(Environment.OpenAIHosted.ContainerSize.SMALL)
+                    .desktop(Environment.OpenAIHosted.Desktop.builder().enabled(true).build())
                     .build()
             )
 

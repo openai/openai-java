@@ -12,6 +12,7 @@ import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionDeleted
 import com.openai.models.beta.agents.AgentSessionEvent
 import com.openai.models.beta.agents.AgentSessionStreamParams
+import com.openai.models.beta.agents.AgentToolHandlers
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.SessionDeleteParams
 import com.openai.models.beta.agents.sessions.SessionListPageAsync
@@ -22,6 +23,7 @@ import com.openai.services.async.beta.agents.sessions.ArtifactServiceAsync
 import com.openai.services.async.beta.agents.sessions.EventServiceAsync
 import com.openai.services.async.beta.agents.sessions.ItemServiceAsync
 import com.openai.services.async.beta.agents.sessions.SubagentServiceAsync
+import com.openai.services.async.beta.agents.sessions.TraceServiceAsync
 import com.openai.services.async.beta.agents.sessions.TurnServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -61,6 +63,8 @@ interface SessionServiceAsync {
 
     fun events(): EventServiceAsync
 
+    fun traces(): TraceServiceAsync
+
     fun turns(): TurnServiceAsync
 
     /**
@@ -90,6 +94,23 @@ interface SessionServiceAsync {
         params: SessionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AsyncStreamResponse<AgentSessionEvent>
+
+    /** Creates and handles the initial turn using local function callbacks. */
+    fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+    ): AsyncStreamResponse<AgentSessionEvent> =
+        createStreaming(params, handlers, RequestOptions.none())
+
+    /** @see createStreaming */
+    fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<AgentSessionEvent> =
+        throw UnsupportedOperationException(
+            "This service does not implement creation tool handlers"
+        )
 
     /**
      * Retrieves the current state of a managed agent session. See
@@ -130,7 +151,8 @@ interface SessionServiceAsync {
         retrieve(sessionId, SessionRetrieveParams.none(), requestOptions)
 
     /**
-     * Updates session metadata. Omitted fields are unchanged. See
+     * Updates session metadata, model, reasoning effort, or service tier. Model settings apply to
+     * subsequent turns. Omitted fields are unchanged. See
      * [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
      */
     fun update(sessionId: String): CompletableFuture<AgentSession> =
@@ -186,8 +208,10 @@ interface SessionServiceAsync {
         list(SessionListParams.none(), requestOptions)
 
     /**
-     * Removes a managed agent session from the public API and returns a deletion confirmation.
-     * Physical cleanup may continue asynchronously. See
+     * Removes a managed agent session from the public API and returns a deletion confirmation. If
+     * backend execution has ended, deletion can cancel a still-open public turn and abandon
+     * unpublished outputs. Running execution must be cancelled first. Physical cleanup may continue
+     * asynchronously. See
      * [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
      */
     fun delete(sessionId: String): CompletableFuture<AgentSessionDeleted> =
@@ -245,6 +269,8 @@ interface SessionServiceAsync {
         fun items(): ItemServiceAsync.WithRawResponse
 
         fun events(): EventServiceAsync.WithRawResponse
+
+        fun traces(): TraceServiceAsync.WithRawResponse
 
         fun turns(): TurnServiceAsync.WithRawResponse
 

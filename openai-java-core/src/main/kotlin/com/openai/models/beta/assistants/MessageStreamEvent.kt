@@ -383,7 +383,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown MessageStreamEvent: $json")
+            throw OpenAIInvalidDataException("Unknown MessageStreamEvent")
         }
     }
 

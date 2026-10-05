@@ -33,7 +33,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Creates an edited or extended image given one or more source images and a prompt. This endpoint
- * supports GPT Image models and `dall-e-2`.
+ * supports GPT Image models.
  */
 class ImageEditParams
 private constructor(
@@ -51,17 +51,14 @@ private constructor(
      * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
      * images.
      *
-     * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
-     * than 4MB.
-     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun image(): Image = body.image()
 
     /**
-     * A text description of the desired image(s). The maximum length is 1000 characters for
-     * `dall-e-2`, and 32000 characters for the GPT image models.
+     * A text description of the desired image(s). The maximum length is 32000 characters for the
+     * GPT image models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -84,10 +81,9 @@ private constructor(
     fun background(): Optional<Background> = body.background()
 
     /**
-     * Control how much effort the model will exert to match the style and features, especially
-     * facial features, of input images. This parameter is only supported for `gpt-image-1` and
-     * `gpt-image-1.5` and later models, unsupported for `gpt-image-1-mini`. Supports `high` and
-     * `low`. Defaults to `low`.
+     * Controls fidelity to the original input image(s). This parameter is supported for GPT image
+     * models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21` ignore this
+     * parameter.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -106,10 +102,10 @@ private constructor(
     fun mask(): Optional<InputStream> = body.mask()
 
     /**
-     * The model to use for image generation. One of `dall-e-2` or a GPT image model (`gpt-image-1`,
-     * `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`,
-     * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-     * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`). Defaults to `gpt-image-1.5`.
+     * The GPT image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
+     * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+     * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`,
+     * or `chatgpt-image-latest`).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -166,27 +162,24 @@ private constructor(
     fun quality(): Optional<Quality> = body.quality()
 
     /**
-     * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
-     * URLs are only valid for 60 minutes after the image has been generated. This parameter is only
-     * supported for `dall-e-2` (default is `url` for `dall-e-2`), as GPT image models always return
-     * base64-encoded images.
+     * Legacy response format parameter for retired image models. Unsupported for GPT image models,
+     * which always return base64-encoded images.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
+    @Deprecated("deprecated") fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
     /**
-     * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
-     * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
-     * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
-     * strings, for example `1536x864`. Width and height must both be divisible by 16 and the
-     * requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are
-     * experimental, and the maximum supported resolution is `3840x2160`. The requested size must
-     * also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
-     * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for
-     * models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or
-     * `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+     * The size of the generated images. Defaults to `auto`. For `gpt-image-2`,
+     * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+     * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are
+     * supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be
+     * divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above
+     * `2560x1440` are experimental, and the maximum supported resolution is `3840x2160`. The
+     * requested size must also satisfy the model's current pixel and edge limits. The standard
+     * sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
+     * is supported for models that allow automatic sizing.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -290,6 +283,7 @@ private constructor(
      * Unlike [responseFormat], this method doesn't throw if the multipart field has an unexpected
      * type.
      */
+    @Deprecated("deprecated")
     fun _responseFormat(): MultipartField<ResponseFormat> = body._responseFormat()
 
     /**
@@ -366,9 +360,6 @@ private constructor(
          * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
          * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-         *
-         * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
-         * than 4MB.
          */
         fun image(image: Image) = apply { body.image(image) }
 
@@ -391,9 +382,6 @@ private constructor(
          * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
          * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-         *
-         * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
-         * than 4MB.
          */
         fun image(inputStream: ByteArray) = apply { body.image(inputStream) }
 
@@ -405,9 +393,6 @@ private constructor(
          * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
          * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-         *
-         * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
-         * than 4MB.
          */
         fun image(path: Path) = apply { body.image(path) }
 
@@ -417,8 +402,8 @@ private constructor(
         }
 
         /**
-         * A text description of the desired image(s). The maximum length is 1000 characters for
-         * `dall-e-2`, and 32000 characters for the GPT image models.
+         * A text description of the desired image(s). The maximum length is 32000 characters for
+         * the GPT image models.
          */
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
@@ -458,10 +443,9 @@ private constructor(
         }
 
         /**
-         * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. This parameter is only supported for `gpt-image-1` and
-         * `gpt-image-1.5` and later models, unsupported for `gpt-image-1-mini`. Supports `high` and
-         * `low`. Defaults to `low`.
+         * Controls fidelity to the original input image(s). This parameter is supported for GPT
+         * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
+         * ignore this parameter.
          */
         fun inputFidelity(inputFidelity: InputFidelity?) = apply {
             body.inputFidelity(inputFidelity)
@@ -516,11 +500,10 @@ private constructor(
         fun mask(path: Path) = apply { body.mask(path) }
 
         /**
-         * The model to use for image generation. One of `dall-e-2` or a GPT image model
-         * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-         * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
-         * Defaults to `gpt-image-1.5`.
+         * The GPT image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
+         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+         * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
          */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
@@ -669,16 +652,16 @@ private constructor(
         fun quality(quality: MultipartField<Quality>) = apply { body.quality(quality) }
 
         /**
-         * The format in which the generated images are returned. Must be one of `url` or
-         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated. This
-         * parameter is only supported for `dall-e-2` (default is `url` for `dall-e-2`), as GPT
-         * image models always return base64-encoded images.
+         * Legacy response format parameter for retired image models. Unsupported for GPT image
+         * models, which always return base64-encoded images.
          */
+        @Deprecated("deprecated")
         fun responseFormat(responseFormat: ResponseFormat?) = apply {
             body.responseFormat(responseFormat)
         }
 
         /** Alias for calling [Builder.responseFormat] with `responseFormat.orElse(null)`. */
+        @Deprecated("deprecated")
         fun responseFormat(responseFormat: Optional<ResponseFormat>) =
             responseFormat(responseFormat.getOrNull())
 
@@ -689,22 +672,21 @@ private constructor(
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
+        @Deprecated("deprecated")
         fun responseFormat(responseFormat: MultipartField<ResponseFormat>) = apply {
             body.responseFormat(responseFormat)
         }
 
         /**
-         * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
-         * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
-         * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
-         * strings, for example `1536x864`. Width and height must both be divisible by 16 and the
-         * requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are
-         * experimental, and the maximum supported resolution is `3840x2160`. The requested size
-         * must also satisfy the model's current pixel and edge limits. The standard sizes
-         * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
-         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
-         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-         * `1792x1024`, or `1024x1792`.
+         * The size of the generated images. Defaults to `auto`. For `gpt-image-2`,
+         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+         * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are
+         * supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both
+         * be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1.
+         * Resolutions above `2560x1440` are experimental, and the maximum supported resolution is
+         * `3840x2160`. The requested size must also satisfy the model's current pixel and edge
+         * limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the
+         * GPT image models; `auto` is supported for models that allow automatic sizing.
          */
         fun size(size: Size?) = apply { body.size(size) }
 
@@ -927,17 +909,14 @@ private constructor(
          * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
          *
-         * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
-         * than 4MB.
-         *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun image(): Image = image.value.getRequired("image")
 
         /**
-         * A text description of the desired image(s). The maximum length is 1000 characters for
-         * `dall-e-2`, and 32000 characters for the GPT image models.
+         * A text description of the desired image(s). The maximum length is 32000 characters for
+         * the GPT image models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -961,10 +940,9 @@ private constructor(
         fun background(): Optional<Background> = background.value.getOptional("background")
 
         /**
-         * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. This parameter is only supported for `gpt-image-1` and
-         * `gpt-image-1.5` and later models, unsupported for `gpt-image-1-mini`. Supports `high` and
-         * `low`. Defaults to `low`.
+         * Controls fidelity to the original input image(s). This parameter is supported for GPT
+         * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
+         * ignore this parameter.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -984,11 +962,10 @@ private constructor(
         fun mask(): Optional<InputStream> = mask.value.getOptional("mask")
 
         /**
-         * The model to use for image generation. One of `dall-e-2` or a GPT image model
-         * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-         * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
-         * Defaults to `gpt-image-1.5`.
+         * The GPT image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
+         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+         * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1048,29 +1025,26 @@ private constructor(
         fun quality(): Optional<Quality> = quality.value.getOptional("quality")
 
         /**
-         * The format in which the generated images are returned. Must be one of `url` or
-         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated. This
-         * parameter is only supported for `dall-e-2` (default is `url` for `dall-e-2`), as GPT
-         * image models always return base64-encoded images.
+         * Legacy response format parameter for retired image models. Unsupported for GPT image
+         * models, which always return base64-encoded images.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        @Deprecated("deprecated")
         fun responseFormat(): Optional<ResponseFormat> =
             responseFormat.value.getOptional("response_format")
 
         /**
-         * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
-         * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
-         * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
-         * strings, for example `1536x864`. Width and height must both be divisible by 16 and the
-         * requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are
-         * experimental, and the maximum supported resolution is `3840x2160`. The requested size
-         * must also satisfy the model's current pixel and edge limits. The standard sizes
-         * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
-         * is supported for models that allow automatic sizing. For `dall-e-2`, use one of
-         * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-         * `1792x1024`, or `1024x1792`.
+         * The size of the generated images. Defaults to `auto`. For `gpt-image-2`,
+         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+         * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are
+         * supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both
+         * be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1.
+         * Resolutions above `2560x1440` are experimental, and the maximum supported resolution is
+         * `3840x2160`. The requested size must also satisfy the model's current pixel and edge
+         * limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the
+         * GPT image models; `auto` is supported for models that allow automatic sizing.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1186,6 +1160,7 @@ private constructor(
          * Unlike [responseFormat], this method doesn't throw if the multipart field has an
          * unexpected type.
          */
+        @Deprecated("deprecated")
         @JsonProperty("response_format")
         @ExcludeMissing
         fun _responseFormat(): MultipartField<ResponseFormat> = responseFormat
@@ -1276,9 +1251,6 @@ private constructor(
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
              * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
              * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-             *
-             * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
-             * less than 4MB.
              */
             fun image(image: Image) =
                 image(
@@ -1308,9 +1280,6 @@ private constructor(
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
              * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
              * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-             *
-             * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
-             * less than 4MB.
              */
             fun image(inputStream: ByteArray) = image(inputStream.inputStream())
 
@@ -1322,9 +1291,6 @@ private constructor(
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
              * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
              * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
-             *
-             * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
-             * less than 4MB.
              */
             fun image(path: Path) =
                 image(
@@ -1340,8 +1306,8 @@ private constructor(
                 image(Image.ofInputStreams(inputStreams))
 
             /**
-             * A text description of the desired image(s). The maximum length is 1000 characters for
-             * `dall-e-2`, and 32000 characters for the GPT image models.
+             * A text description of the desired image(s). The maximum length is 32000 characters
+             * for the GPT image models.
              */
             fun prompt(prompt: String) = prompt(MultipartField.of(prompt))
 
@@ -1382,10 +1348,9 @@ private constructor(
             }
 
             /**
-             * Control how much effort the model will exert to match the style and features,
-             * especially facial features, of input images. This parameter is only supported for
-             * `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for
-             * `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
+             * Controls fidelity to the original input image(s). This parameter is supported for GPT
+             * image models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21`
+             * ignore this parameter.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(MultipartField.of(inputFidelity))
@@ -1445,12 +1410,10 @@ private constructor(
                 )
 
             /**
-             * The model to use for image generation. One of `dall-e-2` or a GPT image model
-             * (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * The GPT image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
+             * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`). Defaults to
-             * `gpt-image-1.5`.
+             * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
              */
             fun model(model: ImageModel?) = model(MultipartField.of(model))
 
@@ -1607,15 +1570,15 @@ private constructor(
             fun quality(quality: MultipartField<Quality>) = apply { this.quality = quality }
 
             /**
-             * The format in which the generated images are returned. Must be one of `url` or
-             * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
-             * This parameter is only supported for `dall-e-2` (default is `url` for `dall-e-2`), as
-             * GPT image models always return base64-encoded images.
+             * Legacy response format parameter for retired image models. Unsupported for GPT image
+             * models, which always return base64-encoded images.
              */
+            @Deprecated("deprecated")
             fun responseFormat(responseFormat: ResponseFormat?) =
                 responseFormat(MultipartField.of(responseFormat))
 
             /** Alias for calling [Builder.responseFormat] with `responseFormat.orElse(null)`. */
+            @Deprecated("deprecated")
             fun responseFormat(responseFormat: Optional<ResponseFormat>) =
                 responseFormat(responseFormat.getOrNull())
 
@@ -1626,22 +1589,23 @@ private constructor(
              * value instead. This method is primarily for setting the field to an undocumented or
              * not yet supported value.
              */
+            @Deprecated("deprecated")
             fun responseFormat(responseFormat: MultipartField<ResponseFormat>) = apply {
                 this.responseFormat = responseFormat
             }
 
             /**
-             * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
-             * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as
+             * The size of the generated images. Defaults to `auto`. For `gpt-image-2`,
+             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+             * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as
              * `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be
              * divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1.
              * Resolutions above `2560x1440` are experimental, and the maximum supported resolution
              * is `3840x2160`. The requested size must also satisfy the model's current pixel and
              * edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are
              * supported by the GPT image models; `auto` is supported for models that allow
-             * automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
-             * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+             * automatic sizing.
              */
             fun size(size: Size?) = size(MultipartField.of(size))
 
@@ -1831,9 +1795,6 @@ private constructor(
      * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each
      * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
      * images.
-     *
-     * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
-     * than 4MB.
      */
     @JsonSerialize(using = Image.Serializer::class)
     class Image
@@ -1841,7 +1802,18 @@ private constructor(
         private val inputStream: InputStream? = null,
         private val inputStreams: List<InputStream>? = null,
         private val _json: JsonValue? = null,
-    ) {
+    ) : com.openai.core.http.MultipartInputStreamProvider {
+
+        @JvmSynthetic
+        override fun collectMultipartInputStreams(
+            consumer: (java.io.InputStream) -> kotlin.Unit
+        ): kotlin.Unit {
+            when {
+                this.inputStream != null -> consumer(this.inputStream)
+                this.inputStreams != null -> this.inputStreams.forEach(consumer)
+                else -> {}
+            }
+        }
 
         fun inputStream(): Optional<InputStream> = Optional.ofNullable(inputStream)
 
@@ -1975,7 +1947,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Image: $json")
+                throw OpenAIInvalidDataException("Unknown Image")
             }
         }
 
@@ -2149,10 +2121,9 @@ private constructor(
     }
 
     /**
-     * Control how much effort the model will exert to match the style and features, especially
-     * facial features, of input images. This parameter is only supported for `gpt-image-1` and
-     * `gpt-image-1.5` and later models, unsupported for `gpt-image-1-mini`. Supports `high` and
-     * `low`. Defaults to `low`.
+     * Controls fidelity to the original input image(s). This parameter is supported for GPT image
+     * models that support input fidelity. `gpt-image-2` and `gpt-image-2-2026-04-21` ignore this
+     * parameter.
      */
     class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -2458,8 +2429,6 @@ private constructor(
 
         companion object {
 
-            @JvmField val STANDARD = of("standard")
-
             @JvmField val LOW = of("low")
 
             @JvmField val MEDIUM = of("medium")
@@ -2472,18 +2441,27 @@ private constructor(
 
             @JvmField val AUTO = of("auto")
 
+            @Deprecated(
+                "This quality was only supported by retired DALL·E models. Use a GPT image quality instead."
+            )
+            @JvmField
+            val STANDARD = of("standard")
+
             @JvmStatic fun of(value: String) = Quality(JsonField.of(value))
         }
 
         /** An enum containing [Quality]'s known values. */
         enum class Known {
-            STANDARD,
             LOW,
             MEDIUM,
             HIGH,
             XHIGH,
             MAX,
             AUTO,
+            @Deprecated(
+                "This quality was only supported by retired DALL·E models. Use a GPT image quality instead."
+            )
+            STANDARD,
         }
 
         /**
@@ -2496,13 +2474,16 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
-            STANDARD,
             LOW,
             MEDIUM,
             HIGH,
             XHIGH,
             MAX,
             AUTO,
+            @Deprecated(
+                "This quality was only supported by retired DALL·E models. Use a GPT image quality instead."
+            )
+            STANDARD,
             /** An enum member indicating that [Quality] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -2516,13 +2497,13 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
-                STANDARD -> Value.STANDARD
                 LOW -> Value.LOW
                 MEDIUM -> Value.MEDIUM
                 HIGH -> Value.HIGH
                 XHIGH -> Value.XHIGH
                 MAX -> Value.MAX
                 AUTO -> Value.AUTO
+                STANDARD -> Value.STANDARD
                 else -> Value._UNKNOWN
             }
 
@@ -2537,13 +2518,13 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
-                STANDARD -> Known.STANDARD
                 LOW -> Known.LOW
                 MEDIUM -> Known.MEDIUM
                 HIGH -> Known.HIGH
                 XHIGH -> Known.XHIGH
                 MAX -> Known.MAX
                 AUTO -> Known.AUTO
+                STANDARD -> Known.STANDARD
                 else -> throw OpenAIInvalidDataException("Unknown Quality: $value")
             }
 
@@ -2609,11 +2590,10 @@ private constructor(
     }
 
     /**
-     * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
-     * URLs are only valid for 60 minutes after the image has been generated. This parameter is only
-     * supported for `dall-e-2` (default is `url` for `dall-e-2`), as GPT image models always return
-     * base64-encoded images.
+     * Legacy response format parameter for retired image models. Unsupported for GPT image models,
+     * which always return base64-encoded images.
      */
+    @Deprecated("deprecated")
     class ResponseFormat @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
 
@@ -2753,16 +2733,15 @@ private constructor(
     }
 
     /**
-     * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
-     * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
-     * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
-     * strings, for example `1536x864`. Width and height must both be divisible by 16 and the
-     * requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are
-     * experimental, and the maximum supported resolution is `3840x2160`. The requested size must
-     * also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
-     * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for
-     * models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or
-     * `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+     * The size of the generated images. Defaults to `auto`. For `gpt-image-2`,
+     * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+     * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are
+     * supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be
+     * divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above
+     * `2560x1440` are experimental, and the maximum supported resolution is `3840x2160`. The
+     * requested size must also satisfy the model's current pixel and edge limits. The standard
+     * sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
+     * is supported for models that allow automatic sizing.
      */
     class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -2778,10 +2757,6 @@ private constructor(
 
         companion object {
 
-            @JvmField val _256X256 = of("256x256")
-
-            @JvmField val _512X512 = of("512x512")
-
             @JvmField val _1024X1024 = of("1024x1024")
 
             @JvmField val _1536X1024 = of("1536x1024")
@@ -2790,17 +2765,35 @@ private constructor(
 
             @JvmField val AUTO = of("auto")
 
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
+            @JvmField
+            val _256X256 = of("256x256")
+
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
+            @JvmField
+            val _512X512 = of("512x512")
+
             @JvmStatic fun of(value: String) = Size(JsonField.of(value))
         }
 
         /** An enum containing [Size]'s known values. */
         enum class Known {
-            _256X256,
-            _512X512,
             _1024X1024,
             _1536X1024,
             _1024X1536,
             AUTO,
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
+            _256X256,
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
+            _512X512,
         }
 
         /**
@@ -2813,12 +2806,18 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
-            _256X256,
-            _512X512,
             _1024X1024,
             _1536X1024,
             _1024X1536,
             AUTO,
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
+            _256X256,
+            @Deprecated(
+                "This legacy size suggestion is retained for SDK compatibility. Check the selected GPT image model's supported sizes."
+            )
+            _512X512,
             /** An enum member indicating that [Size] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -2832,12 +2831,12 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
-                _256X256 -> Value._256X256
-                _512X512 -> Value._512X512
                 _1024X1024 -> Value._1024X1024
                 _1536X1024 -> Value._1536X1024
                 _1024X1536 -> Value._1024X1536
                 AUTO -> Value.AUTO
+                _256X256 -> Value._256X256
+                _512X512 -> Value._512X512
                 else -> Value._UNKNOWN
             }
 
@@ -2852,12 +2851,12 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
-                _256X256 -> Known._256X256
-                _512X512 -> Known._512X512
                 _1024X1024 -> Known._1024X1024
                 _1536X1024 -> Known._1536X1024
                 _1024X1536 -> Known._1024X1536
                 AUTO -> Known.AUTO
+                _256X256 -> Known._256X256
+                _512X512 -> Known._512X512
                 else -> throw OpenAIInvalidDataException("Unknown Size: $value")
             }
 

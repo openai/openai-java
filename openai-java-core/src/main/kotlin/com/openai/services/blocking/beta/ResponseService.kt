@@ -20,6 +20,7 @@ import com.openai.services.blocking.beta.responses.InputItemService
 import com.openai.services.blocking.beta.responses.InputTokenService
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 interface ResponseService {
 
     /**
@@ -34,8 +35,10 @@ interface ResponseService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService
 
+    /** Create and manage model responses. */
     fun inputItems(): InputItemService
 
+    /** Create and manage model responses. */
     fun inputTokens(): InputTokenService
 
     /**
@@ -257,8 +260,10 @@ interface ResponseService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService.WithRawResponse
 
+        /** Create and manage model responses. */
         fun inputItems(): InputItemService.WithRawResponse
 
+        /** Create and manage model responses. */
         fun inputTokens(): InputTokenService.WithRawResponse
 
         /**

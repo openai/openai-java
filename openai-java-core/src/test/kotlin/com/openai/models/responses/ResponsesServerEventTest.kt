@@ -34,6 +34,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -169,6 +170,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -258,6 +260,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -350,6 +353,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -446,6 +450,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -547,6 +552,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -647,6 +653,7 @@ internal class ResponsesServerEventTest {
             .contains(responseCodeInterpreterCallCompleted)
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -746,6 +753,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress())
             .contains(responseCodeInterpreterCallInProgress)
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -845,6 +853,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting())
             .contains(responseCodeInterpreterCallInterpreting)
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -921,12 +930,115 @@ internal class ResponsesServerEventTest {
     }
 
     @Test
+    fun ofResponseCompactionCompacting() {
+        val responseCompactionCompacting =
+            ResponseCompactionCompactingEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseCompactionCompacting(responseCompactionCompacting)
+
+        assertThat(responsesServerEvent.responseAudioDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioDone()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(responsesServerEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting())
+            .contains(responseCompactionCompacting)
+        assertThat(responsesServerEvent.responseCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseCreated()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(responsesServerEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(responsesServerEvent.responseInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseFailed()).isEmpty
+        assertThat(responsesServerEvent.responseIncomplete()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemAdded()).isEmpty
+        assertThat(responsesServerEvent.responseOutputItemDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseReasoningTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDelta()).isEmpty
+        assertThat(responsesServerEvent.responseRefusalDone()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDelta()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextDone()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(responsesServerEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(responsesServerEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(responsesServerEvent.responseQueued()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(responsesServerEvent.responseCustomToolCallInputDone()).isEmpty
+        assertThat(responsesServerEvent.error()).isEmpty
+        assertThat(responsesServerEvent.responseSteerAccepted()).isEmpty
+        assertThat(responsesServerEvent.responseSteerPending()).isEmpty
+        assertThat(responsesServerEvent.responseSteerFailed()).isEmpty
+    }
+
+    @Test
+    fun ofResponseCompactionCompactingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responsesServerEvent =
+            ResponsesServerEvent.ofResponseCompactionCompacting(
+                ResponseCompactionCompactingEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponsesServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responsesServerEvent),
+                jacksonTypeRef<ResponsesServerEvent>(),
+            )
+
+        assertThat(roundtrippedResponsesServerEvent).isEqualTo(responsesServerEvent)
+    }
+
+    @Test
     fun ofResponseCompleted() {
         val responseCompleted =
             ResponseCompletedEvent.builder()
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -1169,6 +1281,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).contains(responseCompleted)
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -1232,6 +1345,11 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
@@ -1531,6 +1649,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded())
             .contains(responseContentPartAdded)
@@ -1682,6 +1801,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).contains(responseContentPartDone)
@@ -1791,6 +1911,11 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -2033,6 +2158,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -2096,6 +2222,11 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
@@ -2368,6 +2499,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -2467,6 +2599,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -2564,6 +2697,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -2664,6 +2798,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -2765,6 +2900,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -2864,6 +3000,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -2964,6 +3101,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -3064,6 +3202,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -3171,6 +3310,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -3286,6 +3426,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -3378,6 +3519,11 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -3620,6 +3766,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -3683,6 +3830,11 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
@@ -3941,6 +4093,11 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -4183,6 +4340,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -4246,6 +4404,11 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
@@ -4504,6 +4667,11 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -4746,6 +4914,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -4809,6 +4978,11 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
@@ -5113,6 +5287,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -5273,6 +5448,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -5405,6 +5581,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -5511,6 +5688,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -5615,6 +5793,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -5718,6 +5897,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -5819,6 +5999,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -5920,6 +6101,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -6020,6 +6202,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -6119,6 +6302,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -6231,6 +6415,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -6355,6 +6540,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -6465,6 +6651,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -6562,6 +6749,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -6659,6 +6847,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -6758,6 +6947,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -6857,6 +7047,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -6956,6 +7147,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -7061,6 +7253,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -7165,6 +7358,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -7264,6 +7458,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -7362,6 +7557,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -7459,6 +7655,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -7555,6 +7752,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -7652,6 +7850,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -7749,6 +7948,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -7846,6 +8046,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -7954,6 +8155,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -8046,6 +8248,11 @@ internal class ResponsesServerEventTest {
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
@@ -8288,6 +8495,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -8351,6 +8559,11 @@ internal class ResponsesServerEventTest {
                     .response(
                         Response.builder()
                             .id("id")
+                            .accessPrograms(
+                                Response.AccessPrograms.builder()
+                                    .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 ResponseError.builder()
@@ -8626,6 +8839,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -8725,6 +8939,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -8851,6 +9066,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -9063,6 +9279,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -9233,6 +9450,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty
@@ -9417,6 +9635,7 @@ internal class ResponsesServerEventTest {
         assertThat(responsesServerEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(responsesServerEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(responsesServerEvent.responseCompactionCompacting()).isEmpty
         assertThat(responsesServerEvent.responseCompleted()).isEmpty
         assertThat(responsesServerEvent.responseContentPartAdded()).isEmpty
         assertThat(responsesServerEvent.responseContentPartDone()).isEmpty

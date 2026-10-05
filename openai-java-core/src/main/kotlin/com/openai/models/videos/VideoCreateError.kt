@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -24,6 +25,7 @@ class VideoCreateError
 private constructor(
     private val code: JsonField<String>,
     private val message: JsonField<String>,
+    private val headers: JsonField<Headers>,
     private val misalignment: JsonField<Misalignment>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -32,10 +34,11 @@ private constructor(
     private constructor(
         @JsonProperty("code") @ExcludeMissing code: JsonField<String> = JsonMissing.of(),
         @JsonProperty("message") @ExcludeMissing message: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("headers") @ExcludeMissing headers: JsonField<Headers> = JsonMissing.of(),
         @JsonProperty("misalignment")
         @ExcludeMissing
         misalignment: JsonField<Misalignment> = JsonMissing.of(),
-    ) : this(code, message, misalignment, mutableMapOf())
+    ) : this(code, message, headers, misalignment, mutableMapOf())
 
     /**
      * A machine-readable error code that was returned.
@@ -52,6 +55,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun message(): String = message.getRequired("message")
+
+    /**
+     * The Retry-After and Retry-After-Ms headers returned with the original error, if any.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun headers(): Optional<Headers> = headers.getOptional("headers")
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -72,6 +83,13 @@ private constructor(
      * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
+
+    /**
+     * Returns the raw JSON value of [headers].
+     *
+     * Unlike [headers], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("headers") @ExcludeMissing fun _headers(): JsonField<Headers> = headers
 
     /**
      * Returns the raw JSON value of [misalignment].
@@ -113,6 +131,7 @@ private constructor(
 
         private var code: JsonField<String>? = null
         private var message: JsonField<String>? = null
+        private var headers: JsonField<Headers> = JsonMissing.of()
         private var misalignment: JsonField<Misalignment> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -120,6 +139,7 @@ private constructor(
         internal fun from(videoCreateError: VideoCreateError) = apply {
             code = videoCreateError.code
             message = videoCreateError.message
+            headers = videoCreateError.headers
             misalignment = videoCreateError.misalignment
             additionalProperties = videoCreateError.additionalProperties.toMutableMap()
         }
@@ -145,6 +165,17 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun message(message: JsonField<String>) = apply { this.message = message }
+
+        /** The Retry-After and Retry-After-Ms headers returned with the original error, if any. */
+        fun headers(headers: Headers) = headers(JsonField.of(headers))
+
+        /**
+         * Sets [Builder.headers] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.headers] with a well-typed [Headers] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun headers(headers: JsonField<Headers>) = apply { this.headers = headers }
 
         fun misalignment(misalignment: Misalignment) = misalignment(JsonField.of(misalignment))
 
@@ -195,6 +226,7 @@ private constructor(
             VideoCreateError(
                 checkRequired("code", code),
                 checkRequired("message", message),
+                headers,
                 misalignment,
                 additionalProperties.toMutableMap(),
             )
@@ -217,6 +249,7 @@ private constructor(
 
         code()
         message()
+        headers().ifPresent { it.validate() }
         misalignment().ifPresent { it.validate() }
         validated = true
     }
@@ -238,7 +271,117 @@ private constructor(
     internal fun validity(): Int =
         (if (code.asKnown().isPresent) 1 else 0) +
             (if (message.asKnown().isPresent) 1 else 0) +
+            (headers.asKnown().getOrNull()?.validity() ?: 0) +
             (misalignment.asKnown().getOrNull()?.validity() ?: 0)
+
+    /** The Retry-After and Retry-After-Ms headers returned with the original error, if any. */
+    class Headers
+    @JsonCreator
+    private constructor(
+        @com.fasterxml.jackson.annotation.JsonValue
+        private val additionalProperties: Map<String, JsonValue>
+    ) {
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Headers]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Headers]. */
+        class Builder internal constructor() {
+
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(headers: Headers) = apply {
+                additionalProperties = headers.additionalProperties.toMutableMap()
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Headers].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Headers = Headers(additionalProperties.toImmutable())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Headers = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Headers && additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Headers{additionalProperties=$additionalProperties}"
+    }
 
     class Misalignment
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -834,16 +977,17 @@ private constructor(
         return other is VideoCreateError &&
             code == other.code &&
             message == other.message &&
+            headers == other.headers &&
             misalignment == other.misalignment &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(code, message, misalignment, additionalProperties)
+        Objects.hash(code, message, headers, misalignment, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "VideoCreateError{code=$code, message=$message, misalignment=$misalignment, additionalProperties=$additionalProperties}"
+        "VideoCreateError{code=$code, message=$message, headers=$headers, misalignment=$misalignment, additionalProperties=$additionalProperties}"
 }

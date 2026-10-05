@@ -18,11 +18,16 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Sent when a batch API request has been cancelled. */
+/** Sent when an agent session requires an action. Retrieve the session for action details. */
 @JsonDeserialize(using = UnwrapWebhookEvent.Deserializer::class)
 @JsonSerialize(using = UnwrapWebhookEvent.Serializer::class)
 class UnwrapWebhookEvent
 private constructor(
+    private val agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent? = null,
+    private val agentSessionCreated: AgentSessionCreatedWebhookEvent? = null,
+    private val agentSessionFailed: AgentSessionFailedWebhookEvent? = null,
+    private val agentSessionIdle: AgentSessionIdleWebhookEvent? = null,
+    private val agentSessionInProgress: AgentSessionInProgressWebhookEvent? = null,
     private val batchCancelled: BatchCancelledWebhookEvent? = null,
     private val batchCompleted: BatchCompletedWebhookEvent? = null,
     private val batchExpired: BatchExpiredWebhookEvent? = null,
@@ -41,9 +46,31 @@ private constructor(
     private val responseFailed: ResponseFailedWebhookEvent? = null,
     private val responseIncomplete: ResponseIncompleteWebhookEvent? = null,
     private val safetyAlertCreated: SafetyAlertCreatedWebhookEvent? = null,
+    private val safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent? = null,
     private val safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent? = null,
+    private val safetyWarningIssued: SafetyWarningIssuedWebhookEvent? = null,
     private val _json: JsonValue? = null,
 ) {
+
+    /** Sent when an agent session requires an action. Retrieve the session for action details. */
+    fun agentSessionActionRequired(): Optional<AgentSessionActionRequiredWebhookEvent> =
+        Optional.ofNullable(agentSessionActionRequired)
+
+    /** Sent when an agent session is created. */
+    fun agentSessionCreated(): Optional<AgentSessionCreatedWebhookEvent> =
+        Optional.ofNullable(agentSessionCreated)
+
+    /** Sent when an agent session fails. */
+    fun agentSessionFailed(): Optional<AgentSessionFailedWebhookEvent> =
+        Optional.ofNullable(agentSessionFailed)
+
+    /** Sent when an agent session becomes idle. */
+    fun agentSessionIdle(): Optional<AgentSessionIdleWebhookEvent> =
+        Optional.ofNullable(agentSessionIdle)
+
+    /** Sent when an agent session enters the in-progress state. */
+    fun agentSessionInProgress(): Optional<AgentSessionInProgressWebhookEvent> =
+        Optional.ofNullable(agentSessionInProgress)
 
     /** Sent when a batch API request has been cancelled. */
     fun batchCancelled(): Optional<BatchCancelledWebhookEvent> = Optional.ofNullable(batchCancelled)
@@ -126,9 +153,27 @@ private constructor(
     fun safetyAlertCreated(): Optional<SafetyAlertCreatedWebhookEvent> =
         Optional.ofNullable(safetyAlertCreated)
 
+    /** Sent when a deactivation is issued for a safety identifier in your organization. */
+    fun safetyDeactivationIssued(): Optional<SafetyDeactivationIssuedWebhookEvent> =
+        Optional.ofNullable(safetyDeactivationIssued)
+
     /** Sent when an approved safety alert is available for an enterprise workspace. */
     fun safetyOrgAlertCreated(): Optional<SafetyOrgAlertCreatedWebhookEvent> =
         Optional.ofNullable(safetyOrgAlertCreated)
+
+    /** Sent when a warning is issued for a safety identifier in your organization. */
+    fun safetyWarningIssued(): Optional<SafetyWarningIssuedWebhookEvent> =
+        Optional.ofNullable(safetyWarningIssued)
+
+    fun isAgentSessionActionRequired(): Boolean = agentSessionActionRequired != null
+
+    fun isAgentSessionCreated(): Boolean = agentSessionCreated != null
+
+    fun isAgentSessionFailed(): Boolean = agentSessionFailed != null
+
+    fun isAgentSessionIdle(): Boolean = agentSessionIdle != null
+
+    fun isAgentSessionInProgress(): Boolean = agentSessionInProgress != null
 
     fun isBatchCancelled(): Boolean = batchCancelled != null
 
@@ -166,7 +211,31 @@ private constructor(
 
     fun isSafetyAlertCreated(): Boolean = safetyAlertCreated != null
 
+    fun isSafetyDeactivationIssued(): Boolean = safetyDeactivationIssued != null
+
     fun isSafetyOrgAlertCreated(): Boolean = safetyOrgAlertCreated != null
+
+    fun isSafetyWarningIssued(): Boolean = safetyWarningIssued != null
+
+    /** Sent when an agent session requires an action. Retrieve the session for action details. */
+    fun asAgentSessionActionRequired(): AgentSessionActionRequiredWebhookEvent =
+        agentSessionActionRequired.getOrThrow("agentSessionActionRequired")
+
+    /** Sent when an agent session is created. */
+    fun asAgentSessionCreated(): AgentSessionCreatedWebhookEvent =
+        agentSessionCreated.getOrThrow("agentSessionCreated")
+
+    /** Sent when an agent session fails. */
+    fun asAgentSessionFailed(): AgentSessionFailedWebhookEvent =
+        agentSessionFailed.getOrThrow("agentSessionFailed")
+
+    /** Sent when an agent session becomes idle. */
+    fun asAgentSessionIdle(): AgentSessionIdleWebhookEvent =
+        agentSessionIdle.getOrThrow("agentSessionIdle")
+
+    /** Sent when an agent session enters the in-progress state. */
+    fun asAgentSessionInProgress(): AgentSessionInProgressWebhookEvent =
+        agentSessionInProgress.getOrThrow("agentSessionInProgress")
 
     /** Sent when a batch API request has been cancelled. */
     fun asBatchCancelled(): BatchCancelledWebhookEvent = batchCancelled.getOrThrow("batchCancelled")
@@ -249,9 +318,17 @@ private constructor(
     fun asSafetyAlertCreated(): SafetyAlertCreatedWebhookEvent =
         safetyAlertCreated.getOrThrow("safetyAlertCreated")
 
+    /** Sent when a deactivation is issued for a safety identifier in your organization. */
+    fun asSafetyDeactivationIssued(): SafetyDeactivationIssuedWebhookEvent =
+        safetyDeactivationIssued.getOrThrow("safetyDeactivationIssued")
+
     /** Sent when an approved safety alert is available for an enterprise workspace. */
     fun asSafetyOrgAlertCreated(): SafetyOrgAlertCreatedWebhookEvent =
         safetyOrgAlertCreated.getOrThrow("safetyOrgAlertCreated")
+
+    /** Sent when a warning is issued for a safety identifier in your organization. */
+    fun asSafetyWarningIssued(): SafetyWarningIssuedWebhookEvent =
+        safetyWarningIssued.getOrThrow("safetyWarningIssued")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -267,8 +344,8 @@ private constructor(
      *
      * Optional<String> result = unwrapWebhookEvent.accept(new UnwrapWebhookEvent.Visitor<Optional<String>>() {
      *     @Override
-     *     public Optional<String> visitBatchCancelled(BatchCancelledWebhookEvent batchCancelled) {
-     *         return Optional.of(batchCancelled.toString());
+     *     public Optional<String> visitAgentSessionActionRequired(AgentSessionActionRequiredWebhookEvent agentSessionActionRequired) {
+     *         return Optional.of(agentSessionActionRequired.toString());
      *     }
      *
      *     // ...
@@ -286,6 +363,13 @@ private constructor(
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
+            agentSessionActionRequired != null ->
+                visitor.visitAgentSessionActionRequired(agentSessionActionRequired)
+            agentSessionCreated != null -> visitor.visitAgentSessionCreated(agentSessionCreated)
+            agentSessionFailed != null -> visitor.visitAgentSessionFailed(agentSessionFailed)
+            agentSessionIdle != null -> visitor.visitAgentSessionIdle(agentSessionIdle)
+            agentSessionInProgress != null ->
+                visitor.visitAgentSessionInProgress(agentSessionInProgress)
             batchCancelled != null -> visitor.visitBatchCancelled(batchCancelled)
             batchCompleted != null -> visitor.visitBatchCompleted(batchCompleted)
             batchExpired != null -> visitor.visitBatchExpired(batchExpired)
@@ -307,8 +391,11 @@ private constructor(
             responseFailed != null -> visitor.visitResponseFailed(responseFailed)
             responseIncomplete != null -> visitor.visitResponseIncomplete(responseIncomplete)
             safetyAlertCreated != null -> visitor.visitSafetyAlertCreated(safetyAlertCreated)
+            safetyDeactivationIssued != null ->
+                visitor.visitSafetyDeactivationIssued(safetyDeactivationIssued)
             safetyOrgAlertCreated != null ->
                 visitor.visitSafetyOrgAlertCreated(safetyOrgAlertCreated)
+            safetyWarningIssued != null -> visitor.visitSafetyWarningIssued(safetyWarningIssued)
             else -> visitor.unknown(_json)
         }
 
@@ -329,6 +416,34 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
+                override fun visitAgentSessionActionRequired(
+                    agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
+                ) {
+                    agentSessionActionRequired.validate()
+                }
+
+                override fun visitAgentSessionCreated(
+                    agentSessionCreated: AgentSessionCreatedWebhookEvent
+                ) {
+                    agentSessionCreated.validate()
+                }
+
+                override fun visitAgentSessionFailed(
+                    agentSessionFailed: AgentSessionFailedWebhookEvent
+                ) {
+                    agentSessionFailed.validate()
+                }
+
+                override fun visitAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent) {
+                    agentSessionIdle.validate()
+                }
+
+                override fun visitAgentSessionInProgress(
+                    agentSessionInProgress: AgentSessionInProgressWebhookEvent
+                ) {
+                    agentSessionInProgress.validate()
+                }
+
                 override fun visitBatchCancelled(batchCancelled: BatchCancelledWebhookEvent) {
                     batchCancelled.validate()
                 }
@@ -419,10 +534,22 @@ private constructor(
                     safetyAlertCreated.validate()
                 }
 
+                override fun visitSafetyDeactivationIssued(
+                    safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
+                ) {
+                    safetyDeactivationIssued.validate()
+                }
+
                 override fun visitSafetyOrgAlertCreated(
                     safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent
                 ) {
                     safetyOrgAlertCreated.validate()
+                }
+
+                override fun visitSafetyWarningIssued(
+                    safetyWarningIssued: SafetyWarningIssuedWebhookEvent
+                ) {
+                    safetyWarningIssued.validate()
                 }
             }
         )
@@ -446,6 +573,25 @@ private constructor(
     internal fun validity(): Int =
         accept(
             object : Visitor<Int> {
+                override fun visitAgentSessionActionRequired(
+                    agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
+                ) = agentSessionActionRequired.validity()
+
+                override fun visitAgentSessionCreated(
+                    agentSessionCreated: AgentSessionCreatedWebhookEvent
+                ) = agentSessionCreated.validity()
+
+                override fun visitAgentSessionFailed(
+                    agentSessionFailed: AgentSessionFailedWebhookEvent
+                ) = agentSessionFailed.validity()
+
+                override fun visitAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent) =
+                    agentSessionIdle.validity()
+
+                override fun visitAgentSessionInProgress(
+                    agentSessionInProgress: AgentSessionInProgressWebhookEvent
+                ) = agentSessionInProgress.validity()
+
                 override fun visitBatchCancelled(batchCancelled: BatchCancelledWebhookEvent) =
                     batchCancelled.validity()
 
@@ -509,9 +655,17 @@ private constructor(
                     safetyAlertCreated: SafetyAlertCreatedWebhookEvent
                 ) = safetyAlertCreated.validity()
 
+                override fun visitSafetyDeactivationIssued(
+                    safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
+                ) = safetyDeactivationIssued.validity()
+
                 override fun visitSafetyOrgAlertCreated(
                     safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent
                 ) = safetyOrgAlertCreated.validity()
+
+                override fun visitSafetyWarningIssued(
+                    safetyWarningIssued: SafetyWarningIssuedWebhookEvent
+                ) = safetyWarningIssued.validity()
 
                 override fun unknown(json: JsonValue?) = 0
             }
@@ -523,6 +677,11 @@ private constructor(
         }
 
         return other is UnwrapWebhookEvent &&
+            agentSessionActionRequired == other.agentSessionActionRequired &&
+            agentSessionCreated == other.agentSessionCreated &&
+            agentSessionFailed == other.agentSessionFailed &&
+            agentSessionIdle == other.agentSessionIdle &&
+            agentSessionInProgress == other.agentSessionInProgress &&
             batchCancelled == other.batchCancelled &&
             batchCompleted == other.batchCompleted &&
             batchExpired == other.batchExpired &&
@@ -541,11 +700,18 @@ private constructor(
             responseFailed == other.responseFailed &&
             responseIncomplete == other.responseIncomplete &&
             safetyAlertCreated == other.safetyAlertCreated &&
-            safetyOrgAlertCreated == other.safetyOrgAlertCreated
+            safetyDeactivationIssued == other.safetyDeactivationIssued &&
+            safetyOrgAlertCreated == other.safetyOrgAlertCreated &&
+            safetyWarningIssued == other.safetyWarningIssued
     }
 
     override fun hashCode(): Int =
         Objects.hash(
+            agentSessionActionRequired,
+            agentSessionCreated,
+            agentSessionFailed,
+            agentSessionIdle,
+            agentSessionInProgress,
             batchCancelled,
             batchCompleted,
             batchExpired,
@@ -564,11 +730,22 @@ private constructor(
             responseFailed,
             responseIncomplete,
             safetyAlertCreated,
+            safetyDeactivationIssued,
             safetyOrgAlertCreated,
+            safetyWarningIssued,
         )
 
     override fun toString(): String =
         when {
+            agentSessionActionRequired != null ->
+                "UnwrapWebhookEvent{agentSessionActionRequired=$agentSessionActionRequired}"
+            agentSessionCreated != null ->
+                "UnwrapWebhookEvent{agentSessionCreated=$agentSessionCreated}"
+            agentSessionFailed != null ->
+                "UnwrapWebhookEvent{agentSessionFailed=$agentSessionFailed}"
+            agentSessionIdle != null -> "UnwrapWebhookEvent{agentSessionIdle=$agentSessionIdle}"
+            agentSessionInProgress != null ->
+                "UnwrapWebhookEvent{agentSessionInProgress=$agentSessionInProgress}"
             batchCancelled != null -> "UnwrapWebhookEvent{batchCancelled=$batchCancelled}"
             batchCompleted != null -> "UnwrapWebhookEvent{batchCompleted=$batchCompleted}"
             batchExpired != null -> "UnwrapWebhookEvent{batchExpired=$batchExpired}"
@@ -594,13 +771,45 @@ private constructor(
                 "UnwrapWebhookEvent{responseIncomplete=$responseIncomplete}"
             safetyAlertCreated != null ->
                 "UnwrapWebhookEvent{safetyAlertCreated=$safetyAlertCreated}"
+            safetyDeactivationIssued != null ->
+                "UnwrapWebhookEvent{safetyDeactivationIssued=$safetyDeactivationIssued}"
             safetyOrgAlertCreated != null ->
                 "UnwrapWebhookEvent{safetyOrgAlertCreated=$safetyOrgAlertCreated}"
+            safetyWarningIssued != null ->
+                "UnwrapWebhookEvent{safetyWarningIssued=$safetyWarningIssued}"
             _json != null -> "UnwrapWebhookEvent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid UnwrapWebhookEvent")
         }
 
     companion object {
+
+        /**
+         * Sent when an agent session requires an action. Retrieve the session for action details.
+         */
+        @JvmStatic
+        fun ofAgentSessionActionRequired(
+            agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
+        ) = UnwrapWebhookEvent(agentSessionActionRequired = agentSessionActionRequired)
+
+        /** Sent when an agent session is created. */
+        @JvmStatic
+        fun ofAgentSessionCreated(agentSessionCreated: AgentSessionCreatedWebhookEvent) =
+            UnwrapWebhookEvent(agentSessionCreated = agentSessionCreated)
+
+        /** Sent when an agent session fails. */
+        @JvmStatic
+        fun ofAgentSessionFailed(agentSessionFailed: AgentSessionFailedWebhookEvent) =
+            UnwrapWebhookEvent(agentSessionFailed = agentSessionFailed)
+
+        /** Sent when an agent session becomes idle. */
+        @JvmStatic
+        fun ofAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent) =
+            UnwrapWebhookEvent(agentSessionIdle = agentSessionIdle)
+
+        /** Sent when an agent session enters the in-progress state. */
+        @JvmStatic
+        fun ofAgentSessionInProgress(agentSessionInProgress: AgentSessionInProgressWebhookEvent) =
+            UnwrapWebhookEvent(agentSessionInProgress = agentSessionInProgress)
 
         /** Sent when a batch API request has been cancelled. */
         @JvmStatic
@@ -707,10 +916,21 @@ private constructor(
         fun ofSafetyAlertCreated(safetyAlertCreated: SafetyAlertCreatedWebhookEvent) =
             UnwrapWebhookEvent(safetyAlertCreated = safetyAlertCreated)
 
+        /** Sent when a deactivation is issued for a safety identifier in your organization. */
+        @JvmStatic
+        fun ofSafetyDeactivationIssued(
+            safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
+        ) = UnwrapWebhookEvent(safetyDeactivationIssued = safetyDeactivationIssued)
+
         /** Sent when an approved safety alert is available for an enterprise workspace. */
         @JvmStatic
         fun ofSafetyOrgAlertCreated(safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent) =
             UnwrapWebhookEvent(safetyOrgAlertCreated = safetyOrgAlertCreated)
+
+        /** Sent when a warning is issued for a safety identifier in your organization. */
+        @JvmStatic
+        fun ofSafetyWarningIssued(safetyWarningIssued: SafetyWarningIssuedWebhookEvent) =
+            UnwrapWebhookEvent(safetyWarningIssued = safetyWarningIssued)
     }
 
     /**
@@ -718,6 +938,30 @@ private constructor(
      * [T].
      */
     interface Visitor<out T> {
+
+        /**
+         * Sent when an agent session requires an action. Retrieve the session for action details.
+         */
+        fun visitAgentSessionActionRequired(
+            agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
+        ): T = unknown(JsonValue.from(agentSessionActionRequired))
+
+        /** Sent when an agent session is created. */
+        fun visitAgentSessionCreated(agentSessionCreated: AgentSessionCreatedWebhookEvent): T =
+            unknown(JsonValue.from(agentSessionCreated))
+
+        /** Sent when an agent session fails. */
+        fun visitAgentSessionFailed(agentSessionFailed: AgentSessionFailedWebhookEvent): T =
+            unknown(JsonValue.from(agentSessionFailed))
+
+        /** Sent when an agent session becomes idle. */
+        fun visitAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent): T =
+            unknown(JsonValue.from(agentSessionIdle))
+
+        /** Sent when an agent session enters the in-progress state. */
+        fun visitAgentSessionInProgress(
+            agentSessionInProgress: AgentSessionInProgressWebhookEvent
+        ): T = unknown(JsonValue.from(agentSessionInProgress))
 
         /** Sent when a batch API request has been cancelled. */
         fun visitBatchCancelled(batchCancelled: BatchCancelledWebhookEvent): T
@@ -792,8 +1036,17 @@ private constructor(
         /** Sent when an approved safety alert is available for an API project. */
         fun visitSafetyAlertCreated(safetyAlertCreated: SafetyAlertCreatedWebhookEvent): T
 
+        /** Sent when a deactivation is issued for a safety identifier in your organization. */
+        fun visitSafetyDeactivationIssued(
+            safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
+        ): T = unknown(JsonValue.from(safetyDeactivationIssued))
+
         /** Sent when an approved safety alert is available for an enterprise workspace. */
         fun visitSafetyOrgAlertCreated(safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent): T
+
+        /** Sent when a warning is issued for a safety identifier in your organization. */
+        fun visitSafetyWarningIssued(safetyWarningIssued: SafetyWarningIssuedWebhookEvent): T =
+            unknown(JsonValue.from(safetyWarningIssued))
 
         /**
          * Maps an unknown variant of [UnwrapWebhookEvent] to a value of type [T].
@@ -806,7 +1059,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown UnwrapWebhookEvent: $json")
+            throw OpenAIInvalidDataException("Unknown UnwrapWebhookEvent")
         }
     }
 
@@ -817,6 +1070,37 @@ private constructor(
             val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
             when (type) {
+                "agent.session.action_required" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentSessionActionRequiredWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(agentSessionActionRequired = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.created" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AgentSessionCreatedWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(agentSessionCreated = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.failed" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AgentSessionFailedWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(agentSessionFailed = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.idle" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AgentSessionIdleWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(agentSessionIdle = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.in_progress" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentSessionInProgressWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(agentSessionInProgress = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
                 "batch.cancelled" -> {
                     return tryDeserialize(node, jacksonTypeRef<BatchCancelledWebhookEvent>())?.let {
                         UnwrapWebhookEvent(batchCancelled = it, _json = json)
@@ -913,9 +1197,22 @@ private constructor(
                         ?.let { UnwrapWebhookEvent(safetyAlertCreated = it, _json = json) }
                         ?: UnwrapWebhookEvent(_json = json)
                 }
+                "safety.deactivation_issued" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<SafetyDeactivationIssuedWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(safetyDeactivationIssued = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
                 "safety.org_alert.created" -> {
                     return tryDeserialize(node, jacksonTypeRef<SafetyOrgAlertCreatedWebhookEvent>())
                         ?.let { UnwrapWebhookEvent(safetyOrgAlertCreated = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "safety.warning_issued" -> {
+                    return tryDeserialize(node, jacksonTypeRef<SafetyWarningIssuedWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(safetyWarningIssued = it, _json = json) }
                         ?: UnwrapWebhookEvent(_json = json)
                 }
             }
@@ -932,6 +1229,14 @@ private constructor(
             provider: SerializerProvider,
         ) {
             when {
+                value.agentSessionActionRequired != null ->
+                    generator.writeObject(value.agentSessionActionRequired)
+                value.agentSessionCreated != null ->
+                    generator.writeObject(value.agentSessionCreated)
+                value.agentSessionFailed != null -> generator.writeObject(value.agentSessionFailed)
+                value.agentSessionIdle != null -> generator.writeObject(value.agentSessionIdle)
+                value.agentSessionInProgress != null ->
+                    generator.writeObject(value.agentSessionInProgress)
                 value.batchCancelled != null -> generator.writeObject(value.batchCancelled)
                 value.batchCompleted != null -> generator.writeObject(value.batchCompleted)
                 value.batchExpired != null -> generator.writeObject(value.batchExpired)
@@ -955,8 +1260,12 @@ private constructor(
                 value.responseFailed != null -> generator.writeObject(value.responseFailed)
                 value.responseIncomplete != null -> generator.writeObject(value.responseIncomplete)
                 value.safetyAlertCreated != null -> generator.writeObject(value.safetyAlertCreated)
+                value.safetyDeactivationIssued != null ->
+                    generator.writeObject(value.safetyDeactivationIssued)
                 value.safetyOrgAlertCreated != null ->
                     generator.writeObject(value.safetyOrgAlertCreated)
+                value.safetyWarningIssued != null ->
+                    generator.writeObject(value.safetyWarningIssued)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid UnwrapWebhookEvent")
             }

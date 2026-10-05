@@ -26,6 +26,30 @@ try (StreamResponse<AgentSessionEvent> stream = client.beta().agents().sessions(
 }
 ```
 
+For the initial prompt, pass the same local handlers to `createStreaming`:
+
+```java
+import com.openai.models.beta.agents.AgentToolHandlers;
+import com.openai.models.beta.agents.sessions.SessionCreateParams;
+import com.openai.services.beta.agents.AgentTurnResults;
+
+var handlers = AgentToolHandlers.builder()
+    .toolHandler("weather", args -> weatherService.lookup(args))
+    .build();
+var creation = SessionCreateParams.builder()
+    .agent(agent) // Configure the corresponding function definition on the agent.
+    .environmentNone()
+    .input("Check the weather in Paris")
+    .build();
+
+try (var stream = client.beta().agents().sessions().createStreaming(creation, handlers)) {
+    System.out.println(AgentTurnResults.getFinalResult(stream).outputText());
+}
+```
+
+The async service accepts the same overload; use `asyncToolHandler` for callbacks
+returning a `CompletionStage`. Handlers run locally while consuming the stream.
+
 A handler receives a deep copy of the JSON object arguments and can return a
 string, JSON object (`Map`), `List<InputContentParam>`,
 `AgentFunctionCallOutputParam`, or `null`. Invalid arguments and handler exceptions
@@ -76,3 +100,68 @@ String text = AgentSessionMessages.outputText(message);
 
 The raw `sessions().events().streamStreaming(...)` API remains available for
 following active sessions and advanced orchestration.
+
+## Typed application tools (beta)
+
+Bind an argument class and application callback once. Jackson's `@JsonTypeName`
+and `@JsonClassDescription` set the hosted name and description, as with other
+class-based SDK tools.
+Schema annotations, such as `@Schema(maximum = "10")`, are preserved. Validate
+business rules in your callback.
+
+```java
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.openai.helpers.beta.agents.AgentFunctionTool;
+
+@JsonTypeName("lookup_order")
+@JsonClassDescription("Look up an order.")
+class LookupOrder { public String orderId; }
+
+var lookup = AgentFunctionTool.of(LookupOrder.class, args -> orderService.lookup(args.orderId));
+// Include lookup.definition() in the agent's tools when configuring the session.
+var params = AgentSessionStreamParams.builder()
+    .sessionId(sessionId)
+    .input("Where is order A123?")
+    .toolHandler(lookup.name(), lookup.handler())
+    .build();
+```
+
+For callbacks returning a `CompletionStage`, use `AgentFunctionTool.ofAsync(...)`
+and register with `.asyncToolHandler(tool.name(), tool.handler())`. Attach either
+binding to an existing session using its hosted tool name. Application services
+and credentials stay in the closure or bound method. Use strings for exact decimal
+amounts, as the existing event decoder represents JSON fractions as doubles. See
+[`BetaAgentToolsExample`](../../openai-java-example/src/main/java/com/openai/example/BetaAgentToolsExample.java)
+for a read-only catalog lookup.
+
+For deferred discovery, configure an immutable copy of a typed binding and include a tool-search
+tool in the agent definition:
+
+```java
+var lookup = AgentFunctionTool.of(LookupOrder.class, args -> orderService.lookup(args.orderId))
+    .withDeferLoading(true);
+```
+
+Submit `lookup.definition()` and register `lookup.handler()` as usual. `ofAsync(...)` bindings
+support the same option; the original binding and handler behavior remain unchanged.
+
+### Observing local tool errors
+
+Use `onToolError` to send local failures to your logger or monitoring system:
+
+```java
+var params = AgentSessionStreamParams.builder()
+    .sessionId(sessionId)
+    .input("Look up order A123.")
+    .toolHandler("lookup_order", arguments -> orderService.lookup(arguments))
+    .onToolError(failure -> logger.error(
+        "Tool {} failed during {}", failure.toolName(), failure.stage()))
+    .build();
+```
+
+The original error may contain application data; redact it before forwarding to logs or monitoring.
+The observer receives the original error and call IDs for argument decoding, callback execution,
+or output conversion failures. Errors remain local; the model receives `Tool handler failed.`.
+The SDK does not log these failures automatically. Ordinary observer exceptions are ignored so
+that the tool failure can still be submitted. Request failures continue to propagate normally.

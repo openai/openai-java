@@ -22,6 +22,11 @@ internal class ResponsesClientEventTest {
     fun ofResponseCreate() {
         val responseCreate =
             ResponsesClientEvent.ResponseCreate.builder()
+                .accessPrograms(
+                    ResponsesClientEvent.ResponseCreate.AccessPrograms.builder()
+                        .cyber(ResponsesClientEvent.ResponseCreate.AccessPrograms.Cyber.STANDARD)
+                        .build()
+                )
                 .background(true)
                 .addContextManagement(
                     ResponsesClientEvent.ResponseCreate.ContextManagement.builder()
@@ -90,6 +95,7 @@ internal class ResponsesClientEventTest {
                     ResponsesClientEvent.ResponseCreate.PromptCacheOptions.builder()
                         .comparisonResponseId("resp_123")
                         .mode(ResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode.IMPLICIT)
+                        .prewarm(true)
                         .ttl(ResponsesClientEvent.ResponseCreate.PromptCacheOptions.Ttl._30M)
                         .build()
                 )
@@ -161,6 +167,13 @@ internal class ResponsesClientEventTest {
         val responsesClientEvent =
             ResponsesClientEvent.ofResponseCreate(
                 ResponsesClientEvent.ResponseCreate.builder()
+                    .accessPrograms(
+                        ResponsesClientEvent.ResponseCreate.AccessPrograms.builder()
+                            .cyber(
+                                ResponsesClientEvent.ResponseCreate.AccessPrograms.Cyber.STANDARD
+                            )
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponsesClientEvent.ResponseCreate.ContextManagement.builder()
@@ -233,6 +246,7 @@ internal class ResponsesClientEventTest {
                             .mode(
                                 ResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode.IMPLICIT
                             )
+                            .prewarm(true)
                             .ttl(ResponsesClientEvent.ResponseCreate.PromptCacheOptions.Ttl._30M)
                             .build()
                     )

@@ -56,6 +56,8 @@ internal class StructuredResponseTest {
         private fun delegationTestCases() =
             listOf(
                 DelegationReadTestCase("id", STRING),
+                DelegationReadTestCase("accessPrograms", OPTIONAL),
+                DelegationReadTestCase("_accessPrograms", JSON_FIELD),
                 DelegationReadTestCase("createdAt", DOUBLE),
                 DelegationReadTestCase("error", OPTIONAL),
                 DelegationReadTestCase("incompleteDetails", OPTIONAL),

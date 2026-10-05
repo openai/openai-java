@@ -247,7 +247,7 @@ private constructor(
          */
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException(
-                "Unknown RealtimeTranscriptionSessionAudioInputTurnDetection: $json"
+                "Unknown RealtimeTranscriptionSessionAudioInputTurnDetection"
             )
         }
     }

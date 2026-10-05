@@ -107,7 +107,7 @@ private constructor(
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
     /**
-     * A customer-safe error describing why a session request failed.
+     * A customer-safe error. Non-null only for a failed turn.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -155,7 +155,7 @@ private constructor(
     fun subagentId(): Optional<String> = subagentId.getOptional("subagent_id")
 
     /**
-     * Recorded token usage for a session or turn. Usage is best effort and may change.
+     * Best-effort token usage for the turn, or null if unknown. Recorded usage may change.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -364,7 +364,7 @@ private constructor(
          */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
-        /** A customer-safe error describing why a session request failed. */
+        /** A customer-safe error. Non-null only for a failed turn. */
         fun error(error: SessionTurnError?) = error(JsonField.ofNullable(error))
 
         /** Alias for calling [Builder.error] with `error.orElse(null)`. */
@@ -449,7 +449,7 @@ private constructor(
          */
         fun subagentId(subagentId: JsonField<String>) = apply { this.subagentId = subagentId }
 
-        /** Recorded token usage for a session or turn. Usage is best effort and may change. */
+        /** Best-effort token usage for the turn, or null if unknown. Recorded usage may change. */
         fun usage(usage: TokenUsage?) = usage(JsonField.ofNullable(usage))
 
         /** Alias for calling [Builder.usage] with `usage.orElse(null)`. */

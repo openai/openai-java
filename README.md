@@ -15,7 +15,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.63.1")
+implementation("com.openai:openai-java:4.76.0")
 ```
 
 ### Maven
@@ -24,7 +24,7 @@ implementation("com.openai:openai-java:4.63.1")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.63.1</version>
+  <version>4.76.0</version>
 </dependency>
 ```
 
@@ -34,6 +34,18 @@ implementation("com.openai:openai-java:4.63.1")
 
 The framework-neutral SDK artifacts require Java 8 or later. Runtime floors and lifecycle states
 are declared per artifact in the [Java version support policy](docs/version-support-policy.md).
+
+### Local development
+
+Before building the repository, check that the local environment uses the development JDK declared
+by `build.jdk` in `gradle/version-support.properties`, then run lint:
+
+```sh
+./scripts/check-env
+./scripts/lint
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the complete development workflow.
 
 ## Usage
 
@@ -87,7 +99,7 @@ with normal AWS credentials:
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java-bedrock:4.63.1")
+implementation("com.openai:openai-java-bedrock:4.76.0")
 ```
 
 <!-- x-release-please-end -->
@@ -1024,6 +1036,21 @@ For a full example of the usage of _Function Calling_ with the Responses API usi
 define and parse function parameters, see
 [`ResponsesFunctionCallingExample`](openai-java-example/src/main/java/com/openai/example/ResponsesFunctionCallingExample.java).
 
+Configure a class-derived Responses tool with an optional builder callback, including when using
+structured responses or streaming:
+
+```java
+var params = ResponseCreateParams.builder()
+    .model(MODEL)
+    .input("Look up item A123.")
+    .addTool(ToolSearchTool.builder().build())
+    .addTool(LookupItem.class, tool -> tool.deferLoading(true))
+    .build();
+```
+
+The callback runs after the usual schema generation and local validation. Function arguments still
+parse with `call.arguments(LookupItem.class)`; the API validates tool-search configuration.
+
 ### Local function JSON schema validation
 
 Like for _Structured Outputs_, you can perform local validation to check that the JSON schema
@@ -1139,6 +1166,10 @@ FileCreateParams params = FileCreateParams.builder()
     .build();
 FileObject fileObject = client.files().create(params);
 ```
+
+If serializing a multipart upload fails, the SDK attempts to close all of its input streams,
+including files it has not read yet. Rebuild the upload parameters with fresh streams before
+retrying after a serialization failure.
 
 ## Webhook Verification
 
@@ -1344,7 +1375,9 @@ The SDK throws custom unchecked exception types:
 
 - [`OpenAIInvalidDataException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIInvalidDataException.kt): Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
 
-- [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
+- [`InvalidResourceIdException`](openai-java-core/src/main/kotlin/com/openai/errors/InvalidResourceIdException.kt): Local rejection of an empty resource ID or one exactly equal to `.` or `..`. Extends `IllegalArgumentException`, not `OpenAIException`; no HTTP request is sent.
+
+- [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for SDK service, I/O, and data exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
 
 ## Pagination
 
@@ -2118,3 +2151,10 @@ changing the last available artifact may be a minor release.
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
 We are keen for your feedback; please open an [issue](https://www.github.com/openai/openai-java/issues) with questions, bugs, or suggestions.
+
+## Contributing
+
+Please share bug reports and feature requests through [GitHub issues](https://github.com/openai/openai-java/issues).
+Pull requests are limited to repository collaborators; we do not accept pull requests from non-collaborators.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the contribution policy and development guide.
+For security vulnerabilities, follow [SECURITY.md](SECURITY.md).

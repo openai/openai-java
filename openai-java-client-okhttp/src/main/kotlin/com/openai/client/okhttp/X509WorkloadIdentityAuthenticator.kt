@@ -7,6 +7,9 @@ import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.core.http.HttpResponse
+import com.openai.core.http.WebSocketClient
+import com.openai.core.http.WebSocketHandshakeException
+import com.openai.core.http.beforeMultipartTransport
 import com.openai.errors.OpenAIException
 import com.openai.errors.OpenAIInvalidDataException
 import java.time.DateTimeException
@@ -182,7 +185,7 @@ internal class X509WorkloadIdentityAuthenticator(
 private class X509RefreshingHttpClient(
     private val delegate: OkHttpClient,
     private val authenticator: X509WorkloadIdentityAuthenticator,
-) : HttpClient {
+) : HttpClient, WebSocketClient {
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
         val authenticated = authenticator.authenticateForBoundTransport(request)
@@ -194,10 +197,57 @@ private class X509RefreshingHttpClient(
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
         authenticator.authenticateForBoundTransportAsync(request).thenCompose { authenticated ->
-            delegate.executeAsync(authenticated, requestOptions).thenApply { response ->
-                checkResponse(authenticated, response)
+            request.body
+                .beforeMultipartTransport { delegate.executeAsync(authenticated, requestOptions) }
+                .thenApply { response -> checkResponse(authenticated, response) }
+        }
+
+    override fun connectWebSocket(
+        request: HttpRequest,
+        options: RequestOptions,
+        maxMessageBytes: Int,
+        listener: WebSocketClient.Listener,
+    ): CompletableFuture<WebSocketClient.Connection> {
+        // Validate before acquiring a bearer; only this wrapper may put it on the bound TLS leg.
+        authenticator.authenticate(request)
+        val authenticated = authenticator.authenticateForBoundTransportAsync(request)
+        val result = CompletableFuture<WebSocketClient.Connection>()
+        val opening =
+            java.util.concurrent.atomic.AtomicReference<
+                CompletableFuture<WebSocketClient.Connection>
+            >()
+        authenticated.whenComplete { prepared, failure ->
+            if (failure != null) result.completeExceptionally(failure)
+            else if (!result.isDone) {
+                try {
+                    val pending =
+                        delegate.connectWebSocket(prepared, options, maxMessageBytes, listener)
+                    opening.set(pending)
+                    if (result.isCancelled) pending.cancel(true)
+                    pending.whenComplete { connection, error ->
+                        if (error != null) {
+                            if (error is WebSocketHandshakeException && error.statusCode == 401) {
+                                authenticator.invalidate(
+                                    prepared.headers.values("Authorization").singleOrNull()
+                                )
+                            }
+                            result.completeExceptionally(error)
+                        } else if (!result.complete(connection)) connection.close()
+                    }
+                } catch (error: Exception) {
+                    result.completeExceptionally(error)
+                }
             }
         }
+        result.whenComplete { _, _ ->
+            if (result.isCancelled) {
+                // The token refresh is shared; cancel this waiter, not another caller's refresh.
+                authenticated.cancel(true)
+                opening.get()?.cancel(true)
+            }
+        }
+        return result
+    }
 
     private fun checkResponse(request: HttpRequest, response: HttpResponse): HttpResponse {
         if (response.statusCode() != 401) return response

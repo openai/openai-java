@@ -34,7 +34,7 @@ private constructor(
 
     override fun items(): List<AdminApiKey> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): AdminApiKeyListParams =
         params.toBuilder().after(items().last()._id().getOptional("id")).build()

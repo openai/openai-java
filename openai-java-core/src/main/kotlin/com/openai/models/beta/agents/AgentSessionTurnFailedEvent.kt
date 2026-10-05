@@ -87,7 +87,7 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * Recorded token usage for a session or turn. Usage is best effort and may change.
+     * Token usage by the root agent during the turn, when available.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -239,7 +239,7 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
-        /** Recorded token usage for a session or turn. Usage is best effort and may change. */
+        /** Token usage by the root agent during the turn, when available. */
         fun usage(usage: TokenUsage?) = usage(JsonField.ofNullable(usage))
 
         /** Alias for calling [Builder.usage] with `usage.orElse(null)`. */

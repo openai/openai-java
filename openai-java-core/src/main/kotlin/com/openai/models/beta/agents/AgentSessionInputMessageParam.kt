@@ -115,7 +115,7 @@ private constructor(
 
         private var content: JsonField<MutableList<InputContentParam>>? = null
         private var role: JsonValue = JsonValue.from("user")
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonField.of(Type.MESSAGE)
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic

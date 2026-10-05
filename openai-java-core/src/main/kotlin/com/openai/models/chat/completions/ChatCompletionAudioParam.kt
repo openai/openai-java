@@ -58,7 +58,9 @@ private constructor(
     /**
      * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`, `ballad`,
      * `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and `cedar`. You may
-     * also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`.
+     * also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Custom
+     * voices must be created from audio samples. Voices created from text prompts are supported
+     * only in Live.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -137,7 +139,8 @@ private constructor(
          * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`,
          * `ballad`, `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and
          * `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id":
-         * "voice_1234" }`.
+         * "voice_1234" }`. Custom voices must be created from audio samples. Voices created from
+         * text prompts are supported only in Live.
          */
         fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -400,7 +403,9 @@ private constructor(
     /**
      * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`, `ballad`,
      * `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and `cedar`. You may
-     * also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`.
+     * also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Custom
+     * voices must be created from audio samples. Voices created from text prompts are supported
+     * only in Live.
      */
     @JsonDeserialize(using = Voice.Deserializer::class)
     @JsonSerialize(using = Voice.Serializer::class)
@@ -586,7 +591,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Voice: $json")
+                throw OpenAIInvalidDataException("Unknown Voice")
             }
         }
 

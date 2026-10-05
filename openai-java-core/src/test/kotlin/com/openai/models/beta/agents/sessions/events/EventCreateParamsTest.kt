@@ -3,7 +3,7 @@
 package com.openai.models.beta.agents.sessions.events
 
 import com.openai.core.http.Headers
-import com.openai.models.beta.agents.AgentSessionInputMessageParam
+import com.openai.models.beta.agents.AgentBrowserAuthenticationSubmitParam
 import com.openai.models.beta.agents.AgentSessionInputParam
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -15,13 +15,21 @@ internal class EventCreateParamsTest {
         EventCreateParams.builder()
             .sessionId("session_id")
             .idempotencyKey("x")
-            .addAgentSessionInputMessageEvent(
-                listOf(
-                    AgentSessionInputMessageParam.builder()
-                        .addInputTextContent("text")
-                        .type(AgentSessionInputMessageParam.Type.MESSAGE)
-                        .build()
-                )
+            .addEvent(
+                AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult.builder()
+                    .requestId("request_id")
+                    .response(
+                        AgentBrowserAuthenticationSubmitParam.builder()
+                            .addField(
+                                AgentBrowserAuthenticationSubmitParam.Field.builder()
+                                    .fieldId("field_id")
+                                    .value("value")
+                                    .build()
+                            )
+                            .selectedOption("selected_option")
+                            .build()
+                    )
+                    .build()
             )
             .build()
     }
@@ -31,10 +39,19 @@ internal class EventCreateParamsTest {
         val params =
             EventCreateParams.builder()
                 .sessionId("session_id")
-                .addAgentSessionInputMessageEvent(
-                    listOf(
-                        AgentSessionInputMessageParam.builder().addInputTextContent("text").build()
-                    )
+                .addEvent(
+                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
+                        .builder()
+                        .requestId("request_id")
+                        .agentBrowserAuthenticationSubmitParamResponse(
+                            listOf(
+                                AgentBrowserAuthenticationSubmitParam.Field.builder()
+                                    .fieldId("field_id")
+                                    .value("value")
+                                    .build()
+                            )
+                        )
+                        .build()
                 )
                 .build()
 
@@ -49,13 +66,22 @@ internal class EventCreateParamsTest {
             EventCreateParams.builder()
                 .sessionId("session_id")
                 .idempotencyKey("x")
-                .addAgentSessionInputMessageEvent(
-                    listOf(
-                        AgentSessionInputMessageParam.builder()
-                            .addInputTextContent("text")
-                            .type(AgentSessionInputMessageParam.Type.MESSAGE)
-                            .build()
-                    )
+                .addEvent(
+                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
+                        .builder()
+                        .requestId("request_id")
+                        .response(
+                            AgentBrowserAuthenticationSubmitParam.builder()
+                                .addField(
+                                    AgentBrowserAuthenticationSubmitParam.Field.builder()
+                                        .fieldId("field_id")
+                                        .value("value")
+                                        .build()
+                                )
+                                .selectedOption("selected_option")
+                                .build()
+                        )
+                        .build()
                 )
                 .build()
 
@@ -69,10 +95,19 @@ internal class EventCreateParamsTest {
         val params =
             EventCreateParams.builder()
                 .sessionId("session_id")
-                .addAgentSessionInputMessageEvent(
-                    listOf(
-                        AgentSessionInputMessageParam.builder().addInputTextContent("text").build()
-                    )
+                .addEvent(
+                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
+                        .builder()
+                        .requestId("request_id")
+                        .agentBrowserAuthenticationSubmitParamResponse(
+                            listOf(
+                                AgentBrowserAuthenticationSubmitParam.Field.builder()
+                                    .fieldId("field_id")
+                                    .value("value")
+                                    .build()
+                            )
+                        )
+                        .build()
                 )
                 .build()
 
@@ -87,13 +122,22 @@ internal class EventCreateParamsTest {
             EventCreateParams.builder()
                 .sessionId("session_id")
                 .idempotencyKey("x")
-                .addAgentSessionInputMessageEvent(
-                    listOf(
-                        AgentSessionInputMessageParam.builder()
-                            .addInputTextContent("text")
-                            .type(AgentSessionInputMessageParam.Type.MESSAGE)
-                            .build()
-                    )
+                .addEvent(
+                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
+                        .builder()
+                        .requestId("request_id")
+                        .response(
+                            AgentBrowserAuthenticationSubmitParam.builder()
+                                .addField(
+                                    AgentBrowserAuthenticationSubmitParam.Field.builder()
+                                        .fieldId("field_id")
+                                        .value("value")
+                                        .build()
+                                )
+                                .selectedOption("selected_option")
+                                .build()
+                        )
+                        .build()
                 )
                 .build()
 
@@ -101,12 +145,19 @@ internal class EventCreateParamsTest {
 
         assertThat(body.events())
             .containsExactly(
-                AgentSessionInputParam.ofAgentSessionInputMessage(
-                    AgentSessionInputParam.AgentSessionInputMessage.builder()
-                        .addInput(
-                            AgentSessionInputMessageParam.builder()
-                                .addInputTextContent("text")
-                                .type(AgentSessionInputMessageParam.Type.MESSAGE)
+                AgentSessionInputParam.ofAgentSessionInputComputerUseApprovalRequestResult(
+                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
+                        .builder()
+                        .requestId("request_id")
+                        .response(
+                            AgentBrowserAuthenticationSubmitParam.builder()
+                                .addField(
+                                    AgentBrowserAuthenticationSubmitParam.Field.builder()
+                                        .fieldId("field_id")
+                                        .value("value")
+                                        .build()
+                                )
+                                .selectedOption("selected_option")
                                 .build()
                         )
                         .build()
@@ -119,10 +170,19 @@ internal class EventCreateParamsTest {
         val params =
             EventCreateParams.builder()
                 .sessionId("session_id")
-                .addAgentSessionInputMessageEvent(
-                    listOf(
-                        AgentSessionInputMessageParam.builder().addInputTextContent("text").build()
-                    )
+                .addEvent(
+                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
+                        .builder()
+                        .requestId("request_id")
+                        .agentBrowserAuthenticationSubmitParamResponse(
+                            listOf(
+                                AgentBrowserAuthenticationSubmitParam.Field.builder()
+                                    .fieldId("field_id")
+                                    .value("value")
+                                    .build()
+                            )
+                        )
+                        .build()
                 )
                 .build()
 
@@ -130,12 +190,17 @@ internal class EventCreateParamsTest {
 
         assertThat(body.events())
             .containsExactly(
-                AgentSessionInputParam.ofAgentSessionInputMessage(
-                    AgentSessionInputParam.AgentSessionInputMessage.builder()
-                        .addInput(
-                            AgentSessionInputMessageParam.builder()
-                                .addInputTextContent("text")
-                                .build()
+                AgentSessionInputParam.ofAgentSessionInputComputerUseApprovalRequestResult(
+                    AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult
+                        .builder()
+                        .requestId("request_id")
+                        .agentBrowserAuthenticationSubmitParamResponse(
+                            listOf(
+                                AgentBrowserAuthenticationSubmitParam.Field.builder()
+                                    .fieldId("field_id")
+                                    .value("value")
+                                    .build()
+                            )
                         )
                         .build()
                 )

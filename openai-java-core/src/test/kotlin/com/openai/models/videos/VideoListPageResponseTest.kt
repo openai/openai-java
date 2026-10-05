@@ -3,6 +3,7 @@
 package com.openai.models.videos
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -22,6 +23,11 @@ internal class VideoListPageResponseTest {
                             VideoCreateError.builder()
                                 .code("code")
                                 .message("message")
+                                .headers(
+                                    VideoCreateError.Headers.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
                                 .misalignment(
                                     VideoCreateError.Misalignment.builder()
                                         .detailedExplanation("detailed_explanation")
@@ -63,6 +69,11 @@ internal class VideoListPageResponseTest {
                         VideoCreateError.builder()
                             .code("code")
                             .message("message")
+                            .headers(
+                                VideoCreateError.Headers.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
                             .misalignment(
                                 VideoCreateError.Misalignment.builder()
                                     .detailedExplanation("detailed_explanation")
@@ -108,6 +119,11 @@ internal class VideoListPageResponseTest {
                             VideoCreateError.builder()
                                 .code("code")
                                 .message("message")
+                                .headers(
+                                    VideoCreateError.Headers.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
                                 .misalignment(
                                     VideoCreateError.Misalignment.builder()
                                         .detailedExplanation("detailed_explanation")

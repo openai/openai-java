@@ -37,6 +37,7 @@ import com.openai.models.ResponsesModel
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -56,6 +57,14 @@ private constructor(
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
+
+    /**
+     * Domain-specific access programs to use for this request.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun accessPrograms(): Optional<AccessPrograms> = body.accessPrograms()
 
     /**
      * Whether to run the model response in the background.
@@ -424,6 +433,13 @@ private constructor(
     @Deprecated("deprecated") fun user(): Optional<String> = body.user()
 
     /**
+     * Returns the raw JSON value of [accessPrograms].
+     *
+     * Unlike [accessPrograms], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _accessPrograms(): JsonField<AccessPrograms> = body._accessPrograms()
+
+    /**
      * Returns the raw JSON value of [background].
      *
      * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
@@ -677,14 +693,30 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [accessPrograms]
          * - [background]
          * - [contextManagement]
          * - [conversation]
          * - [include]
-         * - [input]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /** Domain-specific access programs to use for this request. */
+        fun accessPrograms(accessPrograms: AccessPrograms) = apply {
+            body.accessPrograms(accessPrograms)
+        }
+
+        /**
+         * Sets [Builder.accessPrograms] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.accessPrograms] with a well-typed [AccessPrograms] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun accessPrograms(accessPrograms: JsonField<AccessPrograms>) = apply {
+            body.accessPrograms(accessPrograms)
+        }
 
         /**
          * Whether to run the model response in the background.
@@ -1456,6 +1488,23 @@ private constructor(
             body.addTool(responseFunctionToolFromClass(functionParametersType, localValidation))
         }
 
+        /**
+         * Derives a function schema from [functionParametersType], then customizes its definition.
+         * Use this to set options such as `deferLoading` without rebuilding the generated schema.
+         * Schema generation and [localValidation] behave as in the class-only overload.
+         */
+        @JvmOverloads
+        fun addTool(
+            functionParametersType: Class<*>,
+            localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
+            customize: Consumer<FunctionTool.Builder>,
+        ) = apply {
+            val tool =
+                responseFunctionToolFromClass(functionParametersType, localValidation).toBuilder()
+            customize.accept(tool)
+            body.addTool(tool.build())
+        }
+
         /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
         fun addTool(fileSearch: FileSearchTool) = apply { body.addTool(fileSearch) }
 
@@ -1797,6 +1846,7 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val accessPrograms: JsonField<AccessPrograms>,
         private val background: JsonField<Boolean>,
         private val contextManagement: JsonField<List<ContextManagement>>,
         private val conversation: JsonField<Conversation>,
@@ -1832,6 +1882,9 @@ private constructor(
 
         @JsonCreator
         private constructor(
+            @JsonProperty("access_programs")
+            @ExcludeMissing
+            accessPrograms: JsonField<AccessPrograms> = JsonMissing.of(),
             @JsonProperty("background")
             @ExcludeMissing
             background: JsonField<Boolean> = JsonMissing.of(),
@@ -1913,6 +1966,7 @@ private constructor(
             truncation: JsonField<Truncation> = JsonMissing.of(),
             @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
         ) : this(
+            accessPrograms,
             background,
             contextManagement,
             conversation,
@@ -1945,6 +1999,15 @@ private constructor(
             user,
             mutableMapOf(),
         )
+
+        /**
+         * Domain-specific access programs to use for this request.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun accessPrograms(): Optional<AccessPrograms> =
+            accessPrograms.getOptional("access_programs")
 
         /**
          * Whether to run the model response in the background.
@@ -2323,6 +2386,16 @@ private constructor(
         @Deprecated("deprecated") fun user(): Optional<String> = user.getOptional("user")
 
         /**
+         * Returns the raw JSON value of [accessPrograms].
+         *
+         * Unlike [accessPrograms], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("access_programs")
+        @ExcludeMissing
+        fun _accessPrograms(): JsonField<AccessPrograms> = accessPrograms
+
+        /**
          * Returns the raw JSON value of [background].
          *
          * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
@@ -2612,6 +2685,7 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
+            private var accessPrograms: JsonField<AccessPrograms> = JsonMissing.of()
             private var background: JsonField<Boolean> = JsonMissing.of()
             private var contextManagement: JsonField<MutableList<ContextManagement>>? = null
             private var conversation: JsonField<Conversation> = JsonMissing.of()
@@ -2646,6 +2720,7 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
+                accessPrograms = body.accessPrograms
                 background = body.background
                 contextManagement = body.contextManagement.map { it.toMutableList() }
                 conversation = body.conversation
@@ -2677,6 +2752,21 @@ private constructor(
                 truncation = body.truncation
                 user = body.user
                 additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /** Domain-specific access programs to use for this request. */
+            fun accessPrograms(accessPrograms: AccessPrograms) =
+                accessPrograms(JsonField.of(accessPrograms))
+
+            /**
+             * Sets [Builder.accessPrograms] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.accessPrograms] with a well-typed [AccessPrograms]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun accessPrograms(accessPrograms: JsonField<AccessPrograms>) = apply {
+                this.accessPrograms = accessPrograms
             }
 
             /**
@@ -3672,6 +3762,7 @@ private constructor(
              */
             fun build(): Body =
                 Body(
+                    accessPrograms,
                     background,
                     (contextManagement ?: JsonMissing.of()).map { it.toImmutable() },
                     conversation,
@@ -3722,6 +3813,7 @@ private constructor(
                 return@apply
             }
 
+            accessPrograms().ifPresent { it.validate() }
             background()
             contextManagement().ifPresent { it.forEach { it.validate() } }
             conversation().ifPresent { it.validate() }
@@ -3771,7 +3863,8 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (background.asKnown().isPresent) 1 else 0) +
+            (accessPrograms.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (background.asKnown().isPresent) 1 else 0) +
                 (contextManagement.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (conversation.asKnown().getOrNull()?.validity() ?: 0) +
                 (include.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
@@ -3808,6 +3901,7 @@ private constructor(
             }
 
             return other is Body &&
+                accessPrograms == other.accessPrograms &&
                 background == other.background &&
                 contextManagement == other.contextManagement &&
                 conversation == other.conversation &&
@@ -3843,6 +3937,7 @@ private constructor(
 
         private val hashCode: Int by lazy {
             Objects.hash(
+                accessPrograms,
                 background,
                 contextManagement,
                 conversation,
@@ -3880,7 +3975,332 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "Body{accessPrograms=$accessPrograms, background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+    }
+
+    /** Domain-specific access programs to use for this request. */
+    class AccessPrograms
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val cyber: JsonField<Cyber>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("cyber") @ExcludeMissing cyber: JsonField<Cyber> = JsonMissing.of()
+        ) : this(cyber, mutableMapOf())
+
+        /**
+         * The Cyber access program to use for this request. Supported values are `standard`,
+         * `daybreak_blue`, and `daybreak_red`. If omitted, the API resolves the program from the
+         * model's Cyber tier and your organization and project access, subject to model-specific
+         * eligibility restrictions. By default, models without a Cyber tier use Standard. Blue-tier
+         * models use Daybreak Blue when authorized; otherwise they fall back to Standard unless the
+         * model requires Daybreak access. Red-tier models use Daybreak Red and require
+         * authorization. Requests that require unavailable Daybreak access return 403. An implicit
+         * Standard fallback is represented by null in the response's access_programs field, rather
+         * than an explicit Standard selection.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun cyber(): Optional<Cyber> = cyber.getOptional("cyber")
+
+        /**
+         * Returns the raw JSON value of [cyber].
+         *
+         * Unlike [cyber], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("cyber") @ExcludeMissing fun _cyber(): JsonField<Cyber> = cyber
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [AccessPrograms]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [AccessPrograms]. */
+        class Builder internal constructor() {
+
+            private var cyber: JsonField<Cyber> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(accessPrograms: AccessPrograms) = apply {
+                cyber = accessPrograms.cyber
+                additionalProperties = accessPrograms.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The Cyber access program to use for this request. Supported values are `standard`,
+             * `daybreak_blue`, and `daybreak_red`. If omitted, the API resolves the program from
+             * the model's Cyber tier and your organization and project access, subject to
+             * model-specific eligibility restrictions. By default, models without a Cyber tier use
+             * Standard. Blue-tier models use Daybreak Blue when authorized; otherwise they fall
+             * back to Standard unless the model requires Daybreak access. Red-tier models use
+             * Daybreak Red and require authorization. Requests that require unavailable Daybreak
+             * access return 403. An implicit Standard fallback is represented by null in the
+             * response's access_programs field, rather than an explicit Standard selection.
+             */
+            fun cyber(cyber: Cyber) = cyber(JsonField.of(cyber))
+
+            /**
+             * Sets [Builder.cyber] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.cyber] with a well-typed [Cyber] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun cyber(cyber: JsonField<Cyber>) = apply { this.cyber = cyber }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [AccessPrograms].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): AccessPrograms = AccessPrograms(cyber, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): AccessPrograms = apply {
+            if (validated) {
+                return@apply
+            }
+
+            cyber().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (cyber.asKnown().getOrNull()?.validity() ?: 0)
+
+        /**
+         * The Cyber access program to use for this request. Supported values are `standard`,
+         * `daybreak_blue`, and `daybreak_red`. If omitted, the API resolves the program from the
+         * model's Cyber tier and your organization and project access, subject to model-specific
+         * eligibility restrictions. By default, models without a Cyber tier use Standard. Blue-tier
+         * models use Daybreak Blue when authorized; otherwise they fall back to Standard unless the
+         * model requires Daybreak access. Red-tier models use Daybreak Red and require
+         * authorization. Requests that require unavailable Daybreak access return 403. An implicit
+         * Standard fallback is represented by null in the response's access_programs field, rather
+         * than an explicit Standard selection.
+         */
+        class Cyber @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val STANDARD = of("standard")
+
+                @JvmField val DAYBREAK_BLUE = of("daybreak_blue")
+
+                @JvmField val DAYBREAK_RED = of("daybreak_red")
+
+                @JvmStatic fun of(value: String) = Cyber(JsonField.of(value))
+            }
+
+            /** An enum containing [Cyber]'s known values. */
+            enum class Known {
+                STANDARD,
+                DAYBREAK_BLUE,
+                DAYBREAK_RED,
+            }
+
+            /**
+             * An enum containing [Cyber]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Cyber] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                STANDARD,
+                DAYBREAK_BLUE,
+                DAYBREAK_RED,
+                /**
+                 * An enum member indicating that [Cyber] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    STANDARD -> Value.STANDARD
+                    DAYBREAK_BLUE -> Value.DAYBREAK_BLUE
+                    DAYBREAK_RED -> Value.DAYBREAK_RED
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    STANDARD -> Known.STANDARD
+                    DAYBREAK_BLUE -> Known.DAYBREAK_BLUE
+                    DAYBREAK_RED -> Known.DAYBREAK_RED
+                    else -> throw OpenAIInvalidDataException("Unknown Cyber: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Cyber = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Cyber && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is AccessPrograms &&
+                cyber == other.cyber &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(cyber, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "AccessPrograms{cyber=$cyber, additionalProperties=$additionalProperties}"
     }
 
     class ContextManagement
@@ -4298,7 +4718,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Conversation: $json")
+                throw OpenAIInvalidDataException("Unknown Conversation")
             }
         }
 
@@ -4531,7 +4951,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Input: $json")
+                throw OpenAIInvalidDataException("Unknown Input")
             }
         }
 
@@ -5747,6 +6167,7 @@ private constructor(
     private constructor(
         private val comparisonResponseId: JsonField<String>,
         private val mode: JsonField<Mode>,
+        private val prewarm: JsonField<Boolean>,
         private val ttl: JsonField<Ttl>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -5757,8 +6178,9 @@ private constructor(
             @ExcludeMissing
             comparisonResponseId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
+            @JsonProperty("prewarm") @ExcludeMissing prewarm: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
-        ) : this(comparisonResponseId, mode, ttl, mutableMapOf())
+        ) : this(comparisonResponseId, mode, prewarm, ttl, mutableMapOf())
 
         /**
          * The ID of a response to compare when diagnosing prompt cache reuse. Supplying this field
@@ -5781,6 +6203,15 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun mode(): Optional<Mode> = mode.getOptional("mode")
+
+        /**
+         * Prepares the prompt cache without generating output. Defaults to `false`. When set to
+         * `true`, overrides the `generate` field to `false`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun prewarm(): Optional<Boolean> = prewarm.getOptional("prewarm")
 
         /**
          * The minimum lifetime applied to every implicit and explicit cache breakpoint written by
@@ -5808,6 +6239,13 @@ private constructor(
          * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
+
+        /**
+         * Returns the raw JSON value of [prewarm].
+         *
+         * Unlike [prewarm], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("prewarm") @ExcludeMissing fun _prewarm(): JsonField<Boolean> = prewarm
 
         /**
          * Returns the raw JSON value of [ttl].
@@ -5839,6 +6277,7 @@ private constructor(
 
             private var comparisonResponseId: JsonField<String> = JsonMissing.of()
             private var mode: JsonField<Mode> = JsonMissing.of()
+            private var prewarm: JsonField<Boolean> = JsonMissing.of()
             private var ttl: JsonField<Ttl> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -5846,6 +6285,7 @@ private constructor(
             internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
                 comparisonResponseId = promptCacheOptions.comparisonResponseId
                 mode = promptCacheOptions.mode
+                prewarm = promptCacheOptions.prewarm
                 ttl = promptCacheOptions.ttl
                 additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
             }
@@ -5895,6 +6335,21 @@ private constructor(
             fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
 
             /**
+             * Prepares the prompt cache without generating output. Defaults to `false`. When set to
+             * `true`, overrides the `generate` field to `false`.
+             */
+            fun prewarm(prewarm: Boolean) = prewarm(JsonField.of(prewarm))
+
+            /**
+             * Sets [Builder.prewarm] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.prewarm] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun prewarm(prewarm: JsonField<Boolean>) = apply { this.prewarm = prewarm }
+
+            /**
              * The minimum lifetime applied to every implicit and explicit cache breakpoint written
              * by the request. Defaults to `30m`, which is currently the only supported value. The
              * backend may retain cache entries for longer.
@@ -5938,6 +6393,7 @@ private constructor(
                 PromptCacheOptions(
                     comparisonResponseId,
                     mode,
+                    prewarm,
                     ttl,
                     additionalProperties.toMutableMap(),
                 )
@@ -5961,6 +6417,7 @@ private constructor(
 
             comparisonResponseId()
             mode().ifPresent { it.validate() }
+            prewarm()
             ttl().ifPresent { it.validate() }
             validated = true
         }
@@ -5983,6 +6440,7 @@ private constructor(
         internal fun validity(): Int =
             (if (comparisonResponseId.asKnown().isPresent) 1 else 0) +
                 (mode.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (prewarm.asKnown().isPresent) 1 else 0) +
                 (ttl.asKnown().getOrNull()?.validity() ?: 0)
 
         /**
@@ -6273,18 +6731,19 @@ private constructor(
             return other is PromptCacheOptions &&
                 comparisonResponseId == other.comparisonResponseId &&
                 mode == other.mode &&
+                prewarm == other.prewarm &&
                 ttl == other.ttl &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(comparisonResponseId, mode, ttl, additionalProperties)
+            Objects.hash(comparisonResponseId, mode, prewarm, ttl, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "PromptCacheOptions{comparisonResponseId=$comparisonResponseId, mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+            "PromptCacheOptions{comparisonResponseId=$comparisonResponseId, mode=$mode, prewarm=$prewarm, ttl=$ttl, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -7242,7 +7701,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ToolChoice: $json")
+                throw OpenAIInvalidDataException("Unknown ToolChoice")
             }
         }
 

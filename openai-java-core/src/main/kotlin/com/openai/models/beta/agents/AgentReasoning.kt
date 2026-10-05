@@ -34,7 +34,7 @@ private constructor(
     ) : this(effort, summary, mutableMapOf())
 
     /**
-     * The amount of reasoning effort used by an agent.
+     * The requested reasoning effort, or `null` when the model selects its own default.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -42,7 +42,7 @@ private constructor(
     fun effort(): Optional<Effort> = effort.getOptional("effort")
 
     /**
-     * The reasoning summary format requested from an agent.
+     * The requested reasoning summary format, or `null` when summaries are disabled.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -103,7 +103,7 @@ private constructor(
             additionalProperties = agentReasoning.additionalProperties.toMutableMap()
         }
 
-        /** The amount of reasoning effort used by an agent. */
+        /** The requested reasoning effort, or `null` when the model selects its own default. */
         fun effort(effort: Effort?) = effort(JsonField.ofNullable(effort))
 
         /** Alias for calling [Builder.effort] with `effort.orElse(null)`. */
@@ -117,7 +117,7 @@ private constructor(
          */
         fun effort(effort: JsonField<Effort>) = apply { this.effort = effort }
 
-        /** The reasoning summary format requested from an agent. */
+        /** The requested reasoning summary format, or `null` when summaries are disabled. */
         fun summary(summary: Summary?) = summary(JsonField.ofNullable(summary))
 
         /** Alias for calling [Builder.summary] with `summary.orElse(null)`. */
@@ -209,7 +209,7 @@ private constructor(
         (effort.asKnown().getOrNull()?.validity() ?: 0) +
             (summary.asKnown().getOrNull()?.validity() ?: 0)
 
-    /** The amount of reasoning effort used by an agent. */
+    /** The requested reasoning effort, or `null` when the model selects its own default. */
     class Effort @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -374,7 +374,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The reasoning summary format requested from an agent. */
+    /** The requested reasoning summary format, or `null` when summaries are disabled. */
     class Summary @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**

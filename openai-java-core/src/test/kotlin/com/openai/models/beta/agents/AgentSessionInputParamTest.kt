@@ -15,6 +15,66 @@ import org.junit.jupiter.params.provider.EnumSource
 internal class AgentSessionInputParamTest {
 
     @Test
+    fun ofAgentSessionInputComputerUseApprovalRequestResult() {
+        val agentSessionInputComputerUseApprovalRequestResult =
+            AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult.builder()
+                .requestId("request_id")
+                .response(
+                    AgentBrowserAuthenticationSubmitParam.builder()
+                        .addField(
+                            AgentBrowserAuthenticationSubmitParam.Field.builder()
+                                .fieldId("field_id")
+                                .value("value")
+                                .build()
+                        )
+                        .selectedOption("selected_option")
+                        .build()
+                )
+                .build()
+
+        val agentSessionInputParam =
+            AgentSessionInputParam.ofAgentSessionInputComputerUseApprovalRequestResult(
+                agentSessionInputComputerUseApprovalRequestResult
+            )
+
+        assertThat(agentSessionInputParam.agentSessionInputComputerUseApprovalRequestResult())
+            .contains(agentSessionInputComputerUseApprovalRequestResult)
+        assertThat(agentSessionInputParam.agentSessionInputMessage()).isEmpty
+        assertThat(agentSessionInputParam.agentSessionInputCancel()).isEmpty
+        assertThat(agentSessionInputParam.agentSessionInputToolResult()).isEmpty
+    }
+
+    @Test
+    fun ofAgentSessionInputComputerUseApprovalRequestResultRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val agentSessionInputParam =
+            AgentSessionInputParam.ofAgentSessionInputComputerUseApprovalRequestResult(
+                AgentSessionInputParam.AgentSessionInputComputerUseApprovalRequestResult.builder()
+                    .requestId("request_id")
+                    .response(
+                        AgentBrowserAuthenticationSubmitParam.builder()
+                            .addField(
+                                AgentBrowserAuthenticationSubmitParam.Field.builder()
+                                    .fieldId("field_id")
+                                    .value("value")
+                                    .build()
+                            )
+                            .selectedOption("selected_option")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedAgentSessionInputParam =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(agentSessionInputParam),
+                jacksonTypeRef<AgentSessionInputParam>(),
+            )
+
+        assertThat(roundtrippedAgentSessionInputParam).isEqualTo(agentSessionInputParam)
+    }
+
+    @Test
     fun ofAgentSessionInputMessage() {
         val agentSessionInputMessage =
             AgentSessionInputParam.AgentSessionInputMessage.builder()
@@ -29,6 +89,8 @@ internal class AgentSessionInputParamTest {
         val agentSessionInputParam =
             AgentSessionInputParam.ofAgentSessionInputMessage(agentSessionInputMessage)
 
+        assertThat(agentSessionInputParam.agentSessionInputComputerUseApprovalRequestResult())
+            .isEmpty
         assertThat(agentSessionInputParam.agentSessionInputMessage())
             .contains(agentSessionInputMessage)
         assertThat(agentSessionInputParam.agentSessionInputCancel()).isEmpty
@@ -63,6 +125,8 @@ internal class AgentSessionInputParamTest {
     fun ofAgentSessionInputCancel() {
         val agentSessionInputParam = AgentSessionInputParam.ofAgentSessionInputCancel()
 
+        assertThat(agentSessionInputParam.agentSessionInputComputerUseApprovalRequestResult())
+            .isEmpty
         assertThat(agentSessionInputParam.agentSessionInputMessage()).isEmpty
         assertThat(agentSessionInputParam.agentSessionInputCancel())
             .contains(JsonValue.from(mapOf("type" to "agent.session.input.cancel")))
@@ -97,6 +161,8 @@ internal class AgentSessionInputParamTest {
         val agentSessionInputParam =
             AgentSessionInputParam.ofAgentSessionInputToolResult(agentSessionInputToolResult)
 
+        assertThat(agentSessionInputParam.agentSessionInputComputerUseApprovalRequestResult())
+            .isEmpty
         assertThat(agentSessionInputParam.agentSessionInputMessage()).isEmpty
         assertThat(agentSessionInputParam.agentSessionInputCancel()).isEmpty
         assertThat(agentSessionInputParam.agentSessionInputToolResult())

@@ -37,6 +37,11 @@ internal class ResponseServiceTest {
         val response =
             responseService.create(
                 ResponseCreateParams.builder()
+                    .accessPrograms(
+                        ResponseCreateParams.AccessPrograms.builder()
+                            .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()
@@ -99,6 +104,7 @@ internal class ResponseServiceTest {
                         ResponseCreateParams.PromptCacheOptions.builder()
                             .comparisonResponseId("resp_123")
                             .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                            .prewarm(true)
                             .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                             .build()
                     )
@@ -172,6 +178,11 @@ internal class ResponseServiceTest {
         val responseStreamResponse =
             responseService.createStreaming(
                 ResponseCreateParams.builder()
+                    .accessPrograms(
+                        ResponseCreateParams.AccessPrograms.builder()
+                            .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()
@@ -234,6 +245,7 @@ internal class ResponseServiceTest {
                         ResponseCreateParams.PromptCacheOptions.builder()
                             .comparisonResponseId("resp_123")
                             .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                            .prewarm(true)
                             .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                             .build()
                     )

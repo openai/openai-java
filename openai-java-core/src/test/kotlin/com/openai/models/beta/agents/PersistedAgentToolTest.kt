@@ -35,6 +35,7 @@ internal class PersistedAgentToolTest {
         assertThat(persistedAgentTool.programmaticToolCalling()).isEmpty
         assertThat(persistedAgentTool.mcp()).isEmpty
         assertThat(persistedAgentTool.webSearch()).isEmpty
+        assertThat(persistedAgentTool.computerUse()).isEmpty
     }
 
     @Test
@@ -73,6 +74,7 @@ internal class PersistedAgentToolTest {
         assertThat(persistedAgentTool.programmaticToolCalling()).isEmpty
         assertThat(persistedAgentTool.mcp()).isEmpty
         assertThat(persistedAgentTool.webSearch()).isEmpty
+        assertThat(persistedAgentTool.computerUse()).isEmpty
     }
 
     @Test
@@ -102,6 +104,7 @@ internal class PersistedAgentToolTest {
         assertThat(persistedAgentTool.programmaticToolCalling()).contains(programmaticToolCalling)
         assertThat(persistedAgentTool.mcp()).isEmpty
         assertThat(persistedAgentTool.webSearch()).isEmpty
+        assertThat(persistedAgentTool.computerUse()).isEmpty
     }
 
     @Test
@@ -154,6 +157,7 @@ internal class PersistedAgentToolTest {
         assertThat(persistedAgentTool.programmaticToolCalling()).isEmpty
         assertThat(persistedAgentTool.mcp()).contains(mcp)
         assertThat(persistedAgentTool.webSearch()).isEmpty
+        assertThat(persistedAgentTool.computerUse()).isEmpty
     }
 
     @Test
@@ -218,6 +222,7 @@ internal class PersistedAgentToolTest {
         assertThat(persistedAgentTool.programmaticToolCalling()).isEmpty
         assertThat(persistedAgentTool.mcp()).isEmpty
         assertThat(persistedAgentTool.webSearch()).contains(webSearch)
+        assertThat(persistedAgentTool.computerUse()).isEmpty
     }
 
     @Test
@@ -238,6 +243,37 @@ internal class PersistedAgentToolTest {
                     )
                     .mode(PersistedAgentTool.WebSearch.Mode.DISABLED)
                     .build()
+            )
+
+        val roundtrippedPersistedAgentTool =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(persistedAgentTool),
+                jacksonTypeRef<PersistedAgentTool>(),
+            )
+
+        assertThat(roundtrippedPersistedAgentTool).isEqualTo(persistedAgentTool)
+    }
+
+    @Test
+    fun ofComputerUse() {
+        val computerUse = PersistedAgentTool.ComputerUse.builder().includeScreenshots(true).build()
+
+        val persistedAgentTool = PersistedAgentTool.ofComputerUse(computerUse)
+
+        assertThat(persistedAgentTool.function()).isEmpty
+        assertThat(persistedAgentTool.toolSearch()).isEmpty
+        assertThat(persistedAgentTool.programmaticToolCalling()).isEmpty
+        assertThat(persistedAgentTool.mcp()).isEmpty
+        assertThat(persistedAgentTool.webSearch()).isEmpty
+        assertThat(persistedAgentTool.computerUse()).contains(computerUse)
+    }
+
+    @Test
+    fun ofComputerUseRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val persistedAgentTool =
+            PersistedAgentTool.ofComputerUse(
+                PersistedAgentTool.ComputerUse.builder().includeScreenshots(true).build()
             )
 
         val roundtrippedPersistedAgentTool =

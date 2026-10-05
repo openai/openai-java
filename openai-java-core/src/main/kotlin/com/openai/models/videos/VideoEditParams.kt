@@ -518,7 +518,18 @@ private constructor(
         private val inputStream: InputStream? = null,
         private val referenceInputParam: VideoReferenceInputParam? = null,
         private val _json: JsonValue? = null,
-    ) {
+    ) : com.openai.core.http.MultipartInputStreamProvider {
+
+        @JvmSynthetic
+        override fun collectMultipartInputStreams(
+            consumer: (java.io.InputStream) -> kotlin.Unit
+        ): kotlin.Unit {
+            when {
+                this.inputStream != null -> consumer(this.inputStream)
+                this.referenceInputParam != null -> {}
+                else -> {}
+            }
+        }
 
         /** Reference to the completed video to edit. */
         fun inputStream(): Optional<InputStream> = Optional.ofNullable(inputStream)
@@ -666,7 +677,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Video: $json")
+                throw OpenAIInvalidDataException("Unknown Video")
             }
         }
 

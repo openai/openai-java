@@ -23,3 +23,8 @@ interface HttpRequestBody : AutoCloseable {
     /** Overridden from [AutoCloseable] to not have a checked exception in its signature. */
     override fun close()
 }
+
+/** Internal coordination shared by a multipart body and SDK body wrappers. */
+internal interface MultipartTransportGuard {
+    fun <T> beforeTransport(action: () -> T): T
+}

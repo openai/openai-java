@@ -18,6 +18,13 @@ internal class BetaResponsesClientEventTest {
     fun ofResponseCreate() {
         val responseCreate =
             BetaResponsesClientEvent.ResponseCreate.builder()
+                .accessPrograms(
+                    BetaResponsesClientEvent.ResponseCreate.AccessPrograms.builder()
+                        .cyber(
+                            BetaResponsesClientEvent.ResponseCreate.AccessPrograms.Cyber.STANDARD
+                        )
+                        .build()
+                )
                 .background(true)
                 .addContextManagement(
                     BetaResponsesClientEvent.ResponseCreate.ContextManagement.builder()
@@ -96,6 +103,7 @@ internal class BetaResponsesClientEventTest {
                         .mode(
                             BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode.IMPLICIT
                         )
+                        .prewarm(true)
                         .ttl(BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.Ttl._30M)
                         .build()
                 )
@@ -170,6 +178,14 @@ internal class BetaResponsesClientEventTest {
         val betaResponsesClientEvent =
             BetaResponsesClientEvent.ofResponseCreate(
                 BetaResponsesClientEvent.ResponseCreate.builder()
+                    .accessPrograms(
+                        BetaResponsesClientEvent.ResponseCreate.AccessPrograms.builder()
+                            .cyber(
+                                BetaResponsesClientEvent.ResponseCreate.AccessPrograms.Cyber
+                                    .STANDARD
+                            )
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         BetaResponsesClientEvent.ResponseCreate.ContextManagement.builder()
@@ -251,6 +267,7 @@ internal class BetaResponsesClientEventTest {
                                 BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.Mode
                                     .IMPLICIT
                             )
+                            .prewarm(true)
                             .ttl(
                                 BetaResponsesClientEvent.ResponseCreate.PromptCacheOptions.Ttl._30M
                             )

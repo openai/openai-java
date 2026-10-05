@@ -17,6 +17,11 @@ internal class ResponseCreateParamsTest {
     @Test
     fun create() {
         ResponseCreateParams.builder()
+            .accessPrograms(
+                ResponseCreateParams.AccessPrograms.builder()
+                    .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                    .build()
+            )
             .background(true)
             .addContextManagement(
                 ResponseCreateParams.ContextManagement.builder()
@@ -73,6 +78,7 @@ internal class ResponseCreateParamsTest {
                 ResponseCreateParams.PromptCacheOptions.builder()
                     .comparisonResponseId("resp_123")
                     .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                    .prewarm(true)
                     .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                     .build()
             )
@@ -131,6 +137,11 @@ internal class ResponseCreateParamsTest {
     fun body() {
         val params =
             ResponseCreateParams.builder()
+                .accessPrograms(
+                    ResponseCreateParams.AccessPrograms.builder()
+                        .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                        .build()
+                )
                 .background(true)
                 .addContextManagement(
                     ResponseCreateParams.ContextManagement.builder()
@@ -191,6 +202,7 @@ internal class ResponseCreateParamsTest {
                     ResponseCreateParams.PromptCacheOptions.builder()
                         .comparisonResponseId("resp_123")
                         .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                        .prewarm(true)
                         .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                         .build()
                 )
@@ -246,6 +258,12 @@ internal class ResponseCreateParamsTest {
 
         val body = params._body()
 
+        assertThat(body.accessPrograms())
+            .contains(
+                ResponseCreateParams.AccessPrograms.builder()
+                    .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                    .build()
+            )
         assertThat(body.background()).contains(true)
         assertThat(body.contextManagement().getOrNull())
             .containsExactly(
@@ -308,6 +326,7 @@ internal class ResponseCreateParamsTest {
                 ResponseCreateParams.PromptCacheOptions.builder()
                     .comparisonResponseId("resp_123")
                     .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                    .prewarm(true)
                     .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                     .build()
             )

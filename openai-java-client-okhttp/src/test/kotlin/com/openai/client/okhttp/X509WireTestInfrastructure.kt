@@ -50,11 +50,14 @@ private constructor(val leaf: HeldCertificate, val root: HeldCertificate) {
 }
 
 /**
- * A distinct mTLS peer that acts as an HTTP CONNECT proxy before negotiating TLS. This preserves
+ * A distinct mTLS peer that can act as an HTTP CONNECT proxy before negotiating TLS. This preserves
  * the production authority and SNI while keeping every connection on loopback.
  */
-internal class X509TestPeer(val authority: String, trustedClientRoot: X509Certificate) :
-    AutoCloseable {
+internal class X509TestPeer(
+    val authority: String,
+    trustedClientRoot: X509Certificate,
+    private val tunnelProxy: Boolean = true,
+) : AutoCloseable {
     private val serverRoot =
         HeldCertificate.Builder().commonName("$authority test root").certificateAuthority(1).build()
     private val serverLeaf =
@@ -78,7 +81,7 @@ internal class X509TestPeer(val authority: String, trustedClientRoot: X509Certif
 
     val server =
         MockWebServer().apply {
-            useHttps(sslContext.socketFactory, true)
+            useHttps(sslContext.socketFactory, tunnelProxy)
             requireClientAuth()
             start()
         }
@@ -93,7 +96,8 @@ internal class X509TestPeer(val authority: String, trustedClientRoot: X509Certif
         get() = recordingTrustManager.requestedServerNames.toList()
 
     fun enqueue(response: MockResponse) {
-        server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.UPGRADE_TO_SSL_AT_END))
+        if (tunnelProxy)
+            server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.UPGRADE_TO_SSL_AT_END))
         server.enqueue(response)
     }
 

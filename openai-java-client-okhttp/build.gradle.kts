@@ -1,7 +1,14 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("openai.kotlin")
     id("openai.wiremock-test")
     id("openai.publish")
+}
+
+// Keep multipart cancellation coordination internal across the SDK's owned transport modules.
+tasks.withType<KotlinCompile>().configureEach {
+    friendPaths.from(project(":openai-java-core").layout.buildDirectory.dir("classes/kotlin/main"))
 }
 
 val jacksonPublishedVersion = libs.versions.jacksonPublished.get()

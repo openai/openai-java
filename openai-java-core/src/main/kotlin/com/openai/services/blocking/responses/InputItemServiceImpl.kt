@@ -22,6 +22,7 @@ import com.openai.models.responses.inputitems.ResponseItemList
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Create and manage model responses. */
 class InputItemServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     InputItemService {
 

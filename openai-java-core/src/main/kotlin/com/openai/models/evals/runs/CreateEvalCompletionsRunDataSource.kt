@@ -601,7 +601,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Source: $json")
+                throw OpenAIInvalidDataException("Unknown Source")
             }
         }
 
@@ -2379,7 +2379,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown InputMessages: $json")
+                throw OpenAIInvalidDataException("Unknown InputMessages")
             }
         }
 
@@ -2885,7 +2885,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
                     fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown InnerTemplate: $json")
+                        throw OpenAIInvalidDataException("Unknown InnerTemplate")
                     }
                 }
 
@@ -3053,7 +3053,7 @@ private constructor(
 
                         private var content: JsonField<Content>? = null
                         private var role: JsonField<Role>? = null
-                        private var type: JsonField<Type> = JsonMissing.of()
+                        private var type: JsonField<Type> = JsonField.of(Type.MESSAGE)
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
@@ -3554,7 +3554,7 @@ private constructor(
                              * @throws OpenAIInvalidDataException in the default implementation.
                              */
                             fun unknown(json: JsonValue?): T {
-                                throw OpenAIInvalidDataException("Unknown Content: $json")
+                                throw OpenAIInvalidDataException("Unknown Content")
                             }
                         }
 
@@ -5424,7 +5424,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown ResponseFormat: $json")
+                    throw OpenAIInvalidDataException("Unknown ResponseFormat")
                 }
             }
 

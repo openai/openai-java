@@ -195,7 +195,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown McpTransport: $json")
+            throw OpenAIInvalidDataException("Unknown McpTransport")
         }
     }
 

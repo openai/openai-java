@@ -35,6 +35,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -128,6 +129,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -227,6 +229,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -328,6 +331,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -433,6 +437,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -541,6 +546,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -648,6 +654,7 @@ internal class BetaResponseStreamEventTest {
             .contains(responseCodeInterpreterCallCompleted)
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -754,6 +761,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress())
             .contains(responseCodeInterpreterCallInProgress)
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -860,6 +868,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting())
             .contains(responseCodeInterpreterCallInterpreting)
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -938,12 +947,122 @@ internal class BetaResponseStreamEventTest {
     }
 
     @Test
+    fun ofResponseCompactionCompacting() {
+        val responseCompactionCompacting =
+            BetaResponseCompactionCompactingEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .agent(
+                    BetaResponseCompactionCompactingEvent.Agent.builder()
+                        .agentName("agent_name")
+                        .build()
+                )
+                .build()
+
+        val betaResponseStreamEvent =
+            BetaResponseStreamEvent.ofResponseCompactionCompacting(responseCompactionCompacting)
+
+        assertThat(betaResponseStreamEvent.responseAudioDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioTranscriptDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseAudioTranscriptDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCodeDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCodeDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting())
+            .contains(responseCompactionCompacting)
+        assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCreated()).isEmpty
+        assertThat(betaResponseStreamEvent.error()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFileSearchCallSearching()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFunctionCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallCommandDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseShellCallOutputContentDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseIncomplete()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputItemAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputItemDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryPartAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryPartDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningSummaryTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseReasoningTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseRefusalDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseRefusalDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseWebSearchCallSearching()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallGenerating()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseImageGenerationCallPartialImage()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallArgumentsDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallArgumentsDone()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpCallInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsCompleted()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsFailed()).isEmpty
+        assertThat(betaResponseStreamEvent.responseMcpListToolsInProgress()).isEmpty
+        assertThat(betaResponseStreamEvent.responseOutputTextAnnotationAdded()).isEmpty
+        assertThat(betaResponseStreamEvent.responseQueued()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCustomToolCallInputDelta()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCustomToolCallInputDone()).isEmpty
+    }
+
+    @Test
+    fun ofResponseCompactionCompactingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val betaResponseStreamEvent =
+            BetaResponseStreamEvent.ofResponseCompactionCompacting(
+                BetaResponseCompactionCompactingEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .agent(
+                        BetaResponseCompactionCompactingEvent.Agent.builder()
+                            .agentName("agent_name")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedBetaResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(betaResponseStreamEvent),
+                jacksonTypeRef<BetaResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedBetaResponseStreamEvent).isEqualTo(betaResponseStreamEvent)
+    }
+
+    @Test
     fun ofResponseCompleted() {
         val responseCompleted =
             BetaResponseCompletedEvent.builder()
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -1196,6 +1315,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).contains(responseCompleted)
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -1256,6 +1376,11 @@ internal class BetaResponseStreamEventTest {
                     .response(
                         BetaResponse.builder()
                             .id("id")
+                            .accessPrograms(
+                                BetaResponse.AccessPrograms.builder()
+                                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 BetaResponseError.builder()
@@ -1569,6 +1694,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded())
             .contains(responseContentPartAdded)
@@ -1725,6 +1851,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone())
@@ -1837,6 +1964,11 @@ internal class BetaResponseStreamEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -2089,6 +2221,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -2149,6 +2282,11 @@ internal class BetaResponseStreamEventTest {
                     .response(
                         BetaResponse.builder()
                             .id("id")
+                            .accessPrograms(
+                                BetaResponse.AccessPrograms.builder()
+                                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 BetaResponseError.builder()
@@ -2429,6 +2567,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -2531,6 +2670,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -2637,6 +2777,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -2743,6 +2884,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -2850,6 +2992,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -2958,6 +3101,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -3064,6 +3208,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -3171,6 +3316,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -3278,6 +3424,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -3392,6 +3539,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -3514,6 +3662,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -3608,6 +3757,11 @@ internal class BetaResponseStreamEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -3861,6 +4015,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -3921,6 +4076,11 @@ internal class BetaResponseStreamEventTest {
                     .response(
                         BetaResponse.builder()
                             .id("id")
+                            .accessPrograms(
+                                BetaResponse.AccessPrograms.builder()
+                                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 BetaResponseError.builder()
@@ -4188,6 +4348,11 @@ internal class BetaResponseStreamEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -4440,6 +4605,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -4500,6 +4666,11 @@ internal class BetaResponseStreamEventTest {
                     .response(
                         BetaResponse.builder()
                             .id("id")
+                            .accessPrograms(
+                                BetaResponse.AccessPrograms.builder()
+                                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 BetaResponseError.builder()
@@ -4765,6 +4936,11 @@ internal class BetaResponseStreamEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -5018,6 +5194,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -5078,6 +5255,11 @@ internal class BetaResponseStreamEventTest {
                     .response(
                         BetaResponse.builder()
                             .id("id")
+                            .accessPrograms(
+                                BetaResponse.AccessPrograms.builder()
+                                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 BetaResponseError.builder()
@@ -5399,6 +5581,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -5575,6 +5758,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -5722,6 +5906,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -5837,6 +6022,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -5952,6 +6138,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -6062,6 +6249,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -6170,6 +6358,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -6278,6 +6467,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -6384,6 +6574,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -6487,6 +6678,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -6600,6 +6792,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -6726,6 +6919,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -6842,6 +7036,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -6948,6 +7143,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -7052,6 +7248,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -7158,6 +7355,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -7264,6 +7462,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -7370,6 +7569,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -7482,6 +7682,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -7593,6 +7794,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -7699,6 +7901,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -7804,6 +8007,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -7906,6 +8110,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -8009,6 +8214,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -8113,6 +8319,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -8217,6 +8424,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -8321,6 +8529,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -8436,6 +8645,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -8530,6 +8740,11 @@ internal class BetaResponseStreamEventTest {
                 .response(
                     BetaResponse.builder()
                         .id("id")
+                        .accessPrograms(
+                            BetaResponse.AccessPrograms.builder()
+                                .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             BetaResponseError.builder()
@@ -8782,6 +8997,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -8842,6 +9058,11 @@ internal class BetaResponseStreamEventTest {
                     .response(
                         BetaResponse.builder()
                             .id("id")
+                            .accessPrograms(
+                                BetaResponse.AccessPrograms.builder()
+                                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                                    .build()
+                            )
                             .createdAt(0.0)
                             .error(
                                 BetaResponseError.builder()
@@ -9129,6 +9350,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty
@@ -9237,6 +9459,7 @@ internal class BetaResponseStreamEventTest {
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInProgress()).isEmpty
         assertThat(betaResponseStreamEvent.responseCodeInterpreterCallInterpreting()).isEmpty
+        assertThat(betaResponseStreamEvent.responseCompactionCompacting()).isEmpty
         assertThat(betaResponseStreamEvent.responseCompleted()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartAdded()).isEmpty
         assertThat(betaResponseStreamEvent.responseContentPartDone()).isEmpty

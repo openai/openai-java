@@ -207,7 +207,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown ResponseSteerInput: $json")
+            throw OpenAIInvalidDataException("Unknown ResponseSteerInput")
         }
     }
 
@@ -430,7 +430,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ResponseSteerInputItem: $json")
+                throw OpenAIInvalidDataException("Unknown ResponseSteerInputItem")
             }
         }
 
@@ -980,7 +980,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
                     fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown Content: $json")
+                        throw OpenAIInvalidDataException("Unknown Content")
                     }
                 }
 
@@ -1736,7 +1736,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
                     fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown Output: $json")
+                        throw OpenAIInvalidDataException("Unknown Output")
                     }
                 }
 
@@ -1970,7 +1970,7 @@ private constructor(
                      * @throws OpenAIInvalidDataException in the default implementation.
                      */
                     fun unknown(json: JsonValue?): T {
-                        throw OpenAIInvalidDataException("Unknown Caller: $json")
+                        throw OpenAIInvalidDataException("Unknown Caller")
                     }
                 }
 

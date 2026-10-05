@@ -29,6 +29,7 @@ import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionDeleted
 import com.openai.models.beta.agents.AgentSessionEvent
 import com.openai.models.beta.agents.AgentSessionStreamParams
+import com.openai.models.beta.agents.AgentToolHandlers
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.SessionDeleteParams
 import com.openai.models.beta.agents.sessions.SessionListPageAsync
@@ -44,9 +45,12 @@ import com.openai.services.async.beta.agents.sessions.ItemServiceAsync
 import com.openai.services.async.beta.agents.sessions.ItemServiceAsyncImpl
 import com.openai.services.async.beta.agents.sessions.SubagentServiceAsync
 import com.openai.services.async.beta.agents.sessions.SubagentServiceAsyncImpl
+import com.openai.services.async.beta.agents.sessions.TraceServiceAsync
+import com.openai.services.async.beta.agents.sessions.TraceServiceAsyncImpl
 import com.openai.services.async.beta.agents.sessions.TurnServiceAsync
 import com.openai.services.async.beta.agents.sessions.TurnServiceAsyncImpl
 import com.openai.services.beta.agents.AgentSessionStreamAsync
+import com.openai.services.beta.agents.AgentTurnResults
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -71,18 +75,24 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
     private val events: EventServiceAsync by lazy { EventServiceAsyncImpl(clientOptions) }
 
+    private val traces: TraceServiceAsync by lazy { TraceServiceAsyncImpl(clientOptions) }
+
     private val turns: TurnServiceAsync by lazy { TurnServiceAsyncImpl(clientOptions) }
 
     override fun stream(
         params: AgentSessionStreamParams,
         requestOptions: RequestOptions,
     ): AsyncStreamResponse<AgentSessionEvent> =
-        AgentSessionStreamAsync(
-            this,
-            params,
-            requestOptions,
-            clientOptions.streamHandlerExecutor,
-            clientOptions.sleeper,
+        AgentTurnResults.collecting(
+            AgentSessionStreamAsync(
+                this,
+                params,
+                requestOptions,
+                clientOptions.streamHandlerExecutor,
+                clientOptions.sleeper,
+            ),
+            params.handlers.keys,
+            params.sessionId,
         )
 
     override fun withRawResponse(): SessionServiceAsync.WithRawResponse = withRawResponse
@@ -97,6 +107,8 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun items(): ItemServiceAsync = items
 
     override fun events(): EventServiceAsync = events
+
+    override fun traces(): TraceServiceAsync = traces
 
     override fun turns(): TurnServiceAsync = turns
 
@@ -114,8 +126,27 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
         // post /agents/sessions
         withRawResponse()
             .createStreaming(params, requestOptions)
-            .thenApply { it.parse() }
+            .thenApply { AgentTurnResults.uncollected(it.parse()) }
             .toAsync(clientOptions.streamHandlerExecutor)
+            .let { AgentTurnResults.collecting(it) }
+
+    override fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<AgentSessionEvent> =
+        AgentTurnResults.collecting(
+            AgentSessionStreamAsync(
+                this,
+                null,
+                requestOptions,
+                clientOptions.streamHandlerExecutor,
+                clientOptions.sleeper,
+                params,
+                handlers,
+            ),
+            handlers.handlers.keys,
+        )
 
     override fun retrieve(
         params: SessionRetrieveParams,
@@ -167,6 +198,10 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
             EventServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val traces: TraceServiceAsync.WithRawResponse by lazy {
+            TraceServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val turns: TurnServiceAsync.WithRawResponse by lazy {
             TurnServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -185,6 +220,8 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
         override fun items(): ItemServiceAsync.WithRawResponse = items
 
         override fun events(): EventServiceAsync.WithRawResponse = events
+
+        override fun traces(): TraceServiceAsync.WithRawResponse = traces
 
         override fun turns(): TurnServiceAsync.WithRawResponse = turns
 
@@ -268,6 +305,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
                                     streamResponse
                                 }
                             }
+                            .let { AgentTurnResults.collecting(it) }
                     }
                 }
         }

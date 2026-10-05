@@ -38,7 +38,7 @@ private constructor(
 
     override fun items(): List<ChatCompletion> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): ChatCompletionListParams =
         params.toBuilder().after(items().last()._id().getOptional("id")).build()

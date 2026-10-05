@@ -40,6 +40,7 @@ private constructor(
     private val programmaticToolCalling: ProgrammaticToolCalling? = null,
     private val mcp: Mcp? = null,
     private val webSearch: WebSearch? = null,
+    private val computerUse: ComputerUse? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -59,6 +60,9 @@ private constructor(
     /** Web search. */
     fun webSearch(): Optional<WebSearch> = Optional.ofNullable(webSearch)
 
+    /** Browser use in an OpenAI-hosted session. */
+    fun computerUse(): Optional<ComputerUse> = Optional.ofNullable(computerUse)
+
     fun isFunction(): Boolean = function != null
 
     fun isToolSearch(): Boolean = toolSearch != null
@@ -68,6 +72,8 @@ private constructor(
     fun isMcp(): Boolean = mcp != null
 
     fun isWebSearch(): Boolean = webSearch != null
+
+    fun isComputerUse(): Boolean = computerUse != null
 
     /** A function defined by the application. */
     fun asFunction(): Function = function.getOrThrow("function")
@@ -84,6 +90,9 @@ private constructor(
 
     /** Web search. */
     fun asWebSearch(): WebSearch = webSearch.getOrThrow("webSearch")
+
+    /** Browser use in an OpenAI-hosted session. */
+    fun asComputerUse(): ComputerUse = computerUse.getOrThrow("computerUse")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -124,6 +133,7 @@ private constructor(
                 visitor.visitProgrammaticToolCalling(programmaticToolCalling)
             mcp != null -> visitor.visitMcp(mcp)
             webSearch != null -> visitor.visitWebSearch(webSearch)
+            computerUse != null -> visitor.visitComputerUse(computerUse)
             else -> visitor.unknown(_json)
         }
 
@@ -171,6 +181,10 @@ private constructor(
                 override fun visitWebSearch(webSearch: WebSearch) {
                     webSearch.validate()
                 }
+
+                override fun visitComputerUse(computerUse: ComputerUse) {
+                    computerUse.validate()
+                }
             }
         )
         validated = true
@@ -208,6 +222,8 @@ private constructor(
 
                 override fun visitWebSearch(webSearch: WebSearch) = webSearch.validity()
 
+                override fun visitComputerUse(computerUse: ComputerUse) = computerUse.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -222,11 +238,12 @@ private constructor(
             toolSearch == other.toolSearch &&
             programmaticToolCalling == other.programmaticToolCalling &&
             mcp == other.mcp &&
-            webSearch == other.webSearch
+            webSearch == other.webSearch &&
+            computerUse == other.computerUse
     }
 
     override fun hashCode(): Int =
-        Objects.hash(function, toolSearch, programmaticToolCalling, mcp, webSearch)
+        Objects.hash(function, toolSearch, programmaticToolCalling, mcp, webSearch, computerUse)
 
     override fun toString(): String =
         when {
@@ -236,6 +253,7 @@ private constructor(
                 "PersistedAgentToolParam{programmaticToolCalling=$programmaticToolCalling}"
             mcp != null -> "PersistedAgentToolParam{mcp=$mcp}"
             webSearch != null -> "PersistedAgentToolParam{webSearch=$webSearch}"
+            computerUse != null -> "PersistedAgentToolParam{computerUse=$computerUse}"
             _json != null -> "PersistedAgentToolParam{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid PersistedAgentToolParam")
         }
@@ -261,6 +279,11 @@ private constructor(
         /** Web search. */
         @JvmStatic
         fun ofWebSearch(webSearch: WebSearch) = PersistedAgentToolParam(webSearch = webSearch)
+
+        /** Browser use in an OpenAI-hosted session. */
+        @JvmStatic
+        fun ofComputerUse(computerUse: ComputerUse) =
+            PersistedAgentToolParam(computerUse = computerUse)
     }
 
     /**
@@ -284,6 +307,9 @@ private constructor(
         /** Web search. */
         fun visitWebSearch(webSearch: WebSearch): T
 
+        /** Browser use in an OpenAI-hosted session. */
+        fun visitComputerUse(computerUse: ComputerUse): T
+
         /**
          * Maps an unknown variant of [PersistedAgentToolParam] to a value of type [T].
          *
@@ -295,7 +321,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown PersistedAgentToolParam: $json")
+            throw OpenAIInvalidDataException("Unknown PersistedAgentToolParam")
         }
     }
 
@@ -332,6 +358,11 @@ private constructor(
                         PersistedAgentToolParam(webSearch = it, _json = json)
                     } ?: PersistedAgentToolParam(_json = json)
                 }
+                "computer_use" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ComputerUse>())?.let {
+                        PersistedAgentToolParam(computerUse = it, _json = json)
+                    } ?: PersistedAgentToolParam(_json = json)
+                }
             }
 
             return PersistedAgentToolParam(_json = json)
@@ -353,6 +384,7 @@ private constructor(
                     generator.writeObject(value.programmaticToolCalling)
                 value.mcp != null -> generator.writeObject(value.mcp)
                 value.webSearch != null -> generator.writeObject(value.webSearch)
+                value.computerUse != null -> generator.writeObject(value.computerUse)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid PersistedAgentToolParam")
             }
@@ -1099,7 +1131,7 @@ private constructor(
         fun allowedTools(): Optional<List<String>> = allowedTools.getOptional("allowed_tools")
 
         /**
-         * Where outbound MCP HTTP connections originate.
+         * Selects where outbound MCP HTTP connections originate.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1343,7 +1375,7 @@ private constructor(
                     }
             }
 
-            /** Where outbound MCP HTTP connections originate. */
+            /** Selects where outbound MCP HTTP connections originate. */
             fun connectionOrigin(connectionOrigin: ConnectionOrigin?) =
                 connectionOrigin(JsonField.ofNullable(connectionOrigin))
 
@@ -1521,7 +1553,7 @@ private constructor(
                 (requestMetadata.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (required.asKnown().isPresent) 1 else 0)
 
-        /** Where outbound MCP HTTP connections originate. */
+        /** Selects where outbound MCP HTTP connections originate. */
         class ConnectionOrigin
         @JsonCreator
         private constructor(private val value: JsonField<String>) : Enum {
@@ -1871,7 +1903,7 @@ private constructor(
         fun allowedDomains(): Optional<List<String>> = allowedDomains.getOptional("allowed_domains")
 
         /**
-         * The amount of web search context made available to the model.
+         * The amount of search context made available to the model. Defaults to `medium`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1879,7 +1911,7 @@ private constructor(
         fun contextSize(): Optional<ContextSize> = contextSize.getOptional("context_size")
 
         /**
-         * Approximate user location used to localize web search results.
+         * Approximate location used to localize search results.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1887,7 +1919,7 @@ private constructor(
         fun location(): Optional<Location> = location.getOptional("location")
 
         /**
-         * The source used for web search results.
+         * The source used for web search results. Defaults to `live`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2010,7 +2042,7 @@ private constructor(
                     }
             }
 
-            /** The amount of web search context made available to the model. */
+            /** The amount of search context made available to the model. Defaults to `medium`. */
             fun contextSize(contextSize: ContextSize?) =
                 contextSize(JsonField.ofNullable(contextSize))
 
@@ -2029,7 +2061,7 @@ private constructor(
                 this.contextSize = contextSize
             }
 
-            /** Approximate user location used to localize web search results. */
+            /** Approximate location used to localize search results. */
             fun location(location: Location?) = location(JsonField.ofNullable(location))
 
             /** Alias for calling [Builder.location] with `location.orElse(null)`. */
@@ -2044,7 +2076,7 @@ private constructor(
              */
             fun location(location: JsonField<Location>) = apply { this.location = location }
 
-            /** The source used for web search results. */
+            /** The source used for web search results. Defaults to `live`. */
             fun mode(mode: Mode?) = mode(JsonField.ofNullable(mode))
 
             /** Alias for calling [Builder.mode] with `mode.orElse(null)`. */
@@ -2144,7 +2176,7 @@ private constructor(
                 (location.asKnown().getOrNull()?.validity() ?: 0) +
                 (mode.asKnown().getOrNull()?.validity() ?: 0)
 
-        /** The amount of web search context made available to the model. */
+        /** The amount of search context made available to the model. Defaults to `medium`. */
         class ContextSize @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
 
@@ -2292,7 +2324,7 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        /** Approximate user location used to localize web search results. */
+        /** Approximate location used to localize search results. */
         class Location
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
@@ -2573,7 +2605,7 @@ private constructor(
                 "Location{city=$city, country=$country, region=$region, timezone=$timezone, additionalProperties=$additionalProperties}"
         }
 
-        /** The source used for web search results. */
+        /** The source used for web search results. Defaults to `live`. */
         class Mode @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
@@ -2748,5 +2780,208 @@ private constructor(
 
         override fun toString() =
             "WebSearch{type=$type, allowedDomains=$allowedDomains, contextSize=$contextSize, location=$location, mode=$mode, additionalProperties=$additionalProperties}"
+    }
+
+    /** Browser use in an OpenAI-hosted session. */
+    class ComputerUse
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val type: JsonValue,
+        private val includeScreenshots: JsonField<Boolean>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("include_screenshots")
+            @ExcludeMissing
+            includeScreenshots: JsonField<Boolean> = JsonMissing.of(),
+        ) : this(type, includeScreenshots, mutableMapOf())
+
+        /**
+         * The type of the object. Always `computer_use`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("computer_use")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * Whether computer tool outputs include screenshots. Defaults to `false`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun includeScreenshots(): Optional<Boolean> =
+            includeScreenshots.getOptional("include_screenshots")
+
+        /**
+         * Returns the raw JSON value of [includeScreenshots].
+         *
+         * Unlike [includeScreenshots], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("include_screenshots")
+        @ExcludeMissing
+        fun _includeScreenshots(): JsonField<Boolean> = includeScreenshots
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [ComputerUse]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [ComputerUse]. */
+        class Builder internal constructor() {
+
+            private var type: JsonValue = JsonValue.from("computer_use")
+            private var includeScreenshots: JsonField<Boolean> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(computerUse: ComputerUse) = apply {
+                type = computerUse.type
+                includeScreenshots = computerUse.includeScreenshots
+                additionalProperties = computerUse.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("computer_use")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /** Whether computer tool outputs include screenshots. Defaults to `false`. */
+            fun includeScreenshots(includeScreenshots: Boolean) =
+                includeScreenshots(JsonField.of(includeScreenshots))
+
+            /**
+             * Sets [Builder.includeScreenshots] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.includeScreenshots] with a well-typed [Boolean]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun includeScreenshots(includeScreenshots: JsonField<Boolean>) = apply {
+                this.includeScreenshots = includeScreenshots
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [ComputerUse].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): ComputerUse =
+                ComputerUse(type, includeScreenshots, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): ComputerUse = apply {
+            if (validated) {
+                return@apply
+            }
+
+            _type().let {
+                if (it != JsonValue.from("computer_use")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            includeScreenshots()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            type.let { if (it == JsonValue.from("computer_use")) 1 else 0 } +
+                (if (includeScreenshots.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ComputerUse &&
+                type == other.type &&
+                includeScreenshots == other.includeScreenshots &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(type, includeScreenshots, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "ComputerUse{type=$type, includeScreenshots=$includeScreenshots, additionalProperties=$additionalProperties}"
     }
 }

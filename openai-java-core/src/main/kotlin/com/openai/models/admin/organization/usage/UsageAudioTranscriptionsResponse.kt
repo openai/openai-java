@@ -1290,7 +1290,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Result: $json")
+                    throw OpenAIInvalidDataException("Unknown Result")
                 }
             }
 
@@ -1445,6 +1445,7 @@ private constructor(
                 private val apiKeyId: JsonField<String>,
                 private val batch: JsonField<Boolean>,
                 private val inputAudioTokens: JsonField<Long>,
+                private val inputCacheWrite12hTokens: JsonField<Long>,
                 private val inputCacheWriteTokens: JsonField<Long>,
                 private val inputCachedAudioTokens: JsonField<Long>,
                 private val inputCachedImageTokens: JsonField<Long>,
@@ -1484,6 +1485,9 @@ private constructor(
                     @JsonProperty("input_audio_tokens")
                     @ExcludeMissing
                     inputAudioTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_cache_write_12h_tokens")
+                    @ExcludeMissing
+                    inputCacheWrite12hTokens: JsonField<Long> = JsonMissing.of(),
                     @JsonProperty("input_cache_write_tokens")
                     @ExcludeMissing
                     inputCacheWriteTokens: JsonField<Long> = JsonMissing.of(),
@@ -1537,6 +1541,7 @@ private constructor(
                     apiKeyId,
                     batch,
                     inputAudioTokens,
+                    inputCacheWrite12hTokens,
                     inputCacheWriteTokens,
                     inputCachedAudioTokens,
                     inputCachedImageTokens,
@@ -1624,7 +1629,18 @@ private constructor(
                     inputAudioTokens.getOptional("input_audio_tokens")
 
                 /**
-                 * The aggregated number of input tokens written to the cache.
+                 * The aggregated number of input tokens written to the cache with a 12-hour
+                 * retention period.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputCacheWrite12hTokens(): Optional<Long> =
+                    inputCacheWrite12hTokens.getOptional("input_cache_write_12h_tokens")
+
+                /**
+                 * The aggregated number of input tokens written to the cache with a 30-minute
+                 * retention period.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -1820,6 +1836,16 @@ private constructor(
                 fun _inputAudioTokens(): JsonField<Long> = inputAudioTokens
 
                 /**
+                 * Returns the raw JSON value of [inputCacheWrite12hTokens].
+                 *
+                 * Unlike [inputCacheWrite12hTokens], this method doesn't throw if the JSON field
+                 * has an unexpected type.
+                 */
+                @JsonProperty("input_cache_write_12h_tokens")
+                @ExcludeMissing
+                fun _inputCacheWrite12hTokens(): JsonField<Long> = inputCacheWrite12hTokens
+
+                /**
                  * Returns the raw JSON value of [inputCacheWriteTokens].
                  *
                  * Unlike [inputCacheWriteTokens], this method doesn't throw if the JSON field has
@@ -2004,6 +2030,7 @@ private constructor(
                     private var apiKeyId: JsonField<String> = JsonMissing.of()
                     private var batch: JsonField<Boolean> = JsonMissing.of()
                     private var inputAudioTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputCacheWrite12hTokens: JsonField<Long> = JsonMissing.of()
                     private var inputCacheWriteTokens: JsonField<Long> = JsonMissing.of()
                     private var inputCachedAudioTokens: JsonField<Long> = JsonMissing.of()
                     private var inputCachedImageTokens: JsonField<Long> = JsonMissing.of()
@@ -2032,6 +2059,8 @@ private constructor(
                         apiKeyId = organizationUsageCompletionsResult.apiKeyId
                         batch = organizationUsageCompletionsResult.batch
                         inputAudioTokens = organizationUsageCompletionsResult.inputAudioTokens
+                        inputCacheWrite12hTokens =
+                            organizationUsageCompletionsResult.inputCacheWrite12hTokens
                         inputCacheWriteTokens =
                             organizationUsageCompletionsResult.inputCacheWriteTokens
                         inputCachedAudioTokens =
@@ -2178,7 +2207,29 @@ private constructor(
                         this.inputAudioTokens = inputAudioTokens
                     }
 
-                    /** The aggregated number of input tokens written to the cache. */
+                    /**
+                     * The aggregated number of input tokens written to the cache with a 12-hour
+                     * retention period.
+                     */
+                    fun inputCacheWrite12hTokens(inputCacheWrite12hTokens: Long) =
+                        inputCacheWrite12hTokens(JsonField.of(inputCacheWrite12hTokens))
+
+                    /**
+                     * Sets [Builder.inputCacheWrite12hTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputCacheWrite12hTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputCacheWrite12hTokens(inputCacheWrite12hTokens: JsonField<Long>) =
+                        apply {
+                            this.inputCacheWrite12hTokens = inputCacheWrite12hTokens
+                        }
+
+                    /**
+                     * The aggregated number of input tokens written to the cache with a 30-minute
+                     * retention period.
+                     */
                     fun inputCacheWriteTokens(inputCacheWriteTokens: Long) =
                         inputCacheWriteTokens(JsonField.of(inputCacheWriteTokens))
 
@@ -2476,6 +2527,7 @@ private constructor(
                             apiKeyId,
                             batch,
                             inputAudioTokens,
+                            inputCacheWrite12hTokens,
                             inputCacheWriteTokens,
                             inputCachedAudioTokens,
                             inputCachedImageTokens,
@@ -2523,6 +2575,7 @@ private constructor(
                     apiKeyId()
                     batch()
                     inputAudioTokens()
+                    inputCacheWrite12hTokens()
                     inputCacheWriteTokens()
                     inputCachedAudioTokens()
                     inputCachedImageTokens()
@@ -2567,6 +2620,7 @@ private constructor(
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
                         (if (batch.asKnown().isPresent) 1 else 0) +
                         (if (inputAudioTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputCacheWrite12hTokens.asKnown().isPresent) 1 else 0) +
                         (if (inputCacheWriteTokens.asKnown().isPresent) 1 else 0) +
                         (if (inputCachedAudioTokens.asKnown().isPresent) 1 else 0) +
                         (if (inputCachedImageTokens.asKnown().isPresent) 1 else 0) +
@@ -2596,6 +2650,7 @@ private constructor(
                         apiKeyId == other.apiKeyId &&
                         batch == other.batch &&
                         inputAudioTokens == other.inputAudioTokens &&
+                        inputCacheWrite12hTokens == other.inputCacheWrite12hTokens &&
                         inputCacheWriteTokens == other.inputCacheWriteTokens &&
                         inputCachedAudioTokens == other.inputCachedAudioTokens &&
                         inputCachedImageTokens == other.inputCachedImageTokens &&
@@ -2623,6 +2678,7 @@ private constructor(
                         apiKeyId,
                         batch,
                         inputAudioTokens,
+                        inputCacheWrite12hTokens,
                         inputCacheWriteTokens,
                         inputCachedAudioTokens,
                         inputCachedImageTokens,
@@ -2645,7 +2701,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationUsageCompletionsResult{inputTokens=$inputTokens, numModelRequests=$numModelRequests, object_=$object_, outputTokens=$outputTokens, apiKeyId=$apiKeyId, batch=$batch, inputAudioTokens=$inputAudioTokens, inputCacheWriteTokens=$inputCacheWriteTokens, inputCachedAudioTokens=$inputCachedAudioTokens, inputCachedImageTokens=$inputCachedImageTokens, inputCachedTextTokens=$inputCachedTextTokens, inputCachedTokens=$inputCachedTokens, inputImageTokens=$inputImageTokens, inputTextTokens=$inputTextTokens, inputUncachedTokens=$inputUncachedTokens, model=$model, outputAudioTokens=$outputAudioTokens, outputImageTokens=$outputImageTokens, outputTextTokens=$outputTextTokens, projectId=$projectId, serviceTier=$serviceTier, userId=$userId, additionalProperties=$additionalProperties}"
+                    "OrganizationUsageCompletionsResult{inputTokens=$inputTokens, numModelRequests=$numModelRequests, object_=$object_, outputTokens=$outputTokens, apiKeyId=$apiKeyId, batch=$batch, inputAudioTokens=$inputAudioTokens, inputCacheWrite12hTokens=$inputCacheWrite12hTokens, inputCacheWriteTokens=$inputCacheWriteTokens, inputCachedAudioTokens=$inputCachedAudioTokens, inputCachedImageTokens=$inputCachedImageTokens, inputCachedTextTokens=$inputCachedTextTokens, inputCachedTokens=$inputCachedTokens, inputImageTokens=$inputImageTokens, inputTextTokens=$inputTextTokens, inputUncachedTokens=$inputUncachedTokens, model=$model, outputAudioTokens=$outputAudioTokens, outputImageTokens=$outputImageTokens, outputTextTokens=$outputTextTokens, projectId=$projectId, serviceTier=$serviceTier, userId=$userId, additionalProperties=$additionalProperties}"
             }
 
             /** The aggregated embeddings usage details of the specific time bucket. */

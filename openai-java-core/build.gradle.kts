@@ -1,4 +1,3 @@
-import com.openai.gradle.CoreCompilationClaimedSourceIncludeSpec
 import com.openai.gradle.CoreCompilationClaimedSourceSpec
 import com.openai.gradle.CoreCompilationDependencies
 import com.openai.gradle.CoreCompilationShards
@@ -86,14 +85,11 @@ val coreJar = tasks.named<Jar>("jar") {
     duplicatesStrategy = DuplicatesStrategy.FAIL
 }
 
-val coreSourcesJar = tasks.named<Jar>("kotlinSourcesJar") {
+val coreSourcesJar = tasks.named<Jar>("sourcesJar") {
     duplicatesStrategy = DuplicatesStrategy.FAIL
-    from(
-        fileTree("src/main/kotlin").matching {
-            include(CoreCompilationClaimedSourceIncludeSpec())
-        }
-    ) {
-        into("main")
+    // Eclipse resolves sources from their package paths, without the Kotlin source-set prefix.
+    filesMatching("**/*.kt") {
+        path = path.removePrefix("main/")
     }
 }
 
@@ -235,6 +231,12 @@ if (project.hasProperty("graalvmAgent")) {
     }
 
     tasks.test {
+        // GraalVM's caller-based Byte Buddy names can contain <clinit>, preventing Mockito's
+        // module-aware accessor from initializing. Keep unique, reproducible names for tracing.
+        systemProperty("net.bytebuddy.naming", "0")
+        // One Gradle fork still runs concurrent JUnit methods. Trace them serially so agent
+        // overhead does not starve asynchronous fixtures with bounded waits.
+        systemProperty("junit.jupiter.execution.parallel.enabled", false)
         maxParallelForks = 1
         forkEvery = 0
         jvmArgs(

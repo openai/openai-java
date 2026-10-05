@@ -50,6 +50,7 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
     override fun agents(): AgentServiceAsync = agents
 
+    /** Create and manage model responses. */
     override fun responses(): ResponseServiceAsync = responses
 
     override fun chatkit(): ChatKitServiceAsync = chatkit
@@ -102,6 +103,7 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
         override fun agents(): AgentServiceAsync.WithRawResponse = agents
 
+        /** Create and manage model responses. */
         override fun responses(): ResponseServiceAsync.WithRawResponse = responses
 
         override fun chatkit(): ChatKitServiceAsync.WithRawResponse = chatkit

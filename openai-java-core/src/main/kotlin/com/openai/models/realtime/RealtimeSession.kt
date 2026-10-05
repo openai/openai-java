@@ -1749,7 +1749,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown MaxResponseOutputTokens: $json")
+                throw OpenAIInvalidDataException("Unknown MaxResponseOutputTokens")
             }
         }
 
@@ -2622,7 +2622,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Tracing: $json")
+                throw OpenAIInvalidDataException("Unknown Tracing")
             }
         }
 
@@ -3126,7 +3126,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown TurnDetection: $json")
+                throw OpenAIInvalidDataException("Unknown TurnDetection")
             }
         }
 

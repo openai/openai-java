@@ -215,7 +215,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown BetaMcpToolCallError: $json")
+            throw OpenAIInvalidDataException("Unknown BetaMcpToolCallError")
         }
     }
 

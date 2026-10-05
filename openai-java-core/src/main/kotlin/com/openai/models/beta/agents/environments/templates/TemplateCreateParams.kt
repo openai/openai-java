@@ -48,6 +48,15 @@ private constructor(
     fun capabilityDirectories(): Optional<List<String>> = body.capabilityDirectories()
 
     /**
+     * Desktop provisioning. Omission or null inherits the template setting, or defaults to
+     * disabled.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun desktop(): Optional<Desktop> = body.desktop()
+
+    /**
      * Environment variables made available to the agent.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -72,7 +81,8 @@ private constructor(
     fun name(): Optional<String> = body.name()
 
     /**
-     * Network access for an OpenAI-hosted environment.
+     * Network access policy for the environment. Defaults to disabled for GA requests and enabled
+     * for beta requests.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -80,7 +90,7 @@ private constructor(
     fun network(): Optional<Network> = body.network()
 
     /**
-     * Packages to install in an OpenAI-hosted environment.
+     * Packages to install in the environment. Defaults to empty package lists.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -118,6 +128,13 @@ private constructor(
      * type.
      */
     fun _capabilityDirectories(): JsonField<List<String>> = body._capabilityDirectories()
+
+    /**
+     * Returns the raw JSON value of [desktop].
+     *
+     * Unlike [desktop], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _desktop(): JsonField<Desktop> = body._desktop()
 
     /**
      * Returns the raw JSON value of [env].
@@ -213,10 +230,10 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [capabilityDirectories]
+         * - [desktop]
          * - [env]
          * - [files]
          * - [name]
-         * - [network]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -254,6 +271,23 @@ private constructor(
         fun addCapabilityDirectory(capabilityDirectory: String) = apply {
             body.addCapabilityDirectory(capabilityDirectory)
         }
+
+        /**
+         * Desktop provisioning. Omission or null inherits the template setting, or defaults to
+         * disabled.
+         */
+        fun desktop(desktop: Desktop?) = apply { body.desktop(desktop) }
+
+        /** Alias for calling [Builder.desktop] with `desktop.orElse(null)`. */
+        fun desktop(desktop: Optional<Desktop>) = desktop(desktop.getOrNull())
+
+        /**
+         * Sets [Builder.desktop] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.desktop] with a well-typed [Desktop] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun desktop(desktop: JsonField<Desktop>) = apply { body.desktop(desktop) }
 
         /** Environment variables made available to the agent. */
         fun env(env: Env?) = apply { body.env(env) }
@@ -311,7 +345,10 @@ private constructor(
          */
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
-        /** Network access for an OpenAI-hosted environment. */
+        /**
+         * Network access policy for the environment. Defaults to disabled for GA requests and
+         * enabled for beta requests.
+         */
         fun network(network: Network?) = apply { body.network(network) }
 
         /** Alias for calling [Builder.network] with `network.orElse(null)`. */
@@ -325,7 +362,7 @@ private constructor(
          */
         fun network(network: JsonField<Network>) = apply { body.network(network) }
 
-        /** Packages to install in an OpenAI-hosted environment. */
+        /** Packages to install in the environment. Defaults to empty package lists. */
         fun packages(packages: Packages?) = apply { body.packages(packages) }
 
         /** Alias for calling [Builder.packages] with `packages.orElse(null)`. */
@@ -576,6 +613,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val capabilityDirectories: JsonField<List<String>>,
+        private val desktop: JsonField<Desktop>,
         private val env: JsonField<Env>,
         private val files: JsonField<List<HostedEnvironmentFileParam>>,
         private val name: JsonField<String>,
@@ -592,6 +630,7 @@ private constructor(
             @JsonProperty("capability_directories")
             @ExcludeMissing
             capabilityDirectories: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("desktop") @ExcludeMissing desktop: JsonField<Desktop> = JsonMissing.of(),
             @JsonProperty("env") @ExcludeMissing env: JsonField<Env> = JsonMissing.of(),
             @JsonProperty("files")
             @ExcludeMissing
@@ -612,6 +651,7 @@ private constructor(
             skills: JsonField<List<HostedSkillParam>> = JsonMissing.of(),
         ) : this(
             capabilityDirectories,
+            desktop,
             env,
             files,
             name,
@@ -631,6 +671,15 @@ private constructor(
          */
         fun capabilityDirectories(): Optional<List<String>> =
             capabilityDirectories.getOptional("capability_directories")
+
+        /**
+         * Desktop provisioning. Omission or null inherits the template setting, or defaults to
+         * disabled.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun desktop(): Optional<Desktop> = desktop.getOptional("desktop")
 
         /**
          * Environment variables made available to the agent.
@@ -657,7 +706,8 @@ private constructor(
         fun name(): Optional<String> = name.getOptional("name")
 
         /**
-         * Network access for an OpenAI-hosted environment.
+         * Network access policy for the environment. Defaults to disabled for GA requests and
+         * enabled for beta requests.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -665,7 +715,7 @@ private constructor(
         fun network(): Optional<Network> = network.getOptional("network")
 
         /**
-         * Packages to install in an OpenAI-hosted environment.
+         * Packages to install in the environment. Defaults to empty package lists.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -706,6 +756,13 @@ private constructor(
         @JsonProperty("capability_directories")
         @ExcludeMissing
         fun _capabilityDirectories(): JsonField<List<String>> = capabilityDirectories
+
+        /**
+         * Returns the raw JSON value of [desktop].
+         *
+         * Unlike [desktop], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("desktop") @ExcludeMissing fun _desktop(): JsonField<Desktop> = desktop
 
         /**
          * Returns the raw JSON value of [env].
@@ -794,6 +851,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var capabilityDirectories: JsonField<MutableList<String>>? = null
+            private var desktop: JsonField<Desktop> = JsonMissing.of()
             private var env: JsonField<Env> = JsonMissing.of()
             private var files: JsonField<MutableList<HostedEnvironmentFileParam>>? = null
             private var name: JsonField<String> = JsonMissing.of()
@@ -807,6 +865,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 capabilityDirectories = body.capabilityDirectories.map { it.toMutableList() }
+                desktop = body.desktop
                 env = body.env
                 files = body.files.map { it.toMutableList() }
                 name = body.name
@@ -854,6 +913,24 @@ private constructor(
                         checkKnown("capabilityDirectories", it).add(capabilityDirectory)
                     }
             }
+
+            /**
+             * Desktop provisioning. Omission or null inherits the template setting, or defaults to
+             * disabled.
+             */
+            fun desktop(desktop: Desktop?) = desktop(JsonField.ofNullable(desktop))
+
+            /** Alias for calling [Builder.desktop] with `desktop.orElse(null)`. */
+            fun desktop(desktop: Optional<Desktop>) = desktop(desktop.getOrNull())
+
+            /**
+             * Sets [Builder.desktop] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.desktop] with a well-typed [Desktop] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun desktop(desktop: JsonField<Desktop>) = apply { this.desktop = desktop }
 
             /** Environment variables made available to the agent. */
             fun env(env: Env?) = env(JsonField.ofNullable(env))
@@ -922,7 +999,10 @@ private constructor(
              */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
-            /** Network access for an OpenAI-hosted environment. */
+            /**
+             * Network access policy for the environment. Defaults to disabled for GA requests and
+             * enabled for beta requests.
+             */
             fun network(network: Network?) = network(JsonField.ofNullable(network))
 
             /** Alias for calling [Builder.network] with `network.orElse(null)`. */
@@ -937,7 +1017,7 @@ private constructor(
              */
             fun network(network: JsonField<Network>) = apply { this.network = network }
 
-            /** Packages to install in an OpenAI-hosted environment. */
+            /** Packages to install in the environment. Defaults to empty package lists. */
             fun packages(packages: Packages?) = packages(JsonField.ofNullable(packages))
 
             /** Alias for calling [Builder.packages] with `packages.orElse(null)`. */
@@ -1093,6 +1173,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     (capabilityDirectories ?: JsonMissing.of()).map { it.toImmutable() },
+                    desktop,
                     env,
                     (files ?: JsonMissing.of()).map { it.toImmutable() },
                     name,
@@ -1122,6 +1203,7 @@ private constructor(
             }
 
             capabilityDirectories()
+            desktop().ifPresent { it.validate() }
             env().ifPresent { it.validate() }
             files().ifPresent { it.forEach { it.validate() } }
             name()
@@ -1150,6 +1232,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (capabilityDirectories.asKnown().getOrNull()?.size ?: 0) +
+                (desktop.asKnown().getOrNull()?.validity() ?: 0) +
                 (env.asKnown().getOrNull()?.validity() ?: 0) +
                 (files.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (if (name.asKnown().isPresent) 1 else 0) +
@@ -1166,6 +1249,7 @@ private constructor(
 
             return other is Body &&
                 capabilityDirectories == other.capabilityDirectories &&
+                desktop == other.desktop &&
                 env == other.env &&
                 files == other.files &&
                 name == other.name &&
@@ -1180,6 +1264,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 capabilityDirectories,
+                desktop,
                 env,
                 files,
                 name,
@@ -1195,7 +1280,176 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{capabilityDirectories=$capabilityDirectories, env=$env, files=$files, name=$name, network=$network, packages=$packages, plugins=$plugins, setupCommands=$setupCommands, skills=$skills, additionalProperties=$additionalProperties}"
+            "Body{capabilityDirectories=$capabilityDirectories, desktop=$desktop, env=$env, files=$files, name=$name, network=$network, packages=$packages, plugins=$plugins, setupCommands=$setupCommands, skills=$skills, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Desktop provisioning. Omission or null inherits the template setting, or defaults to
+     * disabled.
+     */
+    class Desktop
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val enabled: JsonField<Boolean>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("enabled") @ExcludeMissing enabled: JsonField<Boolean> = JsonMissing.of()
+        ) : this(enabled, mutableMapOf())
+
+        /**
+         * Whether to provision the desktop and its browser proxy.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun enabled(): Boolean = enabled.getRequired("enabled")
+
+        /**
+         * Returns the raw JSON value of [enabled].
+         *
+         * Unlike [enabled], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("enabled") @ExcludeMissing fun _enabled(): JsonField<Boolean> = enabled
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Desktop].
+             *
+             * The following fields are required:
+             * ```java
+             * .enabled()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Desktop]. */
+        class Builder internal constructor() {
+
+            private var enabled: JsonField<Boolean>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(desktop: Desktop) = apply {
+                enabled = desktop.enabled
+                additionalProperties = desktop.additionalProperties.toMutableMap()
+            }
+
+            /** Whether to provision the desktop and its browser proxy. */
+            fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
+
+            /**
+             * Sets [Builder.enabled] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.enabled] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun enabled(enabled: JsonField<Boolean>) = apply { this.enabled = enabled }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Desktop].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .enabled()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Desktop =
+                Desktop(checkRequired("enabled", enabled), additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Desktop = apply {
+            if (validated) {
+                return@apply
+            }
+
+            enabled()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (if (enabled.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Desktop &&
+                enabled == other.enabled &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(enabled, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Desktop{enabled=$enabled, additionalProperties=$additionalProperties}"
     }
 
     /** Environment variables made available to the agent. */
@@ -1307,12 +1561,16 @@ private constructor(
         override fun toString() = "Env{additionalProperties=$additionalProperties}"
     }
 
-    /** Network access for an OpenAI-hosted environment. */
+    /**
+     * Network access policy for the environment. Defaults to disabled for GA requests and enabled
+     * for beta requests.
+     */
     class Network
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val access: JsonField<Access>,
         private val allowedDomains: JsonField<List<String>>,
+        private val blockedDomains: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -1322,7 +1580,10 @@ private constructor(
             @JsonProperty("allowed_domains")
             @ExcludeMissing
             allowedDomains: JsonField<List<String>> = JsonMissing.of(),
-        ) : this(access, allowedDomains, mutableMapOf())
+            @JsonProperty("blocked_domains")
+            @ExcludeMissing
+            blockedDomains: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(access, allowedDomains, blockedDomains, mutableMapOf())
 
         /**
          * The environment's network access mode.
@@ -1341,6 +1602,16 @@ private constructor(
         fun allowedDomains(): Optional<List<String>> = allowedDomains.getOptional("allowed_domains")
 
         /**
+         * Domains blocked for both executor and browser when access is restricted. A nonempty list
+         * requires `access: restricted` and cannot be combined with nonempty `allowed_domains`.
+         * Wildcard domains are not supported.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun blockedDomains(): Optional<List<String>> = blockedDomains.getOptional("blocked_domains")
+
+        /**
          * Returns the raw JSON value of [access].
          *
          * Unlike [access], this method doesn't throw if the JSON field has an unexpected type.
@@ -1356,6 +1627,16 @@ private constructor(
         @JsonProperty("allowed_domains")
         @ExcludeMissing
         fun _allowedDomains(): JsonField<List<String>> = allowedDomains
+
+        /**
+         * Returns the raw JSON value of [blockedDomains].
+         *
+         * Unlike [blockedDomains], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("blocked_domains")
+        @ExcludeMissing
+        fun _blockedDomains(): JsonField<List<String>> = blockedDomains
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1387,12 +1668,14 @@ private constructor(
 
             private var access: JsonField<Access>? = null
             private var allowedDomains: JsonField<MutableList<String>>? = null
+            private var blockedDomains: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(network: Network) = apply {
                 access = network.access
                 allowedDomains = network.allowedDomains.map { it.toMutableList() }
+                blockedDomains = network.blockedDomains.map { it.toMutableList() }
                 additionalProperties = network.additionalProperties.toMutableMap()
             }
 
@@ -1439,6 +1722,41 @@ private constructor(
                     }
             }
 
+            /**
+             * Domains blocked for both executor and browser when access is restricted. A nonempty
+             * list requires `access: restricted` and cannot be combined with nonempty
+             * `allowed_domains`. Wildcard domains are not supported.
+             */
+            fun blockedDomains(blockedDomains: List<String>?) =
+                blockedDomains(JsonField.ofNullable(blockedDomains))
+
+            /** Alias for calling [Builder.blockedDomains] with `blockedDomains.orElse(null)`. */
+            fun blockedDomains(blockedDomains: Optional<List<String>>) =
+                blockedDomains(blockedDomains.getOrNull())
+
+            /**
+             * Sets [Builder.blockedDomains] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.blockedDomains] with a well-typed `List<String>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun blockedDomains(blockedDomains: JsonField<List<String>>) = apply {
+                this.blockedDomains = blockedDomains.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [blockedDomains].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addBlockedDomain(blockedDomain: String) = apply {
+                blockedDomains =
+                    (blockedDomains ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("blockedDomains", it).add(blockedDomain)
+                    }
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -1474,6 +1792,7 @@ private constructor(
                 Network(
                     checkRequired("access", access),
                     (allowedDomains ?: JsonMissing.of()).map { it.toImmutable() },
+                    (blockedDomains ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -1496,6 +1815,7 @@ private constructor(
 
             access().validate()
             allowedDomains()
+            blockedDomains()
             validated = true
         }
 
@@ -1516,7 +1836,8 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (access.asKnown().getOrNull()?.validity() ?: 0) +
-                (allowedDomains.asKnown().getOrNull()?.size ?: 0)
+                (allowedDomains.asKnown().getOrNull()?.size ?: 0) +
+                (blockedDomains.asKnown().getOrNull()?.size ?: 0)
 
         /** The environment's network access mode. */
         class Access @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -1533,13 +1854,13 @@ private constructor(
 
             companion object {
 
-                /** Allows unrestricted network access, matching an omitted network policy. */
+                /** Allows unrestricted network access. */
                 @JvmField val ENABLED = of("enabled")
 
                 /** Disables network access. */
                 @JvmField val DISABLED = of("disabled")
 
-                /** Allows access only to configured domains. */
+                /** Applies the configured domain restrictions. */
                 @JvmField val RESTRICTED = of("restricted")
 
                 @JvmStatic fun of(value: String) = Access(JsonField.of(value))
@@ -1547,11 +1868,11 @@ private constructor(
 
             /** An enum containing [Access]'s known values. */
             enum class Known {
-                /** Allows unrestricted network access, matching an omitted network policy. */
+                /** Allows unrestricted network access. */
                 ENABLED,
                 /** Disables network access. */
                 DISABLED,
-                /** Allows access only to configured domains. */
+                /** Applies the configured domain restrictions. */
                 RESTRICTED,
             }
 
@@ -1565,11 +1886,11 @@ private constructor(
              * - It was constructed with an arbitrary value using the [of] method.
              */
             enum class Value {
-                /** Allows unrestricted network access, matching an omitted network policy. */
+                /** Allows unrestricted network access. */
                 ENABLED,
                 /** Disables network access. */
                 DISABLED,
-                /** Allows access only to configured domains. */
+                /** Applies the configured domain restrictions. */
                 RESTRICTED,
                 /**
                  * An enum member indicating that [Access] was instantiated with an unknown value.
@@ -1681,20 +2002,21 @@ private constructor(
             return other is Network &&
                 access == other.access &&
                 allowedDomains == other.allowedDomains &&
+                blockedDomains == other.blockedDomains &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(access, allowedDomains, additionalProperties)
+            Objects.hash(access, allowedDomains, blockedDomains, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Network{access=$access, allowedDomains=$allowedDomains, additionalProperties=$additionalProperties}"
+            "Network{access=$access, allowedDomains=$allowedDomains, blockedDomains=$blockedDomains, additionalProperties=$additionalProperties}"
     }
 
-    /** Packages to install in an OpenAI-hosted environment. */
+    /** Packages to install in the environment. Defaults to empty package lists. */
     class Packages
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(

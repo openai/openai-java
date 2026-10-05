@@ -3,6 +3,7 @@
 package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
@@ -11,10 +12,41 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseTest {
 
     @Test
+    fun buildWithoutAccessPrograms() {
+        val response =
+            BetaResponse.builder()
+                .id("response-id")
+                .createdAt(0.0)
+                .error(null)
+                .incompleteDetails(null)
+                .instructions(null)
+                .metadata(null)
+                .model("test-model")
+                .output(listOf())
+                .parallelToolCalls(false)
+                .temperature(null)
+                .toolChoice(JsonNull.of())
+                .tools(listOf())
+                .topP(null)
+                .build()
+
+        assertThat(response.accessPrograms()).isEmpty()
+        assertThat(response._accessPrograms()).isEqualTo(JsonNull.of())
+        val json = jsonMapper().readTree(jsonMapper().writeValueAsString(response))
+        assertThat(json.has("access_programs")).isTrue()
+        assertThat(json.get("access_programs").isNull).isTrue()
+    }
+
+    @Test
     fun create() {
         val betaResponse =
             BetaResponse.builder()
                 .id("id")
+                .accessPrograms(
+                    BetaResponse.AccessPrograms.builder()
+                        .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                        .build()
+                )
                 .createdAt(0.0)
                 .error(
                     BetaResponseError.builder()
@@ -245,6 +277,12 @@ internal class BetaResponseTest {
                 .build()
 
         assertThat(betaResponse.id()).isEqualTo("id")
+        assertThat(betaResponse.accessPrograms())
+            .contains(
+                BetaResponse.AccessPrograms.builder()
+                    .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                    .build()
+            )
         assertThat(betaResponse.createdAt()).isEqualTo(0.0)
         assertThat(betaResponse.error())
             .contains(
@@ -492,6 +530,11 @@ internal class BetaResponseTest {
         val betaResponse =
             BetaResponse.builder()
                 .id("id")
+                .accessPrograms(
+                    BetaResponse.AccessPrograms.builder()
+                        .cyber(BetaResponse.AccessPrograms.Cyber.STANDARD)
+                        .build()
+                )
                 .createdAt(0.0)
                 .error(
                     BetaResponseError.builder()

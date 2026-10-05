@@ -24,6 +24,7 @@ import com.openai.services.async.responses.InputTokenServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 interface ResponseServiceAsync {
 
     /**
@@ -38,8 +39,29 @@ interface ResponseServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseServiceAsync
 
+    /** Opens a managed Responses WebSocket. Close the returned connection when finished. */
+    fun connect(): CompletableFuture<com.openai.core.http.AsyncResponseConnection> =
+        connect(com.openai.core.http.ResponseWebSocketOptions.defaults(), RequestOptions.none())
+
+    /** @see connect */
+    fun connect(
+        options: com.openai.core.http.ResponseWebSocketOptions
+    ): CompletableFuture<com.openai.core.http.AsyncResponseConnection> =
+        connect(options, RequestOptions.none())
+
+    /** @see connect */
+    fun connect(
+        options: com.openai.core.http.ResponseWebSocketOptions,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<com.openai.core.http.AsyncResponseConnection> =
+        throw UnsupportedOperationException(
+            "This service implementation does not support WebSockets"
+        )
+
+    /** Create and manage model responses. */
     fun inputItems(): InputItemServiceAsync
 
+    /** Create and manage model responses. */
     fun inputTokens(): InputTokenServiceAsync
 
     /**
@@ -313,8 +335,10 @@ interface ResponseServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): ResponseServiceAsync.WithRawResponse
 
+        /** Create and manage model responses. */
         fun inputItems(): InputItemServiceAsync.WithRawResponse
 
+        /** Create and manage model responses. */
         fun inputTokens(): InputTokenServiceAsync.WithRawResponse
 
         /**

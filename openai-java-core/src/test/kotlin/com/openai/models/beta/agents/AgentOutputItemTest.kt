@@ -31,6 +31,8 @@ internal class AgentOutputItemTest {
         assertThat(agentOutputItem.reasoning()).isEmpty
         assertThat(agentOutputItem.functionCall()).isEmpty
         assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
         assertThat(agentOutputItem.webSearchCall()).isEmpty
         assertThat(agentOutputItem.commandExecution()).isEmpty
         assertThat(agentOutputItem.createSubagentCall()).isEmpty
@@ -80,6 +82,8 @@ internal class AgentOutputItemTest {
         assertThat(agentOutputItem.reasoning()).contains(reasoning)
         assertThat(agentOutputItem.functionCall()).isEmpty
         assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
         assertThat(agentOutputItem.webSearchCall()).isEmpty
         assertThat(agentOutputItem.commandExecution()).isEmpty
         assertThat(agentOutputItem.createSubagentCall()).isEmpty
@@ -130,6 +134,8 @@ internal class AgentOutputItemTest {
         assertThat(agentOutputItem.reasoning()).isEmpty
         assertThat(agentOutputItem.functionCall()).contains(functionCall)
         assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
         assertThat(agentOutputItem.webSearchCall()).isEmpty
         assertThat(agentOutputItem.commandExecution()).isEmpty
         assertThat(agentOutputItem.createSubagentCall()).isEmpty
@@ -184,6 +190,8 @@ internal class AgentOutputItemTest {
         assertThat(agentOutputItem.reasoning()).isEmpty
         assertThat(agentOutputItem.functionCall()).isEmpty
         assertThat(agentOutputItem.mcpCall()).contains(mcpCall)
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
         assertThat(agentOutputItem.webSearchCall()).isEmpty
         assertThat(agentOutputItem.commandExecution()).isEmpty
         assertThat(agentOutputItem.createSubagentCall()).isEmpty
@@ -221,6 +229,156 @@ internal class AgentOutputItemTest {
     }
 
     @Test
+    fun ofComputerUseCall() {
+        val computerUseCall =
+            AgentOutputItem.ComputerUseCall.builder()
+                .id("id")
+                .output(
+                    AgentOutputItem.ComputerUseCall.Output.builder().imageUrl("image_url").build()
+                )
+                .status(AgentFunctionCallStatus.IN_PROGRESS)
+                .title("title")
+                .turnId("turn_id")
+                .build()
+
+        val agentOutputItem = AgentOutputItem.ofComputerUseCall(computerUseCall)
+
+        assertThat(agentOutputItem.message()).isEmpty
+        assertThat(agentOutputItem.reasoning()).isEmpty
+        assertThat(agentOutputItem.functionCall()).isEmpty
+        assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).contains(computerUseCall)
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
+        assertThat(agentOutputItem.webSearchCall()).isEmpty
+        assertThat(agentOutputItem.commandExecution()).isEmpty
+        assertThat(agentOutputItem.createSubagentCall()).isEmpty
+        assertThat(agentOutputItem.sendSubagentInputCall()).isEmpty
+        assertThat(agentOutputItem.resumeSubagentCall()).isEmpty
+        assertThat(agentOutputItem.waitForSubagentsCall()).isEmpty
+        assertThat(agentOutputItem.interruptSubagentCall()).isEmpty
+        assertThat(agentOutputItem.closeSubagentCall()).isEmpty
+    }
+
+    @Test
+    fun ofComputerUseCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val agentOutputItem =
+            AgentOutputItem.ofComputerUseCall(
+                AgentOutputItem.ComputerUseCall.builder()
+                    .id("id")
+                    .output(
+                        AgentOutputItem.ComputerUseCall.Output.builder()
+                            .imageUrl("image_url")
+                            .build()
+                    )
+                    .status(AgentFunctionCallStatus.IN_PROGRESS)
+                    .title("title")
+                    .turnId("turn_id")
+                    .build()
+            )
+
+        val roundtrippedAgentOutputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(agentOutputItem),
+                jacksonTypeRef<AgentOutputItem>(),
+            )
+
+        assertThat(roundtrippedAgentOutputItem).isEqualTo(agentOutputItem)
+    }
+
+    @Test
+    fun ofComputerUseApprovalRequest() {
+        val computerUseApprovalRequest =
+            AgentOutputItem.ComputerUseApprovalRequest.builder()
+                .id("id")
+                .request(
+                    AgentOutputItem.ComputerUseApprovalRequest.Request.builder()
+                        .credentialOrigin("credential_origin")
+                        .addField(
+                            AgentOutputItem.ComputerUseApprovalRequest.Request.Field.builder()
+                                .id("id")
+                                .label("label")
+                                .required(true)
+                                .type("type")
+                                .build()
+                        )
+                        .addOption(
+                            AgentOutputItem.ComputerUseApprovalRequest.Request.Option.builder()
+                                .id("id")
+                                .addFieldId("string")
+                                .label("label")
+                                .build()
+                        )
+                        .reason("reason")
+                        .build()
+                )
+                .requestId("request_id")
+                .turnId("turn_id")
+                .build()
+
+        val agentOutputItem =
+            AgentOutputItem.ofComputerUseApprovalRequest(computerUseApprovalRequest)
+
+        assertThat(agentOutputItem.message()).isEmpty
+        assertThat(agentOutputItem.reasoning()).isEmpty
+        assertThat(agentOutputItem.functionCall()).isEmpty
+        assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest())
+            .contains(computerUseApprovalRequest)
+        assertThat(agentOutputItem.webSearchCall()).isEmpty
+        assertThat(agentOutputItem.commandExecution()).isEmpty
+        assertThat(agentOutputItem.createSubagentCall()).isEmpty
+        assertThat(agentOutputItem.sendSubagentInputCall()).isEmpty
+        assertThat(agentOutputItem.resumeSubagentCall()).isEmpty
+        assertThat(agentOutputItem.waitForSubagentsCall()).isEmpty
+        assertThat(agentOutputItem.interruptSubagentCall()).isEmpty
+        assertThat(agentOutputItem.closeSubagentCall()).isEmpty
+    }
+
+    @Test
+    fun ofComputerUseApprovalRequestRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val agentOutputItem =
+            AgentOutputItem.ofComputerUseApprovalRequest(
+                AgentOutputItem.ComputerUseApprovalRequest.builder()
+                    .id("id")
+                    .request(
+                        AgentOutputItem.ComputerUseApprovalRequest.Request.builder()
+                            .credentialOrigin("credential_origin")
+                            .addField(
+                                AgentOutputItem.ComputerUseApprovalRequest.Request.Field.builder()
+                                    .id("id")
+                                    .label("label")
+                                    .required(true)
+                                    .type("type")
+                                    .build()
+                            )
+                            .addOption(
+                                AgentOutputItem.ComputerUseApprovalRequest.Request.Option.builder()
+                                    .id("id")
+                                    .addFieldId("string")
+                                    .label("label")
+                                    .build()
+                            )
+                            .reason("reason")
+                            .build()
+                    )
+                    .requestId("request_id")
+                    .turnId("turn_id")
+                    .build()
+            )
+
+        val roundtrippedAgentOutputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(agentOutputItem),
+                jacksonTypeRef<AgentOutputItem>(),
+            )
+
+        assertThat(roundtrippedAgentOutputItem).isEqualTo(agentOutputItem)
+    }
+
+    @Test
     fun ofWebSearchCall() {
         val webSearchCall =
             AgentWebSearchCallItem.builder()
@@ -236,6 +394,8 @@ internal class AgentOutputItemTest {
         assertThat(agentOutputItem.reasoning()).isEmpty
         assertThat(agentOutputItem.functionCall()).isEmpty
         assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
         assertThat(agentOutputItem.webSearchCall()).contains(webSearchCall)
         assertThat(agentOutputItem.commandExecution()).isEmpty
         assertThat(agentOutputItem.createSubagentCall()).isEmpty
@@ -290,6 +450,8 @@ internal class AgentOutputItemTest {
         assertThat(agentOutputItem.reasoning()).isEmpty
         assertThat(agentOutputItem.functionCall()).isEmpty
         assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
         assertThat(agentOutputItem.webSearchCall()).isEmpty
         assertThat(agentOutputItem.commandExecution()).contains(commandExecution)
         assertThat(agentOutputItem.createSubagentCall()).isEmpty
@@ -345,6 +507,8 @@ internal class AgentOutputItemTest {
         assertThat(agentOutputItem.reasoning()).isEmpty
         assertThat(agentOutputItem.functionCall()).isEmpty
         assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
         assertThat(agentOutputItem.webSearchCall()).isEmpty
         assertThat(agentOutputItem.commandExecution()).isEmpty
         assertThat(agentOutputItem.createSubagentCall()).contains(createSubagentCall)
@@ -398,6 +562,8 @@ internal class AgentOutputItemTest {
         assertThat(agentOutputItem.reasoning()).isEmpty
         assertThat(agentOutputItem.functionCall()).isEmpty
         assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
         assertThat(agentOutputItem.webSearchCall()).isEmpty
         assertThat(agentOutputItem.commandExecution()).isEmpty
         assertThat(agentOutputItem.createSubagentCall()).isEmpty
@@ -449,6 +615,8 @@ internal class AgentOutputItemTest {
         assertThat(agentOutputItem.reasoning()).isEmpty
         assertThat(agentOutputItem.functionCall()).isEmpty
         assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
         assertThat(agentOutputItem.webSearchCall()).isEmpty
         assertThat(agentOutputItem.commandExecution()).isEmpty
         assertThat(agentOutputItem.createSubagentCall()).isEmpty
@@ -499,6 +667,8 @@ internal class AgentOutputItemTest {
         assertThat(agentOutputItem.reasoning()).isEmpty
         assertThat(agentOutputItem.functionCall()).isEmpty
         assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
         assertThat(agentOutputItem.webSearchCall()).isEmpty
         assertThat(agentOutputItem.commandExecution()).isEmpty
         assertThat(agentOutputItem.createSubagentCall()).isEmpty
@@ -549,6 +719,8 @@ internal class AgentOutputItemTest {
         assertThat(agentOutputItem.reasoning()).isEmpty
         assertThat(agentOutputItem.functionCall()).isEmpty
         assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
         assertThat(agentOutputItem.webSearchCall()).isEmpty
         assertThat(agentOutputItem.commandExecution()).isEmpty
         assertThat(agentOutputItem.createSubagentCall()).isEmpty
@@ -599,6 +771,8 @@ internal class AgentOutputItemTest {
         assertThat(agentOutputItem.reasoning()).isEmpty
         assertThat(agentOutputItem.functionCall()).isEmpty
         assertThat(agentOutputItem.mcpCall()).isEmpty
+        assertThat(agentOutputItem.computerUseCall()).isEmpty
+        assertThat(agentOutputItem.computerUseApprovalRequest()).isEmpty
         assertThat(agentOutputItem.webSearchCall()).isEmpty
         assertThat(agentOutputItem.commandExecution()).isEmpty
         assertThat(agentOutputItem.createSubagentCall()).isEmpty

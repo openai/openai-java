@@ -20,6 +20,7 @@ import com.openai.models.beta.responses.inputtokens.InputTokenCountParams
 import com.openai.models.beta.responses.inputtokens.InputTokenCountResponse
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 class InputTokenServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     InputTokenService {
 

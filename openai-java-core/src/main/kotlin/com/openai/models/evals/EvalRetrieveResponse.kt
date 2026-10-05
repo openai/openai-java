@@ -800,7 +800,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown DataSourceConfig: $json")
+                throw OpenAIInvalidDataException("Unknown DataSourceConfig")
             }
         }
 
@@ -1802,7 +1802,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown TestingCriterion: $json")
+                throw OpenAIInvalidDataException("Unknown TestingCriterion")
             }
         }
 

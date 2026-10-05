@@ -1734,7 +1734,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown BatchSize: $json")
+                    throw OpenAIInvalidDataException("Unknown BatchSize")
                 }
             }
 
@@ -1959,7 +1959,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown LearningRateMultiplier: $json")
+                    throw OpenAIInvalidDataException("Unknown LearningRateMultiplier")
                 }
             }
 
@@ -2184,7 +2184,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown NEpochs: $json")
+                    throw OpenAIInvalidDataException("Unknown NEpochs")
                 }
             }
 

@@ -37,6 +37,11 @@ internal class ResponseServiceAsyncTest {
         val responseFuture =
             responseServiceAsync.create(
                 ResponseCreateParams.builder()
+                    .accessPrograms(
+                        ResponseCreateParams.AccessPrograms.builder()
+                            .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()
@@ -99,6 +104,7 @@ internal class ResponseServiceAsyncTest {
                         ResponseCreateParams.PromptCacheOptions.builder()
                             .comparisonResponseId("resp_123")
                             .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                            .prewarm(true)
                             .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                             .build()
                     )
@@ -173,6 +179,11 @@ internal class ResponseServiceAsyncTest {
         val responseStreamResponse =
             responseServiceAsync.createStreaming(
                 ResponseCreateParams.builder()
+                    .accessPrograms(
+                        ResponseCreateParams.AccessPrograms.builder()
+                            .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .background(true)
                     .addContextManagement(
                         ResponseCreateParams.ContextManagement.builder()
@@ -235,6 +246,7 @@ internal class ResponseServiceAsyncTest {
                         ResponseCreateParams.PromptCacheOptions.builder()
                             .comparisonResponseId("resp_123")
                             .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                            .prewarm(true)
                             .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                             .build()
                     )

@@ -18,7 +18,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** A collection of credentials that agent tools can use to authenticate to MCP servers. */
+/** A collection of credentials for MCP servers and OpenAI-hosted environments. */
 class Vault
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(

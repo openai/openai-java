@@ -27,6 +27,7 @@ import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionDeleted
 import com.openai.models.beta.agents.AgentSessionEvent
 import com.openai.models.beta.agents.AgentSessionStreamParams
+import com.openai.models.beta.agents.AgentToolHandlers
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.SessionDeleteParams
 import com.openai.models.beta.agents.sessions.SessionListPage
@@ -35,6 +36,7 @@ import com.openai.models.beta.agents.sessions.SessionListParams
 import com.openai.models.beta.agents.sessions.SessionRetrieveParams
 import com.openai.models.beta.agents.sessions.SessionUpdateParams
 import com.openai.services.beta.agents.AgentSessionStream
+import com.openai.services.beta.agents.AgentTurnResults
 import com.openai.services.blocking.beta.agents.sessions.ArtifactService
 import com.openai.services.blocking.beta.agents.sessions.ArtifactServiceImpl
 import com.openai.services.blocking.beta.agents.sessions.EventService
@@ -43,6 +45,8 @@ import com.openai.services.blocking.beta.agents.sessions.ItemService
 import com.openai.services.blocking.beta.agents.sessions.ItemServiceImpl
 import com.openai.services.blocking.beta.agents.sessions.SubagentService
 import com.openai.services.blocking.beta.agents.sessions.SubagentServiceImpl
+import com.openai.services.blocking.beta.agents.sessions.TraceService
+import com.openai.services.blocking.beta.agents.sessions.TraceServiceImpl
 import com.openai.services.blocking.beta.agents.sessions.TurnService
 import com.openai.services.blocking.beta.agents.sessions.TurnServiceImpl
 import java.util.function.Consumer
@@ -68,13 +72,19 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
 
     private val events: EventService by lazy { EventServiceImpl(clientOptions) }
 
+    private val traces: TraceService by lazy { TraceServiceImpl(clientOptions) }
+
     private val turns: TurnService by lazy { TurnServiceImpl(clientOptions) }
 
     override fun stream(
         params: AgentSessionStreamParams,
         requestOptions: RequestOptions,
     ): StreamResponse<AgentSessionEvent> =
-        AgentSessionStream(this, params, requestOptions, clientOptions.sleeper)
+        AgentTurnResults.collecting(
+            AgentSessionStream(this, params, requestOptions, clientOptions.sleeper),
+            params.handlers.keys,
+            params.sessionId,
+        )
 
     override fun withRawResponse(): SessionService.WithRawResponse = withRawResponse
 
@@ -89,6 +99,8 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
 
     override fun events(): EventService = events
 
+    override fun traces(): TraceService = traces
+
     override fun turns(): TurnService = turns
 
     override fun create(params: SessionCreateParams, requestOptions: RequestOptions): AgentSession =
@@ -101,6 +113,16 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
     ): StreamResponse<AgentSessionEvent> =
         // post /agents/sessions
         withRawResponse().createStreaming(params, requestOptions).parse()
+
+    override fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+        requestOptions: RequestOptions,
+    ): StreamResponse<AgentSessionEvent> =
+        AgentTurnResults.collecting(
+            AgentSessionStream(this, null, requestOptions, clientOptions.sleeper, params, handlers),
+            handlers.handlers.keys,
+        )
 
     override fun retrieve(
         params: SessionRetrieveParams,
@@ -146,6 +168,10 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
             EventServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val traces: TraceService.WithRawResponse by lazy {
+            TraceServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val turns: TurnService.WithRawResponse by lazy {
             TurnServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -164,6 +190,8 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
         override fun items(): ItemService.WithRawResponse = items
 
         override fun events(): EventService.WithRawResponse = events
+
+        override fun traces(): TraceService.WithRawResponse = traces
 
         override fun turns(): TurnService.WithRawResponse = turns
 
@@ -242,6 +270,7 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
                             streamResponse
                         }
                     }
+                    .let { AgentTurnResults.collecting(it) }
             }
         }
 

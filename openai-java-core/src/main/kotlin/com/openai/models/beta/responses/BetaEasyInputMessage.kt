@@ -150,7 +150,7 @@ private constructor(
         private var content: JsonField<Content>? = null
         private var role: JsonField<Role>? = null
         private var phase: JsonField<Phase> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonField.of(Type.MESSAGE)
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -511,7 +511,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Content: $json")
+                throw OpenAIInvalidDataException("Unknown Content")
             }
         }
 
