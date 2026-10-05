@@ -1107,6 +1107,22 @@ internal class AgentSessionStreamTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun directlyThrownErrorsStillPropagate(async: Boolean) {
+        val t = Transport(listOf(turn("created"), call(), turn("completed"), idle()))
+        val failures = mutableListOf<AgentToolError>()
+        val p =
+            params()
+                .toolHandler("tool") { throw AssertionError("direct tool failure") }
+                .onToolError { failures.add(it) }
+                .build()
+        assertThatThrownBy { consume(t, async, p) }.hasStackTraceContaining("direct tool failure")
+        assertThat(failures).isEmpty()
+        assertThat(t.posts).hasSize(1)
+        assertThat(t.streamClosed).isTrue()
+    }
+
     @Test
     fun simultaneousCloseAndSubscribeAlwaysCompletesAcceptedSubscriber() {
         val threads = java.util.concurrent.Executors.newFixedThreadPool(2)

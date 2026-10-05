@@ -121,7 +121,7 @@ var params = AgentSessionStreamParams.builder()
     .input("Look up order A123.")
     .toolHandler("lookup_order", arguments -> orderService.lookup(arguments))
     .onToolError(failure -> logger.error(
-        "Tool {} failed during {}", failure.toolName(), failure.stage(), failure.error()))
+        "Tool {} failed during {}", failure.toolName(), failure.stage()))
     .build();
 ```
 
