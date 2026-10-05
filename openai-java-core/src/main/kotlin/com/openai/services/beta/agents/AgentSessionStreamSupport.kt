@@ -13,18 +13,14 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 import java.util.concurrent.CompletionStage
-import java.util.function.Function
 import java.util.concurrent.ExecutionException
+import java.util.function.Function
 import kotlin.jvm.optionals.getOrNull
 
 internal class AgentSessionStreamSupport
 private constructor(
     private val params: AgentSessionStreamParams?,
-    private val handlers:
-        Map<
-            String,
-            Function<Map<String, Any?>, CompletionStage<*>>,
-        >,
+    private val handlers: Map<String, Function<Map<String, Any?>, CompletionStage<*>>>,
     private val headers: Headers,
 ) {
     constructor(params: AgentSessionStreamParams) : this(params, params.handlers, params.headers)
