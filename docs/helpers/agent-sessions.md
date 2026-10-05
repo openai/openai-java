@@ -26,6 +26,30 @@ try (StreamResponse<AgentSessionEvent> stream = client.beta().agents().sessions(
 }
 ```
 
+For the initial prompt, pass the same local handlers to `createStreaming`:
+
+```java
+import com.openai.models.beta.agents.AgentToolHandlers;
+import com.openai.models.beta.agents.sessions.SessionCreateParams;
+import com.openai.services.beta.agents.AgentTurnResults;
+
+var handlers = AgentToolHandlers.builder()
+    .toolHandler("weather", args -> weatherService.lookup(args))
+    .build();
+var creation = SessionCreateParams.builder()
+    .agent(agent) // Configure the corresponding function definition on the agent.
+    .environmentNone()
+    .input("Check the weather in Paris")
+    .build();
+
+try (var stream = client.beta().agents().sessions().createStreaming(creation, handlers)) {
+    System.out.println(AgentTurnResults.getFinalResult(stream).outputText());
+}
+```
+
+The async service accepts the same overload; use `asyncToolHandler` for callbacks
+returning a `CompletionStage`. Handlers run locally while consuming the stream.
+
 A handler receives a deep copy of the JSON object arguments and can return a
 string, JSON object (`Map`), `List<InputContentParam>`,
 `AgentFunctionCallOutputParam`, or `null`. Invalid arguments and handler exceptions

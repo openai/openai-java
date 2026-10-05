@@ -4,6 +4,8 @@ import com.openai.core.RequestOptions
 import com.openai.core.http.StreamResponse
 import com.openai.models.beta.agents.AgentSessionEvent
 import com.openai.models.beta.agents.AgentSessionStreamParams
+import com.openai.models.beta.agents.AgentToolHandlers
+import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.events.EventCreateParams
 import com.openai.services.blocking.beta.agents.SessionService
 import java.util.Spliterator
@@ -15,17 +17,22 @@ import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
 /**
- * One turn's original typed events. Requires an idle session and a single input writer. Use
- * try-with-resources. Closing releases the connection without cancelling the backend turn. Unknown
- * tools remain manual. Registered handlers run sequentially after their event is delivered.
+ * One turn's original typed events. Follow-up streams require an idle session and a single input
+ * writer. Use try-with-resources. Closing releases the connection without cancelling the backend
+ * turn. Unknown tools remain manual. Registered handlers run sequentially after their event is
+ * delivered.
  */
 internal class AgentSessionStream(
     private val sessions: SessionService,
-    params: AgentSessionStreamParams,
+    params: AgentSessionStreamParams?,
     private val options: RequestOptions,
     private val sleeper: com.openai.core.Sleeper,
+    private val creation: SessionCreateParams? = null,
+    handlers: AgentToolHandlers? = null,
 ) : StreamResponse<AgentSessionEvent> {
-    private val support = AgentSessionStreamSupport(params)
+    private val support =
+        if (creation == null) AgentSessionStreamSupport(checkNotNull(params))
+        else AgentSessionStreamSupport(checkNotNull(handlers), creation._headers())
     private val closed = AtomicBoolean()
     private val submissionLock = Any()
     private val consumed = AtomicBoolean()
@@ -35,18 +42,22 @@ internal class AgentSessionStream(
     private val response: com.openai.core.http.HttpResponseFor<StreamResponse<AgentSessionEvent>>
 
     init {
-        support.checkIdle(sessions.retrieve(support.retrieveParams(), options))
+        if (creation == null)
+            support.checkIdle(sessions.retrieve(support.retrieveParams(), options))
         response =
-            sessions.events().withRawResponse().streamStreaming(support.streamParams(), options)
+            if (creation == null)
+                sessions.events().withRawResponse().streamStreaming(support.streamParams(), options)
+            else sessions.withRawResponse().createStreaming(creation, options)
         source =
             try {
-                response.parse()
+                AgentTurnResults.uncollected(response.parse())
             } catch (error: Throwable) {
                 response.close()
                 throw error
             }
         try {
-            sessions.events().withRawResponse().create(support.inputParams(), options).close()
+            if (creation == null)
+                sessions.events().withRawResponse().create(support.inputParams(), options).close()
         } catch (error: Throwable) {
             close()
             throw error

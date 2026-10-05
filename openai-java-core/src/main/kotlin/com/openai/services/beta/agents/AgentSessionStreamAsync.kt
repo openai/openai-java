@@ -5,6 +5,8 @@ import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.StreamResponse
 import com.openai.models.beta.agents.AgentSessionEvent
 import com.openai.models.beta.agents.AgentSessionStreamParams
+import com.openai.models.beta.agents.AgentToolHandlers
+import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.events.EventCreateParams
 import com.openai.services.async.beta.agents.SessionServiceAsync
 import java.util.Optional
@@ -15,12 +17,16 @@ import java.util.concurrent.atomic.AtomicBoolean
 /** Async one-turn stream; uses the SDK executor and never allocates a thread pool. */
 internal class AgentSessionStreamAsync(
     private val sessions: SessionServiceAsync,
-    params: AgentSessionStreamParams,
+    params: AgentSessionStreamParams?,
     private val options: RequestOptions,
     private val defaultExecutor: Executor,
     private val sleeper: com.openai.core.Sleeper,
+    private val creation: SessionCreateParams? = null,
+    handlers: AgentToolHandlers? = null,
 ) : AsyncStreamResponse<AgentSessionEvent> {
-    private val support = AgentSessionStreamSupport(params)
+    private val support =
+        if (creation == null) AgentSessionStreamSupport(checkNotNull(params))
+        else AgentSessionStreamSupport(checkNotNull(handlers), creation._headers())
     private val subscribed = AtomicBoolean()
     private val closed = AtomicBoolean()
     private val submissionLock = Any()
@@ -58,33 +64,48 @@ internal class AgentSessionStreamAsync(
             execute { notifyComplete(null) }
             return@apply
         }
-        await(sessions.retrieve(support.retrieveParams(), options), cancelOnClose = false) { session
-            ->
-            support.checkIdle(session)
-            val opening =
-                sessions.events().withRawResponse().streamStreaming(support.streamParams(), options)
-            // Closing during an in-flight open must also close the eventual HTTP response.
-            opening.whenComplete { response, _ ->
-                openingResponse = response
-                if (closed.get()) response?.close()
+        if (creation != null) open(sessions.withRawResponse().createStreaming(creation, options))
+        else
+            await(sessions.retrieve(support.retrieveParams(), options), cancelOnClose = false) {
+                session ->
+                support.checkIdle(session)
+                open(
+                    sessions
+                        .events()
+                        .withRawResponse()
+                        .streamStreaming(support.streamParams(), options)
+                )
             }
-            await(opening, cancelOnClose = false) { response ->
-                openingResponse = response
-                val stream =
-                    try {
-                        response.parse()
-                    } catch (error: Throwable) {
-                        response.close()
-                        throw error
-                    }
-                source = stream
-                if (closed.get()) {
-                    stream.close()
-                    return@await
+    }
+
+    private fun open(
+        opening:
+            CompletableFuture<
+                com.openai.core.http.HttpResponseFor<StreamResponse<AgentSessionEvent>>
+            >
+    ) {
+        // A response arriving after close must still be released.
+        opening.whenComplete { response, _ ->
+            openingResponse = response
+            if (closed.get()) response?.close()
+        }
+        await(opening, cancelOnClose = false) { response ->
+            openingResponse = response
+            val stream =
+                try {
+                    AgentTurnResults.uncollected(response.parse())
+                } catch (error: Throwable) {
+                    response.close()
+                    throw error
                 }
-                iterator = stream.stream().iterator()
-                create(support.inputParams())?.let { await(it) { pump() } }
+            source = stream
+            if (closed.get()) {
+                stream.close()
+                return@await
             }
+            iterator = stream.stream().iterator()
+            if (creation != null) pump()
+            else create(support.inputParams())?.let { await(it) { pump() } }
         }
     }
 

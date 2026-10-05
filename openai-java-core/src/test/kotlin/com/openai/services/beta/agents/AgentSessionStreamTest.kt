@@ -8,6 +8,7 @@ import com.openai.core.http.*
 import com.openai.core.jsonMapper
 import com.openai.helpers.beta.agents.AgentFunctionTool
 import com.openai.models.beta.agents.*
+import com.openai.models.beta.agents.sessions.SessionCreateParams
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.time.Duration
@@ -72,6 +73,7 @@ internal class AgentSessionStreamTest {
         var inputResponse: HttpResponse? = null
         val requests = java.util.Collections.synchronizedList(mutableListOf<HttpRequest>())
         val options = java.util.Collections.synchronizedList(mutableListOf<RequestOptions>())
+        var creationBody: JsonNode? = null
         val posts = java.util.Collections.synchronizedList(mutableListOf<JsonNode>())
         var status = "idle"
         var postError: String? = null
@@ -155,6 +157,13 @@ internal class AgentSessionStreamTest {
             requests.add(request)
             options.add(requestOptions)
             return when {
+                request.pathSegments.last() == "sessions" && request.method == HttpMethod.POST -> {
+                    val bytes = ByteArrayOutputStream()
+                    request.body!!.writeTo(bytes)
+                    creationBody = mapper.readTree(bytes.toByteArray())
+                    opened = true
+                    response(events.joinToString("") { "data: $it\n\n" }, stream = true)
+                }
                 request.method == HttpMethod.POST -> {
                     check(opened) { "input submitted before subscription" }
                     val bytes = ByteArrayOutputStream()
@@ -234,6 +243,110 @@ internal class AgentSessionStreamTest {
                         .build()
                 )
                 .also { clients.add(it) }
+    }
+
+    private fun creationParams() =
+        SessionCreateParams.builder()
+            .agentId("agent")
+            .environmentNone()
+            .input("Question")
+            .putAdditionalHeader("X-Request-Context", "test")
+            .putAdditionalHeader("Idempotency-Key", "creation-key")
+            .build()
+
+    private fun creationEvents() =
+        listOf(
+            """{"type":"agent.session.created","event_id":"created-session","session":{"id":"s","status":"in_progress"}}""",
+            """{"type":"agent.session.turn.created","event_id":"created-root","session_id":"s","turn_id":"root","turn":{"id":"root","session_id":"s","subagent_id":null}}""",
+            call(args = "{}"),
+            call(args = "{}", event = "duplicate-call"),
+            """{"type":"agent.session.requires_action","event_id":"action","session":{"id":"s","status":"requires_action","required_actions":[{"type":"function_call","name":"tool","call_id":"call","turn_id":"root"}]}}""",
+            """{"type":"agent.session.turn.item.done","event_id":"answer","session_id":"s","turn_id":"root","output_index":0,"item":{"id":"answer","type":"message","role":"assistant","turn_id":"root","phase":"final_answer","status":"completed","content":[{"type":"output_text","text":"Answer","annotations":[]}]}}""",
+            """{"type":"agent.session.turn.completed","event_id":"completed-root","session_id":"s","turn_id":"root","turn":{"id":"root","session_id":"s","subagent_id":null}}""",
+            """{"type":"agent.session.idle","event_id":"idle","session":{"id":"s","status":"idle"}}""",
+        )
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `creation dispatches initial tools using shared retries and collects final output`(
+        async: Boolean
+    ) {
+        val t = Transport(creationEvents())
+        t.postError =
+            """{"error":{"code":"invalid_request_error","message":"Unknown pending tool call: call"}}"""
+        t.postErrors = 1
+        val calls = AtomicInteger()
+        val handlers =
+            AgentToolHandlers.builder()
+                .asyncToolHandler("tool") {
+                    calls.incrementAndGet()
+                    CompletableFuture.completedFuture("Result")
+                }
+                .build()
+        val client = t.client()
+        val result =
+            if (async) {
+                val stream =
+                    client
+                        .async()
+                        .beta()
+                        .agents()
+                        .sessions()
+                        .createStreaming(creationParams(), handlers)
+                AgentTurnResults.getFinalResult(stream).get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            } else
+                client.beta().agents().sessions().createStreaming(creationParams(), handlers).use {
+                    AgentTurnResults.getFinalResult(it)
+                }
+        assertThat(result.outputText()).isEqualTo("Answer")
+        assertThat(result.sessionId()).isEqualTo("s")
+        assertThat(calls.get()).isEqualTo(1)
+        assertThat(t.creationBody!!.path("input").asText()).isEqualTo("Question")
+        assertThat(t.creationBody!!.has("handlers")).isFalse()
+        assertThat(t.requests).hasSize(3).allSatisfy {
+            assertThat(it.method).isEqualTo(HttpMethod.POST)
+        }
+        assertThat(t.requests.drop(1)).allSatisfy {
+            assertThat(it.pathSegments).endsWith("s", "events")
+            assertThat(it.headers.values("X-Request-Context")).containsExactly("test")
+            assertThat(it.headers.values("Idempotency-Key")).doesNotContain("creation-key")
+        }
+        assertThat(t.requests[1].headers.values("Idempotency-Key"))
+            .isEqualTo(t.requests[2].headers.values("Idempotency-Key"))
+        assertThat(t.posts).hasSize(2).allSatisfy {
+            assertThat(it.path("events").first().path("output").asText()).isEqualTo("Result")
+        }
+        assertThat(t.streamClosed).isTrue()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun `closing creation stream on call delivery does not run pending callback`(async: Boolean) {
+        val t = Transport(creationEvents())
+        val calls = AtomicInteger()
+        val handlers =
+            AgentToolHandlers.builder().toolHandler("tool") { calls.incrementAndGet() }.build()
+        val client = t.client()
+        if (async) {
+            val stream =
+                client
+                    .async()
+                    .beta()
+                    .agents()
+                    .sessions()
+                    .createStreaming(creationParams(), handlers)
+            stream
+                .subscribe { if (it.isTurnItemAdded()) stream.close() }
+                .onCompleteFuture()
+                .get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        } else
+            client.beta().agents().sessions().createStreaming(creationParams(), handlers).use {
+                stream ->
+                stream.stream().forEach { if (it.isTurnItemAdded()) stream.close() }
+            }
+        assertThat(calls.get()).isZero()
+        assertThat(t.posts).isEmpty()
+        assertThat(t.streamClosed).isTrue()
     }
 
     private fun params() = AgentSessionStreamParams.builder().sessionId("s").input("hello")
