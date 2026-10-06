@@ -22,6 +22,7 @@ internal class ResponseErrorTest {
                             ResponseError.Misalignment.ErrorType
                                 .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                         )
+                        .reviewTarget("review_target")
                         .steer(
                             ResponseError.Misalignment.Steer.builder().message("message").build()
                         )
@@ -38,6 +39,7 @@ internal class ResponseErrorTest {
                     .errorType(
                         ResponseError.Misalignment.ErrorType.POTENTIALLY_UNINTENDED_DATA_TRANSFER
                     )
+                    .reviewTarget("review_target")
                     .steer(ResponseError.Misalignment.Steer.builder().message("message").build())
                     .build()
             )
@@ -57,6 +59,7 @@ internal class ResponseErrorTest {
                             ResponseError.Misalignment.ErrorType
                                 .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                         )
+                        .reviewTarget("review_target")
                         .steer(
                             ResponseError.Misalignment.Steer.builder().message("message").build()
                         )

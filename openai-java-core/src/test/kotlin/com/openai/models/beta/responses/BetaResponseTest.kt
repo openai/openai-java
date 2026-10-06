@@ -32,6 +32,7 @@ internal class BetaResponseTest {
                                     BetaResponseError.Misalignment.ErrorType
                                         .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                 )
+                                .reviewTarget("review_target")
                                 .steer(
                                     BetaResponseError.Misalignment.Steer.builder()
                                         .message("message")
@@ -269,6 +270,7 @@ internal class BetaResponseTest {
                                 BetaResponseError.Misalignment.ErrorType
                                     .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                             )
+                            .reviewTarget("review_target")
                             .steer(
                                 BetaResponseError.Misalignment.Steer.builder()
                                     .message("message")
@@ -520,6 +522,7 @@ internal class BetaResponseTest {
                                     BetaResponseError.Misalignment.ErrorType
                                         .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                 )
+                                .reviewTarget("review_target")
                                 .steer(
                                     BetaResponseError.Misalignment.Steer.builder()
                                         .message("message")

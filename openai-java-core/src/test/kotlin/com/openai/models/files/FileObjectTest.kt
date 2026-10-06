@@ -24,7 +24,7 @@ internal class FileObjectTest {
                 .build()
 
         assertThat(fileObject.id()).isEqualTo("id")
-        assertThat(fileObject.bytes()).isEqualTo(0L)
+        assertThat(fileObject.bytes()).contains(0L)
         assertThat(fileObject.createdAt()).isEqualTo(0L)
         assertThat(fileObject.filename()).isEqualTo("filename")
         assertThat(fileObject.purpose()).isEqualTo(FileObject.Purpose.ASSISTANTS)

@@ -72,10 +72,10 @@ private constructor(
      * The size of the file, in bytes. In a completed file upload response, this can be null when
      * the file size is not yet available.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun bytes(): Long = bytes.getRequired("bytes")
+    fun bytes(): Optional<Long> = bytes.getOptional("bytes")
 
     /**
      * The Unix timestamp (in seconds) for when the file was created.
@@ -279,7 +279,17 @@ private constructor(
          * The size of the file, in bytes. In a completed file upload response, this can be null
          * when the file size is not yet available.
          */
-        fun bytes(bytes: Long) = bytes(JsonField.of(bytes))
+        fun bytes(bytes: Long?) = bytes(JsonField.ofNullable(bytes))
+
+        /**
+         * Alias for [Builder.bytes].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun bytes(bytes: Long) = bytes(bytes as Long?)
+
+        /** Alias for calling [Builder.bytes] with `bytes.orElse(null)`. */
+        fun bytes(bytes: Optional<Long>) = bytes(bytes.getOrNull())
 
         /**
          * Sets [Builder.bytes] to an arbitrary JSON value.

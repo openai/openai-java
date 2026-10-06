@@ -1051,6 +1051,7 @@ internal class ResponsesServerEventTest {
                                             ResponseError.Misalignment.ErrorType
                                                 .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                         )
+                                        .reviewTarget("review_target")
                                         .steer(
                                             ResponseError.Misalignment.Steer.builder()
                                                 .message("message")
@@ -1362,6 +1363,7 @@ internal class ResponsesServerEventTest {
                                                 ResponseError.Misalignment.ErrorType
                                                     .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                             )
+                                            .reviewTarget("review_target")
                                             .steer(
                                                 ResponseError.Misalignment.Steer.builder()
                                                     .message("message")
@@ -1928,6 +1930,7 @@ internal class ResponsesServerEventTest {
                                             ResponseError.Misalignment.ErrorType
                                                 .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                         )
+                                        .reviewTarget("review_target")
                                         .steer(
                                             ResponseError.Misalignment.Steer.builder()
                                                 .message("message")
@@ -2239,6 +2242,7 @@ internal class ResponsesServerEventTest {
                                                 ResponseError.Misalignment.ErrorType
                                                     .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                             )
+                                            .reviewTarget("review_target")
                                             .steer(
                                                 ResponseError.Misalignment.Steer.builder()
                                                     .message("message")
@@ -3536,6 +3540,7 @@ internal class ResponsesServerEventTest {
                                             ResponseError.Misalignment.ErrorType
                                                 .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                         )
+                                        .reviewTarget("review_target")
                                         .steer(
                                             ResponseError.Misalignment.Steer.builder()
                                                 .message("message")
@@ -3847,6 +3852,7 @@ internal class ResponsesServerEventTest {
                                                 ResponseError.Misalignment.ErrorType
                                                     .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                             )
+                                            .reviewTarget("review_target")
                                             .steer(
                                                 ResponseError.Misalignment.Steer.builder()
                                                     .message("message")
@@ -4110,6 +4116,7 @@ internal class ResponsesServerEventTest {
                                             ResponseError.Misalignment.ErrorType
                                                 .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                         )
+                                        .reviewTarget("review_target")
                                         .steer(
                                             ResponseError.Misalignment.Steer.builder()
                                                 .message("message")
@@ -4421,6 +4428,7 @@ internal class ResponsesServerEventTest {
                                                 ResponseError.Misalignment.ErrorType
                                                     .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                             )
+                                            .reviewTarget("review_target")
                                             .steer(
                                                 ResponseError.Misalignment.Steer.builder()
                                                     .message("message")
@@ -4684,6 +4692,7 @@ internal class ResponsesServerEventTest {
                                             ResponseError.Misalignment.ErrorType
                                                 .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                         )
+                                        .reviewTarget("review_target")
                                         .steer(
                                             ResponseError.Misalignment.Steer.builder()
                                                 .message("message")
@@ -4995,6 +5004,7 @@ internal class ResponsesServerEventTest {
                                                 ResponseError.Misalignment.ErrorType
                                                     .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                             )
+                                            .reviewTarget("review_target")
                                             .steer(
                                                 ResponseError.Misalignment.Steer.builder()
                                                     .message("message")
@@ -8265,6 +8275,7 @@ internal class ResponsesServerEventTest {
                                             ResponseError.Misalignment.ErrorType
                                                 .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                         )
+                                        .reviewTarget("review_target")
                                         .steer(
                                             ResponseError.Misalignment.Steer.builder()
                                                 .message("message")
@@ -8576,6 +8587,7 @@ internal class ResponsesServerEventTest {
                                                 ResponseError.Misalignment.ErrorType
                                                     .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                             )
+                                            .reviewTarget("review_target")
                                             .steer(
                                                 ResponseError.Misalignment.Steer.builder()
                                                     .message("message")
@@ -9040,6 +9052,7 @@ internal class ResponsesServerEventTest {
                                         .ErrorType
                                         .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                 )
+                                .reviewTarget("review_target")
                                 .steer(
                                     ResponsesServerEvent.ResponseWsError.Error.Misalignment.Steer
                                         .builder()
@@ -9146,6 +9159,7 @@ internal class ResponsesServerEventTest {
                                             .ErrorType
                                             .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                     )
+                                    .reviewTarget("review_target")
                                     .steer(
                                         ResponsesServerEvent.ResponseWsError.Error.Misalignment
                                             .Steer
@@ -9197,6 +9211,7 @@ internal class ResponsesServerEventTest {
                                             .ErrorType
                                             .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                     )
+                                    .reviewTarget("review_target")
                                     .steer(
                                         ResponsesServerEvent.ResponseWsError.Error.Misalignment
                                             .Steer

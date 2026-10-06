@@ -25,8 +25,6 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
 
         @JvmField val ASH = of("ash")
 
-        @JvmField val AUBE = of("aube")
-
         @JvmField val BALLAD = of("ballad")
 
         @JvmField val BEACON = of("beacon")
@@ -92,7 +90,6 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
     enum class Known {
         ALLOY,
         ASH,
-        AUBE,
         BALLAD,
         BEACON,
         BOSSA,
@@ -136,7 +133,6 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
     enum class Value {
         ALLOY,
         ASH,
-        AUBE,
         BALLAD,
         BEACON,
         BOSSA,
@@ -181,7 +177,6 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
         when (this) {
             ALLOY -> Value.ALLOY
             ASH -> Value.ASH
-            AUBE -> Value.AUBE
             BALLAD -> Value.BALLAD
             BEACON -> Value.BEACON
             BOSSA -> Value.BOSSA
@@ -226,7 +221,6 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
         when (this) {
             ALLOY -> Known.ALLOY
             ASH -> Known.ASH
-            AUBE -> Known.AUBE
             BALLAD -> Known.BALLAD
             BEACON -> Known.BEACON
             BOSSA -> Known.BOSSA

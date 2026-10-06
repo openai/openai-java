@@ -4689,6 +4689,7 @@ private constructor(
             private constructor(
                 private val detailedExplanation: JsonField<String>,
                 private val errorType: JsonField<ErrorType>,
+                private val reviewTarget: JsonField<String>,
                 private val steer: JsonField<Steer>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
@@ -4701,10 +4702,13 @@ private constructor(
                     @JsonProperty("error_type")
                     @ExcludeMissing
                     errorType: JsonField<ErrorType> = JsonMissing.of(),
+                    @JsonProperty("review_target")
+                    @ExcludeMissing
+                    reviewTarget: JsonField<String> = JsonMissing.of(),
                     @JsonProperty("steer")
                     @ExcludeMissing
                     steer: JsonField<Steer> = JsonMissing.of(),
-                ) : this(detailedExplanation, errorType, steer, mutableMapOf())
+                ) : this(detailedExplanation, errorType, reviewTarget, steer, mutableMapOf())
 
                 /**
                  * The public explanation for this block.
@@ -4722,6 +4726,14 @@ private constructor(
                  *   if the server responded with an unexpected value).
                  */
                 fun errorType(): Optional<ErrorType> = errorType.getOptional("error_type")
+
+                /**
+                 * An opaque target for explicitly continuing this review, or null when unavailable.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun reviewTarget(): Optional<String> = reviewTarget.getOptional("review_target")
 
                 /**
                  * An optional public continuation instruction.
@@ -4750,6 +4762,16 @@ private constructor(
                 @JsonProperty("error_type")
                 @ExcludeMissing
                 fun _errorType(): JsonField<ErrorType> = errorType
+
+                /**
+                 * Returns the raw JSON value of [reviewTarget].
+                 *
+                 * Unlike [reviewTarget], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("review_target")
+                @ExcludeMissing
+                fun _reviewTarget(): JsonField<String> = reviewTarget
 
                 /**
                  * Returns the raw JSON value of [steer].
@@ -4782,6 +4804,7 @@ private constructor(
 
                     private var detailedExplanation: JsonField<String> = JsonMissing.of()
                     private var errorType: JsonField<ErrorType> = JsonMissing.of()
+                    private var reviewTarget: JsonField<String> = JsonMissing.of()
                     private var steer: JsonField<Steer> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -4789,6 +4812,7 @@ private constructor(
                     internal fun from(misalignment: Misalignment) = apply {
                         detailedExplanation = misalignment.detailedExplanation
                         errorType = misalignment.errorType
+                        reviewTarget = misalignment.reviewTarget
                         steer = misalignment.steer
                         additionalProperties = misalignment.additionalProperties.toMutableMap()
                     }
@@ -4830,6 +4854,30 @@ private constructor(
                      * not yet supported value.
                      */
                     fun errorType(value: String) = errorType(ErrorType.of(value))
+
+                    /**
+                     * An opaque target for explicitly continuing this review, or null when
+                     * unavailable.
+                     */
+                    fun reviewTarget(reviewTarget: String?) =
+                        reviewTarget(JsonField.ofNullable(reviewTarget))
+
+                    /**
+                     * Alias for calling [Builder.reviewTarget] with `reviewTarget.orElse(null)`.
+                     */
+                    fun reviewTarget(reviewTarget: Optional<String>) =
+                        reviewTarget(reviewTarget.getOrNull())
+
+                    /**
+                     * Sets [Builder.reviewTarget] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.reviewTarget] with a well-typed [String]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun reviewTarget(reviewTarget: JsonField<String>) = apply {
+                        this.reviewTarget = reviewTarget
+                    }
 
                     /** An optional public continuation instruction. */
                     fun steer(steer: Steer) = steer(JsonField.of(steer))
@@ -4874,6 +4922,7 @@ private constructor(
                         Misalignment(
                             detailedExplanation,
                             errorType,
+                            reviewTarget,
                             steer,
                             additionalProperties.toMutableMap(),
                         )
@@ -4898,6 +4947,7 @@ private constructor(
 
                     detailedExplanation()
                     errorType()
+                    reviewTarget()
                     steer().ifPresent { it.validate() }
                     validated = true
                 }
@@ -4920,6 +4970,7 @@ private constructor(
                 internal fun validity(): Int =
                     (if (detailedExplanation.asKnown().isPresent) 1 else 0) +
                         (if (errorType.asKnown().isPresent) 1 else 0) +
+                        (if (reviewTarget.asKnown().isPresent) 1 else 0) +
                         (steer.asKnown().getOrNull()?.validity() ?: 0)
 
                 /** An optional classification; clients must accept additional values. */
@@ -5283,18 +5334,25 @@ private constructor(
                     return other is Misalignment &&
                         detailedExplanation == other.detailedExplanation &&
                         errorType == other.errorType &&
+                        reviewTarget == other.reviewTarget &&
                         steer == other.steer &&
                         additionalProperties == other.additionalProperties
                 }
 
                 private val hashCode: Int by lazy {
-                    Objects.hash(detailedExplanation, errorType, steer, additionalProperties)
+                    Objects.hash(
+                        detailedExplanation,
+                        errorType,
+                        reviewTarget,
+                        steer,
+                        additionalProperties,
+                    )
                 }
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "Misalignment{detailedExplanation=$detailedExplanation, errorType=$errorType, steer=$steer, additionalProperties=$additionalProperties}"
+                    "Misalignment{detailedExplanation=$detailedExplanation, errorType=$errorType, reviewTarget=$reviewTarget, steer=$steer, additionalProperties=$additionalProperties}"
             }
 
             override fun equals(other: Any?): Boolean {
