@@ -33,7 +33,10 @@ private constructor(
 
     fun turnId(): Optional<String> = Optional.ofNullable(turnId)
 
-    /** Return resources after this resource ID in the selected order. */
+    /**
+     * Return items after this cursor in the selected order. Pass the previous response's last_id,
+     * which can differ from the last item's ID.
+     */
     fun after(): Optional<String> = Optional.ofNullable(after)
 
     /** The maximum number of resources to return, between 1 and 100. Defaults to 20. */
@@ -92,7 +95,10 @@ private constructor(
         /** Alias for calling [Builder.turnId] with `turnId.orElse(null)`. */
         fun turnId(turnId: Optional<String>) = turnId(turnId.getOrNull())
 
-        /** Return resources after this resource ID in the selected order. */
+        /**
+         * Return items after this cursor in the selected order. Pass the previous response's
+         * last_id, which can differ from the last item's ID.
+         */
         fun after(after: String?) = apply { this.after = after }
 
         /** Alias for calling [Builder.after] with `after.orElse(null)`. */

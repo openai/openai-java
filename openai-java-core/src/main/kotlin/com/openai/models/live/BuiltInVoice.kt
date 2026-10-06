@@ -31,8 +31,6 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
 
         @JvmField val BOSSA = of("bossa")
 
-        @JvmField val BRISE = of("brise")
-
         @JvmField val CEDAR = of("cedar")
 
         @JvmField val CINDER = of("cinder")
@@ -43,23 +41,11 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
 
         @JvmField val ECHO = of("echo")
 
-        @JvmField val FLITZ = of("flitz")
-
         @JvmField val GLEAM = of("gleam")
-
-        @JvmField val HAREMA = of("harema")
-
-        @JvmField val JUNI = of("juni")
 
         @JvmField val MARIN = of("marin")
 
         @JvmField val MERIDIAN = of("meridian")
-
-        @JvmField val NIRA = of("nira")
-
-        @JvmField val NOEUL = of("noeul")
-
-        @JvmField val NURI = of("nuri")
 
         @JvmField val QUARTZ = of("quartz")
 
@@ -68,10 +54,6 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
         @JvmField val SAGE = of("sage")
 
         @JvmField val SHIMMER = of("shimmer")
-
-        @JvmField val SHITAN = of("shitan")
-
-        @JvmField val SILLAGE = of("sillage")
 
         @JvmField val STONE = of("stone")
 
@@ -93,27 +75,18 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
         BALLAD,
         BEACON,
         BOSSA,
-        BRISE,
         CEDAR,
         CINDER,
         CORAL,
         DELTA,
         ECHO,
-        FLITZ,
         GLEAM,
-        HAREMA,
-        JUNI,
         MARIN,
         MERIDIAN,
-        NIRA,
-        NOEUL,
-        NURI,
         QUARTZ,
         RIPPLE,
         SAGE,
         SHIMMER,
-        SHITAN,
-        SILLAGE,
         STONE,
         TEMPO,
         VERSE,
@@ -136,27 +109,18 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
         BALLAD,
         BEACON,
         BOSSA,
-        BRISE,
         CEDAR,
         CINDER,
         CORAL,
         DELTA,
         ECHO,
-        FLITZ,
         GLEAM,
-        HAREMA,
-        JUNI,
         MARIN,
         MERIDIAN,
-        NIRA,
-        NOEUL,
-        NURI,
         QUARTZ,
         RIPPLE,
         SAGE,
         SHIMMER,
-        SHITAN,
-        SILLAGE,
         STONE,
         TEMPO,
         VERSE,
@@ -180,27 +144,18 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
             BALLAD -> Value.BALLAD
             BEACON -> Value.BEACON
             BOSSA -> Value.BOSSA
-            BRISE -> Value.BRISE
             CEDAR -> Value.CEDAR
             CINDER -> Value.CINDER
             CORAL -> Value.CORAL
             DELTA -> Value.DELTA
             ECHO -> Value.ECHO
-            FLITZ -> Value.FLITZ
             GLEAM -> Value.GLEAM
-            HAREMA -> Value.HAREMA
-            JUNI -> Value.JUNI
             MARIN -> Value.MARIN
             MERIDIAN -> Value.MERIDIAN
-            NIRA -> Value.NIRA
-            NOEUL -> Value.NOEUL
-            NURI -> Value.NURI
             QUARTZ -> Value.QUARTZ
             RIPPLE -> Value.RIPPLE
             SAGE -> Value.SAGE
             SHIMMER -> Value.SHIMMER
-            SHITAN -> Value.SHITAN
-            SILLAGE -> Value.SILLAGE
             STONE -> Value.STONE
             TEMPO -> Value.TEMPO
             VERSE -> Value.VERSE
@@ -224,27 +179,18 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
             BALLAD -> Known.BALLAD
             BEACON -> Known.BEACON
             BOSSA -> Known.BOSSA
-            BRISE -> Known.BRISE
             CEDAR -> Known.CEDAR
             CINDER -> Known.CINDER
             CORAL -> Known.CORAL
             DELTA -> Known.DELTA
             ECHO -> Known.ECHO
-            FLITZ -> Known.FLITZ
             GLEAM -> Known.GLEAM
-            HAREMA -> Known.HAREMA
-            JUNI -> Known.JUNI
             MARIN -> Known.MARIN
             MERIDIAN -> Known.MERIDIAN
-            NIRA -> Known.NIRA
-            NOEUL -> Known.NOEUL
-            NURI -> Known.NURI
             QUARTZ -> Known.QUARTZ
             RIPPLE -> Known.RIPPLE
             SAGE -> Known.SAGE
             SHIMMER -> Known.SHIMMER
-            SHITAN -> Known.SHITAN
-            SILLAGE -> Known.SILLAGE
             STONE -> Known.STONE
             TEMPO -> Known.TEMPO
             VERSE -> Known.VERSE
