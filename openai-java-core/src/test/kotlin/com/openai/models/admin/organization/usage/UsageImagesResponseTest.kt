@@ -23,6 +23,12 @@ internal class UsageImagesResponseTest {
                                 .numModelRequests(0L)
                                 .outputTokens(0L)
                                 .apiKeyId("api_key_id")
+                                .apiSource(
+                                    UsageImagesResponse.Data.Result
+                                        .OrganizationUsageCompletionsResult
+                                        .ApiSource
+                                        .AGENTS_API
+                                )
                                 .batch(true)
                                 .inputAudioTokens(0L)
                                 .inputCacheWrite12hTokens(0L)
@@ -60,6 +66,11 @@ internal class UsageImagesResponseTest {
                             .numModelRequests(0L)
                             .outputTokens(0L)
                             .apiKeyId("api_key_id")
+                            .apiSource(
+                                UsageImagesResponse.Data.Result.OrganizationUsageCompletionsResult
+                                    .ApiSource
+                                    .AGENTS_API
+                            )
                             .batch(true)
                             .inputAudioTokens(0L)
                             .inputCacheWrite12hTokens(0L)
@@ -102,6 +113,12 @@ internal class UsageImagesResponseTest {
                                 .numModelRequests(0L)
                                 .outputTokens(0L)
                                 .apiKeyId("api_key_id")
+                                .apiSource(
+                                    UsageImagesResponse.Data.Result
+                                        .OrganizationUsageCompletionsResult
+                                        .ApiSource
+                                        .AGENTS_API
+                                )
                                 .batch(true)
                                 .inputAudioTokens(0L)
                                 .inputCacheWrite12hTokens(0L)

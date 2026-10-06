@@ -33,6 +33,7 @@ internal class VideoTest {
                                     VideoCreateError.Misalignment.ErrorType
                                         .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                 )
+                                .reviewTarget("review_target")
                                 .steer(
                                     VideoCreateError.Misalignment.Steer.builder()
                                         .message("message")
@@ -72,6 +73,7 @@ internal class VideoTest {
                                 VideoCreateError.Misalignment.ErrorType
                                     .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                             )
+                            .reviewTarget("review_target")
                             .steer(
                                 VideoCreateError.Misalignment.Steer.builder()
                                     .message("message")
@@ -115,6 +117,7 @@ internal class VideoTest {
                                     VideoCreateError.Misalignment.ErrorType
                                         .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                 )
+                                .reviewTarget("review_target")
                                 .steer(
                                     VideoCreateError.Misalignment.Steer.builder()
                                         .message("message")

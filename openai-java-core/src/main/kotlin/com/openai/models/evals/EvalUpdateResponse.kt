@@ -1278,6 +1278,11 @@ private constructor(
                         additionalProperties.put(key, value)
                     }
 
+                    /** Adds a string-valued property. */
+                    fun putProperty(key: String, value: String) = apply {
+                        putAdditionalProperty(key, JsonValue.from(value))
+                    }
+
                     fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                         apply {
                             this.additionalProperties.putAll(additionalProperties)
@@ -1421,6 +1426,11 @@ private constructor(
 
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
+            }
+
+            /** Adds a string-valued property. */
+            fun putProperty(key: String, value: String) = apply {
+                putAdditionalProperty(key, JsonValue.from(value))
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2715,7 +2725,7 @@ private constructor(
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
-             * The range of the score. Defaults to `[0, 1]`.
+             * The service requires two numbers for the score range. Defaults to `[0, 1]`.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -2908,7 +2918,7 @@ private constructor(
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
 
-                /** The range of the score. Defaults to `[0, 1]`. */
+                /** The service requires two numbers for the score range. Defaults to `[0, 1]`. */
                 fun range(range: List<Double>) = range(JsonField.of(range))
 
                 /**

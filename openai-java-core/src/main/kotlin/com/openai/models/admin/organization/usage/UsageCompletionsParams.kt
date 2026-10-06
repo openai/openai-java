@@ -56,7 +56,9 @@ private constructor(
 
     /**
      * Group the usage data by the specified fields. Support fields include `project_id`, `user_id`,
-     * `api_key_id`, `model`, `batch`, `service_tier` or any combination of them.
+     * `api_key_id`, `model`, `batch`, `service_tier`, `api_source` or any combination of them. When
+     * grouped by `api_source`, results use `agents_api` for attributed Agents API activity and
+     * `unlabeled` for all other activity. Without source grouping, `api_source` is null.
      */
     fun groupBy(): Optional<List<GroupBy>> = Optional.ofNullable(groupBy)
 
@@ -198,7 +200,10 @@ private constructor(
 
         /**
          * Group the usage data by the specified fields. Support fields include `project_id`,
-         * `user_id`, `api_key_id`, `model`, `batch`, `service_tier` or any combination of them.
+         * `user_id`, `api_key_id`, `model`, `batch`, `service_tier`, `api_source` or any
+         * combination of them. When grouped by `api_source`, results use `agents_api` for
+         * attributed Agents API activity and `unlabeled` for all other activity. Without source
+         * grouping, `api_source` is null.
          */
         fun groupBy(groupBy: List<GroupBy>?) = apply { this.groupBy = groupBy?.toMutableList() }
 
@@ -609,6 +614,8 @@ private constructor(
 
             @JvmField val SERVICE_TIER = of("service_tier")
 
+            @JvmField val API_SOURCE = of("api_source")
+
             @JvmStatic fun of(value: String) = GroupBy(JsonField.of(value))
         }
 
@@ -620,6 +627,7 @@ private constructor(
             MODEL,
             BATCH,
             SERVICE_TIER,
+            API_SOURCE,
         }
 
         /**
@@ -638,6 +646,7 @@ private constructor(
             MODEL,
             BATCH,
             SERVICE_TIER,
+            API_SOURCE,
             /** An enum member indicating that [GroupBy] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -657,6 +666,7 @@ private constructor(
                 MODEL -> Value.MODEL
                 BATCH -> Value.BATCH
                 SERVICE_TIER -> Value.SERVICE_TIER
+                API_SOURCE -> Value.API_SOURCE
                 else -> Value._UNKNOWN
             }
 
@@ -677,6 +687,7 @@ private constructor(
                 MODEL -> Known.MODEL
                 BATCH -> Known.BATCH
                 SERVICE_TIER -> Known.SERVICE_TIER
+                API_SOURCE -> Known.API_SOURCE
                 else -> throw OpenAIInvalidDataException("Unknown GroupBy: $value")
             }
 

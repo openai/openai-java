@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -1444,6 +1445,7 @@ private constructor(
                 private val object_: JsonValue,
                 private val outputTokens: JsonField<Long>,
                 private val apiKeyId: JsonField<String>,
+                private val apiSource: JsonField<ApiSource>,
                 private val batch: JsonField<Boolean>,
                 private val inputAudioTokens: JsonField<Long>,
                 private val inputCacheWrite12hTokens: JsonField<Long>,
@@ -1480,6 +1482,9 @@ private constructor(
                     @JsonProperty("api_key_id")
                     @ExcludeMissing
                     apiKeyId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("api_source")
+                    @ExcludeMissing
+                    apiSource: JsonField<ApiSource> = JsonMissing.of(),
                     @JsonProperty("batch")
                     @ExcludeMissing
                     batch: JsonField<Boolean> = JsonMissing.of(),
@@ -1540,6 +1545,7 @@ private constructor(
                     object_,
                     outputTokens,
                     apiKeyId,
+                    apiSource,
                     batch,
                     inputAudioTokens,
                     inputCacheWrite12hTokens,
@@ -1610,6 +1616,17 @@ private constructor(
                  *   if the server responded with an unexpected value).
                  */
                 fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                 * activity and `unlabeled` includes all records without published source
+                 * attribution, including historical and unknown origins. Unlabeled does not imply
+                 * direct API usage. Without source grouping, this field is null.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun apiSource(): Optional<ApiSource> = apiSource.getOptional("api_source")
 
                 /**
                  * When `group_by=batch`, this field tells whether the grouped usage result is batch
@@ -1817,6 +1834,16 @@ private constructor(
                 @JsonProperty("api_key_id")
                 @ExcludeMissing
                 fun _apiKeyId(): JsonField<String> = apiKeyId
+
+                /**
+                 * Returns the raw JSON value of [apiSource].
+                 *
+                 * Unlike [apiSource], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("api_source")
+                @ExcludeMissing
+                fun _apiSource(): JsonField<ApiSource> = apiSource
 
                 /**
                  * Returns the raw JSON value of [batch].
@@ -2029,6 +2056,7 @@ private constructor(
                         JsonValue.from("organization.usage.completions.result")
                     private var outputTokens: JsonField<Long>? = null
                     private var apiKeyId: JsonField<String> = JsonMissing.of()
+                    private var apiSource: JsonField<ApiSource> = JsonMissing.of()
                     private var batch: JsonField<Boolean> = JsonMissing.of()
                     private var inputAudioTokens: JsonField<Long> = JsonMissing.of()
                     private var inputCacheWrite12hTokens: JsonField<Long> = JsonMissing.of()
@@ -2058,6 +2086,7 @@ private constructor(
                         object_ = organizationUsageCompletionsResult.object_
                         outputTokens = organizationUsageCompletionsResult.outputTokens
                         apiKeyId = organizationUsageCompletionsResult.apiKeyId
+                        apiSource = organizationUsageCompletionsResult.apiSource
                         batch = organizationUsageCompletionsResult.batch
                         inputAudioTokens = organizationUsageCompletionsResult.inputAudioTokens
                         inputCacheWrite12hTokens =
@@ -2167,6 +2196,29 @@ private constructor(
                      * not yet supported value.
                      */
                     fun apiKeyId(apiKeyId: JsonField<String>) = apply { this.apiKeyId = apiKeyId }
+
+                    /**
+                     * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                     * activity and `unlabeled` includes all records without published source
+                     * attribution, including historical and unknown origins. Unlabeled does not
+                     * imply direct API usage. Without source grouping, this field is null.
+                     */
+                    fun apiSource(apiSource: ApiSource?) =
+                        apiSource(JsonField.ofNullable(apiSource))
+
+                    /** Alias for calling [Builder.apiSource] with `apiSource.orElse(null)`. */
+                    fun apiSource(apiSource: Optional<ApiSource>) = apiSource(apiSource.getOrNull())
+
+                    /**
+                     * Sets [Builder.apiSource] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.apiSource] with a well-typed [ApiSource]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun apiSource(apiSource: JsonField<ApiSource>) = apply {
+                        this.apiSource = apiSource
+                    }
 
                     /**
                      * When `group_by=batch`, this field tells whether the grouped usage result is
@@ -2526,6 +2578,7 @@ private constructor(
                             object_,
                             checkRequired("outputTokens", outputTokens),
                             apiKeyId,
+                            apiSource,
                             batch,
                             inputAudioTokens,
                             inputCacheWrite12hTokens,
@@ -2574,6 +2627,7 @@ private constructor(
                     }
                     outputTokens()
                     apiKeyId()
+                    apiSource().ifPresent { it.validate() }
                     batch()
                     inputAudioTokens()
                     inputCacheWrite12hTokens()
@@ -2619,6 +2673,7 @@ private constructor(
                         } +
                         (if (outputTokens.asKnown().isPresent) 1 else 0) +
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
+                        (apiSource.asKnown().getOrNull()?.validity() ?: 0) +
                         (if (batch.asKnown().isPresent) 1 else 0) +
                         (if (inputAudioTokens.asKnown().isPresent) 1 else 0) +
                         (if (inputCacheWrite12hTokens.asKnown().isPresent) 1 else 0) +
@@ -2638,6 +2693,157 @@ private constructor(
                         (if (serviceTier.asKnown().isPresent) 1 else 0) +
                         (if (userId.asKnown().isPresent) 1 else 0)
 
+                /**
+                 * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                 * activity and `unlabeled` includes all records without published source
+                 * attribution, including historical and unknown origins. Unlabeled does not imply
+                 * direct API usage. Without source grouping, this field is null.
+                 */
+                class ApiSource
+                @JsonCreator
+                private constructor(private val value: JsonField<String>) : Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val AGENTS_API = of("agents_api")
+
+                        @JvmField val UNLABELED = of("unlabeled")
+
+                        @JvmStatic fun of(value: String) = ApiSource(JsonField.of(value))
+                    }
+
+                    /** An enum containing [ApiSource]'s known values. */
+                    enum class Known {
+                        AGENTS_API,
+                        UNLABELED,
+                    }
+
+                    /**
+                     * An enum containing [ApiSource]'s known values, as well as an [_UNKNOWN]
+                     * member.
+                     *
+                     * An instance of [ApiSource] can contain an unknown value in a couple of cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        AGENTS_API,
+                        UNLABELED,
+                        /**
+                         * An enum member indicating that [ApiSource] was instantiated with an
+                         * unknown value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            AGENTS_API -> Value.AGENTS_API
+                            UNLABELED -> Value.UNLABELED
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            AGENTS_API -> Known.AGENTS_API
+                            UNLABELED -> Known.UNLABELED
+                            else -> throw OpenAIInvalidDataException("Unknown ApiSource: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): ApiSource = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is ApiSource && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
+
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
@@ -2649,6 +2855,7 @@ private constructor(
                         object_ == other.object_ &&
                         outputTokens == other.outputTokens &&
                         apiKeyId == other.apiKeyId &&
+                        apiSource == other.apiSource &&
                         batch == other.batch &&
                         inputAudioTokens == other.inputAudioTokens &&
                         inputCacheWrite12hTokens == other.inputCacheWrite12hTokens &&
@@ -2677,6 +2884,7 @@ private constructor(
                         object_,
                         outputTokens,
                         apiKeyId,
+                        apiSource,
                         batch,
                         inputAudioTokens,
                         inputCacheWrite12hTokens,
@@ -2702,7 +2910,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationUsageCompletionsResult{inputTokens=$inputTokens, numModelRequests=$numModelRequests, object_=$object_, outputTokens=$outputTokens, apiKeyId=$apiKeyId, batch=$batch, inputAudioTokens=$inputAudioTokens, inputCacheWrite12hTokens=$inputCacheWrite12hTokens, inputCacheWriteTokens=$inputCacheWriteTokens, inputCachedAudioTokens=$inputCachedAudioTokens, inputCachedImageTokens=$inputCachedImageTokens, inputCachedTextTokens=$inputCachedTextTokens, inputCachedTokens=$inputCachedTokens, inputImageTokens=$inputImageTokens, inputTextTokens=$inputTextTokens, inputUncachedTokens=$inputUncachedTokens, model=$model, outputAudioTokens=$outputAudioTokens, outputImageTokens=$outputImageTokens, outputTextTokens=$outputTextTokens, projectId=$projectId, serviceTier=$serviceTier, userId=$userId, additionalProperties=$additionalProperties}"
+                    "OrganizationUsageCompletionsResult{inputTokens=$inputTokens, numModelRequests=$numModelRequests, object_=$object_, outputTokens=$outputTokens, apiKeyId=$apiKeyId, apiSource=$apiSource, batch=$batch, inputAudioTokens=$inputAudioTokens, inputCacheWrite12hTokens=$inputCacheWrite12hTokens, inputCacheWriteTokens=$inputCacheWriteTokens, inputCachedAudioTokens=$inputCachedAudioTokens, inputCachedImageTokens=$inputCachedImageTokens, inputCachedTextTokens=$inputCachedTextTokens, inputCachedTokens=$inputCachedTokens, inputImageTokens=$inputImageTokens, inputTextTokens=$inputTextTokens, inputUncachedTokens=$inputUncachedTokens, model=$model, outputAudioTokens=$outputAudioTokens, outputImageTokens=$outputImageTokens, outputTextTokens=$outputTextTokens, projectId=$projectId, serviceTier=$serviceTier, userId=$userId, additionalProperties=$additionalProperties}"
             }
 
             /** The aggregated embeddings usage details of the specific time bucket. */
@@ -6223,6 +6431,7 @@ private constructor(
                 private val numRequests: JsonField<Long>,
                 private val object_: JsonValue,
                 private val apiKeyId: JsonField<String>,
+                private val apiSource: JsonField<ApiSource>,
                 private val contextLevel: JsonField<String>,
                 private val model: JsonField<String>,
                 private val projectId: JsonField<String>,
@@ -6242,6 +6451,9 @@ private constructor(
                     @JsonProperty("api_key_id")
                     @ExcludeMissing
                     apiKeyId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("api_source")
+                    @ExcludeMissing
+                    apiSource: JsonField<ApiSource> = JsonMissing.of(),
                     @JsonProperty("context_level")
                     @ExcludeMissing
                     contextLevel: JsonField<String> = JsonMissing.of(),
@@ -6259,6 +6471,7 @@ private constructor(
                     numRequests,
                     object_,
                     apiKeyId,
+                    apiSource,
                     contextLevel,
                     model,
                     projectId,
@@ -6303,6 +6516,17 @@ private constructor(
                  *   if the server responded with an unexpected value).
                  */
                 fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                 * activity and `unlabeled` includes all records without published source
+                 * attribution, including historical and unknown origins. Unlabeled does not imply
+                 * direct API usage. Without source grouping, this field is null.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun apiSource(): Optional<ApiSource> = apiSource.getOptional("api_source")
 
                 /**
                  * When `group_by=context_level`, this field provides the search context size of the
@@ -6369,6 +6593,16 @@ private constructor(
                 @JsonProperty("api_key_id")
                 @ExcludeMissing
                 fun _apiKeyId(): JsonField<String> = apiKeyId
+
+                /**
+                 * Returns the raw JSON value of [apiSource].
+                 *
+                 * Unlike [apiSource], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("api_source")
+                @ExcludeMissing
+                fun _apiSource(): JsonField<ApiSource> = apiSource
 
                 /**
                  * Returns the raw JSON value of [contextLevel].
@@ -6441,6 +6675,7 @@ private constructor(
                     private var object_: JsonValue =
                         JsonValue.from("organization.usage.web_searches.result")
                     private var apiKeyId: JsonField<String> = JsonMissing.of()
+                    private var apiSource: JsonField<ApiSource> = JsonMissing.of()
                     private var contextLevel: JsonField<String> = JsonMissing.of()
                     private var model: JsonField<String> = JsonMissing.of()
                     private var projectId: JsonField<String> = JsonMissing.of()
@@ -6455,6 +6690,7 @@ private constructor(
                         numRequests = organizationUsageWebSearchesResult.numRequests
                         object_ = organizationUsageWebSearchesResult.object_
                         apiKeyId = organizationUsageWebSearchesResult.apiKeyId
+                        apiSource = organizationUsageWebSearchesResult.apiSource
                         contextLevel = organizationUsageWebSearchesResult.contextLevel
                         model = organizationUsageWebSearchesResult.model
                         projectId = organizationUsageWebSearchesResult.projectId
@@ -6523,6 +6759,29 @@ private constructor(
                      * not yet supported value.
                      */
                     fun apiKeyId(apiKeyId: JsonField<String>) = apply { this.apiKeyId = apiKeyId }
+
+                    /**
+                     * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                     * activity and `unlabeled` includes all records without published source
+                     * attribution, including historical and unknown origins. Unlabeled does not
+                     * imply direct API usage. Without source grouping, this field is null.
+                     */
+                    fun apiSource(apiSource: ApiSource?) =
+                        apiSource(JsonField.ofNullable(apiSource))
+
+                    /** Alias for calling [Builder.apiSource] with `apiSource.orElse(null)`. */
+                    fun apiSource(apiSource: Optional<ApiSource>) = apiSource(apiSource.getOrNull())
+
+                    /**
+                     * Sets [Builder.apiSource] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.apiSource] with a well-typed [ApiSource]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun apiSource(apiSource: JsonField<ApiSource>) = apply {
+                        this.apiSource = apiSource
+                    }
 
                     /**
                      * When `group_by=context_level`, this field provides the search context size of
@@ -6645,6 +6904,7 @@ private constructor(
                             checkRequired("numRequests", numRequests),
                             object_,
                             apiKeyId,
+                            apiSource,
                             contextLevel,
                             model,
                             projectId,
@@ -6678,6 +6938,7 @@ private constructor(
                         }
                     }
                     apiKeyId()
+                    apiSource().ifPresent { it.validate() }
                     contextLevel()
                     model()
                     projectId()
@@ -6708,10 +6969,162 @@ private constructor(
                             else 0
                         } +
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
+                        (apiSource.asKnown().getOrNull()?.validity() ?: 0) +
                         (if (contextLevel.asKnown().isPresent) 1 else 0) +
                         (if (model.asKnown().isPresent) 1 else 0) +
                         (if (projectId.asKnown().isPresent) 1 else 0) +
                         (if (userId.asKnown().isPresent) 1 else 0)
+
+                /**
+                 * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                 * activity and `unlabeled` includes all records without published source
+                 * attribution, including historical and unknown origins. Unlabeled does not imply
+                 * direct API usage. Without source grouping, this field is null.
+                 */
+                class ApiSource
+                @JsonCreator
+                private constructor(private val value: JsonField<String>) : Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val AGENTS_API = of("agents_api")
+
+                        @JvmField val UNLABELED = of("unlabeled")
+
+                        @JvmStatic fun of(value: String) = ApiSource(JsonField.of(value))
+                    }
+
+                    /** An enum containing [ApiSource]'s known values. */
+                    enum class Known {
+                        AGENTS_API,
+                        UNLABELED,
+                    }
+
+                    /**
+                     * An enum containing [ApiSource]'s known values, as well as an [_UNKNOWN]
+                     * member.
+                     *
+                     * An instance of [ApiSource] can contain an unknown value in a couple of cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        AGENTS_API,
+                        UNLABELED,
+                        /**
+                         * An enum member indicating that [ApiSource] was instantiated with an
+                         * unknown value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            AGENTS_API -> Value.AGENTS_API
+                            UNLABELED -> Value.UNLABELED
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            AGENTS_API -> Known.AGENTS_API
+                            UNLABELED -> Known.UNLABELED
+                            else -> throw OpenAIInvalidDataException("Unknown ApiSource: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): ApiSource = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is ApiSource && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -6723,6 +7136,7 @@ private constructor(
                         numRequests == other.numRequests &&
                         object_ == other.object_ &&
                         apiKeyId == other.apiKeyId &&
+                        apiSource == other.apiSource &&
                         contextLevel == other.contextLevel &&
                         model == other.model &&
                         projectId == other.projectId &&
@@ -6736,6 +7150,7 @@ private constructor(
                         numRequests,
                         object_,
                         apiKeyId,
+                        apiSource,
                         contextLevel,
                         model,
                         projectId,
@@ -6747,7 +7162,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationUsageWebSearchesResult{numModelRequests=$numModelRequests, numRequests=$numRequests, object_=$object_, apiKeyId=$apiKeyId, contextLevel=$contextLevel, model=$model, projectId=$projectId, userId=$userId, additionalProperties=$additionalProperties}"
+                    "OrganizationUsageWebSearchesResult{numModelRequests=$numModelRequests, numRequests=$numRequests, object_=$object_, apiKeyId=$apiKeyId, apiSource=$apiSource, contextLevel=$contextLevel, model=$model, projectId=$projectId, userId=$userId, additionalProperties=$additionalProperties}"
             }
 
             /** The aggregated costs details of the specific time bucket. */
@@ -6757,10 +7172,12 @@ private constructor(
                 private val object_: JsonValue,
                 private val amount: JsonField<Amount>,
                 private val apiKeyId: JsonField<String>,
+                private val apiSource: JsonField<ApiSource>,
                 private val lineItem: JsonField<String>,
                 private val projectId: JsonField<String>,
                 private val quantity: JsonField<Double>,
                 private val quantityUnit: JsonField<CostQuantityUnit>,
+                private val userId: JsonField<String>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
@@ -6773,6 +7190,9 @@ private constructor(
                     @JsonProperty("api_key_id")
                     @ExcludeMissing
                     apiKeyId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("api_source")
+                    @ExcludeMissing
+                    apiSource: JsonField<ApiSource> = JsonMissing.of(),
                     @JsonProperty("line_item")
                     @ExcludeMissing
                     lineItem: JsonField<String> = JsonMissing.of(),
@@ -6785,14 +7205,19 @@ private constructor(
                     @JsonProperty("quantity_unit")
                     @ExcludeMissing
                     quantityUnit: JsonField<CostQuantityUnit> = JsonMissing.of(),
+                    @JsonProperty("user_id")
+                    @ExcludeMissing
+                    userId: JsonField<String> = JsonMissing.of(),
                 ) : this(
                     object_,
                     amount,
                     apiKeyId,
+                    apiSource,
                     lineItem,
                     projectId,
                     quantity,
                     quantityUnit,
+                    userId,
                     mutableMapOf(),
                 )
 
@@ -6823,6 +7248,17 @@ private constructor(
                  *   if the server responded with an unexpected value).
                  */
                 fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                 * activity and `unlabeled` includes all records without published source
+                 * attribution, including historical and unknown origins. Unlabeled does not imply
+                 * direct API usage. Without source grouping, this field is null.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun apiSource(): Optional<ApiSource> = apiSource.getOptional("api_source")
 
                 /**
                  * When `group_by=line_item`, this field provides the line item of the grouped costs
@@ -6862,6 +7298,15 @@ private constructor(
                     quantityUnit.getOptional("quantity_unit")
 
                 /**
+                 * When `group_by=user_id`, this field provides the user ID of the grouped costs
+                 * result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun userId(): Optional<String> = userId.getOptional("user_id")
+
+                /**
                  * Returns the raw JSON value of [amount].
                  *
                  * Unlike [amount], this method doesn't throw if the JSON field has an unexpected
@@ -6878,6 +7323,16 @@ private constructor(
                 @JsonProperty("api_key_id")
                 @ExcludeMissing
                 fun _apiKeyId(): JsonField<String> = apiKeyId
+
+                /**
+                 * Returns the raw JSON value of [apiSource].
+                 *
+                 * Unlike [apiSource], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("api_source")
+                @ExcludeMissing
+                fun _apiSource(): JsonField<ApiSource> = apiSource
 
                 /**
                  * Returns the raw JSON value of [lineItem].
@@ -6919,6 +7374,14 @@ private constructor(
                 @ExcludeMissing
                 fun _quantityUnit(): JsonField<CostQuantityUnit> = quantityUnit
 
+                /**
+                 * Returns the raw JSON value of [userId].
+                 *
+                 * Unlike [userId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
+
                 @JsonAnySetter
                 private fun putAdditionalProperty(key: String, value: JsonValue) {
                     additionalProperties.put(key, value)
@@ -6946,10 +7409,12 @@ private constructor(
                     private var object_: JsonValue = JsonValue.from("organization.costs.result")
                     private var amount: JsonField<Amount> = JsonMissing.of()
                     private var apiKeyId: JsonField<String> = JsonMissing.of()
+                    private var apiSource: JsonField<ApiSource> = JsonMissing.of()
                     private var lineItem: JsonField<String> = JsonMissing.of()
                     private var projectId: JsonField<String> = JsonMissing.of()
                     private var quantity: JsonField<Double> = JsonMissing.of()
                     private var quantityUnit: JsonField<CostQuantityUnit> = JsonMissing.of()
+                    private var userId: JsonField<String> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -6957,10 +7422,12 @@ private constructor(
                         object_ = organizationCostsResult.object_
                         amount = organizationCostsResult.amount
                         apiKeyId = organizationCostsResult.apiKeyId
+                        apiSource = organizationCostsResult.apiSource
                         lineItem = organizationCostsResult.lineItem
                         projectId = organizationCostsResult.projectId
                         quantity = organizationCostsResult.quantity
                         quantityUnit = organizationCostsResult.quantityUnit
+                        userId = organizationCostsResult.userId
                         additionalProperties =
                             organizationCostsResult.additionalProperties.toMutableMap()
                     }
@@ -7008,6 +7475,29 @@ private constructor(
                      * not yet supported value.
                      */
                     fun apiKeyId(apiKeyId: JsonField<String>) = apply { this.apiKeyId = apiKeyId }
+
+                    /**
+                     * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                     * activity and `unlabeled` includes all records without published source
+                     * attribution, including historical and unknown origins. Unlabeled does not
+                     * imply direct API usage. Without source grouping, this field is null.
+                     */
+                    fun apiSource(apiSource: ApiSource?) =
+                        apiSource(JsonField.ofNullable(apiSource))
+
+                    /** Alias for calling [Builder.apiSource] with `apiSource.orElse(null)`. */
+                    fun apiSource(apiSource: Optional<ApiSource>) = apiSource(apiSource.getOrNull())
+
+                    /**
+                     * Sets [Builder.apiSource] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.apiSource] with a well-typed [ApiSource]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun apiSource(apiSource: JsonField<ApiSource>) = apply {
+                        this.apiSource = apiSource
+                    }
 
                     /**
                      * When `group_by=line_item`, this field provides the line item of the grouped
@@ -7105,6 +7595,24 @@ private constructor(
                      */
                     fun quantityUnit(value: String) = quantityUnit(CostQuantityUnit.of(value))
 
+                    /**
+                     * When `group_by=user_id`, this field provides the user ID of the grouped costs
+                     * result.
+                     */
+                    fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+                    /** Alias for calling [Builder.userId] with `userId.orElse(null)`. */
+                    fun userId(userId: Optional<String>) = userId(userId.getOrNull())
+
+                    /**
+                     * Sets [Builder.userId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.userId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun userId(userId: JsonField<String>) = apply { this.userId = userId }
+
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
                         putAllAdditionalProperties(additionalProperties)
@@ -7137,10 +7645,12 @@ private constructor(
                             object_,
                             amount,
                             apiKeyId,
+                            apiSource,
                             lineItem,
                             projectId,
                             quantity,
                             quantityUnit,
+                            userId,
                             additionalProperties.toMutableMap(),
                         )
                 }
@@ -7169,10 +7679,12 @@ private constructor(
                     }
                     amount().ifPresent { it.validate() }
                     apiKeyId()
+                    apiSource().ifPresent { it.validate() }
                     lineItem()
                     projectId()
                     quantity()
                     quantityUnit()
+                    userId()
                     validated = true
                 }
 
@@ -7197,10 +7709,12 @@ private constructor(
                     } +
                         (amount.asKnown().getOrNull()?.validity() ?: 0) +
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
+                        (apiSource.asKnown().getOrNull()?.validity() ?: 0) +
                         (if (lineItem.asKnown().isPresent) 1 else 0) +
                         (if (projectId.asKnown().isPresent) 1 else 0) +
                         (if (quantity.asKnown().isPresent) 1 else 0) +
-                        (if (quantityUnit.asKnown().isPresent) 1 else 0)
+                        (if (quantityUnit.asKnown().isPresent) 1 else 0) +
+                        (if (userId.asKnown().isPresent) 1 else 0)
 
                 /** The monetary value in its associated currency. */
                 class Amount
@@ -7407,6 +7921,157 @@ private constructor(
                         "Amount{currency=$currency, value=$value, additionalProperties=$additionalProperties}"
                 }
 
+                /**
+                 * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                 * activity and `unlabeled` includes all records without published source
+                 * attribution, including historical and unknown origins. Unlabeled does not imply
+                 * direct API usage. Without source grouping, this field is null.
+                 */
+                class ApiSource
+                @JsonCreator
+                private constructor(private val value: JsonField<String>) : Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val AGENTS_API = of("agents_api")
+
+                        @JvmField val UNLABELED = of("unlabeled")
+
+                        @JvmStatic fun of(value: String) = ApiSource(JsonField.of(value))
+                    }
+
+                    /** An enum containing [ApiSource]'s known values. */
+                    enum class Known {
+                        AGENTS_API,
+                        UNLABELED,
+                    }
+
+                    /**
+                     * An enum containing [ApiSource]'s known values, as well as an [_UNKNOWN]
+                     * member.
+                     *
+                     * An instance of [ApiSource] can contain an unknown value in a couple of cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        AGENTS_API,
+                        UNLABELED,
+                        /**
+                         * An enum member indicating that [ApiSource] was instantiated with an
+                         * unknown value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            AGENTS_API -> Value.AGENTS_API
+                            UNLABELED -> Value.UNLABELED
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            AGENTS_API -> Known.AGENTS_API
+                            UNLABELED -> Known.UNLABELED
+                            else -> throw OpenAIInvalidDataException("Unknown ApiSource: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): ApiSource = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is ApiSource && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
+
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
@@ -7416,10 +8081,12 @@ private constructor(
                         object_ == other.object_ &&
                         amount == other.amount &&
                         apiKeyId == other.apiKeyId &&
+                        apiSource == other.apiSource &&
                         lineItem == other.lineItem &&
                         projectId == other.projectId &&
                         quantity == other.quantity &&
                         quantityUnit == other.quantityUnit &&
+                        userId == other.userId &&
                         additionalProperties == other.additionalProperties
                 }
 
@@ -7428,10 +8095,12 @@ private constructor(
                         object_,
                         amount,
                         apiKeyId,
+                        apiSource,
                         lineItem,
                         projectId,
                         quantity,
                         quantityUnit,
+                        userId,
                         additionalProperties,
                     )
                 }
@@ -7439,7 +8108,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationCostsResult{object_=$object_, amount=$amount, apiKeyId=$apiKeyId, lineItem=$lineItem, projectId=$projectId, quantity=$quantity, quantityUnit=$quantityUnit, additionalProperties=$additionalProperties}"
+                    "OrganizationCostsResult{object_=$object_, amount=$amount, apiKeyId=$apiKeyId, apiSource=$apiSource, lineItem=$lineItem, projectId=$projectId, quantity=$quantity, quantityUnit=$quantityUnit, userId=$userId, additionalProperties=$additionalProperties}"
             }
         }
 

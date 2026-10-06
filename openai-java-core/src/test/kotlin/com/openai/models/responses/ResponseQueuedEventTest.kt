@@ -38,6 +38,7 @@ internal class ResponseQueuedEventTest {
                                             ResponseError.Misalignment.ErrorType
                                                 .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                         )
+                                        .reviewTarget("review_target")
                                         .steer(
                                             ResponseError.Misalignment.Steer.builder()
                                                 .message("message")
@@ -278,6 +279,7 @@ internal class ResponseQueuedEventTest {
                                         ResponseError.Misalignment.ErrorType
                                             .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                     )
+                                    .reviewTarget("review_target")
                                     .steer(
                                         ResponseError.Misalignment.Steer.builder()
                                             .message("message")
@@ -518,6 +520,7 @@ internal class ResponseQueuedEventTest {
                                             ResponseError.Misalignment.ErrorType
                                                 .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                         )
+                                        .reviewTarget("review_target")
                                         .steer(
                                             ResponseError.Misalignment.Steer.builder()
                                                 .message("message")
