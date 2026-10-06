@@ -260,7 +260,7 @@ private constructor(
          *     .build()
          * ```
          */
-        fun toolSearchOutputItem(tools: List<ResponseToolSearchOutputItemParam.Tool>) =
+        fun toolSearchOutputItem(tools: List<Tool>) =
             item(ResponseToolSearchOutputItemParam.builder().tools(tools).build())
 
         /** Alias for calling [item] with `ResponseInputItem.ofAdditionalTools(additionalTools)`. */

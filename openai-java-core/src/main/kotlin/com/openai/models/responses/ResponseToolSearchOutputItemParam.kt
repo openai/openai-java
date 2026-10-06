@@ -26,6 +26,7 @@ import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.responses.Tool as ResponseTool
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -34,7 +35,7 @@ import kotlin.jvm.optionals.getOrNull
 class ResponseToolSearchOutputItemParam
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
-    private val tools: JsonField<List<Tool>>,
+    private val tools: JsonField<List<ResponseTool>>,
     private val type: JsonValue,
     private val id: JsonField<String>,
     private val callId: JsonField<String>,
@@ -45,7 +46,9 @@ private constructor(
 
     @JsonCreator
     private constructor(
-        @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Tool>> = JsonMissing.of(),
+        @JsonProperty("tools")
+        @ExcludeMissing
+        tools: JsonField<List<ResponseTool>> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
@@ -61,7 +64,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun tools(): List<Tool> = tools.getRequired("tools")
+    fun tools(): List<ResponseTool> = tools.getRequired("tools")
 
     /**
      * The item type. Always `tool_search_output`.
@@ -113,7 +116,7 @@ private constructor(
      *
      * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
+    @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<ResponseTool>> = tools
 
     /**
      * Returns the raw JSON value of [id].
@@ -172,7 +175,7 @@ private constructor(
     /** A builder for [ResponseToolSearchOutputItemParam]. */
     class Builder internal constructor() {
 
-        private var tools: JsonField<MutableList<Tool>>? = null
+        private var tools: JsonField<MutableList<ResponseTool>>? = null
         private var type: JsonValue = JsonValue.from("tool_search_output")
         private var id: JsonField<String> = JsonMissing.of()
         private var callId: JsonField<String> = JsonMissing.of()
@@ -194,34 +197,34 @@ private constructor(
             }
 
         /** The loaded tool definitions returned by the tool search output. */
-        fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
+        fun tools(tools: List<ResponseTool>) = tools(JsonField.of(tools))
 
         /**
          * Sets [Builder.tools] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.tools] with a well-typed `List<ResponseTool>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun tools(tools: JsonField<List<Tool>>) = apply {
+        fun tools(tools: JsonField<List<ResponseTool>>) = apply {
             this.tools = tools.map { it.toMutableList() }
         }
 
         /**
-         * Adds a single [Tool] to [tools].
+         * Adds a single [ResponseTool] to [tools].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addTool(tool: Tool) = apply {
+        fun addTool(tool: ResponseTool) = apply {
             tools =
                 (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
         }
 
-        /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
-        fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
+        /** Alias for calling [addTool] with `ResponseTool.ofFunction(function)`. */
+        fun addTool(function: FunctionTool) = addTool(ResponseTool.ofFunction(function))
 
-        /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
-        fun addTool(fileSearch: FileSearchTool) = addTool(Tool.ofFileSearch(fileSearch))
+        /** Alias for calling [addTool] with `ResponseTool.ofFileSearch(fileSearch)`. */
+        fun addTool(fileSearch: FileSearchTool) = addTool(ResponseTool.ofFileSearch(fileSearch))
 
         /**
          * Alias for calling [addTool] with the following:
@@ -234,78 +237,82 @@ private constructor(
         fun addFileSearchTool(vectorStoreIds: List<String>) =
             addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
 
-        /** Alias for calling [addTool] with `Tool.ofComputer(computer)`. */
-        fun addTool(computer: ComputerTool) = addTool(Tool.ofComputer(computer))
+        /** Alias for calling [addTool] with `ResponseTool.ofComputer(computer)`. */
+        fun addTool(computer: ComputerTool) = addTool(ResponseTool.ofComputer(computer))
 
-        /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
+        /**
+         * Alias for calling [addTool] with `ResponseTool.ofComputerUsePreview(computerUsePreview)`.
+         */
         fun addTool(computerUsePreview: ComputerUsePreviewTool) =
-            addTool(Tool.ofComputerUsePreview(computerUsePreview))
+            addTool(ResponseTool.ofComputerUsePreview(computerUsePreview))
 
-        /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
-        fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
+        /** Alias for calling [addTool] with `ResponseTool.ofWebSearch(webSearch)`. */
+        fun addTool(webSearch: WebSearchTool) = addTool(ResponseTool.ofWebSearch(webSearch))
 
-        /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
-        fun addTool(mcp: Tool.Mcp) = addTool(Tool.ofMcp(mcp))
+        /** Alias for calling [addTool] with `ResponseTool.ofMcp(mcp)`. */
+        fun addTool(mcp: ResponseTool.Mcp) = addTool(ResponseTool.ofMcp(mcp))
 
         /**
          * Alias for calling [addTool] with the following:
          * ```java
-         * Tool.Mcp.builder()
+         * ResponseTool.Mcp.builder()
          *     .serverLabel(serverLabel)
          *     .build()
          * ```
          */
         fun addMcpTool(serverLabel: String) =
-            addTool(Tool.Mcp.builder().serverLabel(serverLabel).build())
+            addTool(ResponseTool.Mcp.builder().serverLabel(serverLabel).build())
 
-        /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
-        fun addTool(codeInterpreter: Tool.CodeInterpreter) =
-            addTool(Tool.ofCodeInterpreter(codeInterpreter))
+        /** Alias for calling [addTool] with `ResponseTool.ofCodeInterpreter(codeInterpreter)`. */
+        fun addTool(codeInterpreter: ResponseTool.CodeInterpreter) =
+            addTool(ResponseTool.ofCodeInterpreter(codeInterpreter))
 
         /**
          * Alias for calling [addTool] with the following:
          * ```java
-         * Tool.CodeInterpreter.builder()
+         * ResponseTool.CodeInterpreter.builder()
          *     .container(container)
          *     .build()
          * ```
          */
-        fun addCodeInterpreterTool(container: Tool.CodeInterpreter.Container) =
-            addTool(Tool.CodeInterpreter.builder().container(container).build())
+        fun addCodeInterpreterTool(container: ResponseTool.CodeInterpreter.Container) =
+            addTool(ResponseTool.CodeInterpreter.builder().container(container).build())
 
         /**
          * Alias for calling [addCodeInterpreterTool] with
-         * `Tool.CodeInterpreter.Container.ofString(string)`.
+         * `ResponseTool.CodeInterpreter.Container.ofString(string)`.
          */
         fun addCodeInterpreterTool(string: String) =
-            addCodeInterpreterTool(Tool.CodeInterpreter.Container.ofString(string))
+            addCodeInterpreterTool(ResponseTool.CodeInterpreter.Container.ofString(string))
 
         /**
          * Alias for calling [addCodeInterpreterTool] with
-         * `Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)`.
+         * `ResponseTool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)`.
          */
         fun addCodeInterpreterTool(
-            codeInterpreterToolAuto: Tool.CodeInterpreter.Container.CodeInterpreterToolAuto
+            codeInterpreterToolAuto: ResponseTool.CodeInterpreter.Container.CodeInterpreterToolAuto
         ) =
             addCodeInterpreterTool(
-                Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)
+                ResponseTool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(
+                    codeInterpreterToolAuto
+                )
             )
 
-        /** Alias for calling [addTool] with `Tool.ofProgrammaticToolCalling()`. */
-        fun addToolProgrammaticToolCalling() = addTool(Tool.ofProgrammaticToolCalling())
+        /** Alias for calling [addTool] with `ResponseTool.ofProgrammaticToolCalling()`. */
+        fun addToolProgrammaticToolCalling() = addTool(ResponseTool.ofProgrammaticToolCalling())
 
-        /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
-        fun addTool(imageGeneration: Tool.ImageGeneration) =
-            addTool(Tool.ofImageGeneration(imageGeneration))
+        /** Alias for calling [addTool] with `ResponseTool.ofImageGeneration(imageGeneration)`. */
+        fun addTool(imageGeneration: ResponseTool.ImageGeneration) =
+            addTool(ResponseTool.ofImageGeneration(imageGeneration))
 
-        /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
-        fun addToolLocalShell() = addTool(Tool.ofLocalShell())
+        /** Alias for calling [addTool] with `ResponseTool.ofLocalShell()`. */
+        fun addToolLocalShell() = addTool(ResponseTool.ofLocalShell())
 
-        /** Alias for calling [addTool] with `Tool.ofShell(shell)`. */
-        fun addTool(shell: FunctionShellTool) = addTool(Tool.ofShell(shell))
+        /** Alias for calling [addTool] with `ResponseTool.ofShell(shell)`. */
+        fun addTool(shell: FunctionShellTool) = addTool(ResponseTool.ofShell(shell))
 
-        /** Alias for calling [addTool] with `Tool.ofCustom(custom)`. */
-        fun addTool(custom: CustomTool) = addTool(Tool.ofCustom(custom))
+        /** Alias for calling [addTool] with `ResponseTool.ofCustom(custom)`. */
+        fun addTool(custom: CustomTool) = addTool(ResponseTool.ofCustom(custom))
 
         /**
          * Alias for calling [addTool] with the following:
@@ -317,18 +324,18 @@ private constructor(
          */
         fun addCustomTool(name: String) = addTool(CustomTool.builder().name(name).build())
 
-        /** Alias for calling [addTool] with `Tool.ofNamespace(namespace)`. */
-        fun addTool(namespace: ToolSearchOutputNamespaceTool) = addTool(Tool.ofNamespace(namespace))
+        /** Alias for calling [addTool] with `ResponseTool.ofNamespace(namespace)`. */
+        fun addTool(namespace: NamespaceTool) = addTool(ResponseTool.ofNamespace(namespace))
 
-        /** Alias for calling [addTool] with `Tool.ofSearch(search)`. */
-        fun addTool(search: ToolSearchTool) = addTool(Tool.ofSearch(search))
+        /** Alias for calling [addTool] with `ResponseTool.ofSearch(search)`. */
+        fun addTool(search: ToolSearchTool) = addTool(ResponseTool.ofSearch(search))
 
-        /** Alias for calling [addTool] with `Tool.ofWebSearchPreview(webSearchPreview)`. */
+        /** Alias for calling [addTool] with `ResponseTool.ofWebSearchPreview(webSearchPreview)`. */
         fun addTool(webSearchPreview: WebSearchPreviewTool) =
-            addTool(Tool.ofWebSearchPreview(webSearchPreview))
+            addTool(ResponseTool.ofWebSearchPreview(webSearchPreview))
 
-        /** Alias for calling [addTool] with `Tool.ofApplyPatch(applyPatch)`. */
-        fun addTool(applyPatch: ApplyPatchTool) = addTool(Tool.ofApplyPatch(applyPatch))
+        /** Alias for calling [addTool] with `ResponseTool.ofApplyPatch(applyPatch)`. */
+        fun addTool(applyPatch: ApplyPatchTool) = addTool(ResponseTool.ofApplyPatch(applyPatch))
 
         /**
          * Sets the field to an arbitrary JSON value.

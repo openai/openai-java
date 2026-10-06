@@ -287,7 +287,7 @@ private constructor(
          *     .build()
          * ```
          */
-        fun addToolSearchOutputItem(tools: List<ResponseToolSearchOutputItemParam.Tool>) = apply {
+        fun addToolSearchOutputItem(tools: List<Tool>) = apply {
             body.addToolSearchOutputItem(tools)
         }
 
@@ -827,7 +827,7 @@ private constructor(
              *     .build()
              * ```
              */
-            fun addToolSearchOutputItem(tools: List<ResponseToolSearchOutputItemParam.Tool>) =
+            fun addToolSearchOutputItem(tools: List<Tool>) =
                 addItem(ResponseToolSearchOutputItemParam.builder().tools(tools).build())
 
             /**

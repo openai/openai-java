@@ -47,7 +47,7 @@ internal class BetaResponseToolSearchOutputItemParamTest {
 
         assertThat(betaResponseToolSearchOutputItemParam.tools())
             .containsExactly(
-                BetaResponseToolSearchOutputItemParam.Tool.ofFunction(
+                BetaTool.ofFunction(
                     BetaFunctionTool.builder()
                         .name("name")
                         .parameters(

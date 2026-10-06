@@ -300,7 +300,7 @@ private constructor(
          *     .build()
          * ```
          */
-        fun addToolSearchOutputInput(tools: List<BetaResponseToolSearchOutputItemParam.Tool>) =
+        fun addToolSearchOutputInput(tools: List<BetaTool>) =
             addInput(BetaResponseToolSearchOutputItemParam.builder().tools(tools).build())
 
         /**

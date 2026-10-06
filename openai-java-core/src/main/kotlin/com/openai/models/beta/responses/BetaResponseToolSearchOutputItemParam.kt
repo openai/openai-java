@@ -34,7 +34,7 @@ import kotlin.jvm.optionals.getOrNull
 class BetaResponseToolSearchOutputItemParam
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
-    private val tools: JsonField<List<Tool>>,
+    private val tools: JsonField<List<BetaTool>>,
     private val type: JsonValue,
     private val id: JsonField<String>,
     private val agent: JsonField<Agent>,
@@ -46,7 +46,7 @@ private constructor(
 
     @JsonCreator
     private constructor(
-        @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Tool>> = JsonMissing.of(),
+        @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<BetaTool>> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("agent") @ExcludeMissing agent: JsonField<Agent> = JsonMissing.of(),
@@ -63,7 +63,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun tools(): List<Tool> = tools.getRequired("tools")
+    fun tools(): List<BetaTool> = tools.getRequired("tools")
 
     /**
      * The item type. Always `tool_search_output`.
@@ -123,7 +123,7 @@ private constructor(
      *
      * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
+    @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<BetaTool>> = tools
 
     /**
      * Returns the raw JSON value of [id].
@@ -189,7 +189,7 @@ private constructor(
     /** A builder for [BetaResponseToolSearchOutputItemParam]. */
     class Builder internal constructor() {
 
-        private var tools: JsonField<MutableList<Tool>>? = null
+        private var tools: JsonField<MutableList<BetaTool>>? = null
         private var type: JsonValue = JsonValue.from("tool_search_output")
         private var id: JsonField<String> = JsonMissing.of()
         private var agent: JsonField<Agent> = JsonMissing.of()
@@ -214,34 +214,34 @@ private constructor(
         }
 
         /** The loaded tool definitions returned by the tool search output. */
-        fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
+        fun tools(tools: List<BetaTool>) = tools(JsonField.of(tools))
 
         /**
          * Sets [Builder.tools] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
+         * You should usually call [Builder.tools] with a well-typed `List<BetaTool>` value instead.
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
-        fun tools(tools: JsonField<List<Tool>>) = apply {
+        fun tools(tools: JsonField<List<BetaTool>>) = apply {
             this.tools = tools.map { it.toMutableList() }
         }
 
         /**
-         * Adds a single [Tool] to [tools].
+         * Adds a single [BetaTool] to [tools].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addTool(tool: Tool) = apply {
+        fun addTool(tool: BetaTool) = apply {
             tools =
                 (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
         }
 
-        /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
-        fun addTool(function: BetaFunctionTool) = addTool(Tool.ofFunction(function))
+        /** Alias for calling [addTool] with `BetaTool.ofFunction(function)`. */
+        fun addTool(function: BetaFunctionTool) = addTool(BetaTool.ofFunction(function))
 
-        /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
-        fun addTool(fileSearch: BetaFileSearchTool) = addTool(Tool.ofFileSearch(fileSearch))
+        /** Alias for calling [addTool] with `BetaTool.ofFileSearch(fileSearch)`. */
+        fun addTool(fileSearch: BetaFileSearchTool) = addTool(BetaTool.ofFileSearch(fileSearch))
 
         /**
          * Alias for calling [addTool] with the following:
@@ -254,78 +254,80 @@ private constructor(
         fun addFileSearchTool(vectorStoreIds: List<String>) =
             addTool(BetaFileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
 
-        /** Alias for calling [addTool] with `Tool.ofComputer(computer)`. */
-        fun addTool(computer: BetaComputerTool) = addTool(Tool.ofComputer(computer))
+        /** Alias for calling [addTool] with `BetaTool.ofComputer(computer)`. */
+        fun addTool(computer: BetaComputerTool) = addTool(BetaTool.ofComputer(computer))
 
-        /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
+        /** Alias for calling [addTool] with `BetaTool.ofComputerUsePreview(computerUsePreview)`. */
         fun addTool(computerUsePreview: BetaComputerUsePreviewTool) =
-            addTool(Tool.ofComputerUsePreview(computerUsePreview))
+            addTool(BetaTool.ofComputerUsePreview(computerUsePreview))
 
-        /** Alias for calling [addTool] with `Tool.ofBetaWebSearch(betaWebSearch)`. */
-        fun addTool(betaWebSearch: BetaWebSearchTool) = addTool(Tool.ofBetaWebSearch(betaWebSearch))
+        /** Alias for calling [addTool] with `BetaTool.ofWebSearch(webSearch)`. */
+        fun addTool(webSearch: BetaWebSearchTool) = addTool(BetaTool.ofWebSearch(webSearch))
 
-        /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
-        fun addTool(mcp: Tool.Mcp) = addTool(Tool.ofMcp(mcp))
+        /** Alias for calling [addTool] with `BetaTool.ofMcp(mcp)`. */
+        fun addTool(mcp: BetaTool.Mcp) = addTool(BetaTool.ofMcp(mcp))
 
         /**
          * Alias for calling [addTool] with the following:
          * ```java
-         * Tool.Mcp.builder()
+         * BetaTool.Mcp.builder()
          *     .serverLabel(serverLabel)
          *     .build()
          * ```
          */
         fun addMcpTool(serverLabel: String) =
-            addTool(Tool.Mcp.builder().serverLabel(serverLabel).build())
+            addTool(BetaTool.Mcp.builder().serverLabel(serverLabel).build())
 
-        /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
-        fun addTool(codeInterpreter: Tool.CodeInterpreter) =
-            addTool(Tool.ofCodeInterpreter(codeInterpreter))
+        /** Alias for calling [addTool] with `BetaTool.ofCodeInterpreter(codeInterpreter)`. */
+        fun addTool(codeInterpreter: BetaTool.CodeInterpreter) =
+            addTool(BetaTool.ofCodeInterpreter(codeInterpreter))
 
         /**
          * Alias for calling [addTool] with the following:
          * ```java
-         * Tool.CodeInterpreter.builder()
+         * BetaTool.CodeInterpreter.builder()
          *     .container(container)
          *     .build()
          * ```
          */
-        fun addCodeInterpreterTool(container: Tool.CodeInterpreter.Container) =
-            addTool(Tool.CodeInterpreter.builder().container(container).build())
+        fun addCodeInterpreterTool(container: BetaTool.CodeInterpreter.Container) =
+            addTool(BetaTool.CodeInterpreter.builder().container(container).build())
 
         /**
          * Alias for calling [addCodeInterpreterTool] with
-         * `Tool.CodeInterpreter.Container.ofString(string)`.
+         * `BetaTool.CodeInterpreter.Container.ofString(string)`.
          */
         fun addCodeInterpreterTool(string: String) =
-            addCodeInterpreterTool(Tool.CodeInterpreter.Container.ofString(string))
+            addCodeInterpreterTool(BetaTool.CodeInterpreter.Container.ofString(string))
 
         /**
          * Alias for calling [addCodeInterpreterTool] with
-         * `Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)`.
+         * `BetaTool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)`.
          */
         fun addCodeInterpreterTool(
-            codeInterpreterToolAuto: Tool.CodeInterpreter.Container.CodeInterpreterToolAuto
+            codeInterpreterToolAuto: BetaTool.CodeInterpreter.Container.CodeInterpreterToolAuto
         ) =
             addCodeInterpreterTool(
-                Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)
+                BetaTool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(
+                    codeInterpreterToolAuto
+                )
             )
 
-        /** Alias for calling [addTool] with `Tool.ofProgrammaticToolCalling()`. */
-        fun addToolProgrammaticToolCalling() = addTool(Tool.ofProgrammaticToolCalling())
+        /** Alias for calling [addTool] with `BetaTool.ofProgrammaticToolCalling()`. */
+        fun addToolProgrammaticToolCalling() = addTool(BetaTool.ofProgrammaticToolCalling())
 
-        /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
-        fun addTool(imageGeneration: Tool.ImageGeneration) =
-            addTool(Tool.ofImageGeneration(imageGeneration))
+        /** Alias for calling [addTool] with `BetaTool.ofImageGeneration(imageGeneration)`. */
+        fun addTool(imageGeneration: BetaTool.ImageGeneration) =
+            addTool(BetaTool.ofImageGeneration(imageGeneration))
 
-        /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
-        fun addToolLocalShell() = addTool(Tool.ofLocalShell())
+        /** Alias for calling [addTool] with `BetaTool.ofLocalShell()`. */
+        fun addToolLocalShell() = addTool(BetaTool.ofLocalShell())
 
-        /** Alias for calling [addTool] with `Tool.ofShell(shell)`. */
-        fun addTool(shell: BetaFunctionShellTool) = addTool(Tool.ofShell(shell))
+        /** Alias for calling [addTool] with `BetaTool.ofShell(shell)`. */
+        fun addTool(shell: BetaFunctionShellTool) = addTool(BetaTool.ofShell(shell))
 
-        /** Alias for calling [addTool] with `Tool.ofCustom(custom)`. */
-        fun addTool(custom: BetaCustomTool) = addTool(Tool.ofCustom(custom))
+        /** Alias for calling [addTool] with `BetaTool.ofCustom(custom)`. */
+        fun addTool(custom: BetaCustomTool) = addTool(BetaTool.ofCustom(custom))
 
         /**
          * Alias for calling [addTool] with the following:
@@ -337,19 +339,18 @@ private constructor(
          */
         fun addCustomTool(name: String) = addTool(BetaCustomTool.builder().name(name).build())
 
-        /** Alias for calling [addTool] with `Tool.ofNamespace(namespace)`. */
-        fun addTool(namespace: BetaToolSearchOutputNamespaceTool) =
-            addTool(Tool.ofNamespace(namespace))
+        /** Alias for calling [addTool] with `BetaTool.ofNamespace(namespace)`. */
+        fun addTool(namespace: BetaNamespaceTool) = addTool(BetaTool.ofNamespace(namespace))
 
-        /** Alias for calling [addTool] with `Tool.ofSearch(search)`. */
-        fun addTool(search: BetaToolSearchTool) = addTool(Tool.ofSearch(search))
+        /** Alias for calling [addTool] with `BetaTool.ofToolSearch(toolSearch)`. */
+        fun addTool(toolSearch: BetaToolSearchTool) = addTool(BetaTool.ofToolSearch(toolSearch))
 
-        /** Alias for calling [addTool] with `Tool.ofBetaWebSearchPreview(betaWebSearchPreview)`. */
-        fun addTool(betaWebSearchPreview: BetaWebSearchPreviewTool) =
-            addTool(Tool.ofBetaWebSearchPreview(betaWebSearchPreview))
+        /** Alias for calling [addTool] with `BetaTool.ofWebSearchPreview(webSearchPreview)`. */
+        fun addTool(webSearchPreview: BetaWebSearchPreviewTool) =
+            addTool(BetaTool.ofWebSearchPreview(webSearchPreview))
 
-        /** Alias for calling [addTool] with `Tool.ofApplyPatch(applyPatch)`. */
-        fun addTool(applyPatch: BetaApplyPatchTool) = addTool(Tool.ofApplyPatch(applyPatch))
+        /** Alias for calling [addTool] with `BetaTool.ofApplyPatch(applyPatch)`. */
+        fun addTool(applyPatch: BetaApplyPatchTool) = addTool(BetaTool.ofApplyPatch(applyPatch))
 
         /**
          * Sets the field to an arbitrary JSON value.
