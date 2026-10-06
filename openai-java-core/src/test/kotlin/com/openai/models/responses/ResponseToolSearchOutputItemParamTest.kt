@@ -42,7 +42,7 @@ internal class ResponseToolSearchOutputItemParamTest {
 
         assertThat(responseToolSearchOutputItemParam.tools())
             .containsExactly(
-                Tool.ofFunction(
+                ResponseToolSearchOutputItemParam.Tool.ofFunction(
                     FunctionTool.builder()
                         .name("name")
                         .parameters(

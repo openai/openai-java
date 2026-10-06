@@ -12,6 +12,7 @@ import com.openai.services.async.CompletionServiceAsync
 import com.openai.services.async.ContainerServiceAsync
 import com.openai.services.async.ContentProvenanceCheckServiceAsync
 import com.openai.services.async.ConversationServiceAsync
+import com.openai.services.async.DecisionServiceAsync
 import com.openai.services.async.EmbeddingServiceAsync
 import com.openai.services.async.EvalServiceAsync
 import com.openai.services.async.FileServiceAsync
@@ -67,6 +68,8 @@ interface OpenAIClientAsync {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClientAsync
+
+    fun decisions(): DecisionServiceAsync
 
     /**
      * Given a prompt, the model will return one or more predicted completions, and can also return
@@ -164,6 +167,8 @@ interface OpenAIClientAsync {
         fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): OpenAIClientAsync.WithRawResponse
+
+        fun decisions(): DecisionServiceAsync.WithRawResponse
 
         /**
          * Given a prompt, the model will return one or more predicted completions, and can also
