@@ -83,7 +83,7 @@ private constructor(
 
     /**
      * Network access available after setup completes. Omit to preserve the current policy, or pass
-     * `null` to reset to disabled for GA requests or enabled for beta requests.
+     * `null` to reset to the default policy.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -356,7 +356,7 @@ private constructor(
 
         /**
          * Network access available after setup completes. Omit to preserve the current policy, or
-         * pass `null` to reset to disabled for GA requests or enabled for beta requests.
+         * pass `null` to reset to the default policy.
          */
         fun network(network: Network?) = apply { body.network(network) }
 
@@ -720,7 +720,7 @@ private constructor(
 
         /**
          * Network access available after setup completes. Omit to preserve the current policy, or
-         * pass `null` to reset to disabled for GA requests or enabled for beta requests.
+         * pass `null` to reset to the default policy.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1008,7 +1008,7 @@ private constructor(
 
             /**
              * Network access available after setup completes. Omit to preserve the current policy,
-             * or pass `null` to reset to disabled for GA requests or enabled for beta requests.
+             * or pass `null` to reset to the default policy.
              */
             fun network(network: Network?) = network(JsonField.ofNullable(network))
 
@@ -1492,6 +1492,11 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /** Adds a string-valued property. */
+            fun putProperty(key: String, value: String) = apply {
+                putAdditionalProperty(key, JsonValue.from(value))
+            }
+
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
             }
@@ -1564,7 +1569,7 @@ private constructor(
 
     /**
      * Network access available after setup completes. Omit to preserve the current policy, or pass
-     * `null` to reset to disabled for GA requests or enabled for beta requests.
+     * `null` to reset to the default policy.
      */
     class Network
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)

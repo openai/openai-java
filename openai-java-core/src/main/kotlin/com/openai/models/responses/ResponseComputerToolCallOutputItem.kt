@@ -49,7 +49,7 @@ private constructor(
     ) : this(id, callId, output, status, type, acknowledgedSafetyChecks, createdBy, mutableMapOf())
 
     /**
-     * The unique ID of the computer call tool output.
+     * The ID of the computer tool call output.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -218,7 +218,7 @@ private constructor(
                     responseComputerToolCallOutputItem.additionalProperties.toMutableMap()
             }
 
-        /** The unique ID of the computer call tool output. */
+        /** The ID of the computer tool call output. */
         fun id(id: String) = id(JsonField.of(id))
 
         /**

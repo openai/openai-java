@@ -22,6 +22,8 @@ import com.openai.models.beta.agents.sessions.turns.TurnListPageAsync
 import com.openai.models.beta.agents.sessions.turns.TurnListPageResponse
 import com.openai.models.beta.agents.sessions.turns.TurnListParams
 import com.openai.models.beta.agents.sessions.turns.TurnRetrieveParams
+import com.openai.services.async.beta.agents.sessions.turns.ItemServiceAsync
+import com.openai.services.async.beta.agents.sessions.turns.ItemServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -38,10 +40,14 @@ class TurnServiceAsyncImpl internal constructor(private val clientOptions: Clien
         WithRawResponseImpl(clientOptions)
     }
 
+    private val items: ItemServiceAsync by lazy { ItemServiceAsyncImpl(clientOptions) }
+
     override fun withRawResponse(): TurnServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurnServiceAsync =
         TurnServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun items(): ItemServiceAsync = items
 
     override fun retrieve(
         params: TurnRetrieveParams,
@@ -63,12 +69,18 @@ class TurnServiceAsyncImpl internal constructor(private val clientOptions: Clien
         private val errorHandler: Handler<HttpResponse> =
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
+        private val items: ItemServiceAsync.WithRawResponse by lazy {
+            ItemServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): TurnServiceAsync.WithRawResponse =
             TurnServiceAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun items(): ItemServiceAsync.WithRawResponse = items
 
         private val retrieveHandler: Handler<Turn> = jsonHandler<Turn>(clientOptions.jsonMapper)
 

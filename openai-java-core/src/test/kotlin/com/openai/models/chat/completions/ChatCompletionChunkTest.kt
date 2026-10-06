@@ -20,6 +20,14 @@ internal class ChatCompletionChunkTest {
                     ChatCompletionChunk.Choice.builder()
                         .delta(
                             ChatCompletionChunk.Choice.Delta.builder()
+                                .audio(
+                                    ChatCompletionChunk.Choice.Delta.Audio.builder()
+                                        .id("id")
+                                        .data("data")
+                                        .expiresAt(0L)
+                                        .transcript("transcript")
+                                        .build()
+                                )
                                 .content("content")
                                 .functionCall(
                                     ChatCompletionChunk.Choice.Delta.FunctionCall.builder()
@@ -47,8 +55,8 @@ internal class ChatCompletionChunkTest {
                                 )
                                 .build()
                         )
-                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                         .index(0L)
+                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                         .logprobs(
                             ChatCompletionChunk.Choice.Logprobs.builder()
                                 .addContent(
@@ -203,6 +211,14 @@ internal class ChatCompletionChunkTest {
                 ChatCompletionChunk.Choice.builder()
                     .delta(
                         ChatCompletionChunk.Choice.Delta.builder()
+                            .audio(
+                                ChatCompletionChunk.Choice.Delta.Audio.builder()
+                                    .id("id")
+                                    .data("data")
+                                    .expiresAt(0L)
+                                    .transcript("transcript")
+                                    .build()
+                            )
                             .content("content")
                             .functionCall(
                                 ChatCompletionChunk.Choice.Delta.FunctionCall.builder()
@@ -227,8 +243,8 @@ internal class ChatCompletionChunkTest {
                             )
                             .build()
                     )
-                    .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                     .index(0L)
+                    .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                     .logprobs(
                         ChatCompletionChunk.Choice.Logprobs.builder()
                             .addContent(
@@ -389,6 +405,14 @@ internal class ChatCompletionChunkTest {
                     ChatCompletionChunk.Choice.builder()
                         .delta(
                             ChatCompletionChunk.Choice.Delta.builder()
+                                .audio(
+                                    ChatCompletionChunk.Choice.Delta.Audio.builder()
+                                        .id("id")
+                                        .data("data")
+                                        .expiresAt(0L)
+                                        .transcript("transcript")
+                                        .build()
+                                )
                                 .content("content")
                                 .functionCall(
                                     ChatCompletionChunk.Choice.Delta.FunctionCall.builder()
@@ -416,8 +440,8 @@ internal class ChatCompletionChunkTest {
                                 )
                                 .build()
                         )
-                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                         .index(0L)
+                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                         .logprobs(
                             ChatCompletionChunk.Choice.Logprobs.builder()
                                 .addContent(

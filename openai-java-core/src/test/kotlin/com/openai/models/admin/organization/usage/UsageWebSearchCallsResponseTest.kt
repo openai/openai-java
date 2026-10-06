@@ -24,6 +24,12 @@ internal class UsageWebSearchCallsResponseTest {
                                 .numModelRequests(0L)
                                 .outputTokens(0L)
                                 .apiKeyId("api_key_id")
+                                .apiSource(
+                                    UsageWebSearchCallsResponse.Data.Result
+                                        .OrganizationUsageCompletionsResult
+                                        .ApiSource
+                                        .AGENTS_API
+                                )
                                 .batch(true)
                                 .inputAudioTokens(0L)
                                 .inputCacheWrite12hTokens(0L)
@@ -62,6 +68,12 @@ internal class UsageWebSearchCallsResponseTest {
                             .numModelRequests(0L)
                             .outputTokens(0L)
                             .apiKeyId("api_key_id")
+                            .apiSource(
+                                UsageWebSearchCallsResponse.Data.Result
+                                    .OrganizationUsageCompletionsResult
+                                    .ApiSource
+                                    .AGENTS_API
+                            )
                             .batch(true)
                             .inputAudioTokens(0L)
                             .inputCacheWrite12hTokens(0L)
@@ -105,6 +117,12 @@ internal class UsageWebSearchCallsResponseTest {
                                 .numModelRequests(0L)
                                 .outputTokens(0L)
                                 .apiKeyId("api_key_id")
+                                .apiSource(
+                                    UsageWebSearchCallsResponse.Data.Result
+                                        .OrganizationUsageCompletionsResult
+                                        .ApiSource
+                                        .AGENTS_API
+                                )
                                 .batch(true)
                                 .inputAudioTokens(0L)
                                 .inputCacheWrite12hTokens(0L)

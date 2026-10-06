@@ -416,8 +416,8 @@ private constructor(
         fun files(): Optional<List<HostedEnvironmentFileParam>> = files.getOptional("files")
 
         /**
-         * Network access policy for the environment. Defaults to disabled for GA requests and
-         * enabled for beta requests.
+         * Network access policy for the environment. If omitted, the API version determines whether
+         * network access is enabled or disabled.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -760,8 +760,8 @@ private constructor(
                 addFile(HostedEnvironmentFileParam.ofInline(inline))
 
             /**
-             * Network access policy for the environment. Defaults to disabled for GA requests and
-             * enabled for beta requests.
+             * Network access policy for the environment. If omitted, the API version determines
+             * whether network access is enabled or disabled.
              */
             fun network(network: Network?) = network(JsonField.ofNullable(network))
 
@@ -1375,6 +1375,11 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /** Adds a string-valued property. */
+                fun putProperty(key: String, value: String) = apply {
+                    putAdditionalProperty(key, JsonValue.from(value))
+                }
+
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
@@ -1450,8 +1455,8 @@ private constructor(
         }
 
         /**
-         * Network access policy for the environment. Defaults to disabled for GA requests and
-         * enabled for beta requests.
+         * Network access policy for the environment. If omitted, the API version determines whether
+         * network access is enabled or disabled.
          */
         class Network
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)

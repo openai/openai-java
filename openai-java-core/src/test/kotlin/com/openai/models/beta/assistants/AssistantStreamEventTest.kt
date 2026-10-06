@@ -3577,6 +3577,7 @@ internal class AssistantStreamEventTest {
                                     ErrorObject.Misalignment.ErrorType
                                         .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                 )
+                                .reviewTarget("review_target")
                                 .steer(
                                     ErrorObject.Misalignment.Steer.builder()
                                         .message("message")
@@ -3635,6 +3636,7 @@ internal class AssistantStreamEventTest {
                                         ErrorObject.Misalignment.ErrorType
                                             .POTENTIALLY_UNINTENDED_DATA_TRANSFER
                                     )
+                                    .reviewTarget("review_target")
                                     .steer(
                                         ErrorObject.Misalignment.Steer.builder()
                                             .message("message")

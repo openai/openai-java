@@ -225,6 +225,17 @@ private constructor(
             /** The organization has reached a usage, plan, or billing limit. */
             @JvmField val USAGE_LIMIT_EXCEEDED = of("usage_limit_exceeded")
 
+            /** The project has reached its enforced spend limit. */
+            @JvmField val PROJECT_SPEND_LIMIT_EXCEEDED = of("project_spend_limit_exceeded")
+
+            /** The organization has reached its enforced spend limit. */
+            @JvmField
+            val ORGANIZATION_SPEND_LIMIT_EXCEEDED = of("organization_spend_limit_exceeded")
+
+            /** The organization has reached its OpenAI-assigned usage limit. */
+            @JvmField
+            val ORGANIZATION_USAGE_LIMIT_EXCEEDED = of("organization_usage_limit_exceeded")
+
             /** The organization has no API credits remaining. */
             @JvmField val CREDIT_BALANCE_EXHAUSTED = of("credit_balance_exhausted")
 
@@ -284,6 +295,12 @@ private constructor(
             SESSION_BUDGET_EXCEEDED,
             /** The organization has reached a usage, plan, or billing limit. */
             USAGE_LIMIT_EXCEEDED,
+            /** The project has reached its enforced spend limit. */
+            PROJECT_SPEND_LIMIT_EXCEEDED,
+            /** The organization has reached its enforced spend limit. */
+            ORGANIZATION_SPEND_LIMIT_EXCEEDED,
+            /** The organization has reached its OpenAI-assigned usage limit. */
+            ORGANIZATION_USAGE_LIMIT_EXCEEDED,
             /** The organization has no API credits remaining. */
             CREDIT_BALANCE_EXHAUSTED,
             /** The request exceeds the available rate limit. */
@@ -334,6 +351,12 @@ private constructor(
             SESSION_BUDGET_EXCEEDED,
             /** The organization has reached a usage, plan, or billing limit. */
             USAGE_LIMIT_EXCEEDED,
+            /** The project has reached its enforced spend limit. */
+            PROJECT_SPEND_LIMIT_EXCEEDED,
+            /** The organization has reached its enforced spend limit. */
+            ORGANIZATION_SPEND_LIMIT_EXCEEDED,
+            /** The organization has reached its OpenAI-assigned usage limit. */
+            ORGANIZATION_USAGE_LIMIT_EXCEEDED,
             /** The organization has no API credits remaining. */
             CREDIT_BALANCE_EXHAUSTED,
             /** The request exceeds the available rate limit. */
@@ -382,6 +405,9 @@ private constructor(
                 CONTEXT_LENGTH_EXCEEDED -> Value.CONTEXT_LENGTH_EXCEEDED
                 SESSION_BUDGET_EXCEEDED -> Value.SESSION_BUDGET_EXCEEDED
                 USAGE_LIMIT_EXCEEDED -> Value.USAGE_LIMIT_EXCEEDED
+                PROJECT_SPEND_LIMIT_EXCEEDED -> Value.PROJECT_SPEND_LIMIT_EXCEEDED
+                ORGANIZATION_SPEND_LIMIT_EXCEEDED -> Value.ORGANIZATION_SPEND_LIMIT_EXCEEDED
+                ORGANIZATION_USAGE_LIMIT_EXCEEDED -> Value.ORGANIZATION_USAGE_LIMIT_EXCEEDED
                 CREDIT_BALANCE_EXHAUSTED -> Value.CREDIT_BALANCE_EXHAUSTED
                 RATE_LIMIT_EXCEEDED -> Value.RATE_LIMIT_EXCEEDED
                 FLEX_UNAVAILABLE -> Value.FLEX_UNAVAILABLE
@@ -415,6 +441,9 @@ private constructor(
                 CONTEXT_LENGTH_EXCEEDED -> Known.CONTEXT_LENGTH_EXCEEDED
                 SESSION_BUDGET_EXCEEDED -> Known.SESSION_BUDGET_EXCEEDED
                 USAGE_LIMIT_EXCEEDED -> Known.USAGE_LIMIT_EXCEEDED
+                PROJECT_SPEND_LIMIT_EXCEEDED -> Known.PROJECT_SPEND_LIMIT_EXCEEDED
+                ORGANIZATION_SPEND_LIMIT_EXCEEDED -> Known.ORGANIZATION_SPEND_LIMIT_EXCEEDED
+                ORGANIZATION_USAGE_LIMIT_EXCEEDED -> Known.ORGANIZATION_USAGE_LIMIT_EXCEEDED
                 CREDIT_BALANCE_EXHAUSTED -> Known.CREDIT_BALANCE_EXHAUSTED
                 RATE_LIMIT_EXCEEDED -> Known.RATE_LIMIT_EXCEEDED
                 FLEX_UNAVAILABLE -> Known.FLEX_UNAVAILABLE
