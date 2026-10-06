@@ -22,6 +22,8 @@ import com.openai.services.async.ContentProvenanceCheckServiceAsync
 import com.openai.services.async.ContentProvenanceCheckServiceAsyncImpl
 import com.openai.services.async.ConversationServiceAsync
 import com.openai.services.async.ConversationServiceAsyncImpl
+import com.openai.services.async.DecisionServiceAsync
+import com.openai.services.async.DecisionServiceAsyncImpl
 import com.openai.services.async.EmbeddingServiceAsync
 import com.openai.services.async.EmbeddingServiceAsyncImpl
 import com.openai.services.async.EvalServiceAsync
@@ -73,6 +75,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     private val withRawResponse: OpenAIClientAsync.WithRawResponse by lazy {
         WithRawResponseImpl(clientOptions)
+    }
+
+    private val decisions: DecisionServiceAsync by lazy {
+        DecisionServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
     private val completions: CompletionServiceAsync by lazy {
@@ -176,6 +182,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClientAsync =
         OpenAIClientAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun decisions(): DecisionServiceAsync = decisions
+
     /**
      * Given a prompt, the model will return one or more predicted completions, and can also return
      * the probabilities of alternative tokens at each position.
@@ -253,6 +261,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         OpenAIClientAsync.WithRawResponse {
+
+        private val decisions: DecisionServiceAsync.WithRawResponse by lazy {
+            DecisionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
 
         private val completions: CompletionServiceAsync.WithRawResponse by lazy {
             CompletionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -365,6 +377,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             OpenAIClientAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun decisions(): DecisionServiceAsync.WithRawResponse = decisions
 
         /**
          * Given a prompt, the model will return one or more predicted completions, and can also
