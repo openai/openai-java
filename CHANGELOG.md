@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.77.0](https://github.com/openai/openai-java/compare/v4.76.0...v4.77.0) (2026-10-06)
+
+
+### Features
+
+* **agents:** observe local tool failures ([#1142](https://github.com/openai/openai-java/issues/1142)) ([c50d94b](https://github.com/openai/openai-java/commit/c50d94b56e76317888b7018fd51c6704c89865b5))
+* **agents:** run local tools during session creation ([#1141](https://github.com/openai/openai-java/issues/1141)) ([bffddc4](https://github.com/openai/openai-java/commit/bffddc4fbf3c3cc748d3380799442e9f0418c313))
+* **api:** add agent turn items and usage source grouping ([#1147](https://github.com/openai/openai-java/issues/1147)) ([54c5e9d](https://github.com/openai/openai-java/commit/54c5e9d4a0479b41283195f7fe1ee3ffb092e8ed))
+
 ## [4.76.0](https://github.com/openai/openai-java/compare/v4.75.1...v4.76.0) (2026-10-04)
 
 
