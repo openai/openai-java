@@ -12,6 +12,7 @@ import com.openai.services.blocking.CompletionService
 import com.openai.services.blocking.ContainerService
 import com.openai.services.blocking.ContentProvenanceCheckService
 import com.openai.services.blocking.ConversationService
+import com.openai.services.blocking.DecisionService
 import com.openai.services.blocking.EmbeddingService
 import com.openai.services.blocking.EvalService
 import com.openai.services.blocking.FileService
@@ -67,6 +68,8 @@ interface OpenAIClient {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClient
+
+    fun decisions(): DecisionService
 
     /**
      * Given a prompt, the model will return one or more predicted completions, and can also return
@@ -162,6 +165,8 @@ interface OpenAIClient {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClient.WithRawResponse
+
+        fun decisions(): DecisionService.WithRawResponse
 
         /**
          * Given a prompt, the model will return one or more predicted completions, and can also
