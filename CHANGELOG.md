@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.78.0](https://github.com/openai/openai-java/compare/v4.77.0...v4.78.0) (2026-10-06)
+
+
+### Features
+
+* **api:** add standalone Decisions support ([#1148](https://github.com/openai/openai-java/issues/1148)) ([4c3de8d](https://github.com/openai/openai-java/commit/4c3de8de48deecd36a7c2de60feeac80c7d37c1d))
+
 ## [4.77.0](https://github.com/openai/openai-java/compare/v4.76.0...v4.77.0) (2026-10-06)
 
 
