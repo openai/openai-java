@@ -1023,7 +1023,8 @@ private constructor(
         fun text(): Optional<AgentTextParam> = text.getOptional("text")
 
         /**
-         * Tools available to the agent. Omit to inherit, or pass null to clear them.
+         * Tools available to the agent. Omit to inherit, or pass null to clear them. The resolved
+         * tool list must fit within 3 MiB (3,145,728 bytes) of compact UTF-8 JSON.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1239,7 +1240,10 @@ private constructor(
              */
             fun text(text: JsonField<AgentTextParam>) = apply { this.text = text }
 
-            /** Tools available to the agent. Omit to inherit, or pass null to clear them. */
+            /**
+             * Tools available to the agent. Omit to inherit, or pass null to clear them. The
+             * resolved tool list must fit within 3 MiB (3,145,728 bytes) of compact UTF-8 JSON.
+             */
             fun tools(tools: List<AgentToolParam>?) = tools(JsonField.ofNullable(tools))
 
             /** Alias for calling [Builder.tools] with `tools.orElse(null)`. */

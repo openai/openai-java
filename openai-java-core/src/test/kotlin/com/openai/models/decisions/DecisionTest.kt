@@ -33,6 +33,7 @@ internal class DecisionTest {
                                 .build()
                         )
                         .totalTokens(-2147483648L)
+                        .computeUnits(0L)
                         .build()
                 )
                 .build()
@@ -61,6 +62,7 @@ internal class DecisionTest {
                             .build()
                     )
                     .totalTokens(-2147483648L)
+                    .computeUnits(0L)
                     .build()
             )
     }
@@ -90,6 +92,7 @@ internal class DecisionTest {
                                 .build()
                         )
                         .totalTokens(-2147483648L)
+                        .computeUnits(0L)
                         .build()
                 )
                 .build()
