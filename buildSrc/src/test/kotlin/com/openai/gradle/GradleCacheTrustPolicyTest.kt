@@ -26,6 +26,34 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
+    fun `SDK compilation cache cannot be saved by a PR or an earlier job`() {
+        val workflow = Path.of("../.github/workflows/ci.yml").readText()
+        val trustedSave =
+            "github.event_name == 'push' &&\n" +
+                "          github.ref_name == github.event.repository.default_branch &&\n" +
+                "          steps.sdk-compilation-cache.outputs.cache-hit != 'true'"
+
+        for (unsafeSave in listOf("true", "github.event_name == 'pull_request'", "always()")) {
+            val poisonedWorkflow = workflow.replace(trustedSave, unsafeSave)
+            assertTrue(poisonedWorkflow != workflow)
+            assertFailsWith<AssertionError> { assertPullRequestCachePolicy(poisonedWorkflow) }
+        }
+
+        val earlierSave =
+            workflow.replace(
+                "      - name: Run lints\n",
+                "      - name: Save incomplete compilation cache\n" +
+                    "        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25\n" +
+                    "        with:\n" +
+                    "          path: ~/.gradle/caches/build-cache-1\n" +
+                    "          key: java-sdk-compile-v1-incomplete\n\n" +
+                    "      - name: Run lints\n",
+            )
+        assertTrue(earlierSave != workflow)
+        assertFailsWith<AssertionError> { assertPullRequestCachePolicy(earlierSave) }
+    }
+
+    @Test
     fun `untrusted CI cannot move outside GitHub enforced pull request cache scope`() {
         val workflow = Path.of("../.github/workflows/ci.yml").readText()
 
@@ -872,6 +900,55 @@ class GradleCacheTrustPolicyTest {
                 "Gradle cache for job ${action.job} must remain effectively read-only on pull requests and merge groups.",
             )
         }
+
+        val compilationCacheActions =
+            parsedWorkflow.jobs.values.flatMap { job ->
+                job.steps.filter { step ->
+                    step.action?.repository == "actions/cache" ||
+                        step.action?.repository?.startsWith("actions/cache/") == true
+                }
+            }
+        assertEquals(
+            2,
+            compilationCacheActions.size,
+            "Only the SDK build owns compilation caching.",
+        )
+        val restore = compilationCacheActions[0]
+        val save = compilationCacheActions[1]
+        assertEquals("build", restore.action?.job)
+        assertEquals("build", save.action?.job)
+        assertEquals("actions/cache/restore", restore.action?.repository)
+        assertEquals("actions/cache/save", save.action?.repository)
+        for (step in compilationCacheActions) {
+            assertTrue(
+                step.action!!.reference.substringAfter('@').matches(Regex("[0-9a-fA-F]{40}"))
+            )
+            assertEquals("~/.gradle/caches/build-cache-1", step.action.inputs["path"])
+        }
+        assertEquals(
+            "java-sdk-compile-v1-\${{ runner.os }}-\${{ runner.arch }}-\${{ github.sha }}",
+            restore.action?.inputs?.get("key"),
+            "Each successful main revision must be able to refresh the compilation cache.",
+        )
+        assertEquals(
+            "java-sdk-compile-v1-\${{ runner.os }}-\${{ runner.arch }}-",
+            restore.action?.inputs?.get("restore-keys"),
+        )
+        assertEquals(
+            "\${{ steps.sdk-compilation-cache.outputs.cache-primary-key }}",
+            save.action?.inputs?.get("key"),
+        )
+        assertEquals(
+            "github.event_name == 'push' && " +
+                "github.ref_name == github.event.repository.default_branch && " +
+                "steps.sdk-compilation-cache.outputs.cache-hit != 'true'",
+            save.condition?.trim(),
+            "PRs, merge groups and workflow dispatch must never publish compilation cache entries.",
+        )
+        val buildSteps = parsedWorkflow.job("build").steps
+        val buildIndex = buildSteps.indexOfFirst { it.name == "Build SDK" }
+        assertTrue(buildSteps.indexOf(restore) < buildIndex)
+        assertTrue(buildSteps.indexOf(save) > buildIndex)
     }
 
     private fun assertPublishingCachePolicy(workflow: String) {
@@ -1161,6 +1238,7 @@ class GradleCacheTrustPolicyTest {
                             action,
                             fields["run"]?.workflowScalar("step script"),
                             fields["env"].workflowScalars("step environment"),
+                            fields["if"]?.workflowScalar("step condition"),
                         )
                     } ?: emptyList()
 
@@ -1235,6 +1313,7 @@ class GradleCacheTrustPolicyTest {
         val action: WorkflowAction?,
         val run: String?,
         val environment: Map<String, String>,
+        val condition: String?,
     )
 
     private data class WorkflowAction(

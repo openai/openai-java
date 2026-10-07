@@ -113,6 +113,17 @@ jobs:
           cache-provider: basic
           cache-read-only: ${{ github.ref_name != github.event.repository.default_branch }}
 
+      # The basic Gradle cache is keyed only by build files: a faster job can save it before the
+      # SDK compiles and GitHub caches cannot be overwritten. Overlay the last successful main
+      # build's content-addressed compilation cache. Gradle still checks every task's own inputs.
+      - name: Restore SDK compilation cache
+        id: sdk-compilation-cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: ~/.gradle/caches/build-cache-1
+          key: java-sdk-compile-v1-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+          restore-keys: java-sdk-compile-v1-${{ runner.os }}-${{ runner.arch }}-
+
       - name: Build SDK
         env:
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
@@ -136,6 +147,18 @@ jobs:
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
+
+      # Only a successful default-branch push may publish compilation outputs for future runs.
+      # PRs/merge groups continue sharing only their immutable, exact-run artifact downstream.
+      - name: Save SDK compilation cache
+        if: >-
+          github.event_name == 'push' &&
+          github.ref_name == github.event.repository.default_branch &&
+          steps.sdk-compilation-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: ~/.gradle/caches/build-cache-1
+          key: ${{ steps.sdk-compilation-cache.outputs.cache-primary-key }}
 
   jackson_compatibility:
     name: CI / Jackson compatibility
