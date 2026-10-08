@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.78.1](https://github.com/openai/openai-java/compare/v4.78.0...v4.78.1) (2026-10-08)
+
+
+### Bug Fixes
+
+* **api:** correct custom voice creation parameters ([#1153](https://github.com/openai/openai-java/issues/1153)) ([43422a8](https://github.com/openai/openai-java/commit/43422a82de0ab4721ca0d3da8a59263fc107f0fe))
+* **ci:** reuse SDK compilation outputs across Java builds ([#1149](https://github.com/openai/openai-java/issues/1149)) ([a0dc1bc](https://github.com/openai/openai-java/commit/a0dc1bcfcfe0a3834bc85346e3f2e78ec2e74385))
+
 ## [4.78.0](https://github.com/openai/openai-java/compare/v4.77.0...v4.78.0) (2026-10-06)
 
 
