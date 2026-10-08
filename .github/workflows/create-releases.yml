@@ -314,17 +314,19 @@ jobs:
         run: |
           set -euo pipefail
 
-          # A retry can check out a release from before core test compilation was split.
-          # Query the verified release source, not the workflow's current main branch.
-          task_list="${RUNNER_TEMP}/openai-java-core-gradle-tasks.txt"
-          ./gradlew :openai-java-core:tasks --all --console=plain > "$task_list"
-          excluded_tasks=(-x compileJava -x compileTestJava -x compileKotlin -x compileTestKotlin)
+          # Skip the new test compilers only if this release has them. Older retries don't.
+          available_tasks="$(./gradlew :openai-java-core:tasks --all --console=plain)"
+          skip_optional_compilers=()
           for task in compileBetaModelTestKotlin compileAdminModelTestKotlin; do
-            if grep -Eq "^${task}([[:space:]]|$)" "$task_list"; then
-              excluded_tasks+=(-x ":openai-java-core:$task")
+            if grep -Eq "^${task}([[:space:]]|$)" <<< "$available_tasks"; then
+              skip_optional_compilers+=(-x ":openai-java-core:$task")
             fi
           done
-          ./gradlew :openai-java-core:test "${excluded_tasks[@]}" -PgraalvmAgent
+
+          # All classes were compiled before switching to GraalVM; only run the tracing tests.
+          ./gradlew :openai-java-core:test \
+            -x compileJava -x compileTestJava -x compileKotlin -x compileTestKotlin \
+            "${skip_optional_compilers[@]}" -PgraalvmAgent
 
       - name: Check generated GraalVM files
         run: |
