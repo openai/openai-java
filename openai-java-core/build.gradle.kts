@@ -78,6 +78,32 @@ mainClassesDirectories.setFrom(combinedClassesDirectory)
 mainClassesDirectories.builtBy(assembleCoreClasses)
 tasks.named("classes") { dependsOn(assembleCoreClasses) }
 
+// These generated model tests do not use the shared fixtures needed by services and core tests.
+// Compile them independently, without moving generated sources or changing test discovery.
+val independentModelTests =
+    listOf(
+        "betaModelTest" to "com/openai/models/beta/**",
+        "adminModelTest" to "com/openai/models/admin/**",
+    )
+val coreTestSourceSet = sourceSets.test.get()
+val coreTestClassesDirectories = coreTestSourceSet.output.classesDirs as ConfigurableFileCollection
+independentModelTests.forEach { (name, pattern) ->
+    val modelTests = sourceSets.create(name)
+    // Resolve exactly the dependencies/Java 17 attributes already used to compile core tests.
+    modelTests.compileClasspath = coreTestSourceSet.compileClasspath
+    kotlin.sourceSets.named(name) {
+        kotlin.setSrcDirs(listOf(layout.projectDirectory.dir("src/test/kotlin")))
+        kotlin.include(pattern)
+    }
+    kotlin.sourceSets.named("test") { kotlin.exclude(pattern) }
+
+    val compileModelTests = tasks.named<KotlinCompile>(modelTests.getCompileTaskName("kotlin")) {
+        friendPaths.setFrom(sourceSets.main.map { it.output.classesDirs })
+    }
+    coreTestClassesDirectories.from(compileModelTests.flatMap { it.destinationDirectory })
+    tasks.named("testClasses") { dependsOn(modelTests.classesTaskName) }
+}
+
 val coreJar = tasks.named<Jar>("jar") {
     // The Kotlin plugin captures compileKotlin's destination before it is relocated above. Publish
     // those client-layer classes through the canonical aggregate instead of the staging directory.

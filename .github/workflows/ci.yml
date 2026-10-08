@@ -87,6 +87,33 @@ jobs:
       - name: Run lints
         run: ./scripts/lint
 
+  build_logic:
+    name: CI / build logic
+    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: |
+            8
+            21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+        with:
+          cache-provider: basic
+          cache-read-only: true
+
+      - name: Test build logic
+        run: ./scripts/gradle :buildSrc:test
+
   build:
     name: CI / build
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
@@ -128,7 +155,9 @@ jobs:
         env:
           GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
         # Release compiled outputs before running the older-Jackson suite in its own job.
-        run: ./scripts/build -x :openai-java-core:testJacksonCompatibility
+        run: >-
+          ./scripts/gradle build testClasses verifyVersionSupportPolicy
+          -x test -x :openai-java-core:testJacksonCompatibility
 
       - name: Collect exact-run Gradle build cache
         env:
@@ -398,6 +427,7 @@ jobs:
     needs:
       - lint
       - build
+      - build_logic
       - test
       - jackson_compatibility
       - api_compatibility
@@ -411,6 +441,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           LINT_RESULT: ${{ needs.lint.result }}
           BUILD_RESULT: ${{ needs.build.result }}
+          BUILD_LOGIC_RESULT: ${{ needs.build_logic.result }}
           TEST_RESULT: ${{ needs.test.result }}
           JACKSON_COMPATIBILITY_RESULT: ${{ needs.jackson_compatibility.result }}
           API_COMPATIBILITY_RESULT: ${{ needs.api_compatibility.result }}
@@ -421,6 +452,7 @@ jobs:
           failed_jobs=()
           [[ "$LINT_RESULT" == "success" ]] || failed_jobs+=("lint: $LINT_RESULT")
           [[ "$BUILD_RESULT" == "success" ]] || failed_jobs+=("build: $BUILD_RESULT")
+          [[ "$BUILD_LOGIC_RESULT" == "success" ]] || failed_jobs+=("build logic: $BUILD_LOGIC_RESULT")
           [[ "$TEST_RESULT" == "success" ]] || failed_jobs+=("test: $TEST_RESULT")
           [[ "$JACKSON_COMPATIBILITY_RESULT" == "success" ]] ||
             failed_jobs+=("Jackson compatibility: $JACKSON_COMPATIBILITY_RESULT")

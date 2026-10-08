@@ -54,6 +54,7 @@ class MergeQueuePolicyTest {
             setOf(
                 "lint",
                 "build",
+                "build_logic",
                 "test",
                 "jackson_compatibility",
                 "api_compatibility",
@@ -67,6 +68,7 @@ class MergeQueuePolicyTest {
             mapOf(
                 "LINT_RESULT" to "lint",
                 "BUILD_RESULT" to "build",
+                "BUILD_LOGIC_RESULT" to "build_logic",
                 "TEST_RESULT" to "test",
                 "JACKSON_COMPATIBILITY_RESULT" to "jackson_compatibility",
                 "API_COMPATIBILITY_RESULT" to "api_compatibility",
@@ -100,7 +102,17 @@ class MergeQueuePolicyTest {
         val workflow = workflow("ci")
         val build = job(workflow, "build")
         val buildCommand = steps(build).single { it["name"] == "Build SDK" }["run"]
-        assertEquals("./scripts/build -x :openai-java-core:testJacksonCompatibility", buildCommand)
+        assertEquals(
+            "./scripts/gradle build testClasses verifyVersionSupportPolicy " +
+                "-x test -x :openai-java-core:testJacksonCompatibility",
+            (buildCommand as String).trim(),
+        )
+        val buildLogic = job(workflow, "build_logic")
+        assertFalse(buildLogic.containsKey("needs"), "Build logic must not wait for SDK compilation")
+        assertEquals(
+            "./scripts/gradle :buildSrc:test",
+            steps(buildLogic).single { it["name"] == "Test build logic" }["run"],
+        )
 
         val jackson = job(workflow, "jackson_compatibility")
         assertEquals("build", jackson["needs"])
