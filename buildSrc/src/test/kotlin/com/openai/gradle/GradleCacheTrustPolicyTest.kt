@@ -20,6 +20,98 @@ class GradleCacheTrustPolicyTest {
     @TempDir lateinit var temporaryDirectory: Path
 
     @Test
+    fun `Graal release test step supports current and older source tasks and stops on query failure`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val script =
+            requireNotNull(
+                parseWorkflow(workflow)
+                    .job("publish")
+                    .steps
+                    .single { it.name == "Run GraalVM native-image agent tests" }
+                    .run
+            )
+        Files.copy(
+            Path.of("../.github/scripts/run-graalvm-tests.sh"),
+            temporaryDirectory.resolve("run-graalvm-tests.sh"),
+        )
+        val wrapper = temporaryDirectory.resolve("gradlew")
+        wrapper.writeText(
+            """
+            |#!/usr/bin/env bash
+            |set -euo pipefail
+            |case "${'$'}1" in
+            |    :openai-java-core:tasks)
+            |        printf '%s\n' "${'$'}AVAILABLE_TASKS"
+            |        exit "${'$'}QUERY_STATUS"
+            |        ;;
+            |    :openai-java-core:test)
+            |        printf '%s\n' "${'$'}@" > "${'$'}RUNNER_TEMP/test-arguments"
+            |        ;;
+            |    *) exit 93 ;;
+            |esac
+            """
+                .trimMargin() + "\n"
+        )
+        assertTrue(wrapper.toFile().setExecutable(true))
+        val testArguments = temporaryDirectory.resolve("test-arguments")
+        val baseArguments =
+            listOf(
+                ":openai-java-core:test",
+                "-x",
+                "compileJava",
+                "-x",
+                "compileTestJava",
+                "-x",
+                "compileKotlin",
+                "-x",
+                "compileTestKotlin",
+            )
+        val shards = listOf("compileBetaModelTestKotlin", "compileAdminModelTestKotlin")
+        val currentListing = shards.joinToString("\n") { "$it - Compiles the test sources." }
+        // An old source or unrelated task prefix must not produce an unknown exclusion.
+        val oldListing =
+            "compileTestKotlin - Compiles tests.\ncompileBetaModelTestKotlinOther - Unrelated."
+        for ((listing, status, expectedShards) in
+            listOf(
+                Triple(currentListing, "0", shards),
+                Triple(oldListing, "0", emptyList()),
+                Triple(currentListing, "19", emptyList()),
+            )) {
+            Files.deleteIfExists(testArguments)
+            val builder =
+                ProcessBuilder("bash", "-euo", "pipefail", "-c", script)
+                    .directory(temporaryDirectory.toFile())
+                    .redirectErrorStream(true)
+            builder
+                .environment()
+                .putAll(
+                    mapOf(
+                        "RUNNER_TEMP" to temporaryDirectory.toString(),
+                        "AVAILABLE_TASKS" to listing,
+                        "QUERY_STATUS" to status,
+                    )
+                )
+            val process = builder.start()
+            val output = process.inputStream.bufferedReader().use { it.readText() }
+            assertEquals(status.toInt(), process.waitFor(), output)
+            if (status == "0") {
+                assertEquals(
+                    baseArguments +
+                        expectedShards.flatMap { listOf("-x", ":openai-java-core:$it") } +
+                        "-PgraalvmAgent",
+                    testArguments.readText().lines().filter { it.isNotEmpty() },
+                    output,
+                )
+            } else {
+                assertFalse(
+                    Files.exists(testArguments),
+                    "Failed task query must stop before tests.",
+                )
+            }
+        }
+    }
+
+    @Test
     fun `all pull request Gradle jobs keep cross-run caches read-only`() {
         val workflow = Path.of("../.github/workflows/ci.yml").readText()
         assertPullRequestCachePolicy(workflow)
@@ -983,6 +1075,40 @@ class GradleCacheTrustPolicyTest {
                 "Privileged publishing action ${action.repository} has unreviewed inputs.",
             )
         }
+
+        val workflowCheckout =
+            publishJob.steps.indexOfFirst { it.name == "Check out workflow scripts" }
+        val preserveHelper =
+            publishJob.steps.indexOfFirst {
+                it.name == "Preserve GraalVM test script for older release retries"
+            }
+        val releaseCheckout =
+            publishJob.steps.indexOfFirst {
+                it.action?.repository == "actions/checkout" &&
+                    it.action.inputs["ref"] == "\${{ needs.release.outputs.source_sha }}"
+            }
+        assertTrue(
+            workflowCheckout >= 0 &&
+                preserveHelper > workflowCheckout &&
+                releaseCheckout > preserveHelper,
+            "Copy the helper from the pinned workflow before checking out the verified release.",
+        )
+        assertEquals(
+            mapOf("persist-credentials" to "false", "ref" to "\${{ github.workflow_sha }}"),
+            requireNotNull(publishJob.steps[workflowCheckout].action).inputs,
+        )
+        assertEquals(
+            mapOf(
+                "persist-credentials" to "false",
+                "ref" to "\${{ needs.release.outputs.source_sha }}",
+            ),
+            requireNotNull(publishJob.steps[releaseCheckout].action).inputs,
+        )
+        assertEquals(
+            "install -m 700 .github/scripts/run-graalvm-tests.sh " +
+                "\"\$RUNNER_TEMP/run-graalvm-tests.sh\"",
+            publishJob.steps[preserveHelper].run,
+        )
 
         val isolation =
             publishJob.steps.indexOfFirst { it.name == "Create isolated release Gradle User Home" }

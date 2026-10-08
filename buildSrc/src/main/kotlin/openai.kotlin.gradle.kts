@@ -2,6 +2,7 @@ import com.openai.gradle.CoreCompilationShards
 import com.openai.gradle.VersionSupportPolicy
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("openai.java")
@@ -36,6 +37,14 @@ kotlin {
         apiVersion.set(KotlinVersion.KOTLIN_1_8)
         coreLibrariesVersion = "1.8.0"
     }
+}
+
+// Kotlin fingerprints friend paths by name, not by class content. Its default includes the
+// versioned main JAR, so a release alone invalidates every test compilation. The compiler already
+// fingerprints the test compile classpath; use the stable main classes for internal visibility.
+// In core this is the canonical aggregate, including its internal compilation shards.
+tasks.named<KotlinCompile>("compileTestKotlin") {
+    friendPaths.setFrom(sourceSets.main.map { it.output.classesDirs })
 }
 
 tasks.withType<Test>().configureEach {

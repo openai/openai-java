@@ -262,6 +262,15 @@ jobs:
     environment: publish
 
     steps:
+      - name: Check out workflow scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+          ref: ${{ github.workflow_sha }}
+
+      - name: Preserve GraalVM test script for older release retries
+        run: install -m 700 .github/scripts/run-graalvm-tests.sh "$RUNNER_TEMP/run-graalvm-tests.sh"
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
@@ -296,7 +305,7 @@ jobs:
           cache-disabled: true
 
       - name: Compile the openai-java-core project
-        run: ./gradlew :openai-java-core:compileJava :openai-java-core:compileTestJava -x test
+        run: ./gradlew :openai-java-core:classes :openai-java-core:testClasses -x test
 
       - name: Stop pre-GraalVM Gradle daemon
         run: ./gradlew --stop
@@ -311,13 +320,7 @@ jobs:
           distribution: graalvm-community
 
       - name: Run GraalVM native-image agent tests
-        run: >-
-          ./gradlew :openai-java-core:test
-          -x compileJava
-          -x compileTestJava
-          -x compileKotlin
-          -x compileTestKotlin
-          -PgraalvmAgent
+        run: bash "$RUNNER_TEMP/run-graalvm-tests.sh"
 
       - name: Check generated GraalVM files
         run: |
