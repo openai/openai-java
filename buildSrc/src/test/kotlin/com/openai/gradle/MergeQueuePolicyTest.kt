@@ -108,7 +108,10 @@ class MergeQueuePolicyTest {
             (buildCommand as String).trim(),
         )
         val buildLogic = job(workflow, "build_logic")
-        assertFalse(buildLogic.containsKey("needs"), "Build logic must not wait for SDK compilation")
+        assertFalse(
+            buildLogic.containsKey("needs"),
+            "Build logic must not wait for SDK compilation",
+        )
         assertEquals(
             "./scripts/gradle :buildSrc:test",
             steps(buildLogic).single { it["name"] == "Test build logic" }["run"],
