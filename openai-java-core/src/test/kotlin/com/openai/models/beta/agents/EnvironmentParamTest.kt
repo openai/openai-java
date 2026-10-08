@@ -49,6 +49,7 @@ internal class EnvironmentParamTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .environmentId("xxxxxxxxx")
                 .environmentTemplateId("environment_template_id")
                 .addFile(HostedEnvironmentFileParam.FileId.builder().fileId("x").path("x").build())
                 .network(
@@ -102,6 +103,7 @@ internal class EnvironmentParamTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
+                    .environmentId("xxxxxxxxx")
                     .environmentTemplateId("environment_template_id")
                     .addFile(
                         HostedEnvironmentFileParam.FileId.builder().fileId("x").path("x").build()

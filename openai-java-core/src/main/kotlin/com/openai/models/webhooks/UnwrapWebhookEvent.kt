@@ -18,11 +18,16 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Sent when an agent session requires an action. Retrieve the session for action details. */
+/**
+ * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to a
+ * session.
+ */
 @JsonDeserialize(using = UnwrapWebhookEvent.Deserializer::class)
 @JsonSerialize(using = UnwrapWebhookEvent.Serializer::class)
 class UnwrapWebhookEvent
 private constructor(
+    private val agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent? = null,
+    private val agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent? = null,
     private val agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent? = null,
     private val agentSessionCreated: AgentSessionCreatedWebhookEvent? = null,
     private val agentSessionFailed: AgentSessionFailedWebhookEvent? = null,
@@ -51,6 +56,20 @@ private constructor(
     private val safetyWarningIssued: SafetyWarningIssuedWebhookEvent? = null,
     private val _json: JsonValue? = null,
 ) {
+
+    /**
+     * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to a
+     * session.
+     */
+    fun agentEnvironmentFailed(): Optional<AgentEnvironmentFailedWebhookEvent> =
+        Optional.ofNullable(agentEnvironmentFailed)
+
+    /**
+     * Sent when a prewarmed OpenAI-hosted environment finishes setup before being attached to a
+     * session.
+     */
+    fun agentEnvironmentReady(): Optional<AgentEnvironmentReadyWebhookEvent> =
+        Optional.ofNullable(agentEnvironmentReady)
 
     /** Sent when an agent session requires an action. Retrieve the session for action details. */
     fun agentSessionActionRequired(): Optional<AgentSessionActionRequiredWebhookEvent> =
@@ -165,6 +184,10 @@ private constructor(
     fun safetyWarningIssued(): Optional<SafetyWarningIssuedWebhookEvent> =
         Optional.ofNullable(safetyWarningIssued)
 
+    fun isAgentEnvironmentFailed(): Boolean = agentEnvironmentFailed != null
+
+    fun isAgentEnvironmentReady(): Boolean = agentEnvironmentReady != null
+
     fun isAgentSessionActionRequired(): Boolean = agentSessionActionRequired != null
 
     fun isAgentSessionCreated(): Boolean = agentSessionCreated != null
@@ -216,6 +239,20 @@ private constructor(
     fun isSafetyOrgAlertCreated(): Boolean = safetyOrgAlertCreated != null
 
     fun isSafetyWarningIssued(): Boolean = safetyWarningIssued != null
+
+    /**
+     * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to a
+     * session.
+     */
+    fun asAgentEnvironmentFailed(): AgentEnvironmentFailedWebhookEvent =
+        agentEnvironmentFailed.getOrThrow("agentEnvironmentFailed")
+
+    /**
+     * Sent when a prewarmed OpenAI-hosted environment finishes setup before being attached to a
+     * session.
+     */
+    fun asAgentEnvironmentReady(): AgentEnvironmentReadyWebhookEvent =
+        agentEnvironmentReady.getOrThrow("agentEnvironmentReady")
 
     /** Sent when an agent session requires an action. Retrieve the session for action details. */
     fun asAgentSessionActionRequired(): AgentSessionActionRequiredWebhookEvent =
@@ -344,8 +381,8 @@ private constructor(
      *
      * Optional<String> result = unwrapWebhookEvent.accept(new UnwrapWebhookEvent.Visitor<Optional<String>>() {
      *     @Override
-     *     public Optional<String> visitAgentSessionActionRequired(AgentSessionActionRequiredWebhookEvent agentSessionActionRequired) {
-     *         return Optional.of(agentSessionActionRequired.toString());
+     *     public Optional<String> visitAgentEnvironmentFailed(AgentEnvironmentFailedWebhookEvent agentEnvironmentFailed) {
+     *         return Optional.of(agentEnvironmentFailed.toString());
      *     }
      *
      *     // ...
@@ -363,6 +400,10 @@ private constructor(
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
+            agentEnvironmentFailed != null ->
+                visitor.visitAgentEnvironmentFailed(agentEnvironmentFailed)
+            agentEnvironmentReady != null ->
+                visitor.visitAgentEnvironmentReady(agentEnvironmentReady)
             agentSessionActionRequired != null ->
                 visitor.visitAgentSessionActionRequired(agentSessionActionRequired)
             agentSessionCreated != null -> visitor.visitAgentSessionCreated(agentSessionCreated)
@@ -416,6 +457,18 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
+                override fun visitAgentEnvironmentFailed(
+                    agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent
+                ) {
+                    agentEnvironmentFailed.validate()
+                }
+
+                override fun visitAgentEnvironmentReady(
+                    agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent
+                ) {
+                    agentEnvironmentReady.validate()
+                }
+
                 override fun visitAgentSessionActionRequired(
                     agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
                 ) {
@@ -573,6 +626,14 @@ private constructor(
     internal fun validity(): Int =
         accept(
             object : Visitor<Int> {
+                override fun visitAgentEnvironmentFailed(
+                    agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent
+                ) = agentEnvironmentFailed.validity()
+
+                override fun visitAgentEnvironmentReady(
+                    agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent
+                ) = agentEnvironmentReady.validity()
+
                 override fun visitAgentSessionActionRequired(
                     agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
                 ) = agentSessionActionRequired.validity()
@@ -677,6 +738,8 @@ private constructor(
         }
 
         return other is UnwrapWebhookEvent &&
+            agentEnvironmentFailed == other.agentEnvironmentFailed &&
+            agentEnvironmentReady == other.agentEnvironmentReady &&
             agentSessionActionRequired == other.agentSessionActionRequired &&
             agentSessionCreated == other.agentSessionCreated &&
             agentSessionFailed == other.agentSessionFailed &&
@@ -707,6 +770,8 @@ private constructor(
 
     override fun hashCode(): Int =
         Objects.hash(
+            agentEnvironmentFailed,
+            agentEnvironmentReady,
             agentSessionActionRequired,
             agentSessionCreated,
             agentSessionFailed,
@@ -737,6 +802,10 @@ private constructor(
 
     override fun toString(): String =
         when {
+            agentEnvironmentFailed != null ->
+                "UnwrapWebhookEvent{agentEnvironmentFailed=$agentEnvironmentFailed}"
+            agentEnvironmentReady != null ->
+                "UnwrapWebhookEvent{agentEnvironmentReady=$agentEnvironmentReady}"
             agentSessionActionRequired != null ->
                 "UnwrapWebhookEvent{agentSessionActionRequired=$agentSessionActionRequired}"
             agentSessionCreated != null ->
@@ -782,6 +851,22 @@ private constructor(
         }
 
     companion object {
+
+        /**
+         * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to
+         * a session.
+         */
+        @JvmStatic
+        fun ofAgentEnvironmentFailed(agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent) =
+            UnwrapWebhookEvent(agentEnvironmentFailed = agentEnvironmentFailed)
+
+        /**
+         * Sent when a prewarmed OpenAI-hosted environment finishes setup before being attached to a
+         * session.
+         */
+        @JvmStatic
+        fun ofAgentEnvironmentReady(agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent) =
+            UnwrapWebhookEvent(agentEnvironmentReady = agentEnvironmentReady)
 
         /**
          * Sent when an agent session requires an action. Retrieve the session for action details.
@@ -940,6 +1025,20 @@ private constructor(
     interface Visitor<out T> {
 
         /**
+         * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to
+         * a session.
+         */
+        fun visitAgentEnvironmentFailed(
+            agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent
+        ): T
+
+        /**
+         * Sent when a prewarmed OpenAI-hosted environment finishes setup before being attached to a
+         * session.
+         */
+        fun visitAgentEnvironmentReady(agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent): T
+
+        /**
          * Sent when an agent session requires an action. Retrieve the session for action details.
          */
         fun visitAgentSessionActionRequired(
@@ -1066,6 +1165,19 @@ private constructor(
             val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
             when (type) {
+                "agent.environment.failed" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentEnvironmentFailedWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(agentEnvironmentFailed = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.environment.ready" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AgentEnvironmentReadyWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(agentEnvironmentReady = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
                 "agent.session.action_required" -> {
                     return tryDeserialize(
                             node,
@@ -1225,6 +1337,10 @@ private constructor(
             provider: SerializerProvider,
         ) {
             when {
+                value.agentEnvironmentFailed != null ->
+                    generator.writeObject(value.agentEnvironmentFailed)
+                value.agentEnvironmentReady != null ->
+                    generator.writeObject(value.agentEnvironmentReady)
                 value.agentSessionActionRequired != null ->
                     generator.writeObject(value.agentSessionActionRequired)
                 value.agentSessionCreated != null ->

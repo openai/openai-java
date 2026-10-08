@@ -245,7 +245,7 @@ internal class WebhookServiceTest {
         val webhookService = client.webhooks()
 
         val payload =
-            "{\"id\":\"id\",\"created_at\":0,\"data\":{\"id\":\"id\",\"required_action\":{\"type\":\"computer_use_approval_request\"}},\"object\":\"event\",\"type\":\"agent.session.action_required\"}"
+            "{\"id\":\"id\",\"created_at\":0,\"data\":{\"id\":\"id\"},\"object\":\"event\",\"type\":\"agent.environment.failed\"}"
         val webhookSecret = "whsec_c2VjcmV0Cg=="
         val headers = Headers.builder().build()
 
