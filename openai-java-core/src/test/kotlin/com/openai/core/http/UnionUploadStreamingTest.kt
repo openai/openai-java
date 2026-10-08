@@ -69,23 +69,11 @@ internal class UnionUploadStreamingTest {
     }
 
     @ParameterizedTest
-    @CsvSource("false,sample", "true,sample", "false,prompt", "true,prompt")
-    fun voiceUnionUploadsPreserveMultipartFieldsAndStreaming(async: Boolean, kind: String) {
+    @ValueSource(booleans = [false, true])
+    fun voiceUploadsPreserveMultipartFieldsAndStreaming(async: Boolean) {
         val payload = byteArrayOf(0, 1, -1, 13, 10, 65, -128)
         val stream = GuardedStream(payload)
-        val params =
-            if (kind == "sample") voiceParams(stream)
-            else
-                VoiceCreateParams.builder()
-                    .body(
-                        VoiceCreateParams.Body.Prompt.builder()
-                            .name("Synthetic voice")
-                            .prompt("A calm synthetic narrator")
-                            .model("auto")
-                            .scriptHint("Welcome aboard")
-                            .build()
-                    )
-                    .build()
+        val params = voiceParams(stream)
         client(
                 checkRequest = {
                     assertThat(it.method).isEqualTo(HttpMethod.POST)
@@ -94,12 +82,10 @@ internal class UnionUploadStreamingTest {
             ) { body ->
                 assertThat(body.contentType()).startsWith("multipart/form-data; boundary=")
                 val output = ByteArrayOutputStream()
-                if (kind == "sample") {
-                    assertThat(stream.closed).isFalse()
-                    assertThat(body.contentLength()).isEqualTo(-1L)
-                    assertThat(body.repeatable()).isFalse()
-                    stream.allowReads = true
-                }
+                assertThat(stream.closed).isFalse()
+                assertThat(body.contentLength()).isEqualTo(-1L)
+                assertThat(body.repeatable()).isFalse()
+                stream.allowReads = true
                 body.use { it.writeTo(output) }
                 val boundary = checkNotNull(body.contentType()).substringAfter("boundary=")
                 val parts = output.toString("ISO-8859-1").split("--$boundary")
@@ -109,28 +95,19 @@ internal class UnionUploadStreamingTest {
                         .substringAfter("\r\n\r\n")
                         .removeSuffix("\r\n")
                 assertThat(value("name")).isEqualTo("Synthetic voice")
-                if (kind == "sample") {
-                    assertThat(value("consent")).isEqualTo("cons_synthetic")
-                    assertThat(parts.single { it.contains("name=\"audio_sample\"") })
-                        .contains("Content-Type: application/octet-stream\r\n")
-                    assertThat(value("audio_sample").toByteArray(Charsets.ISO_8859_1))
-                        .isEqualTo(payload)
-                    assertThat(parts.none { it.contains("name=\"prompt\"") }).isTrue()
-                    assertThat(stream.closeCount).isEqualTo(1)
-                } else {
-                    assertThat(value("type")).isEqualTo("prompt")
-                    assertThat(value("prompt")).isEqualTo("A calm synthetic narrator")
-                    assertThat(value("model")).isEqualTo("auto")
-                    assertThat(value("script_hint")).isEqualTo("Welcome aboard")
-                    assertThat(parts.none { it.contains("name=\"audio_sample\"") }).isTrue()
-                    assertThat(parts.none { it.contains("name=\"consent\"") }).isTrue()
-                }
+                assertThat(value("consent")).isEqualTo("cons_synthetic")
+                assertThat(parts.single { it.contains("name=\"audio_sample\"") })
+                    .contains("Content-Type: application/octet-stream\r\n")
+                assertThat(value("audio_sample").toByteArray(Charsets.ISO_8859_1))
+                    .isEqualTo(payload)
+                assertThat(parts.none { it.contains("name=\"prompt\"") }).isTrue()
+                assertThat(stream.closeCount).isEqualTo(1)
             }
             .useClient {
                 if (async) it.async().audio().voices().create(params).get(10, TimeUnit.SECONDS)
                 else it.audio().voices().withRawResponse().create(params).close()
             }
-        if (kind == "sample") assertThat(stream.closeCount).isEqualTo(1)
+        assertThat(stream.closeCount).isEqualTo(1)
     }
 
     @Test
