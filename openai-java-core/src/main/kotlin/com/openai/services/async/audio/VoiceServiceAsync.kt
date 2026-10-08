@@ -27,15 +27,15 @@ interface VoiceServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VoiceServiceAsync
 
     /**
-     * Creates a voice from a text prompt or from a consent recording and an audio sample.
+     * Create a custom voice you can use for audio output (for example, in Text-to-Speech and the
+     * Realtime API). This requires an audio sample and a previously uploaded consent recording.
      *
-     * For prompt-based creation, send `type: "prompt"` with a `name` and `prompt` as JSON or
-     * multipart form data. For creation from an audio sample, send `type: "audio_sample"` with a
-     * `name`, `audio_sample`, and `consent` recording ID as multipart form data. The type defaults
-     * to `audio_sample` when omitted.
+     * Send `name`, `audio_sample`, and the `consent` recording ID as multipart form data. The
+     * optional `type` defaults to `audio_sample`.
      *
-     * Returns the saved voice's metadata. Voices created from text prompts are supported only in
-     * Live, not in Realtime or the speech endpoint. The response does not include preview audio.
+     * Returns the saved voice's metadata. See the
+     * [custom voices guide](https://developers.openai.com/api/docs/guides/text-to-speech#custom-voices)
+     * for requirements and best practices. Custom voices are limited to eligible customers.
      */
     fun create(params: VoiceCreateParams): CompletableFuture<Voice> =
         create(params, RequestOptions.none())

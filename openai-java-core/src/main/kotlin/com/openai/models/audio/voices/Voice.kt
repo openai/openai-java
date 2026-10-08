@@ -17,10 +17,7 @@ import java.util.Collections
 import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * A custom voice that can be used for audio output. Voices created from text prompts are supported
- * only in Live.
- */
+/** A custom voice that can be used for audio output. */
 class Voice
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -79,7 +76,7 @@ private constructor(
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
-     * How the voice was created. Voices created from text prompts are supported only in Live.
+     * How the voice was created.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -209,9 +206,7 @@ private constructor(
          */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
-        /**
-         * How the voice was created. Voices created from text prompts are supported only in Live.
-         */
+        /** How the voice was created. */
         fun type(type: Type) = type(JsonField.of(type))
 
         /**
@@ -315,7 +310,7 @@ private constructor(
             object_.let { if (it == JsonValue.from("audio.voice")) 1 else 0 } +
             (type.asKnown().getOrNull()?.validity() ?: 0)
 
-    /** How the voice was created. Voices created from text prompts are supported only in Live. */
+    /** How the voice was created. */
     class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -332,15 +327,12 @@ private constructor(
 
             @JvmField val AUDIO_SAMPLE = of("audio_sample")
 
-            @JvmField val PROMPT = of("prompt")
-
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }
 
         /** An enum containing [Type]'s known values. */
         enum class Known {
-            AUDIO_SAMPLE,
-            PROMPT,
+            AUDIO_SAMPLE
         }
 
         /**
@@ -354,7 +346,6 @@ private constructor(
          */
         enum class Value {
             AUDIO_SAMPLE,
-            PROMPT,
             /** An enum member indicating that [Type] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -369,7 +360,6 @@ private constructor(
         fun value(): Value =
             when (this) {
                 AUDIO_SAMPLE -> Value.AUDIO_SAMPLE
-                PROMPT -> Value.PROMPT
                 else -> Value._UNKNOWN
             }
 
@@ -385,7 +375,6 @@ private constructor(
         fun known(): Known =
             when (this) {
                 AUDIO_SAMPLE -> Known.AUDIO_SAMPLE
-                PROMPT -> Known.PROMPT
                 else -> throw OpenAIInvalidDataException("Unknown Type: $value")
             }
 
