@@ -59,8 +59,7 @@ private constructor(
      * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`, `ballad`,
      * `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and `cedar`. You may
      * also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Custom
-     * voices must be created from audio samples. Voices created from text prompts are supported
-     * only in Live.
+     * voices must be created from audio samples.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -139,8 +138,7 @@ private constructor(
          * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`,
          * `ballad`, `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and
          * `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id":
-         * "voice_1234" }`. Custom voices must be created from audio samples. Voices created from
-         * text prompts are supported only in Live.
+         * "voice_1234" }`. Custom voices must be created from audio samples.
          */
         fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -404,8 +402,7 @@ private constructor(
      * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`, `ballad`,
      * `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and `cedar`. You may
      * also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Custom
-     * voices must be created from audio samples. Voices created from text prompts are supported
-     * only in Live.
+     * voices must be created from audio samples.
      */
     @JsonDeserialize(using = Voice.Deserializer::class)
     @JsonSerialize(using = Voice.Serializer::class)
