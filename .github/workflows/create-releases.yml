@@ -262,6 +262,15 @@ jobs:
     environment: publish
 
     steps:
+      - name: Check out workflow scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+          ref: ${{ github.workflow_sha }}
+
+      - name: Preserve GraalVM test script for older release retries
+        run: install -m 700 .github/scripts/run-graalvm-tests.sh "$RUNNER_TEMP/run-graalvm-tests.sh"
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           persist-credentials: false
@@ -311,22 +320,7 @@ jobs:
           distribution: graalvm-community
 
       - name: Run GraalVM native-image agent tests
-        run: |
-          set -euo pipefail
-
-          # Skip the new test compilers only if this release has them. Older retries don't.
-          available_tasks="$(./gradlew :openai-java-core:tasks --all --console=plain)"
-          skip_optional_compilers=()
-          for task in compileBetaModelTestKotlin compileAdminModelTestKotlin; do
-            if grep -Eq "^${task}([[:space:]]|$)" <<< "$available_tasks"; then
-              skip_optional_compilers+=(-x ":openai-java-core:$task")
-            fi
-          done
-
-          # All classes were compiled before switching to GraalVM; only run the tracing tests.
-          ./gradlew :openai-java-core:test \
-            -x compileJava -x compileTestJava -x compileKotlin -x compileTestKotlin \
-            "${skip_optional_compilers[@]}" -PgraalvmAgent
+        run: bash "$RUNNER_TEMP/run-graalvm-tests.sh"
 
       - name: Check generated GraalVM files
         run: |

@@ -30,6 +30,10 @@ class GradleCacheTrustPolicyTest {
                     .single { it.name == "Run GraalVM native-image agent tests" }
                     .run
             )
+        Files.copy(
+            Path.of("../.github/scripts/run-graalvm-tests.sh"),
+            temporaryDirectory.resolve("run-graalvm-tests.sh"),
+        )
         val wrapper = temporaryDirectory.resolve("gradlew")
         wrapper.writeText(
             """
@@ -1071,6 +1075,40 @@ class GradleCacheTrustPolicyTest {
                 "Privileged publishing action ${action.repository} has unreviewed inputs.",
             )
         }
+
+        val workflowCheckout =
+            publishJob.steps.indexOfFirst { it.name == "Check out workflow scripts" }
+        val preserveHelper =
+            publishJob.steps.indexOfFirst {
+                it.name == "Preserve GraalVM test script for older release retries"
+            }
+        val releaseCheckout =
+            publishJob.steps.indexOfFirst {
+                it.action?.repository == "actions/checkout" &&
+                    it.action.inputs["ref"] == "\${{ needs.release.outputs.source_sha }}"
+            }
+        assertTrue(
+            workflowCheckout >= 0 &&
+                preserveHelper > workflowCheckout &&
+                releaseCheckout > preserveHelper,
+            "Copy the helper from the pinned workflow before checking out the verified release.",
+        )
+        assertEquals(
+            mapOf("persist-credentials" to "false", "ref" to "\${{ github.workflow_sha }}"),
+            requireNotNull(publishJob.steps[workflowCheckout].action).inputs,
+        )
+        assertEquals(
+            mapOf(
+                "persist-credentials" to "false",
+                "ref" to "\${{ needs.release.outputs.source_sha }}",
+            ),
+            requireNotNull(publishJob.steps[releaseCheckout].action).inputs,
+        )
+        assertEquals(
+            "install -m 700 .github/scripts/run-graalvm-tests.sh " +
+                "\"\$RUNNER_TEMP/run-graalvm-tests.sh\"",
+            publishJob.steps[preserveHelper].run,
+        )
 
         val isolation =
             publishJob.steps.indexOfFirst { it.name == "Create isolated release Gradle User Home" }
