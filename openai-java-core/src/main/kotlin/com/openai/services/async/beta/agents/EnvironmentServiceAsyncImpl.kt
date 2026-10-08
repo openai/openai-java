@@ -15,14 +15,20 @@ import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.models.beta.agents.environments.EnvironmentCreateParams
 import com.openai.models.beta.agents.environments.EnvironmentInfo
+import com.openai.models.beta.agents.environments.EnvironmentListPageAsync
+import com.openai.models.beta.agents.environments.EnvironmentListPageResponse
+import com.openai.models.beta.agents.environments.EnvironmentListParams
 import com.openai.models.beta.agents.environments.EnvironmentRetrieveParams
 import com.openai.services.async.beta.agents.environments.FileServiceAsync
 import com.openai.services.async.beta.agents.environments.FileServiceAsyncImpl
 import com.openai.services.async.beta.agents.environments.TemplateServiceAsync
 import com.openai.services.async.beta.agents.environments.TemplateServiceAsyncImpl
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -52,12 +58,26 @@ class EnvironmentServiceAsyncImpl internal constructor(private val clientOptions
 
     override fun templates(): TemplateServiceAsync = templates
 
+    override fun create(
+        params: EnvironmentCreateParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<EnvironmentInfo> =
+        // post /agents/environments
+        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+
     override fun retrieve(
         params: EnvironmentRetrieveParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<EnvironmentInfo> =
         // get /agents/environments/{environment_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+
+    override fun list(
+        params: EnvironmentListParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<EnvironmentListPageAsync> =
+        // get /agents/environments
+        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         EnvironmentServiceAsync.WithRawResponse {
@@ -83,6 +103,51 @@ class EnvironmentServiceAsyncImpl internal constructor(private val clientOptions
         override fun files(): FileServiceAsync.WithRawResponse = files
 
         override fun templates(): TemplateServiceAsync.WithRawResponse = templates
+
+        private val createHandler: Handler<EnvironmentInfo> =
+            jsonHandler<EnvironmentInfo>(clientOptions.jsonMapper)
+
+        override fun create(
+            params: EnvironmentCreateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<EnvironmentInfo>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("agents", "environments")
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+                    .thenApply { request ->
+                        // Keep one key across retries, while honoring caller-supplied headers.
+                        if (request.headers.values("Idempotency-Key").isNotEmpty()) request
+                        else
+                            request
+                                .toBuilder()
+                                .putHeader("Idempotency-Key", UUID.randomUUID().toString())
+                                .build()
+                    }
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { createHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
 
         private val retrieveHandler: Handler<EnvironmentInfo> =
             jsonHandler<EnvironmentInfo>(clientOptions.jsonMapper)
@@ -117,6 +182,49 @@ class EnvironmentServiceAsyncImpl internal constructor(private val clientOptions
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+                            }
+                    }
+                }
+        }
+
+        private val listHandler: Handler<EnvironmentListPageResponse> =
+            jsonHandler<EnvironmentListPageResponse>(clientOptions.jsonMapper)
+
+        override fun list(
+            params: EnvironmentListParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<EnvironmentListPageAsync>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("agents", "environments")
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .build()
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { listHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                            .let {
+                                EnvironmentListPageAsync.builder()
+                                    .service(EnvironmentServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

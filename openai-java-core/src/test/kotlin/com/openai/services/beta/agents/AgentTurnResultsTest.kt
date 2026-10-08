@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.io.ByteArrayInputStream
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -261,6 +262,7 @@ internal class AgentTurnResultsTest {
         var executor: Executor = direct
         val posts = AtomicInteger()
         val closed = AtomicInteger()
+        val responseClosed = CountDownLatch(1)
 
         override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
             val streaming =
@@ -302,6 +304,7 @@ internal class AgentTurnResultsTest {
 
                 override fun close() {
                     closed.incrementAndGet()
+                    responseClosed.countDown()
                 }
             }
         }
@@ -812,7 +815,8 @@ internal class AgentTurnResultsTest {
             stream.onCompleteFuture().get(5, TimeUnit.SECONDS)
             assertThat(AgentTurnResults.getFinalResult(stream).isCancelled).isTrue()
             transport.responseReady.complete(null)
-            assertThat(transport.closed.get()).isPositive()
+            // The request may still be opening after observation has been cancelled.
+            assertThat(transport.responseClosed.await(5, TimeUnit.SECONDS)).isTrue()
         }
     }
 

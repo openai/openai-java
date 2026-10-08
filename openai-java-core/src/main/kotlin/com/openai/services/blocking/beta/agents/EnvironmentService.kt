@@ -6,7 +6,10 @@ import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
+import com.openai.models.beta.agents.environments.EnvironmentCreateParams
 import com.openai.models.beta.agents.environments.EnvironmentInfo
+import com.openai.models.beta.agents.environments.EnvironmentListPage
+import com.openai.models.beta.agents.environments.EnvironmentListParams
 import com.openai.models.beta.agents.environments.EnvironmentRetrieveParams
 import com.openai.services.blocking.beta.agents.environments.FileService
 import com.openai.services.blocking.beta.agents.environments.TemplateService
@@ -29,6 +32,19 @@ interface EnvironmentService {
     fun files(): FileService
 
     fun templates(): TemplateService
+
+    /**
+     * Creates an OpenAI-hosted environment before creating a session. Requires access to the
+     * prewarming beta.
+     */
+    fun create(params: EnvironmentCreateParams): EnvironmentInfo =
+        create(params, RequestOptions.none())
+
+    /** @see create */
+    fun create(
+        params: EnvironmentCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): EnvironmentInfo
 
     /**
      * Retrieves an execution environment's connection status and safe installed metadata. See
@@ -66,6 +82,26 @@ interface EnvironmentService {
         retrieve(environmentId, EnvironmentRetrieveParams.none(), requestOptions)
 
     /**
+     * Lists OpenAI-hosted environments owned by the authenticated principal. Requires access to the
+     * prewarming beta.
+     */
+    fun list(): EnvironmentListPage = list(EnvironmentListParams.none())
+
+    /** @see list */
+    fun list(
+        params: EnvironmentListParams = EnvironmentListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): EnvironmentListPage
+
+    /** @see list */
+    fun list(params: EnvironmentListParams = EnvironmentListParams.none()): EnvironmentListPage =
+        list(params, RequestOptions.none())
+
+    /** @see list */
+    fun list(requestOptions: RequestOptions): EnvironmentListPage =
+        list(EnvironmentListParams.none(), requestOptions)
+
+    /**
      * A view of [EnvironmentService] that provides access to raw HTTP responses for each method.
      */
     interface WithRawResponse {
@@ -82,6 +118,21 @@ interface EnvironmentService {
         fun files(): FileService.WithRawResponse
 
         fun templates(): TemplateService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /agents/environments`, but is otherwise the same as
+         * [EnvironmentService.create].
+         */
+        @MustBeClosed
+        fun create(params: EnvironmentCreateParams): HttpResponseFor<EnvironmentInfo> =
+            create(params, RequestOptions.none())
+
+        /** @see create */
+        @MustBeClosed
+        fun create(
+            params: EnvironmentCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<EnvironmentInfo>
 
         /**
          * Returns a raw HTTP response for `get /agents/environments/{environment_id}`, but is
@@ -126,5 +177,30 @@ interface EnvironmentService {
             requestOptions: RequestOptions,
         ): HttpResponseFor<EnvironmentInfo> =
             retrieve(environmentId, EnvironmentRetrieveParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /agents/environments`, but is otherwise the same as
+         * [EnvironmentService.list].
+         */
+        @MustBeClosed
+        fun list(): HttpResponseFor<EnvironmentListPage> = list(EnvironmentListParams.none())
+
+        /** @see list */
+        @MustBeClosed
+        fun list(
+            params: EnvironmentListParams = EnvironmentListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<EnvironmentListPage>
+
+        /** @see list */
+        @MustBeClosed
+        fun list(
+            params: EnvironmentListParams = EnvironmentListParams.none()
+        ): HttpResponseFor<EnvironmentListPage> = list(params, RequestOptions.none())
+
+        /** @see list */
+        @MustBeClosed
+        fun list(requestOptions: RequestOptions): HttpResponseFor<EnvironmentListPage> =
+            list(EnvironmentListParams.none(), requestOptions)
     }
 }
