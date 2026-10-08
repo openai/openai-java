@@ -296,7 +296,7 @@ jobs:
           cache-disabled: true
 
       - name: Compile the openai-java-core project
-        run: ./gradlew :openai-java-core:compileJava :openai-java-core:compileTestJava -x test
+        run: ./gradlew :openai-java-core:classes :openai-java-core:testClasses -x test
 
       - name: Stop pre-GraalVM Gradle daemon
         run: ./gradlew --stop
@@ -311,13 +311,20 @@ jobs:
           distribution: graalvm-community
 
       - name: Run GraalVM native-image agent tests
-        run: >-
-          ./gradlew :openai-java-core:test
-          -x compileJava
-          -x compileTestJava
-          -x compileKotlin
-          -x compileTestKotlin
-          -PgraalvmAgent
+        run: |
+          set -euo pipefail
+
+          # A retry can check out a release from before core test compilation was split.
+          # Query the verified release source, not the workflow's current main branch.
+          task_list="${RUNNER_TEMP}/openai-java-core-gradle-tasks.txt"
+          ./gradlew :openai-java-core:tasks --all --console=plain > "$task_list"
+          excluded_tasks=(-x compileJava -x compileTestJava -x compileKotlin -x compileTestKotlin)
+          for task in compileBetaModelTestKotlin compileAdminModelTestKotlin; do
+            if grep -Eq "^${task}([[:space:]]|$)" "$task_list"; then
+              excluded_tasks+=(-x ":openai-java-core:$task")
+            fi
+          done
+          ./gradlew :openai-java-core:test "${excluded_tasks[@]}" -PgraalvmAgent
 
       - name: Check generated GraalVM files
         run: |
