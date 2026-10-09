@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.20")
     implementation("com.vanniktech:gradle-maven-publish-plugin:0.34.0")
 
     testImplementation(kotlin("test"))
