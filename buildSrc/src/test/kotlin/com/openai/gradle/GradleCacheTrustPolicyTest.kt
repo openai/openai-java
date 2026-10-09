@@ -424,11 +424,13 @@ class GradleCacheTrustPolicyTest {
             login.action.inputs,
         )
         assertEquals("vars.MAVEN_CENTRAL_AUTH_PROXY_URL != ''", login.condition)
-        assertEquals(
-            "\${{ runner.temp }}/maven-azure-\${{ github.run_id }}-\${{ github.run_attempt }}",
-            job.environment["AZURE_CONFIG_DIR"],
+        assertFalse(job.environment.values.any { "runner." in it })
+        val prepare = job.steps.single { it.run?.contains("AZURE_CONFIG_DIR=%s") == true }
+        assertContains(requireNotNull(prepare.run), "mkdir -m 700 \"\$azure_config_dir\"")
+        assertContains(
+            requireNotNull(prepare.run),
+            "\$RUNNER_TEMP/maven-azure-\$GITHUB_RUN_ID-\$GITHUB_RUN_ATTEMPT",
         )
-        val prepare = job.steps.single { it.run == "mkdir -m 700 \"\$AZURE_CONFIG_DIR\"" }
         val upload = job.steps.single { it.run?.contains("publishViaAuthProxy") == true }
         assertEquals(login.condition, prepare.condition)
         assertEquals(login.condition, upload.condition)

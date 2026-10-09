@@ -261,7 +261,6 @@ jobs:
     timeout-minutes: 90
     environment: publish
     env:
-      AZURE_CONFIG_DIR: ${{ runner.temp }}/maven-azure-${{ github.run_id }}-${{ github.run_attempt }}
       AZURE_LOGIN_POST_CLEANUP: 'true'
 
     steps:
@@ -492,7 +491,11 @@ jobs:
 
       - name: Prepare isolated Azure login cache
         if: vars.MAVEN_CENTRAL_AUTH_PROXY_URL != ''
-        run: mkdir -m 700 "$AZURE_CONFIG_DIR"
+        run: |
+          set -euo pipefail
+          azure_config_dir="$RUNNER_TEMP/maven-azure-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -m 700 "$azure_config_dir"
+          printf 'AZURE_CONFIG_DIR=%s\n' "$azure_config_dir" >> "$GITHUB_ENV"
 
       - name: Authenticate publishing identity with Azure
         if: vars.MAVEN_CENTRAL_AUTH_PROXY_URL != ''
