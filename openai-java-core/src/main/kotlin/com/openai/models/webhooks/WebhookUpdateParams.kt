@@ -615,6 +615,10 @@ private constructor(
 
             @JvmField val AGENT_ENVIRONMENT_FAILED = of("agent.environment.failed")
 
+            @JvmField val AGENT_ENVIRONMENT_SUSPENDED = of("agent.environment.suspended")
+
+            @JvmField val AGENT_ENVIRONMENT_EXPIRED = of("agent.environment.expired")
+
             @JvmField val AGENT_SESSION_CREATED = of("agent.session.created")
 
             @JvmField val AGENT_SESSION_ACTION_REQUIRED = of("agent.session.action_required")
@@ -651,6 +655,8 @@ private constructor(
             VIDEO_FAILED,
             AGENT_ENVIRONMENT_READY,
             AGENT_ENVIRONMENT_FAILED,
+            AGENT_ENVIRONMENT_SUSPENDED,
+            AGENT_ENVIRONMENT_EXPIRED,
             AGENT_SESSION_CREATED,
             AGENT_SESSION_ACTION_REQUIRED,
             AGENT_SESSION_IN_PROGRESS,
@@ -688,6 +694,8 @@ private constructor(
             VIDEO_FAILED,
             AGENT_ENVIRONMENT_READY,
             AGENT_ENVIRONMENT_FAILED,
+            AGENT_ENVIRONMENT_SUSPENDED,
+            AGENT_ENVIRONMENT_EXPIRED,
             AGENT_SESSION_CREATED,
             AGENT_SESSION_ACTION_REQUIRED,
             AGENT_SESSION_IN_PROGRESS,
@@ -728,6 +736,8 @@ private constructor(
                 VIDEO_FAILED -> Value.VIDEO_FAILED
                 AGENT_ENVIRONMENT_READY -> Value.AGENT_ENVIRONMENT_READY
                 AGENT_ENVIRONMENT_FAILED -> Value.AGENT_ENVIRONMENT_FAILED
+                AGENT_ENVIRONMENT_SUSPENDED -> Value.AGENT_ENVIRONMENT_SUSPENDED
+                AGENT_ENVIRONMENT_EXPIRED -> Value.AGENT_ENVIRONMENT_EXPIRED
                 AGENT_SESSION_CREATED -> Value.AGENT_SESSION_CREATED
                 AGENT_SESSION_ACTION_REQUIRED -> Value.AGENT_SESSION_ACTION_REQUIRED
                 AGENT_SESSION_IN_PROGRESS -> Value.AGENT_SESSION_IN_PROGRESS
@@ -767,6 +777,8 @@ private constructor(
                 VIDEO_FAILED -> Known.VIDEO_FAILED
                 AGENT_ENVIRONMENT_READY -> Known.AGENT_ENVIRONMENT_READY
                 AGENT_ENVIRONMENT_FAILED -> Known.AGENT_ENVIRONMENT_FAILED
+                AGENT_ENVIRONMENT_SUSPENDED -> Known.AGENT_ENVIRONMENT_SUSPENDED
+                AGENT_ENVIRONMENT_EXPIRED -> Known.AGENT_ENVIRONMENT_EXPIRED
                 AGENT_SESSION_CREATED -> Known.AGENT_SESSION_CREATED
                 AGENT_SESSION_ACTION_REQUIRED -> Known.AGENT_SESSION_ACTION_REQUIRED
                 AGENT_SESSION_IN_PROGRESS -> Known.AGENT_SESSION_IN_PROGRESS

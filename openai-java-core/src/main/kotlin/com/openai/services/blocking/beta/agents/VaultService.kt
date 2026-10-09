@@ -13,6 +13,7 @@ import com.openai.models.beta.agents.vaults.VaultDeleted
 import com.openai.models.beta.agents.vaults.VaultListPage
 import com.openai.models.beta.agents.vaults.VaultListParams
 import com.openai.models.beta.agents.vaults.VaultRetrieveParams
+import com.openai.models.beta.agents.vaults.VaultUpdateParams
 import com.openai.services.blocking.beta.agents.vaults.CredentialService
 import java.util.function.Consumer
 
@@ -81,6 +82,36 @@ interface VaultService {
     /** @see retrieve */
     fun retrieve(vaultId: String, requestOptions: RequestOptions): Vault =
         retrieve(vaultId, VaultRetrieveParams.none(), requestOptions)
+
+    /**
+     * Updates the name or metadata of an active vault. Omitted fields remain unchanged. See
+     * [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
+     */
+    fun update(vaultId: String): Vault = update(vaultId, VaultUpdateParams.none())
+
+    /** @see update */
+    fun update(
+        vaultId: String,
+        params: VaultUpdateParams = VaultUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Vault = update(params.toBuilder().vaultId(vaultId).build(), requestOptions)
+
+    /** @see update */
+    fun update(vaultId: String, params: VaultUpdateParams = VaultUpdateParams.none()): Vault =
+        update(vaultId, params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        params: VaultUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Vault
+
+    /** @see update */
+    fun update(params: VaultUpdateParams): Vault = update(params, RequestOptions.none())
+
+    /** @see update */
+    fun update(vaultId: String, requestOptions: RequestOptions): Vault =
+        update(vaultId, VaultUpdateParams.none(), requestOptions)
 
     /**
      * Lists vaults using ID-based pagination. See
@@ -209,6 +240,47 @@ interface VaultService {
         @MustBeClosed
         fun retrieve(vaultId: String, requestOptions: RequestOptions): HttpResponseFor<Vault> =
             retrieve(vaultId, VaultRetrieveParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /vaults/{vault_id}`, but is otherwise the same as
+         * [VaultService.update].
+         */
+        @MustBeClosed
+        fun update(vaultId: String): HttpResponseFor<Vault> =
+            update(vaultId, VaultUpdateParams.none())
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            vaultId: String,
+            params: VaultUpdateParams = VaultUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Vault> =
+            update(params.toBuilder().vaultId(vaultId).build(), requestOptions)
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            vaultId: String,
+            params: VaultUpdateParams = VaultUpdateParams.none(),
+        ): HttpResponseFor<Vault> = update(vaultId, params, RequestOptions.none())
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            params: VaultUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Vault>
+
+        /** @see update */
+        @MustBeClosed
+        fun update(params: VaultUpdateParams): HttpResponseFor<Vault> =
+            update(params, RequestOptions.none())
+
+        /** @see update */
+        @MustBeClosed
+        fun update(vaultId: String, requestOptions: RequestOptions): HttpResponseFor<Vault> =
+            update(vaultId, VaultUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /vaults`, but is otherwise the same as

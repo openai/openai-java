@@ -34,16 +34,16 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Evaluate ordered classification and scoring questions against shared input. Answers are returned
- * in question order.
+ * Use this endpoint to ask classification or scoring questions about the same input. You’ll get the
+ * answers back in the order you asked the questions.
  *
- * Supply input as a string or user messages containing text and inline images. Only user messages
- * with `input_text` and `input_image` parts are supported; non-user roles, function calls, files,
- * audio, and item references are not supported. Images require a data URL, not an external URL or
- * file ID. At most 128 images are allowed across the request.
+ * For text, you can pass a string. You can also send user messages containing `input_text` and
+ * `input_image` parts, with up to 128 images per request. Images can be base64 data URLs or
+ * publicly accessible HTTP(S) URLs. File IDs aren’t accepted. Other message roles, function calls,
+ * files, audio, and item references aren’t supported.
  *
- * Each question can return a refusal instead of a scored answer. A refusal has type `refusal` and
- * the corresponding question name, or null if unnamed.
+ * Sometimes a question returns a refusal instead of an answer. The result has type `refusal` and
+ * includes the question’s name, or `null` if you didn’t give it one.
  */
 class DecisionCreateParams
 private constructor(
@@ -53,9 +53,10 @@ private constructor(
 ) : Params {
 
     /**
-     * Shared evidence, as a string or an array of user messages containing text and inline images.
-     * Non-user roles, function calls, function-call outputs, files, audio, and item references are
-     * not supported. At most 128 image parts are allowed across all messages in one request.
+     * The text or images to evaluate for every question. Provide a text string or user messages
+     * containing text and images. Images can be base64 data URLs or publicly accessible HTTP(S)
+     * URLs; at most 128 images are allowed across all messages in one request. Files, audio, tools,
+     * and item references are not supported.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -164,10 +165,10 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * Shared evidence, as a string or an array of user messages containing text and inline
-         * images. Non-user roles, function calls, function-call outputs, files, audio, and item
-         * references are not supported. At most 128 image parts are allowed across all messages in
-         * one request.
+         * The text or images to evaluate for every question. Provide a text string or user messages
+         * containing text and images. Images can be base64 data URLs or publicly accessible HTTP(S)
+         * URLs; at most 128 images are allowed across all messages in one request. Files, audio,
+         * tools, and item references are not supported.
          */
         fun input(input: Input) = apply { body.input(input) }
 
@@ -430,10 +431,10 @@ private constructor(
         ) : this(input, model, questions, safetyIdentifier, mutableMapOf())
 
         /**
-         * Shared evidence, as a string or an array of user messages containing text and inline
-         * images. Non-user roles, function calls, function-call outputs, files, audio, and item
-         * references are not supported. At most 128 image parts are allowed across all messages in
-         * one request.
+         * The text or images to evaluate for every question. Provide a text string or user messages
+         * containing text and images. Images can be base64 data URLs or publicly accessible HTTP(S)
+         * URLs; at most 128 images are allowed across all messages in one request. Files, audio,
+         * tools, and item references are not supported.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -540,10 +541,10 @@ private constructor(
             }
 
             /**
-             * Shared evidence, as a string or an array of user messages containing text and inline
-             * images. Non-user roles, function calls, function-call outputs, files, audio, and item
-             * references are not supported. At most 128 image parts are allowed across all messages
-             * in one request.
+             * The text or images to evaluate for every question. Provide a text string or user
+             * messages containing text and images. Images can be base64 data URLs or publicly
+             * accessible HTTP(S) URLs; at most 128 images are allowed across all messages in one
+             * request. Files, audio, tools, and item references are not supported.
              */
             fun input(input: Input) = input(JsonField.of(input))
 
@@ -758,9 +759,10 @@ private constructor(
     }
 
     /**
-     * Shared evidence, as a string or an array of user messages containing text and inline images.
-     * Non-user roles, function calls, function-call outputs, files, audio, and item references are
-     * not supported. At most 128 image parts are allowed across all messages in one request.
+     * The text or images to evaluate for every question. Provide a text string or user messages
+     * containing text and images. Images can be base64 data URLs or publicly accessible HTTP(S)
+     * URLs; at most 128 images are allowed across all messages in one request. Files, audio, tools,
+     * and item references are not supported.
      */
     @JsonDeserialize(using = Input.Deserializer::class)
     @JsonSerialize(using = Input.Serializer::class)
@@ -992,10 +994,13 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
+        /** Estimate how likely it is that a statement about the input is true. */
         fun predicate(): Optional<Predicate> = Optional.ofNullable(predicate)
 
+        /** Choose from the supplied options based on the input. */
         fun choice(): Optional<Choice> = Optional.ofNullable(choice)
 
+        /** Rate the input against the supplied ordered levels. */
         fun score(): Optional<Score> = Optional.ofNullable(score)
 
         fun isPredicate(): Boolean = predicate != null
@@ -1004,10 +1009,13 @@ private constructor(
 
         fun isScore(): Boolean = score != null
 
+        /** Estimate how likely it is that a statement about the input is true. */
         fun asPredicate(): Predicate = predicate.getOrThrow("predicate")
 
+        /** Choose from the supplied options based on the input. */
         fun asChoice(): Choice = choice.getOrThrow("choice")
 
+        /** Rate the input against the supplied ordered levels. */
         fun asScore(): Score = score.getOrThrow("score")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -1135,10 +1143,13 @@ private constructor(
 
         companion object {
 
+            /** Estimate how likely it is that a statement about the input is true. */
             @JvmStatic fun ofPredicate(predicate: Predicate) = Question(predicate = predicate)
 
+            /** Choose from the supplied options based on the input. */
             @JvmStatic fun ofChoice(choice: Choice) = Question(choice = choice)
 
+            /** Rate the input against the supplied ordered levels. */
             @JvmStatic fun ofScore(score: Score) = Question(score = score)
         }
 
@@ -1147,10 +1158,13 @@ private constructor(
          */
         interface Visitor<out T> {
 
+            /** Estimate how likely it is that a statement about the input is true. */
             fun visitPredicate(predicate: Predicate): T
 
+            /** Choose from the supplied options based on the input. */
             fun visitChoice(choice: Choice): T
 
+            /** Rate the input against the supplied ordered levels. */
             fun visitScore(score: Score): T
 
             /**
@@ -1213,6 +1227,7 @@ private constructor(
             }
         }
 
+        /** Estimate how likely it is that a statement about the input is true. */
         class Predicate
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
@@ -1465,6 +1480,7 @@ private constructor(
                 "Predicate{instructions=$instructions, type=$type, name=$name, additionalProperties=$additionalProperties}"
         }
 
+        /** Choose from the supplied options based on the input. */
         class Choice
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
@@ -1488,6 +1504,8 @@ private constructor(
             ) : this(choices, instructions, type, name, mutableMapOf())
 
             /**
+             * Provide between 2 and 255 choices. Each choice must be unique.
+             *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
              *   value).
@@ -1590,6 +1608,7 @@ private constructor(
                     additionalProperties = choice.additionalProperties.toMutableMap()
                 }
 
+                /** Provide between 2 and 255 choices. Each choice must be unique. */
                 fun choices(choices: List<DecisionChoiceOption>) = choices(JsonField.of(choices))
 
                 /**
@@ -1770,6 +1789,7 @@ private constructor(
                 "Choice{choices=$choices, instructions=$instructions, type=$type, name=$name, additionalProperties=$additionalProperties}"
         }
 
+        /** Rate the input against the supplied ordered levels. */
         class Score
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(

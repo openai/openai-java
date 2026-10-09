@@ -43,7 +43,7 @@ internal class DecisionInputPartTest {
     fun ofInputImage() {
         val inputImage =
             DecisionInputImage.builder()
-                .imageUrl("data:")
+                .imageUrl("https://")
                 .detail(DecisionInputImage.Detail.LOW)
                 .build()
 
@@ -59,7 +59,7 @@ internal class DecisionInputPartTest {
         val decisionInputPart =
             DecisionInputPart.ofInputImage(
                 DecisionInputImage.builder()
-                    .imageUrl("data:")
+                    .imageUrl("https://")
                     .detail(DecisionInputImage.Detail.LOW)
                     .build()
             )

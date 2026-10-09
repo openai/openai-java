@@ -143,6 +143,9 @@ private constructor(
         /** Alias for calling [provider] with `Provider.ofGcp(gcp)`. */
         fun provider(gcp: Provider.Gcp) = apply { body.provider(gcp) }
 
+        /** Alias for calling [provider] with `Provider.ofOci(oci)`. */
+        fun provider(oci: Provider.Oci) = apply { body.provider(oci) }
+
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -402,6 +405,9 @@ private constructor(
             /** Alias for calling [provider] with `Provider.ofGcp(gcp)`. */
             fun provider(gcp: Provider.Gcp) = provider(Provider.ofGcp(gcp))
 
+            /** Alias for calling [provider] with `Provider.ofOci(oci)`. */
+            fun provider(oci: Provider.Oci) = provider(Provider.ofOci(oci))
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -510,6 +516,7 @@ private constructor(
         private val aws: Aws? = null,
         private val azure: Azure? = null,
         private val gcp: Gcp? = null,
+        private val oci: Oci? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -519,17 +526,23 @@ private constructor(
 
         fun gcp(): Optional<Gcp> = Optional.ofNullable(gcp)
 
+        fun oci(): Optional<Oci> = Optional.ofNullable(oci)
+
         fun isAws(): Boolean = aws != null
 
         fun isAzure(): Boolean = azure != null
 
         fun isGcp(): Boolean = gcp != null
 
+        fun isOci(): Boolean = oci != null
+
         fun asAws(): Aws = aws.getOrThrow("aws")
 
         fun asAzure(): Azure = azure.getOrThrow("azure")
 
         fun asGcp(): Gcp = gcp.getOrThrow("gcp")
+
+        fun asOci(): Oci = oci.getOrThrow("oci")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -552,6 +565,7 @@ private constructor(
                         value.aws != null -> callbacks["aws"]
                         value.azure != null -> callbacks["azure"]
                         value.gcp != null -> callbacks["gcp"]
+                        value.oci != null -> callbacks["oci"]
                         else -> null
                     }
                 if (callback != null) return callback(value)
@@ -580,6 +594,10 @@ private constructor(
                     callbacks["gcp"] = { value -> callback.apply(value.gcp!!) }
                 }
 
+                fun onOci(callback: java.util.function.Function<in Oci, out T>) = apply {
+                    callbacks["oci"] = { value -> callback.apply(value.oci!!) }
+                }
+
                 /**
                  * Receives this union for both unknown and recognized-but-unregistered variants.
                  */
@@ -597,6 +615,7 @@ private constructor(
                 aws != null -> visitor.visitAws(aws)
                 azure != null -> visitor.visitAzure(azure)
                 gcp != null -> visitor.visitGcp(gcp)
+                oci != null -> visitor.visitOci(oci)
                 else -> visitor.unknown(_json)
             }
 
@@ -666,6 +685,10 @@ private constructor(
                     override fun visitGcp(gcp: Gcp) {
                         gcp.validate()
                     }
+
+                    override fun visitOci(oci: Oci) {
+                        oci.validate()
+                    }
                 }
             )
             validated = true
@@ -695,6 +718,8 @@ private constructor(
 
                     override fun visitGcp(gcp: Gcp) = gcp.validity()
 
+                    override fun visitOci(oci: Oci) = oci.validity()
+
                     override fun unknown(json: JsonValue?) = 0
                 }
             )
@@ -704,16 +729,21 @@ private constructor(
                 return true
             }
 
-            return other is Provider && aws == other.aws && azure == other.azure && gcp == other.gcp
+            return other is Provider &&
+                aws == other.aws &&
+                azure == other.azure &&
+                gcp == other.gcp &&
+                oci == other.oci
         }
 
-        override fun hashCode(): Int = Objects.hash(aws, azure, gcp)
+        override fun hashCode(): Int = Objects.hash(aws, azure, gcp, oci)
 
         override fun toString(): String =
             when {
                 aws != null -> "Provider{aws=$aws}"
                 azure != null -> "Provider{azure=$azure}"
                 gcp != null -> "Provider{gcp=$gcp}"
+                oci != null -> "Provider{oci=$oci}"
                 _json != null -> "Provider{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Provider")
             }
@@ -725,6 +755,8 @@ private constructor(
             @JvmStatic fun ofAzure(azure: Azure) = Provider(azure = azure)
 
             @JvmStatic fun ofGcp(gcp: Gcp) = Provider(gcp = gcp)
+
+            @JvmStatic fun ofOci(oci: Oci) = Provider(oci = oci)
         }
 
         /**
@@ -763,6 +795,8 @@ private constructor(
 
             fun visitGcp(gcp: Gcp): T
 
+            fun visitOci(oci: Oci): T
+
             /**
              * Maps an unknown variant of [Provider] to a value of type [T].
              *
@@ -800,6 +834,11 @@ private constructor(
                             Provider(gcp = it, _json = json)
                         } ?: Provider(_json = json)
                     }
+                    "oci" -> {
+                        return tryDeserialize(node, jacksonTypeRef<Oci>())?.let {
+                            Provider(oci = it, _json = json)
+                        } ?: Provider(_json = json)
+                    }
                 }
 
                 return Provider(_json = json)
@@ -817,6 +856,7 @@ private constructor(
                     value.aws != null -> generator.writeObject(value.aws)
                     value.azure != null -> generator.writeObject(value.azure)
                     value.gcp != null -> generator.writeObject(value.gcp)
+                    value.oci != null -> generator.writeObject(value.oci)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Provider")
                 }
@@ -1832,6 +1872,298 @@ private constructor(
 
             override fun toString() =
                 "Gcp{bucket=$bucket, type=$type, workloadIdentityPoolId=$workloadIdentityPoolId, workloadIdentityProjectNumber=$workloadIdentityProjectNumber, workloadIdentityProviderId=$workloadIdentityProviderId, additionalProperties=$additionalProperties}"
+        }
+
+        class Oci
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val bucket: JsonField<String>,
+            private val region: JsonField<String>,
+            private val tenancyOcid: JsonField<String>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("bucket")
+                @ExcludeMissing
+                bucket: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("region")
+                @ExcludeMissing
+                region: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("tenancy_ocid")
+                @ExcludeMissing
+                tenancyOcid: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(bucket, region, tenancyOcid, type, mutableMapOf())
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun bucket(): String = bucket.getRequired("bucket")
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun region(): String = region.getRequired("region")
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun tenancyOcid(): String = tenancyOcid.getRequired("tenancy_ocid")
+
+            /**
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("oci")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * Returns the raw JSON value of [bucket].
+             *
+             * Unlike [bucket], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("bucket") @ExcludeMissing fun _bucket(): JsonField<String> = bucket
+
+            /**
+             * Returns the raw JSON value of [region].
+             *
+             * Unlike [region], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("region") @ExcludeMissing fun _region(): JsonField<String> = region
+
+            /**
+             * Returns the raw JSON value of [tenancyOcid].
+             *
+             * Unlike [tenancyOcid], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("tenancy_ocid")
+            @ExcludeMissing
+            fun _tenancyOcid(): JsonField<String> = tenancyOcid
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Oci].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .bucket()
+                 * .region()
+                 * .tenancyOcid()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Oci]. */
+            class Builder internal constructor() {
+
+                private var bucket: JsonField<String>? = null
+                private var region: JsonField<String>? = null
+                private var tenancyOcid: JsonField<String>? = null
+                private var type: JsonValue = JsonValue.from("oci")
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(oci: Oci) = apply {
+                    bucket = oci.bucket
+                    region = oci.region
+                    tenancyOcid = oci.tenancyOcid
+                    type = oci.type
+                    additionalProperties = oci.additionalProperties.toMutableMap()
+                }
+
+                fun bucket(bucket: String) = bucket(JsonField.of(bucket))
+
+                /**
+                 * Sets [Builder.bucket] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.bucket] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun bucket(bucket: JsonField<String>) = apply { this.bucket = bucket }
+
+                fun region(region: String) = region(JsonField.of(region))
+
+                /**
+                 * Sets [Builder.region] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.region] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun region(region: JsonField<String>) = apply { this.region = region }
+
+                fun tenancyOcid(tenancyOcid: String) = tenancyOcid(JsonField.of(tenancyOcid))
+
+                /**
+                 * Sets [Builder.tenancyOcid] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.tenancyOcid] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun tenancyOcid(tenancyOcid: JsonField<String>) = apply {
+                    this.tenancyOcid = tenancyOcid
+                }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("oci")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Oci].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .bucket()
+                 * .region()
+                 * .tenancyOcid()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Oci =
+                    Oci(
+                        checkRequired("bucket", bucket),
+                        checkRequired("region", region),
+                        checkRequired("tenancyOcid", tenancyOcid),
+                        type,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Oci = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                bucket()
+                region()
+                tenancyOcid()
+                _type().let {
+                    if (it != JsonValue.from("oci")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (bucket.asKnown().isPresent) 1 else 0) +
+                    (if (region.asKnown().isPresent) 1 else 0) +
+                    (if (tenancyOcid.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("oci")) 1 else 0 }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Oci &&
+                    bucket == other.bucket &&
+                    region == other.region &&
+                    tenancyOcid == other.tenancyOcid &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(bucket, region, tenancyOcid, type, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Oci{bucket=$bucket, region=$region, tenancyOcid=$tenancyOcid, type=$type, additionalProperties=$additionalProperties}"
         }
     }
 

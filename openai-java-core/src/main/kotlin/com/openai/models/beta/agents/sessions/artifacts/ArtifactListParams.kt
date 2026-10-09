@@ -30,16 +30,16 @@ private constructor(
 
     fun sessionId(): Optional<String> = Optional.ofNullable(sessionId)
 
-    /** Return artifacts after this immutable artifact ID. */
+    /** Return resources after this resource ID in the selected order. */
     fun after(): Optional<String> = Optional.ofNullable(after)
 
     /** Restrict the listing to artifacts produced by this environment. */
     fun environmentId(): Optional<String> = Optional.ofNullable(environmentId)
 
-    /** The maximum number of artifacts to return, between 1 and 100. */
+    /** The maximum number of resources to return, between 1 and 100. Defaults to 20. */
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
 
-    /** Sort by creation time and ID. Defaults to descending. */
+    /** The order in which resources are returned. Defaults to `desc`. */
     fun order(): Optional<Order> = Optional.ofNullable(order)
 
     /** Additional headers to send with the request. */
@@ -85,7 +85,7 @@ private constructor(
         /** Alias for calling [Builder.sessionId] with `sessionId.orElse(null)`. */
         fun sessionId(sessionId: Optional<String>) = sessionId(sessionId.getOrNull())
 
-        /** Return artifacts after this immutable artifact ID. */
+        /** Return resources after this resource ID in the selected order. */
         fun after(after: String?) = apply { this.after = after }
 
         /** Alias for calling [Builder.after] with `after.orElse(null)`. */
@@ -98,7 +98,7 @@ private constructor(
         fun environmentId(environmentId: Optional<String>) =
             environmentId(environmentId.getOrNull())
 
-        /** The maximum number of artifacts to return, between 1 and 100. */
+        /** The maximum number of resources to return, between 1 and 100. Defaults to 20. */
         fun limit(limit: Long?) = apply { this.limit = limit }
 
         /**
@@ -111,7 +111,7 @@ private constructor(
         /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
-        /** Sort by creation time and ID. Defaults to descending. */
+        /** The order in which resources are returned. Defaults to `desc`. */
         fun order(order: Order?) = apply { this.order = order }
 
         /** Alias for calling [Builder.order] with `order.orElse(null)`. */
@@ -251,7 +251,7 @@ private constructor(
             }
             .build()
 
-    /** Sort by creation time and ID. Defaults to descending. */
+    /** The order in which resources are returned. Defaults to `desc`. */
     class Order @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**

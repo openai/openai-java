@@ -10,7 +10,14 @@ internal class VaultListParamsTest {
 
     @Test
     fun create() {
-        VaultListParams.builder().after("after").limit(0L).order(VaultListParams.Order.ASC).build()
+        VaultListParams.builder()
+            .after("after")
+            .limit(1L)
+            .metadata(
+                VaultListParams.Metadata.builder().putAdditionalProperty("foo", "string").build()
+            )
+            .order(VaultListParams.Order.ASC)
+            .build()
     }
 
     @Test
@@ -18,7 +25,12 @@ internal class VaultListParamsTest {
         val params =
             VaultListParams.builder()
                 .after("after")
-                .limit(0L)
+                .limit(1L)
+                .metadata(
+                    VaultListParams.Metadata.builder()
+                        .putAdditionalProperty("foo", "string")
+                        .build()
+                )
                 .order(VaultListParams.Order.ASC)
                 .build()
 
@@ -28,7 +40,8 @@ internal class VaultListParamsTest {
             .isEqualTo(
                 QueryParams.builder()
                     .put("after", "after")
-                    .put("limit", "0")
+                    .put("limit", "1")
+                    .put("metadata[foo]", "string")
                     .put("order", "asc")
                     .build()
             )

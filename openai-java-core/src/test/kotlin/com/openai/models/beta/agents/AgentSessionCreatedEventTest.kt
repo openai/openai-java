@@ -120,6 +120,9 @@ internal class AgentSessionCreatedEventTest {
                                 .build()
                         )
                         .addVaultId("string")
+                        .spendControl(
+                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        )
                         .build()
                 )
                 .build()
@@ -229,6 +232,9 @@ internal class AgentSessionCreatedEventTest {
                             .build()
                     )
                     .addVaultId("string")
+                    .spendControl(
+                        AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                    )
                     .build()
             )
     }
@@ -344,6 +350,9 @@ internal class AgentSessionCreatedEventTest {
                                 .build()
                         )
                         .addVaultId("string")
+                        .spendControl(
+                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        )
                         .build()
                 )
                 .build()

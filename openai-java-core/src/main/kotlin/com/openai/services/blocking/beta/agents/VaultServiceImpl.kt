@@ -26,6 +26,7 @@ import com.openai.models.beta.agents.vaults.VaultListPage
 import com.openai.models.beta.agents.vaults.VaultListPageResponse
 import com.openai.models.beta.agents.vaults.VaultListParams
 import com.openai.models.beta.agents.vaults.VaultRetrieveParams
+import com.openai.models.beta.agents.vaults.VaultUpdateParams
 import com.openai.services.blocking.beta.agents.vaults.CredentialService
 import com.openai.services.blocking.beta.agents.vaults.CredentialServiceImpl
 import java.util.function.Consumer
@@ -59,6 +60,10 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun retrieve(params: VaultRetrieveParams, requestOptions: RequestOptions): Vault =
         // get /vaults/{vault_id}
         withRawResponse().retrieve(params, requestOptions).parse()
+
+    override fun update(params: VaultUpdateParams, requestOptions: RequestOptions): Vault =
+        // post /vaults/{vault_id}
+        withRawResponse().update(params, requestOptions).parse()
 
     override fun list(params: VaultListParams, requestOptions: RequestOptions): VaultListPage =
         // get /vaults
@@ -145,6 +150,41 @@ class VaultServiceImpl internal constructor(private val clientOptions: ClientOpt
             return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val updateHandler: Handler<Vault> = jsonHandler<Vault>(clientOptions.jsonMapper)
+
+        override fun update(
+            params: VaultUpdateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Vault> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vaultId", params.vaultId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("vaults", params._pathParam(0))
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { updateHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

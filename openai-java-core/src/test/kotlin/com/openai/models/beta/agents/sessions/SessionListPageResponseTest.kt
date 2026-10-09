@@ -125,6 +125,9 @@ internal class SessionListPageResponseTest {
                                 .build()
                         )
                         .addVaultId("string")
+                        .spendControl(
+                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        )
                         .build()
                 )
                 .firstId("first_id")
@@ -236,6 +239,9 @@ internal class SessionListPageResponseTest {
                             .build()
                     )
                     .addVaultId("string")
+                    .spendControl(
+                        AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                    )
                     .build()
             )
         assertThat(sessionListPageResponse.firstId()).contains("first_id")
@@ -353,6 +359,9 @@ internal class SessionListPageResponseTest {
                                 .build()
                         )
                         .addVaultId("string")
+                        .spendControl(
+                            AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
+                        )
                         .build()
                 )
                 .firstId("first_id")

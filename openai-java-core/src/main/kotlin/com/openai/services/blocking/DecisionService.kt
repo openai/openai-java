@@ -25,16 +25,16 @@ interface DecisionService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): DecisionService
 
     /**
-     * Evaluate ordered classification and scoring questions against shared input. Answers are
-     * returned in question order.
+     * Use this endpoint to ask classification or scoring questions about the same input. You’ll get
+     * the answers back in the order you asked the questions.
      *
-     * Supply input as a string or user messages containing text and inline images. Only user
-     * messages with `input_text` and `input_image` parts are supported; non-user roles, function
-     * calls, files, audio, and item references are not supported. Images require a data URL, not an
-     * external URL or file ID. At most 128 images are allowed across the request.
+     * For text, you can pass a string. You can also send user messages containing `input_text` and
+     * `input_image` parts, with up to 128 images per request. Images can be base64 data URLs or
+     * publicly accessible HTTP(S) URLs. File IDs aren’t accepted. Other message roles, function
+     * calls, files, audio, and item references aren’t supported.
      *
-     * Each question can return a refusal instead of a scored answer. A refusal has type `refusal`
-     * and the corresponding question name, or null if unnamed.
+     * Sometimes a question returns a refusal instead of an answer. The result has type `refusal`
+     * and includes the question’s name, or `null` if you didn’t give it one.
      */
     fun create(params: DecisionCreateParams): Decision = create(params, RequestOptions.none())
 
