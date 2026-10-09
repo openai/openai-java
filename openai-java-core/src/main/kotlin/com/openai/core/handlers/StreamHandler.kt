@@ -2,6 +2,7 @@
 
 package com.openai.core.handlers
 
+import com.openai.core.http.Headers
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.PhantomReachableClosingStreamResponse
@@ -46,7 +47,7 @@ internal fun <T> streamHandler(
                                     // We wrap the `lines` instead of the top-level sequence because
                                     // we only want to catch `IOException` from the reader; not from
                                     // the user's own code.
-                                    IOExceptionWrappingSequence(lines, isClosed),
+                                    IOExceptionWrappingSequence(lines, response.headers(), isClosed),
                                 )
                             }
                         }
@@ -75,6 +76,7 @@ internal fun <T> streamHandler(
 /** A sequence that catches, wraps, and rethrows [IOException] as [OpenAIIoException]. */
 private class IOExceptionWrappingSequence<T>(
     private val sequence: Sequence<T>,
+    private val headers: Headers,
     private val isClosed: AtomicBoolean,
 ) : Sequence<T> {
 
@@ -86,7 +88,7 @@ private class IOExceptionWrappingSequence<T>(
                 try {
                     iterator.next()
                 } catch (e: IOException) {
-                    throw OpenAIIoException("Stream failed", e)
+                    throw OpenAIIoException("Stream failed", e, headers)
                 }
 
             override fun hasNext(): Boolean =
@@ -94,7 +96,7 @@ private class IOExceptionWrappingSequence<T>(
                     iterator.hasNext()
                 } catch (e: IOException) {
                     // Closing the transport may abort an in-flight read instead of returning EOF.
-                    if (isClosed.get()) false else throw OpenAIIoException("Stream failed", e)
+                    if (isClosed.get()) false else throw OpenAIIoException("Stream failed", e, headers)
                 }
         }
     }
