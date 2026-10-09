@@ -189,5 +189,5 @@ tasks.named("dokkaJavadocCollector").configure {
 // Run separately after signed staging so no Sonatype credentials enter this task.
 tasks.register("publishViaAuthProxy") {
     notCompatibleWithConfigurationCache("Release credentials are read only during execution")
-    doLast { MavenCentralProxyPublisher.run(rootDir.toPath()) }
+    doLast { MavenCentralProxyPublisher.run(rootProject) }
 }

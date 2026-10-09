@@ -345,7 +345,7 @@ the ZIP body or assume a generic proxy's upload limits/timeouts fit a full SDK r
 Before enabling the variable, complete an owner-approved, nonpublishing `USER_MANAGED` canary and
 verify the real bundle size, token exchange, signatures and gateway behavior. The enabled release
 workflow **does publish automatically after validation**. It stages signed artifacts without vendor
-credentials, verifies their signatures and attested JAR hashes, then uploads once and records the
+credentials, derives the expected inventory from Gradle Maven publications, verifies signatures and attested JAR hashes, then uploads once and records the
 bundle digest and deployment ID in the job log and summary. The uploader is the `publishViaAuthProxy` Kotlin Gradle task in `buildSrc`; it uses the build JDK.
 The workflow sets `JAVA_TOOL_OPTIONS=-Djdk.httpclient.redirects.retrylimit=1` before starting
 that JVM to disable HTTP-client retries as well as application-level retries.

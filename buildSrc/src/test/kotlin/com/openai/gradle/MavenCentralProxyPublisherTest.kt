@@ -16,6 +16,9 @@ import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import org.gradle.api.GradleException
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.io.TempDir
 
 class MavenCentralProxyPublisherTest {
@@ -231,12 +234,64 @@ class MavenCentralProxyPublisherTest {
         MavenCentralProxyPublisher.bundle(
             staging,
             output,
-            "1.2.3",
-            listOf("openai-java"),
+            MavenCentralProxyPublisher.Inventory(
+                setOf(".jar", ".pom", "-sources.jar", "-javadoc.jar")
+                    .map { "com/openai/openai-java/1.2.3/openai-java-1.2.3$it" }
+                    .toSet(),
+                setOf("com/openai/openai-java/1.2.3/openai-java-1.2.3.module"),
+                mapOf(
+                    "com/openai/openai-java/1.2.3/openai-java-1.2.3.jar" to
+                        "openai-java/build/libs/openai-java-1.2.3.jar"
+                ),
+            ),
             temporary.resolve("manifest"),
             verify,
         )
         return output
+    }
+
+    @Test
+    fun `inventory follows Gradle coordinates classifiers and artifact source paths`() {
+        val project = ProjectBuilder.builder().withProjectDir(temporary.toFile()).build()
+        project.pluginManager.apply("maven-publish")
+        val publication =
+            project.extensions
+                .getByType(PublishingExtension::class.java)
+                .publications
+                .create("release", MavenPublication::class.java)
+        publication.groupId = "example.custom"
+        publication.artifactId = "renamed-library"
+        publication.version = "2026.10-rc1"
+        val jar = temporary.resolve("custom-output/main.jar")
+        publication.artifact(jar.toFile())
+        publication.artifact(temporary.resolve("extra.zip").toFile()) { classifier = "docs-html" }
+        val inventory = MavenCentralProxyPublisher.inventory(listOf(project), publication.version)
+        val prefix = "example/custom/renamed-library/2026.10-rc1/renamed-library-2026.10-rc1"
+        assertEquals(setOf("$prefix.jar", "$prefix.pom", "$prefix-docs-html.zip"), inventory.files)
+        assertEquals(mapOf("$prefix.jar" to "custom-output/main.jar"), inventory.attestedJars)
+        assertEquals(setOf("$prefix.module"), inventory.optionalMetadata)
+        val staging = temporary.resolve("custom-staging")
+        inventory.files.forEach { name ->
+            val file = staging.resolve(name)
+            Files.createDirectories(file.parent)
+            Files.writeString(file, "synthetic")
+            Files.writeString(staging.resolve("$name.asc"), "fake-signature")
+        }
+        val provenance = temporary.resolve("custom-provenance")
+        Files.writeString(
+            provenance,
+            "${MavenCentralProxyPublisher.digest(staging.resolve("$prefix.jar"))}  custom-output/main.jar\n",
+        )
+        val output = temporary.resolve("custom.zip")
+        MavenCentralProxyPublisher.bundle(staging, output, inventory, provenance) { true }
+        ZipFile(output.toFile()).use { assertEquals(6, it.size()) }
+        Files.delete(staging.resolve("$prefix-docs-html.zip"))
+        assertFails {
+            MavenCentralProxyPublisher.bundle(staging, output, inventory, provenance) { true }
+        }
+        assertFails { MavenCentralProxyPublisher.inventory(listOf(project), "different-version") }
+        publication.artifactId = "../escape"
+        assertFails { MavenCentralProxyPublisher.inventory(listOf(project), publication.version) }
     }
 
     @Test

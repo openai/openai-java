@@ -16,6 +16,9 @@ import java.util.UUID
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import org.gradle.api.GradleException
+import org.gradle.api.Project
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
 
 /** Release-only transport. Credentials stay in memory and uploads are never retried. */
 class MavenCentralProxyPublisher(
@@ -140,6 +143,12 @@ class MavenCentralProxyPublisher(
         )
     }
 
+    internal data class Inventory(
+        val files: Set<String>,
+        val optionalMetadata: Set<String>,
+        val attestedJars: Map<String, String>,
+    )
+
     companion object {
         private val httpClient =
             HttpClient.newBuilder()
@@ -202,11 +211,57 @@ class MavenCentralProxyPublisher(
             return digest.digest().joinToString("") { "%02x".format(it) }
         }
 
+        // Read the finalized publication model at task execution, not during configuration.
+        internal fun inventory(projects: Iterable<Project>, version: String): Inventory {
+            check(version.isNotBlank() && !version.endsWith("-SNAPSHOT"))
+            val files = linkedSetOf<String>()
+            val metadata = linkedSetOf<String>()
+            val jars = linkedMapOf<String, String>()
+            projects.forEach { project ->
+                project.extensions
+                    .findByType(PublishingExtension::class.java)
+                    ?.publications
+                    ?.withType(MavenPublication::class.java)
+                    ?.forEach { publication ->
+                        check(publication.version == version)
+                        val prefix =
+                            "${publication.groupId.replace('.', '/')}/${publication.artifactId}/$version/${publication.artifactId}-$version"
+                        check(files.add("$prefix.pom"))
+                        metadata.add("$prefix.module")
+                        publication.artifacts.forEach { artifact ->
+                            val classifier =
+                                artifact.classifier
+                                    ?.takeIf { it.isNotEmpty() }
+                                    ?.let { "-$it" }
+                                    .orEmpty()
+                            val name = "$prefix$classifier.${artifact.extension}"
+                            check(files.add(name))
+                            if (artifact.extension == "jar" && classifier.isEmpty()) {
+                                jars[name] =
+                                    project.rootDir.canonicalFile
+                                        .toPath()
+                                        .relativize(artifact.file.canonicalFile.toPath())
+                                        .toString()
+                                        .replace('\\', '/')
+                            }
+                        }
+                    }
+            }
+            check(files.isNotEmpty())
+            (files + metadata).forEach { name ->
+                check(
+                    !Path.of(name).isAbsolute &&
+                        name.split('/').none { it.isEmpty() || it == "." || it == ".." } &&
+                        '\\' !in name
+                )
+            }
+            return Inventory(files, metadata, jars)
+        }
+
         internal fun bundle(
             staging: Path,
             output: Path,
-            version: String,
-            artifacts: List<String>,
+            inventory: Inventory,
             provenance: Path,
             verifySignature: (Path) -> Boolean = { signature ->
                 ProcessBuilder(
@@ -223,11 +278,6 @@ class MavenCentralProxyPublisher(
             },
         ) {
             check(!Files.isSymbolicLink(staging) && Files.isDirectory(staging))
-            check(
-                version.matches(Regex("[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?")) &&
-                    !version.endsWith("-SNAPSHOT")
-            )
-            check(artifacts.isNotEmpty() && artifacts.distinct() == artifacts)
             val digests = linkedMapOf<String, String>()
             Files.readAllLines(provenance).forEach { line ->
                 val parts = line.split("  ", limit = 2)
@@ -244,20 +294,14 @@ class MavenCentralProxyPublisher(
             val required = mutableSetOf<String>()
             val allowed = mutableSetOf<String>()
             val jars = linkedMapOf<String, String>()
-            artifacts.forEach { artifact ->
-                check(artifact.matches(Regex("openai-java(?:-[a-z0-9-]+)?")))
-                val prefix = "com/openai/$artifact/$version/$artifact-$version"
-                listOf(".jar", ".pom", "-sources.jar", "-javadoc.jar", ".module").forEach { suffix
-                    ->
-                    val name = prefix + suffix
-                    if (suffix != ".module") required.addAll(listOf(name, "$name.asc"))
-                    listOf(name, "$name.asc").forEach { file ->
-                        allowed.add(file)
-                        allowed.addAll(algorithms.keys.map { "$file.$it" })
-                    }
+            inventory.files.forEach { required.addAll(listOf(it, "$it.asc")) }
+            (inventory.files + inventory.optionalMetadata).forEach { name ->
+                listOf(name, "$name.asc").forEach { file ->
+                    allowed.add(file)
+                    allowed.addAll(algorithms.keys.map { "$file.$it" })
                 }
-                jars["$prefix.jar"] = "$artifact/build/libs/$artifact-$version.jar"
             }
+            jars.putAll(inventory.attestedJars)
             check(digests.keys == jars.values.toSet())
             val files = linkedMapOf<String, Path>()
             Files.walk(staging).use { paths ->
@@ -305,7 +349,7 @@ class MavenCentralProxyPublisher(
             }
         }
 
-        fun run(root: Path) {
+        fun run(root: Project) {
             val archive = Files.createTempFile("maven-release-", ".zip")
             try {
                 check(System.getProperty("jdk.httpclient.redirects.retrylimit") == "1") {
@@ -313,10 +357,12 @@ class MavenCentralProxyPublisher(
                 }
                 val environment = System.getenv()
                 bundle(
-                    root.resolve("build/auth-proxy-staging"),
+                    root.layout.buildDirectory.dir("auth-proxy-staging").get().asFile.toPath(),
                     archive,
-                    environment.getValue("RELEASE_TAG").removePrefix("v"),
-                    environment.getValue("MAVEN_ARTIFACTS").split(" "),
+                    inventory(
+                        root.allprojects,
+                        environment.getValue("RELEASE_TAG").removePrefix("v"),
+                    ),
                     Path.of(environment.getValue("RUNNER_TEMP"), "maven-artifact-provenance.sha256"),
                 )
                 record("Maven bundle SHA-256: ${digest(archive)}")
