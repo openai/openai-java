@@ -10,10 +10,12 @@ import java.util.concurrent.ExecutionException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -132,6 +134,51 @@ internal class WorkloadIdentityHttpClientTest {
                 argThat { req -> req.headers.values("Authorization").contains("Bearer $token") },
                 any(),
             )
+    }
+
+    @Test
+    fun close_closesAuthAndDelegate() {
+        val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
+        val delegateHttpClient = mock<HttpClient>()
+        val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
+
+        client.close()
+
+        verify(workloadIdentityAuth).close()
+        verify(delegateHttpClient).close()
+    }
+
+    @Test
+    fun close_whenAuthCloseFails_stillClosesDelegate() {
+        val authFailure = IllegalStateException("auth close failed")
+        val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
+        val delegateHttpClient = mock<HttpClient>()
+        doThrow(authFailure).whenever(workloadIdentityAuth).close()
+        val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
+
+        val thrown = assertThrows<IllegalStateException> { client.close() }
+
+        assertThat(thrown).isSameAs(authFailure)
+        verify(workloadIdentityAuth).close()
+        verify(delegateHttpClient).close()
+    }
+
+    @Test
+    fun close_whenAuthAndDelegateCloseFail_suppressesDelegateFailure() {
+        val authFailure = IllegalStateException("auth close failed")
+        val delegateFailure = IllegalArgumentException("delegate close failed")
+        val workloadIdentityAuth = mock<WorkloadIdentityAuth>()
+        val delegateHttpClient = mock<HttpClient>()
+        doThrow(authFailure).whenever(workloadIdentityAuth).close()
+        doThrow(delegateFailure).whenever(delegateHttpClient).close()
+        val client = WorkloadIdentityHttpClient(delegateHttpClient, workloadIdentityAuth)
+
+        val thrown = assertThrows<IllegalStateException> { client.close() }
+
+        assertThat(thrown).isSameAs(authFailure)
+        assertThat(thrown.suppressed).containsExactly(delegateFailure)
+        verify(workloadIdentityAuth).close()
+        verify(delegateHttpClient).close()
     }
 
     private fun mockResponse(statusCode: Int, body: String): HttpResponse {
