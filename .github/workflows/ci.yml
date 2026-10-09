@@ -65,8 +65,12 @@ jobs:
             secret="${mapping#*:}"
 
             if ! awk -v property="$property" -v secret="$secret" '
+              BEGIN { empty = sprintf("%c%c", 39, 39) }
               $1 == property ":" {
-                if ($2 == ("$" "{{") && $3 == "secrets." secret && $4 == "}}" && NF == 4) {
+                if ($2 == ("$" "{{") && $3 == "vars.MAVEN_CENTRAL_AUTH_PROXY_URL" &&
+                    $4 == "==" && $5 == empty && $6 == "&&" &&
+                    $7 == "secrets." secret && $8 == "||" && $9 == empty &&
+                    $10 == "}}" && NF == 10) {
                   valid++
                 } else {
                   invalid = 1

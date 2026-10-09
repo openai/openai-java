@@ -369,6 +369,43 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
+    fun `publishing credential lint rejects unconditional or inverted secret mappings`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val lint = parseWorkflow(Path.of("../.github/workflows/ci.yml").readText()).job("lint")
+        val guard =
+            requireNotNull(
+                lint.steps
+                    .single {
+                        it.run?.contains("workflow=.github/workflows/create-releases.yml") == true
+                    }
+                    .run
+            )
+        val target = temporaryDirectory.resolve(".github/workflows/create-releases.yml")
+        Files.createDirectories(target.parent)
+        val conditional =
+            "vars.MAVEN_CENTRAL_AUTH_PROXY_URL == '' && secrets.OPENAI_SONATYPE_USERNAME || ''"
+        listOf(
+                workflow to 0,
+                workflow.replace(conditional, "secrets.OPENAI_SONATYPE_USERNAME") to 1,
+                workflow.replace(
+                    "vars.MAVEN_CENTRAL_AUTH_PROXY_URL == '' &&",
+                    "vars.MAVEN_CENTRAL_AUTH_PROXY_URL != '' &&",
+                ) to 1,
+                workflow.replace("secrets.OPENAI_SONATYPE_PASSWORD", "secrets.WRONG_SECRET") to 1,
+            )
+            .forEach { (candidate, expected) ->
+                target.writeText(candidate)
+                val process =
+                    ProcessBuilder("bash", "-c", guard)
+                        .directory(temporaryDirectory.toFile())
+                        .redirectErrorStream(true)
+                        .start()
+                val output = process.inputStream.bufferedReader().use { it.readText() }
+                assertEquals(expected, process.waitFor(), output)
+            }
+    }
+
+    @Test
     fun `publishing shares signing setup without giving vendor credentials to proxy mode`() {
         val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
         val steps = parseWorkflow(workflow).job("publish").steps
