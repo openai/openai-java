@@ -346,7 +346,9 @@ Before enabling the variable, complete an owner-approved, nonpublishing `USER_MA
 verify the real bundle size, token exchange, signatures and gateway behavior. The enabled release
 workflow **does publish automatically after validation**. It stages signed artifacts without vendor
 credentials, verifies their signatures and attested JAR hashes, then uploads once and records the
-bundle digest and deployment ID in the job log and summary. The helper requires Python 3.11+.
+bundle digest and deployment ID in the job log and summary. The uploader is the `publishViaAuthProxy` Kotlin Gradle task in `buildSrc`; it uses the build JDK.
+The workflow sets `JAVA_TOOL_OPTIONS=-Djdk.httpclient.redirects.retrylimit=1` before starting
+that JVM to disable HTTP-client retries as well as application-level retries.
 
 Failures never fall back to direct publishing or retry an upload automatically. An upload timeout
 can mean Central accepted the bundle: inspect Portal before retrying, even if no deployment ID was

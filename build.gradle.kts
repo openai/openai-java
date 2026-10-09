@@ -1,3 +1,4 @@
+import com.openai.gradle.MavenCentralProxyPublisher
 import com.openai.gradle.CoreCompilationShards
 import com.openai.gradle.GenerateVersionSupportMatrixTask
 import com.openai.gradle.VersionSupportPolicy
@@ -183,4 +184,10 @@ tasks.named("dokkaJavadocCollector").configure {
                 it.name == "dokkaJavadocJar"
         }
         .forEach { mustRunAfter(it) }
+}
+
+// Run separately after signed staging so no Sonatype credentials enter this task.
+tasks.register("publishViaAuthProxy") {
+    notCompatibleWithConfigurationCache("Release credentials are read only during execution")
+    doLast { MavenCentralProxyPublisher.run(rootDir.toPath()) }
 }
