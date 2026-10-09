@@ -470,6 +470,9 @@ private constructor(
 
             @JvmField val PENDING = of("pending")
 
+            /** Provisioning succeeded and the environment is available for attachment or use. */
+            @JvmField val READY = of("ready")
+
             @JvmField val CONNECTED = of("connected")
 
             @JvmField val DISCONNECTED = of("disconnected")
@@ -484,6 +487,8 @@ private constructor(
         /** An enum containing [Status]'s known values. */
         enum class Known {
             PENDING,
+            /** Provisioning succeeded and the environment is available for attachment or use. */
+            READY,
             CONNECTED,
             DISCONNECTED,
             EXPIRED,
@@ -501,6 +506,8 @@ private constructor(
          */
         enum class Value {
             PENDING,
+            /** Provisioning succeeded and the environment is available for attachment or use. */
+            READY,
             CONNECTED,
             DISCONNECTED,
             EXPIRED,
@@ -519,6 +526,7 @@ private constructor(
         fun value(): Value =
             when (this) {
                 PENDING -> Value.PENDING
+                READY -> Value.READY
                 CONNECTED -> Value.CONNECTED
                 DISCONNECTED -> Value.DISCONNECTED
                 EXPIRED -> Value.EXPIRED
@@ -538,6 +546,7 @@ private constructor(
         fun known(): Known =
             when (this) {
                 PENDING -> Known.PENDING
+                READY -> Known.READY
                 CONNECTED -> Known.CONNECTED
                 DISCONNECTED -> Known.DISCONNECTED
                 EXPIRED -> Known.EXPIRED

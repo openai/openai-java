@@ -15,14 +15,20 @@ import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
+import com.openai.models.beta.agents.environments.EnvironmentCreateParams
 import com.openai.models.beta.agents.environments.EnvironmentInfo
+import com.openai.models.beta.agents.environments.EnvironmentListPage
+import com.openai.models.beta.agents.environments.EnvironmentListPageResponse
+import com.openai.models.beta.agents.environments.EnvironmentListParams
 import com.openai.models.beta.agents.environments.EnvironmentRetrieveParams
 import com.openai.services.blocking.beta.agents.environments.FileService
 import com.openai.services.blocking.beta.agents.environments.FileServiceImpl
 import com.openai.services.blocking.beta.agents.environments.TemplateService
 import com.openai.services.blocking.beta.agents.environments.TemplateServiceImpl
+import java.util.UUID
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -51,12 +57,26 @@ class EnvironmentServiceImpl internal constructor(private val clientOptions: Cli
 
     override fun templates(): TemplateService = templates
 
+    override fun create(
+        params: EnvironmentCreateParams,
+        requestOptions: RequestOptions,
+    ): EnvironmentInfo =
+        // post /agents/environments
+        withRawResponse().create(params, requestOptions).parse()
+
     override fun retrieve(
         params: EnvironmentRetrieveParams,
         requestOptions: RequestOptions,
     ): EnvironmentInfo =
         // get /agents/environments/{environment_id}
         withRawResponse().retrieve(params, requestOptions).parse()
+
+    override fun list(
+        params: EnvironmentListParams,
+        requestOptions: RequestOptions,
+    ): EnvironmentListPage =
+        // get /agents/environments
+        withRawResponse().list(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         EnvironmentService.WithRawResponse {
@@ -82,6 +102,48 @@ class EnvironmentServiceImpl internal constructor(private val clientOptions: Cli
         override fun files(): FileService.WithRawResponse = files
 
         override fun templates(): TemplateService.WithRawResponse = templates
+
+        private val createHandler: Handler<EnvironmentInfo> =
+            jsonHandler<EnvironmentInfo>(clientOptions.jsonMapper)
+
+        override fun create(
+            params: EnvironmentCreateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<EnvironmentInfo> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("agents", "environments")
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+                    .let { request ->
+                        // Keep one key across retries, while honoring caller-supplied headers.
+                        if (request.headers.values("Idempotency-Key").isNotEmpty()) request
+                        else
+                            request
+                                .toBuilder()
+                                .putHeader("Idempotency-Key", UUID.randomUUID().toString())
+                                .build()
+                    }
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
 
         private val retrieveHandler: Handler<EnvironmentInfo> =
             jsonHandler<EnvironmentInfo>(clientOptions.jsonMapper)
@@ -114,6 +176,45 @@ class EnvironmentServiceImpl internal constructor(private val clientOptions: Cli
                         if (requestOptions.responseValidation!!) {
                             it.validate()
                         }
+                    }
+            }
+        }
+
+        private val listHandler: Handler<EnvironmentListPageResponse> =
+            jsonHandler<EnvironmentListPageResponse>(clientOptions.jsonMapper)
+
+        override fun list(
+            params: EnvironmentListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<EnvironmentListPage> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("agents", "environments")
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let {
+                        EnvironmentListPage.builder()
+                            .service(EnvironmentServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
                     }
             }
         }

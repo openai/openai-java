@@ -625,6 +625,10 @@ private constructor(
 
             @JvmField val VIDEO_FAILED = of("video.failed")
 
+            @JvmField val AGENT_ENVIRONMENT_READY = of("agent.environment.ready")
+
+            @JvmField val AGENT_ENVIRONMENT_FAILED = of("agent.environment.failed")
+
             @JvmField val AGENT_SESSION_CREATED = of("agent.session.created")
 
             @JvmField val AGENT_SESSION_ACTION_REQUIRED = of("agent.session.action_required")
@@ -659,6 +663,8 @@ private constructor(
             REALTIME_CALL_INCOMING,
             VIDEO_COMPLETED,
             VIDEO_FAILED,
+            AGENT_ENVIRONMENT_READY,
+            AGENT_ENVIRONMENT_FAILED,
             AGENT_SESSION_CREATED,
             AGENT_SESSION_ACTION_REQUIRED,
             AGENT_SESSION_IN_PROGRESS,
@@ -694,6 +700,8 @@ private constructor(
             REALTIME_CALL_INCOMING,
             VIDEO_COMPLETED,
             VIDEO_FAILED,
+            AGENT_ENVIRONMENT_READY,
+            AGENT_ENVIRONMENT_FAILED,
             AGENT_SESSION_CREATED,
             AGENT_SESSION_ACTION_REQUIRED,
             AGENT_SESSION_IN_PROGRESS,
@@ -732,6 +740,8 @@ private constructor(
                 REALTIME_CALL_INCOMING -> Value.REALTIME_CALL_INCOMING
                 VIDEO_COMPLETED -> Value.VIDEO_COMPLETED
                 VIDEO_FAILED -> Value.VIDEO_FAILED
+                AGENT_ENVIRONMENT_READY -> Value.AGENT_ENVIRONMENT_READY
+                AGENT_ENVIRONMENT_FAILED -> Value.AGENT_ENVIRONMENT_FAILED
                 AGENT_SESSION_CREATED -> Value.AGENT_SESSION_CREATED
                 AGENT_SESSION_ACTION_REQUIRED -> Value.AGENT_SESSION_ACTION_REQUIRED
                 AGENT_SESSION_IN_PROGRESS -> Value.AGENT_SESSION_IN_PROGRESS
@@ -769,6 +779,8 @@ private constructor(
                 REALTIME_CALL_INCOMING -> Known.REALTIME_CALL_INCOMING
                 VIDEO_COMPLETED -> Known.VIDEO_COMPLETED
                 VIDEO_FAILED -> Known.VIDEO_FAILED
+                AGENT_ENVIRONMENT_READY -> Known.AGENT_ENVIRONMENT_READY
+                AGENT_ENVIRONMENT_FAILED -> Known.AGENT_ENVIRONMENT_FAILED
                 AGENT_SESSION_CREATED -> Known.AGENT_SESSION_CREATED
                 AGENT_SESSION_ACTION_REQUIRED -> Known.AGENT_SESSION_ACTION_REQUIRED
                 AGENT_SESSION_IN_PROGRESS -> Known.AGENT_SESSION_IN_PROGRESS

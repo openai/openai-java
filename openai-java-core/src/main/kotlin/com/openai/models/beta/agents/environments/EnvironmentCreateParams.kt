@@ -1,300 +1,559 @@
 // File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
-package com.openai.models.beta.agents
+package com.openai.models.beta.agents.environments
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.openai.core.BaseDeserializer
-import com.openai.core.BaseSerializer
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.Params
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.getOrThrow
+import com.openai.core.http.Headers
+import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.beta.agents.HostedEnvironmentFileParam
+import com.openai.models.beta.agents.HostedPluginParam
+import com.openai.models.beta.agents.HostedSkillParam
+import com.openai.models.beta.agents.SetupCommandParam
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** The execution environment and optional reusable template for a session. */
-@JsonDeserialize(using = EnvironmentParam.Deserializer::class)
-@JsonSerialize(using = EnvironmentParam.Serializer::class)
-class EnvironmentParam
+/**
+ * Creates an OpenAI-hosted environment before creating a session. Requires access to the prewarming
+ * beta.
+ */
+class EnvironmentCreateParams
 private constructor(
-    private val none: JsonValue? = null,
-    private val openaiHosted: OpenAIHosted? = null,
-    private val selfHosted: SelfHosted? = null,
-    private val _json: JsonValue? = null,
-) {
+    private val idempotencyKey: String?,
+    private val body: Body,
+    private val additionalHeaders: Headers,
+    private val additionalQueryParams: QueryParams,
+) : Params {
 
-    /** Runs the agent without an execution environment. */
-    fun none(): Optional<JsonValue> = Optional.ofNullable(none)
-
-    /** An existing OpenAI-hosted environment or new inline/template-based hosted configuration. */
-    fun openaiHosted(): Optional<OpenAIHosted> = Optional.ofNullable(openaiHosted)
-
-    /** An application-hosted environment configured inline. */
-    fun selfHosted(): Optional<SelfHosted> = Optional.ofNullable(selfHosted)
-
-    fun isNone(): Boolean = none != null
-
-    fun isOpenAIHosted(): Boolean = openaiHosted != null
-
-    fun isSelfHosted(): Boolean = selfHosted != null
-
-    /** Runs the agent without an execution environment. */
-    fun asNone(): JsonValue = none.getOrThrow("none")
-
-    /** An existing OpenAI-hosted environment or new inline/template-based hosted configuration. */
-    fun asOpenAIHosted(): OpenAIHosted = openaiHosted.getOrThrow("openaiHosted")
-
-    /** An application-hosted environment configured inline. */
-    fun asSelfHosted(): SelfHosted = selfHosted.getOrThrow("selfHosted")
-
-    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+    fun idempotencyKey(): Optional<String> = Optional.ofNullable(idempotencyKey)
 
     /**
-     * Maps this instance's current variant to a value of type [T] using the given [visitor].
+     * The required hosting type and its configuration.
      *
-     * Note that this method is _not_ forwards compatible with new variants from the API, unless
-     * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of the
-     * SDK gracefully, consider overriding [Visitor.unknown]:
-     * ```java
-     * import com.openai.core.JsonValue;
-     * import java.util.Optional;
-     *
-     * Optional<String> result = environmentParam.accept(new EnvironmentParam.Visitor<Optional<String>>() {
-     *     @Override
-     *     public Optional<String> visitNone(JsonValue none) {
-     *         return Optional.of(none.toString());
-     *     }
-     *
-     *     // ...
-     *
-     *     @Override
-     *     public Optional<String> unknown(JsonValue json) {
-     *         // Or inspect the `json`.
-     *         return Optional.empty();
-     *     }
-     * });
-     * ```
-     *
-     * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor] and
-     *   the current variant is unknown.
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun <T> accept(visitor: Visitor<T>): T =
-        when {
-            none != null -> visitor.visitNone(none)
-            openaiHosted != null -> visitor.visitOpenAIHosted(openaiHosted)
-            selfHosted != null -> visitor.visitSelfHosted(selfHosted)
-            else -> visitor.unknown(_json)
-        }
-
-    private var validated: Boolean = false
+    fun environment(): Environment = body.environment()
 
     /**
-     * Validates that the types of all values in this object match their expected types recursively.
+     * The IDs of up to 10 vaults made available to an OpenAI-hosted environment.
      *
-     * This method is _not_ forwards compatible with new types from the API for existing fields.
-     *
-     * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-     *   expected type.
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun validate(): EnvironmentParam = apply {
-        if (validated) {
-            return@apply
-        }
-
-        accept(
-            object : Visitor<Unit> {
-                override fun visitNone(none: JsonValue) {
-                    none.let {
-                        if (it != JsonValue.from(mapOf("type" to "none"))) {
-                            throw OpenAIInvalidDataException("'none' is invalid, received $it")
-                        }
-                    }
-                }
-
-                override fun visitOpenAIHosted(openaiHosted: OpenAIHosted) {
-                    openaiHosted.validate()
-                }
-
-                override fun visitSelfHosted(selfHosted: SelfHosted) {
-                    selfHosted.validate()
-                }
-            }
-        )
-        validated = true
-    }
-
-    fun isValid(): Boolean =
-        try {
-            validate()
-            true
-        } catch (e: OpenAIInvalidDataException) {
-            false
-        }
+    fun vaultIds(): Optional<List<String>> = body.vaultIds()
 
     /**
-     * Returns a score indicating how many valid values are contained in this object recursively.
+     * Returns the raw JSON value of [environment].
      *
-     * Used for best match union deserialization.
+     * Unlike [environment], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JvmSynthetic
-    internal fun validity(): Int =
-        accept(
-            object : Visitor<Int> {
-                override fun visitNone(none: JsonValue) =
-                    none.let { if (it == JsonValue.from(mapOf("type" to "none"))) 1 else 0 }
+    fun _environment(): JsonField<Environment> = body._environment()
 
-                override fun visitOpenAIHosted(openaiHosted: OpenAIHosted) = openaiHosted.validity()
+    /**
+     * Returns the raw JSON value of [vaultIds].
+     *
+     * Unlike [vaultIds], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _vaultIds(): JsonField<List<String>> = body._vaultIds()
 
-                override fun visitSelfHosted(selfHosted: SelfHosted) = selfHosted.validity()
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
-                override fun unknown(json: JsonValue?) = 0
-            }
-        )
+    /** Additional headers to send with the request. */
+    fun _additionalHeaders(): Headers = additionalHeaders
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
+    /** Additional query param to send with the request. */
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-        return other is EnvironmentParam &&
-            none == other.none &&
-            openaiHosted == other.openaiHosted &&
-            selfHosted == other.selfHosted
-    }
-
-    override fun hashCode(): Int = Objects.hash(none, openaiHosted, selfHosted)
-
-    override fun toString(): String =
-        when {
-            none != null -> "EnvironmentParam{none=$none}"
-            openaiHosted != null -> "EnvironmentParam{openaiHosted=$openaiHosted}"
-            selfHosted != null -> "EnvironmentParam{selfHosted=$selfHosted}"
-            _json != null -> "EnvironmentParam{_unknown=$_json}"
-            else -> throw IllegalStateException("Invalid EnvironmentParam")
-        }
+    fun toBuilder() = Builder().from(this)
 
     companion object {
 
-        /** Runs the agent without an execution environment. */
-        @JvmStatic fun ofNone() = EnvironmentParam(none = JsonValue.from(mapOf("type" to "none")))
-
         /**
-         * An existing OpenAI-hosted environment or new inline/template-based hosted configuration.
+         * Returns a mutable builder for constructing an instance of [EnvironmentCreateParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .environment()
+         * ```
          */
-        @JvmStatic
-        fun ofOpenAIHosted(openaiHosted: OpenAIHosted) =
-            EnvironmentParam(openaiHosted = openaiHosted)
-
-        /** An application-hosted environment configured inline. */
-        @JvmStatic
-        fun ofSelfHosted(selfHosted: SelfHosted) = EnvironmentParam(selfHosted = selfHosted)
+        @JvmStatic fun builder() = Builder()
     }
 
-    /**
-     * An interface that defines how to map each variant of [EnvironmentParam] to a value of type
-     * [T].
-     */
-    interface Visitor<out T> {
+    /** A builder for [EnvironmentCreateParams]. */
+    class Builder internal constructor() {
 
-        /** Runs the agent without an execution environment. */
-        fun visitNone(none: JsonValue): T
+        private var idempotencyKey: String? = null
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
-        /**
-         * An existing OpenAI-hosted environment or new inline/template-based hosted configuration.
-         */
-        fun visitOpenAIHosted(openaiHosted: OpenAIHosted): T
-
-        /** An application-hosted environment configured inline. */
-        fun visitSelfHosted(selfHosted: SelfHosted): T
-
-        /**
-         * Maps an unknown variant of [EnvironmentParam] to a value of type [T].
-         *
-         * An instance of [EnvironmentParam] can contain an unknown variant if it was deserialized
-         * from data that doesn't match any known variant. For example, if the SDK is on an older
-         * version than the API, then the API may respond with new variants that the SDK is unaware
-         * of.
-         *
-         * @throws OpenAIInvalidDataException in the default implementation.
-         */
-        fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown EnvironmentParam")
+        @JvmSynthetic
+        internal fun from(environmentCreateParams: EnvironmentCreateParams) = apply {
+            idempotencyKey = environmentCreateParams.idempotencyKey
+            body = environmentCreateParams.body.toBuilder()
+            additionalHeaders = environmentCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = environmentCreateParams.additionalQueryParams.toBuilder()
         }
-    }
 
-    internal class Deserializer : BaseDeserializer<EnvironmentParam>(EnvironmentParam::class) {
+        fun idempotencyKey(idempotencyKey: String?) = apply { this.idempotencyKey = idempotencyKey }
 
-        override fun ObjectCodec.deserialize(node: JsonNode): EnvironmentParam {
-            val json = JsonValue.fromJsonNode(node)
-            val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+        /** Alias for calling [Builder.idempotencyKey] with `idempotencyKey.orElse(null)`. */
+        fun idempotencyKey(idempotencyKey: Optional<String>) =
+            idempotencyKey(idempotencyKey.getOrNull())
 
-            when (type) {
-                "none" -> {
-                    return tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                        ?.let { EnvironmentParam(none = it, _json = json) }
-                        ?.takeIf { it.isValid() } ?: EnvironmentParam(_json = json)
-                }
-                "openai_hosted" -> {
-                    return tryDeserialize(node, jacksonTypeRef<OpenAIHosted>())?.let {
-                        EnvironmentParam(openaiHosted = it, _json = json)
-                    } ?: EnvironmentParam(_json = json)
-                }
-                "self_hosted" -> {
-                    return tryDeserialize(node, jacksonTypeRef<SelfHosted>())?.let {
-                        EnvironmentParam(selfHosted = it, _json = json)
-                    } ?: EnvironmentParam(_json = json)
-                }
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [environment]
+         * - [vaultIds]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /** The required hosting type and its configuration. */
+        fun environment(environment: Environment) = apply { body.environment(environment) }
+
+        /**
+         * Sets [Builder.environment] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.environment] with a well-typed [Environment] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun environment(environment: JsonField<Environment>) = apply {
+            body.environment(environment)
+        }
+
+        /** The IDs of up to 10 vaults made available to an OpenAI-hosted environment. */
+        fun vaultIds(vaultIds: List<String>?) = apply { body.vaultIds(vaultIds) }
+
+        /** Alias for calling [Builder.vaultIds] with `vaultIds.orElse(null)`. */
+        fun vaultIds(vaultIds: Optional<List<String>>) = vaultIds(vaultIds.getOrNull())
+
+        /**
+         * Sets [Builder.vaultIds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vaultIds] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun vaultIds(vaultIds: JsonField<List<String>>) = apply { body.vaultIds(vaultIds) }
+
+        /**
+         * Adds a single [String] to [vaultIds].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addVaultId(vaultId: String) = apply { body.addVaultId(vaultId) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
             }
 
-            return EnvironmentParam(_json = json)
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
         }
-    }
 
-    internal class Serializer : BaseSerializer<EnvironmentParam>(EnvironmentParam::class) {
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
 
-        override fun serialize(
-            value: EnvironmentParam,
-            generator: JsonGenerator,
-            provider: SerializerProvider,
-        ) {
-            when {
-                value.none != null -> generator.writeObject(value.none)
-                value.openaiHosted != null -> generator.writeObject(value.openaiHosted)
-                value.selfHosted != null -> generator.writeObject(value.selfHosted)
-                value._json != null -> generator.writeObject(value._json)
-                else -> throw IllegalStateException("Invalid EnvironmentParam")
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
             }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
         }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [EnvironmentCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .environment()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): EnvironmentCreateParams =
+            EnvironmentCreateParams(
+                idempotencyKey,
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
     }
 
-    /** An existing OpenAI-hosted environment or new inline/template-based hosted configuration. */
-    class OpenAIHosted
+    fun _body(): Body = body
+
+    override fun _headers(): Headers =
+        Headers.builder()
+            .apply {
+                idempotencyKey?.let { put("Idempotency-Key", it) }
+                putAll(additionalHeaders)
+            }
+            .build()
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    /** Parameters for creating an execution environment before its sessions. */
+    class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val environment: JsonField<Environment>,
+        private val vaultIds: JsonField<List<String>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("environment")
+            @ExcludeMissing
+            environment: JsonField<Environment> = JsonMissing.of(),
+            @JsonProperty("vault_ids")
+            @ExcludeMissing
+            vaultIds: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(environment, vaultIds, mutableMapOf())
+
+        /**
+         * The required hosting type and its configuration.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun environment(): Environment = environment.getRequired("environment")
+
+        /**
+         * The IDs of up to 10 vaults made available to an OpenAI-hosted environment.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun vaultIds(): Optional<List<String>> = vaultIds.getOptional("vault_ids")
+
+        /**
+         * Returns the raw JSON value of [environment].
+         *
+         * Unlike [environment], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("environment")
+        @ExcludeMissing
+        fun _environment(): JsonField<Environment> = environment
+
+        /**
+         * Returns the raw JSON value of [vaultIds].
+         *
+         * Unlike [vaultIds], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("vault_ids")
+        @ExcludeMissing
+        fun _vaultIds(): JsonField<List<String>> = vaultIds
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .environment()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var environment: JsonField<Environment>? = null
+            private var vaultIds: JsonField<MutableList<String>>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                environment = body.environment
+                vaultIds = body.vaultIds.map { it.toMutableList() }
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /** The required hosting type and its configuration. */
+            fun environment(environment: Environment) = environment(JsonField.of(environment))
+
+            /**
+             * Sets [Builder.environment] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.environment] with a well-typed [Environment] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun environment(environment: JsonField<Environment>) = apply {
+                this.environment = environment
+            }
+
+            /** The IDs of up to 10 vaults made available to an OpenAI-hosted environment. */
+            fun vaultIds(vaultIds: List<String>?) = vaultIds(JsonField.ofNullable(vaultIds))
+
+            /** Alias for calling [Builder.vaultIds] with `vaultIds.orElse(null)`. */
+            fun vaultIds(vaultIds: Optional<List<String>>) = vaultIds(vaultIds.getOrNull())
+
+            /**
+             * Sets [Builder.vaultIds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.vaultIds] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun vaultIds(vaultIds: JsonField<List<String>>) = apply {
+                this.vaultIds = vaultIds.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [vaultIds].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addVaultId(vaultId: String) = apply {
+                vaultIds =
+                    (vaultIds ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("vaultIds", it).add(vaultId)
+                    }
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .environment()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("environment", environment),
+                    (vaultIds ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            environment().validate()
+            vaultIds()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (environment.asKnown().getOrNull()?.validity() ?: 0) +
+                (vaultIds.asKnown().getOrNull()?.size ?: 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Body &&
+                environment == other.environment &&
+                vaultIds == other.vaultIds &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(environment, vaultIds, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Body{<redacted>}"
+    }
+
+    /** The required hosting type and its configuration. */
+    class Environment
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonValue,
         private val capabilityDirectories: JsonField<List<String>>,
-        private val containerSize: JsonField<ContainerSize>,
         private val desktop: JsonField<Desktop>,
         private val env: JsonField<Env>,
-        private val environmentId: JsonField<String>,
         private val environmentTemplateId: JsonField<String>,
         private val files: JsonField<List<HostedEnvironmentFileParam>>,
         private val network: JsonField<Network>,
@@ -311,14 +570,8 @@ private constructor(
             @JsonProperty("capability_directories")
             @ExcludeMissing
             capabilityDirectories: JsonField<List<String>> = JsonMissing.of(),
-            @JsonProperty("container_size")
-            @ExcludeMissing
-            containerSize: JsonField<ContainerSize> = JsonMissing.of(),
             @JsonProperty("desktop") @ExcludeMissing desktop: JsonField<Desktop> = JsonMissing.of(),
             @JsonProperty("env") @ExcludeMissing env: JsonField<Env> = JsonMissing.of(),
-            @JsonProperty("environment_id")
-            @ExcludeMissing
-            environmentId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("environment_template_id")
             @ExcludeMissing
             environmentTemplateId: JsonField<String> = JsonMissing.of(),
@@ -341,10 +594,8 @@ private constructor(
         ) : this(
             type,
             capabilityDirectories,
-            containerSize,
             desktop,
             env,
-            environmentId,
             environmentTemplateId,
             files,
             network,
@@ -378,14 +629,6 @@ private constructor(
             capabilityDirectories.getOptional("capability_directories")
 
         /**
-         * The hosted container size. Omission selects the medium tier.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun containerSize(): Optional<ContainerSize> = containerSize.getOptional("container_size")
-
-        /**
          * Desktop provisioning. Omission or null inherits the template setting, or defaults to
          * disabled.
          *
@@ -403,17 +646,8 @@ private constructor(
         fun env(): Optional<Env> = env.getOptional("env")
 
         /**
-         * An existing prewarmed environment. Cannot be combined with a template or inline
-         * configuration.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun environmentId(): Optional<String> = environmentId.getOptional("environment_id")
-
-        /**
-         * A reusable hosted template applied before inline session configuration. Omitted fields
-         * inherit the template; network overrides cannot broaden its policy.
+         * A reusable hosted template applied before inline configuration. Omitted fields inherit
+         * the template; network overrides cannot broaden its policy.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -482,16 +716,6 @@ private constructor(
         fun _capabilityDirectories(): JsonField<List<String>> = capabilityDirectories
 
         /**
-         * Returns the raw JSON value of [containerSize].
-         *
-         * Unlike [containerSize], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("container_size")
-        @ExcludeMissing
-        fun _containerSize(): JsonField<ContainerSize> = containerSize
-
-        /**
          * Returns the raw JSON value of [desktop].
          *
          * Unlike [desktop], this method doesn't throw if the JSON field has an unexpected type.
@@ -504,16 +728,6 @@ private constructor(
          * Unlike [env], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("env") @ExcludeMissing fun _env(): JsonField<Env> = env
-
-        /**
-         * Returns the raw JSON value of [environmentId].
-         *
-         * Unlike [environmentId], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("environment_id")
-        @ExcludeMissing
-        fun _environmentId(): JsonField<String> = environmentId
 
         /**
          * Returns the raw JSON value of [environmentTemplateId].
@@ -590,19 +804,17 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [OpenAIHosted]. */
+            /** Returns a mutable builder for constructing an instance of [Environment]. */
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [OpenAIHosted]. */
+        /** A builder for [Environment]. */
         class Builder internal constructor() {
 
             private var type: JsonValue = JsonValue.from("openai_hosted")
             private var capabilityDirectories: JsonField<MutableList<String>>? = null
-            private var containerSize: JsonField<ContainerSize> = JsonMissing.of()
             private var desktop: JsonField<Desktop> = JsonMissing.of()
             private var env: JsonField<Env> = JsonMissing.of()
-            private var environmentId: JsonField<String> = JsonMissing.of()
             private var environmentTemplateId: JsonField<String> = JsonMissing.of()
             private var files: JsonField<MutableList<HostedEnvironmentFileParam>>? = null
             private var network: JsonField<Network> = JsonMissing.of()
@@ -613,22 +825,19 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(openaiHosted: OpenAIHosted) = apply {
-                type = openaiHosted.type
-                capabilityDirectories =
-                    openaiHosted.capabilityDirectories.map { it.toMutableList() }
-                containerSize = openaiHosted.containerSize
-                desktop = openaiHosted.desktop
-                env = openaiHosted.env
-                environmentId = openaiHosted.environmentId
-                environmentTemplateId = openaiHosted.environmentTemplateId
-                files = openaiHosted.files.map { it.toMutableList() }
-                network = openaiHosted.network
-                packages = openaiHosted.packages
-                plugins = openaiHosted.plugins.map { it.toMutableList() }
-                setupCommands = openaiHosted.setupCommands.map { it.toMutableList() }
-                skills = openaiHosted.skills.map { it.toMutableList() }
-                additionalProperties = openaiHosted.additionalProperties.toMutableMap()
+            internal fun from(environment: Environment) = apply {
+                type = environment.type
+                capabilityDirectories = environment.capabilityDirectories.map { it.toMutableList() }
+                desktop = environment.desktop
+                env = environment.env
+                environmentTemplateId = environment.environmentTemplateId
+                files = environment.files.map { it.toMutableList() }
+                network = environment.network
+                packages = environment.packages
+                plugins = environment.plugins.map { it.toMutableList() }
+                setupCommands = environment.setupCommands.map { it.toMutableList() }
+                skills = environment.skills.map { it.toMutableList() }
+                additionalProperties = environment.additionalProperties.toMutableMap()
             }
 
             /**
@@ -682,21 +891,6 @@ private constructor(
                     }
             }
 
-            /** The hosted container size. Omission selects the medium tier. */
-            fun containerSize(containerSize: ContainerSize) =
-                containerSize(JsonField.of(containerSize))
-
-            /**
-             * Sets [Builder.containerSize] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.containerSize] with a well-typed [ContainerSize]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
-             */
-            fun containerSize(containerSize: JsonField<ContainerSize>) = apply {
-                this.containerSize = containerSize
-            }
-
             /**
              * Desktop provisioning. Omission or null inherits the template setting, or defaults to
              * disabled.
@@ -731,25 +925,8 @@ private constructor(
             fun env(env: JsonField<Env>) = apply { this.env = env }
 
             /**
-             * An existing prewarmed environment. Cannot be combined with a template or inline
-             * configuration.
-             */
-            fun environmentId(environmentId: String) = environmentId(JsonField.of(environmentId))
-
-            /**
-             * Sets [Builder.environmentId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.environmentId] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun environmentId(environmentId: JsonField<String>) = apply {
-                this.environmentId = environmentId
-            }
-
-            /**
-             * A reusable hosted template applied before inline session configuration. Omitted
-             * fields inherit the template; network overrides cannot broaden its policy.
+             * A reusable hosted template applied before inline configuration. Omitted fields
+             * inherit the template; network overrides cannot broaden its policy.
              */
             fun environmentTemplateId(environmentTemplateId: String) =
                 environmentTemplateId(JsonField.of(environmentTemplateId))
@@ -969,18 +1146,16 @@ private constructor(
             }
 
             /**
-             * Returns an immutable instance of [OpenAIHosted].
+             * Returns an immutable instance of [Environment].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): OpenAIHosted =
-                OpenAIHosted(
+            fun build(): Environment =
+                Environment(
                     type,
                     (capabilityDirectories ?: JsonMissing.of()).map { it.toImmutable() },
-                    containerSize,
                     desktop,
                     env,
-                    environmentId,
                     environmentTemplateId,
                     (files ?: JsonMissing.of()).map { it.toImmutable() },
                     network,
@@ -1003,7 +1178,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
          *   expected type.
          */
-        fun validate(): OpenAIHosted = apply {
+        fun validate(): Environment = apply {
             if (validated) {
                 return@apply
             }
@@ -1014,10 +1189,8 @@ private constructor(
                 }
             }
             capabilityDirectories()
-            containerSize().ifPresent { it.validate() }
             desktop().ifPresent { it.validate() }
             env().ifPresent { it.validate() }
-            environmentId()
             environmentTemplateId()
             files().ifPresent { it.forEach { it.validate() } }
             network().ifPresent { it.validate() }
@@ -1046,10 +1219,8 @@ private constructor(
         internal fun validity(): Int =
             type.let { if (it == JsonValue.from("openai_hosted")) 1 else 0 } +
                 (capabilityDirectories.asKnown().getOrNull()?.size ?: 0) +
-                (containerSize.asKnown().getOrNull()?.validity() ?: 0) +
                 (desktop.asKnown().getOrNull()?.validity() ?: 0) +
                 (env.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (environmentId.asKnown().isPresent) 1 else 0) +
                 (if (environmentTemplateId.asKnown().isPresent) 1 else 0) +
                 (files.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (network.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1057,154 +1228,6 @@ private constructor(
                 (plugins.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (setupCommands.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (skills.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
-
-        /** The hosted container size. Omission selects the medium tier. */
-        class ContainerSize @JsonCreator private constructor(private val value: JsonField<String>) :
-            Enum {
-
-            /**
-             * Returns this class instance's raw value.
-             *
-             * This is usually only useful if this instance was deserialized from data that doesn't
-             * match any known member, and you want to know that value. For example, if the SDK is
-             * on an older version than the API, then the API may respond with new members that the
-             * SDK is unaware of.
-             */
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val SMALL = of("small")
-
-                @JvmField val MEDIUM = of("medium")
-
-                @JvmField val LARGE = of("large")
-
-                @JvmStatic fun of(value: String) = ContainerSize(JsonField.of(value))
-            }
-
-            /** An enum containing [ContainerSize]'s known values. */
-            enum class Known {
-                SMALL,
-                MEDIUM,
-                LARGE,
-            }
-
-            /**
-             * An enum containing [ContainerSize]'s known values, as well as an [_UNKNOWN] member.
-             *
-             * An instance of [ContainerSize] can contain an unknown value in a couple of cases:
-             * - It was deserialized from data that doesn't match any known member. For example, if
-             *   the SDK is on an older version than the API, then the API may respond with new
-             *   members that the SDK is unaware of.
-             * - It was constructed with an arbitrary value using the [of] method.
-             */
-            enum class Value {
-                SMALL,
-                MEDIUM,
-                LARGE,
-                /**
-                 * An enum member indicating that [ContainerSize] was instantiated with an unknown
-                 * value.
-                 */
-                _UNKNOWN,
-            }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value, or
-             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-             *
-             * Use the [known] method instead if you're certain the value is always known or if you
-             * want to throw for the unknown case.
-             */
-            fun value(): Value =
-                when (this) {
-                    SMALL -> Value.SMALL
-                    MEDIUM -> Value.MEDIUM
-                    LARGE -> Value.LARGE
-                    else -> Value._UNKNOWN
-                }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value.
-             *
-             * Use the [value] method instead if you're uncertain the value is always known and
-             * don't want to throw for the unknown case.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-             *   member.
-             */
-            fun known(): Known =
-                when (this) {
-                    SMALL -> Known.SMALL
-                    MEDIUM -> Known.MEDIUM
-                    LARGE -> Known.LARGE
-                    else -> throw OpenAIInvalidDataException("Unknown ContainerSize: $value")
-                }
-
-            /**
-             * Returns this class instance's primitive wire representation.
-             *
-             * This differs from the [toString] method because that method is primarily for
-             * debugging and generally doesn't throw.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value does not have the
-             *   expected primitive type.
-             */
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    OpenAIInvalidDataException("Value is not a String")
-                }
-
-            private var validated: Boolean = false
-
-            /**
-             * Validates that the types of all values in this object match their expected types
-             * recursively.
-             *
-             * This method is _not_ forwards compatible with new types from the API for existing
-             * fields.
-             *
-             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-             *   expected type.
-             */
-            fun validate(): ContainerSize = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                known()
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: OpenAIInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is ContainerSize && value == other.value
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
 
         /**
          * Desktop provisioning. Omission or null inherits the template setting, or defaults to
@@ -1497,7 +1520,7 @@ private constructor(
 
             override fun hashCode(): Int = hashCode
 
-            override fun toString() = "Env{additionalProperties=$additionalProperties}"
+            override fun toString() = "Env{<redacted>}"
         }
 
         /**
@@ -2265,13 +2288,11 @@ private constructor(
                 return true
             }
 
-            return other is OpenAIHosted &&
+            return other is Environment &&
                 type == other.type &&
                 capabilityDirectories == other.capabilityDirectories &&
-                containerSize == other.containerSize &&
                 desktop == other.desktop &&
                 env == other.env &&
-                environmentId == other.environmentId &&
                 environmentTemplateId == other.environmentTemplateId &&
                 files == other.files &&
                 network == other.network &&
@@ -2286,10 +2307,8 @@ private constructor(
             Objects.hash(
                 type,
                 capabilityDirectories,
-                containerSize,
                 desktop,
                 env,
-                environmentId,
                 environmentTemplateId,
                 files,
                 network,
@@ -2303,293 +2322,23 @@ private constructor(
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() =
-            "OpenAIHosted{type=$type, capabilityDirectories=$capabilityDirectories, containerSize=$containerSize, desktop=$desktop, env=$env, environmentId=$environmentId, environmentTemplateId=$environmentTemplateId, files=$files, network=$network, packages=$packages, plugins=$plugins, setupCommands=$setupCommands, skills=$skills, additionalProperties=$additionalProperties}"
+        override fun toString() = "Environment{<redacted>}"
     }
 
-    /** An application-hosted environment configured inline. */
-    class SelfHosted
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val type: JsonValue,
-        private val workspaceDirectory: JsonField<String>,
-        private val capabilityDirectories: JsonField<List<String>>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-            @JsonProperty("workspace_directory")
-            @ExcludeMissing
-            workspaceDirectory: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("capability_directories")
-            @ExcludeMissing
-            capabilityDirectories: JsonField<List<String>> = JsonMissing.of(),
-        ) : this(type, workspaceDirectory, capabilityDirectories, mutableMapOf())
-
-        /**
-         * The type of the object. Always `self_hosted`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("self_hosted")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-        /**
-         * Absolute project directory inside the self-hosted environment.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun workspaceDirectory(): String = workspaceDirectory.getRequired("workspace_directory")
-
-        /**
-         * Directories that contain capabilities exposed to the agent. Defaults to an empty list.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun capabilityDirectories(): Optional<List<String>> =
-            capabilityDirectories.getOptional("capability_directories")
-
-        /**
-         * Returns the raw JSON value of [workspaceDirectory].
-         *
-         * Unlike [workspaceDirectory], this method doesn't throw if the JSON field has an
-         * unexpected type.
-         */
-        @JsonProperty("workspace_directory")
-        @ExcludeMissing
-        fun _workspaceDirectory(): JsonField<String> = workspaceDirectory
-
-        /**
-         * Returns the raw JSON value of [capabilityDirectories].
-         *
-         * Unlike [capabilityDirectories], this method doesn't throw if the JSON field has an
-         * unexpected type.
-         */
-        @JsonProperty("capability_directories")
-        @ExcludeMissing
-        fun _capabilityDirectories(): JsonField<List<String>> = capabilityDirectories
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
         }
 
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [SelfHosted].
-             *
-             * The following fields are required:
-             * ```java
-             * .workspaceDirectory()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [SelfHosted]. */
-        class Builder internal constructor() {
-
-            private var type: JsonValue = JsonValue.from("self_hosted")
-            private var workspaceDirectory: JsonField<String>? = null
-            private var capabilityDirectories: JsonField<MutableList<String>>? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(selfHosted: SelfHosted) = apply {
-                type = selfHosted.type
-                workspaceDirectory = selfHosted.workspaceDirectory
-                capabilityDirectories = selfHosted.capabilityDirectories.map { it.toMutableList() }
-                additionalProperties = selfHosted.additionalProperties.toMutableMap()
-            }
-
-            /**
-             * Sets the field to an arbitrary JSON value.
-             *
-             * It is usually unnecessary to call this method because the field defaults to the
-             * following:
-             * ```java
-             * JsonValue.from("self_hosted")
-             * ```
-             *
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun type(type: JsonValue) = apply { this.type = type }
-
-            /** Absolute project directory inside the self-hosted environment. */
-            fun workspaceDirectory(workspaceDirectory: String) =
-                workspaceDirectory(JsonField.of(workspaceDirectory))
-
-            /**
-             * Sets [Builder.workspaceDirectory] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.workspaceDirectory] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun workspaceDirectory(workspaceDirectory: JsonField<String>) = apply {
-                this.workspaceDirectory = workspaceDirectory
-            }
-
-            /**
-             * Directories that contain capabilities exposed to the agent. Defaults to an empty
-             * list.
-             */
-            fun capabilityDirectories(capabilityDirectories: List<String>?) =
-                capabilityDirectories(JsonField.ofNullable(capabilityDirectories))
-
-            /**
-             * Alias for calling [Builder.capabilityDirectories] with
-             * `capabilityDirectories.orElse(null)`.
-             */
-            fun capabilityDirectories(capabilityDirectories: Optional<List<String>>) =
-                capabilityDirectories(capabilityDirectories.getOrNull())
-
-            /**
-             * Sets [Builder.capabilityDirectories] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.capabilityDirectories] with a well-typed
-             * `List<String>` value instead. This method is primarily for setting the field to an
-             * undocumented or not yet supported value.
-             */
-            fun capabilityDirectories(capabilityDirectories: JsonField<List<String>>) = apply {
-                this.capabilityDirectories = capabilityDirectories.map { it.toMutableList() }
-            }
-
-            /**
-             * Adds a single [String] to [capabilityDirectories].
-             *
-             * @throws IllegalStateException if the field was previously set to a non-list.
-             */
-            fun addCapabilityDirectory(capabilityDirectory: String) = apply {
-                capabilityDirectories =
-                    (capabilityDirectories ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("capabilityDirectories", it).add(capabilityDirectory)
-                    }
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [SelfHosted].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .workspaceDirectory()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): SelfHosted =
-                SelfHosted(
-                    type,
-                    checkRequired("workspaceDirectory", workspaceDirectory),
-                    (capabilityDirectories ?: JsonMissing.of()).map { it.toImmutable() },
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        private var validated: Boolean = false
-
-        /**
-         * Validates that the types of all values in this object match their expected types
-         * recursively.
-         *
-         * This method is _not_ forwards compatible with new types from the API for existing fields.
-         *
-         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-         *   expected type.
-         */
-        fun validate(): SelfHosted = apply {
-            if (validated) {
-                return@apply
-            }
-
-            _type().let {
-                if (it != JsonValue.from("self_hosted")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            workspaceDirectory()
-            capabilityDirectories()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            type.let { if (it == JsonValue.from("self_hosted")) 1 else 0 } +
-                (if (workspaceDirectory.asKnown().isPresent) 1 else 0) +
-                (capabilityDirectories.asKnown().getOrNull()?.size ?: 0)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is SelfHosted &&
-                type == other.type &&
-                workspaceDirectory == other.workspaceDirectory &&
-                capabilityDirectories == other.capabilityDirectories &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(type, workspaceDirectory, capabilityDirectories, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "SelfHosted{type=$type, workspaceDirectory=$workspaceDirectory, capabilityDirectories=$capabilityDirectories, additionalProperties=$additionalProperties}"
+        return other is EnvironmentCreateParams &&
+            idempotencyKey == other.idempotencyKey &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
+
+    override fun hashCode(): Int =
+        Objects.hash(idempotencyKey, body, additionalHeaders, additionalQueryParams)
+
+    override fun toString() = "EnvironmentCreateParams{<redacted>}"
 }
