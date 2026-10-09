@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.79.0](https://github.com/openai/openai-java/compare/v4.78.1...v4.79.0) (2026-10-09)
+
+
+### Features
+
+* **api:** add prewarmed hosted environments ([#1155](https://github.com/openai/openai-java/issues/1155)) ([4264044](https://github.com/openai/openai-java/commit/4264044c3d5be0c3df61188feb3a5e57c5ff6ff9))
+
 ## [4.78.1](https://github.com/openai/openai-java/compare/v4.78.0...v4.78.1) (2026-10-08)
 
 
