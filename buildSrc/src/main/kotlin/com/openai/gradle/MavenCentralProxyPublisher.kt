@@ -2,6 +2,8 @@ package com.openai.gradle
 
 import groovy.json.JsonSlurper
 import java.net.URI
+import java.net.URLDecoder
+import java.net.URLEncoder
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpRequest.BodyPublishers
@@ -10,7 +12,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.security.MessageDigest
 import java.time.Duration
-import java.time.Instant
 import java.util.UUID
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -23,21 +24,52 @@ class MavenCentralProxyPublisher(
     private val receipt: (String) -> Unit = ::record,
     private val clock: () -> Long = { System.nanoTime() / 1_000_000_000 },
     private val sleep: (Long) -> Unit = Thread::sleep,
-    private val epochSeconds: () -> Long = { Instant.now().epochSecond },
 ) {
-    internal fun token(minimumLifetimeSeconds: Long = 60): String {
-        val value = environment.getValue("MAVEN_CENTRAL_AUTH_PROXY_TOKEN")
-        val expiry = environment.getValue("MAVEN_CENTRAL_AUTH_PROXY_TOKEN_EXPIRES_AT").toLong()
-        if (
-            value.isBlank() ||
-                value.any(Char::isWhitespace) ||
-                expiry <= epochSeconds() + minimumLifetimeSeconds
-        ) {
-            throw GradleException(
-                "Proxy token is missing or expires too soon. Obtain a fresh Azure token; reconcile any recorded deployment before retrying."
+    private var accessToken = ""
+    private var expiresAt = 0L
+
+    internal fun token(): String {
+        if (expiresAt > clock() + 60) return accessToken
+        val tenant = UUID.fromString(environment.getValue("MAVEN_CENTRAL_AZURE_TENANT_ID"))
+        val client = UUID.fromString(environment.getValue("MAVEN_CENTRAL_AZURE_CLIENT_ID"))
+        val resource = environment.getValue("MAVEN_CENTRAL_AZURE_RESOURCE")
+        check(resource.isNotBlank() && !resource.endsWith("/.default"))
+        val endpoint = httpsUri(environment.getValue("ACTIONS_ID_TOKEN_REQUEST_URL"))
+        check(endpoint.host.endsWith(".actions.githubusercontent.com"))
+        val query =
+            endpoint.rawQuery.orEmpty().split('&').filter {
+                it.isNotEmpty() && URLDecoder.decode(it.substringBefore('='), "UTF-8") != "audience"
+            } + "audience=${encode("api://AzureADTokenExchange") }"
+        val oidcUri = URI(endpoint.toString().substringBefore('?') + "?" + query.joinToString("&"))
+        val assertion =
+            json(send(oidcUri, environment.getValue("ACTIONS_ID_TOKEN_REQUEST_TOKEN"), null, null))[
+                "value"]
+                as String
+        val form =
+            mapOf(
+                    "client_id" to client.toString(),
+                    "scope" to resource.trimEnd('/') + "/.default",
+                    "grant_type" to "client_credentials",
+                    "client_assertion_type" to
+                        "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+                    "client_assertion" to assertion,
+                )
+                .entries
+                .joinToString("&") { "${encode(it.key)}=${encode(it.value)}" }
+        val response =
+            json(
+                send(
+                    URI("https://login.microsoftonline.com/$tenant/oauth2/v2.0/token"),
+                    null,
+                    BodyPublishers.ofString(form),
+                    "application/x-www-form-urlencoded",
+                )
             )
-        }
-        return value
+        accessToken = response["access_token"] as String
+        val lifetime = response["expires_in"].toString().toLong()
+        check(accessToken.isNotEmpty() && lifetime > 0)
+        expiresAt = clock() + lifetime
+        return accessToken
     }
 
     internal fun publish(archive: Path) {
@@ -53,8 +85,7 @@ class MavenCentralProxyPublisher(
                 BodyPublishers.ofFile(archive),
                 BodyPublishers.ofString("\r\n--$boundary--\r\n"),
             )
-        // Cover the 15-minute poll deadline plus upload and request timeouts.
-        val credential = token(20 * 60)
+        val credential = token()
         receipt(
             "Submitting Maven bundle. If no deployment ID follows, inspect Central Portal before retrying."
         )
@@ -115,6 +146,8 @@ class MavenCentralProxyPublisher(
                 .followRedirects(HttpClient.Redirect.NEVER)
                 .connectTimeout(Duration.ofSeconds(30))
                 .build()
+
+        private fun encode(value: String) = URLEncoder.encode(value, "UTF-8")
 
         private fun json(value: String) = JsonSlurper().parseText(value) as Map<*, *>
 

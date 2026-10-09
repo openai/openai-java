@@ -335,13 +335,6 @@ the protected `publish` environment:
 - `MAVEN_CENTRAL_AZURE_CLIENT_ID`: the dedicated federated application UUID.
 - `MAVEN_CENTRAL_AZURE_RESOURCE`: the proxy's Entra resource identifier, without `/.default`.
 
-The SHA-pinned Microsoft `azure/login` action and Azure CLI obtain the short-lived proxy token.
-Proxy-mode runners need Azure CLI 2.54+ (for `expires_on`) and `jq`; the standard Ubuntu runner
-provides both. Azure login uses a private per-run cache and its post-job credential cleanup.
-The token is masked and passed only through the upload process environment, never a command argument
-or workflow output. The uploader requires at least 20 minutes of token lifetime before upload and
-stops if it expires during polling; it does not reupload or silently fall back.
-
 The application must trust GitHub OIDC for this repository's `publish` environment. Preserve its
 `main`-only deployment restriction: the default environment subject does not also constrain the
 branch or workflow. Review stronger workflow-specific federation with the proxy owner. The proxy

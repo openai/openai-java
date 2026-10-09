@@ -24,8 +24,12 @@ class MavenCentralProxyPublisherTest {
     private val environment =
         mapOf(
             "MAVEN_CENTRAL_AUTH_PROXY_URL" to "https://proxy.example.invalid",
-            "MAVEN_CENTRAL_AUTH_PROXY_TOKEN" to "fake-entra",
-            "MAVEN_CENTRAL_AUTH_PROXY_TOKEN_EXPIRES_AT" to Long.MAX_VALUE.toString(),
+            "MAVEN_CENTRAL_AZURE_TENANT_ID" to deployment,
+            "MAVEN_CENTRAL_AZURE_CLIENT_ID" to deployment,
+            "MAVEN_CENTRAL_AZURE_RESOURCE" to "api://fake-resource",
+            "ACTIONS_ID_TOKEN_REQUEST_URL" to
+                "https://pipelines.actions.githubusercontent.com/token?audience=old",
+            "ACTIONS_ID_TOKEN_REQUEST_TOKEN" to "fake-github-token",
         )
 
     private fun body(publisher: HttpRequest.BodyPublisher): String {
@@ -53,8 +57,15 @@ class MavenCentralProxyPublisherTest {
         MavenCentralProxyPublisher(
             environment,
             { uri, token, data, _ ->
-                assertEquals("fake-entra", token)
-                central(uri, data)
+                when (uri.host) {
+                    "pipelines.actions.githubusercontent.com" -> """{"value":"fake-assertion"}"""
+                    "login.microsoftonline.com" ->
+                        """{"access_token":"fake-entra","expires_in":3600}"""
+                    else -> {
+                        assertEquals("fake-entra", token)
+                        central(uri, data)
+                    }
+                }
             },
             receipts::add,
             clock,
@@ -151,37 +162,51 @@ class MavenCentralProxyPublisherTest {
     }
 
     @Test
-    fun `Azure token must have enough lifetime and no header whitespace`() {
+    fun `OIDC exchange replaces audience and refreshes expiring credentials`() {
+        var now = 100L
+        var exchanges = 0
         val publisher =
             MavenCentralProxyPublisher(
-                environment + ("MAVEN_CENTRAL_AUTH_PROXY_TOKEN_EXPIRES_AT" to "1100"),
-                epochSeconds = { 1000 },
+                environment,
+                { uri, token, data, _ ->
+                    if (uri.host.endsWith(".actions.githubusercontent.com")) {
+                        assertContains(uri.rawQuery, "audience=api%3A%2F%2FAzureADTokenExchange")
+                        assertFalse(uri.rawQuery.contains("audience=old"))
+                        assertEquals("fake-github-token", token)
+                        """{"value":"fake-assertion"}"""
+                    } else {
+                        exchanges++
+                        assertEquals(null, token)
+                        val form = body(requireNotNull(data))
+                        assertContains(form, "client_assertion=fake-assertion")
+                        assertContains(form, "scope=api%3A%2F%2Ffake-resource%2F.default")
+                        """{"access_token":"fake-entra","expires_in":3600}"""
+                    }
+                },
+                {},
+                { now },
             )
         assertEquals("fake-entra", publisher.token())
-        assertFailsWith<GradleException> { publisher.token(1200) }
-        for (value in listOf("", "fake\nheader")) {
-            val invalid =
-                MavenCentralProxyPublisher(
-                    environment + ("MAVEN_CENTRAL_AUTH_PROXY_TOKEN" to value)
-                )
-            assertFailsWith<GradleException> { invalid.token() }
-        }
+        publisher.token()
+        assertEquals(1, exchanges)
+        now = 3700
+        publisher.token()
+        assertEquals(2, exchanges)
     }
 
     @Test
-    fun `short lived token fails before sending upload`() {
+    fun `unexpected OIDC endpoint is rejected before sending credentials`() {
         var requested = false
         val publisher =
             MavenCentralProxyPublisher(
-                environment + ("MAVEN_CENTRAL_AUTH_PROXY_TOKEN_EXPIRES_AT" to "1100"),
+                environment + ("ACTIONS_ID_TOKEN_REQUEST_URL" to "https://evil.invalid/token"),
                 { _, _, _, _ ->
                     requested = true
                     ""
                 },
                 {},
-                epochSeconds = { 1000 },
             )
-        assertFailsWith<GradleException> { publisher.publish(archive()) }
+        assertFails { publisher.token() }
         assertFalse(requested)
     }
 
