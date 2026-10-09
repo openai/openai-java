@@ -109,6 +109,7 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         try {
             return request.body.use {
                 try {
+                    notifyRequestStart(call, requestOptions)
                     call.execute().toHttpResponse().also { response = it }
                 } catch (e: IOException) {
                     throw OpenAIIoException("Request failed", e)
@@ -126,6 +127,7 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         val future = CompletableFuture<HttpResponse>()
 
         val call = newCall(request, requestOptions)
+        notifyRequestStart(call, requestOptions)
         call.enqueue(
             object : Callback {
                 override fun onResponse(call: Call, response: Response) {
@@ -149,6 +151,16 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         }
 
         return future
+    }
+
+    private fun notifyRequestStart(call: Call, requestOptions: RequestOptions) {
+        val observer = requestOptions.requestObserver ?: return
+        try {
+            val request = call.request()
+            observer.onRequestStart(HttpMethod.valueOf(request.method), request.url.toString())
+        } catch (_: RuntimeException) {
+            // Observation must not prevent dispatch.
+        }
     }
 
     override fun close() {
