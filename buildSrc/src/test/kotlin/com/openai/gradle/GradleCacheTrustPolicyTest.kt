@@ -406,6 +406,94 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
+    fun `publishing uses pinned Microsoft OIDC login with isolated cache and environment token`() {
+        val job =
+            parseWorkflow(Path.of("../.github/workflows/create-releases.yml").readText())
+                .job("publish")
+        val login = job.steps.single { it.action?.repository == "azure/login" }
+        assertEquals(
+            "azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906",
+            login.action!!.reference,
+        )
+        assertEquals(
+            mapOf(
+                "client-id" to "\${{ vars.MAVEN_CENTRAL_AZURE_CLIENT_ID }}",
+                "tenant-id" to "\${{ vars.MAVEN_CENTRAL_AZURE_TENANT_ID }}",
+                "allow-no-subscriptions" to "true",
+            ),
+            login.action.inputs,
+        )
+        assertEquals("vars.MAVEN_CENTRAL_AUTH_PROXY_URL != ''", login.condition)
+        assertEquals(
+            "\${{ runner.temp }}/maven-azure-\${{ github.run_id }}-\${{ github.run_attempt }}",
+            job.environment["AZURE_CONFIG_DIR"],
+        )
+        val prepare = job.steps.single { it.run == "mkdir -m 700 \"\$AZURE_CONFIG_DIR\"" }
+        val upload = job.steps.single { it.run?.contains("publishViaAuthProxy") == true }
+        assertEquals(login.condition, prepare.condition)
+        assertEquals(login.condition, upload.condition)
+        assertTrue(job.steps.indexOf(prepare) < job.steps.indexOf(login))
+        assertTrue(job.steps.indexOf(login) < job.steps.indexOf(upload))
+        assertTrue(
+            login.environment.isEmpty(),
+            "Keep the action's default post-job cleanup enabled",
+        )
+        assertFalse(requireNotNull(upload.run).contains("GITHUB_ENV"))
+        assertFalse(requireNotNull(upload.run).contains("GITHUB_OUTPUT"))
+    }
+
+    @Test
+    fun `publishing passes the Azure token only in the child environment and fails on CLI errors`() {
+        val job =
+            parseWorkflow(Path.of("../.github/workflows/create-releases.yml").readText())
+                .job("publish")
+        val script =
+            requireNotNull(job.steps.single { it.run?.contains("publishViaAuthProxy") == true }.run)
+        val bin = Files.createDirectory(temporaryDirectory.resolve("bin"))
+        val az = bin.resolve("az")
+        az.writeText(
+            "#!/usr/bin/env bash\n[[ \"\$1 \$2\" == 'account get-access-token' ]] || exit 91\nprintf '%s' '{\"accessToken\":\"fake-azure-token\",\"expires_on\":2000000000}'\n"
+        )
+        assertTrue(az.toFile().setExecutable(true))
+        val wrapper = temporaryDirectory.resolve("gradlew")
+        wrapper.writeText(
+            "#!/usr/bin/env bash\nprintf '%s\\n' \"\$MAVEN_CENTRAL_AUTH_PROXY_TOKEN\" \"\$MAVEN_CENTRAL_AUTH_PROXY_TOKEN_EXPIRES_AT\" \"\$@\" > child-env\n"
+        )
+        assertTrue(wrapper.toFile().setExecutable(true))
+        fun execute(): Pair<Int, String> {
+            val builder =
+                ProcessBuilder("bash", "-c", script)
+                    .directory(temporaryDirectory.toFile())
+                    .redirectErrorStream(true)
+            builder.environment()["PATH"] = "$bin:${System.getenv("PATH")}"
+            builder.environment()["MAVEN_CENTRAL_AZURE_RESOURCE"] = "api://fake-resource"
+            val process = builder.start()
+            val output = process.inputStream.bufferedReader().use { it.readText() }
+            return process.waitFor() to output
+        }
+        val (status, output) = execute()
+        assertEquals(0, status, output)
+        assertEquals("::add-mask::fake-azure-token", output.trim())
+        val received = temporaryDirectory.resolve("child-env").readText().lines()
+        assertEquals(
+            listOf(
+                "fake-azure-token",
+                "2000000000",
+                "publishViaAuthProxy",
+                "-PstageForAuthProxy=true",
+                "--no-daemon",
+                "--no-configuration-cache",
+                "",
+            ),
+            received,
+        )
+        Files.delete(temporaryDirectory.resolve("child-env"))
+        az.writeText("#!/usr/bin/env bash\nexit 42\n")
+        assertEquals(42, execute().first)
+        assertFalse(Files.exists(temporaryDirectory.resolve("child-env")))
+    }
+
+    @Test
     fun `publishing shares signing setup without giving vendor credentials to proxy mode`() {
         val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
         val steps = parseWorkflow(workflow).job("publish").steps
@@ -1125,6 +1213,7 @@ class GradleCacheTrustPolicyTest {
                 "gradle/actions/setup-gradle" to setOf("cache-disabled", "cache-provider"),
                 "graalvm/setup-graalvm" to setOf("distribution", "java-version"),
                 "actions/attest" to setOf("subject-path", "predicate-type", "predicate-path"),
+                "azure/login" to setOf("client-id", "tenant-id", "allow-no-subscriptions"),
             )
 
         publishJob.actions.forEach { action ->
@@ -1440,6 +1529,7 @@ class GradleCacheTrustPolicyTest {
                         jobName,
                         job["outputs"].workflowScalars("job outputs"),
                         job["permissions"].workflowScalars("job permissions"),
+                        job["env"].workflowScalars("job environment"),
                         steps,
                     )
             },
@@ -1494,6 +1584,7 @@ class GradleCacheTrustPolicyTest {
         val name: String,
         val outputs: Map<String, String>,
         val permissions: Map<String, String>,
+        val environment: Map<String, String>,
         val steps: List<WorkflowStep>,
     ) {
         val actions: List<WorkflowAction>

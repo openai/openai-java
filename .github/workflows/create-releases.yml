@@ -260,6 +260,9 @@ jobs:
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 90
     environment: publish
+    env:
+      AZURE_CONFIG_DIR: ${{ runner.temp }}/maven-azure-${{ github.run_id }}-${{ github.run_attempt }}
+      AZURE_LOGIN_POST_CLEANUP: 'true'
 
     steps:
       - name: Check out workflow scripts
@@ -487,16 +490,37 @@ jobs:
             --no-parallel \
             --no-configuration-cache
 
+      - name: Prepare isolated Azure login cache
+        if: vars.MAVEN_CENTRAL_AUTH_PROXY_URL != ''
+        run: mkdir -m 700 "$AZURE_CONFIG_DIR"
+
+      - name: Authenticate publishing identity with Azure
+        if: vars.MAVEN_CENTRAL_AUTH_PROXY_URL != ''
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.MAVEN_CENTRAL_AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.MAVEN_CENTRAL_AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
       - name: Publish through Maven Central auth proxy
         if: vars.MAVEN_CENTRAL_AUTH_PROXY_URL != ''
         env:
           JAVA_TOOL_OPTIONS: -Djdk.httpclient.redirects.retrylimit=1
           MAVEN_CENTRAL_AUTH_PROXY_URL: ${{ vars.MAVEN_CENTRAL_AUTH_PROXY_URL }}
-          MAVEN_CENTRAL_AZURE_TENANT_ID: ${{ vars.MAVEN_CENTRAL_AZURE_TENANT_ID }}
-          MAVEN_CENTRAL_AZURE_CLIENT_ID: ${{ vars.MAVEN_CENTRAL_AZURE_CLIENT_ID }}
           MAVEN_CENTRAL_AZURE_RESOURCE: ${{ vars.MAVEN_CENTRAL_AZURE_RESOURCE }}
           RELEASE_TAG: ${{ needs.release.outputs.release_tag }}
-        run: ./gradlew publishViaAuthProxy -PstageForAuthProxy=true --no-daemon --no-configuration-cache
+        run: |
+          set +x
+          set -euo pipefail
+          : "${MAVEN_CENTRAL_AZURE_RESOURCE:?Set the proxy resource identifier}"
+          response="$(az account get-access-token --resource "$MAVEN_CENTRAL_AZURE_RESOURCE" --output json --only-show-errors)"
+          token="$(jq -er '.accessToken | strings | select(length > 0)' <<< "$response")"
+          printf '::add-mask::%s\n' "$token"
+          export MAVEN_CENTRAL_AUTH_PROXY_TOKEN="$token"
+          expiry="$(jq -er '.expires_on | tonumber' <<< "$response")"
+          export MAVEN_CENTRAL_AUTH_PROXY_TOKEN_EXPIRES_AT="$expiry"
+          unset response token expiry
+          ./gradlew publishViaAuthProxy -PstageForAuthProxy=true --no-daemon --no-configuration-cache
 
       - name: Verify attested Maven artifacts
         run: sha256sum --check "$RUNNER_TEMP/maven-artifact-provenance.sha256"
