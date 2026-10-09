@@ -257,7 +257,7 @@ internal class WebhookServiceAsyncTest {
         val webhookServiceAsync = client.webhooks()
 
         val payload =
-            "{\"id\":\"id\",\"created_at\":0,\"data\":{\"id\":\"id\"},\"object\":\"event\",\"type\":\"agent.environment.failed\"}"
+            "{\"id\":\"id\",\"created_at\":0,\"data\":{\"id\":\"id\"},\"object\":\"event\",\"type\":\"agent.environment.expired\"}"
         val webhookSecret = "whsec_c2VjcmV0Cg=="
         val headers = Headers.builder().build()
 

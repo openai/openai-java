@@ -28,6 +28,7 @@ internal class SessionUpdateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+            .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
             .build()
     }
 
@@ -61,6 +62,7 @@ internal class SessionUpdateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .spendControl(SessionUpdateParams.SpendControl.builder().limit(1L).build())
                 .build()
 
         val body = params._body()
@@ -83,6 +85,8 @@ internal class SessionUpdateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+        assertThat(body.spendControl())
+            .contains(SessionUpdateParams.SpendControl.builder().limit(1L).build())
     }
 
     @Test

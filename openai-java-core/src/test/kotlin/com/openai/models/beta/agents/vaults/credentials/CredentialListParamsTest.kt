@@ -13,7 +13,12 @@ internal class CredentialListParamsTest {
         CredentialListParams.builder()
             .vaultId("vault_id")
             .after("after")
-            .limit(0L)
+            .limit(1L)
+            .metadata(
+                CredentialListParams.Metadata.builder()
+                    .putAdditionalProperty("foo", "string")
+                    .build()
+            )
             .order(CredentialListParams.Order.ASC)
             .build()
     }
@@ -33,7 +38,12 @@ internal class CredentialListParamsTest {
             CredentialListParams.builder()
                 .vaultId("vault_id")
                 .after("after")
-                .limit(0L)
+                .limit(1L)
+                .metadata(
+                    CredentialListParams.Metadata.builder()
+                        .putAdditionalProperty("foo", "string")
+                        .build()
+                )
                 .order(CredentialListParams.Order.ASC)
                 .build()
 
@@ -43,7 +53,8 @@ internal class CredentialListParamsTest {
             .isEqualTo(
                 QueryParams.builder()
                     .put("after", "after")
-                    .put("limit", "0")
+                    .put("limit", "1")
+                    .put("metadata[foo]", "string")
                     .put("order", "asc")
                     .build()
             )

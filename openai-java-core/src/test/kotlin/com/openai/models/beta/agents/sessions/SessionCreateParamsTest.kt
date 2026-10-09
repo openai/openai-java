@@ -62,6 +62,7 @@ internal class SessionCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+            .spendControl(SessionCreateParams.SpendControl.builder().limit(1L).build())
             .addVaultId("string")
             .build()
     }
@@ -115,6 +116,7 @@ internal class SessionCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .spendControl(SessionCreateParams.SpendControl.builder().limit(1L).build())
                 .addVaultId("string")
                 .build()
 
@@ -167,6 +169,8 @@ internal class SessionCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+        assertThat(body.spendControl())
+            .contains(SessionCreateParams.SpendControl.builder().limit(1L).build())
         assertThat(body.vaultIds().getOrNull()).containsExactly("string")
     }
 

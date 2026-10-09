@@ -102,7 +102,8 @@ private constructor(
     fun text(): Optional<AgentTextParam> = body.text()
 
     /**
-     * Tools available to the agent. Defaults to an empty list.
+     * Tools available to the agent. Defaults to an empty list. The tool list must fit within 3 MiB
+     * (3,145,728 bytes) of compact UTF-8 JSON.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -356,7 +357,10 @@ private constructor(
          */
         fun text(text: JsonField<AgentTextParam>) = apply { body.text(text) }
 
-        /** Tools available to the agent. Defaults to an empty list. */
+        /**
+         * Tools available to the agent. Defaults to an empty list. The tool list must fit within 3
+         * MiB (3,145,728 bytes) of compact UTF-8 JSON.
+         */
         fun tools(tools: List<PersistedAgentToolParam>?) = apply { body.tools(tools) }
 
         /** Alias for calling [Builder.tools] with `tools.orElse(null)`. */
@@ -673,7 +677,8 @@ private constructor(
         fun text(): Optional<AgentTextParam> = text.getOptional("text")
 
         /**
-         * Tools available to the agent. Defaults to an empty list.
+         * Tools available to the agent. Defaults to an empty list. The tool list must fit within 3
+         * MiB (3,145,728 bytes) of compact UTF-8 JSON.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -951,7 +956,10 @@ private constructor(
              */
             fun text(text: JsonField<AgentTextParam>) = apply { this.text = text }
 
-            /** Tools available to the agent. Defaults to an empty list. */
+            /**
+             * Tools available to the agent. Defaults to an empty list. The tool list must fit
+             * within 3 MiB (3,145,728 bytes) of compact UTF-8 JSON.
+             */
             fun tools(tools: List<PersistedAgentToolParam>?) = tools(JsonField.ofNullable(tools))
 
             /** Alias for calling [Builder.tools] with `tools.orElse(null)`. */

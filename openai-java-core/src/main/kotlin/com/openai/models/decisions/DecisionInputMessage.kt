@@ -30,7 +30,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** A user message containing text or inline images. */
+/** A user message containing text or images. */
 class DecisionInputMessage
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -48,7 +48,7 @@ private constructor(
     ) : this(content, role, type, mutableMapOf())
 
     /**
-     * Text evidence or an ordered list of text and inline image parts.
+     * Text evidence or an ordered list of text and image parts.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -127,7 +127,7 @@ private constructor(
             additionalProperties = decisionInputMessage.additionalProperties.toMutableMap()
         }
 
-        /** Text evidence or an ordered list of text and inline image parts. */
+        /** Text evidence or an ordered list of text and image parts. */
         fun content(content: Content) = content(JsonField.of(content))
 
         /**
@@ -252,7 +252,7 @@ private constructor(
             role.let { if (it == JsonValue.from("user")) 1 else 0 } +
             (type.asKnown().getOrNull()?.validity() ?: 0)
 
-    /** Text evidence or an ordered list of text and inline image parts. */
+    /** Text evidence or an ordered list of text and image parts. */
     @JsonDeserialize(using = Content.Deserializer::class)
     @JsonSerialize(using = Content.Serializer::class)
     class Content

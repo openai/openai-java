@@ -27,13 +27,13 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /** Return environments after this environment ID in the selected order. */
+    /** Return resources after this resource ID in the selected order. */
     fun after(): Optional<String> = Optional.ofNullable(after)
 
-    /** The maximum number of environments to return, between 1 and 100. Defaults to 20. */
+    /** The maximum number of resources to return, between 1 and 100. Defaults to 20. */
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
 
-    /** The order in which environments are returned. Defaults to `desc`. */
+    /** The order in which resources are returned. Defaults to `desc`. */
     fun order(): Optional<Order> = Optional.ofNullable(order)
 
     /** The hosting type to list. Defaults to `openai_hosted`. */
@@ -75,13 +75,13 @@ private constructor(
             additionalQueryParams = environmentListParams.additionalQueryParams.toBuilder()
         }
 
-        /** Return environments after this environment ID in the selected order. */
+        /** Return resources after this resource ID in the selected order. */
         fun after(after: String?) = apply { this.after = after }
 
         /** Alias for calling [Builder.after] with `after.orElse(null)`. */
         fun after(after: Optional<String>) = after(after.getOrNull())
 
-        /** The maximum number of environments to return, between 1 and 100. Defaults to 20. */
+        /** The maximum number of resources to return, between 1 and 100. Defaults to 20. */
         fun limit(limit: Long?) = apply { this.limit = limit }
 
         /**
@@ -94,7 +94,7 @@ private constructor(
         /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
-        /** The order in which environments are returned. Defaults to `desc`. */
+        /** The order in which resources are returned. Defaults to `desc`. */
         fun order(order: Order?) = apply { this.order = order }
 
         /** Alias for calling [Builder.order] with `order.orElse(null)`. */
@@ -233,7 +233,7 @@ private constructor(
             }
             .build()
 
-    /** The order in which environments are returned. Defaults to `desc`. */
+    /** The order in which resources are returned. Defaults to `desc`. */
     class Order @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**

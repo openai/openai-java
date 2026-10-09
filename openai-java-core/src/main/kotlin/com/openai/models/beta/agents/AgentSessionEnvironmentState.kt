@@ -550,6 +550,12 @@ private constructor(
             /** The environment is disconnected. */
             @JvmField val DISCONNECTED = of("disconnected")
 
+            /** The environment is stopped and can be resumed from its private checkpoint. */
+            @JvmField val SUSPENDED = of("suspended")
+
+            /** The environment and its private checkpoint have expired. */
+            @JvmField val EXPIRED = of("expired")
+
             /** The environment failed to connect. */
             @JvmField val FAILED = of("failed")
 
@@ -566,6 +572,10 @@ private constructor(
             CONNECTED,
             /** The environment is disconnected. */
             DISCONNECTED,
+            /** The environment is stopped and can be resumed from its private checkpoint. */
+            SUSPENDED,
+            /** The environment and its private checkpoint have expired. */
+            EXPIRED,
             /** The environment failed to connect. */
             FAILED,
         }
@@ -588,6 +598,10 @@ private constructor(
             CONNECTED,
             /** The environment is disconnected. */
             DISCONNECTED,
+            /** The environment is stopped and can be resumed from its private checkpoint. */
+            SUSPENDED,
+            /** The environment and its private checkpoint have expired. */
+            EXPIRED,
             /** The environment failed to connect. */
             FAILED,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
@@ -607,6 +621,8 @@ private constructor(
                 READY -> Value.READY
                 CONNECTED -> Value.CONNECTED
                 DISCONNECTED -> Value.DISCONNECTED
+                SUSPENDED -> Value.SUSPENDED
+                EXPIRED -> Value.EXPIRED
                 FAILED -> Value.FAILED
                 else -> Value._UNKNOWN
             }
@@ -626,6 +642,8 @@ private constructor(
                 READY -> Known.READY
                 CONNECTED -> Known.CONNECTED
                 DISCONNECTED -> Known.DISCONNECTED
+                SUSPENDED -> Known.SUSPENDED
+                EXPIRED -> Known.EXPIRED
                 FAILED -> Known.FAILED
                 else -> throw OpenAIInvalidDataException("Unknown Status: $value")
             }

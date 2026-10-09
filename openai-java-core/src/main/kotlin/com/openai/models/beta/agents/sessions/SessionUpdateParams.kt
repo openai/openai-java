@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -54,6 +55,14 @@ private constructor(
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
+     * Omit to retain the limit; null or a null limit removes it without resetting spend.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun spendControl(): Optional<SpendControl> = body.spendControl()
+
+    /**
      * Returns the raw JSON value of [agent].
      *
      * Unlike [agent], this method doesn't throw if the JSON field has an unexpected type.
@@ -66,6 +75,13 @@ private constructor(
      * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _metadata(): JsonField<Metadata> = body._metadata()
+
+    /**
+     * Returns the raw JSON value of [spendControl].
+     *
+     * Unlike [spendControl], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _spendControl(): JsonField<SpendControl> = body._spendControl()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -113,6 +129,7 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [agent]
          * - [metadata]
+         * - [spendControl]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -144,6 +161,24 @@ private constructor(
          * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
+
+        /** Omit to retain the limit; null or a null limit removes it without resetting spend. */
+        fun spendControl(spendControl: SpendControl?) = apply { body.spendControl(spendControl) }
+
+        /** Alias for calling [Builder.spendControl] with `spendControl.orElse(null)`. */
+        fun spendControl(spendControl: Optional<SpendControl>) =
+            spendControl(spendControl.getOrNull())
+
+        /**
+         * Sets [Builder.spendControl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.spendControl] with a well-typed [SpendControl] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun spendControl(spendControl: JsonField<SpendControl>) = apply {
+            body.spendControl(spendControl)
+        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -294,6 +329,7 @@ private constructor(
     private constructor(
         private val agent: JsonField<Agent>,
         private val metadata: JsonField<Metadata>,
+        private val spendControl: JsonField<SpendControl>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -303,7 +339,10 @@ private constructor(
             @JsonProperty("metadata")
             @ExcludeMissing
             metadata: JsonField<Metadata> = JsonMissing.of(),
-        ) : this(agent, metadata, mutableMapOf())
+            @JsonProperty("spend_control")
+            @ExcludeMissing
+            spendControl: JsonField<SpendControl> = JsonMissing.of(),
+        ) : this(agent, metadata, spendControl, mutableMapOf())
 
         /**
          * Model settings for subsequent turns. Omitted fields stay unchanged.
@@ -323,6 +362,14 @@ private constructor(
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
+         * Omit to retain the limit; null or a null limit removes it without resetting spend.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun spendControl(): Optional<SpendControl> = spendControl.getOptional("spend_control")
+
+        /**
          * Returns the raw JSON value of [agent].
          *
          * Unlike [agent], this method doesn't throw if the JSON field has an unexpected type.
@@ -335,6 +382,16 @@ private constructor(
          * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
+        /**
+         * Returns the raw JSON value of [spendControl].
+         *
+         * Unlike [spendControl], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("spend_control")
+        @ExcludeMissing
+        fun _spendControl(): JsonField<SpendControl> = spendControl
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -359,12 +416,14 @@ private constructor(
 
             private var agent: JsonField<Agent> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
+            private var spendControl: JsonField<SpendControl> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 agent = body.agent
                 metadata = body.metadata
+                spendControl = body.spendControl
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -398,6 +457,27 @@ private constructor(
              */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
+            /**
+             * Omit to retain the limit; null or a null limit removes it without resetting spend.
+             */
+            fun spendControl(spendControl: SpendControl?) =
+                spendControl(JsonField.ofNullable(spendControl))
+
+            /** Alias for calling [Builder.spendControl] with `spendControl.orElse(null)`. */
+            fun spendControl(spendControl: Optional<SpendControl>) =
+                spendControl(spendControl.getOrNull())
+
+            /**
+             * Sets [Builder.spendControl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.spendControl] with a well-typed [SpendControl] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun spendControl(spendControl: JsonField<SpendControl>) = apply {
+                this.spendControl = spendControl
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -422,7 +502,8 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Body = Body(agent, metadata, additionalProperties.toMutableMap())
+            fun build(): Body =
+                Body(agent, metadata, spendControl, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -443,6 +524,7 @@ private constructor(
 
             agent().ifPresent { it.validate() }
             metadata().ifPresent { it.validate() }
+            spendControl().ifPresent { it.validate() }
             validated = true
         }
 
@@ -463,7 +545,8 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (agent.asKnown().getOrNull()?.validity() ?: 0) +
-                (metadata.asKnown().getOrNull()?.validity() ?: 0)
+                (metadata.asKnown().getOrNull()?.validity() ?: 0) +
+                (spendControl.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -473,15 +556,18 @@ private constructor(
             return other is Body &&
                 agent == other.agent &&
                 metadata == other.metadata &&
+                spendControl == other.spendControl &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(agent, metadata, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(agent, metadata, spendControl, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{agent=$agent, metadata=$metadata, additionalProperties=$additionalProperties}"
+            "Body{agent=$agent, metadata=$metadata, spendControl=$spendControl, additionalProperties=$additionalProperties}"
     }
 
     /** Model settings for subsequent turns. Omitted fields stay unchanged. */
@@ -1344,6 +1430,182 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
+    }
+
+    /** Omit to retain the limit; null or a null limit removes it without resetting spend. */
+    class SpendControl
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val limit: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("limit") @ExcludeMissing limit: JsonField<Long> = JsonMissing.of()
+        ) : this(limit, mutableMapOf())
+
+        /**
+         * Positive USD cents, or null to remove the limit.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun limit(): Optional<Long> = limit.getOptional("limit")
+
+        /**
+         * Returns the raw JSON value of [limit].
+         *
+         * Unlike [limit], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("limit") @ExcludeMissing fun _limit(): JsonField<Long> = limit
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [SpendControl].
+             *
+             * The following fields are required:
+             * ```java
+             * .limit()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [SpendControl]. */
+        class Builder internal constructor() {
+
+            private var limit: JsonField<Long>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(spendControl: SpendControl) = apply {
+                limit = spendControl.limit
+                additionalProperties = spendControl.additionalProperties.toMutableMap()
+            }
+
+            /** Positive USD cents, or null to remove the limit. */
+            fun limit(limit: Long?) = limit(JsonField.ofNullable(limit))
+
+            /**
+             * Alias for [Builder.limit].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun limit(limit: Long) = limit(limit as Long?)
+
+            /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
+            fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
+
+            /**
+             * Sets [Builder.limit] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.limit] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun limit(limit: JsonField<Long>) = apply { this.limit = limit }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [SpendControl].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .limit()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): SpendControl =
+                SpendControl(checkRequired("limit", limit), additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): SpendControl = apply {
+            if (validated) {
+                return@apply
+            }
+
+            limit()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (if (limit.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is SpendControl &&
+                limit == other.limit &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(limit, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "SpendControl{limit=$limit, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

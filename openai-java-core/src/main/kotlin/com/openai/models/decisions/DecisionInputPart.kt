@@ -18,7 +18,10 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** An inline image. External URLs and file IDs are not supported. */
+/**
+ * An image provided as a base64 data URL or a publicly accessible HTTP(S) URL. File IDs are not
+ * supported.
+ */
 @JsonDeserialize(using = DecisionInputPart.Deserializer::class)
 @JsonSerialize(using = DecisionInputPart.Serializer::class)
 class DecisionInputPart
@@ -30,7 +33,10 @@ private constructor(
 
     fun inputText(): Optional<DecisionInputText> = Optional.ofNullable(inputText)
 
-    /** An inline image. External URLs and file IDs are not supported. */
+    /**
+     * An image provided as a base64 data URL or a publicly accessible HTTP(S) URL. File IDs are not
+     * supported.
+     */
     fun inputImage(): Optional<DecisionInputImage> = Optional.ofNullable(inputImage)
 
     fun isInputText(): Boolean = inputText != null
@@ -39,7 +45,10 @@ private constructor(
 
     fun asInputText(): DecisionInputText = inputText.getOrThrow("inputText")
 
-    /** An inline image. External URLs and file IDs are not supported. */
+    /**
+     * An image provided as a base64 data URL or a publicly accessible HTTP(S) URL. File IDs are not
+     * supported.
+     */
     fun asInputImage(): DecisionInputImage = inputImage.getOrThrow("inputImage")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -159,7 +168,10 @@ private constructor(
         @JvmStatic
         fun ofInputText(inputText: DecisionInputText) = DecisionInputPart(inputText = inputText)
 
-        /** An inline image. External URLs and file IDs are not supported. */
+        /**
+         * An image provided as a base64 data URL or a publicly accessible HTTP(S) URL. File IDs are
+         * not supported.
+         */
         @JvmStatic
         fun ofInputImage(inputImage: DecisionInputImage) =
             DecisionInputPart(inputImage = inputImage)
@@ -173,7 +185,10 @@ private constructor(
 
         fun visitInputText(inputText: DecisionInputText): T
 
-        /** An inline image. External URLs and file IDs are not supported. */
+        /**
+         * An image provided as a base64 data URL or a publicly accessible HTTP(S) URL. File IDs are
+         * not supported.
+         */
         fun visitInputImage(inputImage: DecisionInputImage): T
 
         /**

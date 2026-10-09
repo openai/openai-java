@@ -22,6 +22,7 @@ private constructor(
     private val vaultId: String?,
     private val after: String?,
     private val limit: Long?,
+    private val metadata: Metadata?,
     private val order: Order?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -32,16 +33,17 @@ private constructor(
     /** Return resources after this resource ID in the selected order. */
     fun after(): Optional<String> = Optional.ofNullable(after)
 
-    /**
-     * The maximum number of resources to return. Defaults to 20. Values are clamped between 1
-     * and 100.
-     */
+    /** The maximum number of resources to return, between 1 and 100. Defaults to 20. */
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
 
     /**
-     * Sort order by the `created_at` timestamp. Use `asc` for ascending order or `desc` for
-     * descending order. Defaults to `desc`.
+     * Exact string matches supplied as `metadata[key]=value`. All supplied pairs must match. Up to
+     * 16 pairs, with keys from 1 to 64 characters and values up to 512 characters. Filtering is
+     * eventually consistent; metadata changes may take time to appear.
      */
+    fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata)
+
+    /** The order in which resources are returned. Defaults to `desc`. */
     fun order(): Optional<Order> = Optional.ofNullable(order)
 
     /** Additional headers to send with the request. */
@@ -66,6 +68,7 @@ private constructor(
         private var vaultId: String? = null
         private var after: String? = null
         private var limit: Long? = null
+        private var metadata: Metadata? = null
         private var order: Order? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
@@ -75,6 +78,7 @@ private constructor(
             vaultId = credentialListParams.vaultId
             after = credentialListParams.after
             limit = credentialListParams.limit
+            metadata = credentialListParams.metadata
             order = credentialListParams.order
             additionalHeaders = credentialListParams.additionalHeaders.toBuilder()
             additionalQueryParams = credentialListParams.additionalQueryParams.toBuilder()
@@ -91,10 +95,7 @@ private constructor(
         /** Alias for calling [Builder.after] with `after.orElse(null)`. */
         fun after(after: Optional<String>) = after(after.getOrNull())
 
-        /**
-         * The maximum number of resources to return. Defaults to 20. Values are clamped between 1
-         * and 100.
-         */
+        /** The maximum number of resources to return, between 1 and 100. Defaults to 20. */
         fun limit(limit: Long?) = apply { this.limit = limit }
 
         /**
@@ -108,9 +109,16 @@ private constructor(
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         /**
-         * Sort order by the `created_at` timestamp. Use `asc` for ascending order or `desc` for
-         * descending order. Defaults to `desc`.
+         * Exact string matches supplied as `metadata[key]=value`. All supplied pairs must match. Up
+         * to 16 pairs, with keys from 1 to 64 characters and values up to 512 characters. Filtering
+         * is eventually consistent; metadata changes may take time to appear.
          */
+        fun metadata(metadata: Metadata?) = apply { this.metadata = metadata }
+
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
+
+        /** The order in which resources are returned. Defaults to `desc`. */
         fun order(order: Order?) = apply { this.order = order }
 
         /** Alias for calling [Builder.order] with `order.orElse(null)`. */
@@ -224,6 +232,7 @@ private constructor(
                 vaultId,
                 after,
                 limit,
+                metadata,
                 order,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -243,15 +252,119 @@ private constructor(
             .apply {
                 after?.let { put("after", it) }
                 limit?.let { put("limit", it.toString()) }
+                metadata?.let {
+                    it._additionalProperties().keys().forEach { key ->
+                        it._additionalProperties().values(key).forEach { value ->
+                            put("metadata[$key]", value)
+                        }
+                    }
+                }
                 order?.let { put("order", it.toString()) }
                 putAll(additionalQueryParams)
             }
             .build()
 
     /**
-     * Sort order by the `created_at` timestamp. Use `asc` for ascending order or `desc` for
-     * descending order. Defaults to `desc`.
+     * Exact string matches supplied as `metadata[key]=value`. All supplied pairs must match. Up to
+     * 16 pairs, with keys from 1 to 64 characters and values up to 512 characters. Filtering is
+     * eventually consistent; metadata changes may take time to appear.
      */
+    class Metadata private constructor(private val additionalProperties: QueryParams) {
+
+        /** Query params to send with the request. */
+        fun _additionalProperties(): QueryParams = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Metadata]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Metadata]. */
+        class Builder internal constructor() {
+
+            private var additionalProperties: QueryParams.Builder = QueryParams.builder()
+
+            @JvmSynthetic
+            internal fun from(metadata: Metadata) = apply {
+                additionalProperties = metadata.additionalProperties.toBuilder()
+            }
+
+            fun additionalProperties(additionalProperties: QueryParams) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, Iterable<String>>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: String) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAdditionalProperties(key: String, values: Iterable<String>) = apply {
+                additionalProperties.put(key, values)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: QueryParams) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, Iterable<String>>) =
+                apply {
+                    this.additionalProperties.putAll(additionalProperties)
+                }
+
+            fun replaceAdditionalProperties(key: String, value: String) = apply {
+                additionalProperties.replace(key, value)
+            }
+
+            fun replaceAdditionalProperties(key: String, values: Iterable<String>) = apply {
+                additionalProperties.replace(key, values)
+            }
+
+            fun replaceAllAdditionalProperties(additionalProperties: QueryParams) = apply {
+                this.additionalProperties.replaceAll(additionalProperties)
+            }
+
+            fun replaceAllAdditionalProperties(
+                additionalProperties: Map<String, Iterable<String>>
+            ) = apply { this.additionalProperties.replaceAll(additionalProperties) }
+
+            fun removeAdditionalProperties(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                additionalProperties.removeAll(keys)
+            }
+
+            /**
+             * Returns an immutable instance of [Metadata].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Metadata = Metadata(additionalProperties.build())
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Metadata && additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
+    }
+
+    /** The order in which resources are returned. Defaults to `desc`. */
     class Order @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -401,14 +514,23 @@ private constructor(
             vaultId == other.vaultId &&
             after == other.after &&
             limit == other.limit &&
+            metadata == other.metadata &&
             order == other.order &&
             additionalHeaders == other.additionalHeaders &&
             additionalQueryParams == other.additionalQueryParams
     }
 
     override fun hashCode(): Int =
-        Objects.hash(vaultId, after, limit, order, additionalHeaders, additionalQueryParams)
+        Objects.hash(
+            vaultId,
+            after,
+            limit,
+            metadata,
+            order,
+            additionalHeaders,
+            additionalQueryParams,
+        )
 
     override fun toString() =
-        "CredentialListParams{vaultId=$vaultId, after=$after, limit=$limit, order=$order, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "CredentialListParams{vaultId=$vaultId, after=$after, limit=$limit, metadata=$metadata, order=$order, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

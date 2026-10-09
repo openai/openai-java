@@ -18,16 +18,15 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to a
- * session.
- */
+/** Sent when an agent environment expires and can no longer resume from a snapshot. */
 @JsonDeserialize(using = UnwrapWebhookEvent.Deserializer::class)
 @JsonSerialize(using = UnwrapWebhookEvent.Serializer::class)
 class UnwrapWebhookEvent
 private constructor(
+    private val agentEnvironmentExpired: AgentEnvironmentExpiredWebhookEvent? = null,
     private val agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent? = null,
     private val agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent? = null,
+    private val agentEnvironmentSuspended: AgentEnvironmentSuspendedWebhookEvent? = null,
     private val agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent? = null,
     private val agentSessionCreated: AgentSessionCreatedWebhookEvent? = null,
     private val agentSessionFailed: AgentSessionFailedWebhookEvent? = null,
@@ -57,6 +56,10 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
+    /** Sent when an agent environment expires and can no longer resume from a snapshot. */
+    fun agentEnvironmentExpired(): Optional<AgentEnvironmentExpiredWebhookEvent> =
+        Optional.ofNullable(agentEnvironmentExpired)
+
     /**
      * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to a
      * session.
@@ -70,6 +73,10 @@ private constructor(
      */
     fun agentEnvironmentReady(): Optional<AgentEnvironmentReadyWebhookEvent> =
         Optional.ofNullable(agentEnvironmentReady)
+
+    /** Sent when an agent environment is suspended and can resume from a snapshot. */
+    fun agentEnvironmentSuspended(): Optional<AgentEnvironmentSuspendedWebhookEvent> =
+        Optional.ofNullable(agentEnvironmentSuspended)
 
     /** Sent when an agent session requires an action. Retrieve the session for action details. */
     fun agentSessionActionRequired(): Optional<AgentSessionActionRequiredWebhookEvent> =
@@ -184,9 +191,13 @@ private constructor(
     fun safetyWarningIssued(): Optional<SafetyWarningIssuedWebhookEvent> =
         Optional.ofNullable(safetyWarningIssued)
 
+    fun isAgentEnvironmentExpired(): Boolean = agentEnvironmentExpired != null
+
     fun isAgentEnvironmentFailed(): Boolean = agentEnvironmentFailed != null
 
     fun isAgentEnvironmentReady(): Boolean = agentEnvironmentReady != null
+
+    fun isAgentEnvironmentSuspended(): Boolean = agentEnvironmentSuspended != null
 
     fun isAgentSessionActionRequired(): Boolean = agentSessionActionRequired != null
 
@@ -240,6 +251,10 @@ private constructor(
 
     fun isSafetyWarningIssued(): Boolean = safetyWarningIssued != null
 
+    /** Sent when an agent environment expires and can no longer resume from a snapshot. */
+    fun asAgentEnvironmentExpired(): AgentEnvironmentExpiredWebhookEvent =
+        agentEnvironmentExpired.getOrThrow("agentEnvironmentExpired")
+
     /**
      * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to a
      * session.
@@ -253,6 +268,10 @@ private constructor(
      */
     fun asAgentEnvironmentReady(): AgentEnvironmentReadyWebhookEvent =
         agentEnvironmentReady.getOrThrow("agentEnvironmentReady")
+
+    /** Sent when an agent environment is suspended and can resume from a snapshot. */
+    fun asAgentEnvironmentSuspended(): AgentEnvironmentSuspendedWebhookEvent =
+        agentEnvironmentSuspended.getOrThrow("agentEnvironmentSuspended")
 
     /** Sent when an agent session requires an action. Retrieve the session for action details. */
     fun asAgentSessionActionRequired(): AgentSessionActionRequiredWebhookEvent =
@@ -381,8 +400,8 @@ private constructor(
      *
      * Optional<String> result = unwrapWebhookEvent.accept(new UnwrapWebhookEvent.Visitor<Optional<String>>() {
      *     @Override
-     *     public Optional<String> visitAgentEnvironmentFailed(AgentEnvironmentFailedWebhookEvent agentEnvironmentFailed) {
-     *         return Optional.of(agentEnvironmentFailed.toString());
+     *     public Optional<String> visitAgentEnvironmentExpired(AgentEnvironmentExpiredWebhookEvent agentEnvironmentExpired) {
+     *         return Optional.of(agentEnvironmentExpired.toString());
      *     }
      *
      *     // ...
@@ -400,10 +419,14 @@ private constructor(
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
+            agentEnvironmentExpired != null ->
+                visitor.visitAgentEnvironmentExpired(agentEnvironmentExpired)
             agentEnvironmentFailed != null ->
                 visitor.visitAgentEnvironmentFailed(agentEnvironmentFailed)
             agentEnvironmentReady != null ->
                 visitor.visitAgentEnvironmentReady(agentEnvironmentReady)
+            agentEnvironmentSuspended != null ->
+                visitor.visitAgentEnvironmentSuspended(agentEnvironmentSuspended)
             agentSessionActionRequired != null ->
                 visitor.visitAgentSessionActionRequired(agentSessionActionRequired)
             agentSessionCreated != null -> visitor.visitAgentSessionCreated(agentSessionCreated)
@@ -457,6 +480,12 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
+                override fun visitAgentEnvironmentExpired(
+                    agentEnvironmentExpired: AgentEnvironmentExpiredWebhookEvent
+                ) {
+                    agentEnvironmentExpired.validate()
+                }
+
                 override fun visitAgentEnvironmentFailed(
                     agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent
                 ) {
@@ -467,6 +496,12 @@ private constructor(
                     agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent
                 ) {
                     agentEnvironmentReady.validate()
+                }
+
+                override fun visitAgentEnvironmentSuspended(
+                    agentEnvironmentSuspended: AgentEnvironmentSuspendedWebhookEvent
+                ) {
+                    agentEnvironmentSuspended.validate()
                 }
 
                 override fun visitAgentSessionActionRequired(
@@ -626,6 +661,10 @@ private constructor(
     internal fun validity(): Int =
         accept(
             object : Visitor<Int> {
+                override fun visitAgentEnvironmentExpired(
+                    agentEnvironmentExpired: AgentEnvironmentExpiredWebhookEvent
+                ) = agentEnvironmentExpired.validity()
+
                 override fun visitAgentEnvironmentFailed(
                     agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent
                 ) = agentEnvironmentFailed.validity()
@@ -633,6 +672,10 @@ private constructor(
                 override fun visitAgentEnvironmentReady(
                     agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent
                 ) = agentEnvironmentReady.validity()
+
+                override fun visitAgentEnvironmentSuspended(
+                    agentEnvironmentSuspended: AgentEnvironmentSuspendedWebhookEvent
+                ) = agentEnvironmentSuspended.validity()
 
                 override fun visitAgentSessionActionRequired(
                     agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
@@ -738,8 +781,10 @@ private constructor(
         }
 
         return other is UnwrapWebhookEvent &&
+            agentEnvironmentExpired == other.agentEnvironmentExpired &&
             agentEnvironmentFailed == other.agentEnvironmentFailed &&
             agentEnvironmentReady == other.agentEnvironmentReady &&
+            agentEnvironmentSuspended == other.agentEnvironmentSuspended &&
             agentSessionActionRequired == other.agentSessionActionRequired &&
             agentSessionCreated == other.agentSessionCreated &&
             agentSessionFailed == other.agentSessionFailed &&
@@ -770,8 +815,10 @@ private constructor(
 
     override fun hashCode(): Int =
         Objects.hash(
+            agentEnvironmentExpired,
             agentEnvironmentFailed,
             agentEnvironmentReady,
+            agentEnvironmentSuspended,
             agentSessionActionRequired,
             agentSessionCreated,
             agentSessionFailed,
@@ -802,10 +849,14 @@ private constructor(
 
     override fun toString(): String =
         when {
+            agentEnvironmentExpired != null ->
+                "UnwrapWebhookEvent{agentEnvironmentExpired=$agentEnvironmentExpired}"
             agentEnvironmentFailed != null ->
                 "UnwrapWebhookEvent{agentEnvironmentFailed=$agentEnvironmentFailed}"
             agentEnvironmentReady != null ->
                 "UnwrapWebhookEvent{agentEnvironmentReady=$agentEnvironmentReady}"
+            agentEnvironmentSuspended != null ->
+                "UnwrapWebhookEvent{agentEnvironmentSuspended=$agentEnvironmentSuspended}"
             agentSessionActionRequired != null ->
                 "UnwrapWebhookEvent{agentSessionActionRequired=$agentSessionActionRequired}"
             agentSessionCreated != null ->
@@ -852,6 +903,12 @@ private constructor(
 
     companion object {
 
+        /** Sent when an agent environment expires and can no longer resume from a snapshot. */
+        @JvmStatic
+        fun ofAgentEnvironmentExpired(
+            agentEnvironmentExpired: AgentEnvironmentExpiredWebhookEvent
+        ) = UnwrapWebhookEvent(agentEnvironmentExpired = agentEnvironmentExpired)
+
         /**
          * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to
          * a session.
@@ -867,6 +924,12 @@ private constructor(
         @JvmStatic
         fun ofAgentEnvironmentReady(agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent) =
             UnwrapWebhookEvent(agentEnvironmentReady = agentEnvironmentReady)
+
+        /** Sent when an agent environment is suspended and can resume from a snapshot. */
+        @JvmStatic
+        fun ofAgentEnvironmentSuspended(
+            agentEnvironmentSuspended: AgentEnvironmentSuspendedWebhookEvent
+        ) = UnwrapWebhookEvent(agentEnvironmentSuspended = agentEnvironmentSuspended)
 
         /**
          * Sent when an agent session requires an action. Retrieve the session for action details.
@@ -1024,6 +1087,11 @@ private constructor(
      */
     interface Visitor<out T> {
 
+        /** Sent when an agent environment expires and can no longer resume from a snapshot. */
+        fun visitAgentEnvironmentExpired(
+            agentEnvironmentExpired: AgentEnvironmentExpiredWebhookEvent
+        ): T
+
         /**
          * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to
          * a session.
@@ -1037,6 +1105,11 @@ private constructor(
          * session.
          */
         fun visitAgentEnvironmentReady(agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent): T
+
+        /** Sent when an agent environment is suspended and can resume from a snapshot. */
+        fun visitAgentEnvironmentSuspended(
+            agentEnvironmentSuspended: AgentEnvironmentSuspendedWebhookEvent
+        ): T
 
         /**
          * Sent when an agent session requires an action. Retrieve the session for action details.
@@ -1165,6 +1238,14 @@ private constructor(
             val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
             when (type) {
+                "agent.environment.expired" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentEnvironmentExpiredWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(agentEnvironmentExpired = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
                 "agent.environment.failed" -> {
                     return tryDeserialize(
                             node,
@@ -1176,6 +1257,14 @@ private constructor(
                 "agent.environment.ready" -> {
                     return tryDeserialize(node, jacksonTypeRef<AgentEnvironmentReadyWebhookEvent>())
                         ?.let { UnwrapWebhookEvent(agentEnvironmentReady = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.environment.suspended" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentEnvironmentSuspendedWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(agentEnvironmentSuspended = it, _json = json) }
                         ?: UnwrapWebhookEvent(_json = json)
                 }
                 "agent.session.action_required" -> {
@@ -1337,10 +1426,14 @@ private constructor(
             provider: SerializerProvider,
         ) {
             when {
+                value.agentEnvironmentExpired != null ->
+                    generator.writeObject(value.agentEnvironmentExpired)
                 value.agentEnvironmentFailed != null ->
                     generator.writeObject(value.agentEnvironmentFailed)
                 value.agentEnvironmentReady != null ->
                     generator.writeObject(value.agentEnvironmentReady)
+                value.agentEnvironmentSuspended != null ->
+                    generator.writeObject(value.agentEnvironmentSuspended)
                 value.agentSessionActionRequired != null ->
                     generator.writeObject(value.agentSessionActionRequired)
                 value.agentSessionCreated != null ->
