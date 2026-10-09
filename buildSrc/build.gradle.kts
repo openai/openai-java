@@ -1,6 +1,6 @@
 plugins {
     `kotlin-dsl`
-    kotlin("jvm") version "2.2.21"
+    kotlin("jvm") version "2.4.20"
     id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
