@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.80.0](https://github.com/openai/openai-java/compare/v4.79.0...v4.80.0) (2026-10-09)
+
+
+### Features
+
+* **api:** add agent environment webhook events and vault updates ([#1159](https://github.com/openai/openai-java/issues/1159)) ([c577cc4](https://github.com/openai/openai-java/commit/c577cc470e3f98b383529a08f237541450e561ee))
+
+
+### Build System
+
+* **deps:** bump com.fasterxml.jackson.core:jackson-databind from 2.22.1 to 2.22.3 ([#1131](https://github.com/openai/openai-java/issues/1131)) ([a22dd21](https://github.com/openai/openai-java/commit/a22dd21ba519a6458881d8e7274fb431639d9755))
+
 ## [4.79.0](https://github.com/openai/openai-java/compare/v4.78.1...v4.79.0) (2026-10-09)
 
 
