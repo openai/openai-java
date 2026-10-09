@@ -111,6 +111,9 @@ jobs:
           cache-provider: basic
           cache-read-only: true
 
+      - name: Test Maven publishing helper
+        run: python3 -m unittest discover -s .github/scripts -p 'test_publish_maven_central.py'
+
       - name: Test build logic
         run: ./scripts/gradle :buildSrc:test
 
