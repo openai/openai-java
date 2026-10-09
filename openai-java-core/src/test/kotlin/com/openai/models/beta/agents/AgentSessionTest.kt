@@ -113,6 +113,7 @@ internal class AgentSessionTest {
                         .build()
                 )
                 .addVaultId("string")
+                .spendControl(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
                 .build()
 
         assertThat(agentSession.id()).isEqualTo("id")
@@ -214,6 +215,8 @@ internal class AgentSessionTest {
                     .build()
             )
         assertThat(agentSession.vaultIds()).containsExactly("string")
+        assertThat(agentSession.spendControl())
+            .contains(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
     }
 
     @Test
@@ -320,6 +323,7 @@ internal class AgentSessionTest {
                         .build()
                 )
                 .addVaultId("string")
+                .spendControl(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
                 .build()
 
         val roundtrippedAgentSession =

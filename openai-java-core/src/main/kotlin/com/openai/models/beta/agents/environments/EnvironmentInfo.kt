@@ -477,6 +477,9 @@ private constructor(
 
             @JvmField val DISCONNECTED = of("disconnected")
 
+            /** The sandbox is stopped and can be resumed from its private checkpoint. */
+            @JvmField val SUSPENDED = of("suspended")
+
             @JvmField val EXPIRED = of("expired")
 
             @JvmField val FAILED = of("failed")
@@ -491,6 +494,8 @@ private constructor(
             READY,
             CONNECTED,
             DISCONNECTED,
+            /** The sandbox is stopped and can be resumed from its private checkpoint. */
+            SUSPENDED,
             EXPIRED,
             FAILED,
         }
@@ -510,6 +515,8 @@ private constructor(
             READY,
             CONNECTED,
             DISCONNECTED,
+            /** The sandbox is stopped and can be resumed from its private checkpoint. */
+            SUSPENDED,
             EXPIRED,
             FAILED,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
@@ -529,6 +536,7 @@ private constructor(
                 READY -> Value.READY
                 CONNECTED -> Value.CONNECTED
                 DISCONNECTED -> Value.DISCONNECTED
+                SUSPENDED -> Value.SUSPENDED
                 EXPIRED -> Value.EXPIRED
                 FAILED -> Value.FAILED
                 else -> Value._UNKNOWN
@@ -549,6 +557,7 @@ private constructor(
                 READY -> Known.READY
                 CONNECTED -> Known.CONNECTED
                 DISCONNECTED -> Known.DISCONNECTED
+                SUSPENDED -> Known.SUSPENDED
                 EXPIRED -> Known.EXPIRED
                 FAILED -> Known.FAILED
                 else -> throw OpenAIInvalidDataException("Unknown Status: $value")

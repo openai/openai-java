@@ -25,6 +25,8 @@ class AgentSessionEvent
 private constructor(
     private val error: AgentSessionErrorEvent? = null,
     private val environmentReady: AgentSessionEnvironmentReadyEvent? = null,
+    private val environmentSuspended: AgentSessionEnvironmentSuspendedEvent? = null,
+    private val environmentExpired: AgentSessionEnvironmentExpiredEvent? = null,
     private val environmentReset: AgentSessionEnvironmentResetEvent? = null,
     private val outputCommandExecutionOutputDelta: AgentOutputCommandExecutionOutputDeltaEvent? =
         null,
@@ -66,6 +68,14 @@ private constructor(
     /** Emitted when a hosted session environment is ready to connect. */
     fun environmentReady(): Optional<AgentSessionEnvironmentReadyEvent> =
         Optional.ofNullable(environmentReady)
+
+    /** Emitted after an idle hosted session environment is checkpointed and stopped. */
+    fun environmentSuspended(): Optional<AgentSessionEnvironmentSuspendedEvent> =
+        Optional.ofNullable(environmentSuspended)
+
+    /** Emitted after a suspended hosted session environment and its checkpoint expire. */
+    fun environmentExpired(): Optional<AgentSessionEnvironmentExpiredEvent> =
+        Optional.ofNullable(environmentExpired)
 
     /**
      * Emitted after a hosted sandbox is replaced. Conversation history survives; changes to the
@@ -183,6 +193,10 @@ private constructor(
 
     fun isEnvironmentReady(): Boolean = environmentReady != null
 
+    fun isEnvironmentSuspended(): Boolean = environmentSuspended != null
+
+    fun isEnvironmentExpired(): Boolean = environmentExpired != null
+
     fun isEnvironmentReset(): Boolean = environmentReset != null
 
     fun isOutputCommandExecutionOutputDelta(): Boolean = outputCommandExecutionOutputDelta != null
@@ -247,6 +261,14 @@ private constructor(
     /** Emitted when a hosted session environment is ready to connect. */
     fun asEnvironmentReady(): AgentSessionEnvironmentReadyEvent =
         environmentReady.getOrThrow("environmentReady")
+
+    /** Emitted after an idle hosted session environment is checkpointed and stopped. */
+    fun asEnvironmentSuspended(): AgentSessionEnvironmentSuspendedEvent =
+        environmentSuspended.getOrThrow("environmentSuspended")
+
+    /** Emitted after a suspended hosted session environment and its checkpoint expire. */
+    fun asEnvironmentExpired(): AgentSessionEnvironmentExpiredEvent =
+        environmentExpired.getOrThrow("environmentExpired")
 
     /**
      * Emitted after a hosted sandbox is replaced. Conversation history survives; changes to the
@@ -395,6 +417,8 @@ private constructor(
         when {
             error != null -> visitor.visitError(error)
             environmentReady != null -> visitor.visitEnvironmentReady(environmentReady)
+            environmentSuspended != null -> visitor.visitEnvironmentSuspended(environmentSuspended)
+            environmentExpired != null -> visitor.visitEnvironmentExpired(environmentExpired)
             environmentReset != null -> visitor.visitEnvironmentReset(environmentReset)
             outputCommandExecutionOutputDelta != null ->
                 visitor.visitOutputCommandExecutionOutputDelta(outputCommandExecutionOutputDelta)
@@ -458,6 +482,18 @@ private constructor(
                     environmentReady: AgentSessionEnvironmentReadyEvent
                 ) {
                     environmentReady.validate()
+                }
+
+                override fun visitEnvironmentSuspended(
+                    environmentSuspended: AgentSessionEnvironmentSuspendedEvent
+                ) {
+                    environmentSuspended.validate()
+                }
+
+                override fun visitEnvironmentExpired(
+                    environmentExpired: AgentSessionEnvironmentExpiredEvent
+                ) {
+                    environmentExpired.validate()
                 }
 
                 override fun visitEnvironmentReset(
@@ -633,6 +669,14 @@ private constructor(
                     environmentReady: AgentSessionEnvironmentReadyEvent
                 ) = environmentReady.validity()
 
+                override fun visitEnvironmentSuspended(
+                    environmentSuspended: AgentSessionEnvironmentSuspendedEvent
+                ) = environmentSuspended.validity()
+
+                override fun visitEnvironmentExpired(
+                    environmentExpired: AgentSessionEnvironmentExpiredEvent
+                ) = environmentExpired.validity()
+
                 override fun visitEnvironmentReset(
                     environmentReset: AgentSessionEnvironmentResetEvent
                 ) = environmentReset.validity()
@@ -744,6 +788,8 @@ private constructor(
         return other is AgentSessionEvent &&
             error == other.error &&
             environmentReady == other.environmentReady &&
+            environmentSuspended == other.environmentSuspended &&
+            environmentExpired == other.environmentExpired &&
             environmentReset == other.environmentReset &&
             outputCommandExecutionOutputDelta == other.outputCommandExecutionOutputDelta &&
             created == other.created &&
@@ -779,6 +825,8 @@ private constructor(
         Objects.hash(
             error,
             environmentReady,
+            environmentSuspended,
+            environmentExpired,
             environmentReset,
             outputCommandExecutionOutputDelta,
             created,
@@ -814,6 +862,10 @@ private constructor(
         when {
             error != null -> "AgentSessionEvent{error=$error}"
             environmentReady != null -> "AgentSessionEvent{environmentReady=$environmentReady}"
+            environmentSuspended != null ->
+                "AgentSessionEvent{environmentSuspended=$environmentSuspended}"
+            environmentExpired != null ->
+                "AgentSessionEvent{environmentExpired=$environmentExpired}"
             environmentReset != null -> "AgentSessionEvent{environmentReset=$environmentReset}"
             outputCommandExecutionOutputDelta != null ->
                 "AgentSessionEvent{outputCommandExecutionOutputDelta=$outputCommandExecutionOutputDelta}"
@@ -868,6 +920,16 @@ private constructor(
         @JvmStatic
         fun ofEnvironmentReady(environmentReady: AgentSessionEnvironmentReadyEvent) =
             AgentSessionEvent(environmentReady = environmentReady)
+
+        /** Emitted after an idle hosted session environment is checkpointed and stopped. */
+        @JvmStatic
+        fun ofEnvironmentSuspended(environmentSuspended: AgentSessionEnvironmentSuspendedEvent) =
+            AgentSessionEvent(environmentSuspended = environmentSuspended)
+
+        /** Emitted after a suspended hosted session environment and its checkpoint expire. */
+        @JvmStatic
+        fun ofEnvironmentExpired(environmentExpired: AgentSessionEnvironmentExpiredEvent) =
+            AgentSessionEvent(environmentExpired = environmentExpired)
 
         /**
          * Emitted after a hosted sandbox is replaced. Conversation history survives; changes to the
@@ -1033,6 +1095,15 @@ private constructor(
         fun visitEnvironmentReady(environmentReady: AgentSessionEnvironmentReadyEvent): T =
             unknown(JsonValue.from(environmentReady))
 
+        /** Emitted after an idle hosted session environment is checkpointed and stopped. */
+        fun visitEnvironmentSuspended(
+            environmentSuspended: AgentSessionEnvironmentSuspendedEvent
+        ): T = unknown(JsonValue.from(environmentSuspended))
+
+        /** Emitted after a suspended hosted session environment and its checkpoint expire. */
+        fun visitEnvironmentExpired(environmentExpired: AgentSessionEnvironmentExpiredEvent): T =
+            unknown(JsonValue.from(environmentExpired))
+
         /**
          * Emitted after a hosted sandbox is replaced. Conversation history survives; changes to the
          * previous sandbox's files and processes do not.
@@ -1190,6 +1261,22 @@ private constructor(
                 "agent.session.environment.ready" -> {
                     return tryDeserialize(node, jacksonTypeRef<AgentSessionEnvironmentReadyEvent>())
                         ?.let { AgentSessionEvent(environmentReady = it, _json = json) }
+                        ?: AgentSessionEvent(_json = json)
+                }
+                "agent.session.environment.suspended" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentSessionEnvironmentSuspendedEvent>(),
+                        )
+                        ?.let { AgentSessionEvent(environmentSuspended = it, _json = json) }
+                        ?: AgentSessionEvent(_json = json)
+                }
+                "agent.session.environment.expired" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentSessionEnvironmentExpiredEvent>(),
+                        )
+                        ?.let { AgentSessionEvent(environmentExpired = it, _json = json) }
                         ?: AgentSessionEvent(_json = json)
                 }
                 "agent.session.environment.reset" -> {
@@ -1395,6 +1482,9 @@ private constructor(
             when {
                 value.error != null -> generator.writeObject(value.error)
                 value.environmentReady != null -> generator.writeObject(value.environmentReady)
+                value.environmentSuspended != null ->
+                    generator.writeObject(value.environmentSuspended)
+                value.environmentExpired != null -> generator.writeObject(value.environmentExpired)
                 value.environmentReset != null -> generator.writeObject(value.environmentReset)
                 value.outputCommandExecutionOutputDelta != null ->
                     generator.writeObject(value.outputCommandExecutionOutputDelta)

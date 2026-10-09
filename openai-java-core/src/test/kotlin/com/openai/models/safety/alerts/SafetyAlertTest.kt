@@ -21,6 +21,7 @@ internal class SafetyAlertTest {
                 .requestId("request_id")
                 .requestPaused(true)
                 .responseId("response_id")
+                .detailedExplanation("detailed_explanation")
                 .build()
 
         assertThat(safetyAlert.id()).isEqualTo("id")
@@ -32,6 +33,7 @@ internal class SafetyAlertTest {
         assertThat(safetyAlert.requestId()).isEqualTo("request_id")
         assertThat(safetyAlert.requestPaused()).isEqualTo(true)
         assertThat(safetyAlert.responseId()).isEqualTo("response_id")
+        assertThat(safetyAlert.detailedExplanation()).contains("detailed_explanation")
     }
 
     @Test
@@ -47,6 +49,7 @@ internal class SafetyAlertTest {
                 .requestId("request_id")
                 .requestPaused(true)
                 .responseId("response_id")
+                .detailedExplanation("detailed_explanation")
                 .build()
 
         val roundtrippedSafetyAlert =

@@ -299,7 +299,10 @@ private constructor(
 
         fun score(): Optional<Score> = Optional.ofNullable(score)
 
-        /** The host may decline one question without disclosing its refusal score. */
+        /**
+         * The model declined to answer this question. Other questions in the same request can still
+         * receive answers.
+         */
         fun refusal(): Optional<Refusal> = Optional.ofNullable(refusal)
 
         fun isPredicate(): Boolean = predicate != null
@@ -316,7 +319,10 @@ private constructor(
 
         fun asScore(): Score = score.getOrThrow("score")
 
-        /** The host may decline one question without disclosing its refusal score. */
+        /**
+         * The model declined to answer this question. Other questions in the same request can still
+         * receive answers.
+         */
         fun asRefusal(): Refusal = refusal.getOrThrow("refusal")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -459,7 +465,10 @@ private constructor(
 
             @JvmStatic fun ofScore(score: Score) = Answer(score = score)
 
-            /** The host may decline one question without disclosing its refusal score. */
+            /**
+             * The model declined to answer this question. Other questions in the same request can
+             * still receive answers.
+             */
             @JvmStatic fun ofRefusal(refusal: Refusal) = Answer(refusal = refusal)
         }
 
@@ -472,7 +481,10 @@ private constructor(
 
             fun visitScore(score: Score): T
 
-            /** The host may decline one question without disclosing its refusal score. */
+            /**
+             * The model declined to answer this question. Other questions in the same request can
+             * still receive answers.
+             */
             fun visitRefusal(refusal: Refusal): T
 
             /**
@@ -1995,7 +2007,10 @@ private constructor(
                 "Score{confidence=$confidence, name=$name, probabilities=$probabilities, score=$score, type=$type, additionalProperties=$additionalProperties}"
         }
 
-        /** The host may decline one question without disclosing its refusal score. */
+        /**
+         * The model declined to answer this question. Other questions in the same request can still
+         * receive answers.
+         */
         class Refusal
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(

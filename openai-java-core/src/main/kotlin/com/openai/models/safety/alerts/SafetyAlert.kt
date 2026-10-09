@@ -30,6 +30,7 @@ private constructor(
     private val requestId: JsonField<String>,
     private val requestPaused: JsonField<Boolean>,
     private val responseId: JsonField<String>,
+    private val detailedExplanation: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -50,6 +51,9 @@ private constructor(
         @JsonProperty("response_id")
         @ExcludeMissing
         responseId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("detailed_explanation")
+        @ExcludeMissing
+        detailedExplanation: JsonField<String> = JsonMissing.of(),
     ) : this(
         id,
         createdAt,
@@ -60,6 +64,7 @@ private constructor(
         requestId,
         requestPaused,
         responseId,
+        detailedExplanation,
         mutableMapOf(),
     )
 
@@ -129,6 +134,16 @@ private constructor(
     fun responseId(): String = responseId.getRequired("response_id")
 
     /**
+     * A generated explanation, temporarily available for eligible zero data retention alerts.
+     * Omitted when unavailable.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun detailedExplanation(): Optional<String> =
+        detailedExplanation.getOptional("detailed_explanation")
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -186,6 +201,16 @@ private constructor(
      */
     @JsonProperty("response_id") @ExcludeMissing fun _responseId(): JsonField<String> = responseId
 
+    /**
+     * Returns the raw JSON value of [detailedExplanation].
+     *
+     * Unlike [detailedExplanation], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("detailed_explanation")
+    @ExcludeMissing
+    fun _detailedExplanation(): JsonField<String> = detailedExplanation
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -230,6 +255,7 @@ private constructor(
         private var requestId: JsonField<String>? = null
         private var requestPaused: JsonField<Boolean>? = null
         private var responseId: JsonField<String>? = null
+        private var detailedExplanation: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -243,6 +269,7 @@ private constructor(
             requestId = safetyAlert.requestId
             requestPaused = safetyAlert.requestPaused
             responseId = safetyAlert.responseId
+            detailedExplanation = safetyAlert.detailedExplanation
             additionalProperties = safetyAlert.additionalProperties.toMutableMap()
         }
 
@@ -357,6 +384,30 @@ private constructor(
          */
         fun responseId(responseId: JsonField<String>) = apply { this.responseId = responseId }
 
+        /**
+         * A generated explanation, temporarily available for eligible zero data retention alerts.
+         * Omitted when unavailable.
+         */
+        fun detailedExplanation(detailedExplanation: String?) =
+            detailedExplanation(JsonField.ofNullable(detailedExplanation))
+
+        /**
+         * Alias for calling [Builder.detailedExplanation] with `detailedExplanation.orElse(null)`.
+         */
+        fun detailedExplanation(detailedExplanation: Optional<String>) =
+            detailedExplanation(detailedExplanation.getOrNull())
+
+        /**
+         * Sets [Builder.detailedExplanation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.detailedExplanation] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun detailedExplanation(detailedExplanation: JsonField<String>) = apply {
+            this.detailedExplanation = detailedExplanation
+        }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -406,6 +457,7 @@ private constructor(
                 checkRequired("requestId", requestId),
                 checkRequired("requestPaused", requestPaused),
                 checkRequired("responseId", responseId),
+                detailedExplanation,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -438,6 +490,7 @@ private constructor(
         requestId()
         requestPaused()
         responseId()
+        detailedExplanation()
         validated = true
     }
 
@@ -464,7 +517,8 @@ private constructor(
             (if (reason.asKnown().isPresent) 1 else 0) +
             (if (requestId.asKnown().isPresent) 1 else 0) +
             (if (requestPaused.asKnown().isPresent) 1 else 0) +
-            (if (responseId.asKnown().isPresent) 1 else 0)
+            (if (responseId.asKnown().isPresent) 1 else 0) +
+            (if (detailedExplanation.asKnown().isPresent) 1 else 0)
 
     class ErrorType @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -635,6 +689,7 @@ private constructor(
             requestId == other.requestId &&
             requestPaused == other.requestPaused &&
             responseId == other.responseId &&
+            detailedExplanation == other.detailedExplanation &&
             additionalProperties == other.additionalProperties
     }
 
@@ -649,6 +704,7 @@ private constructor(
             requestId,
             requestPaused,
             responseId,
+            detailedExplanation,
             additionalProperties,
         )
     }
@@ -656,5 +712,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "SafetyAlert{id=$id, createdAt=$createdAt, errorType=$errorType, model=$model, object_=$object_, reason=$reason, requestId=$requestId, requestPaused=$requestPaused, responseId=$responseId, additionalProperties=$additionalProperties}"
+        "SafetyAlert{id=$id, createdAt=$createdAt, errorType=$errorType, model=$model, object_=$object_, reason=$reason, requestId=$requestId, requestPaused=$requestPaused, responseId=$responseId, detailedExplanation=$detailedExplanation, additionalProperties=$additionalProperties}"
 }

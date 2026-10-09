@@ -18,7 +18,10 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** An inline image. External URLs and file IDs are not supported. */
+/**
+ * An image provided as a base64 data URL or a publicly accessible HTTP(S) URL. File IDs are not
+ * supported.
+ */
 class DecisionInputImage
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -36,7 +39,7 @@ private constructor(
     ) : this(imageUrl, type, detail, mutableMapOf())
 
     /**
-     * A base64-encoded image in a data URL.
+     * A base64-encoded image in a data URL or a publicly accessible HTTP(S) image URL.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -117,7 +120,7 @@ private constructor(
             additionalProperties = decisionInputImage.additionalProperties.toMutableMap()
         }
 
-        /** A base64-encoded image in a data URL. */
+        /** A base64-encoded image in a data URL or a publicly accessible HTTP(S) image URL. */
         fun imageUrl(imageUrl: String) = imageUrl(JsonField.of(imageUrl))
 
         /**

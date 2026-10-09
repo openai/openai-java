@@ -12,6 +12,7 @@ import com.openai.models.beta.agents.vaults.VaultDeleted
 import com.openai.models.beta.agents.vaults.VaultListPageAsync
 import com.openai.models.beta.agents.vaults.VaultListParams
 import com.openai.models.beta.agents.vaults.VaultRetrieveParams
+import com.openai.models.beta.agents.vaults.VaultUpdateParams
 import com.openai.services.async.beta.agents.vaults.CredentialServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -86,6 +87,41 @@ interface VaultServiceAsync {
     /** @see retrieve */
     fun retrieve(vaultId: String, requestOptions: RequestOptions): CompletableFuture<Vault> =
         retrieve(vaultId, VaultRetrieveParams.none(), requestOptions)
+
+    /**
+     * Updates the name or metadata of an active vault. Omitted fields remain unchanged. See
+     * [vaults](https://developers.openai.com/api/docs/guides/agents-api/tools/vaults).
+     */
+    fun update(vaultId: String): CompletableFuture<Vault> =
+        update(vaultId, VaultUpdateParams.none())
+
+    /** @see update */
+    fun update(
+        vaultId: String,
+        params: VaultUpdateParams = VaultUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Vault> =
+        update(params.toBuilder().vaultId(vaultId).build(), requestOptions)
+
+    /** @see update */
+    fun update(
+        vaultId: String,
+        params: VaultUpdateParams = VaultUpdateParams.none(),
+    ): CompletableFuture<Vault> = update(vaultId, params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        params: VaultUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Vault>
+
+    /** @see update */
+    fun update(params: VaultUpdateParams): CompletableFuture<Vault> =
+        update(params, RequestOptions.none())
+
+    /** @see update */
+    fun update(vaultId: String, requestOptions: RequestOptions): CompletableFuture<Vault> =
+        update(vaultId, VaultUpdateParams.none(), requestOptions)
 
     /**
      * Lists vaults using ID-based pagination. See
@@ -216,6 +252,45 @@ interface VaultServiceAsync {
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Vault>> =
             retrieve(vaultId, VaultRetrieveParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /vaults/{vault_id}`, but is otherwise the same as
+         * [VaultServiceAsync.update].
+         */
+        fun update(vaultId: String): CompletableFuture<HttpResponseFor<Vault>> =
+            update(vaultId, VaultUpdateParams.none())
+
+        /** @see update */
+        fun update(
+            vaultId: String,
+            params: VaultUpdateParams = VaultUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Vault>> =
+            update(params.toBuilder().vaultId(vaultId).build(), requestOptions)
+
+        /** @see update */
+        fun update(
+            vaultId: String,
+            params: VaultUpdateParams = VaultUpdateParams.none(),
+        ): CompletableFuture<HttpResponseFor<Vault>> =
+            update(vaultId, params, RequestOptions.none())
+
+        /** @see update */
+        fun update(
+            params: VaultUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Vault>>
+
+        /** @see update */
+        fun update(params: VaultUpdateParams): CompletableFuture<HttpResponseFor<Vault>> =
+            update(params, RequestOptions.none())
+
+        /** @see update */
+        fun update(
+            vaultId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Vault>> =
+            update(vaultId, VaultUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /vaults`, but is otherwise the same as

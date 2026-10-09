@@ -35,13 +35,10 @@ private constructor(
      */
     fun agentId(): Optional<String> = Optional.ofNullable(agentId)
 
-    /** The maximum number of resources to return. */
+    /** The maximum number of resources to return, between 1 and 100. Defaults to 20. */
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
 
-    /**
-     * Sort order by the `created_at` timestamp. Use `asc` for ascending order or `desc` for
-     * descending order. Defaults to `desc`.
-     */
+    /** The order in which resources are returned. Defaults to `desc`. */
     fun order(): Optional<Order> = Optional.ofNullable(order)
 
     /** Additional headers to send with the request. */
@@ -95,7 +92,7 @@ private constructor(
         /** Alias for calling [Builder.agentId] with `agentId.orElse(null)`. */
         fun agentId(agentId: Optional<String>) = agentId(agentId.getOrNull())
 
-        /** The maximum number of resources to return. */
+        /** The maximum number of resources to return, between 1 and 100. Defaults to 20. */
         fun limit(limit: Long?) = apply { this.limit = limit }
 
         /**
@@ -108,10 +105,7 @@ private constructor(
         /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
-        /**
-         * Sort order by the `created_at` timestamp. Use `asc` for ascending order or `desc` for
-         * descending order. Defaults to `desc`.
-         */
+        /** The order in which resources are returned. Defaults to `desc`. */
         fun order(order: Order?) = apply { this.order = order }
 
         /** Alias for calling [Builder.order] with `order.orElse(null)`. */
@@ -244,10 +238,7 @@ private constructor(
             }
             .build()
 
-    /**
-     * Sort order by the `created_at` timestamp. Use `asc` for ascending order or `desc` for
-     * descending order. Defaults to `desc`.
-     */
+    /** The order in which resources are returned. Defaults to `desc`. */
     class Order @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**

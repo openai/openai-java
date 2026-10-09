@@ -13,11 +13,11 @@ internal class DecisionInputImageTest {
     fun create() {
         val decisionInputImage =
             DecisionInputImage.builder()
-                .imageUrl("data:")
+                .imageUrl("https://")
                 .detail(DecisionInputImage.Detail.LOW)
                 .build()
 
-        assertThat(decisionInputImage.imageUrl()).isEqualTo("data:")
+        assertThat(decisionInputImage.imageUrl()).isEqualTo("https://")
         assertThat(decisionInputImage.detail()).contains(DecisionInputImage.Detail.LOW)
     }
 
@@ -26,7 +26,7 @@ internal class DecisionInputImageTest {
         val jsonMapper = jsonMapper()
         val decisionInputImage =
             DecisionInputImage.builder()
-                .imageUrl("data:")
+                .imageUrl("https://")
                 .detail(DecisionInputImage.Detail.LOW)
                 .build()
 

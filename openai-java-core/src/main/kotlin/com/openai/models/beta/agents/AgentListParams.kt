@@ -29,7 +29,7 @@ private constructor(
     /** Return resources after this resource ID in the selected order. */
     fun after(): Optional<String> = Optional.ofNullable(after)
 
-    /** The maximum number of resources to return. */
+    /** The maximum number of resources to return, between 1 and 100. Defaults to 20. */
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
 
     /** The order in which resources are returned. Defaults to `desc`. */
@@ -75,7 +75,7 @@ private constructor(
         /** Alias for calling [Builder.after] with `after.orElse(null)`. */
         fun after(after: Optional<String>) = after(after.getOrNull())
 
-        /** The maximum number of resources to return. */
+        /** The maximum number of resources to return, between 1 and 100. Defaults to 20. */
         fun limit(limit: Long?) = apply { this.limit = limit }
 
         /**

@@ -15,6 +15,7 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
 import com.openai.models.beta.agents.vaults.VaultCreateParams
+import com.openai.models.beta.agents.vaults.VaultUpdateParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -61,6 +62,32 @@ internal class VaultServiceTest {
         val vaultService = client.beta().agents().vaults()
 
         val vault = vaultService.retrieve("vault_id")
+
+        vault.validate()
+    }
+
+    @Test
+    fun update() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val vaultService = client.beta().agents().vaults()
+
+        val vault =
+            vaultService.update(
+                VaultUpdateParams.builder()
+                    .vaultId("vault_id")
+                    .metadata(
+                        VaultUpdateParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .name("x")
+                    .build()
+            )
 
         vault.validate()
     }

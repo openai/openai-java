@@ -236,6 +236,9 @@ private constructor(
             @JvmField
             val ORGANIZATION_USAGE_LIMIT_EXCEEDED = of("organization_usage_limit_exceeded")
 
+            /** Billing is not active for the account. */
+            @JvmField val BILLING_NOT_ACTIVE = of("billing_not_active")
+
             /** The organization has no API credits remaining. */
             @JvmField val CREDIT_BALANCE_EXHAUSTED = of("credit_balance_exhausted")
 
@@ -301,6 +304,8 @@ private constructor(
             ORGANIZATION_SPEND_LIMIT_EXCEEDED,
             /** The organization has reached its OpenAI-assigned usage limit. */
             ORGANIZATION_USAGE_LIMIT_EXCEEDED,
+            /** Billing is not active for the account. */
+            BILLING_NOT_ACTIVE,
             /** The organization has no API credits remaining. */
             CREDIT_BALANCE_EXHAUSTED,
             /** The request exceeds the available rate limit. */
@@ -357,6 +362,8 @@ private constructor(
             ORGANIZATION_SPEND_LIMIT_EXCEEDED,
             /** The organization has reached its OpenAI-assigned usage limit. */
             ORGANIZATION_USAGE_LIMIT_EXCEEDED,
+            /** Billing is not active for the account. */
+            BILLING_NOT_ACTIVE,
             /** The organization has no API credits remaining. */
             CREDIT_BALANCE_EXHAUSTED,
             /** The request exceeds the available rate limit. */
@@ -408,6 +415,7 @@ private constructor(
                 PROJECT_SPEND_LIMIT_EXCEEDED -> Value.PROJECT_SPEND_LIMIT_EXCEEDED
                 ORGANIZATION_SPEND_LIMIT_EXCEEDED -> Value.ORGANIZATION_SPEND_LIMIT_EXCEEDED
                 ORGANIZATION_USAGE_LIMIT_EXCEEDED -> Value.ORGANIZATION_USAGE_LIMIT_EXCEEDED
+                BILLING_NOT_ACTIVE -> Value.BILLING_NOT_ACTIVE
                 CREDIT_BALANCE_EXHAUSTED -> Value.CREDIT_BALANCE_EXHAUSTED
                 RATE_LIMIT_EXCEEDED -> Value.RATE_LIMIT_EXCEEDED
                 FLEX_UNAVAILABLE -> Value.FLEX_UNAVAILABLE
@@ -444,6 +452,7 @@ private constructor(
                 PROJECT_SPEND_LIMIT_EXCEEDED -> Known.PROJECT_SPEND_LIMIT_EXCEEDED
                 ORGANIZATION_SPEND_LIMIT_EXCEEDED -> Known.ORGANIZATION_SPEND_LIMIT_EXCEEDED
                 ORGANIZATION_USAGE_LIMIT_EXCEEDED -> Known.ORGANIZATION_USAGE_LIMIT_EXCEEDED
+                BILLING_NOT_ACTIVE -> Known.BILLING_NOT_ACTIVE
                 CREDIT_BALANCE_EXHAUSTED -> Known.CREDIT_BALANCE_EXHAUSTED
                 RATE_LIMIT_EXCEEDED -> Known.RATE_LIMIT_EXCEEDED
                 FLEX_UNAVAILABLE -> Known.FLEX_UNAVAILABLE
