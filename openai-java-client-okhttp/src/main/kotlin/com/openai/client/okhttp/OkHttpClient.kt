@@ -305,7 +305,15 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
                             }
                         }
 
-                        dispatcherExecutorService?.let { dispatcher(Dispatcher(it)) }
+                        dispatcherExecutorService?.let { executor ->
+                            // The configured executor is responsible for dispatch/backpressure.
+                            // Keeping OkHttp's 64-call queue in front of it can submit a queued
+                            // request from another call's completion thread, which breaks
+                            // executors that capture caller context at submission time.
+                            dispatcher(
+                                Dispatcher(executor).apply { maxRequests = Int.MAX_VALUE }
+                            )
+                        }
 
                         val maxIdleConnections = maxIdleConnections
                         val keepAliveDuration = keepAliveDuration
