@@ -369,6 +369,74 @@ class GradleCacheTrustPolicyTest {
     }
 
     @Test
+    fun `publishing credential lint rejects unconditional or inverted secret mappings`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val lint = parseWorkflow(Path.of("../.github/workflows/ci.yml").readText()).job("lint")
+        val guard =
+            requireNotNull(
+                lint.steps
+                    .single {
+                        it.run?.contains("workflow=.github/workflows/create-releases.yml") == true
+                    }
+                    .run
+            )
+        val target = temporaryDirectory.resolve(".github/workflows/create-releases.yml")
+        Files.createDirectories(target.parent)
+        val conditional =
+            "vars.MAVEN_CENTRAL_AUTH_PROXY_URL == '' && secrets.OPENAI_SONATYPE_USERNAME || ''"
+        listOf(
+                workflow to 0,
+                workflow.replace(conditional, "secrets.OPENAI_SONATYPE_USERNAME") to 1,
+                workflow.replace(
+                    "vars.MAVEN_CENTRAL_AUTH_PROXY_URL == '' &&",
+                    "vars.MAVEN_CENTRAL_AUTH_PROXY_URL != '' &&",
+                ) to 1,
+                workflow.replace("secrets.OPENAI_SONATYPE_PASSWORD", "secrets.WRONG_SECRET") to 1,
+            )
+            .forEach { (candidate, expected) ->
+                target.writeText(candidate)
+                val process =
+                    ProcessBuilder("bash", "-c", guard)
+                        .directory(temporaryDirectory.toFile())
+                        .redirectErrorStream(true)
+                        .start()
+                val output = process.inputStream.bufferedReader().use { it.readText() }
+                assertEquals(expected, process.waitFor(), output)
+            }
+    }
+
+    @Test
+    fun `publishing shares signing setup without giving vendor credentials to proxy mode`() {
+        val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
+        val steps = parseWorkflow(workflow).job("publish").steps
+        val signing = steps.single { "GPG_SIGNING_KEY" in it.environment }
+        val upload = steps.single { it.run?.contains("publishViaAuthProxy") == true }
+        assertEquals(1, steps.count { "GPG_SIGNING_KEY" in it.environment })
+        for (kind in listOf("Username", "Password")) {
+            val secret = "OPENAI_SONATYPE_${kind.uppercase(Locale.ROOT)}"
+            assertEquals(
+                "\${{ vars.MAVEN_CENTRAL_AUTH_PROXY_URL == '' && secrets.$secret || '' }}",
+                signing.environment["ORG_GRADLE_PROJECT_mavenCentral$kind"],
+            )
+        }
+        val script = requireNotNull(signing.run)
+        assertContains(script, "publish_tasks=(publishAndReleaseToMavenCentral)")
+        assertContains(
+            script,
+            "publish_tasks=(publishAllPublicationsToAuthProxyStagingRepository -PstageForAuthProxy=true)",
+        )
+        assertContains(script, "if [[ -n \"\${MAVEN_CENTRAL_AUTH_PROXY_URL:-}\" ]]")
+        assertEquals("vars.MAVEN_CENTRAL_AUTH_PROXY_URL != ''", upload.condition)
+        assertTrue(upload.environment.values.none { "secrets." in it })
+        assertEquals(
+            "-Djdk.httpclient.redirects.retrylimit=1",
+            upload.environment["JAVA_TOOL_OPTIONS"],
+        )
+        assertContains(requireNotNull(upload.run), "publishViaAuthProxy")
+        assertContains(requireNotNull(upload.run), "--no-daemon --no-configuration-cache")
+    }
+
+    @Test
     fun `publishing attests every released artifact before exposing signing secrets`() {
         val workflow = Path.of("../.github/workflows/create-releases.yml").readText()
         assertPublishingProvenancePolicy(workflow)
@@ -384,7 +452,7 @@ class GradleCacheTrustPolicyTest {
                 workflow.replaceFirst(verification, ""),
                 workflow.replaceFirst(
                     verification,
-                    "          ./gradlew publishAndReleaseToMavenCentral\n$verification",
+                    "          ./gradlew \"\${publish_tasks[@]}\"\n$verification",
                 ),
             )
             .forEach { poisonedWorkflow ->
@@ -1175,7 +1243,7 @@ class GradleCacheTrustPolicyTest {
         val publication =
             requireNotNull(publishSteps.single { it.name == "Publish to Maven Central" }.run)
         val serializedInvocation =
-            "./gradlew publishAndReleaseToMavenCentral \\\n" +
+            "./gradlew \"\${publish_tasks[@]}\" \\\n" +
                 "  \"\${publish_exclusions[@]}\" \\\n" +
                 "  --stacktrace \\\n" +
                 "  --no-parallel \\\n" +
@@ -1268,8 +1336,7 @@ class GradleCacheTrustPolicyTest {
         val publicationScript = requireNotNull(publishJob.steps[signingIndex].run)
         val verification = "sha256sum --check \"\$RUNNER_TEMP/maven-artifact-provenance.sha256\""
         val verificationStart = publicationScript.indexOf(verification)
-        val publicationStart =
-            publicationScript.indexOf("./gradlew publishAndReleaseToMavenCentral")
+        val publicationStart = publicationScript.indexOf("./gradlew \"\${publish_tasks[@]}\"")
         assertTrue(
             verificationStart >= 0 && publicationStart > verificationStart,
             "Verify attested artifact digests before irreversible Maven Central publication.",

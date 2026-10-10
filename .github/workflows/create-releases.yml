@@ -434,18 +434,19 @@ jobs:
 
       - name: Publish to Maven Central
         env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OPENAI_SONATYPE_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OPENAI_SONATYPE_PASSWORD }}
+          MAVEN_CENTRAL_AUTH_PROXY_URL: ${{ vars.MAVEN_CENTRAL_AUTH_PROXY_URL }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ vars.MAVEN_CENTRAL_AUTH_PROXY_URL == '' && secrets.OPENAI_SONATYPE_USERNAME || '' }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ vars.MAVEN_CENTRAL_AUTH_PROXY_URL == '' && secrets.OPENAI_SONATYPE_PASSWORD || '' }}
           GPG_SIGNING_KEY: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_KEY }}
           GPG_SIGNING_PASSWORD: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_PASSWORD }}
         run: |
           set -euo pipefail
 
-          for variable in \
-            ORG_GRADLE_PROJECT_mavenCentralUsername \
-            ORG_GRADLE_PROJECT_mavenCentralPassword \
-            GPG_SIGNING_KEY \
-            GPG_SIGNING_PASSWORD; do
+          required_variables=(GPG_SIGNING_KEY GPG_SIGNING_PASSWORD)
+          if [[ -z "$MAVEN_CENTRAL_AUTH_PROXY_URL" ]]; then
+            required_variables+=(ORG_GRADLE_PROJECT_mavenCentralUsername ORG_GRADLE_PROJECT_mavenCentralPassword)
+          fi
+          for variable in "${required_variables[@]}"; do
             if [[ -z "${!variable}" ]]; then
               echo "::error::$variable is empty"
               exit 1
@@ -470,12 +471,32 @@ jobs:
             publish_exclusions+=("--exclude-task" ":$artifact:jar")
           done
 
+          publish_tasks=(publishAndReleaseToMavenCentral)
+          if [[ -n "${MAVEN_CENTRAL_AUTH_PROXY_URL:-}" ]]; then
+            if [[ -e build/auth-proxy-staging || -L build/auth-proxy-staging ]]; then
+              echo "::error::Proxy staging directory must be fresh"
+              exit 1
+            fi
+            publish_tasks=(publishAllPublicationsToAuthProxyStagingRepository -PstageForAuthProxy=true)
+          fi
+
           sha256sum --check "$RUNNER_TEMP/maven-artifact-provenance.sha256"
-          ./gradlew publishAndReleaseToMavenCentral \
+          ./gradlew "${publish_tasks[@]}" \
             "${publish_exclusions[@]}" \
             --stacktrace \
             --no-parallel \
             --no-configuration-cache
+
+      - name: Publish through Maven Central auth proxy
+        if: vars.MAVEN_CENTRAL_AUTH_PROXY_URL != ''
+        env:
+          JAVA_TOOL_OPTIONS: -Djdk.httpclient.redirects.retrylimit=1
+          MAVEN_CENTRAL_AUTH_PROXY_URL: ${{ vars.MAVEN_CENTRAL_AUTH_PROXY_URL }}
+          MAVEN_CENTRAL_AZURE_TENANT_ID: ${{ vars.MAVEN_CENTRAL_AZURE_TENANT_ID }}
+          MAVEN_CENTRAL_AZURE_CLIENT_ID: ${{ vars.MAVEN_CENTRAL_AZURE_CLIENT_ID }}
+          MAVEN_CENTRAL_AZURE_RESOURCE: ${{ vars.MAVEN_CENTRAL_AZURE_RESOURCE }}
+          RELEASE_TAG: ${{ needs.release.outputs.release_tag }}
+        run: ./gradlew publishViaAuthProxy -PstageForAuthProxy=true --no-daemon --no-configuration-cache
 
       - name: Verify attested Maven artifacts
         run: sha256sum --check "$RUNNER_TEMP/maven-artifact-provenance.sha256"

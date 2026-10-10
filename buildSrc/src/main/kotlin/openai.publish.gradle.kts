@@ -7,12 +7,18 @@ plugins {
     id("com.vanniktech.maven.publish")
 }
 
+val stageForAuthProxy = providers.gradleProperty("stageForAuthProxy").map(String::toBoolean).orElse(false).get()
+require(!(stageForAuthProxy && project.hasProperty("publishLocal"))) {
+    "Signed proxy staging cannot be combined with unsigned publishLocal"
+}
+
 publishing {
   repositories {
-      if (project.hasProperty("publishLocal")) {
+      if (project.hasProperty("publishLocal") || stageForAuthProxy) {
           maven {
-              name = "LocalFileSystem"
-              url = uri("${rootProject.layout.buildDirectory.get()}/local-maven-repo")
+              name = if (stageForAuthProxy) "AuthProxyStaging" else "LocalFileSystem"
+              val directory = if (stageForAuthProxy) "auth-proxy-staging" else "local-maven-repo"
+              url = uri("${rootProject.layout.buildDirectory.get()}/$directory")
           }
       }
   }
@@ -33,7 +39,9 @@ configure<MavenPublishBaseExtension> {
                 System.getenv("GPG_SIGNING_PASSWORD"),
             )
         }
-        publishToMavenCentral()
+        if (!stageForAuthProxy) {
+            publishToMavenCentral()
+        }
     }
 
     coordinates(project.group.toString(), project.name, project.version.toString())
