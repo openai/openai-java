@@ -93,6 +93,15 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
                     else "Cannot subscribe after the response is closed"
                 }
 
+                val guardedExecutor = Executor { task ->
+                    try {
+                        executor.execute(task)
+                    } catch (error: Throwable) {
+                        if (onCompleteFuture.completeExceptionally(error)) close()
+                        throw error
+                    }
+                }
+
                 this@toAsync.whenCompleteAsync(
                     { streamResponse, futureError ->
                         if (state.get() == State.CLOSED) {
@@ -131,7 +140,7 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
                             }
                         }
                     },
-                    executor,
+                    guardedExecutor,
                 )
             }
 
