@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.80.1](https://github.com/openai/openai-java/compare/v4.80.0...v4.80.1) (2026-10-10)
+
+
+### Chores
+
+* **api:** retain existing vault update support ([#1161](https://github.com/openai/openai-java/issues/1161)) ([d3f1053](https://github.com/openai/openai-java/commit/d3f1053b905da920e69692ed3856e41bf10b3cd8))
+
 ## [4.80.0](https://github.com/openai/openai-java/compare/v4.79.0...v4.80.0) (2026-10-09)
 
 
