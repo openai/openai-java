@@ -53,6 +53,8 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
 
         @JvmField val SAGE = of("sage")
 
+        @JvmField val SHIDA = of("shida")
+
         @JvmField val SHIMMER = of("shimmer")
 
         @JvmField val STONE = of("stone")
@@ -86,6 +88,7 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
         QUARTZ,
         RIPPLE,
         SAGE,
+        SHIDA,
         SHIMMER,
         STONE,
         TEMPO,
@@ -120,6 +123,7 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
         QUARTZ,
         RIPPLE,
         SAGE,
+        SHIDA,
         SHIMMER,
         STONE,
         TEMPO,
@@ -155,6 +159,7 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
             QUARTZ -> Value.QUARTZ
             RIPPLE -> Value.RIPPLE
             SAGE -> Value.SAGE
+            SHIDA -> Value.SHIDA
             SHIMMER -> Value.SHIMMER
             STONE -> Value.STONE
             TEMPO -> Value.TEMPO
@@ -190,6 +195,7 @@ class BuiltInVoice @JsonCreator private constructor(private val value: JsonField
             QUARTZ -> Known.QUARTZ
             RIPPLE -> Known.RIPPLE
             SAGE -> Known.SAGE
+            SHIDA -> Known.SHIDA
             SHIMMER -> Known.SHIMMER
             STONE -> Known.STONE
             TEMPO -> Known.TEMPO
