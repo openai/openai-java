@@ -15,6 +15,8 @@ import com.openai.models.admin.organization.usage.UsageCompletionsParams
 import com.openai.models.admin.organization.usage.UsageCompletionsResponse
 import com.openai.models.admin.organization.usage.UsageCostsParams
 import com.openai.models.admin.organization.usage.UsageCostsResponse
+import com.openai.models.admin.organization.usage.UsageDecisionsParams
+import com.openai.models.admin.organization.usage.UsageDecisionsResponse
 import com.openai.models.admin.organization.usage.UsageEmbeddingsParams
 import com.openai.models.admin.organization.usage.UsageEmbeddingsResponse
 import com.openai.models.admin.organization.usage.UsageFileSearchCallsParams
@@ -98,6 +100,16 @@ interface UsageServiceAsync {
         params: UsageCostsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<UsageCostsResponse>
+
+    /** Get Decisions API usage details for the organization. */
+    fun decisions(params: UsageDecisionsParams): CompletableFuture<UsageDecisionsResponse> =
+        decisions(params, RequestOptions.none())
+
+    /** @see decisions */
+    fun decisions(
+        params: UsageDecisionsParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<UsageDecisionsResponse>
 
     /** Get embeddings usage details for the organization. */
     fun embeddings(params: UsageEmbeddingsParams): CompletableFuture<UsageEmbeddingsResponse> =
@@ -250,6 +262,21 @@ interface UsageServiceAsync {
             params: UsageCostsParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<UsageCostsResponse>>
+
+        /**
+         * Returns a raw HTTP response for `get /organization/usage/decisions`, but is otherwise the
+         * same as [UsageServiceAsync.decisions].
+         */
+        fun decisions(
+            params: UsageDecisionsParams
+        ): CompletableFuture<HttpResponseFor<UsageDecisionsResponse>> =
+            decisions(params, RequestOptions.none())
+
+        /** @see decisions */
+        fun decisions(
+            params: UsageDecisionsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<UsageDecisionsResponse>>
 
         /**
          * Returns a raw HTTP response for `get /organization/usage/embeddings`, but is otherwise
