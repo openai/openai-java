@@ -25,6 +25,8 @@ import com.openai.models.admin.organization.usage.UsageCompletionsParams
 import com.openai.models.admin.organization.usage.UsageCompletionsResponse
 import com.openai.models.admin.organization.usage.UsageCostsParams
 import com.openai.models.admin.organization.usage.UsageCostsResponse
+import com.openai.models.admin.organization.usage.UsageDecisionsParams
+import com.openai.models.admin.organization.usage.UsageDecisionsResponse
 import com.openai.models.admin.organization.usage.UsageEmbeddingsParams
 import com.openai.models.admin.organization.usage.UsageEmbeddingsResponse
 import com.openai.models.admin.organization.usage.UsageFileSearchCallsParams
@@ -85,6 +87,13 @@ class UsageServiceImpl internal constructor(private val clientOptions: ClientOpt
     ): UsageCostsResponse =
         // get /organization/costs
         withRawResponse().costs(params, requestOptions).parse()
+
+    override fun decisions(
+        params: UsageDecisionsParams,
+        requestOptions: RequestOptions,
+    ): UsageDecisionsResponse =
+        // get /organization/usage/decisions
+        withRawResponse().decisions(params, requestOptions).parse()
 
     override fun embeddings(
         params: UsageEmbeddingsParams,
@@ -288,6 +297,37 @@ class UsageServiceImpl internal constructor(private val clientOptions: ClientOpt
             return errorHandler.handle(response).parseable {
                 response
                     .use { costsHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val decisionsHandler: Handler<UsageDecisionsResponse> =
+            jsonHandler<UsageDecisionsResponse>(clientOptions.jsonMapper)
+
+        override fun decisions(
+            params: UsageDecisionsParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<UsageDecisionsResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("organization", "usage", "decisions")
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { decisionsHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

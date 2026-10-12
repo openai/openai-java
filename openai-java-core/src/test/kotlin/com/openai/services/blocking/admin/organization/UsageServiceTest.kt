@@ -9,6 +9,7 @@ import com.openai.models.admin.organization.usage.UsageAudioTranscriptionsParams
 import com.openai.models.admin.organization.usage.UsageCodeInterpreterSessionsParams
 import com.openai.models.admin.organization.usage.UsageCompletionsParams
 import com.openai.models.admin.organization.usage.UsageCostsParams
+import com.openai.models.admin.organization.usage.UsageDecisionsParams
 import com.openai.models.admin.organization.usage.UsageEmbeddingsParams
 import com.openai.models.admin.organization.usage.UsageFileSearchCallsParams
 import com.openai.models.admin.organization.usage.UsageImagesParams
@@ -157,6 +158,36 @@ internal class UsageServiceTest {
                     .addLineItem("string")
                     .page("page")
                     .addProjectId("string")
+                    .build()
+            )
+
+        response.validate()
+    }
+
+    @Test
+    fun decisions() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val usageService = client.admin().organization().usage()
+
+        val response =
+            usageService.decisions(
+                UsageDecisionsParams.builder()
+                    .startTime(0L)
+                    .addApiKeyId("string")
+                    .batch(true)
+                    .bucketWidth(UsageDecisionsParams.BucketWidth._1M)
+                    .endTime(0L)
+                    .addGroupBy(UsageDecisionsParams.GroupBy.PROJECT_ID)
+                    .limit(0L)
+                    .addModel("string")
+                    .page("page")
+                    .addProjectId("string")
+                    .addUserId("string")
                     .build()
             )
 
