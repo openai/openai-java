@@ -36,9 +36,9 @@ internal class EnvironmentCreateParamsTest {
                     )
                     .network(
                         EnvironmentCreateParams.Environment.Network.builder()
-                            .access(EnvironmentCreateParams.Environment.Network.Access.ENABLED)
-                            .addAllowedDomain("string")
-                            .addBlockedDomain("string")
+                            .access(EnvironmentCreateParams.Environment.Network.Access.RESTRICTED)
+                            .addAllowedDomain("example.com")
+                            .blockedDomains(listOf())
                             .build()
                     )
                     .packages(
@@ -97,9 +97,11 @@ internal class EnvironmentCreateParamsTest {
                         )
                         .network(
                             EnvironmentCreateParams.Environment.Network.builder()
-                                .access(EnvironmentCreateParams.Environment.Network.Access.ENABLED)
-                                .addAllowedDomain("string")
-                                .addBlockedDomain("string")
+                                .access(
+                                    EnvironmentCreateParams.Environment.Network.Access.RESTRICTED
+                                )
+                                .addAllowedDomain("example.com")
+                                .blockedDomains(listOf())
                                 .build()
                         )
                         .packages(
@@ -174,9 +176,11 @@ internal class EnvironmentCreateParamsTest {
                         )
                         .network(
                             EnvironmentCreateParams.Environment.Network.builder()
-                                .access(EnvironmentCreateParams.Environment.Network.Access.ENABLED)
-                                .addAllowedDomain("string")
-                                .addBlockedDomain("string")
+                                .access(
+                                    EnvironmentCreateParams.Environment.Network.Access.RESTRICTED
+                                )
+                                .addAllowedDomain("example.com")
+                                .blockedDomains(listOf())
                                 .build()
                         )
                         .packages(
@@ -227,9 +231,9 @@ internal class EnvironmentCreateParamsTest {
                     )
                     .network(
                         EnvironmentCreateParams.Environment.Network.builder()
-                            .access(EnvironmentCreateParams.Environment.Network.Access.ENABLED)
-                            .addAllowedDomain("string")
-                            .addBlockedDomain("string")
+                            .access(EnvironmentCreateParams.Environment.Network.Access.RESTRICTED)
+                            .addAllowedDomain("example.com")
+                            .blockedDomains(listOf())
                             .build()
                     )
                     .packages(

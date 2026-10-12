@@ -28,9 +28,9 @@ internal class TemplateCreateParamsTest {
             .name("x")
             .network(
                 TemplateCreateParams.Network.builder()
-                    .access(TemplateCreateParams.Network.Access.ENABLED)
-                    .addAllowedDomain("string")
-                    .addBlockedDomain("string")
+                    .access(TemplateCreateParams.Network.Access.RESTRICTED)
+                    .addAllowedDomain("example.com")
+                    .blockedDomains(listOf())
                     .build()
             )
             .packages(
@@ -69,9 +69,9 @@ internal class TemplateCreateParamsTest {
                 .name("x")
                 .network(
                     TemplateCreateParams.Network.builder()
-                        .access(TemplateCreateParams.Network.Access.ENABLED)
-                        .addAllowedDomain("string")
-                        .addBlockedDomain("string")
+                        .access(TemplateCreateParams.Network.Access.RESTRICTED)
+                        .addAllowedDomain("example.com")
+                        .blockedDomains(listOf())
                         .build()
                 )
                 .packages(
@@ -118,9 +118,9 @@ internal class TemplateCreateParamsTest {
         assertThat(body.network())
             .contains(
                 TemplateCreateParams.Network.builder()
-                    .access(TemplateCreateParams.Network.Access.ENABLED)
-                    .addAllowedDomain("string")
-                    .addBlockedDomain("string")
+                    .access(TemplateCreateParams.Network.Access.RESTRICTED)
+                    .addAllowedDomain("example.com")
+                    .blockedDomains(listOf())
                     .build()
             )
         assertThat(body.packages())
