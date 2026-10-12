@@ -29,9 +29,9 @@ internal class TemplateUpdateParamsTest {
             .name("x")
             .network(
                 TemplateUpdateParams.Network.builder()
-                    .access(TemplateUpdateParams.Network.Access.ENABLED)
-                    .addAllowedDomain("string")
-                    .addBlockedDomain("string")
+                    .access(TemplateUpdateParams.Network.Access.RESTRICTED)
+                    .addAllowedDomain("example.com")
+                    .blockedDomains(listOf())
                     .build()
             )
             .packages(
@@ -81,9 +81,9 @@ internal class TemplateUpdateParamsTest {
                 .name("x")
                 .network(
                     TemplateUpdateParams.Network.builder()
-                        .access(TemplateUpdateParams.Network.Access.ENABLED)
-                        .addAllowedDomain("string")
-                        .addBlockedDomain("string")
+                        .access(TemplateUpdateParams.Network.Access.RESTRICTED)
+                        .addAllowedDomain("example.com")
+                        .blockedDomains(listOf())
                         .build()
                 )
                 .packages(
@@ -130,9 +130,9 @@ internal class TemplateUpdateParamsTest {
         assertThat(body.network())
             .contains(
                 TemplateUpdateParams.Network.builder()
-                    .access(TemplateUpdateParams.Network.Access.ENABLED)
-                    .addAllowedDomain("string")
-                    .addBlockedDomain("string")
+                    .access(TemplateUpdateParams.Network.Access.RESTRICTED)
+                    .addAllowedDomain("example.com")
+                    .blockedDomains(listOf())
                     .build()
             )
         assertThat(body.packages())

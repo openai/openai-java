@@ -67,10 +67,11 @@ internal class EnvironmentServiceTest {
                             .network(
                                 EnvironmentCreateParams.Environment.Network.builder()
                                     .access(
-                                        EnvironmentCreateParams.Environment.Network.Access.ENABLED
+                                        EnvironmentCreateParams.Environment.Network.Access
+                                            .RESTRICTED
                                     )
-                                    .addAllowedDomain("string")
-                                    .addBlockedDomain("string")
+                                    .addAllowedDomain("example.com")
+                                    .blockedDomains(listOf())
                                     .build()
                             )
                             .packages(
