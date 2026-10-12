@@ -54,9 +54,9 @@ internal class EnvironmentParamTest {
                 .addFile(HostedEnvironmentFileParam.FileId.builder().fileId("x").path("x").build())
                 .network(
                     EnvironmentParam.OpenAIHosted.Network.builder()
-                        .access(EnvironmentParam.OpenAIHosted.Network.Access.ENABLED)
-                        .addAllowedDomain("string")
-                        .addBlockedDomain("string")
+                        .access(EnvironmentParam.OpenAIHosted.Network.Access.RESTRICTED)
+                        .addAllowedDomain("example.com")
+                        .blockedDomains(listOf())
                         .build()
                 )
                 .packages(
@@ -110,9 +110,9 @@ internal class EnvironmentParamTest {
                     )
                     .network(
                         EnvironmentParam.OpenAIHosted.Network.builder()
-                            .access(EnvironmentParam.OpenAIHosted.Network.Access.ENABLED)
-                            .addAllowedDomain("string")
-                            .addBlockedDomain("string")
+                            .access(EnvironmentParam.OpenAIHosted.Network.Access.RESTRICTED)
+                            .addAllowedDomain("example.com")
+                            .blockedDomains(listOf())
                             .build()
                     )
                     .packages(

@@ -57,9 +57,9 @@ internal class TemplateServiceTest {
                     .name("x")
                     .network(
                         TemplateCreateParams.Network.builder()
-                            .access(TemplateCreateParams.Network.Access.ENABLED)
-                            .addAllowedDomain("string")
-                            .addBlockedDomain("string")
+                            .access(TemplateCreateParams.Network.Access.RESTRICTED)
+                            .addAllowedDomain("example.com")
+                            .blockedDomains(listOf())
                             .build()
                     )
                     .packages(
@@ -133,9 +133,9 @@ internal class TemplateServiceTest {
                     .name("x")
                     .network(
                         TemplateUpdateParams.Network.builder()
-                            .access(TemplateUpdateParams.Network.Access.ENABLED)
-                            .addAllowedDomain("string")
-                            .addBlockedDomain("string")
+                            .access(TemplateUpdateParams.Network.Access.RESTRICTED)
+                            .addAllowedDomain("example.com")
+                            .blockedDomains(listOf())
                             .build()
                     )
                     .packages(
