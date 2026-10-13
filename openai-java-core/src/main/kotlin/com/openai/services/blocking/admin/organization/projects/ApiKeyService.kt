@@ -11,6 +11,7 @@ import com.openai.models.admin.organization.projects.apikeys.ApiKeyDeleteRespons
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyListPage
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyListParams
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyRetrieveParams
+import com.openai.models.admin.organization.projects.apikeys.ApiKeyUpdateParams
 import com.openai.models.admin.organization.projects.apikeys.ProjectApiKey
 import java.util.function.Consumer
 
@@ -46,6 +47,34 @@ interface ApiKeyService {
     /** @see retrieve */
     fun retrieve(
         params: ApiKeyRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectApiKey
+
+    /**
+     * Updates the expiration of an existing API key in the project, including a
+     * service-account-owned key. Requires permission to write project API keys.
+     *
+     * Provide `expires_in_seconds` to set the expiration relative to this request. The value must
+     * satisfy the organization's and project's expiry policies. Expired keys cannot be updated.
+     * Retrying resets the expiration relative to the new request. The response contains only the
+     * redacted key, not its secret.
+     */
+    fun update(apiKeyId: String, params: ApiKeyUpdateParams): ProjectApiKey =
+        update(apiKeyId, params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        apiKeyId: String,
+        params: ApiKeyUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ProjectApiKey = update(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
+
+    /** @see update */
+    fun update(params: ApiKeyUpdateParams): ProjectApiKey = update(params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        params: ApiKeyUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ProjectApiKey
 
@@ -143,6 +172,36 @@ interface ApiKeyService {
         @MustBeClosed
         fun retrieve(
             params: ApiKeyRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectApiKey>
+
+        /**
+         * Returns a raw HTTP response for `post
+         * /organization/projects/{project_id}/api_keys/{api_key_id}`, but is otherwise the same as
+         * [ApiKeyService.update].
+         */
+        @MustBeClosed
+        fun update(apiKeyId: String, params: ApiKeyUpdateParams): HttpResponseFor<ProjectApiKey> =
+            update(apiKeyId, params, RequestOptions.none())
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            apiKeyId: String,
+            params: ApiKeyUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ProjectApiKey> =
+            update(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
+
+        /** @see update */
+        @MustBeClosed
+        fun update(params: ApiKeyUpdateParams): HttpResponseFor<ProjectApiKey> =
+            update(params, RequestOptions.none())
+
+        /** @see update */
+        @MustBeClosed
+        fun update(
+            params: ApiKeyUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ProjectApiKey>
 

@@ -17,7 +17,7 @@ internal class VaultUpdateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-            .name("x")
+            .name("Research vault")
             .build()
     }
 
@@ -40,7 +40,7 @@ internal class VaultUpdateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .name("x")
+                .name("Research vault")
                 .build()
 
         val body = params._body()
@@ -51,7 +51,7 @@ internal class VaultUpdateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(body.name()).contains("x")
+        assertThat(body.name()).contains("Research vault")
     }
 
     @Test
