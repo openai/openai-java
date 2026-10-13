@@ -1,5 +1,33 @@
 # Changelog
 
+## [4.81.0](https://github.com/openai/openai-java/compare/v4.80.0...v4.81.0) (2026-10-13)
+
+
+### Features
+
+* **api:** add organization Decisions usage reporting ([#1165](https://github.com/openai/openai-java/issues/1165)) ([1b29d6e](https://github.com/openai/openai-java/commit/1b29d6e36695ed73ad06cb08bf1a0c4d2880d490))
+* **api:** add shida to named Live voices ([#1163](https://github.com/openai/openai-java/issues/1163)) ([22bd97e](https://github.com/openai/openai-java/commit/22bd97e2e62820dea1c5697cd75556623c5d2b9f))
+* **api:** share OCI external-storage response types ([#1164](https://github.com/openai/openai-java/issues/1164)) ([3efd4ca](https://github.com/openai/openai-java/commit/3efd4ca9009aadeeb24484216f76344baca1f303))
+* **api:** support updating project API key expiry ([#1167](https://github.com/openai/openai-java/issues/1167)) ([cefea29](https://github.com/openai/openai-java/commit/cefea29d6669c7b3c8fff14607905588ce698acf))
+
+
+### Bug Fixes
+
+* **auth:** close transport after workload cleanup failure ([#1146](https://github.com/openai/openai-java/issues/1146)) ([bdc31c7](https://github.com/openai/openai-java/commit/bdc31c787001c47fb4f5cbbd20d041607c03320c))
+
+
+### Chores
+
+* **api:** refresh API reference examples ([#1166](https://github.com/openai/openai-java/issues/1166)) ([df74d10](https://github.com/openai/openai-java/commit/df74d10a21c0c66a10316410261b1ad38df767fe))
+* **api:** retain existing vault update support ([#1161](https://github.com/openai/openai-java/issues/1161)) ([d3f1053](https://github.com/openai/openai-java/commit/d3f1053b905da920e69692ed3856e41bf10b3cd8))
+
+
+### Build System
+
+* **deps:** bump actions/cache/restore from 5.1.0 to 6.1.0 ([#1170](https://github.com/openai/openai-java/issues/1170)) ([101463a](https://github.com/openai/openai-java/commit/101463a8dbb3bb5de748c50e82690a7c483fece4))
+* **deps:** bump actions/cache/save from 5.1.0 to 6.1.0 ([#1171](https://github.com/openai/openai-java/issues/1171)) ([170bc2d](https://github.com/openai/openai-java/commit/170bc2de122e9929f5e5d7531933f89193d56e5c))
+* **deps:** bump graalvm/setup-graalvm from 1.6.6 to 1.6.7 ([#1172](https://github.com/openai/openai-java/issues/1172)) ([8edbcff](https://github.com/openai/openai-java/commit/8edbcffa43e27b71c3aa07f076769d63f31bcb1b))
+
 ## [4.80.0](https://github.com/openai/openai-java/compare/v4.79.0...v4.80.0) (2026-10-09)
 
 
