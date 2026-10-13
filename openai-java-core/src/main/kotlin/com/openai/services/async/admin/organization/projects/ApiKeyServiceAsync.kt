@@ -10,6 +10,7 @@ import com.openai.models.admin.organization.projects.apikeys.ApiKeyDeleteRespons
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyListPageAsync
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyListParams
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyRetrieveParams
+import com.openai.models.admin.organization.projects.apikeys.ApiKeyUpdateParams
 import com.openai.models.admin.organization.projects.apikeys.ProjectApiKey
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -47,6 +48,36 @@ interface ApiKeyServiceAsync {
     /** @see retrieve */
     fun retrieve(
         params: ApiKeyRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ProjectApiKey>
+
+    /**
+     * Updates the expiration of an existing API key in the project, including a
+     * service-account-owned key. Requires permission to write project API keys.
+     *
+     * Provide `expires_in_seconds` to set the expiration relative to this request. The value must
+     * satisfy the organization's and project's expiry policies. Expired keys cannot be updated.
+     * Retrying resets the expiration relative to the new request. The response contains only the
+     * redacted key, not its secret.
+     */
+    fun update(apiKeyId: String, params: ApiKeyUpdateParams): CompletableFuture<ProjectApiKey> =
+        update(apiKeyId, params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        apiKeyId: String,
+        params: ApiKeyUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ProjectApiKey> =
+        update(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
+
+    /** @see update */
+    fun update(params: ApiKeyUpdateParams): CompletableFuture<ProjectApiKey> =
+        update(params, RequestOptions.none())
+
+    /** @see update */
+    fun update(
+        params: ApiKeyUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ProjectApiKey>
 
@@ -156,6 +187,35 @@ interface ApiKeyServiceAsync {
         /** @see retrieve */
         fun retrieve(
             params: ApiKeyRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ProjectApiKey>>
+
+        /**
+         * Returns a raw HTTP response for `post
+         * /organization/projects/{project_id}/api_keys/{api_key_id}`, but is otherwise the same as
+         * [ApiKeyServiceAsync.update].
+         */
+        fun update(
+            apiKeyId: String,
+            params: ApiKeyUpdateParams,
+        ): CompletableFuture<HttpResponseFor<ProjectApiKey>> =
+            update(apiKeyId, params, RequestOptions.none())
+
+        /** @see update */
+        fun update(
+            apiKeyId: String,
+            params: ApiKeyUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ProjectApiKey>> =
+            update(params.toBuilder().apiKeyId(apiKeyId).build(), requestOptions)
+
+        /** @see update */
+        fun update(params: ApiKeyUpdateParams): CompletableFuture<HttpResponseFor<ProjectApiKey>> =
+            update(params, RequestOptions.none())
+
+        /** @see update */
+        fun update(
+            params: ApiKeyUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ProjectApiKey>>
 

@@ -85,7 +85,7 @@ internal class VaultServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .name("x")
+                    .name("Research vault")
                     .build()
             )
 

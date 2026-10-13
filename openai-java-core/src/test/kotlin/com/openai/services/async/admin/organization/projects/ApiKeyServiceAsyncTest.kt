@@ -15,6 +15,7 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyDeleteParams
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyRetrieveParams
+import com.openai.models.admin.organization.projects.apikeys.ApiKeyUpdateParams
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -41,6 +42,29 @@ internal class ApiKeyServiceAsyncTest {
                 ApiKeyRetrieveParams.builder()
                     .projectId("project_id")
                     .apiKeyId("api_key_id")
+                    .build()
+            )
+
+        val projectApiKey = projectApiKeyFuture.get()
+        projectApiKey.validate()
+    }
+
+    @Test
+    fun update() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val apiKeyServiceAsync = client.admin().organization().projects().apiKeys()
+
+        val projectApiKeyFuture =
+            apiKeyServiceAsync.update(
+                ApiKeyUpdateParams.builder()
+                    .projectId("project_id")
+                    .apiKeyId("api_key_id")
+                    .expiresInSeconds(1L)
                     .build()
             )
 
