@@ -451,6 +451,24 @@ internal class ConversationItemTest {
                 .status(ConversationItem.ImageGenerationCall.Status.IN_PROGRESS)
                 .action(ConversationItem.ImageGenerationCall.Action.GENERATE)
                 .background(ConversationItem.ImageGenerationCall.Background.TRANSPARENT)
+                .error(
+                    ConversationItem.ImageGenerationCall.Error.builder()
+                        .code("code")
+                        .message("message")
+                        .param("param")
+                        .type("type")
+                        .moderationDetails(
+                            ConversationItem.ImageGenerationCall.Error.ModerationDetails.builder()
+                                .addCategory("string")
+                                .moderationStage(
+                                    ConversationItem.ImageGenerationCall.Error.ModerationDetails
+                                        .ModerationStage
+                                        .INPUT
+                                )
+                                .build()
+                        )
+                        .build()
+                )
                 .outputFormat(ConversationItem.ImageGenerationCall.OutputFormat.PNG)
                 .quality(ConversationItem.ImageGenerationCall.Quality.LOW)
                 .revisedPrompt("revised_prompt")
@@ -501,6 +519,25 @@ internal class ConversationItemTest {
                     .status(ConversationItem.ImageGenerationCall.Status.IN_PROGRESS)
                     .action(ConversationItem.ImageGenerationCall.Action.GENERATE)
                     .background(ConversationItem.ImageGenerationCall.Background.TRANSPARENT)
+                    .error(
+                        ConversationItem.ImageGenerationCall.Error.builder()
+                            .code("code")
+                            .message("message")
+                            .param("param")
+                            .type("type")
+                            .moderationDetails(
+                                ConversationItem.ImageGenerationCall.Error.ModerationDetails
+                                    .builder()
+                                    .addCategory("string")
+                                    .moderationStage(
+                                        ConversationItem.ImageGenerationCall.Error.ModerationDetails
+                                            .ModerationStage
+                                            .INPUT
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
                     .outputFormat(ConversationItem.ImageGenerationCall.OutputFormat.PNG)
                     .quality(ConversationItem.ImageGenerationCall.Quality.LOW)
                     .revisedPrompt("revised_prompt")

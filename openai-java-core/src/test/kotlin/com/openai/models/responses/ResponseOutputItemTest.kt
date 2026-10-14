@@ -1181,6 +1181,24 @@ internal class ResponseOutputItemTest {
                 .status(ResponseOutputItem.ImageGenerationCall.Status.IN_PROGRESS)
                 .action(ResponseOutputItem.ImageGenerationCall.Action.GENERATE)
                 .background(ResponseOutputItem.ImageGenerationCall.Background.TRANSPARENT)
+                .error(
+                    ResponseOutputItem.ImageGenerationCall.Error.builder()
+                        .code("code")
+                        .message("message")
+                        .param("param")
+                        .type("type")
+                        .moderationDetails(
+                            ResponseOutputItem.ImageGenerationCall.Error.ModerationDetails.builder()
+                                .addCategory("string")
+                                .moderationStage(
+                                    ResponseOutputItem.ImageGenerationCall.Error.ModerationDetails
+                                        .ModerationStage
+                                        .INPUT
+                                )
+                                .build()
+                        )
+                        .build()
+                )
                 .outputFormat(ResponseOutputItem.ImageGenerationCall.OutputFormat.PNG)
                 .quality(ResponseOutputItem.ImageGenerationCall.Quality.LOW)
                 .revisedPrompt("revised_prompt")
@@ -1230,6 +1248,26 @@ internal class ResponseOutputItemTest {
                     .status(ResponseOutputItem.ImageGenerationCall.Status.IN_PROGRESS)
                     .action(ResponseOutputItem.ImageGenerationCall.Action.GENERATE)
                     .background(ResponseOutputItem.ImageGenerationCall.Background.TRANSPARENT)
+                    .error(
+                        ResponseOutputItem.ImageGenerationCall.Error.builder()
+                            .code("code")
+                            .message("message")
+                            .param("param")
+                            .type("type")
+                            .moderationDetails(
+                                ResponseOutputItem.ImageGenerationCall.Error.ModerationDetails
+                                    .builder()
+                                    .addCategory("string")
+                                    .moderationStage(
+                                        ResponseOutputItem.ImageGenerationCall.Error
+                                            .ModerationDetails
+                                            .ModerationStage
+                                            .INPUT
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
                     .outputFormat(ResponseOutputItem.ImageGenerationCall.OutputFormat.PNG)
                     .quality(ResponseOutputItem.ImageGenerationCall.Quality.LOW)
                     .revisedPrompt("revised_prompt")
