@@ -1620,6 +1620,26 @@ internal class BetaResponseOutputItemTest {
                         .build()
                 )
                 .background(BetaResponseOutputItem.ImageGenerationCall.Background.TRANSPARENT)
+                .error(
+                    BetaResponseOutputItem.ImageGenerationCall.Error.builder()
+                        .code("code")
+                        .message("message")
+                        .param("param")
+                        .type("type")
+                        .moderationDetails(
+                            BetaResponseOutputItem.ImageGenerationCall.Error.ModerationDetails
+                                .builder()
+                                .addCategory("string")
+                                .moderationStage(
+                                    BetaResponseOutputItem.ImageGenerationCall.Error
+                                        .ModerationDetails
+                                        .ModerationStage
+                                        .INPUT
+                                )
+                                .build()
+                        )
+                        .build()
+                )
                 .outputFormat(BetaResponseOutputItem.ImageGenerationCall.OutputFormat.PNG)
                 .quality(BetaResponseOutputItem.ImageGenerationCall.Quality.LOW)
                 .revisedPrompt("revised_prompt")
@@ -1678,6 +1698,26 @@ internal class BetaResponseOutputItemTest {
                             .build()
                     )
                     .background(BetaResponseOutputItem.ImageGenerationCall.Background.TRANSPARENT)
+                    .error(
+                        BetaResponseOutputItem.ImageGenerationCall.Error.builder()
+                            .code("code")
+                            .message("message")
+                            .param("param")
+                            .type("type")
+                            .moderationDetails(
+                                BetaResponseOutputItem.ImageGenerationCall.Error.ModerationDetails
+                                    .builder()
+                                    .addCategory("string")
+                                    .moderationStage(
+                                        BetaResponseOutputItem.ImageGenerationCall.Error
+                                            .ModerationDetails
+                                            .ModerationStage
+                                            .INPUT
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
                     .outputFormat(BetaResponseOutputItem.ImageGenerationCall.OutputFormat.PNG)
                     .quality(BetaResponseOutputItem.ImageGenerationCall.Quality.LOW)
                     .revisedPrompt("revised_prompt")
