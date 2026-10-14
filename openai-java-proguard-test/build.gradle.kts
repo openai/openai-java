@@ -29,6 +29,7 @@ buildscript {
 dependencies {
     testImplementation(project(":openai-java"))
     testImplementation(kotlin("test"))
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
