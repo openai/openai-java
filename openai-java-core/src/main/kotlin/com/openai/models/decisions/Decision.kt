@@ -48,18 +48,26 @@ private constructor(
     ) : this(answers, model, usage, mutableMapOf())
 
     /**
+     * Answers in question order. Any question can return a refusal instead of an answer; other
+     * questions can still receive answers. A refusal has `type: "refusal"` and the question's
+     * `name`, or `null` if it was unnamed.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun answers(): List<Answer> = answers.getRequired("answers")
 
     /**
+     * The model used.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun model(): String = model.getRequired("model")
 
     /**
+     * Token usage for the request.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
@@ -129,6 +137,11 @@ private constructor(
             additionalProperties = decision.additionalProperties.toMutableMap()
         }
 
+        /**
+         * Answers in question order. Any question can return a refusal instead of an answer; other
+         * questions can still receive answers. A refusal has `type: "refusal"` and the question's
+         * `name`, or `null` if it was unnamed.
+         */
         fun answers(answers: List<Answer>) = answers(JsonField.of(answers))
 
         /**
@@ -179,6 +192,7 @@ private constructor(
         /** Alias for calling [addRefusalAnswer] with `name.orElse(null)`. */
         fun addRefusalAnswer(name: Optional<String>) = addRefusalAnswer(name.getOrNull())
 
+        /** The model used. */
         fun model(model: String) = model(JsonField.of(model))
 
         /**
@@ -189,6 +203,7 @@ private constructor(
          */
         fun model(model: JsonField<String>) = apply { this.model = model }
 
+        /** Token usage for the request. */
         fun usage(usage: Usage) = usage(JsonField.of(usage))
 
         /**
@@ -2221,6 +2236,7 @@ private constructor(
         }
     }
 
+    /** Token usage for the request. */
     class Usage
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
