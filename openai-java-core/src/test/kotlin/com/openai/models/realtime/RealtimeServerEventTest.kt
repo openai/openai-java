@@ -1995,6 +1995,7 @@ internal class RealtimeServerEventTest {
                                 .error(
                                     RealtimeResponseStatus.Error.builder()
                                         .code("code")
+                                        .message("message")
                                         .type("type")
                                         .build()
                                 )
@@ -2146,6 +2147,7 @@ internal class RealtimeServerEventTest {
                                     .error(
                                         RealtimeResponseStatus.Error.builder()
                                             .code("code")
+                                            .message("message")
                                             .type("type")
                                             .build()
                                     )
@@ -2251,6 +2253,7 @@ internal class RealtimeServerEventTest {
                                 .error(
                                     RealtimeResponseStatus.Error.builder()
                                         .code("code")
+                                        .message("message")
                                         .type("type")
                                         .build()
                                 )
@@ -2402,6 +2405,7 @@ internal class RealtimeServerEventTest {
                                     .error(
                                         RealtimeResponseStatus.Error.builder()
                                             .code("code")
+                                            .message("message")
                                             .type("type")
                                             .build()
                                     )

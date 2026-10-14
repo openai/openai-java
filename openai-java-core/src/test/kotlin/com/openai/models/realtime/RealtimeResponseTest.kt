@@ -57,7 +57,11 @@ internal class RealtimeResponseTest {
                 .statusDetails(
                     RealtimeResponseStatus.builder()
                         .error(
-                            RealtimeResponseStatus.Error.builder().code("code").type("type").build()
+                            RealtimeResponseStatus.Error.builder()
+                                .code("code")
+                                .message("message")
+                                .type("type")
+                                .build()
                         )
                         .reason(RealtimeResponseStatus.Reason.TURN_DETECTED)
                         .type(RealtimeResponseStatus.Type.COMPLETED)
@@ -143,7 +147,13 @@ internal class RealtimeResponseTest {
         assertThat(realtimeResponse.statusDetails())
             .contains(
                 RealtimeResponseStatus.builder()
-                    .error(RealtimeResponseStatus.Error.builder().code("code").type("type").build())
+                    .error(
+                        RealtimeResponseStatus.Error.builder()
+                            .code("code")
+                            .message("message")
+                            .type("type")
+                            .build()
+                    )
                     .reason(RealtimeResponseStatus.Reason.TURN_DETECTED)
                     .type(RealtimeResponseStatus.Type.COMPLETED)
                     .build()
@@ -226,7 +236,11 @@ internal class RealtimeResponseTest {
                 .statusDetails(
                     RealtimeResponseStatus.builder()
                         .error(
-                            RealtimeResponseStatus.Error.builder().code("code").type("type").build()
+                            RealtimeResponseStatus.Error.builder()
+                                .code("code")
+                                .message("message")
+                                .type("type")
+                                .build()
                         )
                         .reason(RealtimeResponseStatus.Reason.TURN_DETECTED)
                         .type(RealtimeResponseStatus.Type.COMPLETED)
