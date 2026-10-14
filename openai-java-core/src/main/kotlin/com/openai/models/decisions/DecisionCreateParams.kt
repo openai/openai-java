@@ -34,16 +34,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Use this endpoint to ask classification or scoring questions about the same input. You’ll get the
- * answers back in the order you asked the questions.
- *
- * For text, you can pass a string. You can also send user messages containing `input_text` and
- * `input_image` parts, with up to 128 images per request. Images can be base64 data URLs or
- * publicly accessible HTTP(S) URLs. File IDs aren’t accepted. Other message roles, function calls,
- * files, audio, and item references aren’t supported.
- *
- * Sometimes a question returns a refusal instead of an answer. The result has type `refusal` and
- * includes the question’s name, or `null` if you didn’t give it one.
+ * Use this endpoint to quickly answer classification or scoring questions about some input. You can
+ * ask multiple questions in one request.
  */
 class DecisionCreateParams
 private constructor(
@@ -64,12 +56,17 @@ private constructor(
     fun input(): Input = body.input()
 
     /**
+     * The model to use. Only `gpt-6-luna` is supported.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun model(): String = body.model()
 
     /**
+     * Ask 1–200 questions about the input. Each question can be a predicate, choice, or score.
+     * Answers come back in the same order.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
@@ -191,6 +188,7 @@ private constructor(
                 body.inputOfDecisionInputMessages(decisionInputMessages)
             }
 
+        /** The model to use. Only `gpt-6-luna` is supported. */
         fun model(model: String) = apply { body.model(model) }
 
         /**
@@ -201,6 +199,10 @@ private constructor(
          */
         fun model(model: JsonField<String>) = apply { body.model(model) }
 
+        /**
+         * Ask 1–200 questions about the input. Each question can be a predicate, choice, or score.
+         * Answers come back in the same order.
+         */
         fun questions(questions: List<Question>) = apply { body.questions(questions) }
 
         /**
@@ -442,12 +444,17 @@ private constructor(
         fun input(): Input = input.getRequired("input")
 
         /**
+         * The model to use. Only `gpt-6-luna` is supported.
+         *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun model(): String = model.getRequired("model")
 
         /**
+         * Ask 1–200 questions about the input. Each question can be a predicate, choice, or score.
+         * Answers come back in the same order.
+         *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
@@ -567,6 +574,7 @@ private constructor(
             fun inputOfDecisionInputMessages(decisionInputMessages: List<DecisionInputMessage>) =
                 input(Input.ofDecisionInputMessages(decisionInputMessages))
 
+            /** The model to use. Only `gpt-6-luna` is supported. */
             fun model(model: String) = model(JsonField.of(model))
 
             /**
@@ -578,6 +586,10 @@ private constructor(
              */
             fun model(model: JsonField<String>) = apply { this.model = model }
 
+            /**
+             * Ask 1–200 questions about the input. Each question can be a predicate, choice, or
+             * score. Answers come back in the same order.
+             */
             fun questions(questions: List<Question>) = questions(JsonField.of(questions))
 
             /**
