@@ -29,6 +29,8 @@ class ProjectResidency @JsonCreator private constructor(private val value: JsonF
 
         @JvmField val JP_STORAGE = of("JP_STORAGE")
 
+        @JvmField val JP_STORAGE_PROCESSING = of("JP_STORAGE_PROCESSING")
+
         @JvmField val KR_STORAGE = of("KR_STORAGE")
 
         @JvmField val CA_STORAGE = of("CA_STORAGE")
@@ -37,7 +39,11 @@ class ProjectResidency @JsonCreator private constructor(private val value: JsonF
 
         @JvmField val IN_STORAGE = of("IN_STORAGE")
 
+        @JvmField val IN_STORAGE_PROCESSING = of("IN_STORAGE_PROCESSING")
+
         @JvmField val AU_STORAGE = of("AU_STORAGE")
+
+        @JvmField val AU_STORAGE_PROCESSING = of("AU_STORAGE_PROCESSING")
 
         @JvmField val GB_STORAGE = of("GB_STORAGE")
 
@@ -54,11 +60,14 @@ class ProjectResidency @JsonCreator private constructor(private val value: JsonF
         US_STORAGE_PROCESSING,
         EU_STORAGE_PROCESSING,
         JP_STORAGE,
+        JP_STORAGE_PROCESSING,
         KR_STORAGE,
         CA_STORAGE,
         SG_STORAGE,
         IN_STORAGE,
+        IN_STORAGE_PROCESSING,
         AU_STORAGE,
+        AU_STORAGE_PROCESSING,
         GB_STORAGE,
         AE_STORAGE,
         AE_STORAGE_PROCESSING,
@@ -78,11 +87,14 @@ class ProjectResidency @JsonCreator private constructor(private val value: JsonF
         US_STORAGE_PROCESSING,
         EU_STORAGE_PROCESSING,
         JP_STORAGE,
+        JP_STORAGE_PROCESSING,
         KR_STORAGE,
         CA_STORAGE,
         SG_STORAGE,
         IN_STORAGE,
+        IN_STORAGE_PROCESSING,
         AU_STORAGE,
+        AU_STORAGE_PROCESSING,
         GB_STORAGE,
         AE_STORAGE,
         AE_STORAGE_PROCESSING,
@@ -105,11 +117,14 @@ class ProjectResidency @JsonCreator private constructor(private val value: JsonF
             US_STORAGE_PROCESSING -> Value.US_STORAGE_PROCESSING
             EU_STORAGE_PROCESSING -> Value.EU_STORAGE_PROCESSING
             JP_STORAGE -> Value.JP_STORAGE
+            JP_STORAGE_PROCESSING -> Value.JP_STORAGE_PROCESSING
             KR_STORAGE -> Value.KR_STORAGE
             CA_STORAGE -> Value.CA_STORAGE
             SG_STORAGE -> Value.SG_STORAGE
             IN_STORAGE -> Value.IN_STORAGE
+            IN_STORAGE_PROCESSING -> Value.IN_STORAGE_PROCESSING
             AU_STORAGE -> Value.AU_STORAGE
+            AU_STORAGE_PROCESSING -> Value.AU_STORAGE_PROCESSING
             GB_STORAGE -> Value.GB_STORAGE
             AE_STORAGE -> Value.AE_STORAGE
             AE_STORAGE_PROCESSING -> Value.AE_STORAGE_PROCESSING
@@ -130,11 +145,14 @@ class ProjectResidency @JsonCreator private constructor(private val value: JsonF
             US_STORAGE_PROCESSING -> Known.US_STORAGE_PROCESSING
             EU_STORAGE_PROCESSING -> Known.EU_STORAGE_PROCESSING
             JP_STORAGE -> Known.JP_STORAGE
+            JP_STORAGE_PROCESSING -> Known.JP_STORAGE_PROCESSING
             KR_STORAGE -> Known.KR_STORAGE
             CA_STORAGE -> Known.CA_STORAGE
             SG_STORAGE -> Known.SG_STORAGE
             IN_STORAGE -> Known.IN_STORAGE
+            IN_STORAGE_PROCESSING -> Known.IN_STORAGE_PROCESSING
             AU_STORAGE -> Known.AU_STORAGE
+            AU_STORAGE_PROCESSING -> Known.AU_STORAGE_PROCESSING
             GB_STORAGE -> Known.GB_STORAGE
             AE_STORAGE -> Known.AE_STORAGE
             AE_STORAGE_PROCESSING -> Known.AE_STORAGE_PROCESSING
