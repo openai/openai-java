@@ -107,18 +107,7 @@ private constructor(
         }
     }
 
-    private fun dispatch(action: () -> Unit) {
-        // Do not execute arbitrary user callbacks on the socket reader.
-        // An Executor may run inline. The trampoline keeps callbacks off the transport reader
-        // and outside connection locks even for direct executors or a rejected executor.
-        CompletableFuture.runAsync {
-            try {
-                clientOptions.streamHandlerExecutor.execute(action)
-            } catch (_: java.util.concurrent.RejectedExecutionException) {
-                action()
-            }
-        }
-    }
+    private fun dispatch(action: () -> Unit) = clientOptions.dispatchWebSocketCallback(action)
 
     // Caller holds lock. Reserving the attempt prevents concurrent reconnects.
     private fun reserveOpen(): OpenAttempt {
