@@ -159,6 +159,15 @@ jobs:
           ./scripts/gradle build testClasses verifyVersionSupportPolicy
           -x test -x :openai-java-core:testJacksonCompatibility
 
+      - name: Verify local publication
+        run: |
+          ./scripts/gradle -PpublishLocal --no-configuration-cache \
+            :openai-java:publishAllPublicationsToLocalFileSystemRepository \
+            :openai-java-core:publishAllPublicationsToLocalFileSystemRepository \
+            :openai-java-client-okhttp:publishAllPublicationsToLocalFileSystemRepository \
+            :openai-java-bedrock:publishAllPublicationsToLocalFileSystemRepository
+          python3 scripts/verify-local-publication.py
+
       - name: Collect exact-run Gradle build cache
         env:
           CACHE_ARTIFACT_PATH: ${{ runner.temp }}/ci-gradle-build-cache

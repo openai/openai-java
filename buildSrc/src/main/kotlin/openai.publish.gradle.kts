@@ -4,7 +4,9 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.plugins.signing.SigningExtension
 
 plugins {
-    id("com.vanniktech.maven.publish")
+    // All publication settings (including the Javadoc task) are configured below. The full
+    // plugin also auto-detects Dokka after evaluation and assumes V2, even when configured.
+    id("com.vanniktech.maven.publish.base")
 }
 
 publishing {
