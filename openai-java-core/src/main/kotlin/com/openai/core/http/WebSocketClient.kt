@@ -1,8 +1,12 @@
 package com.openai.core.http
 
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.errors.OpenAIIoException
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeoutException
 
 /** Optional transport capability. HTTP-only clients need not implement this interface. */
@@ -78,4 +82,59 @@ internal fun utf8Size(text: String): Long {
             }
     }
     return bytes
+}
+
+// Assign a read without invoking arbitrary CompletableFuture callbacks while holding the owner's
+// lock. Once assigned it cannot be canceled and silently discard a server event.
+internal class WebSocketReadFuture<T>(private val lock: Any, val blocking: Boolean) :
+    CompletableFuture<T>() {
+    var claimed = false
+    var cancellationReserved = false
+
+    override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
+        synchronized(lock) {
+            if (claimed) return false
+            if (isDone) return isCancelled
+            cancellationReserved = true
+        }
+        return super.cancel(mayInterruptIfRunning)
+    }
+}
+
+@JvmSynthetic
+internal fun <T> awaitWebSocketFuture(future: CompletableFuture<T>, api: String): T {
+    var interrupted = false
+    try {
+        while (true) {
+            try {
+                return future.get()
+            } catch (error: InterruptedException) {
+                interrupted = true
+                if (future.cancel(false))
+                    throw OpenAIIoException("$api WebSocket operation interrupted", error)
+            } catch (error: ExecutionException) {
+                val cause = error.cause ?: error
+                throw when (cause) {
+                    is RuntimeException -> cause
+                    is Error -> cause
+                    else -> OpenAIIoException("$api WebSocket operation failed", cause)
+                }
+            }
+        }
+    } finally {
+        if (interrupted) Thread.currentThread().interrupt()
+    }
+}
+
+// An executor may run inline or reject work. The common-pool trampoline keeps user callbacks
+// off the transport reader and outside connection locks in either case.
+@JvmSynthetic
+internal fun ClientOptions.dispatchWebSocketCallback(action: () -> Unit) {
+    CompletableFuture.runAsync {
+        try {
+            streamHandlerExecutor.execute(action)
+        } catch (_: RejectedExecutionException) {
+            action()
+        }
+    }
 }

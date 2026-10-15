@@ -10,10 +10,12 @@ import com.openai.core.SecurityOptions
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.WebSocketClient
+import com.openai.core.http.WebSocketReadFuture
 import com.openai.core.http.WebSocketWriteNotAttempted
+import com.openai.core.http.awaitWebSocketFuture
+import com.openai.core.http.dispatchWebSocketCallback
 import com.openai.core.http.utf8Size
 import com.openai.core.prepare
-import com.openai.errors.OpenAIIoException
 import com.openai.models.live.ClientEvent
 import com.openai.models.live.ServerEvent
 import java.io.IOException
@@ -23,7 +25,6 @@ import java.net.URLEncoder
 import java.util.ArrayDeque
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutionException
 
 /**
  * Primary Live WebSocket. The completed connect opens only the transport; it never starts a
@@ -128,26 +129,10 @@ internal class LiveSocket<C : Any, S : Any>(
     private var queuedBytes = 0L
     private var socket: WebSocketClient.Connection? = null
     private var opening: CompletableFuture<WebSocketClient.Connection>? = null
-    private var waiter: ReadFuture? = null
+    private var waiter: WebSocketReadFuture<S>? = null
     private var failure: Throwable? = null
     private var closed = false
     private var sending = false
-
-    // Assign a read without invoking arbitrary CompletableFuture callbacks while holding lock.
-    // Once assigned it cannot be canceled and silently discard a server event.
-    private inner class ReadFuture(val blocking: Boolean) : CompletableFuture<S>() {
-        var claimed = false
-        var cancellationReserved = false
-
-        override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
-            synchronized(lock) {
-                if (claimed) return false
-                if (isDone) return isCancelled
-                cancellationReserved = true
-            }
-            return super.cancel(mayInterruptIfRunning)
-        }
-    }
 
     fun <T : AutoCloseable> open(
         blocking: Boolean,
@@ -298,29 +283,7 @@ internal class LiveSocket<C : Any, S : Any>(
     }
 
     companion object {
-        fun <T> await(future: CompletableFuture<T>): T {
-            var interrupted = false
-            try {
-                while (true) {
-                    try {
-                        return future.get()
-                    } catch (error: InterruptedException) {
-                        interrupted = true
-                        if (future.cancel(false))
-                            throw OpenAIIoException("Live WebSocket operation interrupted", error)
-                    } catch (error: ExecutionException) {
-                        val cause = error.cause ?: error
-                        throw when (cause) {
-                            is RuntimeException -> cause
-                            is Error -> cause
-                            else -> OpenAIIoException("Live WebSocket operation failed", cause)
-                        }
-                    }
-                }
-            } finally {
-                if (interrupted) Thread.currentThread().interrupt()
-            }
-        }
+        fun <T> await(future: CompletableFuture<T>): T = awaitWebSocketFuture(future, "Live")
     }
 
     /** Returns one event, even if the peer closes immediately after it. */
@@ -342,7 +305,7 @@ internal class LiveSocket<C : Any, S : Any>(
             failure?.let {
                 return CompletableFuture<S>().apply { completeExceptionally(it) }
             }
-            return ReadFuture(blocking).also { next ->
+            return WebSocketReadFuture<S>(lock, blocking).also { next ->
                 waiter = next
                 next.whenComplete { _, _ ->
                     synchronized(lock) { if (waiter === next) waiter = null }
@@ -476,13 +439,5 @@ internal class LiveSocket<C : Any, S : Any>(
 
     // User completion callbacks never run on the transport reader, including with a direct
     // executor.
-    private fun dispatch(action: () -> Unit) {
-        CompletableFuture.runAsync {
-            try {
-                clientOptions.streamHandlerExecutor.execute(action)
-            } catch (_: java.util.concurrent.RejectedExecutionException) {
-                action()
-            }
-        }
-    }
+    private fun dispatch(action: () -> Unit) = clientOptions.dispatchWebSocketCallback(action)
 }

@@ -10,7 +10,10 @@ import com.openai.core.SecurityOptions
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.WebSocketClient
+import com.openai.core.http.WebSocketReadFuture
 import com.openai.core.http.WebSocketWriteNotAttempted
+import com.openai.core.http.awaitWebSocketFuture
+import com.openai.core.http.dispatchWebSocketCallback
 import com.openai.core.http.utf8Size
 import com.openai.core.jsonMapper
 import com.openai.core.prepare
@@ -27,7 +30,6 @@ import java.time.Duration
 import java.util.ArrayDeque
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executor
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.ScheduledExecutorService
@@ -100,30 +102,13 @@ private constructor(
     private var queuedBytes = 0L
     private var socket: WebSocketClient.Connection? = null
     private var opening: CompletableFuture<WebSocketClient.Connection>? = null
-    private var waiter: ReadFuture? = null
+    private var waiter: WebSocketReadFuture<RealtimeTranslationServerEvent>? = null
     private var failure: Throwable? = null
     private var closed = false
     private var sending = false
     private var terminal: RealtimeTranslationSessionClosedEvent? = null
     private var finished = false
     private var finishing: CompletableFuture<RealtimeTranslationSessionClosedEvent>? = null
-
-    // Assign a read without invoking arbitrary CompletableFuture callbacks while holding lock.
-    // Once assigned it cannot be canceled and silently discard a server event.
-    private inner class ReadFuture(val blocking: Boolean) :
-        CompletableFuture<RealtimeTranslationServerEvent>() {
-        var claimed = false
-        var cancellationReserved = false
-
-        override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
-            synchronized(lock) {
-                if (claimed) return false
-                if (isDone) return isCancelled
-                cancellationReserved = true
-            }
-            return super.cancel(mayInterruptIfRunning)
-        }
-    }
 
     companion object {
         private val terminalReader =
@@ -294,33 +279,8 @@ private constructor(
             return result
         }
 
-        private fun <T> await(future: CompletableFuture<T>): T {
-            var interrupted = false
-            try {
-                while (true) {
-                    try {
-                        return future.get()
-                    } catch (error: InterruptedException) {
-                        interrupted = true
-                        if (future.cancel(false))
-                            throw OpenAIIoException(
-                                "Translation WebSocket operation interrupted",
-                                error,
-                            )
-                    } catch (error: ExecutionException) {
-                        val cause = error.cause ?: error
-                        throw when (cause) {
-                            is RuntimeException -> cause
-                            is Error -> cause
-                            else ->
-                                OpenAIIoException("Translation WebSocket operation failed", cause)
-                        }
-                    }
-                }
-            } finally {
-                if (interrupted) Thread.currentThread().interrupt()
-            }
-        }
+        private fun <T> await(future: CompletableFuture<T>): T =
+            awaitWebSocketFuture(future, "Translation")
     }
 
     /** Returns one event, even if the peer closes immediately after it. */
@@ -382,7 +342,8 @@ private constructor(
                 return CompletableFuture<RealtimeTranslationServerEvent>().apply {
                     completeExceptionally(EOFException("Translation session ended"))
                 }
-            return ReadFuture(blocking).also { next ->
+            return WebSocketReadFuture<RealtimeTranslationServerEvent>(lock, blocking).also { next
+                ->
                 waiter = next
                 next.whenComplete { _, _ ->
                     synchronized(lock) { if (waiter === next) waiter = null }
@@ -871,13 +832,5 @@ private constructor(
 
     // User completion callbacks never run on the transport reader, including with a direct
     // executor.
-    private fun dispatch(action: () -> Unit) {
-        CompletableFuture.runAsync {
-            try {
-                clientOptions.streamHandlerExecutor.execute(action)
-            } catch (_: java.util.concurrent.RejectedExecutionException) {
-                action()
-            }
-        }
-    }
+    private fun dispatch(action: () -> Unit) = clientOptions.dispatchWebSocketCallback(action)
 }
