@@ -173,14 +173,3 @@ subprojects {
         }
     }
 }
-
-// Avoid race conditions between `dokkaJavadocCollector` and `dokkaJavadocJar` tasks
-tasks.named("dokkaJavadocCollector").configure {
-    subprojects.flatMap { it.tasks }
-        .filter {
-            it.project.name != "openai-java" &&
-                !CoreCompilationShards.isShardProject(it.project.name) &&
-                it.name == "dokkaJavadocJar"
-        }
-        .forEach { mustRunAfter(it) }
-}

@@ -6,10 +6,10 @@ from zipfile import ZipFile
 
 repo = Path(__file__).resolve().parents[1] / "build/local-maven-repo/com/openai"
 maven = {"m": "http://maven.apache.org/POM/4.0.0"}
-# The umbrella Javadoc must retain both core and OkHttp APIs. Core must include
+# The umbrella Javadoc must retain all published APIs. Core must include
 # models compiled in internal shards as well as its client layer.
 documented_classes = {
-    "openai-java": {"OpenAIClient.html", "OpenAIOkHttpClient.html"},
+    "openai-java": {"OpenAIClient.html", "OpenAIOkHttpClient.html", "BedrockOpenAIOkHttpClient.html"},
     "openai-java-core": {"OpenAIClient.html", "ChatCompletion.html"},
     "openai-java-client-okhttp": {"OpenAIOkHttpClient.html"},
     "openai-java-bedrock": {"BedrockOpenAIOkHttpClient.html"},
@@ -26,6 +26,10 @@ for artifact, expected_docs in documented_classes.items():
     assert not any(d.text.startswith("openai-java-core-") for d in deps), (
         f"{pom}: internal compilation shard leaked into consumer dependencies"
     )
+    if artifact == "openai-java":
+        assert not any(d.text == "openai-java-bedrock" for d in deps), (
+            f"{pom}: documentation-only Bedrock dependency leaked into the umbrella SDK"
+        )
     assert pom.with_suffix(".module").is_file(), f"{pom}: missing Gradle module metadata"
     assert pom.with_suffix(".jar").is_file(), f"{pom}: missing binary JAR"
     sources = pom.with_name(f"{pom.stem}-sources.jar")
