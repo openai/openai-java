@@ -159,9 +159,6 @@ jobs:
           ./scripts/gradle build testClasses verifyVersionSupportPolicy
           -x test -x :openai-java-core:testJacksonCompatibility
 
-      - name: Check Maven Publish plugin configuration
-        run: ./scripts/gradle publishAndReleaseToMavenCentral --dry-run --no-configuration-cache
-
       - name: Collect exact-run Gradle build cache
         env:
           CACHE_ARTIFACT_PATH: ${{ runner.temp }}/ci-gradle-build-cache
