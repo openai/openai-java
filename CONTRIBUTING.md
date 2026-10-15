@@ -323,6 +323,41 @@ these commands with shell tracing enabled.
 After the rotated secrets work, revoke the old Central Portal token and remove any old repository-level copies of the
 `OPENAI_SONATYPE_*` secrets.
 
+### Publish through an authentication proxy
+
+The release workflow can upload through an HTTPS credential proxy instead of exposing the Central
+Portal token to the runner. Leave `MAVEN_CENTRAL_AUTH_PROXY_URL` unset to keep direct publishing.
+After the proxy owner has reviewed and provisioned the integration, configure these variables in
+the protected `publish` environment:
+
+- `MAVEN_CENTRAL_AUTH_PROXY_URL`: the proxy's HTTPS origin, without a path or query.
+- `MAVEN_CENTRAL_AZURE_TENANT_ID`: the Microsoft Entra tenant UUID.
+- `MAVEN_CENTRAL_AZURE_CLIENT_ID`: the dedicated federated application UUID.
+- `MAVEN_CENTRAL_AZURE_RESOURCE`: the proxy's Entra resource identifier, without `/.default`.
+
+The application must trust GitHub OIDC for this repository's `publish` environment. Preserve its
+`main`-only deployment restriction: the default environment subject does not also constrain the
+branch or workflow. Review stronger workflow-specific federation with the proxy owner. The proxy
+must validate the Entra application identity and inject the Central Portal bearer credential only
+for its fixed Sonatype destination. Grant only upload, status and publish operations. Do not inspect
+the ZIP body or assume a generic proxy's upload limits/timeouts fit a full SDK release.
+
+Before enabling the variable, complete an owner-approved, nonpublishing `USER_MANAGED` canary and
+verify the real bundle size, token exchange, signatures and gateway behavior. The enabled release
+workflow **does publish automatically after validation**. It stages signed artifacts without vendor
+credentials, derives the expected inventory from Gradle Maven publications, verifies signatures and attested JAR hashes, then uploads once and records the
+bundle digest and deployment ID in the job log and summary. The uploader is the `publishViaAuthProxy` Kotlin Gradle task in `buildSrc`; it uses the build JDK.
+The workflow sets `JAVA_TOOL_OPTIONS=-Djdk.httpclient.redirects.retrylimit=1` before starting
+that JVM to disable HTTP-client retries as well as application-level retries.
+
+Failures never fall back to direct publishing or retry an upload automatically. An upload timeout
+can mean Central accepted the bundle: inspect Portal before retrying, even if no deployment ID was
+returned. For a known ID, inspect that deployment rather than starting another upload. Proxy mode
+requires a release source containing the signed-staging Gradle support; older release retries must
+use the direct path after confirming no existing deployment. Keep GPG signing secrets configured.
+Remove/revoke the GitHub Sonatype token only after a successful approved rollout. Once it is revoked,
+clearing the proxy URL alone is not sufficient to restore direct publishing.
+
 ### Publish manually
 
 The GitHub workflow is preferred because it validates the immutable release identity and requires a Central Portal check
