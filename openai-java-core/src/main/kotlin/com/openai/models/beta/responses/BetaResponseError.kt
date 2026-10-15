@@ -12,6 +12,8 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.legacyAdditionalProperties
+import com.openai.core.serializableAdditionalProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -25,6 +27,8 @@ private constructor(
     private val code: JsonField<Code>,
     private val message: JsonField<String>,
     private val misalignment: JsonField<Misalignment>,
+    private val param: JsonField<String>,
+    private val type: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -35,7 +39,9 @@ private constructor(
         @JsonProperty("misalignment")
         @ExcludeMissing
         misalignment: JsonField<Misalignment> = JsonMissing.of(),
-    ) : this(code, message, misalignment, mutableMapOf())
+        @JsonProperty("param") @ExcludeMissing param: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonField<String> = JsonMissing.of(),
+    ) : this(code, message, misalignment, param, type, mutableMapOf())
 
     /**
      * The error code for the response.
@@ -60,6 +66,22 @@ private constructor(
     fun misalignment(): Optional<Misalignment> = misalignment.getOptional("misalignment")
 
     /**
+     * The request parameter associated with the error, or null if none was recorded.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun param(): Optional<String> = param.getOptional("param")
+
+    /**
+     * The original error type, or null if it was not recorded.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun type(): Optional<String> = type.getOptional("type")
+
+    /**
      * Returns the raw JSON value of [code].
      *
      * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
@@ -82,15 +104,35 @@ private constructor(
     @ExcludeMissing
     fun _misalignment(): JsonField<Misalignment> = misalignment
 
+    /**
+     * Returns the raw JSON value of [param].
+     *
+     * Unlike [param], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("param") @ExcludeMissing fun _param(): JsonField<String> = param
+
+    /**
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
     }
 
+    fun _additionalProperties(): Map<String, JsonValue> =
+        legacyAdditionalProperties(additionalProperties, mapOf("type" to type, "param" to param))
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
-        Collections.unmodifiableMap(additionalProperties)
+    private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
+        serializableAdditionalProperties(
+            additionalProperties,
+            mapOf("type" to type, "param" to param),
+        )
 
     fun toBuilder() = Builder().from(this)
 
@@ -114,6 +156,8 @@ private constructor(
         private var code: JsonField<Code>? = null
         private var message: JsonField<String>? = null
         private var misalignment: JsonField<Misalignment> = JsonMissing.of()
+        private var param: JsonField<String> = JsonMissing.of()
+        private var type: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -121,6 +165,8 @@ private constructor(
             code = betaResponseError.code
             message = betaResponseError.message
             misalignment = betaResponseError.misalignment
+            param = betaResponseError.param
+            type = betaResponseError.type
             additionalProperties = betaResponseError.additionalProperties.toMutableMap()
         }
 
@@ -159,6 +205,34 @@ private constructor(
             this.misalignment = misalignment
         }
 
+        /** The request parameter associated with the error, or null if none was recorded. */
+        fun param(param: String?) = param(JsonField.ofNullable(param))
+
+        /** Alias for calling [Builder.param] with `param.orElse(null)`. */
+        fun param(param: Optional<String>) = param(param.getOrNull())
+
+        /**
+         * Sets [Builder.param] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.param] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun param(param: JsonField<String>) = apply { this.param = param }
+
+        /** The original error type, or null if it was not recorded. */
+        fun type(type: String?) = type(JsonField.ofNullable(type))
+
+        /** Alias for calling [Builder.type] with `type.orElse(null)`. */
+        fun type(type: Optional<String>) = type(type.getOrNull())
+
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun type(type: JsonField<String>) = apply { this.type = type }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -196,6 +270,8 @@ private constructor(
                 checkRequired("code", code),
                 checkRequired("message", message),
                 misalignment,
+                param,
+                type,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -218,6 +294,8 @@ private constructor(
         code().validate()
         message()
         misalignment().ifPresent { it.validate() }
+        param()
+        type()
         validated = true
     }
 
@@ -238,7 +316,9 @@ private constructor(
     internal fun validity(): Int =
         (code.asKnown().getOrNull()?.validity() ?: 0) +
             (if (message.asKnown().isPresent) 1 else 0) +
-            (misalignment.asKnown().getOrNull()?.validity() ?: 0)
+            (misalignment.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (param.asKnown().isPresent) 1 else 0) +
+            (if (type.asKnown().isPresent) 1 else 0)
 
     /** The error code for the response. */
     class Code @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -1131,15 +1211,17 @@ private constructor(
             code == other.code &&
             message == other.message &&
             misalignment == other.misalignment &&
+            param == other.param &&
+            type == other.type &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(code, message, misalignment, additionalProperties)
+        Objects.hash(code, message, misalignment, param, type, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "BetaResponseError{code=$code, message=$message, misalignment=$misalignment, additionalProperties=$additionalProperties}"
+        "BetaResponseError{code=$code, message=$message, misalignment=$misalignment, param=$param, type=$type, additionalProperties=$additionalProperties}"
 }

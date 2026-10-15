@@ -963,6 +963,8 @@ internal class ResponseStreamEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -1272,6 +1274,8 @@ internal class ResponseStreamEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -1830,6 +1834,8 @@ internal class ResponseStreamEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -2139,6 +2145,8 @@ internal class ResponseStreamEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -3484,6 +3492,8 @@ internal class ResponseStreamEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -3793,6 +3803,8 @@ internal class ResponseStreamEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -4057,6 +4069,8 @@ internal class ResponseStreamEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -4366,6 +4380,8 @@ internal class ResponseStreamEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -4630,6 +4646,8 @@ internal class ResponseStreamEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -4939,6 +4957,8 @@ internal class ResponseStreamEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -8083,6 +8103,8 @@ internal class ResponseStreamEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -8392,6 +8414,8 @@ internal class ResponseStreamEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(

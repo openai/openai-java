@@ -34,6 +34,8 @@ internal class VideoCreateErrorTest {
                         )
                         .build()
                 )
+                .param("param")
+                .type("type")
                 .build()
 
         assertThat(videoCreateError.code()).isEqualTo("code")
@@ -55,6 +57,8 @@ internal class VideoCreateErrorTest {
                     .steer(VideoCreateError.Misalignment.Steer.builder().message("message").build())
                     .build()
             )
+        assertThat(videoCreateError.param()).contains("param")
+        assertThat(videoCreateError.type()).contains("type")
     }
 
     @Test
@@ -82,6 +86,8 @@ internal class VideoCreateErrorTest {
                         )
                         .build()
                 )
+                .param("param")
+                .type("type")
                 .build()
 
         val roundtrippedVideoCreateError =
