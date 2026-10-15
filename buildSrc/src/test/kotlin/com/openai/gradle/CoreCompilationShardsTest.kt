@@ -73,6 +73,32 @@ class CoreCompilationShardsTest {
     }
 
     @Test
+    fun `independent model domains do not depend on Responses or Chat models`() {
+        val interactiveModelSources =
+            listOf(
+                "com/openai/models/AllModels.kt",
+                "com/openai/models/ResponsesModel.kt",
+                "com/openai/models/responses/Response.kt",
+                "com/openai/models/chat/completions/ChatCompletion.kt",
+            )
+        listOf(
+                CoreCompilationShard.MODELS_ADMIN,
+                CoreCompilationShard.MODELS_BETA_RESPONSES,
+                CoreCompilationShard.MODELS_BETA,
+            )
+            .forEach { shard ->
+                val compilationShards = shard.transitiveDependencies() + shard
+                interactiveModelSources.forEach { source ->
+                    val owner = assertNotNull(CoreCompilationShards.shardFor(source), source)
+                    assertTrue(
+                        owner !in compilationShards,
+                        "${shard.id} must not be invalidated by changes to $source",
+                    )
+                }
+            }
+    }
+
+    @Test
     fun `service shards depend only on their model domains`() {
         assertEquals(
             listOf(CoreCompilationShard.MODELS_COMMON),

@@ -6,6 +6,8 @@ import org.gradle.api.specs.Spec
 
 enum class CoreCompilationShard(val id: String) {
     RUNTIME("runtime"),
+    // Shared primitives must not pull Responses and Chat models into every model domain.
+    MODELS_FOUNDATION("models-foundation"),
     MODELS_COMMON("models-common"),
     MODELS_ADMIN("models-admin"),
     MODELS_BETA_RESPONSES("models-beta-responses"),
@@ -26,10 +28,11 @@ enum class CoreCompilationShard(val id: String) {
         get() =
             when (this) {
                 RUNTIME -> emptyList()
-                MODELS_COMMON -> listOf(RUNTIME)
+                MODELS_FOUNDATION -> listOf(RUNTIME)
+                MODELS_COMMON -> listOf(MODELS_FOUNDATION)
                 MODELS_ADMIN,
                 MODELS_BETA_RESPONSES,
-                MODELS_BETA,
+                MODELS_BETA -> listOf(MODELS_FOUNDATION)
                 MODELS_GENERAL,
                 MODELS_EVALS -> listOf(MODELS_COMMON)
                 MODELS_REALTIME -> listOf(MODELS_COMMON, MODELS_GENERAL)
@@ -154,8 +157,11 @@ object CoreCompilationShards {
             }
 
             return when {
+                // These root-level unions include Responses-only model IDs.
+                path == "com/openai/models/ResponsesModel.kt" ||
+                    path == "com/openai/models/AllModels.kt" -> CoreCompilationShard.MODELS_COMMON
                 path.substringAfter("com/openai/models/").contains('/').not() ->
-                    CoreCompilationShard.MODELS_COMMON
+                    CoreCompilationShard.MODELS_FOUNDATION
                 path.startsWith("com/openai/models/responses/") ->
                     CoreCompilationShard.MODELS_COMMON
                 path.startsWith("com/openai/models/chat/") -> CoreCompilationShard.MODELS_COMMON
@@ -184,6 +190,10 @@ object CoreCompilationShards {
         if (path == "com/openai/credential/WorkloadIdentityCredential.kt") {
             return CoreCompilationShard.CLIENT_BASE
         }
+        // These helpers depend on both Responses and Chat models.
+        if (path == "com/openai/core/StructuredOutputs.kt") {
+            return CoreCompilationShard.MODELS_COMMON
+        }
 
         if (
             path.startsWith("com/openai/core/") ||
@@ -191,7 +201,7 @@ object CoreCompilationShards {
                 path.startsWith("com/openai/azure/") ||
                 path.startsWith("com/openai/credential/")
         ) {
-            return CoreCompilationShard.MODELS_COMMON
+            return CoreCompilationShard.MODELS_FOUNDATION
         }
 
         return null
