@@ -34,6 +34,7 @@ private constructor(
     private val sessionInputAudioAppend: InputAudioAppendEvent? = null,
     private val sessionInputAudioMute: InputAudioMuteEvent? = null,
     private val sessionInputAudioUnmute: InputAudioUnmuteEvent? = null,
+    private val sessionOutputAudioFixturePlay: OutputAudioFixturePlayEvent? = null,
     private val sessionInstructionsAppend: InstructionsAppendEvent? = null,
     private val sessionThinkingAppend: ThinkingAppendEvent? = null,
     private val sessionCommentaryAppend: CommentaryAppendEvent? = null,
@@ -75,6 +76,18 @@ private constructor(
      */
     fun sessionInputAudioUnmute(): Optional<InputAudioUnmuteEvent> =
         Optional.ofNullable(sessionInputAudioUnmute)
+
+    /**
+     * Play one complete audio fixture through the session output. Send this event over the primary
+     * WebSocket or a server sideband. Audio must be raw mono PCM16 little-endian at 24 kHz,
+     * regardless of the session audio format, and at most 30 seconds. The entire payload is
+     * validated before model speech is interrupted and input is muted. Only one fixture can be
+     * active. fixture.playing acknowledges acceptance and fixture.played reports server mixer
+     * drain. These notifications are not exact transport-media boundaries. Input arriving during
+     * playback is dropped and not replayed.
+     */
+    fun sessionOutputAudioFixturePlay(): Optional<OutputAudioFixturePlayEvent> =
+        Optional.ofNullable(sessionOutputAudioFixturePlay)
 
     /**
      * Append instructions to the Live conversation while it is running, optionally associating them
@@ -126,6 +139,8 @@ private constructor(
 
     fun isSessionInputAudioUnmute(): Boolean = sessionInputAudioUnmute != null
 
+    fun isSessionOutputAudioFixturePlay(): Boolean = sessionOutputAudioFixturePlay != null
+
     fun isSessionInstructionsAppend(): Boolean = sessionInstructionsAppend != null
 
     fun isSessionThinkingAppend(): Boolean = sessionThinkingAppend != null
@@ -170,6 +185,18 @@ private constructor(
      */
     fun asSessionInputAudioUnmute(): InputAudioUnmuteEvent =
         sessionInputAudioUnmute.getOrThrow("sessionInputAudioUnmute")
+
+    /**
+     * Play one complete audio fixture through the session output. Send this event over the primary
+     * WebSocket or a server sideband. Audio must be raw mono PCM16 little-endian at 24 kHz,
+     * regardless of the session audio format, and at most 30 seconds. The entire payload is
+     * validated before model speech is interrupted and input is muted. Only one fixture can be
+     * active. fixture.playing acknowledges acceptance and fixture.played reports server mixer
+     * drain. These notifications are not exact transport-media boundaries. Input arriving during
+     * playback is dropped and not replayed.
+     */
+    fun asSessionOutputAudioFixturePlay(): OutputAudioFixturePlayEvent =
+        sessionOutputAudioFixturePlay.getOrThrow("sessionOutputAudioFixturePlay")
 
     /**
      * Append instructions to the Live conversation while it is running, optionally associating them
@@ -252,6 +279,8 @@ private constructor(
                 visitor.visitSessionInputAudioMute(sessionInputAudioMute)
             sessionInputAudioUnmute != null ->
                 visitor.visitSessionInputAudioUnmute(sessionInputAudioUnmute)
+            sessionOutputAudioFixturePlay != null ->
+                visitor.visitSessionOutputAudioFixturePlay(sessionOutputAudioFixturePlay)
             sessionInstructionsAppend != null ->
                 visitor.visitSessionInstructionsAppend(sessionInstructionsAppend)
             sessionThinkingAppend != null ->
@@ -305,6 +334,12 @@ private constructor(
                     sessionInputAudioUnmute: InputAudioUnmuteEvent
                 ) {
                     sessionInputAudioUnmute.validate()
+                }
+
+                override fun visitSessionOutputAudioFixturePlay(
+                    sessionOutputAudioFixturePlay: OutputAudioFixturePlayEvent
+                ) {
+                    sessionOutputAudioFixturePlay.validate()
                 }
 
                 override fun visitSessionInstructionsAppend(
@@ -376,6 +411,10 @@ private constructor(
                     sessionInputAudioUnmute: InputAudioUnmuteEvent
                 ) = sessionInputAudioUnmute.validity()
 
+                override fun visitSessionOutputAudioFixturePlay(
+                    sessionOutputAudioFixturePlay: OutputAudioFixturePlayEvent
+                ) = sessionOutputAudioFixturePlay.validity()
+
                 override fun visitSessionInstructionsAppend(
                     sessionInstructionsAppend: InstructionsAppendEvent
                 ) = sessionInstructionsAppend.validity()
@@ -412,6 +451,7 @@ private constructor(
             sessionInputAudioAppend == other.sessionInputAudioAppend &&
             sessionInputAudioMute == other.sessionInputAudioMute &&
             sessionInputAudioUnmute == other.sessionInputAudioUnmute &&
+            sessionOutputAudioFixturePlay == other.sessionOutputAudioFixturePlay &&
             sessionInstructionsAppend == other.sessionInstructionsAppend &&
             sessionThinkingAppend == other.sessionThinkingAppend &&
             sessionCommentaryAppend == other.sessionCommentaryAppend &&
@@ -427,6 +467,7 @@ private constructor(
             sessionInputAudioAppend,
             sessionInputAudioMute,
             sessionInputAudioUnmute,
+            sessionOutputAudioFixturePlay,
             sessionInstructionsAppend,
             sessionThinkingAppend,
             sessionCommentaryAppend,
@@ -445,6 +486,8 @@ private constructor(
                 "ClientEvent{sessionInputAudioMute=$sessionInputAudioMute}"
             sessionInputAudioUnmute != null ->
                 "ClientEvent{sessionInputAudioUnmute=$sessionInputAudioUnmute}"
+            sessionOutputAudioFixturePlay != null ->
+                "ClientEvent{sessionOutputAudioFixturePlay=$sessionOutputAudioFixturePlay}"
             sessionInstructionsAppend != null ->
                 "ClientEvent{sessionInstructionsAppend=$sessionInstructionsAppend}"
             sessionThinkingAppend != null ->
@@ -499,6 +542,20 @@ private constructor(
         @JvmStatic
         fun ofSessionInputAudioUnmute(sessionInputAudioUnmute: InputAudioUnmuteEvent) =
             ClientEvent(sessionInputAudioUnmute = sessionInputAudioUnmute)
+
+        /**
+         * Play one complete audio fixture through the session output. Send this event over the
+         * primary WebSocket or a server sideband. Audio must be raw mono PCM16 little-endian at 24
+         * kHz, regardless of the session audio format, and at most 30 seconds. The entire payload
+         * is validated before model speech is interrupted and input is muted. Only one fixture can
+         * be active. fixture.playing acknowledges acceptance and fixture.played reports server
+         * mixer drain. These notifications are not exact transport-media boundaries. Input arriving
+         * during playback is dropped and not replayed.
+         */
+        @JvmStatic
+        fun ofSessionOutputAudioFixturePlay(
+            sessionOutputAudioFixturePlay: OutputAudioFixturePlayEvent
+        ) = ClientEvent(sessionOutputAudioFixturePlay = sessionOutputAudioFixturePlay)
 
         /**
          * Append instructions to the Live conversation while it is running, optionally associating
@@ -585,6 +642,19 @@ private constructor(
         fun visitSessionInputAudioUnmute(sessionInputAudioUnmute: InputAudioUnmuteEvent): T
 
         /**
+         * Play one complete audio fixture through the session output. Send this event over the
+         * primary WebSocket or a server sideband. Audio must be raw mono PCM16 little-endian at 24
+         * kHz, regardless of the session audio format, and at most 30 seconds. The entire payload
+         * is validated before model speech is interrupted and input is muted. Only one fixture can
+         * be active. fixture.playing acknowledges acceptance and fixture.played reports server
+         * mixer drain. These notifications are not exact transport-media boundaries. Input arriving
+         * during playback is dropped and not replayed.
+         */
+        fun visitSessionOutputAudioFixturePlay(
+            sessionOutputAudioFixturePlay: OutputAudioFixturePlayEvent
+        ): T
+
+        /**
          * Append instructions to the Live conversation while it is running, optionally associating
          * them with an existing client delegation.
          */
@@ -666,6 +736,11 @@ private constructor(
                         ClientEvent(sessionInputAudioUnmute = it, _json = json)
                     } ?: ClientEvent(_json = json)
                 }
+                "session.output_audio.fixture.play" -> {
+                    return tryDeserialize(node, jacksonTypeRef<OutputAudioFixturePlayEvent>())
+                        ?.let { ClientEvent(sessionOutputAudioFixturePlay = it, _json = json) }
+                        ?: ClientEvent(_json = json)
+                }
                 "session.instructions.append" -> {
                     return tryDeserialize(node, jacksonTypeRef<InstructionsAppendEvent>())?.let {
                         ClientEvent(sessionInstructionsAppend = it, _json = json)
@@ -718,6 +793,8 @@ private constructor(
                     generator.writeObject(value.sessionInputAudioMute)
                 value.sessionInputAudioUnmute != null ->
                     generator.writeObject(value.sessionInputAudioUnmute)
+                value.sessionOutputAudioFixturePlay != null ->
+                    generator.writeObject(value.sessionOutputAudioFixturePlay)
                 value.sessionInstructionsAppend != null ->
                     generator.writeObject(value.sessionInstructionsAppend)
                 value.sessionThinkingAppend != null ->
