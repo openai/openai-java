@@ -437,7 +437,8 @@ internal class JsonSchemaValidator private constructor() {
             path,
             {
                 "'$PROPS' field is missing, empty or not an object. " +
-                    "At least one named property must be defined. See: $NO_PROPERTIES_DOC"
+                    "At least one named property must be defined. " +
+                    "For Map fields, use a list of key/value objects instead. See: $NO_PROPERTIES_DOC"
             },
         ) {
             return
