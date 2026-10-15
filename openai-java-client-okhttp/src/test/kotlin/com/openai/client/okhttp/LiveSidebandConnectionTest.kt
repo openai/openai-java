@@ -14,6 +14,7 @@ import com.openai.helpers.LiveSidebandConnection
 import com.openai.helpers.LiveWebSocketOptions
 import com.openai.models.live.InputAudioMuteEvent
 import com.openai.models.live.InputAudioUnmuteEvent
+import com.openai.models.live.OutputAudioFixturePlayEvent
 import com.openai.models.live.SessionCloseEvent
 import java.io.IOException
 import java.net.URI
@@ -175,6 +176,63 @@ class LiveSidebandConnectionTest {
                         .get(8, TimeUnit.SECONDS)
                         .send("""{"type":"session.input_audio.unmuted","event_id":"unmuted"}""")
                     assertThat(sideband.receive().isSessionInputAudioUnmuted()).isTrue()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun outputAudioFixturePlaybackLifecycleOverSideband() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                LiveSidebandConnection.connect(options(server, http), "signaling").use { sideband ->
+                    val fixture =
+                        OutputAudioFixturePlayEvent.builder()
+                            .audio("AAABAA==")
+                            .eventId("fixture-1")
+                            .build()
+                    assertThatThrownBy {
+                            sideband.send(
+                                fixture
+                                    .toBuilder()
+                                    .type(JsonValue.from("session.input_audio.append"))
+                                    .build()
+                            )
+                        }
+                        .isInstanceOf(IllegalArgumentException::class.java)
+                    sideband.send(fixture)
+                    val play = mapper.readTree(peer.messages.poll(8, TimeUnit.SECONDS))
+                    assertThat(play)
+                        .isEqualTo(
+                            mapper.readTree(
+                                """{"type":"session.output_audio.fixture.play","audio":"AAABAA==","event_id":"fixture-1"}"""
+                            )
+                        )
+                    val clientEventId = play.path("event_id").asText()
+                    peer.socket.get(8, TimeUnit.SECONDS).apply {
+                        send(
+                            """{"type":"session.output_audio.fixture.playing","event_id":"playing-1","client_event_id":"$clientEventId"}"""
+                        )
+                        send(
+                            """{"type":"session.output_audio.fixture.played","event_id":"played-1","client_event_id":"$clientEventId"}"""
+                        )
+                    }
+                    val playing =
+                        sideband
+                            .receiveAsync()
+                            .get(8, TimeUnit.SECONDS)
+                            .asSessionOutputAudioFixturePlaying()
+                    assertThat(playing.eventId()).isEqualTo("playing-1")
+                    assertThat(playing.clientEventId()).contains(clientEventId)
+                    val played =
+                        sideband
+                            .receiveAsync()
+                            .get(8, TimeUnit.SECONDS)
+                            .asSessionOutputAudioFixturePlayed()
+                    assertThat(played.eventId()).isEqualTo("played-1")
+                    assertThat(played.clientEventId()).contains(clientEventId)
                 }
             }
         }
