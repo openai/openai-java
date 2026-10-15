@@ -1,5 +1,39 @@
 # Changelog
 
+## [4.82.0](https://github.com/openai/openai-java/compare/v4.81.0...v4.82.0) (2026-10-15)
+
+
+### Features
+
+* **api:** add regional processing residency options ([#1179](https://github.com/openai/openai-java/issues/1179)) ([fc93c4a](https://github.com/openai/openai-java/commit/fc93c4a512b12e364a53b4035879516f40903c95))
+* **api:** add response error diagnostics and model notices ([#1187](https://github.com/openai/openai-java/issues/1187)) ([43eb4aa](https://github.com/openai/openai-java/commit/43eb4aa67696c0bbbe29dcc7ea0661a30f7f1466))
+* **api:** expose image tool error and moderation details ([#1177](https://github.com/openai/openai-java/issues/1177)) ([7d9e8af](https://github.com/openai/openai-java/commit/7d9e8affcc7ec40553c9482ede8f63d529fead3e))
+
+
+### Bug Fixes
+
+* **api:** expose Realtime response error messages ([#1181](https://github.com/openai/openai-java/issues/1181)) ([34deb60](https://github.com/openai/openai-java/commit/34deb6073eae8124fd8b506946fc45e10bccf39b))
+* **core:** explain unsupported structured output maps ([#1188](https://github.com/openai/openai-java/issues/1188)) ([b83d170](https://github.com/openai/openai-java/commit/b83d170821a0809332697083de2cc6f315b08bb6))
+* **streaming:** settle rejected subscriber callbacks ([#1173](https://github.com/openai/openai-java/issues/1173)) ([d2b31a2](https://github.com/openai/openai-java/commit/d2b31a28c7bede2c7c8a792edfdb568351bd56ee))
+
+
+### Chores
+
+* **api:** clarify Decisions request and response fields ([#1178](https://github.com/openai/openai-java/issues/1178)) ([9fd36c0](https://github.com/openai/openai-java/commit/9fd36c0cf27e9646fbbfd924ba9462fafe760a0c))
+
+
+### Refactors
+
+* share WebSocket read and callback primitives ([#1186](https://github.com/openai/openai-java/issues/1186)) ([eae42df](https://github.com/openai/openai-java/commit/eae42df1f6c6487d2166a7e3217376372ed62b47))
+
+
+### Build System
+
+* **deps:** bump com.gradleup.shadow from 9.2.2 to 9.6.1 in /openai-java-proguard-test ([#1098](https://github.com/openai/openai-java/issues/1098)) ([f5cb67b](https://github.com/openai/openai-java/commit/f5cb67b01e43a8fb52158913041ac0471c866471))
+* isolate foundational model compilation ([#1182](https://github.com/openai/openai-java/issues/1182)) ([a31271d](https://github.com/openai/openai-java/commit/a31271d4d9c54f85d371407246fba1b4aa988a4a))
+* upgrade Gradle to 9.8.1 and fix JUnit test runtimes ([#1176](https://github.com/openai/openai-java/issues/1176)) ([6f1f1d4](https://github.com/openai/openai-java/commit/6f1f1d45b49f33b8b68863911d290eef32a6db73))
+* upgrade Maven Publish to 0.37.0 with explicit SDK publication ([#1139](https://github.com/openai/openai-java/issues/1139)) ([0b3dcaa](https://github.com/openai/openai-java/commit/0b3dcaaad10b6d303956e989f6a980de2bead5af))
+
 ## [4.81.0](https://github.com/openai/openai-java/compare/v4.80.0...v4.81.0) (2026-10-13)
 
 
