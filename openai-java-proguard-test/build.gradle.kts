@@ -1,6 +1,6 @@
 plugins {
     id("openai.kotlin")
-    id("com.gradleup.shadow") version "9.2.2"
+    id("com.gradleup.shadow") version "9.6.1"
 }
 
 buildscript {
