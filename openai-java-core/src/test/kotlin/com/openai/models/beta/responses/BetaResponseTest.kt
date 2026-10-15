@@ -40,6 +40,8 @@ internal class BetaResponseTest {
                                 )
                                 .build()
                         )
+                        .param("param")
+                        .type("type")
                         .build()
                 )
                 .incompleteDetails(
@@ -278,6 +280,8 @@ internal class BetaResponseTest {
                             )
                             .build()
                     )
+                    .param("param")
+                    .type("type")
                     .build()
             )
         assertThat(betaResponse.incompleteDetails())
@@ -530,6 +534,8 @@ internal class BetaResponseTest {
                                 )
                                 .build()
                         )
+                        .param("param")
+                        .type("type")
                         .build()
                 )
                 .incompleteDetails(

@@ -30,6 +30,8 @@ internal class BetaResponseErrorTest {
                         )
                         .build()
                 )
+                .param("param")
+                .type("type")
                 .build()
 
         assertThat(betaResponseError.code()).isEqualTo(BetaResponseError.Code.SERVER_ERROR)
@@ -48,6 +50,8 @@ internal class BetaResponseErrorTest {
                     )
                     .build()
             )
+        assertThat(betaResponseError.param()).contains("param")
+        assertThat(betaResponseError.type()).contains("type")
     }
 
     @Test
@@ -72,6 +76,8 @@ internal class BetaResponseErrorTest {
                         )
                         .build()
                 )
+                .param("param")
+                .type("type")
                 .build()
 
         val roundtrippedBetaResponseError =

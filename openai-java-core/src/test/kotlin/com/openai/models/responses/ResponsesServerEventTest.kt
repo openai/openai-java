@@ -1059,6 +1059,8 @@ internal class ResponsesServerEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -1371,6 +1373,8 @@ internal class ResponsesServerEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -1938,6 +1942,8 @@ internal class ResponsesServerEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -2250,6 +2256,8 @@ internal class ResponsesServerEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -3548,6 +3556,8 @@ internal class ResponsesServerEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -3860,6 +3870,8 @@ internal class ResponsesServerEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -4124,6 +4136,8 @@ internal class ResponsesServerEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -4436,6 +4450,8 @@ internal class ResponsesServerEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -4700,6 +4716,8 @@ internal class ResponsesServerEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -5012,6 +5030,8 @@ internal class ResponsesServerEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -8283,6 +8303,8 @@ internal class ResponsesServerEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -8595,6 +8617,8 @@ internal class ResponsesServerEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(

@@ -1083,6 +1083,8 @@ internal class BetaResponseStreamEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -1402,6 +1404,8 @@ internal class BetaResponseStreamEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -1991,6 +1995,8 @@ internal class BetaResponseStreamEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -2310,6 +2316,8 @@ internal class BetaResponseStreamEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -3786,6 +3794,8 @@ internal class BetaResponseStreamEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -4106,6 +4116,8 @@ internal class BetaResponseStreamEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -4379,6 +4391,8 @@ internal class BetaResponseStreamEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -4698,6 +4712,8 @@ internal class BetaResponseStreamEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -4969,6 +4985,8 @@ internal class BetaResponseStreamEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -5289,6 +5307,8 @@ internal class BetaResponseStreamEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -8775,6 +8795,8 @@ internal class BetaResponseStreamEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -9094,6 +9116,8 @@ internal class BetaResponseStreamEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(

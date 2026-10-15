@@ -42,6 +42,8 @@ internal class BetaResponseCreatedEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -293,6 +295,8 @@ internal class BetaResponseCreatedEventTest {
                                     )
                                     .build()
                             )
+                            .param("param")
+                            .type("type")
                             .build()
                     )
                     .incompleteDetails(
@@ -545,6 +549,8 @@ internal class BetaResponseCreatedEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(

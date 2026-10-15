@@ -45,6 +45,8 @@ internal class ResponseTest {
                                 )
                                 .build()
                         )
+                        .param("param")
+                        .type("type")
                         .build()
                 )
                 .incompleteDetails(
@@ -274,6 +276,8 @@ internal class ResponseTest {
                             )
                             .build()
                     )
+                    .param("param")
+                    .type("type")
                     .build()
             )
         assertThat(response.incompleteDetails())
@@ -517,6 +521,8 @@ internal class ResponseTest {
                                 )
                                 .build()
                         )
+                        .param("param")
+                        .type("type")
                         .build()
                 )
                 .incompleteDetails(

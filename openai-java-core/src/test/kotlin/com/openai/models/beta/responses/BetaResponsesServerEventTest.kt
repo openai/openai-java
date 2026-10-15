@@ -1189,6 +1189,8 @@ internal class BetaResponsesServerEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -1514,6 +1516,8 @@ internal class BetaResponsesServerEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -2113,6 +2117,8 @@ internal class BetaResponsesServerEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -2437,6 +2443,8 @@ internal class BetaResponsesServerEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -3866,6 +3874,8 @@ internal class BetaResponsesServerEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -4191,6 +4201,8 @@ internal class BetaResponsesServerEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -4464,6 +4476,8 @@ internal class BetaResponsesServerEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -4788,6 +4802,8 @@ internal class BetaResponsesServerEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -5059,6 +5075,8 @@ internal class BetaResponsesServerEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -5384,6 +5402,8 @@ internal class BetaResponsesServerEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
@@ -9016,6 +9036,8 @@ internal class BetaResponsesServerEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -9340,6 +9362,8 @@ internal class BetaResponsesServerEventTest {
                                             )
                                             .build()
                                     )
+                                    .param("param")
+                                    .type("type")
                                     .build()
                             )
                             .incompleteDetails(
