@@ -788,6 +788,21 @@ properties can be derived. This may occur if, for example:
   If you need arbitrary key/value data, model it as a list of entry objects with named fields so the
   generated schema still has concrete property names.
 
+For example, replace `Map<String, Integer> coolMap` with a list of entries:
+
+```java
+class TestMap {
+    public List<Entry> coolMap;
+}
+
+class Entry {
+    public String key;
+    public int value;
+}
+```
+
+The entry list does not enforce unique keys; handle duplicates when converting it back to a map.
+
 ### Annotating classes and JSON schemas
 
 You can use annotations to add further information to the JSON schema derived from your Java
