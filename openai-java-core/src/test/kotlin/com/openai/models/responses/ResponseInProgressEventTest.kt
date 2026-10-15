@@ -46,6 +46,8 @@ internal class ResponseInProgressEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -287,6 +289,8 @@ internal class ResponseInProgressEventTest {
                                     )
                                     .build()
                             )
+                            .param("param")
+                            .type("type")
                             .build()
                     )
                     .incompleteDetails(
@@ -528,6 +532,8 @@ internal class ResponseInProgressEventTest {
                                         )
                                         .build()
                                 )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(

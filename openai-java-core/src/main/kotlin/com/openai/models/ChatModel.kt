@@ -42,7 +42,11 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val GPT_5_4_MINI = of("gpt-5.4-mini")
 
-        @JvmField val GPT_5_4_NANO = of("gpt-5.4-nano")
+        @Deprecated(
+            "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
+        @JvmField
+        val GPT_5_4_NANO = of("gpt-5.4-nano")
 
         @JvmField val GPT_5_4_MINI_2026_03_17 = of("gpt-5.4-mini-2026-03-17")
 
@@ -68,7 +72,11 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val GPT_5_2_PRO_2025_12_11 = of("gpt-5.2-pro-2025-12-11")
 
-        @JvmField val GPT_5_1 = of("gpt-5.1")
+        @Deprecated(
+            "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
+        @JvmField
+        val GPT_5_1 = of("gpt-5.1")
 
         @JvmField val GPT_5_1_2025_11_13 = of("gpt-5.1-2025-11-13")
 
@@ -140,9 +148,17 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         @JvmField
         val GPT_4_1_NANO = of("gpt-4.1-nano")
 
-        @JvmField val GPT_4_1_2025_04_14 = of("gpt-4.1-2025-04-14")
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
+        @JvmField
+        val GPT_4_1_2025_04_14 = of("gpt-4.1-2025-04-14")
 
-        @JvmField val GPT_4_1_MINI_2025_04_14 = of("gpt-4.1-mini-2025-04-14")
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
+        @JvmField
+        val GPT_4_1_MINI_2025_04_14 = of("gpt-4.1-mini-2025-04-14")
 
         @Deprecated(
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -224,9 +240,17 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val GPT_4O = of("gpt-4o")
 
-        @JvmField val GPT_4O_2024_11_20 = of("gpt-4o-2024-11-20")
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
+        @JvmField
+        val GPT_4O_2024_11_20 = of("gpt-4o-2024-11-20")
 
-        @JvmField val GPT_4O_2024_08_06 = of("gpt-4o-2024-08-06")
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
+        @JvmField
+        val GPT_4O_2024_08_06 = of("gpt-4o-2024-08-06")
 
         @Deprecated(
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -320,7 +344,11 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val GPT_4O_MINI = of("gpt-4o-mini")
 
-        @JvmField val GPT_4O_MINI_2024_07_18 = of("gpt-4o-mini-2024-07-18")
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
+        @JvmField
+        val GPT_4O_MINI_2024_07_18 = of("gpt-4o-mini-2024-07-18")
 
         @Deprecated(
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -452,6 +480,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_5_5_2026_04_23,
         GPT_5_4,
         GPT_5_4_MINI,
+        @Deprecated(
+            "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_5_4_NANO,
         GPT_5_4_MINI_2026_03_17,
         GPT_5_4_NANO_2026_03_17,
@@ -467,6 +498,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_5_2_CHAT_LATEST,
         GPT_5_2_PRO,
         GPT_5_2_PRO_2025_12_11,
+        @Deprecated(
+            "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_5_1,
         GPT_5_1_2025_11_13,
         @Deprecated(
@@ -512,7 +546,13 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
         )
         GPT_4_1_NANO,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4_1_2025_04_14,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4_1_MINI_2025_04_14,
         @Deprecated(
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -567,7 +607,13 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         )
         O1_MINI_2024_09_12,
         GPT_4O,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4O_2024_11_20,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4O_2024_08_06,
         @Deprecated(
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -630,6 +676,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         )
         CODEX_MINI_LATEST,
         GPT_4O_MINI,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4O_MINI_2024_07_18,
         @Deprecated(
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -730,6 +779,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_5_5_2026_04_23,
         GPT_5_4,
         GPT_5_4_MINI,
+        @Deprecated(
+            "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_5_4_NANO,
         GPT_5_4_MINI_2026_03_17,
         GPT_5_4_NANO_2026_03_17,
@@ -745,6 +797,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_5_2_CHAT_LATEST,
         GPT_5_2_PRO,
         GPT_5_2_PRO_2025_12_11,
+        @Deprecated(
+            "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_5_1,
         GPT_5_1_2025_11_13,
         @Deprecated(
@@ -790,7 +845,13 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
         )
         GPT_4_1_NANO,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4_1_2025_04_14,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4_1_MINI_2025_04_14,
         @Deprecated(
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -845,7 +906,13 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         )
         O1_MINI_2024_09_12,
         GPT_4O,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4O_2024_11_20,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4O_2024_08_06,
         @Deprecated(
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -908,6 +975,9 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         )
         CODEX_MINI_LATEST,
         GPT_4O_MINI,
+        @Deprecated(
+            "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+        )
         GPT_4O_MINI_2024_07_18,
         @Deprecated(
             "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."

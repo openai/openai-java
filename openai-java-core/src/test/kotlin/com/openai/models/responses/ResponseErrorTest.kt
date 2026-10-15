@@ -28,6 +28,8 @@ internal class ResponseErrorTest {
                         )
                         .build()
                 )
+                .param("param")
+                .type("type")
                 .build()
 
         assertThat(responseError.code()).isEqualTo(ResponseError.Code.SERVER_ERROR)
@@ -43,6 +45,8 @@ internal class ResponseErrorTest {
                     .steer(ResponseError.Misalignment.Steer.builder().message("message").build())
                     .build()
             )
+        assertThat(responseError.param()).contains("param")
+        assertThat(responseError.type()).contains("type")
     }
 
     @Test
@@ -65,6 +69,8 @@ internal class ResponseErrorTest {
                         )
                         .build()
                 )
+                .param("param")
+                .type("type")
                 .build()
 
         val roundtrippedResponseError =

@@ -11,6 +11,8 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.legacyAdditionalProperties
+import com.openai.core.serializableAdditionalProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -302,20 +304,13 @@ private constructor(
         }
 
         // Retain the legacy message lookup until _additionalProperties is removed.
-        fun _additionalProperties(): Map<String, JsonValue> {
-            val properties = additionalProperties.toMutableMap()
-            if (!message.isMissing()) {
-                properties["message"] =
-                    message.asUnknown().orElseGet { JsonValue.from(message.asKnown().get()) }
-            }
-            return Collections.unmodifiableMap(properties)
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            legacyAdditionalProperties(additionalProperties, mapOf("message" to message))
 
         @JsonAnyGetter
         @ExcludeMissing
         private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
-            if (message.isMissing()) additionalProperties
-            else additionalProperties.filterKeys { it != "message" }
+            serializableAdditionalProperties(additionalProperties, mapOf("message" to message))
 
         fun toBuilder() = Builder().from(this)
 
