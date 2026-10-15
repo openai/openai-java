@@ -161,7 +161,11 @@ jobs:
 
       - name: Verify local publication
         run: |
-          ./scripts/gradle -PpublishLocal --no-configuration-cache \
+          # Release the compiler heap before Dokka analyzes the full SDK again.
+          # The core and umbrella docs both cover the whole model tree.
+          ./scripts/gradle --stop
+          ./scripts/gradle -PpublishLocal --no-configuration-cache --no-daemon \
+            --no-parallel --max-workers=1 \
             :openai-java:publishAllPublicationsToLocalFileSystemRepository \
             :openai-java-core:publishAllPublicationsToLocalFileSystemRepository \
             :openai-java-client-okhttp:publishAllPublicationsToLocalFileSystemRepository \
