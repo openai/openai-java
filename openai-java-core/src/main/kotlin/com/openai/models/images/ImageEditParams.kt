@@ -172,6 +172,18 @@ private constructor(
     @Deprecated("deprecated") fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
     /**
+     * A stable identifier for an end user in your organization, used for safety monitoring and
+     * abuse detection. Hash a username or email address to avoid sending identifying information. A
+     * non-empty value takes precedence over the deprecated `user` parameter. If omitted, null, or
+     * empty, the API uses `user` when available.
+     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun safetyIdentifier(): Optional<String> = body.safetyIdentifier()
+
+    /**
      * The size of the generated images. Defaults to `auto`. For `gpt-image-2`,
      * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
      * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are
@@ -188,14 +200,14 @@ private constructor(
     fun size(): Optional<Size> = body.size()
 
     /**
-     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
-     * abuse.
+     * Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward
+     * compatibility and is used when `safety_identifier` is omitted, null, or empty.
      * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun user(): Optional<String> = body.user()
+    @Deprecated("deprecated") fun user(): Optional<String> = body.user()
 
     /**
      * Returns the raw multipart value of [image].
@@ -288,6 +300,14 @@ private constructor(
     fun _responseFormat(): MultipartField<ResponseFormat> = body._responseFormat()
 
     /**
+     * Returns the raw multipart value of [safetyIdentifier].
+     *
+     * Unlike [safetyIdentifier], this method doesn't throw if the multipart field has an unexpected
+     * type.
+     */
+    fun _safetyIdentifier(): MultipartField<String> = body._safetyIdentifier()
+
+    /**
      * Returns the raw multipart value of [size].
      *
      * Unlike [size], this method doesn't throw if the multipart field has an unexpected type.
@@ -299,7 +319,7 @@ private constructor(
      *
      * Unlike [user], this method doesn't throw if the multipart field has an unexpected type.
      */
-    fun _user(): MultipartField<String> = body._user()
+    @Deprecated("deprecated") fun _user(): MultipartField<String> = body._user()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -680,6 +700,32 @@ private constructor(
         }
 
         /**
+         * A stable identifier for an end user in your organization, used for safety monitoring and
+         * abuse detection. Hash a username or email address to avoid sending identifying
+         * information. A non-empty value takes precedence over the deprecated `user` parameter. If
+         * omitted, null, or empty, the API uses `user` when available.
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+         */
+        fun safetyIdentifier(safetyIdentifier: String?) = apply {
+            body.safetyIdentifier(safetyIdentifier)
+        }
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
+
+        /**
+         * Sets [Builder.safetyIdentifier] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun safetyIdentifier(safetyIdentifier: MultipartField<String>) = apply {
+            body.safetyIdentifier(safetyIdentifier)
+        }
+
+        /**
          * The size of the generated images. Defaults to `auto`. For `gpt-image-2`,
          * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
          * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are
@@ -712,11 +758,11 @@ private constructor(
         fun size(value: String) = apply { body.size(value) }
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
+         * Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward
+         * compatibility and is used when `safety_identifier` is omitted, null, or empty.
          * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          */
-        fun user(user: String) = apply { body.user(user) }
+        @Deprecated("deprecated") fun user(user: String) = apply { body.user(user) }
 
         /**
          * Sets [Builder.user] to an arbitrary multipart value.
@@ -724,7 +770,7 @@ private constructor(
          * You should usually call [Builder.user] with a well-typed [String] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun user(user: MultipartField<String>) = apply { body.user(user) }
+        @Deprecated("deprecated") fun user(user: MultipartField<String>) = apply { body.user(user) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -874,6 +920,7 @@ private constructor(
                 "partial_images" to _partialImages(),
                 "quality" to _quality(),
                 "response_format" to _responseFormat(),
+                "safety_identifier" to _safetyIdentifier(),
                 "size" to _size(),
                 "user" to _user(),
             ) + _additionalBodyProperties().mapValues { (_, value) -> MultipartField.of(value) })
@@ -897,6 +944,7 @@ private constructor(
         private val partialImages: MultipartField<Long>,
         private val quality: MultipartField<Quality>,
         private val responseFormat: MultipartField<ResponseFormat>,
+        private val safetyIdentifier: MultipartField<String>,
         private val size: MultipartField<Size>,
         private val user: MultipartField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1039,6 +1087,19 @@ private constructor(
             responseFormat.value.getOptional("response_format")
 
         /**
+         * A stable identifier for an end user in your organization, used for safety monitoring and
+         * abuse detection. Hash a username or email address to avoid sending identifying
+         * information. A non-empty value takes precedence over the deprecated `user` parameter. If
+         * omitted, null, or empty, the API uses `user` when available.
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun safetyIdentifier(): Optional<String> =
+            safetyIdentifier.value.getOptional("safety_identifier")
+
+        /**
          * The size of the generated images. Defaults to `auto`. For `gpt-image-2`,
          * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
          * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are
@@ -1055,14 +1116,14 @@ private constructor(
         fun size(): Optional<Size> = size.value.getOptional("size")
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
+         * Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward
+         * compatibility and is used when `safety_identifier` is omitted, null, or empty.
          * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun user(): Optional<String> = user.value.getOptional("user")
+        @Deprecated("deprecated") fun user(): Optional<String> = user.value.getOptional("user")
 
         /**
          * Returns the raw multipart value of [image].
@@ -1169,6 +1230,16 @@ private constructor(
         fun _responseFormat(): MultipartField<ResponseFormat> = responseFormat
 
         /**
+         * Returns the raw multipart value of [safetyIdentifier].
+         *
+         * Unlike [safetyIdentifier], this method doesn't throw if the multipart field has an
+         * unexpected type.
+         */
+        @JsonProperty("safety_identifier")
+        @ExcludeMissing
+        fun _safetyIdentifier(): MultipartField<String> = safetyIdentifier
+
+        /**
          * Returns the raw multipart value of [size].
          *
          * Unlike [size], this method doesn't throw if the multipart field has an unexpected type.
@@ -1180,7 +1251,10 @@ private constructor(
          *
          * Unlike [user], this method doesn't throw if the multipart field has an unexpected type.
          */
-        @JsonProperty("user") @ExcludeMissing fun _user(): MultipartField<String> = user
+        @Deprecated("deprecated")
+        @JsonProperty("user")
+        @ExcludeMissing
+        fun _user(): MultipartField<String> = user
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1223,6 +1297,7 @@ private constructor(
             private var partialImages: MultipartField<Long> = MultipartField.of(null)
             private var quality: MultipartField<Quality> = MultipartField.of(null)
             private var responseFormat: MultipartField<ResponseFormat> = MultipartField.of(null)
+            private var safetyIdentifier: MultipartField<String> = MultipartField.of(null)
             private var size: MultipartField<Size> = MultipartField.of(null)
             private var user: MultipartField<String> = MultipartField.of(null)
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1241,6 +1316,7 @@ private constructor(
                 partialImages = body.partialImages
                 quality = body.quality
                 responseFormat = body.responseFormat
+                safetyIdentifier = body.safetyIdentifier
                 size = body.size
                 user = body.user
                 additionalProperties = body.additionalProperties.toMutableMap()
@@ -1599,6 +1675,33 @@ private constructor(
             }
 
             /**
+             * A stable identifier for an end user in your organization, used for safety monitoring
+             * and abuse detection. Hash a username or email address to avoid sending identifying
+             * information. A non-empty value takes precedence over the deprecated `user` parameter.
+             * If omitted, null, or empty, the API uses `user` when available.
+             * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+             */
+            fun safetyIdentifier(safetyIdentifier: String?) =
+                safetyIdentifier(MultipartField.of(safetyIdentifier))
+
+            /**
+             * Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`.
+             */
+            fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+                safetyIdentifier(safetyIdentifier.getOrNull())
+
+            /**
+             * Sets [Builder.safetyIdentifier] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun safetyIdentifier(safetyIdentifier: MultipartField<String>) = apply {
+                this.safetyIdentifier = safetyIdentifier
+            }
+
+            /**
              * The size of the generated images. Defaults to `auto`. For `gpt-image-2`,
              * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
@@ -1634,11 +1737,12 @@ private constructor(
             fun size(value: String) = size(Size.of(value))
 
             /**
-             * A unique identifier representing your end-user, which can help OpenAI to monitor and
-             * detect abuse.
+             * Deprecated: use `safety_identifier` instead. This parameter remains accepted for
+             * backward compatibility and is used when `safety_identifier` is omitted, null, or
+             * empty.
              * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
              */
-            fun user(user: String) = user(MultipartField.of(user))
+            @Deprecated("deprecated") fun user(user: String) = user(MultipartField.of(user))
 
             /**
              * Sets [Builder.user] to an arbitrary multipart value.
@@ -1647,6 +1751,7 @@ private constructor(
              * method is primarily for setting the field to an undocumented or not yet supported
              * value.
              */
+            @Deprecated("deprecated")
             fun user(user: MultipartField<String>) = apply { this.user = user }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1695,6 +1800,7 @@ private constructor(
                     partialImages,
                     quality,
                     responseFormat,
+                    safetyIdentifier,
                     size,
                     user,
                     additionalProperties.toMutableMap(),
@@ -1729,6 +1835,7 @@ private constructor(
             partialImages()
             quality().ifPresent { it.validate() }
             responseFormat().ifPresent { it.validate() }
+            safetyIdentifier()
             size()
             user()
             validated = true
@@ -1760,6 +1867,7 @@ private constructor(
                 partialImages == other.partialImages &&
                 quality == other.quality &&
                 responseFormat == other.responseFormat &&
+                safetyIdentifier == other.safetyIdentifier &&
                 size == other.size &&
                 user == other.user &&
                 additionalProperties == other.additionalProperties
@@ -1779,6 +1887,7 @@ private constructor(
                 partialImages,
                 quality,
                 responseFormat,
+                safetyIdentifier,
                 size,
                 user,
                 additionalProperties,
@@ -1788,7 +1897,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{image=$image, prompt=$prompt, background=$background, inputFidelity=$inputFidelity, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, size=$size, user=$user, additionalProperties=$additionalProperties}"
+            "Body{image=$image, prompt=$prompt, background=$background, inputFidelity=$inputFidelity, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, size=$size, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**

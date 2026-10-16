@@ -15,6 +15,7 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when image generation has completed and the final image is available. */
@@ -29,6 +30,7 @@ private constructor(
     private val size: JsonField<Size>,
     private val type: JsonValue,
     private val usage: JsonField<Usage>,
+    private val safetyIdentifier: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -46,6 +48,9 @@ private constructor(
         @JsonProperty("size") @ExcludeMissing size: JsonField<Size> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("usage") @ExcludeMissing usage: JsonField<Usage> = JsonMissing.of(),
+        @JsonProperty("safety_identifier")
+        @ExcludeMissing
+        safetyIdentifier: JsonField<String> = JsonMissing.of(),
     ) : this(
         b64Json,
         background,
@@ -55,6 +60,7 @@ private constructor(
         size,
         type,
         usage,
+        safetyIdentifier,
         mutableMapOf(),
     )
 
@@ -128,6 +134,16 @@ private constructor(
     fun usage(): Usage = usage.getRequired("usage")
 
     /**
+     * The effective safety identifier used for safety monitoring and abuse detection. This is the
+     * non-empty `safety_identifier` from the request, or the deprecated `user` value when
+     * `safety_identifier` is omitted, null, or empty.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun safetyIdentifier(): Optional<String> = safetyIdentifier.getOptional("safety_identifier")
+
+    /**
      * Returns the raw JSON value of [b64Json].
      *
      * Unlike [b64Json], this method doesn't throw if the JSON field has an unexpected type.
@@ -180,6 +196,16 @@ private constructor(
      */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<Usage> = usage
 
+    /**
+     * Returns the raw JSON value of [safetyIdentifier].
+     *
+     * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("safety_identifier")
+    @ExcludeMissing
+    fun _safetyIdentifier(): JsonField<String> = safetyIdentifier
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -222,6 +248,7 @@ private constructor(
         private var size: JsonField<Size>? = null
         private var type: JsonValue = JsonValue.from("image_generation.completed")
         private var usage: JsonField<Usage>? = null
+        private var safetyIdentifier: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -234,6 +261,7 @@ private constructor(
             size = imageGenCompletedEvent.size
             type = imageGenCompletedEvent.type
             usage = imageGenCompletedEvent.usage
+            safetyIdentifier = imageGenCompletedEvent.safetyIdentifier
             additionalProperties = imageGenCompletedEvent.additionalProperties.toMutableMap()
         }
 
@@ -340,6 +368,29 @@ private constructor(
          */
         fun usage(usage: JsonField<Usage>) = apply { this.usage = usage }
 
+        /**
+         * The effective safety identifier used for safety monitoring and abuse detection. This is
+         * the non-empty `safety_identifier` from the request, or the deprecated `user` value when
+         * `safety_identifier` is omitted, null, or empty.
+         */
+        fun safetyIdentifier(safetyIdentifier: String?) =
+            safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
+
+        /**
+         * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+            this.safetyIdentifier = safetyIdentifier
+        }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -387,6 +438,7 @@ private constructor(
                 checkRequired("size", size),
                 type,
                 checkRequired("usage", usage),
+                safetyIdentifier,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -418,6 +470,7 @@ private constructor(
             }
         }
         usage().validate()
+        safetyIdentifier()
         validated = true
     }
 
@@ -443,7 +496,8 @@ private constructor(
             (quality.asKnown().getOrNull()?.validity() ?: 0) +
             (if (size.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("image_generation.completed")) 1 else 0 } +
-            (usage.asKnown().getOrNull()?.validity() ?: 0)
+            (usage.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (safetyIdentifier.asKnown().isPresent) 1 else 0)
 
     /** The background setting for the generated image. */
     class Background @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -1594,6 +1648,7 @@ private constructor(
             size == other.size &&
             type == other.type &&
             usage == other.usage &&
+            safetyIdentifier == other.safetyIdentifier &&
             additionalProperties == other.additionalProperties
     }
 
@@ -1607,6 +1662,7 @@ private constructor(
             size,
             type,
             usage,
+            safetyIdentifier,
             additionalProperties,
         )
     }
@@ -1614,5 +1670,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ImageGenCompletedEvent{b64Json=$b64Json, background=$background, createdAt=$createdAt, outputFormat=$outputFormat, quality=$quality, size=$size, type=$type, usage=$usage, additionalProperties=$additionalProperties}"
+        "ImageGenCompletedEvent{b64Json=$b64Json, background=$background, createdAt=$createdAt, outputFormat=$outputFormat, quality=$quality, size=$size, type=$type, usage=$usage, safetyIdentifier=$safetyIdentifier, additionalProperties=$additionalProperties}"
 }
