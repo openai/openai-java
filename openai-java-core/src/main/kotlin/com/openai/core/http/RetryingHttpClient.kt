@@ -78,7 +78,8 @@ private constructor(
 
         // Don't send the current retry count in the headers if the caller set their own value.
         val shouldSendRetryCount =
-            !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
+            requestOptions.disableTelemetry != true &&
+                !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
 
         var retries = 0
 
@@ -125,7 +126,8 @@ private constructor(
 
         // Don't send the current retry count in the headers if the caller set their own value.
         val shouldSendRetryCount =
-            !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
+            requestOptions.disableTelemetry != true &&
+                !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
 
         var retries = 0
 

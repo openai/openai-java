@@ -36,6 +36,51 @@ internal class X509WorkloadIdentityIntegrationTest {
     private val jsonMapper = ObjectMapper()
 
     @Test
+    fun telemetryCanBeDisabledOnClonedX509ApiClients() {
+        for (async in listOf(false, true)) {
+            val identity = X509TestIdentity.create("telemetry identity")
+            X509TestPeer(AUTH_HOST, identity.root.certificate).use { authPeer ->
+                X509TestPeer(API_HOST, identity.root.certificate).use { apiPeer ->
+                    authPeer.enqueue(tokenResponse(ACCESS_TOKEN))
+                    apiPeer.enqueue(filesResponse())
+                    val configuration =
+                        configuration(
+                                identity,
+                                listOf(
+                                    authPeer.serverRootCertificate,
+                                    apiPeer.serverRootCertificate,
+                                ),
+                            )
+                            .withTestProxies(authPeer.proxy, apiPeer.proxy)
+                    val client =
+                        OpenAIOkHttpClient.builder().x509WorkloadIdentity(configuration).build()
+                    try {
+                        val disabled = client.withOptions { it.disableTelemetry(true) }
+                        if (async) disabled.async().files().list().get(5, TimeUnit.SECONDS)
+                        else disabled.files().list()
+                        assertThat(apiPeer.takeRequest().method).isEqualTo("CONNECT")
+                        val request = apiPeer.takeRequest()
+                        assertThat(
+                                request.headers.names().filter {
+                                    it.startsWith("X-Stainless-", ignoreCase = true)
+                                }
+                            )
+                            .isEmpty()
+                        assertThat(request.getHeader("User-Agent").orEmpty())
+                            .doesNotContain("OpenAIClient")
+                        assertThat(request.getHeader("Authorization"))
+                            .isEqualTo("Bearer $ACCESS_TOKEN")
+                        assertThat(request.handshake!!.peerCertificates.first())
+                            .isEqualTo(identity.leaf.certificate)
+                    } finally {
+                        client.close()
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     fun cancelledUploadDoesNotStartAfterCertificateTokenExchange() {
         val identity = X509TestIdentity.create("cancelled upload identity")
         val tokenStarted = CountDownLatch(1)

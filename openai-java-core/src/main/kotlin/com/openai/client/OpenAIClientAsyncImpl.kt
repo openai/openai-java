@@ -67,7 +67,7 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         else
             clientOptions
                 .toBuilder()
-                .putHeader("User-Agent", "${javaClass.simpleName}/Java ${getPackageVersion()}")
+                .defaultUserAgent("${javaClass.simpleName}/Java ${getPackageVersion()}")
                 .build()
 
     // Pass the original clientOptions so that this client sets its own User-Agent.
