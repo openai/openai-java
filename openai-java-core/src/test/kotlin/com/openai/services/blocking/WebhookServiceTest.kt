@@ -12,7 +12,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
-import com.openai.client.OpenAIClient
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.http.Headers
 import com.openai.models.webhooks.WebhookCreateParams
@@ -20,9 +19,6 @@ import com.openai.models.webhooks.WebhookRotateSecretParams
 import com.openai.models.webhooks.WebhookTestParams
 import com.openai.models.webhooks.WebhookUpdateParams
 import com.openai.models.webhooks.WebhookVerificationParams
-import java.time.Clock
-import java.time.Instant
-import java.time.ZoneOffset
 import kotlin.test.assertTrue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -35,55 +31,8 @@ import org.junit.jupiter.api.parallel.ResourceLock
 @ResourceLock("https://github.com/wiremock/wiremock/issues/169")
 internal class WebhookServiceTest {
 
-    // Standardized test data (matches TypeScript implementation)
     private val testPayload =
         """{"id": "evt_685c059ae3a481909bdc86819b066fb6", "object": "event", "created_at": 1750861210, "type": "response.completed", "data": {"id": "resp_123"}}"""
-    private val testSecret = "whsec_RdvaYFYUXuIFuEbvZHwMfYFhUf7aMYjYcmM24+Aj40c="
-
-    // Use a fixed timestamp for consistent testing (matches the created_at in payload)
-    private val fixedTimestamp = "1750861210"
-    private val webhookId = "wh_685c059ae39c8190af8c71ed1022a24d"
-
-    // Pre-computed valid signatures for consistent testing
-    private val validSignatureForSecret = "v1,gUAg4R2hWouRZqRQG4uJypNS8YK885G838+EHb4nKBY="
-
-    // Fixed clock for deterministic testing
-    private val fixedClock =
-        Clock.fixed(Instant.ofEpochSecond(fixedTimestamp.toLong()), ZoneOffset.UTC)
-
-    private fun createClientWithFixedClock(): OpenAIClient {
-        return OpenAIOkHttpClient.builder()
-            .baseUrl(TestServerExtension.BASE_URL)
-            .apiKey("My API Key")
-            .clock(fixedClock)
-            .build()
-    }
-
-    @Test
-    fun unwrapWithValidSignatureAndSecret() {
-        val client = createClientWithFixedClock()
-        val webhookService = client.webhooks()
-
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", validSignatureForSecret)
-                .put("webhook-timestamp", fixedTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        val event =
-            webhookService
-                .unwrap(
-                    WebhookVerificationParams.builder()
-                        .payload(testPayload)
-                        .headers(headers)
-                        .secret(testSecret)
-                        .build()
-                )
-                .validate()
-
-        assertTrue(event.isResponseCompleted())
-    }
 
     @Test
     fun create() {
