@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.openai.azure.AzureUrlCategory
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
-import com.openai.core.SecurityOptions
 import com.openai.core.prepare
 import com.openai.models.responses.Response
 import com.openai.models.responses.ResponsesClientEvent
@@ -142,12 +141,14 @@ private constructor(
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
                     .baseUrl(clientOptions.baseUrl())
-                    .addPathSegment("responses")
+                    .pathSegments(
+                        com.openai.models.responses.ResponseWebSocketBinding.create().pathSegments
+                    )
                     .build()
                     .prepare(
                         clientOptions,
                         options,
-                        SecurityOptions.builder().bearerAuth(true).build(),
+                        com.openai.models.responses.ResponseWebSocketBinding.create().security,
                     )
             val opening =
                 clientOptions.connectWebSocket(

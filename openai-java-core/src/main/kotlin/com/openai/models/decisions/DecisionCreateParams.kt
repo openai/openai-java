@@ -610,9 +610,8 @@ private constructor(
              */
             fun addQuestion(question: Question) = apply {
                 questions =
-                    (questions ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("questions", it).add(question)
-                    }
+                    (questions?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("questions", it).add(question) }
             }
 
             /** Alias for calling [addQuestion] with `Question.ofPredicate(predicate)`. */

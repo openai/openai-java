@@ -72,7 +72,7 @@ private constructor(
                     clientOptions,
                     options,
                     requestOptions,
-                    listOf("live", "sessions", storedSessionId, "fork"),
+                    com.openai.models.live.forks.ForkWebSocketBinding.create(storedSessionId),
                     ForkServerEvent::class.java,
                     { it.validate() },
                     embedEncodedPath = true,

@@ -122,6 +122,8 @@ object CoreCompilationShards {
             "com/openai/core/http/ResponseWebSocketOptions.kt",
             "com/openai/core/http/ResponseWebSocketException.kt",
             "com/openai/core/http/WebSocketClient.kt",
+            "com/openai/core/http/WebSocketConnection.kt",
+            "com/openai/core/http/WebSocketConnections.kt",
             "com/openai/core/http/AuthenticatingHttpClient.kt",
             "com/openai/core/http/HttpClient.kt",
             "com/openai/core/http/LoggingHttpClient.kt",

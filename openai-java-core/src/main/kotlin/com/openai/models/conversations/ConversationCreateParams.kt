@@ -705,7 +705,7 @@ private constructor(
              */
             fun addItem(item: ResponseInputItem) = apply {
                 items =
-                    (items ?: JsonField.of(mutableListOf())).also {
+                    (items?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("items", it).add(item)
                     }
             }

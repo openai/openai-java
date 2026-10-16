@@ -881,9 +881,8 @@ private constructor(
              */
             fun addVaultId(vaultId: String) = apply {
                 vaultIds =
-                    (vaultIds ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("vaultIds", it).add(vaultId)
-                    }
+                    (vaultIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("vaultIds", it).add(vaultId) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

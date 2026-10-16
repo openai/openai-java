@@ -1658,9 +1658,9 @@ private constructor(
              */
             fun addAdditionalMessage(additionalMessage: AdditionalMessage) = apply {
                 additionalMessages =
-                    (additionalMessages ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("additionalMessages", it).add(additionalMessage)
-                    }
+                    (additionalMessages?.takeUnless { it.isMissing() }
+                            ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("additionalMessages", it).add(additionalMessage) }
             }
 
             /**
@@ -2014,7 +2014,7 @@ private constructor(
              */
             fun addTool(tool: AssistantTool) = apply {
                 tools =
-                    (tools ?: JsonField.of(mutableListOf())).also {
+                    (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("tools", it).add(tool)
                     }
             }

@@ -437,9 +437,8 @@ private constructor(
              */
             fun addEventType(eventType: EventType) = apply {
                 eventTypes =
-                    (eventTypes ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("eventTypes", it).add(eventType)
-                    }
+                    (eventTypes?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("eventTypes", it).add(eventType) }
             }
 
             /** A new human-readable name for the webhook endpoint. */

@@ -345,9 +345,8 @@ private constructor(
              */
             fun addCertificateId(certificateId: String) = apply {
                 certificateIds =
-                    (certificateIds ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("certificateIds", it).add(certificateId)
-                    }
+                    (certificateIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("certificateIds", it).add(certificateId) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

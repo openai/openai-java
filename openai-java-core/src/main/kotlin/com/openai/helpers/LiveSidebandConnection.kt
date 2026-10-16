@@ -76,7 +76,7 @@ private constructor(
                     clientOptions,
                     options,
                     requestOptions,
-                    listOf("live", "sessions", sessionId, "attach"),
+                    com.openai.models.live.sideband.SidebandWebSocketBinding.create(sessionId),
                     ServerEvent::class.java,
                     { it.validate() },
                     embedEncodedPath = true,
