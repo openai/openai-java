@@ -1287,7 +1287,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/audio/speech/SpeechCreateParams.kt": {
       "mode": "100644",
-      "sha256": "bd8609a2d3f6e91a627d398210c5c57c8a582fd3e9bb1bd6ab9b7d7d92fe85ff"
+      "sha256": "8e67c827b8180393b053ffcc46126d1120b9990790ed2de94232340033bcd837"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/audio/speech/SpeechModel.kt": {
       "mode": "100644",
@@ -1367,11 +1367,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/audio/voices/Voice.kt": {
       "mode": "100644",
-      "sha256": "8b1c88c7f353b2c67fb32a2386ad51a46bf1e63eb7eb0f2d32b353d52950781f"
+      "sha256": "41cb3a724d4cfcaceceface7091facd0e11ce2236e8f8ea0093ad5c47d604d61"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/audio/voices/VoiceCreateParams.kt": {
       "mode": "100644",
-      "sha256": "e19413093d6f4c210c7a65d1fd9578d50e2894eb98a2c543f2af34b581234e83"
+      "sha256": "4b17093d52bb7adc26a80b7b1fe930ea955bd64206ea87beae8e25ca85cd1434"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/batches/Batch.kt": {
       "mode": "100644",
@@ -3547,7 +3547,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/chat/completions/ChatCompletionAudioParam.kt": {
       "mode": "100644",
-      "sha256": "388dba2d9bb0aca2e46c1c9e880489d64b85c81b35c2a4793fa4d2fd204c9c60"
+      "sha256": "f6e3f4700ab085e0b09868d719fac2436de4b5a9d1a1d03006dbbf87c076cc17"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/chat/completions/ChatCompletionChunk.kt": {
       "mode": "100644",
@@ -4879,7 +4879,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/realtime/RealtimeAudioConfigOutput.kt": {
       "mode": "100644",
-      "sha256": "dc82b1ca29ec2f620ed7cd42422b3e5ba32a5efec497afce21621c46a5f33917"
+      "sha256": "325307a22ab80913514b1f8c9b81880aa2817d6d0d74c4d94acdbd1c9549f927"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/realtime/RealtimeAudioFormats.kt": {
       "mode": "100644",
@@ -4967,7 +4967,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/realtime/RealtimeResponseCreateAudioOutput.kt": {
       "mode": "100644",
-      "sha256": "397b34659cb351b3d0be1b15b9f8384ed0b26865dfff316f901f3080913985b6"
+      "sha256": "9ac96c2bebfb36b034e341f8fb38a75986e90a4dbb7e983ddc94217308c472cf"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/realtime/RealtimeResponseCreateMcpTool.kt": {
       "mode": "100644",
@@ -7035,7 +7035,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/audio/VoiceServiceAsync.kt": {
       "mode": "100644",
-      "sha256": "d2db9a7f02ff5c964d2beb865017ded9e791e4fa59fc850d48c6af29e7158cee"
+      "sha256": "28d631358a4ba39fcf1e7fb4176c86ff53c919b9df93d46819a6ccfa4b783bf0"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/audio/VoiceServiceAsyncImpl.kt": {
       "mode": "100644",
@@ -8027,7 +8027,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/audio/VoiceService.kt": {
       "mode": "100644",
-      "sha256": "66a501996bcac15fdd0b5bc35f6b24118b6ee24706138273c457a7ddb2fd7fef"
+      "sha256": "a2cb878dbc0dd6dc83b0ea4ec9c2118394da3a5aa19295d3fb479781a1ed11dd"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/audio/VoiceServiceImpl.kt": {
       "mode": "100644",
@@ -9611,7 +9611,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/audio/voices/VoiceTest.kt": {
       "mode": "100644",
-      "sha256": "7efc6b16a23debc288be9c8e0467c6259cc01c767433e627ea8f97dd2d20ef9e"
+      "sha256": "73808ec8459037d7b6848af06d8fe8671462693b045e50e9b986bbeac7575509"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/batches/BatchCancelParamsTest.kt": {
       "mode": "100644",

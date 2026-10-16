@@ -17,12 +17,14 @@ internal class VoiceTest {
                 .createdAt(0L)
                 .name("name")
                 .type(Voice.Type.AUDIO_SAMPLE)
+                .prompt("prompt")
                 .build()
 
         assertThat(voice.id()).isEqualTo("id")
         assertThat(voice.createdAt()).isEqualTo(0L)
         assertThat(voice.name()).isEqualTo("name")
         assertThat(voice.type()).isEqualTo(Voice.Type.AUDIO_SAMPLE)
+        assertThat(voice.prompt()).contains("prompt")
     }
 
     @Test
@@ -34,6 +36,7 @@ internal class VoiceTest {
                 .createdAt(0L)
                 .name("name")
                 .type(Voice.Type.AUDIO_SAMPLE)
+                .prompt("prompt")
                 .build()
 
         val roundtrippedVoice =
