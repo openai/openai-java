@@ -103,10 +103,15 @@ internal class CompletionServiceAsyncTest {
                     .build()
             )
 
+        val received = java.util.concurrent.atomic.AtomicInteger()
         val onCompleteFuture =
             completionStreamResponse
-                .subscribe { completion -> completion.validate() }
+                .subscribe { event ->
+                    event.validate()
+                    received.incrementAndGet()
+                }
                 .onCompleteFuture()
         onCompleteFuture.get()
+        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 }

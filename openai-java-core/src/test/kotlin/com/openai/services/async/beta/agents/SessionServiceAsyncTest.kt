@@ -167,15 +167,18 @@ internal class SessionServiceAsyncTest {
                     .build()
             )
 
+        val received = java.util.concurrent.atomic.AtomicInteger()
         val onCompleteFuture =
             agentSessionStreamResponse
                 .subscribe { agentSession ->
                     agentSession.validate()
+                    received.incrementAndGet()
                     deltas.add(agentSession.asTurnOutputTextDelta().delta())
                 }
                 .onCompleteFuture()
         onCompleteFuture.get()
         assertThat(deltas).containsExactly("hello")
+        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 
     @Test

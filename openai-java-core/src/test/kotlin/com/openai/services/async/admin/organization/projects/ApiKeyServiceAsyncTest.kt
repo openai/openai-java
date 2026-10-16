@@ -65,6 +65,7 @@ internal class ApiKeyServiceAsyncTest {
                     .projectId("project_id")
                     .apiKeyId("api_key_id")
                     .expiresInSeconds(1L)
+                    .addScope("api.all.read")
                     .build()
             )
 
