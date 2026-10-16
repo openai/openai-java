@@ -467,9 +467,8 @@ private constructor(
              */
             fun addPermission(permission: String) = apply {
                 permissions =
-                    (permissions ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("permissions", it).add(permission)
-                    }
+                    (permissions?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("permissions", it).add(permission) }
             }
 
             /** Unique name for the role. */

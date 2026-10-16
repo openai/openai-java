@@ -75,10 +75,13 @@ internal class TranscriptionServiceTest {
                     .build()
             )
 
+        var received = 0
         transcriptionStreamResponse.use {
-            transcriptionStreamResponse.stream().forEach { transcription ->
-                transcription.validate()
+            transcriptionStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
             }
         }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 }

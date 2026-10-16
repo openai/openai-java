@@ -28,7 +28,9 @@ internal class ServerEventTest {
                             SessionResource.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                 .output(
-                                    SessionResource.Audio.Output.builder().voice("marin").build()
+                                    SessionResource.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -98,7 +100,7 @@ internal class ServerEventTest {
                                     .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                     .output(
                                         SessionResource.Audio.Output.builder()
-                                            .voice("marin")
+                                            .voice(BuiltInVoice.MARIN)
                                             .build()
                                     )
                                     .build()
@@ -148,7 +150,9 @@ internal class ServerEventTest {
                             SessionResource.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                 .output(
-                                    SessionResource.Audio.Output.builder().voice("marin").build()
+                                    SessionResource.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -245,7 +249,7 @@ internal class ServerEventTest {
                                     .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                     .output(
                                         SessionResource.Audio.Output.builder()
-                                            .voice("marin")
+                                            .voice(BuiltInVoice.MARIN)
                                             .build()
                                     )
                                     .build()
@@ -1189,7 +1193,9 @@ internal class ServerEventTest {
                             SessionResource.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                 .output(
-                                    SessionResource.Audio.Output.builder().voice("marin").build()
+                                    SessionResource.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -1261,7 +1267,7 @@ internal class ServerEventTest {
                                     .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                     .output(
                                         SessionResource.Audio.Output.builder()
-                                            .voice("marin")
+                                            .voice(BuiltInVoice.MARIN)
                                             .build()
                                     )
                                     .build()

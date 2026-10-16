@@ -60,10 +60,13 @@ internal class EventServiceTest {
 
         val agentSessionEventStreamResponse = eventService.streamStreaming("session_id")
 
+        var received = 0
         agentSessionEventStreamResponse.use {
-            agentSessionEventStreamResponse.stream().forEach { agentSessionEvent ->
-                agentSessionEvent.validate()
+            agentSessionEventStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
             }
         }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 }

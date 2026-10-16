@@ -161,11 +161,16 @@ internal class SessionServiceAsyncTest {
                     .build()
             )
 
+        val received = java.util.concurrent.atomic.AtomicInteger()
         val onCompleteFuture =
             agentSessionStreamResponse
-                .subscribe { agentSession -> agentSession.validate() }
+                .subscribe { event ->
+                    event.validate()
+                    received.incrementAndGet()
+                }
                 .onCompleteFuture()
         onCompleteFuture.get()
+        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 
     @Test

@@ -100,8 +100,13 @@ internal class CompletionServiceTest {
                     .build()
             )
 
+        var received = 0
         completionStreamResponse.use {
-            completionStreamResponse.stream().forEach { completion -> completion.validate() }
+            completionStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
+            }
         }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 }

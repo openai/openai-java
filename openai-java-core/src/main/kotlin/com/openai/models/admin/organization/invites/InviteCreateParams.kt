@@ -481,9 +481,8 @@ private constructor(
              */
             fun addProject(project: Project) = apply {
                 projects =
-                    (projects ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("projects", it).add(project)
-                    }
+                    (projects?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("projects", it).add(project) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

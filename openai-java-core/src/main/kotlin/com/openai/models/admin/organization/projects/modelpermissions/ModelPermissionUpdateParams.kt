@@ -421,9 +421,8 @@ private constructor(
              */
             fun addModelId(modelId: String) = apply {
                 modelIds =
-                    (modelIds ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("modelIds", it).add(modelId)
-                    }
+                    (modelIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("modelIds", it).add(modelId) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

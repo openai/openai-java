@@ -1793,7 +1793,7 @@ private constructor(
              */
             fun addTool(tool: AssistantTool) = apply {
                 tools =
-                    (tools ?: JsonField.of(mutableListOf())).also {
+                    (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("tools", it).add(tool)
                     }
             }

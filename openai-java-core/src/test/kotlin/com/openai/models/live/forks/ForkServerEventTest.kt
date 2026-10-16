@@ -7,6 +7,7 @@ import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.live.AudioFormat
+import com.openai.models.live.BuiltInVoice
 import com.openai.models.live.ClientConfig
 import com.openai.models.live.ClientDelegation
 import com.openai.models.live.CommentaryAppendedEvent
@@ -54,7 +55,9 @@ internal class ForkServerEventTest {
                             SessionResource.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                 .output(
-                                    SessionResource.Audio.Output.builder().voice("marin").build()
+                                    SessionResource.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -124,7 +127,7 @@ internal class ForkServerEventTest {
                                     .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                     .output(
                                         SessionResource.Audio.Output.builder()
-                                            .voice("marin")
+                                            .voice(BuiltInVoice.MARIN)
                                             .build()
                                     )
                                     .build()
@@ -174,7 +177,9 @@ internal class ForkServerEventTest {
                             SessionResource.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                 .output(
-                                    SessionResource.Audio.Output.builder().voice("marin").build()
+                                    SessionResource.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -271,7 +276,7 @@ internal class ForkServerEventTest {
                                     .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                     .output(
                                         SessionResource.Audio.Output.builder()
-                                            .voice("marin")
+                                            .voice(BuiltInVoice.MARIN)
                                             .build()
                                     )
                                     .build()
@@ -1220,7 +1225,9 @@ internal class ForkServerEventTest {
                             SessionResource.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                 .output(
-                                    SessionResource.Audio.Output.builder().voice("marin").build()
+                                    SessionResource.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -1292,7 +1299,7 @@ internal class ForkServerEventTest {
                                     .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                     .output(
                                         SessionResource.Audio.Output.builder()
-                                            .voice("marin")
+                                            .voice(BuiltInVoice.MARIN)
                                             .build()
                                     )
                                     .build()

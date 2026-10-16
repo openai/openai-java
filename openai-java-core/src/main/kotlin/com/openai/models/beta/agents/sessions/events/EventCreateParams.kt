@@ -429,7 +429,7 @@ private constructor(
              */
             fun addEvent(event: AgentSessionInputParam) = apply {
                 events =
-                    (events ?: JsonField.of(mutableListOf())).also {
+                    (events?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("events", it).add(event)
                     }
             }
