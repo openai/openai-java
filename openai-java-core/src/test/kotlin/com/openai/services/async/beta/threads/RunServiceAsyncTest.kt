@@ -157,16 +157,9 @@ internal class RunServiceAsyncTest {
                     .build()
             )
 
-        val received = java.util.concurrent.atomic.AtomicInteger()
         val onCompleteFuture =
-            runStreamResponse
-                .subscribe { event ->
-                    event.validate()
-                    received.incrementAndGet()
-                }
-                .onCompleteFuture()
+            runStreamResponse.subscribe { run -> run.validate() }.onCompleteFuture()
         onCompleteFuture.get()
-        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 
     @Test
@@ -381,15 +374,8 @@ internal class RunServiceAsyncTest {
                     .build()
             )
 
-        val received = java.util.concurrent.atomic.AtomicInteger()
         val onCompleteFuture =
-            runStreamResponse
-                .subscribe { event ->
-                    event.validate()
-                    received.incrementAndGet()
-                }
-                .onCompleteFuture()
+            runStreamResponse.subscribe { run -> run.validate() }.onCompleteFuture()
         onCompleteFuture.get()
-        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 }

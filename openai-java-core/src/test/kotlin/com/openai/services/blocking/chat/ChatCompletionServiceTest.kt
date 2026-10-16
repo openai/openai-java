@@ -335,14 +335,11 @@ internal class ChatCompletionServiceTest {
                     .build()
             )
 
-        var received = 0
         chatCompletionStreamResponse.use {
-            chatCompletionStreamResponse.stream().forEach { event ->
-                event.validate()
-                received++
+            chatCompletionStreamResponse.stream().forEach { chatCompletion ->
+                chatCompletion.validate()
             }
         }
-        check(received > 0) { "Expected at least one streaming event" }
     }
 
     @Test

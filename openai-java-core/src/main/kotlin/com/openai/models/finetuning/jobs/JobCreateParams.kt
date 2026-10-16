@@ -1029,8 +1029,9 @@ private constructor(
              */
             fun addIntegration(integration: Integration) = apply {
                 integrations =
-                    (integrations?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
-                        .also { checkKnown("integrations", it).add(integration) }
+                    (integrations ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("integrations", it).add(integration)
+                    }
             }
 
             /**

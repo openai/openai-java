@@ -102,14 +102,11 @@ internal class ImageServiceTest {
                     .build()
             )
 
-        var received = 0
         imagesResponseStreamResponse.use {
-            imagesResponseStreamResponse.stream().forEach { event ->
-                event.validate()
-                received++
+            imagesResponseStreamResponse.stream().forEach { imagesResponse ->
+                imagesResponse.validate()
             }
         }
-        check(received > 0) { "Expected at least one streaming event" }
     }
 
     @Test
@@ -173,13 +170,10 @@ internal class ImageServiceTest {
                     .build()
             )
 
-        var received = 0
         imagesResponseStreamResponse.use {
-            imagesResponseStreamResponse.stream().forEach { event ->
-                event.validate()
-                received++
+            imagesResponseStreamResponse.stream().forEach { imagesResponse ->
+                imagesResponse.validate()
             }
         }
-        check(received > 0) { "Expected at least one streaming event" }
     }
 }

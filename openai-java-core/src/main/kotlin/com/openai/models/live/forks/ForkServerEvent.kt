@@ -31,8 +31,6 @@ import com.openai.models.live.InputAudioUnmutedEvent
 import com.openai.models.live.InputTranscriptDeltaEvent
 import com.openai.models.live.InstructionsAppendedEvent
 import com.openai.models.live.OutputAudioDeltaEvent
-import com.openai.models.live.OutputAudioFixturePlayedEvent
-import com.openai.models.live.OutputAudioFixturePlayingEvent
 import com.openai.models.live.OutputTranscriptDeltaEvent
 import com.openai.models.live.ResponseEvent
 import com.openai.models.live.SessionClosedEvent
@@ -59,8 +57,6 @@ private constructor(
     private val sessionUpdated: SessionUpdatedEvent? = null,
     private val sessionInputAudioMuted: InputAudioMutedEvent? = null,
     private val sessionInputAudioUnmuted: InputAudioUnmutedEvent? = null,
-    private val sessionOutputAudioFixturePlaying: OutputAudioFixturePlayingEvent? = null,
-    private val sessionOutputAudioFixturePlayed: OutputAudioFixturePlayedEvent? = null,
     private val sessionInstructionsAppended: InstructionsAppendedEvent? = null,
     private val sessionThinkingAppended: ThinkingAppendedEvent? = null,
     private val sessionCommentaryAppended: CommentaryAppendedEvent? = null,
@@ -107,23 +103,6 @@ private constructor(
      */
     fun sessionInputAudioUnmuted(): Optional<InputAudioUnmutedEvent> =
         Optional.ofNullable(sessionInputAudioUnmuted)
-
-    /**
-     * The existing playback path has accepted the validated audio fixture. This acknowledgment does
-     * not identify when the listener receives the first sample. The optional client_event_id echoes
-     * the play command.
-     */
-    fun sessionOutputAudioFixturePlaying(): Optional<OutputAudioFixturePlayingEvent> =
-        Optional.ofNullable(sessionOutputAudioFixturePlaying)
-
-    /**
-     * The complete audio fixture has drained from the server mixer and normal inference has
-     * resumed. Transport buffers may still contain audio; this event does not prove listener-side
-     * completion. The optional client_event_id echoes the play command. This event is not emitted
-     * for canceled or failed playback.
-     */
-    fun sessionOutputAudioFixturePlayed(): Optional<OutputAudioFixturePlayedEvent> =
-        Optional.ofNullable(sessionOutputAudioFixturePlayed)
 
     /**
      * Returned when a session.instructions.append command is accepted into the Live session
@@ -250,10 +229,6 @@ private constructor(
 
     fun isSessionInputAudioUnmuted(): Boolean = sessionInputAudioUnmuted != null
 
-    fun isSessionOutputAudioFixturePlaying(): Boolean = sessionOutputAudioFixturePlaying != null
-
-    fun isSessionOutputAudioFixturePlayed(): Boolean = sessionOutputAudioFixturePlayed != null
-
     fun isSessionInstructionsAppended(): Boolean = sessionInstructionsAppended != null
 
     fun isSessionThinkingAppended(): Boolean = sessionThinkingAppended != null
@@ -315,23 +290,6 @@ private constructor(
      */
     fun asSessionInputAudioUnmuted(): InputAudioUnmutedEvent =
         sessionInputAudioUnmuted.getOrThrow("sessionInputAudioUnmuted")
-
-    /**
-     * The existing playback path has accepted the validated audio fixture. This acknowledgment does
-     * not identify when the listener receives the first sample. The optional client_event_id echoes
-     * the play command.
-     */
-    fun asSessionOutputAudioFixturePlaying(): OutputAudioFixturePlayingEvent =
-        sessionOutputAudioFixturePlaying.getOrThrow("sessionOutputAudioFixturePlaying")
-
-    /**
-     * The complete audio fixture has drained from the server mixer and normal inference has
-     * resumed. Transport buffers may still contain audio; this event does not prove listener-side
-     * completion. The optional client_event_id echoes the play command. This event is not emitted
-     * for canceled or failed playback.
-     */
-    fun asSessionOutputAudioFixturePlayed(): OutputAudioFixturePlayedEvent =
-        sessionOutputAudioFixturePlayed.getOrThrow("sessionOutputAudioFixturePlayed")
 
     /**
      * Returned when a session.instructions.append command is accepted into the Live session
@@ -489,10 +447,6 @@ private constructor(
                 visitor.visitSessionInputAudioMuted(sessionInputAudioMuted)
             sessionInputAudioUnmuted != null ->
                 visitor.visitSessionInputAudioUnmuted(sessionInputAudioUnmuted)
-            sessionOutputAudioFixturePlaying != null ->
-                visitor.visitSessionOutputAudioFixturePlaying(sessionOutputAudioFixturePlaying)
-            sessionOutputAudioFixturePlayed != null ->
-                visitor.visitSessionOutputAudioFixturePlayed(sessionOutputAudioFixturePlayed)
             sessionInstructionsAppended != null ->
                 visitor.visitSessionInstructionsAppended(sessionInstructionsAppended)
             sessionThinkingAppended != null ->
@@ -558,18 +512,6 @@ private constructor(
                     sessionInputAudioUnmuted: InputAudioUnmutedEvent
                 ) {
                     sessionInputAudioUnmuted.validate()
-                }
-
-                override fun visitSessionOutputAudioFixturePlaying(
-                    sessionOutputAudioFixturePlaying: OutputAudioFixturePlayingEvent
-                ) {
-                    sessionOutputAudioFixturePlaying.validate()
-                }
-
-                override fun visitSessionOutputAudioFixturePlayed(
-                    sessionOutputAudioFixturePlayed: OutputAudioFixturePlayedEvent
-                ) {
-                    sessionOutputAudioFixturePlayed.validate()
                 }
 
                 override fun visitSessionInstructionsAppended(
@@ -699,14 +641,6 @@ private constructor(
                     sessionInputAudioUnmuted: InputAudioUnmutedEvent
                 ) = sessionInputAudioUnmuted.validity()
 
-                override fun visitSessionOutputAudioFixturePlaying(
-                    sessionOutputAudioFixturePlaying: OutputAudioFixturePlayingEvent
-                ) = sessionOutputAudioFixturePlaying.validity()
-
-                override fun visitSessionOutputAudioFixturePlayed(
-                    sessionOutputAudioFixturePlayed: OutputAudioFixturePlayedEvent
-                ) = sessionOutputAudioFixturePlayed.validity()
-
                 override fun visitSessionInstructionsAppended(
                     sessionInstructionsAppended: InstructionsAppendedEvent
                 ) = sessionInstructionsAppended.validity()
@@ -783,8 +717,6 @@ private constructor(
             sessionUpdated == other.sessionUpdated &&
             sessionInputAudioMuted == other.sessionInputAudioMuted &&
             sessionInputAudioUnmuted == other.sessionInputAudioUnmuted &&
-            sessionOutputAudioFixturePlaying == other.sessionOutputAudioFixturePlaying &&
-            sessionOutputAudioFixturePlayed == other.sessionOutputAudioFixturePlayed &&
             sessionInstructionsAppended == other.sessionInstructionsAppended &&
             sessionThinkingAppended == other.sessionThinkingAppended &&
             sessionCommentaryAppended == other.sessionCommentaryAppended &&
@@ -811,8 +743,6 @@ private constructor(
             sessionUpdated,
             sessionInputAudioMuted,
             sessionInputAudioUnmuted,
-            sessionOutputAudioFixturePlaying,
-            sessionOutputAudioFixturePlayed,
             sessionInstructionsAppended,
             sessionThinkingAppended,
             sessionCommentaryAppended,
@@ -841,10 +771,6 @@ private constructor(
                 "ForkServerEvent{sessionInputAudioMuted=$sessionInputAudioMuted}"
             sessionInputAudioUnmuted != null ->
                 "ForkServerEvent{sessionInputAudioUnmuted=$sessionInputAudioUnmuted}"
-            sessionOutputAudioFixturePlaying != null ->
-                "ForkServerEvent{sessionOutputAudioFixturePlaying=$sessionOutputAudioFixturePlaying}"
-            sessionOutputAudioFixturePlayed != null ->
-                "ForkServerEvent{sessionOutputAudioFixturePlayed=$sessionOutputAudioFixturePlayed}"
             sessionInstructionsAppended != null ->
                 "ForkServerEvent{sessionInstructionsAppended=$sessionInstructionsAppended}"
             sessionThinkingAppended != null ->
@@ -910,27 +836,6 @@ private constructor(
         @JvmStatic
         fun ofSessionInputAudioUnmuted(sessionInputAudioUnmuted: InputAudioUnmutedEvent) =
             ForkServerEvent(sessionInputAudioUnmuted = sessionInputAudioUnmuted)
-
-        /**
-         * The existing playback path has accepted the validated audio fixture. This acknowledgment
-         * does not identify when the listener receives the first sample. The optional
-         * client_event_id echoes the play command.
-         */
-        @JvmStatic
-        fun ofSessionOutputAudioFixturePlaying(
-            sessionOutputAudioFixturePlaying: OutputAudioFixturePlayingEvent
-        ) = ForkServerEvent(sessionOutputAudioFixturePlaying = sessionOutputAudioFixturePlaying)
-
-        /**
-         * The complete audio fixture has drained from the server mixer and normal inference has
-         * resumed. Transport buffers may still contain audio; this event does not prove
-         * listener-side completion. The optional client_event_id echoes the play command. This
-         * event is not emitted for canceled or failed playback.
-         */
-        @JvmStatic
-        fun ofSessionOutputAudioFixturePlayed(
-            sessionOutputAudioFixturePlayed: OutputAudioFixturePlayedEvent
-        ) = ForkServerEvent(sessionOutputAudioFixturePlayed = sessionOutputAudioFixturePlayed)
 
         /**
          * Returned when a session.instructions.append command is accepted into the Live session
@@ -1112,25 +1017,6 @@ private constructor(
             unknown(JsonValue.from(sessionInputAudioUnmuted))
 
         /**
-         * The existing playback path has accepted the validated audio fixture. This acknowledgment
-         * does not identify when the listener receives the first sample. The optional
-         * client_event_id echoes the play command.
-         */
-        fun visitSessionOutputAudioFixturePlaying(
-            sessionOutputAudioFixturePlaying: OutputAudioFixturePlayingEvent
-        ): T = unknown(JsonValue.from(sessionOutputAudioFixturePlaying))
-
-        /**
-         * The complete audio fixture has drained from the server mixer and normal inference has
-         * resumed. Transport buffers may still contain audio; this event does not prove
-         * listener-side completion. The optional client_event_id echoes the play command. This
-         * event is not emitted for canceled or failed playback.
-         */
-        fun visitSessionOutputAudioFixturePlayed(
-            sessionOutputAudioFixturePlayed: OutputAudioFixturePlayedEvent
-        ): T = unknown(JsonValue.from(sessionOutputAudioFixturePlayed))
-
-        /**
          * Returned when a session.instructions.append command is accepted into the Live session
          * timeline. Acknowledges the appended instructions without guaranteeing that the model has
          * acted on them.
@@ -1304,18 +1190,6 @@ private constructor(
                         ForkServerEvent(sessionInputAudioUnmuted = it, _json = json)
                     } ?: ForkServerEvent(_json = json)
                 }
-                "session.output_audio.fixture.playing" -> {
-                    return tryDeserialize(node, jacksonTypeRef<OutputAudioFixturePlayingEvent>())
-                        ?.let {
-                            ForkServerEvent(sessionOutputAudioFixturePlaying = it, _json = json)
-                        } ?: ForkServerEvent(_json = json)
-                }
-                "session.output_audio.fixture.played" -> {
-                    return tryDeserialize(node, jacksonTypeRef<OutputAudioFixturePlayedEvent>())
-                        ?.let {
-                            ForkServerEvent(sessionOutputAudioFixturePlayed = it, _json = json)
-                        } ?: ForkServerEvent(_json = json)
-                }
                 "session.instructions.appended" -> {
                     return tryDeserialize(node, jacksonTypeRef<InstructionsAppendedEvent>())?.let {
                         ForkServerEvent(sessionInstructionsAppended = it, _json = json)
@@ -1426,10 +1300,6 @@ private constructor(
                     generator.writeObject(value.sessionInputAudioMuted)
                 value.sessionInputAudioUnmuted != null ->
                     generator.writeObject(value.sessionInputAudioUnmuted)
-                value.sessionOutputAudioFixturePlaying != null ->
-                    generator.writeObject(value.sessionOutputAudioFixturePlaying)
-                value.sessionOutputAudioFixturePlayed != null ->
-                    generator.writeObject(value.sessionOutputAudioFixturePlayed)
                 value.sessionInstructionsAppended != null ->
                     generator.writeObject(value.sessionInstructionsAppended)
                 value.sessionThinkingAppended != null ->

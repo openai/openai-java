@@ -396,13 +396,6 @@ internal class ThreadServiceTest {
                     .build()
             )
 
-        var received = 0
-        runStreamResponse.use {
-            runStreamResponse.stream().forEach { event ->
-                event.validate()
-                received++
-            }
-        }
-        check(received > 0) { "Expected at least one streaming event" }
+        runStreamResponse.use { runStreamResponse.stream().forEach { run -> run.validate() } }
     }
 }

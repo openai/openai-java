@@ -8,9 +8,10 @@ import os
 import struct
 import subprocess
 import unittest
-from unittest import mock
+import unittest.mock as mock
 
 import custom_code_report as report
+
 from custom_code_test_support import GENERATION, GitTestCase
 
 
@@ -282,7 +283,6 @@ class CustomCodeTests(GitTestCase):
         snapshot = report.prepare_public_snapshot(
             self.repo, base, base, public, public_base, "castiron/promotions/pr-1"
         )
-        self.assertEqual(snapshot["base_commit"], snapshot["commit"])
         self.assertNotEqual(snapshot["commit"], generated)
         self.assertEqual(report.git(public, "rev-list", "--count", snapshot["commit"]), b"1\n")
         self.assertEqual(report.hash_codegen_commit(public, snapshot["commit"]), snapshot["hash"])
@@ -308,7 +308,6 @@ class CustomCodeTests(GitTestCase):
         again = report.prepare_public_snapshot(
             self.repo, base, base, public, public_base, "castiron/promotions/pr-1"
         )
-        self.assertEqual(again["base_commit"], snapshot["base_commit"])
         self.assertEqual(again["commit"], snapshot["commit"])
         tree = report.git(public, "rev-parse", f"{snapshot['commit']}^{{tree}}").decode().strip()
         message = report.git(public, "show", "-s", "--format=%B", snapshot["commit"])

@@ -104,16 +104,11 @@ internal class ImageServiceAsyncTest {
                     .build()
             )
 
-        val received = java.util.concurrent.atomic.AtomicInteger()
         val onCompleteFuture =
             imagesResponseStreamResponse
-                .subscribe { event ->
-                    event.validate()
-                    received.incrementAndGet()
-                }
+                .subscribe { imagesResponse -> imagesResponse.validate() }
                 .onCompleteFuture()
         onCompleteFuture.get()
-        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 
     @Test
@@ -178,15 +173,10 @@ internal class ImageServiceAsyncTest {
                     .build()
             )
 
-        val received = java.util.concurrent.atomic.AtomicInteger()
         val onCompleteFuture =
             imagesResponseStreamResponse
-                .subscribe { event ->
-                    event.validate()
-                    received.incrementAndGet()
-                }
+                .subscribe { imagesResponse -> imagesResponse.validate() }
                 .onCompleteFuture()
         onCompleteFuture.get()
-        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 }

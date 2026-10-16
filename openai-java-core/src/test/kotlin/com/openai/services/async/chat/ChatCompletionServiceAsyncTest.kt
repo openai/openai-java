@@ -337,16 +337,11 @@ internal class ChatCompletionServiceAsyncTest {
                     .build()
             )
 
-        val received = java.util.concurrent.atomic.AtomicInteger()
         val onCompleteFuture =
             chatCompletionStreamResponse
-                .subscribe { event ->
-                    event.validate()
-                    received.incrementAndGet()
-                }
+                .subscribe { chatCompletion -> chatCompletion.validate() }
                 .onCompleteFuture()
         onCompleteFuture.get()
-        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 
     @Test

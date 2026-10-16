@@ -522,7 +522,7 @@ private constructor(
              */
             fun addScope(scope: String) = apply {
                 scopes =
-                    (scopes?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    (scopes ?: JsonField.of(mutableListOf())).also {
                         checkKnown("scopes", it).add(scope)
                     }
             }

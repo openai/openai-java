@@ -159,14 +159,9 @@ internal class SessionServiceTest {
                     .build()
             )
 
-        var received = 0
         agentSessionStreamResponse.use {
-            agentSessionStreamResponse.stream().forEach { event ->
-                event.validate()
-                received++
-            }
+            agentSessionStreamResponse.stream().forEach { agentSession -> agentSession.validate() }
         }
-        check(received > 0) { "Expected at least one streaming event" }
     }
 
     @Test

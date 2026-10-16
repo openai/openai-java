@@ -983,7 +983,7 @@ private constructor(
              */
             fun addTool(tool: PersistedAgentToolParam) = apply {
                 tools =
-                    (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    (tools ?: JsonField.of(mutableListOf())).also {
                         checkKnown("tools", it).add(tool)
                     }
             }

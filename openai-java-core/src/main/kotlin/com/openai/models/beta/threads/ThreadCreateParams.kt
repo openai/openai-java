@@ -489,8 +489,9 @@ private constructor(
              */
             fun addMessage(message: Message) = apply {
                 messages =
-                    (messages?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
-                        .also { checkKnown("messages", it).add(message) }
+                    (messages ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("messages", it).add(message)
+                    }
             }
 
             /**

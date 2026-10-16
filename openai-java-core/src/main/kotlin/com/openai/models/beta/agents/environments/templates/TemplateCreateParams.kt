@@ -909,9 +909,9 @@ private constructor(
              */
             fun addCapabilityDirectory(capabilityDirectory: String) = apply {
                 capabilityDirectories =
-                    (capabilityDirectories?.takeUnless { it.isMissing() }
-                            ?: JsonField.of(mutableListOf()))
-                        .also { checkKnown("capabilityDirectories", it).add(capabilityDirectory) }
+                    (capabilityDirectories ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("capabilityDirectories", it).add(capabilityDirectory)
+                    }
             }
 
             /**
@@ -971,7 +971,7 @@ private constructor(
              */
             fun addFile(file: HostedEnvironmentFileParam) = apply {
                 files =
-                    (files?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    (files ?: JsonField.of(mutableListOf())).also {
                         checkKnown("files", it).add(file)
                     }
             }
@@ -1056,7 +1056,7 @@ private constructor(
              */
             fun addPlugin(plugin: HostedPluginParam) = apply {
                 plugins =
-                    (plugins?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    (plugins ?: JsonField.of(mutableListOf())).also {
                         checkKnown("plugins", it).add(plugin)
                     }
             }
@@ -1087,8 +1087,9 @@ private constructor(
              */
             fun addSetupCommand(setupCommand: SetupCommandParam) = apply {
                 setupCommands =
-                    (setupCommands?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
-                        .also { checkKnown("setupCommands", it).add(setupCommand) }
+                    (setupCommands ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("setupCommands", it).add(setupCommand)
+                    }
             }
 
             /**
@@ -1118,7 +1119,7 @@ private constructor(
              */
             fun addSkill(skill: HostedSkillParam) = apply {
                 skills =
-                    (skills?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    (skills ?: JsonField.of(mutableListOf())).also {
                         checkKnown("skills", it).add(skill)
                     }
             }

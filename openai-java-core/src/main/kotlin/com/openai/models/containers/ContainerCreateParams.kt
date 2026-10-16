@@ -684,7 +684,7 @@ private constructor(
              */
             fun addFileId(fileId: String) = apply {
                 fileIds =
-                    (fileIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    (fileIds ?: JsonField.of(mutableListOf())).also {
                         checkKnown("fileIds", it).add(fileId)
                     }
             }
@@ -760,7 +760,7 @@ private constructor(
              */
             fun addSkill(skill: Skill) = apply {
                 skills =
-                    (skills?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    (skills ?: JsonField.of(mutableListOf())).also {
                         checkKnown("skills", it).add(skill)
                     }
             }
