@@ -1,5 +1,36 @@
 # Changelog
 
+## [4.83.0](https://github.com/openai/openai-java/compare/v4.82.0...v4.83.0) (2026-10-16)
+
+
+### Features
+
+* add client and JVM telemetry opt-out ([#1199](https://github.com/openai/openai-java/issues/1199)) ([e17430d](https://github.com/openai/openai-java/commit/e17430d5c3b04b1b81d34b4de250ae5e28fd4dd1))
+* **api:** add prompt-based voice creation ([#1205](https://github.com/openai/openai-java/issues/1205)) ([ffdc023](https://github.com/openai/openai-java/commit/ffdc02379cf629ea7c8c246606efdb8e935a85a9))
+* **api:** add safety identifiers to image requests and responses ([#1208](https://github.com/openai/openai-java/issues/1208)) ([f15a828](https://github.com/openai/openai-java/commit/f15a828c9a14a8f8b06d3ad3f13cfb825720affb))
+* **api:** support audio fixture playback in Live sessions ([#1185](https://github.com/openai/openai-java/issues/1185)) ([c36bc50](https://github.com/openai/openai-java/commit/c36bc50f4cb86bbf1fcbdc6a7f85f1a451319f1e))
+* **api:** support project API key scope updates ([#1180](https://github.com/openai/openai-java/issues/1180)) ([ee0cd94](https://github.com/openai/openai-java/commit/ee0cd94a3f2b7c6e89385a8287d997133843a098))
+
+
+### Bug Fixes
+
+* **core:** omit missing multipart values in JSON conversion ([#1207](https://github.com/openai/openai-java/issues/1207)) ([8a27c62](https://github.com/openai/openai-java/commit/8a27c62b9a0934e67d47d0834acd8055f6ccc00c))
+* **core:** retry synchronous async-transport failures ([#1200](https://github.com/openai/openai-java/issues/1200)) ([9185d8a](https://github.com/openai/openai-java/commit/9185d8ac9ecf1528c4314bcbb9debf3f81af0132))
+* **live:** avoid contextual transcript casing scans ([#1195](https://github.com/openai/openai-java/issues/1195)) ([169f511](https://github.com/openai/openai-java/commit/169f511e0a66678cbaf15ea8f559fac59e3c007c))
+* make phantom cleanup registration explicit and close once ([#1204](https://github.com/openai/openai-java/issues/1204)) ([b3b7ed6](https://github.com/openai/openai-java/commit/b3b7ed6acd4bd91f6131cc5536490b4fac02f8cc))
+* **responses:** defer repeated text-done metadata copies ([#1198](https://github.com/openai/openai-java/issues/1198)) ([9a4f6fc](https://github.com/openai/openai-java/commit/9a4f6fc32ef4177487d294e2dafea8a32e793c31))
+* settle async retry sleeps during shutdown ([#1201](https://github.com/openai/openai-java/issues/1201)) ([e26eb17](https://github.com/openai/openai-java/commit/e26eb17bcb5e9b4cdd13c7ecbde64617e7ff1e73))
+
+
+### Chores
+
+* strengthen generated file verification ([#1192](https://github.com/openai/openai-java/issues/1192)) ([812a4fb](https://github.com/openai/openai-java/commit/812a4fb74885f69b130c82d024f44541f73b8f5e))
+
+
+### Refactors
+
+* reuse Java WebSocket connection helpers ([#1194](https://github.com/openai/openai-java/issues/1194)) ([848ef53](https://github.com/openai/openai-java/commit/848ef53c94498e795587d571900202ea383601d4))
+
 ## [4.82.0](https://github.com/openai/openai-java/compare/v4.81.0...v4.82.0) (2026-10-15)
 
 
