@@ -75,12 +75,15 @@ internal class EventServiceTest {
 
         val agentSessionEventStreamResponse = eventService.streamStreaming("session_id")
 
+        var received = 0
         agentSessionEventStreamResponse.use {
-            agentSessionEventStreamResponse.stream().forEach { agentSessionEvent ->
-                agentSessionEvent.validate()
-                deltas.add(agentSessionEvent.asTurnOutputTextDelta().delta())
+            agentSessionEventStreamResponse.stream().forEach { event ->
+                event.validate()
+                deltas.add(event.asTurnOutputTextDelta().delta())
+                received++
             }
         }
+        check(received > 0) { "Expected at least one streaming event" }
         assertThat(deltas).containsExactly("hello")
     }
 }

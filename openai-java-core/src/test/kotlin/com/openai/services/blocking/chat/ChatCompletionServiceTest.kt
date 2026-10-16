@@ -27,7 +27,6 @@ import com.openai.models.chat.completions.ChatCompletionStreamOptions
 import com.openai.models.chat.completions.ChatCompletionToolChoiceOption
 import com.openai.models.chat.completions.ChatCompletionUpdateParams
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.parallel.ResourceLock
@@ -188,7 +187,6 @@ internal class ChatCompletionServiceTest {
         chatCompletion.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun createStreaming() {
         val client =
@@ -337,11 +335,14 @@ internal class ChatCompletionServiceTest {
                     .build()
             )
 
+        var received = 0
         chatCompletionStreamResponse.use {
-            chatCompletionStreamResponse.stream().forEach { chatCompletion ->
-                chatCompletion.validate()
+            chatCompletionStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
             }
         }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 
     @Test

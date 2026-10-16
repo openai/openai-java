@@ -8,7 +8,6 @@ import com.openai.models.images.ImageCreateVariationParams
 import com.openai.models.images.ImageEditParams
 import com.openai.models.images.ImageGenerateParams
 import com.openai.models.images.ImageModel
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -73,7 +72,6 @@ internal class ImageServiceTest {
         imagesResponse.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun editStreaming() {
         val client =
@@ -104,11 +102,14 @@ internal class ImageServiceTest {
                     .build()
             )
 
+        var received = 0
         imagesResponseStreamResponse.use {
-            imagesResponseStreamResponse.stream().forEach { imagesResponse ->
-                imagesResponse.validate()
+            imagesResponseStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
             }
         }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 
     @Test
@@ -143,7 +144,6 @@ internal class ImageServiceTest {
         imagesResponse.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun generateStreaming() {
         val client =
@@ -173,10 +173,13 @@ internal class ImageServiceTest {
                     .build()
             )
 
+        var received = 0
         imagesResponseStreamResponse.use {
-            imagesResponseStreamResponse.stream().forEach { imagesResponse ->
-                imagesResponse.validate()
+            imagesResponseStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
             }
         }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 }

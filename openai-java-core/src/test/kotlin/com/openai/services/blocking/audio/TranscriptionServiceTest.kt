@@ -8,7 +8,6 @@ import com.openai.models.audio.AudioModel
 import com.openai.models.audio.AudioResponseFormat
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionInclude
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -47,7 +46,6 @@ internal class TranscriptionServiceTest {
         transcription.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun createStreaming() {
         val client =
@@ -77,10 +75,13 @@ internal class TranscriptionServiceTest {
                     .build()
             )
 
+        var received = 0
         transcriptionStreamResponse.use {
-            transcriptionStreamResponse.stream().forEach { transcription ->
-                transcription.validate()
+            transcriptionStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
             }
         }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 }

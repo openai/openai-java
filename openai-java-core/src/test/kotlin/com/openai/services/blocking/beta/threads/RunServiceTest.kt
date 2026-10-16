@@ -25,7 +25,6 @@ import com.openai.models.beta.threads.runs.RunSubmitToolOutputsParams
 import com.openai.models.beta.threads.runs.RunUpdateParams
 import com.openai.models.beta.threads.runs.steps.RunStepInclude
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.parallel.ResourceLock
@@ -97,7 +96,6 @@ internal class RunServiceTest {
         run.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun createStreaming() {
         val client =
@@ -157,7 +155,14 @@ internal class RunServiceTest {
                     .build()
             )
 
-        runStreamResponse.use { runStreamResponse.stream().forEach { run -> run.validate() } }
+        var received = 0
+        runStreamResponse.use {
+            runStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
+            }
+        }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 
     @Test
@@ -339,7 +344,6 @@ internal class RunServiceTest {
         run.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun submitToolOutputsStreaming() {
         val client =
@@ -364,6 +368,13 @@ internal class RunServiceTest {
                     .build()
             )
 
-        runStreamResponse.use { runStreamResponse.stream().forEach { run -> run.validate() } }
+        var received = 0
+        runStreamResponse.use {
+            runStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
+            }
+        }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 }

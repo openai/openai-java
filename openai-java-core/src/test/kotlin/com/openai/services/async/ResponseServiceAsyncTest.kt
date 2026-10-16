@@ -17,7 +17,6 @@ import com.openai.models.responses.ResponsePrompt
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseTextConfig
 import com.openai.models.responses.ToolChoiceOptions
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -165,7 +164,6 @@ internal class ResponseServiceAsyncTest {
         response.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun createStreaming() {
         val client =
@@ -303,9 +301,16 @@ internal class ResponseServiceAsyncTest {
                     .build()
             )
 
+        val received = java.util.concurrent.atomic.AtomicInteger()
         val onCompleteFuture =
-            responseStreamResponse.subscribe { response -> response.validate() }.onCompleteFuture()
+            responseStreamResponse
+                .subscribe { event ->
+                    event.validate()
+                    received.incrementAndGet()
+                }
+                .onCompleteFuture()
         onCompleteFuture.get()
+        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 
     @Test
@@ -332,7 +337,6 @@ internal class ResponseServiceAsyncTest {
         response.validate()
     }
 
-    @Disabled("Prism does not support SSE streaming mock responses")
     @Test
     fun retrieveStreaming() {
         val client =
@@ -353,9 +357,16 @@ internal class ResponseServiceAsyncTest {
                     .build()
             )
 
+        val received = java.util.concurrent.atomic.AtomicInteger()
         val onCompleteFuture =
-            responseStreamResponse.subscribe { response -> response.validate() }.onCompleteFuture()
+            responseStreamResponse
+                .subscribe { event ->
+                    event.validate()
+                    received.incrementAndGet()
+                }
+                .onCompleteFuture()
         onCompleteFuture.get()
+        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 
     @Test
