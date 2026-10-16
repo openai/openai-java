@@ -28,7 +28,10 @@ mkdir -p "${CACHE_DESTINATION}"
 
 # The build already populated these outputs. Re-evaluating the task graph with --info exposes each
 # content-addressed cache key without recompiling, allowing the artifact to omit unrelated history.
-if ! ./scripts/gradle classes testClasses --info > "${GRADLE_LOG}" 2>&1; then
+# Match the CI build graph, including the shrinker fixture's shadow JAR. Collecting only classes
+# drops that reusable output and makes both subsequent builds and shrinker jobs assemble it again.
+if ! ./scripts/gradle build testClasses verifyVersionSupportPolicy \
+    -x test -x :openai-java-core:testJacksonCompatibility --info > "${GRADLE_LOG}" 2>&1; then
     cat "${GRADLE_LOG}" >&2
     exit 1
 fi
