@@ -3268,9 +3268,8 @@ private constructor(
              */
             fun addMessage(message: ChatCompletionMessageParam) = apply {
                 messages =
-                    (messages ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("messages", it).add(message)
-                    }
+                    (messages?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("messages", it).add(message) }
             }
 
             /**
@@ -3594,9 +3593,8 @@ private constructor(
             @Deprecated("deprecated")
             fun addFunction(function: Function) = apply {
                 functions =
-                    (functions ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("functions", it).add(function)
-                    }
+                    (functions?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("functions", it).add(function) }
             }
 
             /**
@@ -3774,9 +3772,8 @@ private constructor(
              */
             fun addModality(modality: Modality) = apply {
                 modalities =
-                    (modalities ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("modalities", it).add(modality)
-                    }
+                    (modalities?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("modalities", it).add(modality) }
             }
 
             /** Configuration for running moderation on the request input and generated output. */
@@ -4337,7 +4334,7 @@ private constructor(
              */
             fun addTool(tool: ChatCompletionTool) = apply {
                 tools =
-                    (tools ?: JsonField.of(mutableListOf())).also {
+                    (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("tools", it).add(tool)
                     }
             }

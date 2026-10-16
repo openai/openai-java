@@ -57,7 +57,7 @@ def read_policy(repo: Path, revision: str) -> dict[str, Any]:
         report.git(repo, "show", f"{revision}:{POLICY}"), object_pairs_hook=unique_keys
     )
     if not isinstance(value, dict):
-        raise ValueError("budget file must be an object")  # noqa: TRY004 - malformed policy is a value error
+        raise ValueError("budget file must be an object")
     value = cast(dict[str, Any], value)
     version = value.get("schema_version")
     if type(version) is not int or version not in (1, 2):
@@ -94,6 +94,20 @@ GENERATED_GITHUB_PATHS = frozenset(
 )
 
 
+
+# Audited inventory of the authenticated pre-inventory checker format. These
+# historical snapshots bind the checker bytes and manifest through their codegen
+# hash. Never infer their inventory from the running compiler or candidate tree.
+LEGACY_CHECKPOINT_INVENTORIES = {
+    "e504abba2701f4733eb4b8ce26856cca596e13feab1e7e323adc8e7d2ccb64bc": frozenset(
+        {
+            b".github/workflows/castiron-custom-code-comment.yml",
+            b".github/workflows/castiron-custom-code.yml",
+        }
+    ),
+}
+
+
 def checkpoint_github_inventory(source: bytes) -> frozenset[bytes]:
     """Read literal compiler inventory from verified checkpoint data, without execution."""
     values = [
@@ -105,6 +119,10 @@ def checkpoint_github_inventory(source: bytes) -> frozenset[bytes]:
             for target in node.targets
         )
     ]
+    if not values:
+        historical = LEGACY_CHECKPOINT_INVENTORIES.get(hashlib.sha256(source).hexdigest())
+        if historical is not None:
+            return historical
     if len(values) != 1:
         raise ValueError("checkpoint must contain one generated GitHub inventory")
     value = values[0]

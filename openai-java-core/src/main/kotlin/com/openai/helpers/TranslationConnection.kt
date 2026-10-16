@@ -6,7 +6,6 @@ import com.google.errorprone.annotations.MustBeClosed
 import com.openai.azure.AzureUrlCategory
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
-import com.openai.core.SecurityOptions
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.WebSocketClient
@@ -176,8 +175,11 @@ private constructor(
                     HttpRequest.builder()
                         .method(HttpMethod.GET)
                         .baseUrl(baseUrl.toASCIIString().substringBefore('#').substringBefore('?'))
-                        .addPathSegment("realtime")
-                        .addPathSegment("translations")
+                        .pathSegments(
+                            com.openai.models.realtime.translations.TranslationWebSocketBinding
+                                .create()
+                                .pathSegments
+                        )
                         .apply {
                             baseQuery
                                 .filter { it.isNotEmpty() }
@@ -192,7 +194,9 @@ private constructor(
                         .prepare(
                             clientOptions,
                             options,
-                            SecurityOptions.builder().bearerAuth(true).build(),
+                            com.openai.models.realtime.translations.TranslationWebSocketBinding
+                                .create()
+                                .security,
                         )
                 require(request.queryParams.values("intent").isEmpty()) {
                     "Translation does not accept the Realtime intent query parameter"

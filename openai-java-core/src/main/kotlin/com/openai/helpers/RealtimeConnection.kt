@@ -6,7 +6,6 @@ import com.google.errorprone.annotations.MustBeClosed
 import com.openai.azure.AzureUrlCategory
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
-import com.openai.core.SecurityOptions
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.WebSocketClient
@@ -102,12 +101,15 @@ private constructor(
                     HttpRequest.builder()
                         .method(HttpMethod.GET)
                         .baseUrl(clientOptions.baseUrl())
-                        .addPathSegment("realtime")
+                        .pathSegments(
+                            com.openai.models.realtime.RealtimeWebSocketBinding.create()
+                                .pathSegments
+                        )
                         .build()
                         .prepare(
                             clientOptions,
                             options,
-                            SecurityOptions.builder().bearerAuth(true).build(),
+                            com.openai.models.realtime.RealtimeWebSocketBinding.create().security,
                         )
                 val pending =
                     clientOptions.connectWebSocket(
