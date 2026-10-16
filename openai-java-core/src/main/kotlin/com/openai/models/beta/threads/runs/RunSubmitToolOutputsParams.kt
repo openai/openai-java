@@ -377,9 +377,8 @@ private constructor(
              */
             fun addToolOutput(toolOutput: ToolOutput) = apply {
                 toolOutputs =
-                    (toolOutputs ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("toolOutputs", it).add(toolOutput)
-                    }
+                    (toolOutputs?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("toolOutputs", it).add(toolOutput) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

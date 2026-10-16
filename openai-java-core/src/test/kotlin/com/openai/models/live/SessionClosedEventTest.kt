@@ -24,7 +24,9 @@ internal class SessionClosedEventTest {
                             SessionResource.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                 .output(
-                                    SessionResource.Audio.Output.builder().voice("marin").build()
+                                    SessionResource.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -61,7 +63,11 @@ internal class SessionClosedEventTest {
                     .audio(
                         SessionResource.Audio.builder()
                             .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
-                            .output(SessionResource.Audio.Output.builder().voice("marin").build())
+                            .output(
+                                SessionResource.Audio.Output.builder()
+                                    .voice(BuiltInVoice.MARIN)
+                                    .build()
+                            )
                             .build()
                     )
                     .client(
@@ -103,7 +109,9 @@ internal class SessionClosedEventTest {
                             SessionResource.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                 .output(
-                                    SessionResource.Audio.Output.builder().voice("marin").build()
+                                    SessionResource.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
                                 )
                                 .build()
                         )

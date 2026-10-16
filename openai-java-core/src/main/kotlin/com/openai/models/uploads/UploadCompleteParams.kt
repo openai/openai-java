@@ -421,7 +421,7 @@ private constructor(
              */
             fun addPartId(partId: String) = apply {
                 partIds =
-                    (partIds ?: JsonField.of(mutableListOf())).also {
+                    (partIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("partIds", it).add(partId)
                     }
             }

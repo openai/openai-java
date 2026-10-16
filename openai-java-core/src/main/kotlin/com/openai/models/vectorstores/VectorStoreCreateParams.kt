@@ -722,7 +722,7 @@ private constructor(
              */
             fun addFileId(fileId: String) = apply {
                 fileIds =
-                    (fileIds ?: JsonField.of(mutableListOf())).also {
+                    (fileIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("fileIds", it).add(fileId)
                     }
             }

@@ -613,9 +613,8 @@ private constructor(
              */
             fun addAttachment(attachment: Attachment) = apply {
                 attachments =
-                    (attachments ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("attachments", it).add(attachment)
-                    }
+                    (attachments?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("attachments", it).add(attachment) }
             }
 
             /**

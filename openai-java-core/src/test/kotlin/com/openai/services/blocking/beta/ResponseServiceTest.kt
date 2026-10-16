@@ -312,9 +312,14 @@ internal class ResponseServiceTest {
                     .build()
             )
 
+        var received = 0
         betaResponseStreamResponse.use {
-            betaResponseStreamResponse.stream().forEach { betaResponse -> betaResponse.validate() }
+            betaResponseStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
+            }
         }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 
     @Test
@@ -362,9 +367,14 @@ internal class ResponseServiceTest {
                     .build()
             )
 
+        var received = 0
         betaResponseStreamResponse.use {
-            betaResponseStreamResponse.stream().forEach { betaResponse -> betaResponse.validate() }
+            betaResponseStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
+            }
         }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 
     @Test

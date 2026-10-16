@@ -28,7 +28,9 @@ internal class ServerEventTest {
                             SessionResource.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                 .output(
-                                    SessionResource.Audio.Output.builder().voice("marin").build()
+                                    SessionResource.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -59,6 +61,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -96,7 +100,7 @@ internal class ServerEventTest {
                                     .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                     .output(
                                         SessionResource.Audio.Output.builder()
-                                            .voice("marin")
+                                            .voice(BuiltInVoice.MARIN)
                                             .build()
                                     )
                                     .build()
@@ -146,7 +150,9 @@ internal class ServerEventTest {
                             SessionResource.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                 .output(
-                                    SessionResource.Audio.Output.builder().voice("marin").build()
+                                    SessionResource.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -204,6 +210,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).contains(sessionUpdated)
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -241,7 +249,7 @@ internal class ServerEventTest {
                                     .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                     .output(
                                         SessionResource.Audio.Output.builder()
-                                            .voice("marin")
+                                            .voice(BuiltInVoice.MARIN)
                                             .build()
                                     )
                                     .build()
@@ -318,6 +326,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).contains(sessionInputAudioMuted)
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -372,6 +382,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).contains(sessionInputAudioUnmuted)
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -413,6 +425,122 @@ internal class ServerEventTest {
     }
 
     @Test
+    fun ofSessionOutputAudioFixturePlaying() {
+        val sessionOutputAudioFixturePlaying =
+            OutputAudioFixturePlayingEvent.builder()
+                .eventId("evt_playing_001")
+                .clientEventId("evt_play_001")
+                .build()
+
+        val serverEvent =
+            ServerEvent.ofSessionOutputAudioFixturePlaying(sessionOutputAudioFixturePlaying)
+
+        assertThat(serverEvent.sessionStarted()).isEmpty
+        assertThat(serverEvent.sessionUpdated()).isEmpty
+        assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying())
+            .contains(sessionOutputAudioFixturePlaying)
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(serverEvent.sessionThinkingAppended()).isEmpty
+        assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(serverEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(serverEvent.sessionDelegationCreated()).isEmpty
+        assertThat(serverEvent.responseEvent()).isEmpty
+        assertThat(serverEvent.sessionUsageUpdated()).isEmpty
+        assertThat(serverEvent.sessionClosed()).isEmpty
+        assertThat(serverEvent.errorEvent()).isEmpty
+        assertThat(serverEvent.infoEvent()).isEmpty
+        assertThat(serverEvent.transportDtmfReceived()).isEmpty
+        assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportRinging()).isEmpty
+        assertThat(serverEvent.transportAnswered()).isEmpty
+        assertThat(serverEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofSessionOutputAudioFixturePlayingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val serverEvent =
+            ServerEvent.ofSessionOutputAudioFixturePlaying(
+                OutputAudioFixturePlayingEvent.builder()
+                    .eventId("evt_playing_001")
+                    .clientEventId("evt_play_001")
+                    .build()
+            )
+
+        val roundtrippedServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(serverEvent),
+                jacksonTypeRef<ServerEvent>(),
+            )
+
+        assertThat(roundtrippedServerEvent).isEqualTo(serverEvent)
+    }
+
+    @Test
+    fun ofSessionOutputAudioFixturePlayed() {
+        val sessionOutputAudioFixturePlayed =
+            OutputAudioFixturePlayedEvent.builder()
+                .eventId("evt_played_001")
+                .clientEventId("evt_play_001")
+                .build()
+
+        val serverEvent =
+            ServerEvent.ofSessionOutputAudioFixturePlayed(sessionOutputAudioFixturePlayed)
+
+        assertThat(serverEvent.sessionStarted()).isEmpty
+        assertThat(serverEvent.sessionUpdated()).isEmpty
+        assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed())
+            .contains(sessionOutputAudioFixturePlayed)
+        assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(serverEvent.sessionThinkingAppended()).isEmpty
+        assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(serverEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(serverEvent.sessionDelegationCreated()).isEmpty
+        assertThat(serverEvent.responseEvent()).isEmpty
+        assertThat(serverEvent.sessionUsageUpdated()).isEmpty
+        assertThat(serverEvent.sessionClosed()).isEmpty
+        assertThat(serverEvent.errorEvent()).isEmpty
+        assertThat(serverEvent.infoEvent()).isEmpty
+        assertThat(serverEvent.transportDtmfReceived()).isEmpty
+        assertThat(serverEvent.transportDtmfSend()).isEmpty
+        assertThat(serverEvent.transportRinging()).isEmpty
+        assertThat(serverEvent.transportAnswered()).isEmpty
+        assertThat(serverEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofSessionOutputAudioFixturePlayedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val serverEvent =
+            ServerEvent.ofSessionOutputAudioFixturePlayed(
+                OutputAudioFixturePlayedEvent.builder()
+                    .eventId("evt_played_001")
+                    .clientEventId("evt_play_001")
+                    .build()
+            )
+
+        val roundtrippedServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(serverEvent),
+                jacksonTypeRef<ServerEvent>(),
+            )
+
+        assertThat(roundtrippedServerEvent).isEqualTo(serverEvent)
+    }
+
+    @Test
     fun ofSessionInstructionsAppended() {
         val sessionInstructionsAppended =
             InstructionsAppendedEvent.builder()
@@ -428,6 +556,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).contains(sessionInstructionsAppended)
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -486,6 +616,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).contains(sessionThinkingAppended)
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -544,6 +676,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).contains(sessionCommentaryAppended)
@@ -597,6 +731,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -649,6 +785,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -707,6 +845,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -767,6 +907,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -833,6 +975,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -910,6 +1054,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -986,6 +1132,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -1045,7 +1193,9 @@ internal class ServerEventTest {
                             SessionResource.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                 .output(
-                                    SessionResource.Audio.Output.builder().voice("marin").build()
+                                    SessionResource.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -1077,6 +1227,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -1115,7 +1267,7 @@ internal class ServerEventTest {
                                     .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
                                     .output(
                                         SessionResource.Audio.Output.builder()
-                                            .voice("marin")
+                                            .voice(BuiltInVoice.MARIN)
                                             .build()
                                     )
                                     .build()
@@ -1175,6 +1327,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -1242,6 +1396,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -1297,6 +1453,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -1349,6 +1507,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -1404,6 +1564,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -1458,6 +1620,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
@@ -1519,6 +1683,8 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionUpdated()).isEmpty
         assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
         assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
         assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
         assertThat(serverEvent.sessionThinkingAppended()).isEmpty
         assertThat(serverEvent.sessionCommentaryAppended()).isEmpty

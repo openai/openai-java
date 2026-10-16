@@ -19,7 +19,11 @@ internal class SessionStartEventTest {
                         .audio(
                             SessionConfig.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
-                                .output(SessionConfig.Audio.Output.builder().voice("marin").build())
+                                .output(
+                                    SessionConfig.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
+                                )
                                 .build()
                         )
                         .client(
@@ -62,7 +66,11 @@ internal class SessionStartEventTest {
                     .audio(
                         SessionConfig.Audio.builder()
                             .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
-                            .output(SessionConfig.Audio.Output.builder().voice("marin").build())
+                            .output(
+                                SessionConfig.Audio.Output.builder()
+                                    .voice(BuiltInVoice.MARIN)
+                                    .build()
+                            )
                             .build()
                     )
                     .client(
@@ -109,7 +117,11 @@ internal class SessionStartEventTest {
                         .audio(
                             SessionConfig.Audio.builder()
                                 .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
-                                .output(SessionConfig.Audio.Output.builder().voice("marin").build())
+                                .output(
+                                    SessionConfig.Audio.Output.builder()
+                                        .voice(BuiltInVoice.MARIN)
+                                        .build()
+                                )
                                 .build()
                         )
                         .client(

@@ -675,9 +675,9 @@ private constructor(
              */
             fun addTestingCriterion(testingCriterion: TestingCriterion) = apply {
                 testingCriteria =
-                    (testingCriteria ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("testingCriteria", it).add(testingCriterion)
-                    }
+                    (testingCriteria?.takeUnless { it.isMissing() }
+                            ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("testingCriteria", it).add(testingCriterion) }
             }
 
             /**
