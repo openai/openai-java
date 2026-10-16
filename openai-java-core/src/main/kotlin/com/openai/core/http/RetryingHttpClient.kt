@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 import java.util.function.Function
@@ -136,8 +137,12 @@ private constructor(
                 if (shouldSendRetryCount) setRetryCountHeader(request, retries) else request
 
             val responseFuture =
-                request.body.beforeMultipartTransport {
-                    httpClient.executeAsync(requestWithRetryCount, requestOptions)
+                try {
+                    request.body.beforeMultipartTransport {
+                        httpClient.executeAsync(requestWithRetryCount, requestOptions)
+                    }
+                } catch (throwable: Throwable) {
+                    CompletableFuture<HttpResponse>().also { it.completeExceptionally(throwable) }
                 }
             if (!isRetryable(requestWithRetryCount)) {
                 return responseFuture
@@ -154,7 +159,10 @@ private constructor(
                                 return CompletableFuture.completedFuture(response)
                             }
                         } else {
-                            if (++retries > maxRetries || !shouldRetry(throwable!!)) {
+                            if (
+                                ++retries > maxRetries ||
+                                    !shouldRetry(unwrapCompletionException(throwable!!))
+                            ) {
                                 val failedFuture = CompletableFuture<HttpResponse>()
                                 failedFuture.completeExceptionally(throwable)
                                 return failedFuture
@@ -246,6 +254,11 @@ private constructor(
         throwable is IOException ||
             throwable is OpenAIIoException ||
             throwable is OpenAIRetryableException
+
+    private tailrec fun unwrapCompletionException(throwable: Throwable): Throwable =
+        if (throwable is CompletionException && throwable.cause != null)
+            unwrapCompletionException(throwable.cause!!)
+        else throwable
 
     private fun getRetryBackoffDuration(retries: Int, response: HttpResponse?): Duration {
         // About the Retry-After header:

@@ -1067,20 +1067,28 @@ internal class AgentSessionStreamTest {
             .isNotEqualTo(second.requests.last().headers.values("Idempotency-Key"))
     }
 
-    @Test
-    fun existingAsyncTransportIOExceptionPropagatesAndClosesHelper() {
+    @ParameterizedTest
+    @ValueSource(ints = [1, 3])
+    fun asyncTransportIOExceptionRetriesWithSameKeyAndClosesHelper(failures: Int) {
         val t =
             Transport().apply {
                 ambiguousFromPost = 1
-                ambiguousRemaining = 1
+                ambiguousRemaining = failures
                 ambiguousIOException = true
             }
-        assertThatThrownBy { consume(t, true) }
-            .hasStackTraceContaining("synthetic ambiguous delivery")
+        if (failures == 1) {
+            consume(t, true)
+        } else {
+            assertThatThrownBy { consume(t, true) }
+                .hasStackTraceContaining("synthetic ambiguous delivery")
+        }
         assertThat(t.streamClosed).isTrue()
-        // Existing async transport doesn't unwrap CompletionException for its retry predicate.
-        assertThat(t.posts).hasSize(1)
-        assertThat(t.requests.last().headers.values("Idempotency-Key")).hasSize(1)
+        assertThat(t.posts).hasSize(if (failures == 1) 2 else 3)
+        val keys =
+            t.requests
+                .filter { it.method == HttpMethod.POST }
+                .map { it.headers.values("Idempotency-Key").single() }
+        assertThat(keys.toSet()).hasSize(1)
     }
 
     @ParameterizedTest
