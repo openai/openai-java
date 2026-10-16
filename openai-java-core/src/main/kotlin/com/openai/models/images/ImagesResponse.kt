@@ -29,6 +29,7 @@ private constructor(
     private val data: JsonField<List<Image>>,
     private val outputFormat: JsonField<OutputFormat>,
     private val quality: JsonField<Quality>,
+    private val safetyIdentifier: JsonField<String>,
     private val size: JsonField<Size>,
     private val usage: JsonField<Usage>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -45,9 +46,22 @@ private constructor(
         @ExcludeMissing
         outputFormat: JsonField<OutputFormat> = JsonMissing.of(),
         @JsonProperty("quality") @ExcludeMissing quality: JsonField<Quality> = JsonMissing.of(),
+        @JsonProperty("safety_identifier")
+        @ExcludeMissing
+        safetyIdentifier: JsonField<String> = JsonMissing.of(),
         @JsonProperty("size") @ExcludeMissing size: JsonField<Size> = JsonMissing.of(),
         @JsonProperty("usage") @ExcludeMissing usage: JsonField<Usage> = JsonMissing.of(),
-    ) : this(created, background, data, outputFormat, quality, size, usage, mutableMapOf())
+    ) : this(
+        created,
+        background,
+        data,
+        outputFormat,
+        quality,
+        safetyIdentifier,
+        size,
+        usage,
+        mutableMapOf(),
+    )
 
     /**
      * The Unix timestamp (in seconds) of when the image was created.
@@ -88,6 +102,16 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun quality(): Optional<Quality> = quality.getOptional("quality")
+
+    /**
+     * The effective safety identifier used for safety monitoring and abuse detection. This is the
+     * non-empty `safety_identifier` from the request, or the deprecated `user` value when
+     * `safety_identifier` is omitted, null, or empty.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun safetyIdentifier(): Optional<String> = safetyIdentifier.getOptional("safety_identifier")
 
     /**
      * The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`.
@@ -145,6 +169,16 @@ private constructor(
     @JsonProperty("quality") @ExcludeMissing fun _quality(): JsonField<Quality> = quality
 
     /**
+     * Returns the raw JSON value of [safetyIdentifier].
+     *
+     * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("safety_identifier")
+    @ExcludeMissing
+    fun _safetyIdentifier(): JsonField<String> = safetyIdentifier
+
+    /**
      * Returns the raw JSON value of [size].
      *
      * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
@@ -191,6 +225,7 @@ private constructor(
         private var data: JsonField<MutableList<Image>>? = null
         private var outputFormat: JsonField<OutputFormat> = JsonMissing.of()
         private var quality: JsonField<Quality> = JsonMissing.of()
+        private var safetyIdentifier: JsonField<String> = JsonMissing.of()
         private var size: JsonField<Size> = JsonMissing.of()
         private var usage: JsonField<Usage> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -202,6 +237,7 @@ private constructor(
             data = imagesResponse.data.map { it.toMutableList() }
             outputFormat = imagesResponse.outputFormat
             quality = imagesResponse.quality
+            safetyIdentifier = imagesResponse.safetyIdentifier
             size = imagesResponse.size
             usage = imagesResponse.usage
             additionalProperties = imagesResponse.additionalProperties.toMutableMap()
@@ -285,6 +321,29 @@ private constructor(
          */
         fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
 
+        /**
+         * The effective safety identifier used for safety monitoring and abuse detection. This is
+         * the non-empty `safety_identifier` from the request, or the deprecated `user` value when
+         * `safety_identifier` is omitted, null, or empty.
+         */
+        fun safetyIdentifier(safetyIdentifier: String?) =
+            safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
+
+        /**
+         * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+            this.safetyIdentifier = safetyIdentifier
+        }
+
         /** The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. */
         fun size(size: Size) = size(JsonField.of(size))
 
@@ -353,6 +412,7 @@ private constructor(
                 (data ?: JsonMissing.of()).map { it.toImmutable() },
                 outputFormat,
                 quality,
+                safetyIdentifier,
                 size,
                 usage,
                 additionalProperties.toMutableMap(),
@@ -379,6 +439,7 @@ private constructor(
         data().ifPresent { it.forEach { it.validate() } }
         outputFormat().ifPresent { it.validate() }
         quality().ifPresent { it.validate() }
+        safetyIdentifier()
         size()
         usage().ifPresent { it.validate() }
         validated = true
@@ -404,6 +465,7 @@ private constructor(
             (data.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (outputFormat.asKnown().getOrNull()?.validity() ?: 0) +
             (quality.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (safetyIdentifier.asKnown().isPresent) 1 else 0) +
             (if (size.asKnown().isPresent) 1 else 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0)
 
@@ -1815,6 +1877,7 @@ private constructor(
             data == other.data &&
             outputFormat == other.outputFormat &&
             quality == other.quality &&
+            safetyIdentifier == other.safetyIdentifier &&
             size == other.size &&
             usage == other.usage &&
             additionalProperties == other.additionalProperties
@@ -1827,6 +1890,7 @@ private constructor(
             data,
             outputFormat,
             quality,
+            safetyIdentifier,
             size,
             usage,
             additionalProperties,
@@ -1836,5 +1900,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ImagesResponse{created=$created, background=$background, data=$data, outputFormat=$outputFormat, quality=$quality, size=$size, usage=$usage, additionalProperties=$additionalProperties}"
+        "ImagesResponse{created=$created, background=$background, data=$data, outputFormat=$outputFormat, quality=$quality, safetyIdentifier=$safetyIdentifier, size=$size, usage=$usage, additionalProperties=$additionalProperties}"
 }
