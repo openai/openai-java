@@ -1,11 +1,19 @@
 package com.openai.client.okhttp
 
+import com.openai.core.ClientOptions
+import com.openai.core.jsonMapper
 import com.openai.helpers.ChatCompletionAccumulator
+import com.openai.helpers.LiveSidebandConnection
 import com.openai.helpers.ResponseAccumulator
 import com.openai.models.chat.completions.ChatCompletionCreateParams
+import com.openai.models.live.OutputAudioFixturePlayEvent
 import com.openai.models.responses.Response
 import com.openai.models.responses.ResponseCreateParams
+import java.util.Base64
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
@@ -22,6 +30,40 @@ internal class LargePayloadContractTest {
     // to make new restrictions pass. This is a regression probe, not an API maximum.
     // Generate data in memory and keep these few cases sequential.
     private val payloadSize = 16 * 1024 * 1024 + 1
+
+    @Test
+    fun liveSidebandSendsMaximumAudioFixture() {
+        // The maximum is 30 seconds of 24 kHz mono PCM16: 1,440,000 raw bytes.
+        val audio = Base64.getEncoder().encodeToString(ByteArray(30 * 24_000 * 2))
+        val received = CompletableFuture<String>()
+        MockWebServer().use { server ->
+            server.enqueue(
+                MockResponse()
+                    .withWebSocketUpgrade(
+                        object : WebSocketListener() {
+                            override fun onMessage(webSocket: WebSocket, text: String) {
+                                received.complete(text)
+                            }
+                        }
+                    )
+            )
+            OkHttpClient.builder().build().use { http ->
+                val options =
+                    ClientOptions.builder()
+                        .httpClient(http)
+                        .apiKey("fake-key")
+                        .baseUrl(server.url("/v1").toString())
+                        .build()
+                LiveSidebandConnection.connect(options, "fixture-session").use { sideband ->
+                    sideband.send(OutputAudioFixturePlayEvent.builder().audio(audio).build())
+                    val event = jsonMapper().readTree(received.get(10, TimeUnit.SECONDS))
+                    assertThat(event.path("type").asText())
+                        .isEqualTo("session.output_audio.fixture.play")
+                    assertCompleteText(event.path("audio").asText(), audio)
+                }
+            }
+        }
+    }
 
     @Test
     fun blockingResponsesJsonPreservesLargeOutputText() {

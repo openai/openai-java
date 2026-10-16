@@ -9,6 +9,7 @@ import com.openai.models.live.CommentaryAppendEvent
 import com.openai.models.live.InputAudioMuteEvent
 import com.openai.models.live.InputAudioUnmuteEvent
 import com.openai.models.live.InstructionsAppendEvent
+import com.openai.models.live.OutputAudioFixturePlayEvent
 import com.openai.models.live.ResponseCreateEvent
 import com.openai.models.live.ResponseItemCreateEvent
 import com.openai.models.live.ServerEvent
@@ -22,7 +23,8 @@ import java.util.concurrent.CompletableFuture
  * credentials. Configure the intended bearer in ClientOptions or per-connection headers; matching a
  * project alone does not guarantee access. A completed connection is transport-open, not a fresh
  * session.started: the server can replay recent events followed by live delivery. No session.start,
- * reconnect, or audio append is sent by this helper. Send audio over the primary transport.
+ * reconnect, or input audio append is sent by this helper. Send input audio over the primary
+ * transport.
  *
  * Receive typed Live server events (including reflected audio and signaling events) in wire order.
  * Closing the observer releases its transport without ending the underlying session or its client.
@@ -92,6 +94,8 @@ private constructor(
     fun send(event: InputAudioMuteEvent) = sendCommand(event)
 
     fun send(event: InputAudioUnmuteEvent) = sendCommand(event)
+
+    fun send(event: OutputAudioFixturePlayEvent) = sendCommand(event)
 
     fun send(event: InstructionsAppendEvent) = sendCommand(event)
 
