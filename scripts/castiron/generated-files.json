@@ -4367,11 +4367,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageEditCompletedEvent.kt": {
       "mode": "100644",
-      "sha256": "2ce8577f09ddb4d66d8b1d63d8ae415b907bac49b6245ad3f24a92776b8281b4"
+      "sha256": "ec0f0d408845ec761fb3707973ce1e7979cd30f75ccc62c19a2a39706831f5c4"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageEditParams.kt": {
       "mode": "100644",
-      "sha256": "41cab75a05c77f79f60a597ba587a7c8cc6b6ab015b2aa5f7fa1db919a8f1aa7"
+      "sha256": "896887a1dd0e4fc7f80aef64f78e8233a3705d23536a70c42f250aaf43e8cec0"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageEditPartialImageEvent.kt": {
       "mode": "100644",
@@ -4383,7 +4383,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageGenCompletedEvent.kt": {
       "mode": "100644",
-      "sha256": "353243d2e316495aa52621ed8024772a0e7f935d1e0516a418f83299ea829f23"
+      "sha256": "8e9709bed66f526e63817494ba5347528a93c9f88b6717ac553bf8772a613c0f"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageGenPartialImageEvent.kt": {
       "mode": "100644",
@@ -4395,7 +4395,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageGenerateParams.kt": {
       "mode": "100644",
-      "sha256": "67fa392b6c0f90ab5453f353b8e644b412f3384ec8c8b480812163db1591ba24"
+      "sha256": "aefb5ad30604f0e72eafffbbebe42202cb5fcc3cb8a2cedebc9f6af7dfa6338c"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageModel.kt": {
       "mode": "100644",
@@ -4403,7 +4403,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImagesResponse.kt": {
       "mode": "100644",
-      "sha256": "d4115c4039b32826e751426bf6dbf4107de79750b885aac60da3c99661674fa8"
+      "sha256": "6647fcaba34ccabcd7cf5ca9705f02c3bf8150a449de5aaa7916c75033b871e2"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/AudioFormat.kt": {
       "mode": "100644",
@@ -12239,11 +12239,11 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/images/ImageEditCompletedEventTest.kt": {
       "mode": "100644",
-      "sha256": "74b4e9073848674d4f0df87d2f5da8c645e90298c07ea379c5119a8a16622067"
+      "sha256": "8d6a9aa1f437fe293958b6ad468b24462b49229770ce02912a7a3d5e6db57535"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/images/ImageEditParamsTest.kt": {
       "mode": "100644",
-      "sha256": "a2a0d16ef0fd0f1aa3c515838eff80178cbeed1a9039d910babbc4374c0a6734"
+      "sha256": "52fc9f3e797210d398cc76c1cbe1e4caa59e6c7f5f9e7b39b0a7ce3a19107317"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/images/ImageEditPartialImageEventTest.kt": {
       "mode": "100644",
@@ -12251,11 +12251,11 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/images/ImageEditStreamEventTest.kt": {
       "mode": "100644",
-      "sha256": "2d70a135db26582448871a6be4bfff72bf549c7bb40ded6543ed20ae8de7d772"
+      "sha256": "402bd65afdd55e72f6963c3dc338480b6802d56fdb656794ad3b22757038a136"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/images/ImageGenCompletedEventTest.kt": {
       "mode": "100644",
-      "sha256": "1d700c0541470538506bff56bb6578e32ccc5e7e9645661106e8ba23624240fc"
+      "sha256": "f95bdd931181de8830a2e6a44f0afbf066b00647ea82ec85a302c2ad50fc9c3d"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/images/ImageGenPartialImageEventTest.kt": {
       "mode": "100644",
@@ -12263,11 +12263,11 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/images/ImageGenStreamEventTest.kt": {
       "mode": "100644",
-      "sha256": "73035e34919549e4b04395edab67423165dba8ed230ab359d653e01bb1daf5da"
+      "sha256": "5074b52963f9d1265390790ae16f7460d5aecc157eaa7593602d537f5e2e4c0d"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/images/ImageGenerateParamsTest.kt": {
       "mode": "100644",
-      "sha256": "14624952a84bc38b46626d37300706ab330cc7336f4bcabc7867693ce0c0002d"
+      "sha256": "ec96aaac548822f53f2629a98d16f5be398320977ef201a9b9753864e14857ed"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/images/ImageTest.kt": {
       "mode": "100644",
@@ -12275,7 +12275,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/images/ImagesResponseTest.kt": {
       "mode": "100644",
-      "sha256": "632a975fdfe5b4ea8ac2db5ce9da91b0ffda247d1313d073dd7ba656ad1c7c48"
+      "sha256": "c514eba672c2b3873e21075bb9e2dc71c0df7b5f7fd8d019adbd207f90eacfc6"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/AudioFormatTest.kt": {
       "mode": "100644",
@@ -14291,7 +14291,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/services/async/ImageServiceAsyncTest.kt": {
       "mode": "100644",
-      "sha256": "482bafd3592b01f9336da1ae08f0344ad1d8b6e4c7f78b144060a29cf6bfab3a"
+      "sha256": "26701b4efba66b33d53db8225ad2710b9a1f849d9f0ec4239ca11a1d38835385"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/async/LiveServiceAsyncTest.kt": {
       "mode": "100644",
@@ -14715,7 +14715,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/ImageServiceTest.kt": {
       "mode": "100644",
-      "sha256": "88c8be9ee87820c464b35fd11f49f9b81a816c45419e2456716cf86648c81c40"
+      "sha256": "adaeac406c75a23d269f6c88c176dd6b68df6a3a9bbc4a2f16110e83796ddbe0"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/LiveServiceTest.kt": {
       "mode": "100644",

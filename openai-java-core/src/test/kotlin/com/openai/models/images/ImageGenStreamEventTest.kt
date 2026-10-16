@@ -82,6 +82,7 @@ internal class ImageGenStreamEventTest {
                         .totalTokens(0L)
                         .build()
                 )
+                .safetyIdentifier("safety_identifier")
                 .build()
 
         val imageGenStreamEvent = ImageGenStreamEvent.ofGenerationCompleted(generationCompleted)
@@ -115,6 +116,7 @@ internal class ImageGenStreamEventTest {
                             .totalTokens(0L)
                             .build()
                     )
+                    .safetyIdentifier("safety_identifier")
                     .build()
             )
 

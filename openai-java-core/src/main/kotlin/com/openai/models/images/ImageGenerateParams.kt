@@ -136,6 +136,18 @@ private constructor(
     @Deprecated("deprecated") fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
     /**
+     * A stable identifier for an end user in your organization, used for safety monitoring and
+     * abuse detection. Hash a username or email address to avoid sending identifying information. A
+     * non-empty value takes precedence over the deprecated `user` parameter. If omitted, null, or
+     * empty, the API uses `user` when available.
+     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun safetyIdentifier(): Optional<String> = body.safetyIdentifier()
+
+    /**
      * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
      * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
      * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
@@ -161,14 +173,14 @@ private constructor(
     @Deprecated("deprecated") fun style(): Optional<Style> = body.style()
 
     /**
-     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
-     * abuse.
+     * Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward
+     * compatibility and is used when `safety_identifier` is omitted, null, or empty.
      * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun user(): Optional<String> = body.user()
+    @Deprecated("deprecated") fun user(): Optional<String> = body.user()
 
     /**
      * Returns the raw JSON value of [prompt].
@@ -243,6 +255,14 @@ private constructor(
     fun _responseFormat(): JsonField<ResponseFormat> = body._responseFormat()
 
     /**
+     * Returns the raw JSON value of [safetyIdentifier].
+     *
+     * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _safetyIdentifier(): JsonField<String> = body._safetyIdentifier()
+
+    /**
      * Returns the raw JSON value of [size].
      *
      * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
@@ -261,7 +281,7 @@ private constructor(
      *
      * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _user(): JsonField<String> = body._user()
+    @Deprecated("deprecated") fun _user(): JsonField<String> = body._user()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -547,6 +567,32 @@ private constructor(
         }
 
         /**
+         * A stable identifier for an end user in your organization, used for safety monitoring and
+         * abuse detection. Hash a username or email address to avoid sending identifying
+         * information. A non-empty value takes precedence over the deprecated `user` parameter. If
+         * omitted, null, or empty, the API uses `user` when available.
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+         */
+        fun safetyIdentifier(safetyIdentifier: String?) = apply {
+            body.safetyIdentifier(safetyIdentifier)
+        }
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
+
+        /**
+         * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+            body.safetyIdentifier(safetyIdentifier)
+        }
+
+        /**
          * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
          * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
          * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
@@ -596,11 +642,11 @@ private constructor(
         @Deprecated("deprecated") fun style(style: JsonField<Style>) = apply { body.style(style) }
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
+         * Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward
+         * compatibility and is used when `safety_identifier` is omitted, null, or empty.
          * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          */
-        fun user(user: String) = apply { body.user(user) }
+        @Deprecated("deprecated") fun user(user: String) = apply { body.user(user) }
 
         /**
          * Sets [Builder.user] to an arbitrary JSON value.
@@ -608,7 +654,7 @@ private constructor(
          * You should usually call [Builder.user] with a well-typed [String] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun user(user: JsonField<String>) = apply { body.user(user) }
+        @Deprecated("deprecated") fun user(user: JsonField<String>) = apply { body.user(user) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -766,6 +812,7 @@ private constructor(
         private val partialImages: JsonField<Long>,
         private val quality: JsonField<Quality>,
         private val responseFormat: JsonField<ResponseFormat>,
+        private val safetyIdentifier: JsonField<String>,
         private val size: JsonField<Size>,
         private val style: JsonField<Style>,
         private val user: JsonField<String>,
@@ -796,6 +843,9 @@ private constructor(
             @JsonProperty("response_format")
             @ExcludeMissing
             responseFormat: JsonField<ResponseFormat> = JsonMissing.of(),
+            @JsonProperty("safety_identifier")
+            @ExcludeMissing
+            safetyIdentifier: JsonField<String> = JsonMissing.of(),
             @JsonProperty("size") @ExcludeMissing size: JsonField<Size> = JsonMissing.of(),
             @JsonProperty("style") @ExcludeMissing style: JsonField<Style> = JsonMissing.of(),
             @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
@@ -810,6 +860,7 @@ private constructor(
             partialImages,
             quality,
             responseFormat,
+            safetyIdentifier,
             size,
             style,
             user,
@@ -924,6 +975,18 @@ private constructor(
             responseFormat.getOptional("response_format")
 
         /**
+         * A stable identifier for an end user in your organization, used for safety monitoring and
+         * abuse detection. Hash a username or email address to avoid sending identifying
+         * information. A non-empty value takes precedence over the deprecated `user` parameter. If
+         * omitted, null, or empty, the API uses `user` when available.
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun safetyIdentifier(): Optional<String> = safetyIdentifier.getOptional("safety_identifier")
+
+        /**
          * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
          * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
          * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
@@ -949,14 +1012,14 @@ private constructor(
         @Deprecated("deprecated") fun style(): Optional<Style> = style.getOptional("style")
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
+         * Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward
+         * compatibility and is used when `safety_identifier` is omitted, null, or empty.
          * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun user(): Optional<String> = user.getOptional("user")
+        @Deprecated("deprecated") fun user(): Optional<String> = user.getOptional("user")
 
         /**
          * Returns the raw JSON value of [prompt].
@@ -1046,6 +1109,16 @@ private constructor(
         fun _responseFormat(): JsonField<ResponseFormat> = responseFormat
 
         /**
+         * Returns the raw JSON value of [safetyIdentifier].
+         *
+         * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("safety_identifier")
+        @ExcludeMissing
+        fun _safetyIdentifier(): JsonField<String> = safetyIdentifier
+
+        /**
          * Returns the raw JSON value of [size].
          *
          * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
@@ -1067,7 +1140,10 @@ private constructor(
          *
          * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("user") @ExcludeMissing fun _user(): JsonField<String> = user
+        @Deprecated("deprecated")
+        @JsonProperty("user")
+        @ExcludeMissing
+        fun _user(): JsonField<String> = user
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1107,6 +1183,7 @@ private constructor(
             private var partialImages: JsonField<Long> = JsonMissing.of()
             private var quality: JsonField<Quality> = JsonMissing.of()
             private var responseFormat: JsonField<ResponseFormat> = JsonMissing.of()
+            private var safetyIdentifier: JsonField<String> = JsonMissing.of()
             private var size: JsonField<Size> = JsonMissing.of()
             private var style: JsonField<Style> = JsonMissing.of()
             private var user: JsonField<String> = JsonMissing.of()
@@ -1124,6 +1201,7 @@ private constructor(
                 partialImages = body.partialImages
                 quality = body.quality
                 responseFormat = body.responseFormat
+                safetyIdentifier = body.safetyIdentifier
                 size = body.size
                 style = body.style
                 user = body.user
@@ -1379,6 +1457,33 @@ private constructor(
             }
 
             /**
+             * A stable identifier for an end user in your organization, used for safety monitoring
+             * and abuse detection. Hash a username or email address to avoid sending identifying
+             * information. A non-empty value takes precedence over the deprecated `user` parameter.
+             * If omitted, null, or empty, the API uses `user` when available.
+             * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+             */
+            fun safetyIdentifier(safetyIdentifier: String?) =
+                safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+            /**
+             * Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`.
+             */
+            fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+                safetyIdentifier(safetyIdentifier.getOrNull())
+
+            /**
+             * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+                this.safetyIdentifier = safetyIdentifier
+            }
+
+            /**
              * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
              * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
              * and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as
@@ -1432,11 +1537,12 @@ private constructor(
             fun style(style: JsonField<Style>) = apply { this.style = style }
 
             /**
-             * A unique identifier representing your end-user, which can help OpenAI to monitor and
-             * detect abuse.
+             * Deprecated: use `safety_identifier` instead. This parameter remains accepted for
+             * backward compatibility and is used when `safety_identifier` is omitted, null, or
+             * empty.
              * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
              */
-            fun user(user: String) = user(JsonField.of(user))
+            @Deprecated("deprecated") fun user(user: String) = user(JsonField.of(user))
 
             /**
              * Sets [Builder.user] to an arbitrary JSON value.
@@ -1445,7 +1551,7 @@ private constructor(
              * method is primarily for setting the field to an undocumented or not yet supported
              * value.
              */
-            fun user(user: JsonField<String>) = apply { this.user = user }
+            @Deprecated("deprecated") fun user(user: JsonField<String>) = apply { this.user = user }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1490,6 +1596,7 @@ private constructor(
                     partialImages,
                     quality,
                     responseFormat,
+                    safetyIdentifier,
                     size,
                     style,
                     user,
@@ -1523,6 +1630,7 @@ private constructor(
             partialImages()
             quality().ifPresent { it.validate() }
             responseFormat().ifPresent { it.validate() }
+            safetyIdentifier()
             size()
             style().ifPresent { it.validate() }
             user()
@@ -1555,6 +1663,7 @@ private constructor(
                 (if (partialImages.asKnown().isPresent) 1 else 0) +
                 (quality.asKnown().getOrNull()?.validity() ?: 0) +
                 (responseFormat.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (safetyIdentifier.asKnown().isPresent) 1 else 0) +
                 (if (size.asKnown().isPresent) 1 else 0) +
                 (style.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (user.asKnown().isPresent) 1 else 0)
@@ -1575,6 +1684,7 @@ private constructor(
                 partialImages == other.partialImages &&
                 quality == other.quality &&
                 responseFormat == other.responseFormat &&
+                safetyIdentifier == other.safetyIdentifier &&
                 size == other.size &&
                 style == other.style &&
                 user == other.user &&
@@ -1593,6 +1703,7 @@ private constructor(
                 partialImages,
                 quality,
                 responseFormat,
+                safetyIdentifier,
                 size,
                 style,
                 user,
@@ -1603,7 +1714,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{prompt=$prompt, background=$background, model=$model, moderation=$moderation, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, size=$size, style=$style, user=$user, additionalProperties=$additionalProperties}"
+            "Body{prompt=$prompt, background=$background, model=$model, moderation=$moderation, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, size=$size, style=$style, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**
