@@ -322,6 +322,11 @@ internal class ResponseAccumulatorTest {
         send(
             """{"type":"response.output_text.done","sequence_number":9,"output_index":0,"content_index":0,"item_id":"m","text":"final","logprobs":[{"token":"final","logprob":-0.3,"top_logprobs":[]}]}"""
         )
+        repeat(100) { sequence ->
+            send(
+                """{"type":"response.output_text.done","sequence_number":${10 + sequence},"output_index":0,"content_index":0,"item_id":"m","text":"final"}"""
+            )
+        }
         val last = state.snapshot().get()
         val text = last.output()[0].asMessage().content()[0].asOutputText()
         assertThat(last.output()[1].asCustomToolCall().input()).isEqualTo("authoritative patch")
@@ -333,6 +338,34 @@ internal class ResponseAccumulatorTest {
         assertThat(first.output()[1].asCustomToolCall().input()).isEqualTo("patch first")
         assertThatThrownBy { state.response() }
             .isExactlyInstanceOf(IllegalStateException::class.java)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["", "\"text\":null,", "\"text\":123,"])
+    fun textDoneEstablishesTextForLaterDeltas(initialText: String) {
+        val mapper = jsonMapper()
+        val state = ResponseAccumulator.createWithSnapshots()
+        fun send(frame: String) {
+            state.accumulate(mapper.readValue(frame, ResponseStreamEvent::class.java))
+        }
+        send(
+            """{"type":"response.created","sequence_number":0,"response":{"id":"r","output":[{"id":"m","type":"message","role":"assistant","status":"in_progress","content":[{"type":"output_text",${initialText}"annotations":[]}]}]}}"""
+        )
+        send(
+            """{"type":"response.output_text.done","sequence_number":1,"output_index":0,"content_index":0,"item_id":"m","text":"final"}"""
+        )
+        val completed = state.snapshot().get()
+        send(
+            """{"type":"response.refusal.delta","sequence_number":2,"output_index":0,"content_index":0,"item_id":"m","delta":"ignored"}"""
+        )
+        send(
+            """{"type":"response.output_text.delta","sequence_number":3,"output_index":0,"content_index":0,"item_id":"m","delta":"!","logprobs":[{"token":"!","logprob":-0.1,"top_logprobs":[]}]}"""
+        )
+        val text = state.snapshot().get().output()[0].asMessage().content()[0].asOutputText()
+        assertThat(text.text()).isEqualTo("final!")
+        assertThat(text.logprobs().get().map { it.token() }).containsExactly("!")
+        assertThat(completed.output()[0].asMessage().content()[0].asOutputText().text())
+            .isEqualTo("final")
     }
 
     @Test

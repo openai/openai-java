@@ -602,17 +602,18 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                     ) { content ->
                         val outputText =
                             content?.part?.outputText()?.orElse(null) ?: return@updateContent null
-                        val result =
-                            ResponseOutputMessage.Content.ofOutputText(
-                                outputText.toBuilder().text(outputTextDone.text()).build()
-                            )
                         val probabilities = outputTextDone._logprobs().asKnown().orElse(null)
                         val converted =
                             probabilities?.mapNotNull {
                                 JsonValue.from(it).convert(ResponseOutputText.Logprob::class.java)
                             }
-                        content.part = result
-                        content.text = null
+                        if (outputText._text().asKnown().orElse(null) == null) {
+                            content.part =
+                                ResponseOutputMessage.Content.ofOutputText(
+                                    outputText.toBuilder().text(outputTextDone.text()).build()
+                                )
+                        }
+                        content.text = StringBuilder(outputTextDone.text())
                         if (converted != null) content.logprobs = converted.toMutableList()
                         content
                     }
