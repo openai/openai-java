@@ -1,8 +1,15 @@
 package com.openai.core
 
+import com.openai.core.http.RequestObserver
 import java.time.Duration
 
-class RequestOptions private constructor(val responseValidation: Boolean?, val timeout: Timeout?) {
+class RequestOptions
+private constructor(
+    val responseValidation: Boolean?,
+    val timeout: Timeout?,
+    /** Optional callback for the URL prepared by the HTTP transport for this request. */
+    val requestObserver: RequestObserver?,
+) {
 
     companion object {
 
@@ -26,12 +33,19 @@ class RequestOptions private constructor(val responseValidation: Boolean?, val t
             timeout =
                 if (options.timeout != null && timeout != null) timeout.assign(options.timeout)
                 else timeout ?: options.timeout,
+            requestObserver = requestObserver ?: options.requestObserver,
         )
+
+    /** Returns a copy with a callback scoped to this execution. */
+    @JvmSynthetic
+    internal fun withRequestObserver(observer: RequestObserver): RequestOptions =
+        RequestOptions(responseValidation, timeout, observer)
 
     class Builder internal constructor() {
 
         private var responseValidation: Boolean? = null
         private var timeout: Timeout? = null
+        private var requestObserver: RequestObserver? = null
 
         /**
          * Whether to call `validate` on the response before returning it.
@@ -50,6 +64,13 @@ class RequestOptions private constructor(val responseValidation: Boolean?, val t
 
         fun timeout(timeout: Duration) = timeout(Timeout.builder().request(timeout).build())
 
-        fun build(): RequestOptions = RequestOptions(responseValidation, timeout)
+        /**
+         * Reports the transport's initial prepared method and URL, if the transport supports it.
+         */
+        fun requestObserver(requestObserver: RequestObserver) = apply {
+            this.requestObserver = requestObserver
+        }
+
+        fun build(): RequestOptions = RequestOptions(responseValidation, timeout, requestObserver)
     }
 }
