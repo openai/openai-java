@@ -14,6 +14,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import com.openai.client.okhttp.OkHttpClient
+import com.openai.core.DefaultSleeper
 import com.openai.core.RequestOptions
 import com.openai.core.Sleeper
 import com.openai.core.jsonMapper
@@ -25,6 +26,7 @@ import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -44,6 +46,32 @@ import org.mockito.kotlin.whenever
 @WireMockTest
 @ResourceLock("https://github.com/wiremock/wiremock/issues/169")
 internal class RetryingHttpClientTest {
+
+    @Test
+    fun closeDuringAsyncBackoffSettlesRequestWithoutAnotherAttempt() {
+        val sleeper = DefaultSleeper()
+        val response = mock<HttpResponse>()
+        whenever(response.statusCode()).thenReturn(503)
+        whenever(response.headers()).thenReturn(Headers.builder().put("Retry-After", "8").build())
+        val delegate = mock<HttpClient>()
+        whenever(delegate.executeAsync(any(), any()))
+            .thenReturn(CompletableFuture.completedFuture(response))
+        val request =
+            HttpRequest.builder().method(HttpMethod.GET).baseUrl("https://example.test").build()
+
+        RetryingHttpClient.builder().httpClient(delegate).sleeper(sleeper).build().use { client ->
+            // The completed transport future enters backoff inline before executeAsync returns.
+            val result = client.executeAsync(request)
+            assertThat(result.isDone).isFalse()
+            org.mockito.kotlin.verify(response).close()
+
+            client.close()
+
+            assertThatThrownBy { result.get(1, TimeUnit.SECONDS) }
+                .hasRootCauseInstanceOf(CancellationException::class.java)
+            org.mockito.kotlin.verify(delegate).executeAsync(any(), any())
+        }
+    }
 
     @Test
     fun cancellingNonMultipartStreamCancelsTransport() {
