@@ -102,7 +102,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
     }
 
     private class PendingContent(var part: ResponseOutputMessage.Content) {
-        var text: StringBuilder? = null
+        var text: CharSequence? = null
         var annotations: MutableList<ResponseOutputText.Annotation>? = null
         var logprobs: MutableList<ResponseOutputText.Logprob>? = null
     }
@@ -613,7 +613,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                                     outputText.toBuilder().text(outputTextDone.text()).build()
                                 )
                         }
-                        content.text = StringBuilder(outputTextDone.text())
+                        content.text = outputTextDone.text()
                         if (converted != null) content.logprobs = converted.toMutableList()
                         content
                     }
@@ -765,7 +765,8 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         if (contentIndex < 0 || contentIndex >= parts.size.toLong()) return null
         val part = parts[contentIndex.toInt()]
         val text = initial(part.part) ?: return null
-        val buffer = part.text ?: StringBuilder(text).also { part.text = it }
+        val buffer =
+            part.text as? StringBuilder ?: StringBuilder(part.text ?: text).also { part.text = it }
         buffer.append(delta)
         materialized = null
         return part

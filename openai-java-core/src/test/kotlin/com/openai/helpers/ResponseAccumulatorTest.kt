@@ -17,6 +17,7 @@ import com.openai.models.responses.ResponseOutputItem
 import com.openai.models.responses.ResponseOutputMessage
 import com.openai.models.responses.ResponseOutputText
 import com.openai.models.responses.ResponseStreamEvent
+import com.openai.models.responses.ResponseTextDoneEvent
 import com.openai.models.responses.ResponsesServerEvent
 import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
@@ -338,6 +339,57 @@ internal class ResponseAccumulatorTest {
         assertThat(first.output()[1].asCustomToolCall().input()).isEqualTo("patch first")
         assertThatThrownBy { state.response() }
             .isExactlyInstanceOf(IllegalStateException::class.java)
+    }
+
+    @Test
+    fun repeatedLargeTextDoneRetainsTextUntilAnotherDelta() {
+        val mapper = jsonMapper()
+        val state = ResponseAccumulator.createWithSnapshots()
+        fun send(frame: String) {
+            state.accumulate(mapper.readValue(frame, ResponseStreamEvent::class.java))
+        }
+        send(
+            """{"type":"response.created","sequence_number":0,"response":{"id":"r","output":[{"id":"m","type":"message","role":"assistant","status":"in_progress","content":[{"type":"output_text","text":"old","annotations":[]}]}]}}"""
+        )
+        val text = "x".repeat(4 * 1024 * 1024)
+        val done =
+            ResponseStreamEvent.ofOutputTextDone(
+                ResponseTextDoneEvent.builder()
+                    .sequenceNumber(1)
+                    .outputIndex(0)
+                    .contentIndex(0)
+                    .itemId("m")
+                    .text(text)
+                    .logprobs(emptyList())
+                    .build()
+            )
+        repeat(128) { state.accumulate(done) }
+        val completed = state.snapshot().get()
+        // An immutable completed string can be shared without copying its large payload.
+        assertThat(completed.output()[0].asMessage().content()[0].asOutputText().text() === text)
+            .isTrue()
+        send(
+            """{"type":"response.output_text.delta","sequence_number":2,"output_index":0,"content_index":0,"item_id":"m","delta":"!"}"""
+        )
+        val appended = state.snapshot().get()
+        assertThat(appended.output()[0].asMessage().content()[0].asOutputText().text())
+            .isEqualTo(text + "!")
+        state.accumulate(done)
+        assertThat(
+                state
+                    .snapshot()
+                    .get()
+                    .output()[0]
+                    .asMessage()
+                    .content()[0]
+                    .asOutputText()
+                    .text() === text
+            )
+            .isTrue()
+        assertThat(completed.output()[0].asMessage().content()[0].asOutputText().text() === text)
+            .isTrue()
+        assertThat(appended.output()[0].asMessage().content()[0].asOutputText().text())
+            .isEqualTo(text + "!")
     }
 
     @ParameterizedTest
