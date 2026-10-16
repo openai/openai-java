@@ -11,9 +11,11 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -21,8 +23,18 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Updates the expiration of an existing API key in the project, including a service-account-owned
- * key. Requires permission to write project API keys.
+ * Updates the scopes and/or expiration of an existing API key in the project, including a
+ * service-account-owned key. Requires permission to write project API keys.
+ *
+ * Provide at least one of `scopes` or `expires_in_seconds`. Omitted fields stay unchanged; neither
+ * field accepts `null`. Both changes are saved together.
+ *
+ * `scopes` replaces the key's scope restrictions using the same scope identifiers as the dashboard.
+ * An empty array means All permissions, subject to the owner's effective access; it does not mean
+ * no access. Use `["api.all.read"]` for read-only access or specific scopes such as
+ * `["api.files.read"]` for restricted access. This does not change user or service-account roles or
+ * grant admin permissions. Scope changes follow the same authentication-cache propagation as
+ * dashboard edits.
  *
  * Provide `expires_in_seconds` to set the expiration relative to this request. The value must
  * satisfy the organization's and project's expiry policies. Expired keys cannot be updated.
@@ -45,12 +57,27 @@ private constructor(
     /**
      * Number of seconds from this request until the API key expires. Must comply with the
      * organization and project expiry policies. Expired keys cannot be updated. Retrying resets the
-     * expiry relative to the new request.
+     * expiry relative to the new request. Omit to keep the current expiration.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * For scope-only updates, use [expiresInSecondsOptional] to inspect the omitted expiry.
+     *
+     * @throws OpenAIInvalidDataException if the field is missing, null, or has an unexpected type.
      */
     fun expiresInSeconds(): Long = body.expiresInSeconds()
+
+    /** Returns the requested expiry, or empty when only scopes are being updated. */
+    fun expiresInSecondsOptional(): Optional<Long> = body.expiresInSecondsOptional()
+
+    /**
+     * Replace the API key scope restrictions. Omit to leave scopes unchanged. An empty array
+     * removes key restrictions (All permissions), subject to the owner's effective permissions. Use
+     * ["api.all.read"] for read-only access. Scopes do not change the owner's roles or grant
+     * administrative permissions.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun scopes(): Optional<List<String>> = body.scopes()
 
     /**
      * Returns the raw JSON value of [expiresInSeconds].
@@ -59,6 +86,13 @@ private constructor(
      * type.
      */
     fun _expiresInSeconds(): JsonField<Long> = body._expiresInSeconds()
+
+    /**
+     * Returns the raw JSON value of [scopes].
+     *
+     * Unlike [scopes], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _scopes(): JsonField<List<String>> = body._scopes()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -78,7 +112,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .projectId()
-         * .expiresInSeconds()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -115,13 +148,14 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [expiresInSeconds]
+         * - [scopes]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
          * Number of seconds from this request until the API key expires. Must comply with the
          * organization and project expiry policies. Expired keys cannot be updated. Retrying resets
-         * the expiry relative to the new request.
+         * the expiry relative to the new request. Omit to keep the current expiration.
          */
         fun expiresInSeconds(expiresInSeconds: Long) = apply {
             body.expiresInSeconds(expiresInSeconds)
@@ -137,6 +171,30 @@ private constructor(
         fun expiresInSeconds(expiresInSeconds: JsonField<Long>) = apply {
             body.expiresInSeconds(expiresInSeconds)
         }
+
+        /**
+         * Replace the API key scope restrictions. Omit to leave scopes unchanged. An empty array
+         * removes key restrictions (All permissions), subject to the owner's effective permissions.
+         * Use ["api.all.read"] for read-only access. Scopes do not change the owner's roles or
+         * grant administrative permissions.
+         */
+        fun scopes(scopes: List<String>) = apply { body.scopes(scopes) }
+
+        /**
+         * Sets [Builder.scopes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.scopes] with a well-typed `List<String>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun scopes(scopes: JsonField<List<String>>) = apply { body.scopes(scopes) }
+
+        /**
+         * Adds a single [String] to [scopes].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addScope(scope: String) = apply { body.addScope(scope) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -263,7 +321,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .projectId()
-         * .expiresInSeconds()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -295,6 +352,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val expiresInSeconds: JsonField<Long>,
+        private val scopes: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -302,18 +360,38 @@ private constructor(
         private constructor(
             @JsonProperty("expires_in_seconds")
             @ExcludeMissing
-            expiresInSeconds: JsonField<Long> = JsonMissing.of()
-        ) : this(expiresInSeconds, mutableMapOf())
+            expiresInSeconds: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("scopes")
+            @ExcludeMissing
+            scopes: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(expiresInSeconds, scopes, mutableMapOf())
 
         /**
          * Number of seconds from this request until the API key expires. Must comply with the
          * organization and project expiry policies. Expired keys cannot be updated. Retrying resets
-         * the expiry relative to the new request.
+         * the expiry relative to the new request. Omit to keep the current expiration.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * For scope-only updates, use [expiresInSecondsOptional] to inspect the omitted expiry.
+         *
+         * @throws OpenAIInvalidDataException if the field is missing, null, or has an unexpected
+         *   type.
          */
         fun expiresInSeconds(): Long = expiresInSeconds.getRequired("expires_in_seconds")
+
+        /** Returns the requested expiry, or empty when only scopes are being updated. */
+        fun expiresInSecondsOptional(): Optional<Long> =
+            expiresInSeconds.getOptional("expires_in_seconds")
+
+        /**
+         * Replace the API key scope restrictions. Omit to leave scopes unchanged. An empty array
+         * removes key restrictions (All permissions), subject to the owner's effective permissions.
+         * Use ["api.all.read"] for read-only access. Scopes do not change the owner's roles or
+         * grant administrative permissions.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun scopes(): Optional<List<String>> = scopes.getOptional("scopes")
 
         /**
          * Returns the raw JSON value of [expiresInSeconds].
@@ -324,6 +402,13 @@ private constructor(
         @JsonProperty("expires_in_seconds")
         @ExcludeMissing
         fun _expiresInSeconds(): JsonField<Long> = expiresInSeconds
+
+        /**
+         * Returns the raw JSON value of [scopes].
+         *
+         * Unlike [scopes], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("scopes") @ExcludeMissing fun _scopes(): JsonField<List<String>> = scopes
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -339,33 +424,28 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .expiresInSeconds()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var expiresInSeconds: JsonField<Long>? = null
+            private var expiresInSeconds: JsonField<Long> = JsonMissing.of()
+            private var scopes: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 expiresInSeconds = body.expiresInSeconds
+                scopes = body.scopes.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
              * Number of seconds from this request until the API key expires. Must comply with the
              * organization and project expiry policies. Expired keys cannot be updated. Retrying
-             * resets the expiry relative to the new request.
+             * resets the expiry relative to the new request. Omit to keep the current expiration.
              */
             fun expiresInSeconds(expiresInSeconds: Long) =
                 expiresInSeconds(JsonField.of(expiresInSeconds))
@@ -379,6 +459,37 @@ private constructor(
              */
             fun expiresInSeconds(expiresInSeconds: JsonField<Long>) = apply {
                 this.expiresInSeconds = expiresInSeconds
+            }
+
+            /**
+             * Replace the API key scope restrictions. Omit to leave scopes unchanged. An empty
+             * array removes key restrictions (All permissions), subject to the owner's effective
+             * permissions. Use ["api.all.read"] for read-only access. Scopes do not change the
+             * owner's roles or grant administrative permissions.
+             */
+            fun scopes(scopes: List<String>) = scopes(JsonField.of(scopes))
+
+            /**
+             * Sets [Builder.scopes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.scopes] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun scopes(scopes: JsonField<List<String>>) = apply {
+                this.scopes = scopes.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [scopes].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addScope(scope: String) = apply {
+                scopes =
+                    (scopes?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("scopes", it).add(scope)
+                    }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -404,17 +515,11 @@ private constructor(
              * Returns an immutable instance of [Body].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .expiresInSeconds()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
                 Body(
-                    checkRequired("expiresInSeconds", expiresInSeconds),
+                    expiresInSeconds,
+                    (scopes ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -435,7 +540,8 @@ private constructor(
                 return@apply
             }
 
-            expiresInSeconds()
+            expiresInSecondsOptional()
+            scopes()
             validated = true
         }
 
@@ -454,7 +560,9 @@ private constructor(
          * Used for best match union deserialization.
          */
         @JvmSynthetic
-        internal fun validity(): Int = (if (expiresInSeconds.asKnown().isPresent) 1 else 0)
+        internal fun validity(): Int =
+            (if (expiresInSeconds.asKnown().isPresent) 1 else 0) +
+                (scopes.asKnown().getOrNull()?.size ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -463,15 +571,18 @@ private constructor(
 
             return other is Body &&
                 expiresInSeconds == other.expiresInSeconds &&
+                scopes == other.scopes &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(expiresInSeconds, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(expiresInSeconds, scopes, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{expiresInSeconds=$expiresInSeconds, additionalProperties=$additionalProperties}"
+            "Body{expiresInSeconds=$expiresInSeconds, scopes=$scopes, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

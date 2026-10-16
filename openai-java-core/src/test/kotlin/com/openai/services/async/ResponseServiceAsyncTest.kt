@@ -2,6 +2,13 @@
 
 package com.openai.services.async
 
+import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.ok
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
+import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
@@ -20,8 +27,11 @@ import com.openai.models.responses.ToolChoiceOptions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.parallel.ResourceLock
 
 @ExtendWith(TestServerExtension::class)
+@WireMockTest
+@ResourceLock("https://github.com/wiremock/wiremock/issues/169")
 internal class ResponseServiceAsyncTest {
 
     @Test
@@ -303,9 +313,16 @@ internal class ResponseServiceAsyncTest {
                     .build()
             )
 
+        val received = java.util.concurrent.atomic.AtomicInteger()
         val onCompleteFuture =
-            responseStreamResponse.subscribe { response -> response.validate() }.onCompleteFuture()
+            responseStreamResponse
+                .subscribe { event ->
+                    event.validate()
+                    received.incrementAndGet()
+                }
+                .onCompleteFuture()
         onCompleteFuture.get()
+        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 
     @Test
@@ -334,14 +351,27 @@ internal class ResponseServiceAsyncTest {
 
     @Disabled("Prism does not support SSE streaming mock responses")
     @Test
-    fun retrieveStreaming() {
+    fun retrieveStreaming(wmRuntimeInfo: WireMockRuntimeInfo) {
         val client =
             OpenAIOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
+                .baseUrl(wmRuntimeInfo.httpBaseUrl)
                 .apiKey("My API Key")
                 .adminApiKey("My Admin API Key")
                 .build()
         val responseServiceAsync = client.responses()
+
+        stubFor(
+            get(anyUrl())
+                .withHeader("Accept", equalTo("text/event-stream"))
+                .withQueryParam("stream", equalTo("true"))
+                .willReturn(
+                    ok()
+                        .withHeader("Content-Type", "text/event-stream")
+                        .withBody(
+                            "data: {\"delta\":\"delta\",\"sequence_number\":0,\"type\":\"response.audio.delta\"}\n\n"
+                        )
+                )
+        )
 
         val responseStreamResponse =
             responseServiceAsync.retrieveStreaming(
@@ -353,9 +383,16 @@ internal class ResponseServiceAsyncTest {
                     .build()
             )
 
+        val received = java.util.concurrent.atomic.AtomicInteger()
         val onCompleteFuture =
-            responseStreamResponse.subscribe { response -> response.validate() }.onCompleteFuture()
+            responseStreamResponse
+                .subscribe { event ->
+                    event.validate()
+                    received.incrementAndGet()
+                }
+                .onCompleteFuture()
         onCompleteFuture.get()
+        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 
     @Test
