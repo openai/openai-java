@@ -29,6 +29,7 @@ import okhttp3.ConnectionPool
 import okhttp3.Dispatcher
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -211,6 +212,7 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         private var sslSocketFactory: SSLSocketFactory? = null
         private var trustManager: X509TrustManager? = null
         private var hostnameVerifier: HostnameVerifier? = null
+        private val interceptors: MutableList<Interceptor> = mutableListOf()
 
         fun timeout(timeout: Timeout) = apply { this.timeout = timeout }
 
@@ -226,6 +228,9 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         fun proxyAuthenticator(proxyAuthenticator: ProxyAuthenticator?) = apply {
             this.proxyAuthenticator = proxyAuthenticator
         }
+
+        /** Adds an application interceptor to the underlying OkHttp transport. */
+        fun addInterceptor(interceptor: Interceptor) = apply { interceptors.add(interceptor) }
 
         /**
          * Sets the maximum number of idle connections kept by the underlying [ConnectionPool].
@@ -279,6 +284,8 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
                     .callTimeout(timeout.request())
                     .proxy(proxy)
                     .apply {
+                        interceptors.forEach(::addInterceptor)
+
                         proxyAuthenticator?.let { auth ->
                             proxyAuthenticator { route, response ->
                                 val proxy = route?.proxy ?: Proxy.NO_PROXY

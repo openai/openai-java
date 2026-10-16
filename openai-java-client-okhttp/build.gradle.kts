@@ -30,7 +30,7 @@ listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath)
 dependencies {
     api(project(":openai-java-core"))
 
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    api("com.squareup.okhttp3:okhttp:4.12.0")
 
     testImplementation(kotlin("test"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

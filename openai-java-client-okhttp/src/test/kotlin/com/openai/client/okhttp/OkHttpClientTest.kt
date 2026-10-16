@@ -127,6 +127,42 @@ internal class OkHttpClientTest {
     }
 
     @Test
+    fun execute_runsConfiguredApplicationInterceptor() {
+        stubFor(get(urlPathEqualTo("/something")).willReturn(ok()))
+        val client =
+            OkHttpClient.builder()
+                .addInterceptor(
+                    Interceptor { chain ->
+                        chain.proceed(
+                            chain
+                                .request()
+                                .newBuilder()
+                                .header("X-Test-Interceptor", "applied")
+                                .build()
+                        )
+                    }
+                )
+                .build()
+
+        client
+            .execute(
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build()
+            )
+            .use { assertThat(it.statusCode()).isEqualTo(200) }
+
+        verify(
+            1,
+            getRequestedFor(urlPathEqualTo("/something"))
+                .withHeader("X-Test-Interceptor", equalTo("applied")),
+        )
+        client.close()
+    }
+
+    @Test
     fun cancellingMultipartUploadAbortsCallWaitingForResponse() {
         val callFailed = CountDownLatch(1)
         val closes = AtomicInteger()
