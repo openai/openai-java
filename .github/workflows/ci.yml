@@ -142,14 +142,28 @@ jobs:
 
       # The basic Gradle cache is keyed only by build files: a faster job can save it before the
       # SDK compiles and GitHub caches cannot be overwritten. Overlay the last successful main
-      # build's content-addressed compilation cache. Gradle still checks every task's own inputs.
+      # build's content-addressed compilation cache. Keep only that build's selected entries,
+      # rather than carrying several GB of historical outputs forward. Gradle checks task inputs.
       - name: Restore SDK compilation cache
         id: sdk-compilation-cache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: ~/.gradle/caches/build-cache-1
-          key: java-sdk-compile-v1-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
-          restore-keys: java-sdk-compile-v1-${{ runner.os }}-${{ runner.arch }}-
+          path: ${{ runner.temp }}/ci-gradle-build-cache
+          key: java-sdk-compile-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+          restore-keys: java-sdk-compile-v2-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: Import SDK compilation cache
+        env:
+          CACHE_ARTIFACT_PATH: ${{ runner.temp }}/ci-gradle-build-cache
+        run: |
+          set -euo pipefail
+          if [[ -d "$CACHE_ARTIFACT_PATH" ]]; then
+            cache_root="${GRADLE_USER_HOME:-$HOME/.gradle}/caches/build-cache-1"
+            mkdir -p "$cache_root"
+            cp -R "$CACHE_ARTIFACT_PATH/." "$cache_root/"
+            # Leave a fresh destination for the collector; never re-publish restored history.
+            mv "$CACHE_ARTIFACT_PATH" "$CACHE_ARTIFACT_PATH.restored"
+          fi
 
       - name: Build SDK
         env:
@@ -186,7 +200,7 @@ jobs:
           steps.sdk-compilation-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: ~/.gradle/caches/build-cache-1
+          path: ${{ runner.temp }}/ci-gradle-build-cache
           key: ${{ steps.sdk-compilation-cache.outputs.cache-primary-key }}
 
   jackson_compatibility:

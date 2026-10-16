@@ -138,11 +138,52 @@ class GradleCacheTrustPolicyTest {
                     "        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25\n" +
                     "        with:\n" +
                     "          path: ~/.gradle/caches/build-cache-1\n" +
-                    "          key: java-sdk-compile-v1-incomplete\n\n" +
+                    "          key: java-sdk-compile-v2-incomplete\n\n" +
                     "      - name: Run lints\n",
             )
         assertTrue(earlierSave != workflow)
         assertFailsWith<AssertionError> { assertPullRequestCachePolicy(earlierSave) }
+    }
+
+    @Test
+    fun `compact compilation cache imports entries and leaves a fresh collection destination`() {
+        val workflow = parseWorkflow(Path.of("../.github/workflows/ci.yml").readText())
+        val script =
+            requireNotNull(
+                workflow.job("build").steps.single { it.name == "Import SDK compilation cache" }.run
+            )
+        for (cacheHit in listOf(false, true)) {
+            for (customGradleHome in listOf(false, true)) {
+                val root = temporaryDirectory.resolve("$cacheHit-$customGradleHome")
+                val home = root.resolve("home")
+                val gradleHome =
+                    if (customGradleHome) root.resolve("custom-gradle") else home.resolve(".gradle")
+                val cacheRoot = gradleHome.resolve("caches/build-cache-1")
+                Files.createDirectories(cacheRoot)
+                cacheRoot.resolve("existing-entry").writeText("from setup-gradle")
+                val artifact = root.resolve("ci-gradle-build-cache")
+                val key = "0123456789abcdef0123456789abcdef"
+                if (cacheHit) {
+                    Files.createDirectories(artifact)
+                    artifact.resolve(key).writeText("compiled output")
+                }
+                val builder = ProcessBuilder("bash", "-c", script).redirectErrorStream(true)
+                builder.environment().apply {
+                    put("HOME", home.toString())
+                    put("CACHE_ARTIFACT_PATH", artifact.toString())
+                    remove("GRADLE_USER_HOME")
+                    if (customGradleHome) put("GRADLE_USER_HOME", gradleHome.toString())
+                }
+                val process = builder.start()
+                val output = process.inputStream.bufferedReader().use { it.readText() }
+                assertEquals(0, process.waitFor(), output)
+                assertEquals("from setup-gradle", cacheRoot.resolve("existing-entry").readText())
+                assertEquals(cacheHit, Files.exists(cacheRoot.resolve(key)))
+                if (cacheHit) assertEquals("compiled output", cacheRoot.resolve(key).readText())
+                assertFalse(Files.exists(artifact), "The collector must get a fresh destination.")
+                assertEquals(cacheHit, Files.exists(root.resolve("ci-gradle-build-cache.restored")))
+            }
+        }
     }
 
     @Test
@@ -1015,15 +1056,15 @@ class GradleCacheTrustPolicyTest {
             assertTrue(
                 step.action!!.reference.substringAfter('@').matches(Regex("[0-9a-fA-F]{40}"))
             )
-            assertEquals("~/.gradle/caches/build-cache-1", step.action.inputs["path"])
+            assertEquals("\${{ runner.temp }}/ci-gradle-build-cache", step.action.inputs["path"])
         }
         assertEquals(
-            "java-sdk-compile-v1-\${{ runner.os }}-\${{ runner.arch }}-\${{ github.sha }}",
+            "java-sdk-compile-v2-\${{ runner.os }}-\${{ runner.arch }}-\${{ github.sha }}",
             restore.action?.inputs?.get("key"),
             "Each successful main revision must be able to refresh the compilation cache.",
         )
         assertEquals(
-            "java-sdk-compile-v1-\${{ runner.os }}-\${{ runner.arch }}-",
+            "java-sdk-compile-v2-\${{ runner.os }}-\${{ runner.arch }}-",
             restore.action?.inputs?.get("restore-keys"),
         )
         assertEquals(
@@ -1039,8 +1080,22 @@ class GradleCacheTrustPolicyTest {
         )
         val buildSteps = parsedWorkflow.job("build").steps
         val buildIndex = buildSteps.indexOfFirst { it.name == "Build SDK" }
-        assertTrue(buildSteps.indexOf(restore) < buildIndex)
-        assertTrue(buildSteps.indexOf(save) > buildIndex)
+        val importIndex = buildSteps.indexOfFirst { it.name == "Import SDK compilation cache" }
+        val collectIndex =
+            buildSteps.indexOfFirst { it.name == "Collect exact-run Gradle build cache" }
+        assertTrue(buildSteps.indexOf(restore) < importIndex)
+        assertTrue(importIndex < buildIndex)
+        assertTrue(collectIndex > buildIndex)
+        assertTrue(buildSteps.indexOf(save) > collectIndex)
+        val collector = buildSteps[collectIndex]
+        assertEquals(
+            "\${{ runner.temp }}/ci-gradle-build-cache",
+            collector.environment["CACHE_ARTIFACT_PATH"],
+        )
+        assertEquals(
+            "./scripts/collect-gradle-build-cache \"\$CACHE_ARTIFACT_PATH\"",
+            collector.run,
+        )
     }
 
     private fun assertPublishingCachePolicy(workflow: String) {

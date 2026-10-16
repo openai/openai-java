@@ -30,6 +30,7 @@ tasks.test {
             layout.projectDirectory.file("../scripts/java-format"),
             layout.projectDirectory.file("../scripts/lint"),
             layout.projectDirectory.file("../scripts/format"),
+            layout.projectDirectory.file("../scripts/collect-gradle-build-cache"),
         )
         .withPathSensitivity(PathSensitivity.RELATIVE)
     inputs
