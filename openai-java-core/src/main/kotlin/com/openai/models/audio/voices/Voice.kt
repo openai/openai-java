@@ -15,9 +15,13 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** A custom voice that can be used for audio output. */
+/**
+ * A custom voice that can be used for audio output. Voices created from text prompts are supported
+ * only in Live.
+ */
 class Voice
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -26,6 +30,7 @@ private constructor(
     private val name: JsonField<String>,
     private val object_: JsonValue,
     private val type: JsonField<Type>,
+    private val prompt: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -36,7 +41,8 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
-    ) : this(id, createdAt, name, object_, type, mutableMapOf())
+        @JsonProperty("prompt") @ExcludeMissing prompt: JsonField<String> = JsonMissing.of(),
+    ) : this(id, createdAt, name, object_, type, prompt, mutableMapOf())
 
     /**
      * The voice identifier, which can be referenced in API endpoints.
@@ -84,6 +90,15 @@ private constructor(
     fun type(): Type = type.getRequired("type")
 
     /**
+     * The original text prompt used to create the voice. Present for prompt-generated voices with a
+     * stored prompt; omitted for audio-sample voices and older voices without a stored prompt.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun prompt(): Optional<String> = prompt.getOptional("prompt")
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -110,6 +125,13 @@ private constructor(
      * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+    /**
+     * Returns the raw JSON value of [prompt].
+     *
+     * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<String> = prompt
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -147,6 +169,7 @@ private constructor(
         private var name: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("audio.voice")
         private var type: JsonField<Type>? = null
+        private var prompt: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -156,6 +179,7 @@ private constructor(
             name = voice.name
             object_ = voice.object_
             type = voice.type
+            prompt = voice.prompt
             additionalProperties = voice.additionalProperties.toMutableMap()
         }
 
@@ -217,6 +241,21 @@ private constructor(
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
+        /**
+         * The original text prompt used to create the voice. Present for prompt-generated voices
+         * with a stored prompt; omitted for audio-sample voices and older voices without a stored
+         * prompt.
+         */
+        fun prompt(prompt: String) = prompt(JsonField.of(prompt))
+
+        /**
+         * Sets [Builder.prompt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.prompt] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun prompt(prompt: JsonField<String>) = apply { this.prompt = prompt }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -258,6 +297,7 @@ private constructor(
                 checkRequired("name", name),
                 object_,
                 checkRequired("type", type),
+                prompt,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -286,6 +326,7 @@ private constructor(
             }
         }
         type().validate()
+        prompt()
         validated = true
     }
 
@@ -308,7 +349,8 @@ private constructor(
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (if (name.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("audio.voice")) 1 else 0 } +
-            (type.asKnown().getOrNull()?.validity() ?: 0)
+            (type.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (prompt.asKnown().isPresent) 1 else 0)
 
     /** How the voice was created. */
     class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -327,12 +369,15 @@ private constructor(
 
             @JvmField val AUDIO_SAMPLE = of("audio_sample")
 
+            @JvmField val PROMPT = of("prompt")
+
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }
 
         /** An enum containing [Type]'s known values. */
         enum class Known {
-            AUDIO_SAMPLE
+            AUDIO_SAMPLE,
+            PROMPT,
         }
 
         /**
@@ -346,6 +391,7 @@ private constructor(
          */
         enum class Value {
             AUDIO_SAMPLE,
+            PROMPT,
             /** An enum member indicating that [Type] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -360,6 +406,7 @@ private constructor(
         fun value(): Value =
             when (this) {
                 AUDIO_SAMPLE -> Value.AUDIO_SAMPLE
+                PROMPT -> Value.PROMPT
                 else -> Value._UNKNOWN
             }
 
@@ -375,6 +422,7 @@ private constructor(
         fun known(): Known =
             when (this) {
                 AUDIO_SAMPLE -> Known.AUDIO_SAMPLE
+                PROMPT -> Known.PROMPT
                 else -> throw OpenAIInvalidDataException("Unknown Type: $value")
             }
 
@@ -450,15 +498,16 @@ private constructor(
             name == other.name &&
             object_ == other.object_ &&
             type == other.type &&
+            prompt == other.prompt &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, createdAt, name, object_, type, additionalProperties)
+        Objects.hash(id, createdAt, name, object_, type, prompt, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Voice{id=$id, createdAt=$createdAt, name=$name, object_=$object_, type=$type, additionalProperties=$additionalProperties}"
+        "Voice{id=$id, createdAt=$createdAt, name=$name, object_=$object_, type=$type, prompt=$prompt, additionalProperties=$additionalProperties}"
 }
