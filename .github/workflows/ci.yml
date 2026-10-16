@@ -229,11 +229,18 @@ jobs:
         run: ./scripts/gradle :openai-java-core:testJacksonCompatibility
 
   test:
-    name: CI / tests
+    name: CI / tests / ${{ matrix.suite }}
     needs: build
     if: needs.build.result == 'success'
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 30
+
+    # Shrinkers dominate the test tail and compete with each other and JUnit for CPU/memory.
+    # Keep every check required, but run each shrinker on its own runner.
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [sdk, proguard, r8]
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
@@ -263,11 +270,22 @@ jobs:
           path: ~/.gradle/caches/build-cache-1
 
       - name: Check concurrent Steady publication
+        if: matrix.suite == 'sdk'
         run: node scripts/steady/publication.test.cjs
 
-      - name: Run tests
-        # Reuse compilation/shrinker outputs, but exercise the mock server on every run.
-        run: ./scripts/test --rerun
+      - name: Run SDK tests
+        if: matrix.suite == 'sdk'
+        # Excluding this aggregate also excludes its two shrinker dependencies here. The other
+        # matrix legs invoke those smoke tests explicitly, without starting an unused mock server.
+        run: ./scripts/test --rerun -x :openai-java-proguard-test:test
+
+      - name: Run ProGuard compatibility
+        if: matrix.suite == 'proguard'
+        run: ./scripts/gradle :openai-java-proguard-test:testProGuard
+
+      - name: Run R8 compatibility
+        if: matrix.suite == 'r8'
+        run: ./scripts/gradle :openai-java-proguard-test:testR8
 
   api_compatibility:
     name: CI / API compatibility

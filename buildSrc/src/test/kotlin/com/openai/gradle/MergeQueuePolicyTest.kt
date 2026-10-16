@@ -98,6 +98,35 @@ class MergeQueuePolicyTest {
     }
 
     @Test
+    fun `SDK and both shrinkers run as required independent matrix legs`() {
+        val test = job(workflow("ci"), "test")
+        val strategy = test["strategy"] as Map<*, *>
+        assertEquals(false, strategy["fail-fast"])
+        val matrix = strategy["matrix"] as Map<*, *>
+        assertEquals(listOf("sdk", "proguard", "r8"), matrix["suite"])
+        assertEquals(setOf("suite"), matrix.keys)
+        assertFalse(test.containsKey("continue-on-error"))
+        val commands =
+            mapOf(
+                "Run SDK tests" to
+                    ("sdk" to "./scripts/test --rerun -x :openai-java-proguard-test:test"),
+                "Run ProGuard compatibility" to
+                    ("proguard" to "./scripts/gradle :openai-java-proguard-test:testProGuard"),
+                "Run R8 compatibility" to
+                    ("r8" to "./scripts/gradle :openai-java-proguard-test:testR8"),
+            )
+        commands.forEach { (name, suiteAndCommand) ->
+            val (suite, command) = suiteAndCommand
+            val step = steps(test).single { it["name"] == name }
+            assertEquals("matrix.suite == '$suite'", step["if"])
+            assertEquals(command, step["run"])
+            assertFalse(step.containsKey("continue-on-error"))
+        }
+        val publication = steps(test).single { it["name"] == "Check concurrent Steady publication" }
+        assertEquals("matrix.suite == 'sdk'", publication["if"])
+    }
+
+    @Test
     fun `Jackson suite runs alongside downstream jobs with compiled outputs from build`() {
         val workflow = workflow("ci")
         val build = job(workflow, "build")

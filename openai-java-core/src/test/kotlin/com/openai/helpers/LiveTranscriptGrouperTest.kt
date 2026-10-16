@@ -22,6 +22,7 @@ import java.util.concurrent.TimeoutException
 import java.util.function.Consumer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Assertions.assertTimeout
 import org.junit.jupiter.api.Test
 
 internal class LiveTranscriptGrouperTest {
@@ -334,6 +335,22 @@ internal class LiveTranscriptGrouperTest {
                 grouper.push(input("u2", "lo", 100, 200))
             }
         assertThat(finalized(events).map { it.segment().text() }).containsExactly("hello")
+    }
+
+    @Test
+    fun longSigmaTranscriptPreservesTextWithoutContextualCasingDelay() {
+        val text = "\u03A3".repeat(32_000)
+        val events = updates()
+        assertTimeout(Duration.ofSeconds(5)) {
+            LiveTranscriptGrouper.create { events.add(it) }
+                .use { grouper ->
+                    grouper.push(input("u1", "hello", 0, 100))
+                    grouper.push(output("a1", text, 0, 100))
+                    grouper.push(input("u2", " again", 100, 200))
+                }
+        }
+        assertThat(finalized(events).map { it.segment().text() })
+            .containsExactly("hello again", text)
     }
 
     @Test
