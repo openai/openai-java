@@ -41,7 +41,7 @@ class ApiCompatibilityCachePolicyTest {
             "artifact-ids: \${{ needs.build.outputs.gradle-cache-artifact-id }}",
         )
         assertContains(testJob, "digest-mismatch: error")
-        assertContains(testJob, "run: ./scripts/test --rerun\n")
+        assertContains(testJob, "run: ./scripts/test --rerun -x :openai-java-proguard-test:test\n")
     }
 
     @Test
