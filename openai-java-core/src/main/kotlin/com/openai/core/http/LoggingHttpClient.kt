@@ -284,6 +284,9 @@ private class LoggingHttpRequestBody(
         System.err.println()
     }
 
+    override fun content(): InputStream =
+        LoggingRequestInputStream(method, body.content(), charset)
+
     override fun contentType(): String? = body.contentType()
 
     override fun contentLength(): Long = body.contentLength()
@@ -291,6 +294,54 @@ private class LoggingHttpRequestBody(
     override fun repeatable(): Boolean = body.repeatable()
 
     override fun close() = body.close()
+}
+
+private class LoggingRequestInputStream(
+    private val method: HttpMethod,
+    private val inputStream: InputStream,
+    charset: Charset?,
+) : InputStream() {
+
+    private var isDone = false
+    private val buffer = LoggingBuffer(charset)
+
+    override fun read(): Int {
+        if (isDone) return -1
+        val byte = inputStream.read()
+        if (byte == -1) {
+            markDone()
+            return -1
+        }
+        buffer.write(byte)
+        return byte
+    }
+
+    override fun read(bytes: ByteArray, offset: Int, length: Int): Int {
+        if (isDone) return -1
+        val count = inputStream.read(bytes, offset, length)
+        if (count == -1) {
+            markDone()
+            return -1
+        }
+        for (index in offset until offset + count) {
+            buffer.write(bytes[index].toInt() and 0xFF)
+        }
+        return count
+    }
+
+    override fun close() {
+        if (!isDone) markDone(closedEarly = true)
+        inputStream.close()
+    }
+
+    private fun markDone(closedEarly: Boolean = false) {
+        if (isDone) return
+        isDone = true
+        buffer.flush()
+        val suffix = if (closedEarly) ", closed early" else ""
+        System.err.println("--> END " + method + " (" + buffer.writeCount() + "-byte body" + suffix + ")")
+        System.err.println()
+    }
 }
 
 /**
