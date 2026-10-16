@@ -164,13 +164,16 @@ internal class SessionServiceTest {
                     .build()
             )
 
+        var received = 0
         agentSessionStreamResponse.use {
             agentSessionStreamResponse.stream().forEach { agentSession ->
                 agentSession.validate()
+                received++
                 deltas.add(agentSession.asTurnOutputTextDelta().delta())
             }
         }
         assertThat(deltas).containsExactly("hello")
+        check(received > 0) { "Expected at least one streaming event" }
     }
 
     @Test
