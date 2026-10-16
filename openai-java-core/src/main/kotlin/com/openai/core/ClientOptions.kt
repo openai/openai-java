@@ -91,6 +91,10 @@ private constructor(
     /** Headers to send with the request. */
     @get:JvmName("headers") val headers: Headers,
     private val removedSecurityHeaders: Set<String>,
+    private val customHeaders: Headers,
+    private val defaultUserAgent: String?,
+    /** Whether SDK-generated telemetry headers are disabled. */
+    @get:JvmName("disableTelemetry") val disableTelemetry: Boolean,
     /** Query params to send with the request. */
     @get:JvmName("queryParams") val queryParams: QueryParams,
     /**
@@ -320,6 +324,8 @@ private constructor(
         private var explicitDataResidency: Boolean = false
         private var inheritedAzureEndpoint: Boolean = false
         private var headers: Headers.Builder = Headers.builder()
+        private var defaultUserAgent: String? = null
+        private var disableTelemetry: Boolean? = null
         private var removedSecurityHeaders: MutableSet<String> = mutableSetOf()
         private var queryParams: QueryParams.Builder = QueryParams.builder()
         private var responseValidation: Boolean = false
@@ -352,7 +358,9 @@ private constructor(
                 clientOptions.baseUrl?.let {
                     AzureUrlCategory.categorizeBaseUrl(it, AzureUrlPathMode.AUTO).isAzure()
                 } ?: false
-            headers = clientOptions.headers.toBuilder()
+            headers = clientOptions.customHeaders.toBuilder()
+            defaultUserAgent = clientOptions.defaultUserAgent
+            disableTelemetry = clientOptions.disableTelemetry
             removedSecurityHeaders = clientOptions.removedSecurityHeaders.toMutableSet()
             queryParams = clientOptions.queryParams.toBuilder()
             responseValidation = clientOptions.responseValidation
@@ -486,6 +494,19 @@ private constructor(
             dataResidency(dataResidency.getOrNull())
 
         /**
+         * Disables SDK-generated `X-Stainless-*` and `User-Agent` headers. Explicit caller headers
+         * are preserved. This overrides the `openai.disableTelemetry` system property, which is
+         * read when building a new client and defaults to `false`. Clones retain the resolved
+         * value.
+         */
+        fun disableTelemetry(disableTelemetry: Boolean) = apply {
+            this.disableTelemetry = disableTelemetry
+        }
+
+        @JvmSynthetic
+        internal fun defaultUserAgent(userAgent: String) = apply { defaultUserAgent = userAgent }
+
+        /**
          * Whether to call `validate` on every response before returning it.
          *
          * Setting this to `true` is _not_ forwards compatible with new types from the API for
@@ -593,11 +614,13 @@ private constructor(
 
         fun headers(headers: Headers) = apply {
             this.headers.clear()
+            defaultUserAgent = null
             putAllHeaders(headers)
         }
 
         fun headers(headers: Map<String, Iterable<String>>) = apply {
             this.headers.clear()
+            defaultUserAgent = null
             putAllHeaders(headers)
         }
 
@@ -611,20 +634,29 @@ private constructor(
             this.headers.putAll(headers)
         }
 
-        fun replaceHeaders(name: String, value: String) = apply { headers.replace(name, value) }
+        fun replaceHeaders(name: String, value: String) = replaceHeaders(name, listOf(value))
 
         fun replaceHeaders(name: String, values: Iterable<String>) = apply {
-            headers.replace(name, values)
+            val replacement = values.toList()
+            if (replacement.isEmpty()) {
+                removeHeaders(name)
+            } else {
+                headers.replace(name, replacement)
+                if (name.equals("User-Agent", ignoreCase = true)) defaultUserAgent = null
+            }
         }
 
-        fun replaceAllHeaders(headers: Headers) = apply { this.headers.replaceAll(headers) }
+        fun replaceAllHeaders(headers: Headers) = apply {
+            headers.names().forEach { replaceHeaders(it, headers.values(it)) }
+        }
 
         fun replaceAllHeaders(headers: Map<String, Iterable<String>>) = apply {
-            this.headers.replaceAll(headers)
+            headers.forEach(::replaceHeaders)
         }
 
         fun removeHeaders(name: String) = apply {
             headers.remove(name)
+            if (name.equals("User-Agent", ignoreCase = true)) defaultUserAgent = null
             // Security headers are applied per route, after this builder has finished.
             removedSecurityHeaders.add(name.lowercase(Locale.ROOT))
         }
@@ -832,14 +864,21 @@ private constructor(
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
-            headers.put("X-Stainless-Lang", "java")
-            headers.put("X-Stainless-Arch", getOsArch())
-            headers.put("X-Stainless-OS", getOsName())
-            headers.put("X-Stainless-OS-Version", getOsVersion())
-            headers.put("X-Stainless-Package-Version", getPackageVersion())
-            headers.put("X-Stainless-Runtime", "JRE")
-            headers.put("X-Stainless-Runtime-Version", getJavaVersion())
-            headers.put("X-Stainless-Kotlin-Version", KotlinVersion.CURRENT.toString())
+            val disableTelemetry =
+                disableTelemetry ?: java.lang.Boolean.getBoolean("openai.disableTelemetry")
+            if (!disableTelemetry) {
+                headers.put("X-Stainless-Lang", "java")
+                headers.put("X-Stainless-Arch", getOsArch())
+                headers.put("X-Stainless-OS", getOsName())
+                headers.put("X-Stainless-OS-Version", getOsVersion())
+                headers.put("X-Stainless-Package-Version", getPackageVersion())
+                headers.put("X-Stainless-Runtime", "JRE")
+                headers.put("X-Stainless-Runtime-Version", getJavaVersion())
+                headers.put("X-Stainless-Kotlin-Version", KotlinVersion.CURRENT.toString())
+                defaultUserAgent?.let { headers.put("User-Agent", it) }
+            }
+            // Honor explicit removals before applying caller-supplied values.
+            headers.removeAll(removedSecurityHeaders)
             // We replace after all the default headers to allow end-users to overwrite them.
             headers.replaceAll(this.headers.build())
 
@@ -915,6 +954,9 @@ private constructor(
                 dataResidencySelected,
                 headers.build(),
                 removedSecurityHeaders.toSet(),
+                this.headers.build(),
+                defaultUserAgent,
+                disableTelemetry,
                 queryParams.build(),
                 responseValidation,
                 timeout,

@@ -31,13 +31,63 @@ import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.Isolated
 import org.junit.jupiter.api.parallel.ResourceLock
+import org.junitpioneer.jupiter.SetSystemProperty
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider
 
+@Isolated
 @WireMockTest
 @ResourceLock("https://github.com/wiremock/wiremock/issues/169")
 internal class BedrockOpenAIOkHttpClientTest {
+
+    @Test
+    @SetSystemProperty(key = "openai.disableTelemetry", value = "true")
+    fun telemetryOverridePreservesSignedRequests(wmRuntimeInfo: WireMockRuntimeInfo) {
+        stubFor(
+            post(urlPathEqualTo("/openai/v1/chat/completions"))
+                .willReturn(okJson(runtimeChatCompletion()))
+        )
+        for (disabled in listOf(true, false)) {
+            val client =
+                BedrockOpenAIOkHttpClient.builder()
+                    .endpoint(BedrockEndpoint.RUNTIME)
+                    .baseUrl("${wmRuntimeInfo.httpBaseUrl}/openai/v1")
+                    .awsRegion("us-east-1")
+                    .awsAccessKeyId("ACCESSKEY")
+                    .awsSecretAccessKey("fixture-secret-access-key")
+                    .awsSessionToken("session-token")
+                    .disableTelemetry(disabled)
+                    .putHeader("X-Stainless-Custom", "caller-value")
+                    .maxRetries(0)
+                    .build()
+            try {
+                client.chat().completions().create(runtimeChatParams())
+            } finally {
+                client.close()
+            }
+        }
+        val requests = findAll(postRequestedFor(urlPathEqualTo("/openai/v1/chat/completions")))
+        assertThat(requests).hasSize(2)
+        assertThat(requests.map { it.getHeader("X-Stainless-Lang") })
+            .containsExactlyInAnyOrder(null, "java")
+        for (request in requests) {
+            assertThat(request.getHeader("Authorization"))
+                .contains("/us-east-1/bedrock/aws4_request")
+            assertThat(request.getHeader("X-Amz-Security-Token")).isEqualTo("session-token")
+            assertThat(request.getHeader("X-Stainless-Custom")).isEqualTo("caller-value")
+            if (request.getHeader("X-Stainless-Lang") == null) {
+                assertThat(
+                        request.headers.keys().filter {
+                            it.startsWith("X-Stainless-", ignoreCase = true)
+                        }
+                    )
+                    .containsExactly("X-Stainless-Custom")
+                assertThat(request.getHeader("User-Agent").orEmpty()).doesNotContain("OpenAIClient")
+            }
+        }
+    }
 
     @Test
     fun runtimeChatCompletionsUseBedrockSigV4Service(wmRuntimeInfo: WireMockRuntimeInfo) {

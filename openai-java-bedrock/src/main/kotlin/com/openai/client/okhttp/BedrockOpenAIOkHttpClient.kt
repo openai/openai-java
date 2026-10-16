@@ -187,6 +187,14 @@ class BedrockOpenAIOkHttpClient private constructor() {
             delegate.responseValidation(responseValidation)
         }
 
+        /**
+         * Disables SDK-generated telemetry headers, preserving caller-supplied headers. Overrides
+         * the `openai.disableTelemetry` system property for this client.
+         */
+        fun disableTelemetry(disableTelemetry: Boolean) = apply {
+            delegate.disableTelemetry(disableTelemetry)
+        }
+
         fun timeout(timeout: Timeout) = apply { delegate.timeout(timeout) }
 
         fun timeout(timeout: Duration) = apply { delegate.timeout(timeout) }

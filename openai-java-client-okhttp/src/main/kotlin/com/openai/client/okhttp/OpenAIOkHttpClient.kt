@@ -370,6 +370,14 @@ class OpenAIOkHttpClient private constructor() {
             clientOptions.azureUrlPathMode(azureUrlPathMode)
         }
 
+        /**
+         * Disables SDK-generated telemetry headers, preserving explicit caller headers. Overrides
+         * the `openai.disableTelemetry` system property. Defaults to `false`.
+         */
+        fun disableTelemetry(disableTelemetry: Boolean) = apply {
+            clientOptions.disableTelemetry(disableTelemetry)
+        }
+
         fun organization(organization: String?) = apply { clientOptions.organization(organization) }
 
         /** Alias for calling [Builder.organization] with `organization.orElse(null)`. */

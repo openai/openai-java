@@ -68,7 +68,7 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         val result =
             BoundedWebSocket.connect(
                 okHttpClient,
-                request.toRequest(okHttpClient, options.timeout),
+                request.toRequest(okHttpClient, options.timeout, options.disableTelemetry == true),
                 options,
                 maxMessageBytes,
                 object : com.openai.core.http.WebSocketClient.Listener {
@@ -174,7 +174,9 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         }
 
         val client = clientBuilder.build()
-        return client.newCall(request.toRequest(client))
+        return client.newCall(
+            request.toRequest(client, disableTelemetry = requestOptions.disableTelemetry == true)
+        )
     }
 
     companion object {
@@ -348,6 +350,7 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
 private fun HttpRequest.toRequest(
     client: okhttp3.OkHttpClient?,
     timeout: Timeout? = null,
+    disableTelemetry: Boolean = false,
 ): Request {
     var body: RequestBody? = body?.toRequestBody()
     if (body == null && requiresBody(method)) {
@@ -357,7 +360,7 @@ private fun HttpRequest.toRequest(
     val builder = Request.Builder().url(toUrl()).method(method.name, body)
     headers.names().forEach { name -> headers.values(name).forEach { builder.addHeader(name, it) } }
 
-    if (client != null) {
+    if (client != null && !disableTelemetry) {
         val readTimeout = timeout?.read() ?: Duration.ofMillis(client.readTimeoutMillis.toLong())
         val requestTimeout =
             timeout?.request() ?: Duration.ofMillis(client.callTimeoutMillis.toLong())
