@@ -102,7 +102,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
     }
 
     private class PendingContent(var part: ResponseOutputMessage.Content) {
-        var text: StringBuilder? = null
+        var text: CharSequence? = null
         var annotations: MutableList<ResponseOutputText.Annotation>? = null
         var logprobs: MutableList<ResponseOutputText.Logprob>? = null
     }
@@ -602,17 +602,18 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                     ) { content ->
                         val outputText =
                             content?.part?.outputText()?.orElse(null) ?: return@updateContent null
-                        val result =
-                            ResponseOutputMessage.Content.ofOutputText(
-                                outputText.toBuilder().text(outputTextDone.text()).build()
-                            )
                         val probabilities = outputTextDone._logprobs().asKnown().orElse(null)
                         val converted =
                             probabilities?.mapNotNull {
                                 JsonValue.from(it).convert(ResponseOutputText.Logprob::class.java)
                             }
-                        content.part = result
-                        content.text = null
+                        if (outputText._text().asKnown().orElse(null) == null) {
+                            content.part =
+                                ResponseOutputMessage.Content.ofOutputText(
+                                    outputText.toBuilder().text(outputTextDone.text()).build()
+                                )
+                        }
+                        content.text = outputTextDone.text()
                         if (converted != null) content.logprobs = converted.toMutableList()
                         content
                     }
@@ -764,7 +765,8 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         if (contentIndex < 0 || contentIndex >= parts.size.toLong()) return null
         val part = parts[contentIndex.toInt()]
         val text = initial(part.part) ?: return null
-        val buffer = part.text ?: StringBuilder(text).also { part.text = it }
+        val buffer =
+            part.text as? StringBuilder ?: StringBuilder(part.text ?: text).also { part.text = it }
         buffer.append(delta)
         materialized = null
         return part
