@@ -18,6 +18,13 @@ internal class DecisionCreateParamsTest {
                     .name("name")
                     .build()
             )
+            .promptCacheKey("prompt_cache_key")
+            .promptCacheOptions(
+                DecisionCreateParams.PromptCacheOptions.builder()
+                    .mode(DecisionCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                    .ttl(DecisionCreateParams.PromptCacheOptions.Ttl._30M)
+                    .build()
+            )
             .safetyIdentifier("safety_identifier")
             .build()
     }
@@ -32,6 +39,13 @@ internal class DecisionCreateParamsTest {
                     DecisionCreateParams.Question.Predicate.builder()
                         .instructions("instructions")
                         .name("name")
+                        .build()
+                )
+                .promptCacheKey("prompt_cache_key")
+                .promptCacheOptions(
+                    DecisionCreateParams.PromptCacheOptions.builder()
+                        .mode(DecisionCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                        .ttl(DecisionCreateParams.PromptCacheOptions.Ttl._30M)
                         .build()
                 )
                 .safetyIdentifier("safety_identifier")
@@ -49,6 +63,14 @@ internal class DecisionCreateParamsTest {
                         .name("name")
                         .build()
                 )
+            )
+        assertThat(body.promptCacheKey()).contains("prompt_cache_key")
+        assertThat(body.promptCacheOptions())
+            .contains(
+                DecisionCreateParams.PromptCacheOptions.builder()
+                    .mode(DecisionCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                    .ttl(DecisionCreateParams.PromptCacheOptions.Ttl._30M)
+                    .build()
             )
         assertThat(body.safetyIdentifier()).contains("safety_identifier")
     }
