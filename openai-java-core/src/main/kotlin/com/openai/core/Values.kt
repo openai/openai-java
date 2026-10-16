@@ -240,7 +240,8 @@ sealed class JsonField<out T : Any> {
      */
     class IsMissing {
 
-        override fun equals(other: Any?): Boolean = other is JsonMissing
+        override fun equals(other: Any?): Boolean =
+            other is JsonMissing || other is MultipartField<*> && other.value.isMissing()
 
         override fun hashCode(): Int = Objects.hash()
     }
