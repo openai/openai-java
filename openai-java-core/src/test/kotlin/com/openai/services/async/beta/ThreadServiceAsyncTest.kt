@@ -2,14 +2,6 @@
 
 package com.openai.services.async.beta
 
-import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
-import com.github.tomakehurst.wiremock.client.WireMock.equalTo
-import com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath
-import com.github.tomakehurst.wiremock.client.WireMock.ok
-import com.github.tomakehurst.wiremock.client.WireMock.post
-import com.github.tomakehurst.wiremock.client.WireMock.stubFor
-import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
-import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
@@ -21,11 +13,8 @@ import com.openai.models.beta.threads.ThreadCreateParams
 import com.openai.models.beta.threads.ThreadUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.api.parallel.ResourceLock
 
 @ExtendWith(TestServerExtension::class)
-@WireMockTest
-@ResourceLock("https://github.com/wiremock/wiremock/issues/169")
 internal class ThreadServiceAsyncTest {
 
     @Test
@@ -296,27 +285,14 @@ internal class ThreadServiceAsyncTest {
     }
 
     @Test
-    fun createAndRunStreaming(wmRuntimeInfo: WireMockRuntimeInfo) {
+    fun createAndRunStreaming() {
         val client =
             OpenAIOkHttpClientAsync.builder()
-                .baseUrl(wmRuntimeInfo.httpBaseUrl)
+                .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .adminApiKey("My Admin API Key")
                 .build()
         val threadServiceAsync = client.beta().threads()
-
-        stubFor(
-            post(anyUrl())
-                .withHeader("Accept", equalTo("text/event-stream"))
-                .withRequestBody(matchingJsonPath("\$[\"stream\"]", equalTo("true")))
-                .willReturn(
-                    ok()
-                        .withHeader("Content-Type", "text/event-stream")
-                        .withBody(
-                            "event: thread.created\ndata: {\"id\":\"id\",\"created_at\":0,\"metadata\":{\"foo\":\"string\"},\"object\":\"thread\",\"tool_resources\":{\"code_interpreter\":{\"file_ids\":[\"string\"]},\"file_search\":{\"vector_store_ids\":[\"string\"]}}}\n\n"
-                        )
-                )
-        )
 
         val runStreamResponse =
             threadServiceAsync.createAndRunStreaming(

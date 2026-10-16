@@ -2,13 +2,6 @@
 
 package com.openai.services.blocking.beta
 
-import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
-import com.github.tomakehurst.wiremock.client.WireMock.equalTo
-import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.github.tomakehurst.wiremock.client.WireMock.ok
-import com.github.tomakehurst.wiremock.client.WireMock.stubFor
-import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
-import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
@@ -24,11 +17,8 @@ import com.openai.models.beta.responses.ResponseDeleteParams
 import com.openai.models.beta.responses.ResponseRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.api.parallel.ResourceLock
 
 @ExtendWith(TestServerExtension::class)
-@WireMockTest
-@ResourceLock("https://github.com/wiremock/wiremock/issues/169")
 internal class ResponseServiceTest {
 
     @Test
@@ -357,28 +347,14 @@ internal class ResponseServiceTest {
     }
 
     @Test
-    fun retrieveStreaming(wmRuntimeInfo: WireMockRuntimeInfo) {
+    fun retrieveStreaming() {
         val client =
             OpenAIOkHttpClient.builder()
-                .baseUrl(wmRuntimeInfo.httpBaseUrl)
+                .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .adminApiKey("My Admin API Key")
                 .build()
         val responseService = client.beta().responses()
-
-        stubFor(
-            get(anyUrl())
-                .withHeader("Accept", equalTo("text/event-stream"))
-                .withQueryParam("beta", equalTo("true"))
-                .withQueryParam("stream", equalTo("true"))
-                .willReturn(
-                    ok()
-                        .withHeader("Content-Type", "text/event-stream")
-                        .withBody(
-                            "data: {\"delta\":\"delta\",\"sequence_number\":0,\"type\":\"response.audio.delta\",\"agent\":{\"agent_name\":\"agent_name\"}}\n\n"
-                        )
-                )
-        )
 
         val betaResponseStreamResponse =
             responseService.retrieveStreaming(
