@@ -191,9 +191,13 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
             )
 
         private fun normalize(value: String): String =
-            whitespace
-                .replace(value.lowercase(Locale.ROOT).replace('ς', 'σ').replace('-', ' '), " ")
-                .trim { it == ' ' || it in punctuation }
+            whitespace.replace(foldCase(value).replace('-', ' '), " ").trim {
+                it == ' ' || it in punctuation
+            }
+
+        // Sigma forms are equivalent here; fold before ROOT casing to avoid contextual scans.
+        private fun foldCase(value: String): String =
+            value.replace('\u03A3', '\u03C3').lowercase(Locale.ROOT).replace('ς', 'σ')
     }
 
     private class AckNode {
@@ -221,7 +225,7 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
             highSurrogate = text.last().takeIf(Char::isHighSurrogate)
             val end = text.length - if (highSurrogate == null) 0 else 1
             // Folding final sigma keeps ROOT lowercase independent of fragment boundaries.
-            val lower = text.substring(0, end).lowercase(Locale.ROOT).replace('ς', 'σ')
+            val lower = foldCase(text.substring(0, end))
             for (raw in lower) {
                 val char = if (raw == '-' || whitespace.matches(raw.toString())) ' ' else raw
                 val trim = char == ' ' || char in punctuation
