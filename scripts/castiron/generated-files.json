@@ -267,7 +267,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalstorage/ExternalStorageConfiguration.kt": {
       "mode": "100644",
-      "sha256": "12a08a68bda7ed52786bb9932eac87981ed7829488e674151bb68bae2bb25f68"
+      "sha256": "083491946d0c56d7aa65aaccf69ff8b3ad624492fa2ad1be558e4d0c98e4aa73"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalstorage/ExternalStorageCreateParams.kt": {
       "mode": "100644",
