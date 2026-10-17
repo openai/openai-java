@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.84.0](https://github.com/openai/openai-java/compare/v4.83.0...v4.84.0) (2026-10-17)
+
+
+### Features
+
+* **api:** add degraded external storage status ([#1214](https://github.com/openai/openai-java/issues/1214)) ([91825de](https://github.com/openai/openai-java/commit/91825dedc6f14549d7101ef758c8455719faf251))
+* **api:** add Live events with compatible service and visitor defaults ([#1213](https://github.com/openai/openai-java/issues/1213)) ([71916f9](https://github.com/openai/openai-java/commit/71916f9f8a456f3055b56b6b12d4334479fdc280))
+* **api:** support Live sideband Decision commands ([#1193](https://github.com/openai/openai-java/issues/1193)) ([690835d](https://github.com/openai/openai-java/commit/690835d2b1ad8ca094d8a51052f47cac10cb54ff))
+
+
+### Chores
+
+* **api:** add Assistants model shutdown notices ([#1212](https://github.com/openai/openai-java/issues/1212)) ([224aec1](https://github.com/openai/openai-java/commit/224aec1fa1b57dbbc8938778e47e66cb8ea73ea8))
+* **api:** add shutdown notices for GPT-4 model aliases ([#1211](https://github.com/openai/openai-java/issues/1211)) ([ef1bcd5](https://github.com/openai/openai-java/commit/ef1bcd55ef8a6ac630547f940235d0a9827c2174))
+* clarify Live limits and refresh generated-file verification ([#1209](https://github.com/openai/openai-java/issues/1209)) ([9d1919c](https://github.com/openai/openai-java/commit/9d1919c5343d69d6bc8b14857a109c13be1670bf))
+
 ## [4.83.0](https://github.com/openai/openai-java/compare/v4.82.0...v4.83.0) (2026-10-16)
 
 
