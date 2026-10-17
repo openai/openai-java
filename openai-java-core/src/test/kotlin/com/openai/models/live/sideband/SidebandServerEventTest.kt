@@ -25,6 +25,7 @@ import com.openai.models.live.InputAudioMutedEvent
 import com.openai.models.live.InputAudioUnmutedEvent
 import com.openai.models.live.InputTranscriptDeltaEvent
 import com.openai.models.live.InstructionsAppendedEvent
+import com.openai.models.live.OutputAudioDeltaEvent
 import com.openai.models.live.OutputAudioFixturePlayedEvent
 import com.openai.models.live.OutputAudioFixturePlayingEvent
 import com.openai.models.live.OutputTranscriptDeltaEvent
@@ -123,6 +124,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -301,6 +309,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -432,6 +447,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -486,6 +508,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -540,6 +569,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -594,6 +630,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -650,6 +693,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -707,6 +757,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -765,6 +822,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -824,6 +888,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -884,6 +955,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -949,6 +1027,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -1045,6 +1130,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -1140,6 +1232,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -1200,6 +1299,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -1268,6 +1374,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -1342,6 +1455,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -1448,6 +1568,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).contains(sessionClosed)
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -1562,6 +1689,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).contains(errorEvent)
         assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -1627,6 +1761,13 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
         assertThat(sidebandServerEvent.errorEvent()).isEmpty
         assertThat(sidebandServerEvent.infoEvent()).contains(infoEvent)
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
     }
 
     @Test
@@ -1641,6 +1782,433 @@ internal class SidebandServerEventTest {
                         "The frontend data channel is configured with restricted event permissions."
                     )
                     .clientEventId("client_event_id")
+                    .build()
+            )
+
+        val roundtrippedSidebandServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandServerEvent),
+                jacksonTypeRef<SidebandServerEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandServerEvent).isEqualTo(sidebandServerEvent)
+    }
+
+    @Test
+    fun ofSessionInputAudioAppend() {
+        val sessionInputAudioAppend =
+            SidebandServerEvent.SessionInputAudioAppend.builder().audio("audio").build()
+
+        val sidebandServerEvent =
+            SidebandServerEvent.ofSessionInputAudioAppend(sessionInputAudioAppend)
+
+        assertThat(sidebandServerEvent.sessionStarted()).isEmpty
+        assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(sidebandServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(sidebandServerEvent.responseEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionClosed()).isEmpty
+        assertThat(sidebandServerEvent.errorEvent()).isEmpty
+        assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).contains(sessionInputAudioAppend)
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofSessionInputAudioAppendRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandServerEvent =
+            SidebandServerEvent.ofSessionInputAudioAppend(
+                SidebandServerEvent.SessionInputAudioAppend.builder().audio("audio").build()
+            )
+
+        val roundtrippedSidebandServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandServerEvent),
+                jacksonTypeRef<SidebandServerEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandServerEvent).isEqualTo(sidebandServerEvent)
+    }
+
+    @Test
+    fun ofSessionOutputAudioDelta() {
+        val sessionOutputAudioDelta =
+            OutputAudioDeltaEvent.builder()
+                .delta("AACAAIAAAIAAAP9/AIAAgA==")
+                .endMs(1200L)
+                .startMs(1000L)
+                .build()
+
+        val sidebandServerEvent =
+            SidebandServerEvent.ofSessionOutputAudioDelta(sessionOutputAudioDelta)
+
+        assertThat(sidebandServerEvent.sessionStarted()).isEmpty
+        assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(sidebandServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(sidebandServerEvent.responseEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionClosed()).isEmpty
+        assertThat(sidebandServerEvent.errorEvent()).isEmpty
+        assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).contains(sessionOutputAudioDelta)
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofSessionOutputAudioDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandServerEvent =
+            SidebandServerEvent.ofSessionOutputAudioDelta(
+                OutputAudioDeltaEvent.builder()
+                    .delta("AACAAIAAAIAAAP9/AIAAgA==")
+                    .endMs(1200L)
+                    .startMs(1000L)
+                    .build()
+            )
+
+        val roundtrippedSidebandServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandServerEvent),
+                jacksonTypeRef<SidebandServerEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandServerEvent).isEqualTo(sidebandServerEvent)
+    }
+
+    @Test
+    fun ofTransportDtmfReceived() {
+        val transportDtmfReceived =
+            SidebandServerEvent.TransportDtmfReceived.builder()
+                .event("#")
+                .eventId("event_id")
+                .build()
+
+        val sidebandServerEvent = SidebandServerEvent.ofTransportDtmfReceived(transportDtmfReceived)
+
+        assertThat(sidebandServerEvent.sessionStarted()).isEmpty
+        assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(sidebandServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(sidebandServerEvent.responseEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionClosed()).isEmpty
+        assertThat(sidebandServerEvent.errorEvent()).isEmpty
+        assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).contains(transportDtmfReceived)
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofTransportDtmfReceivedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandServerEvent =
+            SidebandServerEvent.ofTransportDtmfReceived(
+                SidebandServerEvent.TransportDtmfReceived.builder()
+                    .event("#")
+                    .eventId("event_id")
+                    .build()
+            )
+
+        val roundtrippedSidebandServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandServerEvent),
+                jacksonTypeRef<SidebandServerEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandServerEvent).isEqualTo(sidebandServerEvent)
+    }
+
+    @Test
+    fun ofTransportDtmfSend() {
+        val transportDtmfSend =
+            SidebandServerEvent.TransportDtmfSend.builder()
+                .event("#")
+                .eventId("event_id")
+                .clientEventId("client_event_id")
+                .build()
+
+        val sidebandServerEvent = SidebandServerEvent.ofTransportDtmfSend(transportDtmfSend)
+
+        assertThat(sidebandServerEvent.sessionStarted()).isEmpty
+        assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(sidebandServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(sidebandServerEvent.responseEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionClosed()).isEmpty
+        assertThat(sidebandServerEvent.errorEvent()).isEmpty
+        assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).contains(transportDtmfSend)
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofTransportDtmfSendRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandServerEvent =
+            SidebandServerEvent.ofTransportDtmfSend(
+                SidebandServerEvent.TransportDtmfSend.builder()
+                    .event("#")
+                    .eventId("event_id")
+                    .clientEventId("client_event_id")
+                    .build()
+            )
+
+        val roundtrippedSidebandServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandServerEvent),
+                jacksonTypeRef<SidebandServerEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandServerEvent).isEqualTo(sidebandServerEvent)
+    }
+
+    @Test
+    fun ofTransportRinging() {
+        val transportRinging =
+            SidebandServerEvent.TransportRinging.builder()
+                .eventId("event_id")
+                .sessionId("session_id")
+                .build()
+
+        val sidebandServerEvent = SidebandServerEvent.ofTransportRinging(transportRinging)
+
+        assertThat(sidebandServerEvent.sessionStarted()).isEmpty
+        assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(sidebandServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(sidebandServerEvent.responseEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionClosed()).isEmpty
+        assertThat(sidebandServerEvent.errorEvent()).isEmpty
+        assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).contains(transportRinging)
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofTransportRingingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandServerEvent =
+            SidebandServerEvent.ofTransportRinging(
+                SidebandServerEvent.TransportRinging.builder()
+                    .eventId("event_id")
+                    .sessionId("session_id")
+                    .build()
+            )
+
+        val roundtrippedSidebandServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandServerEvent),
+                jacksonTypeRef<SidebandServerEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandServerEvent).isEqualTo(sidebandServerEvent)
+    }
+
+    @Test
+    fun ofTransportAnswered() {
+        val transportAnswered =
+            SidebandServerEvent.TransportAnswered.builder()
+                .eventId("event_id")
+                .sessionId("session_id")
+                .build()
+
+        val sidebandServerEvent = SidebandServerEvent.ofTransportAnswered(transportAnswered)
+
+        assertThat(sidebandServerEvent.sessionStarted()).isEmpty
+        assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(sidebandServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(sidebandServerEvent.responseEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionClosed()).isEmpty
+        assertThat(sidebandServerEvent.errorEvent()).isEmpty
+        assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).contains(transportAnswered)
+        assertThat(sidebandServerEvent.transportFailed()).isEmpty
+    }
+
+    @Test
+    fun ofTransportAnsweredRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandServerEvent =
+            SidebandServerEvent.ofTransportAnswered(
+                SidebandServerEvent.TransportAnswered.builder()
+                    .eventId("event_id")
+                    .sessionId("session_id")
+                    .build()
+            )
+
+        val roundtrippedSidebandServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandServerEvent),
+                jacksonTypeRef<SidebandServerEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandServerEvent).isEqualTo(sidebandServerEvent)
+    }
+
+    @Test
+    fun ofTransportFailed() {
+        val transportFailed =
+            SidebandServerEvent.TransportFailed.builder()
+                .error(
+                    SidebandServerEvent.TransportFailed.Error.builder()
+                        .code("code")
+                        .message("message")
+                        .param("param")
+                        .build()
+                )
+                .eventId("event_id")
+                .sessionId("session_id")
+                .build()
+
+        val sidebandServerEvent = SidebandServerEvent.ofTransportFailed(transportFailed)
+
+        assertThat(sidebandServerEvent.sessionStarted()).isEmpty
+        assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(sidebandServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(sidebandServerEvent.responseEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionClosed()).isEmpty
+        assertThat(sidebandServerEvent.errorEvent()).isEmpty
+        assertThat(sidebandServerEvent.infoEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioDelta()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfReceived()).isEmpty
+        assertThat(sidebandServerEvent.transportDtmfSend()).isEmpty
+        assertThat(sidebandServerEvent.transportRinging()).isEmpty
+        assertThat(sidebandServerEvent.transportAnswered()).isEmpty
+        assertThat(sidebandServerEvent.transportFailed()).contains(transportFailed)
+    }
+
+    @Test
+    fun ofTransportFailedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandServerEvent =
+            SidebandServerEvent.ofTransportFailed(
+                SidebandServerEvent.TransportFailed.builder()
+                    .error(
+                        SidebandServerEvent.TransportFailed.Error.builder()
+                            .code("code")
+                            .message("message")
+                            .param("param")
+                            .build()
+                    )
+                    .eventId("event_id")
+                    .sessionId("session_id")
                     .build()
             )
 

@@ -37,6 +37,41 @@ interface ResponseServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseServiceAsync
 
+    /** Opens a typed WebSocket using the SDK-owned connection implementation. */
+    fun connectWebSocket():
+        CompletableFuture<
+            com.openai.core.http.WebSocketConnection<
+                com.openai.models.beta.responses.BetaResponsesClientEvent,
+                com.openai.models.beta.responses.BetaResponsesServerEvent,
+            >
+        > =
+        connectWebSocket(
+            com.openai.core.http.WebSocketOptions.defaults(),
+            com.openai.core.RequestOptions.none(),
+        )
+
+    fun connectWebSocket(
+        options: com.openai.core.http.WebSocketOptions
+    ): CompletableFuture<
+        com.openai.core.http.WebSocketConnection<
+            com.openai.models.beta.responses.BetaResponsesClientEvent,
+            com.openai.models.beta.responses.BetaResponsesServerEvent,
+        >
+    > = connectWebSocket(options, com.openai.core.RequestOptions.none())
+
+    fun connectWebSocket(
+        options: com.openai.core.http.WebSocketOptions,
+        requestOptions: com.openai.core.RequestOptions,
+    ): CompletableFuture<
+        com.openai.core.http.WebSocketConnection<
+            com.openai.models.beta.responses.BetaResponsesClientEvent,
+            com.openai.models.beta.responses.BetaResponsesServerEvent,
+        >
+    > =
+        throw UnsupportedOperationException(
+            "This service implementation does not support WebSockets"
+        )
+
     /** Create and manage model responses. */
     fun inputItems(): InputItemServiceAsync =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")

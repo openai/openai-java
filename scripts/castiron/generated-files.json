@@ -3173,6 +3173,10 @@
       "mode": "100644",
       "sha256": "7cc6e1baf4fd6aef5161cba0cbf9507e9a2e11bcc9aa612c50dcf9131ea78524"
     },
+    "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/ResponseWebSocketBinding.kt": {
+      "mode": "100644",
+      "sha256": "49595be818946f27573fd018dd31ccc27f0f861686def65b16ab99cf1b583523"
+    },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/inputitems/BetaResponseItemList.kt": {
       "mode": "100644",
       "sha256": "63cfba375e8492168a294b4a5923d96f3636823123373e27854250cbe61eca9f"
@@ -4711,7 +4715,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/sideband/SidebandServerEvent.kt": {
       "mode": "100644",
-      "sha256": "18601ee108876929a9f570fcf4f397e992d7604961a0339f04fef4ddcc1ff0e1"
+      "sha256": "bb8edce8d968bb4cd6a0825150e348482dd8493c10706ac936c1d5be36ee8c24"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/sideband/SidebandWebSocketBinding.kt": {
       "mode": "100644",
@@ -7107,11 +7111,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/beta/ResponseServiceAsync.kt": {
       "mode": "100644",
-      "sha256": "9993414463199a769a727a2a52d2caa53fec9848fbe622dd859c3532a4c05afa"
+      "sha256": "012585f236e7151db1cfa8afc24acf4143f7af77b86fbbfac744c96950b54ff3"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/beta/ResponseServiceAsyncImpl.kt": {
       "mode": "100644",
-      "sha256": "bc08a5d50a27762e387953a90e5cf397a97443ae1b33429ea1988c04eaa9a452"
+      "sha256": "fc3e6c9f7947db379dc82bcc0e8ed4d6a4625120e9e5deb9583fd81a6fd6f9c5"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/beta/ThreadServiceAsync.kt": {
       "mode": "100644",
@@ -8099,11 +8103,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/beta/ResponseService.kt": {
       "mode": "100644",
-      "sha256": "daf82e2a830c8cea5d77693e846ac7541f33548d35e77d32b1ec9802e662b607"
+      "sha256": "137804dd8a7d06e94fa35f7a850be62c6c30925518ee45cb7f970193fa6cff1a"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/beta/ResponseServiceImpl.kt": {
       "mode": "100644",
-      "sha256": "4717129965187b8fa5b0fc5fe14e8ce769c1e78f24c3c444c65cbbd865156811"
+      "sha256": "d9a552fa2d7b09694dcf60551e1373738a6b9a4625028f8cbd02356953ceb2c7"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/beta/ThreadService.kt": {
       "mode": "100644",
@@ -12611,7 +12615,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/live/sideband/SidebandServerEventTest.kt": {
       "mode": "100644",
-      "sha256": "5bd02de081078859cb4d2b95658762a764880fd53dc978ad4e2daeef45aa9504"
+      "sha256": "fad09f50d5248b9fc0728cf1a6d9906f0c53c1bdd048e29e2d840e2948f6e34a"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/models/ModelDeleteParamsTest.kt": {
       "mode": "100644",
