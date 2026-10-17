@@ -6,6 +6,9 @@ import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.models.live.CommentaryAppendEvent
+import com.openai.models.live.DecisionCreateEvent
+import com.openai.models.live.DecisionItemCreateEvent
+import com.openai.models.live.DecisionItemDeleteEvent
 import com.openai.models.live.InputAudioMuteEvent
 import com.openai.models.live.InputAudioUnmuteEvent
 import com.openai.models.live.InstructionsAppendEvent
@@ -102,6 +105,12 @@ private constructor(
     fun send(event: ThinkingAppendEvent) = sendCommand(event)
 
     fun send(event: CommentaryAppendEvent) = sendCommand(event)
+
+    fun send(event: DecisionCreateEvent) = sendCommand(event)
+
+    fun send(event: DecisionItemCreateEvent) = sendCommand(event)
+
+    fun send(event: DecisionItemDeleteEvent) = sendCommand(event)
 
     fun send(event: ResponseItemCreateEvent) = sendCommand(event)
 

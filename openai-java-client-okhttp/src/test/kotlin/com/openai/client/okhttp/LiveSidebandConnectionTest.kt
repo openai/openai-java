@@ -12,6 +12,10 @@ import com.openai.core.http.WebSocketWriteNotAttempted
 import com.openai.core.jsonMapper
 import com.openai.helpers.LiveSidebandConnection
 import com.openai.helpers.LiveWebSocketOptions
+import com.openai.models.live.DecisionCreateEvent
+import com.openai.models.live.DecisionEvent
+import com.openai.models.live.DecisionItemCreateEvent
+import com.openai.models.live.DecisionItemDeleteEvent
 import com.openai.models.live.InputAudioMuteEvent
 import com.openai.models.live.InputAudioUnmuteEvent
 import com.openai.models.live.OutputAudioFixturePlayEvent
@@ -75,6 +79,62 @@ class LiveSidebandConnectionTest {
             .putHeader("OpenAI-Project", "fake-project")
             .baseUrl(server.url("/proxy/v1?inherited=one%2Ftwo&x=a%2Bb").toString())
             .build()
+
+    @Test
+    fun decisionCommandsAndResultUseSideband() {
+        MockWebServer().use { server ->
+            val peer = Peer()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            OkHttpClient.builder().build().use { http ->
+                LiveSidebandConnection.connect(options(server, http), "signaling").use { sideband ->
+                    sideband.send(DecisionCreateEvent.builder().eventId("request").build())
+                    sideband.send(
+                        DecisionItemCreateEvent.builder()
+                            .item(DecisionItemCreateEvent.Item.builder().content("fixture").build())
+                            .build()
+                    )
+                    sideband.send(DecisionItemDeleteEvent.builder().itemId("item-1").build())
+                    for (expected in
+                        listOf(
+                            """{"type":"decision.create","event_id":"request"}""",
+                            """{"type":"decision.item.create","item":{"type":"message","role":"user","content":"fixture"}}""",
+                            """{"type":"decision.item.delete","item_id":"item-1"}""",
+                        )) {
+                        assertThat(mapper.readTree(peer.messages.poll(8, TimeUnit.SECONDS)))
+                            .isEqualTo(mapper.readTree(expected))
+                    }
+                    peer.socket
+                        .get(8, TimeUnit.SECONDS)
+                        .send(
+                            """
+                            {
+                                                            "type":"decision.event","event_id":"result","delegation_id":null,
+                                                            "trigger_id":"trigger-1","source_event_id":"transcript-1",
+                                                            "source_event_type":"session.input_transcript.delta",
+                                                            "event":{"type":"decision.completed","decision":{
+                                                                "model":"fixture-model","answers":[{"type":"predicate","probability":0.75}],
+                                                                "usage":{"input_tokens":1,"input_tokens_details":{"cached_tokens":0,"cache_write_tokens":0},
+                                                                    "output_tokens":2,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":3}
+                                                            }}
+                                                        }
+                            """
+                                .trimIndent()
+                        )
+                    val result = sideband.receive().asDecisionEvent()
+                    assertThat(result.delegationId()).isEmpty()
+                    assertThat(result.triggerId()).contains("trigger-1")
+                    assertThat(result.sourceEventId()).contains("transcript-1")
+                    assertThat(result.sourceEventType())
+                        .contains(DecisionEvent.SourceEventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                    assertThat(
+                            result.event().decision().answers().single().asPredicate().probability()
+                        )
+                        .isEqualTo(0.75)
+                    assertThat(result.event().decision().usage().totalTokens()).isEqualTo(3L)
+                }
+            }
+        }
+    }
 
     @Test
     fun replayAndReflectedAudioArriveWithoutAnyFreshStartedEventOrStartupCommand() {
