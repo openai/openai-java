@@ -55,17 +55,23 @@ interface SessionService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SessionService
 
-    fun subagents(): SubagentService
+    fun subagents(): SubagentService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun artifacts(): ArtifactService
+    fun artifacts(): ArtifactService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun items(): ItemService
+    fun items(): ItemService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun events(): EventService
+    fun events(): EventService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun traces(): TraceService
+    fun traces(): TraceService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun turns(): TurnService
+    fun turns(): TurnService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Creates a managed agent session, optionally submits initial input, and returns the session or
@@ -248,17 +254,35 @@ interface SessionService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): SessionService.WithRawResponse
 
-        fun subagents(): SubagentService.WithRawResponse
+        fun subagents(): SubagentService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun artifacts(): ArtifactService.WithRawResponse
+        fun artifacts(): ArtifactService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun items(): ItemService.WithRawResponse
+        fun items(): ItemService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun events(): EventService.WithRawResponse
+        fun events(): EventService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun traces(): TraceService.WithRawResponse
+        fun traces(): TraceService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun turns(): TurnService.WithRawResponse
+        fun turns(): TurnService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /agents/sessions`, but is otherwise the same as

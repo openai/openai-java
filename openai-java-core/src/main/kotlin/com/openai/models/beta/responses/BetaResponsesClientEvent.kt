@@ -1539,9 +1539,9 @@ private constructor(
              */
             fun addContextManagement(contextManagement: ContextManagement) = apply {
                 this.contextManagement =
-                    (this.contextManagement ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("contextManagement", it).add(contextManagement)
-                    }
+                    (this.contextManagement?.takeUnless { it.isMissing() }
+                            ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("contextManagement", it).add(contextManagement) }
             }
 
             /**
@@ -1623,9 +1623,8 @@ private constructor(
              */
             fun addInclude(include: BetaResponseIncludable) = apply {
                 this.include =
-                    (this.include ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("include", it).add(include)
-                    }
+                    (this.include?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("include", it).add(include) }
             }
 
             /**
@@ -2332,7 +2331,7 @@ private constructor(
              */
             fun addTool(tool: BetaTool) = apply {
                 tools =
-                    (tools ?: JsonField.of(mutableListOf())).also {
+                    (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("tools", it).add(tool)
                     }
             }

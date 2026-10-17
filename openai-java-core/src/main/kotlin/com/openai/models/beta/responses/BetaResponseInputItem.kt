@@ -2896,9 +2896,12 @@ private constructor(
             fun addAcknowledgedSafetyCheck(acknowledgedSafetyCheck: AcknowledgedSafetyCheck) =
                 apply {
                     acknowledgedSafetyChecks =
-                        (acknowledgedSafetyChecks ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("acknowledgedSafetyChecks", it).add(acknowledgedSafetyCheck)
-                        }
+                        (acknowledgedSafetyChecks?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also {
+                                checkKnown("acknowledgedSafetyChecks", it)
+                                    .add(acknowledgedSafetyCheck)
+                            }
                 }
 
             /** The agent that produced this item. */
@@ -7700,9 +7703,9 @@ private constructor(
                  */
                 fun addAnnotation(annotation: Annotation) = apply {
                     annotations =
-                        (annotations ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("annotations", it).add(annotation)
-                        }
+                        (annotations?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("annotations", it).add(annotation) }
                 }
 
                 /**

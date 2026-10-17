@@ -32,9 +32,11 @@ interface SkillServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SkillServiceAsync
 
-    fun content(): ContentServiceAsync
+    fun content(): ContentServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun versions(): VersionServiceAsync
+    fun versions(): VersionServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create a new skill. */
     fun create(): CompletableFuture<Skill> = create(SkillCreateParams.none())
@@ -169,9 +171,15 @@ interface SkillServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): SkillServiceAsync.WithRawResponse
 
-        fun content(): ContentServiceAsync.WithRawResponse
+        fun content(): ContentServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun versions(): VersionServiceAsync.WithRawResponse
+        fun versions(): VersionServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /skills`, but is otherwise the same as

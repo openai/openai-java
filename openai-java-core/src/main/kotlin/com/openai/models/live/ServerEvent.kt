@@ -51,6 +51,9 @@ private constructor(
     private val sessionInputTranscriptDelta: InputTranscriptDeltaEvent? = null,
     private val sessionOutputTranscriptDelta: OutputTranscriptDeltaEvent? = null,
     private val sessionDelegationCreated: DelegationCreatedEvent? = null,
+    private val decisionEvent: DecisionEvent? = null,
+    private val decisionItemCreated: DecisionItemCreatedEvent? = null,
+    private val decisionItemDeleted: DecisionItemDeletedEvent? = null,
     private val responseEvent: ResponseEvent? = null,
     private val sessionUsageUpdated: SessionUsageUpdatedEvent? = null,
     private val sessionClosed: SessionClosedEvent? = null,
@@ -77,15 +80,16 @@ private constructor(
     fun sessionUpdated(): Optional<SessionUpdatedEvent> = Optional.ofNullable(sessionUpdated)
 
     /**
-     * Returned when a session.input_audio.mute command is accepted. Input audio is no longer sent
-     * to the model; sideband audio reflection continues.
+     * Acknowledges a session.input_audio.mute command. An independent input mute sends silence to
+     * the model and preserves sideband audio reflection. Fixture playback does not emit this event.
      */
     fun sessionInputAudioMuted(): Optional<InputAudioMutedEvent> =
         Optional.ofNullable(sessionInputAudioMuted)
 
     /**
-     * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to the
-     * model again.
+     * Acknowledges a session.input_audio.unmute command, removing the independent input mute. An
+     * active audio fixture still pauses inference until playback finishes. Fixture playback does
+     * not emit this event.
      */
     fun sessionInputAudioUnmuted(): Optional<InputAudioUnmutedEvent> =
         Optional.ofNullable(sessionInputAudioUnmuted)
@@ -160,12 +164,26 @@ private constructor(
         Optional.ofNullable(sessionOutputTranscriptDelta)
 
     /**
-     * Returned when the Live model delegates work to your application or a Responses backend.
+     * Returned when the Live model delegates work to your application, Responses, or Decisions.
      * Contains delegation metadata and the position on the session timeline where the work was
      * delegated.
      */
     fun sessionDelegationCreated(): Optional<DelegationCreatedEvent> =
         Optional.ofNullable(sessionDelegationCreated)
+
+    /**
+     * A Decision API event for a Live delegation or transcript trigger. For a trigger,
+     * source_event_id identifies the transcript delta that caused this evaluation.
+     */
+    fun decisionEvent(): Optional<DecisionEvent> = Optional.ofNullable(decisionEvent)
+
+    /** An input item was appended for future decisions. */
+    fun decisionItemCreated(): Optional<DecisionItemCreatedEvent> =
+        Optional.ofNullable(decisionItemCreated)
+
+    /** An input item was removed from future decisions. */
+    fun decisionItemDeleted(): Optional<DecisionItemDeletedEvent> =
+        Optional.ofNullable(decisionItemDeleted)
 
     /**
      * A streaming Responses API event from a backend delegated to by the Live session. Use the
@@ -252,6 +270,12 @@ private constructor(
 
     fun isSessionDelegationCreated(): Boolean = sessionDelegationCreated != null
 
+    fun isDecisionEvent(): Boolean = decisionEvent != null
+
+    fun isDecisionItemCreated(): Boolean = decisionItemCreated != null
+
+    fun isDecisionItemDeleted(): Boolean = decisionItemDeleted != null
+
     fun isResponseEvent(): Boolean = responseEvent != null
 
     fun isSessionUsageUpdated(): Boolean = sessionUsageUpdated != null
@@ -285,15 +309,16 @@ private constructor(
     fun asSessionUpdated(): SessionUpdatedEvent = sessionUpdated.getOrThrow("sessionUpdated")
 
     /**
-     * Returned when a session.input_audio.mute command is accepted. Input audio is no longer sent
-     * to the model; sideband audio reflection continues.
+     * Acknowledges a session.input_audio.mute command. An independent input mute sends silence to
+     * the model and preserves sideband audio reflection. Fixture playback does not emit this event.
      */
     fun asSessionInputAudioMuted(): InputAudioMutedEvent =
         sessionInputAudioMuted.getOrThrow("sessionInputAudioMuted")
 
     /**
-     * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to the
-     * model again.
+     * Acknowledges a session.input_audio.unmute command, removing the independent input mute. An
+     * active audio fixture still pauses inference until playback finishes. Fixture playback does
+     * not emit this event.
      */
     fun asSessionInputAudioUnmuted(): InputAudioUnmutedEvent =
         sessionInputAudioUnmuted.getOrThrow("sessionInputAudioUnmuted")
@@ -368,12 +393,26 @@ private constructor(
         sessionOutputTranscriptDelta.getOrThrow("sessionOutputTranscriptDelta")
 
     /**
-     * Returned when the Live model delegates work to your application or a Responses backend.
+     * Returned when the Live model delegates work to your application, Responses, or Decisions.
      * Contains delegation metadata and the position on the session timeline where the work was
      * delegated.
      */
     fun asSessionDelegationCreated(): DelegationCreatedEvent =
         sessionDelegationCreated.getOrThrow("sessionDelegationCreated")
+
+    /**
+     * A Decision API event for a Live delegation or transcript trigger. For a trigger,
+     * source_event_id identifies the transcript delta that caused this evaluation.
+     */
+    fun asDecisionEvent(): DecisionEvent = decisionEvent.getOrThrow("decisionEvent")
+
+    /** An input item was appended for future decisions. */
+    fun asDecisionItemCreated(): DecisionItemCreatedEvent =
+        decisionItemCreated.getOrThrow("decisionItemCreated")
+
+    /** An input item was removed from future decisions. */
+    fun asDecisionItemDeleted(): DecisionItemDeletedEvent =
+        decisionItemDeleted.getOrThrow("decisionItemDeleted")
 
     /**
      * A streaming Responses API event from a backend delegated to by the Live session. Use the
@@ -491,6 +530,9 @@ private constructor(
                 visitor.visitSessionOutputTranscriptDelta(sessionOutputTranscriptDelta)
             sessionDelegationCreated != null ->
                 visitor.visitSessionDelegationCreated(sessionDelegationCreated)
+            decisionEvent != null -> visitor.visitDecisionEvent(decisionEvent)
+            decisionItemCreated != null -> visitor.visitDecisionItemCreated(decisionItemCreated)
+            decisionItemDeleted != null -> visitor.visitDecisionItemDeleted(decisionItemDeleted)
             responseEvent != null -> visitor.visitResponseEvent(responseEvent)
             sessionUsageUpdated != null -> visitor.visitSessionUsageUpdated(sessionUsageUpdated)
             sessionClosed != null -> visitor.visitSessionClosed(sessionClosed)
@@ -600,6 +642,22 @@ private constructor(
                     sessionDelegationCreated: DelegationCreatedEvent
                 ) {
                     sessionDelegationCreated.validate()
+                }
+
+                override fun visitDecisionEvent(decisionEvent: DecisionEvent) {
+                    decisionEvent.validate()
+                }
+
+                override fun visitDecisionItemCreated(
+                    decisionItemCreated: DecisionItemCreatedEvent
+                ) {
+                    decisionItemCreated.validate()
+                }
+
+                override fun visitDecisionItemDeleted(
+                    decisionItemDeleted: DecisionItemDeletedEvent
+                ) {
+                    decisionItemDeleted.validate()
                 }
 
                 override fun visitResponseEvent(responseEvent: ResponseEvent) {
@@ -721,6 +779,17 @@ private constructor(
                     sessionDelegationCreated: DelegationCreatedEvent
                 ) = sessionDelegationCreated.validity()
 
+                override fun visitDecisionEvent(decisionEvent: DecisionEvent) =
+                    decisionEvent.validity()
+
+                override fun visitDecisionItemCreated(
+                    decisionItemCreated: DecisionItemCreatedEvent
+                ) = decisionItemCreated.validity()
+
+                override fun visitDecisionItemDeleted(
+                    decisionItemDeleted: DecisionItemDeletedEvent
+                ) = decisionItemDeleted.validity()
+
                 override fun visitResponseEvent(responseEvent: ResponseEvent) =
                     responseEvent.validity()
 
@@ -775,6 +844,9 @@ private constructor(
             sessionInputTranscriptDelta == other.sessionInputTranscriptDelta &&
             sessionOutputTranscriptDelta == other.sessionOutputTranscriptDelta &&
             sessionDelegationCreated == other.sessionDelegationCreated &&
+            decisionEvent == other.decisionEvent &&
+            decisionItemCreated == other.decisionItemCreated &&
+            decisionItemDeleted == other.decisionItemDeleted &&
             responseEvent == other.responseEvent &&
             sessionUsageUpdated == other.sessionUsageUpdated &&
             sessionClosed == other.sessionClosed &&
@@ -803,6 +875,9 @@ private constructor(
             sessionInputTranscriptDelta,
             sessionOutputTranscriptDelta,
             sessionDelegationCreated,
+            decisionEvent,
+            decisionItemCreated,
+            decisionItemDeleted,
             responseEvent,
             sessionUsageUpdated,
             sessionClosed,
@@ -843,6 +918,9 @@ private constructor(
                 "ServerEvent{sessionOutputTranscriptDelta=$sessionOutputTranscriptDelta}"
             sessionDelegationCreated != null ->
                 "ServerEvent{sessionDelegationCreated=$sessionDelegationCreated}"
+            decisionEvent != null -> "ServerEvent{decisionEvent=$decisionEvent}"
+            decisionItemCreated != null -> "ServerEvent{decisionItemCreated=$decisionItemCreated}"
+            decisionItemDeleted != null -> "ServerEvent{decisionItemDeleted=$decisionItemDeleted}"
             responseEvent != null -> "ServerEvent{responseEvent=$responseEvent}"
             sessionUsageUpdated != null -> "ServerEvent{sessionUsageUpdated=$sessionUsageUpdated}"
             sessionClosed != null -> "ServerEvent{sessionClosed=$sessionClosed}"
@@ -877,16 +955,18 @@ private constructor(
             ServerEvent(sessionUpdated = sessionUpdated)
 
         /**
-         * Returned when a session.input_audio.mute command is accepted. Input audio is no longer
-         * sent to the model; sideband audio reflection continues.
+         * Acknowledges a session.input_audio.mute command. An independent input mute sends silence
+         * to the model and preserves sideband audio reflection. Fixture playback does not emit this
+         * event.
          */
         @JvmStatic
         fun ofSessionInputAudioMuted(sessionInputAudioMuted: InputAudioMutedEvent) =
             ServerEvent(sessionInputAudioMuted = sessionInputAudioMuted)
 
         /**
-         * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to
-         * the model again.
+         * Acknowledges a session.input_audio.unmute command, removing the independent input mute.
+         * An active audio fixture still pauses inference until playback finishes. Fixture playback
+         * does not emit this event.
          */
         @JvmStatic
         fun ofSessionInputAudioUnmuted(sessionInputAudioUnmuted: InputAudioUnmutedEvent) =
@@ -977,13 +1057,31 @@ private constructor(
         ) = ServerEvent(sessionOutputTranscriptDelta = sessionOutputTranscriptDelta)
 
         /**
-         * Returned when the Live model delegates work to your application or a Responses backend.
+         * Returned when the Live model delegates work to your application, Responses, or Decisions.
          * Contains delegation metadata and the position on the session timeline where the work was
          * delegated.
          */
         @JvmStatic
         fun ofSessionDelegationCreated(sessionDelegationCreated: DelegationCreatedEvent) =
             ServerEvent(sessionDelegationCreated = sessionDelegationCreated)
+
+        /**
+         * A Decision API event for a Live delegation or transcript trigger. For a trigger,
+         * source_event_id identifies the transcript delta that caused this evaluation.
+         */
+        @JvmStatic
+        fun ofDecisionEvent(decisionEvent: DecisionEvent) =
+            ServerEvent(decisionEvent = decisionEvent)
+
+        /** An input item was appended for future decisions. */
+        @JvmStatic
+        fun ofDecisionItemCreated(decisionItemCreated: DecisionItemCreatedEvent) =
+            ServerEvent(decisionItemCreated = decisionItemCreated)
+
+        /** An input item was removed from future decisions. */
+        @JvmStatic
+        fun ofDecisionItemDeleted(decisionItemDeleted: DecisionItemDeletedEvent) =
+            ServerEvent(decisionItemDeleted = decisionItemDeleted)
 
         /**
          * A streaming Responses API event from a backend delegated to by the Live session. Use the
@@ -1077,15 +1175,17 @@ private constructor(
             unknown(JsonValue.from(sessionUpdated))
 
         /**
-         * Returned when a session.input_audio.mute command is accepted. Input audio is no longer
-         * sent to the model; sideband audio reflection continues.
+         * Acknowledges a session.input_audio.mute command. An independent input mute sends silence
+         * to the model and preserves sideband audio reflection. Fixture playback does not emit this
+         * event.
          */
         fun visitSessionInputAudioMuted(sessionInputAudioMuted: InputAudioMutedEvent): T =
             unknown(JsonValue.from(sessionInputAudioMuted))
 
         /**
-         * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to
-         * the model again.
+         * Acknowledges a session.input_audio.unmute command, removing the independent input mute.
+         * An active audio fixture still pauses inference until playback finishes. Fixture playback
+         * does not emit this event.
          */
         fun visitSessionInputAudioUnmuted(sessionInputAudioUnmuted: InputAudioUnmutedEvent): T =
             unknown(JsonValue.from(sessionInputAudioUnmuted))
@@ -1168,12 +1268,27 @@ private constructor(
         ): T = unknown(JsonValue.from(sessionOutputTranscriptDelta))
 
         /**
-         * Returned when the Live model delegates work to your application or a Responses backend.
+         * Returned when the Live model delegates work to your application, Responses, or Decisions.
          * Contains delegation metadata and the position on the session timeline where the work was
          * delegated.
          */
         fun visitSessionDelegationCreated(sessionDelegationCreated: DelegationCreatedEvent): T =
             unknown(JsonValue.from(sessionDelegationCreated))
+
+        /**
+         * A Decision API event for a Live delegation or transcript trigger. For a trigger,
+         * source_event_id identifies the transcript delta that caused this evaluation.
+         */
+        fun visitDecisionEvent(decisionEvent: DecisionEvent): T =
+            unknown(JsonValue.from(decisionEvent))
+
+        /** An input item was appended for future decisions. */
+        fun visitDecisionItemCreated(decisionItemCreated: DecisionItemCreatedEvent): T =
+            unknown(JsonValue.from(decisionItemCreated))
+
+        /** An input item was removed from future decisions. */
+        fun visitDecisionItemDeleted(decisionItemDeleted: DecisionItemDeletedEvent): T =
+            unknown(JsonValue.from(decisionItemDeleted))
 
         /**
          * A streaming Responses API event from a backend delegated to by the Live session. Use the
@@ -1332,6 +1447,21 @@ private constructor(
                         ServerEvent(sessionDelegationCreated = it, _json = json)
                     } ?: ServerEvent(_json = json)
                 }
+                "decision.event" -> {
+                    return tryDeserialize(node, jacksonTypeRef<DecisionEvent>())?.let {
+                        ServerEvent(decisionEvent = it, _json = json)
+                    } ?: ServerEvent(_json = json)
+                }
+                "decision.item.created" -> {
+                    return tryDeserialize(node, jacksonTypeRef<DecisionItemCreatedEvent>())?.let {
+                        ServerEvent(decisionItemCreated = it, _json = json)
+                    } ?: ServerEvent(_json = json)
+                }
+                "decision.item.deleted" -> {
+                    return tryDeserialize(node, jacksonTypeRef<DecisionItemDeletedEvent>())?.let {
+                        ServerEvent(decisionItemDeleted = it, _json = json)
+                    } ?: ServerEvent(_json = json)
+                }
                 "response.event" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseEvent>())?.let {
                         ServerEvent(responseEvent = it, _json = json)
@@ -1422,6 +1552,11 @@ private constructor(
                     generator.writeObject(value.sessionOutputTranscriptDelta)
                 value.sessionDelegationCreated != null ->
                     generator.writeObject(value.sessionDelegationCreated)
+                value.decisionEvent != null -> generator.writeObject(value.decisionEvent)
+                value.decisionItemCreated != null ->
+                    generator.writeObject(value.decisionItemCreated)
+                value.decisionItemDeleted != null ->
+                    generator.writeObject(value.decisionItemDeleted)
                 value.responseEvent != null -> generator.writeObject(value.responseEvent)
                 value.sessionUsageUpdated != null ->
                     generator.writeObject(value.sessionUsageUpdated)

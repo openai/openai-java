@@ -46,6 +46,21 @@ internal class SessionClosedEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
+                        .addTrigger(
+                            DecisionTrigger.builder()
+                                .decisions(
+                                    DecisionTrigger.Decisions.builder()
+                                        .addQuestion(
+                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                                .instructions("instructions")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                                .build()
+                        )
                         .build()
                 )
                 .usage(SessionUsage.builder().seconds(45.8).build())
@@ -86,6 +101,21 @@ internal class SessionClosedEventTest {
                         "Help the caller plan a restaurant reservation. Confirm details before booking."
                     )
                     .store(true)
+                    .addTrigger(
+                        DecisionTrigger.builder()
+                            .decisions(
+                                DecisionTrigger.Decisions.builder()
+                                    .addQuestion(
+                                        DecisionTrigger.Decisions.Question.Predicate.builder()
+                                            .instructions("instructions")
+                                            .name("name")
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                            .build()
+                    )
                     .build()
             )
         assertThat(sessionClosedEvent.usage())
@@ -131,6 +161,21 @@ internal class SessionClosedEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
+                        .addTrigger(
+                            DecisionTrigger.builder()
+                                .decisions(
+                                    DecisionTrigger.Decisions.builder()
+                                        .addQuestion(
+                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                                .instructions("instructions")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                                .build()
+                        )
                         .build()
                 )
                 .usage(SessionUsage.builder().seconds(45.8).build())

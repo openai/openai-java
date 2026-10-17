@@ -18,7 +18,8 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Resume audio input to a Live model after muting it. The server acknowledges with
- * `session.input_audio.unmuted`.
+ * `session.input_audio.unmuted`. An active audio fixture still pauses inference until playback
+ * finishes.
  */
 class InputAudioUnmuteEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

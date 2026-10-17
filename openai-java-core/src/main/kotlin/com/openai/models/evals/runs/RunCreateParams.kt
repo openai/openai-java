@@ -3053,9 +3053,9 @@ private constructor(
                          */
                         fun addTool(tool: String) = apply {
                             tools =
-                                (tools ?: JsonField.of(mutableListOf())).also {
-                                    checkKnown("tools", it).add(tool)
-                                }
+                                (tools?.takeUnless { it.isMissing() }
+                                        ?: JsonField.of(mutableListOf()))
+                                    .also { checkKnown("tools", it).add(tool) }
                         }
 
                         /**
@@ -3111,9 +3111,9 @@ private constructor(
                          */
                         fun addUser(user: String) = apply {
                             users =
-                                (users ?: JsonField.of(mutableListOf())).also {
-                                    checkKnown("users", it).add(user)
-                                }
+                                (users?.takeUnless { it.isMissing() }
+                                        ?: JsonField.of(mutableListOf()))
+                                    .also { checkKnown("users", it).add(user) }
                         }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -6592,9 +6592,8 @@ private constructor(
                      */
                     fun addTool(tool: Tool) = apply {
                         tools =
-                            (tools ?: JsonField.of(mutableListOf())).also {
-                                checkKnown("tools", it).add(tool)
-                            }
+                            (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                                .also { checkKnown("tools", it).add(tool) }
                     }
 
                     /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */

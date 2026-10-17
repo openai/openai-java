@@ -38,11 +38,13 @@ interface ThreadService {
 
     /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-    fun runs(): RunService
+    fun runs(): RunService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-    fun messages(): MessageService
+    fun messages(): MessageService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create a thread. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -208,11 +210,17 @@ interface ThreadService {
 
         /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-        fun runs(): RunService.WithRawResponse
+        fun runs(): RunService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-        fun messages(): MessageService.WithRawResponse
+        fun messages(): MessageService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /threads`, but is otherwise the same as

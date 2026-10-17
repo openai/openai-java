@@ -398,7 +398,7 @@ private constructor(
          */
         fun addAction(action: ComputerAction) = apply {
             actions =
-                (actions ?: JsonField.of(mutableListOf())).also {
+                (actions?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("actions", it).add(action)
                 }
         }
@@ -1746,9 +1746,8 @@ private constructor(
                  */
                 fun addKey(key: String) = apply {
                     keys =
-                        (keys ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("keys", it).add(key)
-                        }
+                        (keys?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("keys", it).add(key) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2536,9 +2535,8 @@ private constructor(
                  */
                 fun addKey(key: String) = apply {
                     keys =
-                        (keys ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("keys", it).add(key)
-                        }
+                        (keys?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("keys", it).add(key) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -3289,9 +3287,8 @@ private constructor(
                  */
                 fun addKey(key: String) = apply {
                     keys =
-                        (keys ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("keys", it).add(key)
-                        }
+                        (keys?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("keys", it).add(key) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -3669,9 +3666,8 @@ private constructor(
                  */
                 fun addKey(key: String) = apply {
                     keys =
-                        (keys ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("keys", it).add(key)
-                        }
+                        (keys?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("keys", it).add(key) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

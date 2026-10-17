@@ -349,9 +349,8 @@ private constructor(
          */
         fun addContent(content: Content) = apply {
             this.content =
-                (this.content ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("content", it).add(content)
-                }
+                (this.content?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("content", it).add(content) }
         }
 
         /** The name of the function being called (for `function_call` items). */

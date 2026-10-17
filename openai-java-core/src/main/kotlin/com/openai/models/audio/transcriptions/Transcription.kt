@@ -195,7 +195,7 @@ private constructor(
          */
         fun addLanguage(language: TranscriptionLanguage) = apply {
             languages =
-                (languages ?: JsonField.of(mutableListOf())).also {
+                (languages?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("languages", it).add(language)
                 }
         }
@@ -225,7 +225,7 @@ private constructor(
          */
         fun addLogprob(logprob: Logprob) = apply {
             logprobs =
-                (logprobs ?: JsonField.of(mutableListOf())).also {
+                (logprobs?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("logprobs", it).add(logprob)
                 }
         }
@@ -471,7 +471,7 @@ private constructor(
              */
             fun addByte(byte_: Double) = apply {
                 bytes =
-                    (bytes ?: JsonField.of(mutableListOf())).also {
+                    (bytes?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("bytes", it).add(byte_)
                     }
             }

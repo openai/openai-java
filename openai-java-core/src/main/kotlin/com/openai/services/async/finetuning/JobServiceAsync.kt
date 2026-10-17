@@ -35,7 +35,8 @@ interface JobServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobServiceAsync
 
     /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-    fun checkpoints(): CheckpointServiceAsync
+    fun checkpoints(): CheckpointServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Creates a fine-tuning job which begins the process of creating a new model from a given
@@ -265,7 +266,10 @@ interface JobServiceAsync {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobServiceAsync.WithRawResponse
 
         /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-        fun checkpoints(): CheckpointServiceAsync.WithRawResponse
+        fun checkpoints(): CheckpointServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /fine_tuning/jobs`, but is otherwise the same as

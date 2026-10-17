@@ -32,6 +32,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.SoftAssertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
 import org.junit.jupiter.api.assertThrows
@@ -78,6 +79,145 @@ class LiveConnectionTest {
             .apiKey("fake-live-key")
             .baseUrl(server.url("/proxy/v1?inherited=one%2Ftwo&x=a%2Bb").toString())
             .build()
+
+    @Test
+    fun nullableDecisionFieldsSurviveSyncAndAsyncTransport() {
+        val softly = SoftAssertions()
+        for (async in listOf(false, true)) {
+            MockWebServer().use { server ->
+                val peer = Peer()
+                server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+                OkHttpClient.builder().build().use { http ->
+                    val live =
+                        if (async)
+                            LiveConnection.connectAsync(options(server, http))
+                                .get(8, TimeUnit.SECONDS)
+                        else LiveConnection.connect(options(server, http))
+                    live.use { conn ->
+                        val request = server.takeRequest(8, TimeUnit.SECONDS)!!
+                        assertThat(request.requestUrl!!.encodedPath)
+                            .isEqualTo("/proxy/v1/live/sessions")
+                        assertThat(request.getHeader("Authorization"))
+                            .isEqualTo("Bearer fake-live-key")
+                        conn.send(start())
+                        assertThat(
+                                mapper
+                                    .readTree(peer.messages.poll(8, TimeUnit.SECONDS))
+                                    .path("type")
+                                    .asText()
+                            )
+                            .isEqualTo("session.start")
+                        val socket = peer.socket.get(8, TimeUnit.SECONDS)
+                        fun receive() =
+                            if (async) conn.receiveAsync().get(8, TimeUnit.SECONDS)
+                            else conn.receive()
+
+                        for (trigger in listOf(false, true)) {
+                            val correlation =
+                                if (trigger)
+                                    """"delegation_id":null,"trigger_id":"trigger-fixture","source_event_id":"transcript-fixture","source_event_type":"session.input_transcript.delta""""
+                                else
+                                    """"delegation_id":"delegation-fixture","trigger_id":null,"source_event_id":null,"source_event_type":null"""
+                            assertThat(
+                                    socket.send(
+                                        """{"type":"decision.event","event_id":"decision-fixture",$correlation,"event":{"type":"decision.completed","decision":{"model":"decision-test","answers":[],"usage":{"input_tokens":0,"input_tokens_details":{"cached_tokens":0,"cache_write_tokens":0},"output_tokens":0,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":0}}}}"""
+                                    )
+                                )
+                                .isTrue()
+                            val event = receive().asDecisionEvent()
+                            softly
+                                .assertThat(event.delegationId().orElse(null))
+                                .describedAs("delegation_id (async=%s, trigger=%s)", async, trigger)
+                                .isEqualTo(if (trigger) null else "delegation-fixture")
+                            softly
+                                .assertThat(event.triggerId().orElse(null))
+                                .describedAs("trigger_id (async=%s, trigger=%s)", async, trigger)
+                                .isEqualTo(if (trigger) "trigger-fixture" else null)
+                            softly
+                                .assertThat(event.sourceEventId().orElse(null))
+                                .describedAs(
+                                    "source_event_id (async=%s, trigger=%s)",
+                                    async,
+                                    trigger,
+                                )
+                                .isEqualTo(if (trigger) "transcript-fixture" else null)
+                            softly
+                                .assertThat(
+                                    event.sourceEventType().map { it.asString() }.orElse(null)
+                                )
+                                .describedAs(
+                                    "source_event_type (async=%s, trigger=%s)",
+                                    async,
+                                    trigger,
+                                )
+                                .isEqualTo(if (trigger) "session.input_transcript.delta" else null)
+                        }
+
+                        for ((detail, expected) in
+                            listOf(
+                                """, "detail":"original"""" to "original",
+                                """, "detail":null""" to null,
+                                "" to null,
+                            )) {
+                            assertThat(
+                                    socket.send(
+                                        """{"type":"decision.item.created","event_id":"item-fixture","item":{"id":"image-fixture","type":"message","role":"user","content":[{"type":"input_image","image_url":"data:image/png;base64,AA=="$detail}]}}"""
+                                    )
+                                )
+                                .isTrue()
+                            val image =
+                                receive()
+                                    .asDecisionItemCreated()
+                                    .item()
+                                    .content()
+                                    .asDecisionItemCreatedEventItemContentItems()
+                                    .single()
+                                    .asInputImage()
+                            softly
+                                .assertThat(image.detail().map { it.asString() }.orElse(null))
+                                .describedAs(
+                                    "input_image.detail (async=%s, fixture=%s)",
+                                    async,
+                                    detail,
+                                )
+                                .isEqualTo(expected)
+                        }
+
+                        for ((delegation, expected) in
+                            listOf(
+                                """, "delegation":{"type":"decisions","decisions":{"model":"decision-test","questions":[]}}""" to
+                                    "decision-test",
+                                """, "delegation":null""" to null,
+                                "" to null,
+                            )) {
+                            assertThat(
+                                    socket.send(
+                                        """{"type":"session.started","event_id":"session-fixture","session":{"id":"session-fixture","model":"live-test"$delegation}}"""
+                                    )
+                                )
+                                .isTrue()
+                            val session = receive().asSessionStarted().session()
+                            softly
+                                .assertThat(
+                                    session
+                                        .delegation()
+                                        .map { it.asDecisions().decisions().model() }
+                                        .orElse(null)
+                                )
+                                .describedAs(
+                                    "session.delegation (async=%s, fixture=%s)",
+                                    async,
+                                    delegation,
+                                )
+                                .isEqualTo(expected)
+                        }
+                    }
+                    assertThat(peer.closed.await(8, TimeUnit.SECONDS)).isTrue()
+                }
+            }
+        }
+        softly.assertAll()
+    }
 
     @Test
     fun primaryStartIsCallerDrivenThenUsageAndErrorsDrainOnSameReader() {

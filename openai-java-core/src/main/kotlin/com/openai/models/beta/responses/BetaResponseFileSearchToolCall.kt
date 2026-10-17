@@ -292,7 +292,7 @@ private constructor(
          */
         fun addResult(result: Result) = apply {
             results =
-                (results ?: JsonField.of(mutableListOf())).also {
+                (results?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("results", it).add(result)
                 }
         }

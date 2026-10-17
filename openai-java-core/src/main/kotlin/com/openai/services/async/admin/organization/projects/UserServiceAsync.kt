@@ -31,7 +31,8 @@ interface UserServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserServiceAsync
 
-    fun roles(): RoleServiceAsync
+    fun roles(): RoleServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Adds a user to the project. Users must already be members of the organization to be added to
@@ -173,7 +174,10 @@ interface UserServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserServiceAsync.WithRawResponse
 
-        fun roles(): RoleServiceAsync.WithRawResponse
+        fun roles(): RoleServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /organization/projects/{project_id}/users`, but is

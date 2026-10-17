@@ -19,7 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Provide context the Live model can communicate to the user, optionally for an existing client
- * delegation.
+ * delegation. Rejected while an audio fixture is active.
  */
 class CommentaryAppendEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

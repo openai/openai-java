@@ -2803,9 +2803,8 @@ private constructor(
                  */
                 fun addTag(tag: String) = apply {
                     tags =
-                        (tags ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("tags", it).add(tag)
-                        }
+                        (tags?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("tags", it).add(tag) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

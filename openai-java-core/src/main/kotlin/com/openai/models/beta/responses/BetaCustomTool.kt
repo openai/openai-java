@@ -273,9 +273,8 @@ private constructor(
          */
         fun addAllowedCaller(allowedCaller: AllowedCaller) = apply {
             allowedCallers =
-                (allowedCallers ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("allowedCallers", it).add(allowedCaller)
-                }
+                (allowedCallers?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("allowedCallers", it).add(allowedCaller) }
         }
 
         /**

@@ -6035,9 +6035,8 @@ private constructor(
                  */
                 fun addRange(range: Double) = apply {
                     this.range =
-                        (this.range ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("range", it).add(range)
-                        }
+                        (this.range?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("range", it).add(range) }
                 }
 
                 /** The sampling parameters for the model. */

@@ -306,9 +306,11 @@ private constructor(
          */
         fun addAcknowledgedSafetyCheck(acknowledgedSafetyCheck: AcknowledgedSafetyCheck) = apply {
             acknowledgedSafetyChecks =
-                (acknowledgedSafetyChecks ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("acknowledgedSafetyChecks", it).add(acknowledgedSafetyCheck)
-                }
+                (acknowledgedSafetyChecks?.takeUnless { it.isMissing() }
+                        ?: JsonField.of(mutableListOf()))
+                    .also {
+                        checkKnown("acknowledgedSafetyChecks", it).add(acknowledgedSafetyCheck)
+                    }
         }
 
         /** The identifier of the actor that created the item. */

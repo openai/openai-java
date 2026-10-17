@@ -452,7 +452,7 @@ private constructor(
          */
         fun addInput(input: ConversationItem) = apply {
             this.input =
-                (this.input ?: JsonField.of(mutableListOf())).also {
+                (this.input?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("input", it).add(input)
                 }
         }
@@ -657,9 +657,8 @@ private constructor(
          */
         fun addOutputModality(outputModality: OutputModality) = apply {
             outputModalities =
-                (outputModalities ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("outputModalities", it).add(outputModality)
-                }
+                (outputModalities?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("outputModalities", it).add(outputModality) }
         }
 
         /**
@@ -757,7 +756,9 @@ private constructor(
          */
         fun addTool(tool: Tool) = apply {
             tools =
-                (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
+                (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("tools", it).add(tool)
+                }
         }
 
         /** Alias for calling [addTool] with `Tool.ofRealtimeFunction(realtimeFunction)`. */

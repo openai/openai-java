@@ -6,12 +6,17 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.decisions.Decision
 import com.openai.models.live.AudioFormat
 import com.openai.models.live.BuiltInVoice
 import com.openai.models.live.ClientConfig
 import com.openai.models.live.ClientDelegation
 import com.openai.models.live.CommentaryAppendedEvent
 import com.openai.models.live.DataChannelConfig
+import com.openai.models.live.DecisionEvent
+import com.openai.models.live.DecisionItemCreatedEvent
+import com.openai.models.live.DecisionItemDeletedEvent
+import com.openai.models.live.DecisionTrigger
 import com.openai.models.live.DelegationCreatedEvent
 import com.openai.models.live.Error
 import com.openai.models.live.ErrorEvent
@@ -76,6 +81,21 @@ internal class SidebandServerEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
+                        .addTrigger(
+                            DecisionTrigger.builder()
+                                .decisions(
+                                    DecisionTrigger.Decisions.builder()
+                                        .addQuestion(
+                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                                .instructions("instructions")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                                .build()
+                        )
                         .build()
                 )
                 .clientEventId("evt_start_001")
@@ -95,6 +115,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -140,6 +163,24 @@ internal class SidebandServerEventTest {
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
                             .store(true)
+                            .addTrigger(
+                                DecisionTrigger.builder()
+                                    .decisions(
+                                        DecisionTrigger.Decisions.builder()
+                                            .addQuestion(
+                                                DecisionTrigger.Decisions.Question.Predicate
+                                                    .builder()
+                                                    .instructions("instructions")
+                                                    .name("name")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .eventType(
+                                        DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
+                                    )
+                                    .build()
+                            )
                             .build()
                     )
                     .clientEventId("evt_start_001")
@@ -218,6 +259,21 @@ internal class SidebandServerEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
+                        .addTrigger(
+                            DecisionTrigger.builder()
+                                .decisions(
+                                    DecisionTrigger.Decisions.builder()
+                                        .addQuestion(
+                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                                .instructions("instructions")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                                .build()
+                        )
                         .build()
                 )
                 .clientEventId("evt_update_001")
@@ -237,6 +293,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -309,6 +368,24 @@ internal class SidebandServerEventTest {
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
                             .store(true)
+                            .addTrigger(
+                                DecisionTrigger.builder()
+                                    .decisions(
+                                        DecisionTrigger.Decisions.builder()
+                                            .addQuestion(
+                                                DecisionTrigger.Decisions.Question.Predicate
+                                                    .builder()
+                                                    .instructions("instructions")
+                                                    .name("name")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .eventType(
+                                        DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
+                                    )
+                                    .build()
+                            )
                             .build()
                     )
                     .clientEventId("evt_update_001")
@@ -347,6 +424,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -398,6 +478,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -449,6 +532,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -500,6 +586,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -553,6 +642,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -607,6 +699,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -662,6 +757,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -718,6 +816,9 @@ internal class SidebandServerEventTest {
             .contains(sessionInputTranscriptDelta)
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -775,6 +876,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta())
             .contains(sessionOutputTranscriptDelta)
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -837,6 +941,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated())
             .contains(sessionDelegationCreated)
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -860,6 +967,250 @@ internal class SidebandServerEventTest {
                     .eventId("evt_delegation_001")
                     .offsetMs(3600L)
                     .clientEventId("client_event_id")
+                    .build()
+            )
+
+        val roundtrippedSidebandServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandServerEvent),
+                jacksonTypeRef<SidebandServerEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandServerEvent).isEqualTo(sidebandServerEvent)
+    }
+
+    @Test
+    fun ofDecisionEvent() {
+        val decisionEvent =
+            DecisionEvent.builder()
+                .delegationId("del_abc123")
+                .event(
+                    DecisionEvent.Event.builder()
+                        .decision(
+                            Decision.builder()
+                                .addAnswer(
+                                    Decision.Answer.Predicate.builder()
+                                        .name("damaged")
+                                        .probability(0.95)
+                                        .build()
+                                )
+                                .model("gpt-6-luna")
+                                .usage(
+                                    Decision.Usage.builder()
+                                        .inputTokens(42L)
+                                        .inputTokensDetails(
+                                            Decision.Usage.InputTokensDetails.builder()
+                                                .cacheWriteTokens(0L)
+                                                .cachedTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .outputTokensDetails(
+                                            Decision.Usage.OutputTokensDetails.builder()
+                                                .reasoningTokens(0L)
+                                                .build()
+                                        )
+                                        .totalTokens(42L)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .eventId("evt_decision_1")
+                .sourceEventId(null)
+                .sourceEventType(null)
+                .triggerId(null)
+                .build()
+
+        val sidebandServerEvent = SidebandServerEvent.ofDecisionEvent(decisionEvent)
+
+        assertThat(sidebandServerEvent.sessionStarted()).isEmpty
+        assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(sidebandServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).contains(decisionEvent)
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(sidebandServerEvent.responseEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionClosed()).isEmpty
+        assertThat(sidebandServerEvent.errorEvent()).isEmpty
+        assertThat(sidebandServerEvent.infoEvent()).isEmpty
+    }
+
+    @Test
+    fun ofDecisionEventRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandServerEvent =
+            SidebandServerEvent.ofDecisionEvent(
+                DecisionEvent.builder()
+                    .delegationId("del_abc123")
+                    .event(
+                        DecisionEvent.Event.builder()
+                            .decision(
+                                Decision.builder()
+                                    .addAnswer(
+                                        Decision.Answer.Predicate.builder()
+                                            .name("damaged")
+                                            .probability(0.95)
+                                            .build()
+                                    )
+                                    .model("gpt-6-luna")
+                                    .usage(
+                                        Decision.Usage.builder()
+                                            .inputTokens(42L)
+                                            .inputTokensDetails(
+                                                Decision.Usage.InputTokensDetails.builder()
+                                                    .cacheWriteTokens(0L)
+                                                    .cachedTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .outputTokensDetails(
+                                                Decision.Usage.OutputTokensDetails.builder()
+                                                    .reasoningTokens(0L)
+                                                    .build()
+                                            )
+                                            .totalTokens(42L)
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .eventId("evt_decision_1")
+                    .sourceEventId(null)
+                    .sourceEventType(null)
+                    .triggerId(null)
+                    .build()
+            )
+
+        val roundtrippedSidebandServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandServerEvent),
+                jacksonTypeRef<SidebandServerEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandServerEvent).isEqualTo(sidebandServerEvent)
+    }
+
+    @Test
+    fun ofDecisionItemCreated() {
+        val decisionItemCreated =
+            DecisionItemCreatedEvent.builder()
+                .eventId("evt_item_1")
+                .item(
+                    DecisionItemCreatedEvent.Item.builder()
+                        .id("msg_browser_1")
+                        .content("string")
+                        .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
+                        .build()
+                )
+                .clientEventId("browser_1")
+                .build()
+
+        val sidebandServerEvent = SidebandServerEvent.ofDecisionItemCreated(decisionItemCreated)
+
+        assertThat(sidebandServerEvent.sessionStarted()).isEmpty
+        assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(sidebandServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).contains(decisionItemCreated)
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
+        assertThat(sidebandServerEvent.responseEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionClosed()).isEmpty
+        assertThat(sidebandServerEvent.errorEvent()).isEmpty
+        assertThat(sidebandServerEvent.infoEvent()).isEmpty
+    }
+
+    @Test
+    fun ofDecisionItemCreatedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandServerEvent =
+            SidebandServerEvent.ofDecisionItemCreated(
+                DecisionItemCreatedEvent.builder()
+                    .eventId("evt_item_1")
+                    .item(
+                        DecisionItemCreatedEvent.Item.builder()
+                            .id("msg_browser_1")
+                            .content("string")
+                            .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
+                            .build()
+                    )
+                    .clientEventId("browser_1")
+                    .build()
+            )
+
+        val roundtrippedSidebandServerEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandServerEvent),
+                jacksonTypeRef<SidebandServerEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandServerEvent).isEqualTo(sidebandServerEvent)
+    }
+
+    @Test
+    fun ofDecisionItemDeleted() {
+        val decisionItemDeleted =
+            DecisionItemDeletedEvent.builder()
+                .eventId("evt_item_deleted_1")
+                .itemId("msg_browser_1")
+                .clientEventId("remove_browser_1")
+                .build()
+
+        val sidebandServerEvent = SidebandServerEvent.ofDecisionItemDeleted(decisionItemDeleted)
+
+        assertThat(sidebandServerEvent.sessionStarted()).isEmpty
+        assertThat(sidebandServerEvent.sessionUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioMuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputAudioUnmuted()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
+        assertThat(sidebandServerEvent.sessionInstructionsAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionThinkingAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionCommentaryAppended()).isEmpty
+        assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
+        assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).contains(decisionItemDeleted)
+        assertThat(sidebandServerEvent.responseEvent()).isEmpty
+        assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
+        assertThat(sidebandServerEvent.sessionClosed()).isEmpty
+        assertThat(sidebandServerEvent.errorEvent()).isEmpty
+        assertThat(sidebandServerEvent.infoEvent()).isEmpty
+    }
+
+    @Test
+    fun ofDecisionItemDeletedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandServerEvent =
+            SidebandServerEvent.ofDecisionItemDeleted(
+                DecisionItemDeletedEvent.builder()
+                    .eventId("evt_item_deleted_1")
+                    .itemId("msg_browser_1")
+                    .clientEventId("remove_browser_1")
                     .build()
             )
 
@@ -909,6 +1260,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).contains(responseEvent)
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -980,6 +1334,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).contains(sessionUsageUpdated)
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -1048,6 +1405,21 @@ internal class SidebandServerEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
+                        .addTrigger(
+                            DecisionTrigger.builder()
+                                .decisions(
+                                    DecisionTrigger.Decisions.builder()
+                                        .addQuestion(
+                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                                .instructions("instructions")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                                .build()
+                        )
                         .build()
                 )
                 .usage(SessionUsage.builder().seconds(45.8).build())
@@ -1068,6 +1440,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).contains(sessionClosed)
@@ -1114,6 +1489,24 @@ internal class SidebandServerEventTest {
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
                             .store(true)
+                            .addTrigger(
+                                DecisionTrigger.builder()
+                                    .decisions(
+                                        DecisionTrigger.Decisions.builder()
+                                            .addQuestion(
+                                                DecisionTrigger.Decisions.Question.Predicate
+                                                    .builder()
+                                                    .instructions("instructions")
+                                                    .name("name")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .eventType(
+                                        DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
+                                    )
+                                    .build()
+                            )
                             .build()
                     )
                     .usage(SessionUsage.builder().seconds(45.8).build())
@@ -1161,6 +1554,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty
@@ -1223,6 +1619,9 @@ internal class SidebandServerEventTest {
         assertThat(sidebandServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(sidebandServerEvent.sessionDelegationCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionEvent()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemCreated()).isEmpty
+        assertThat(sidebandServerEvent.decisionItemDeleted()).isEmpty
         assertThat(sidebandServerEvent.responseEvent()).isEmpty
         assertThat(sidebandServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(sidebandServerEvent.sessionClosed()).isEmpty

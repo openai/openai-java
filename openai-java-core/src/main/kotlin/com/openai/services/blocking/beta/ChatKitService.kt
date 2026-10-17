@@ -21,9 +21,11 @@ interface ChatKitService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatKitService
 
-    fun sessions(): SessionService
+    fun sessions(): SessionService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun threads(): ThreadService
+    fun threads(): ThreadService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** A view of [ChatKitService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -35,8 +37,14 @@ interface ChatKitService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatKitService.WithRawResponse
 
-        fun sessions(): SessionService.WithRawResponse
+        fun sessions(): SessionService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun threads(): ThreadService.WithRawResponse
+        fun threads(): ThreadService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
     }
 }

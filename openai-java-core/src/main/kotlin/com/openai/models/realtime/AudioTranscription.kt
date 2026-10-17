@@ -229,7 +229,7 @@ private constructor(
          */
         fun addKeyword(keyword: String) = apply {
             keywords =
-                (keywords ?: JsonField.of(mutableListOf())).also {
+                (keywords?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("keywords", it).add(keyword)
                 }
         }
@@ -274,7 +274,7 @@ private constructor(
          */
         fun addLanguage(language: String) = apply {
             languages =
-                (languages ?: JsonField.of(mutableListOf())).also {
+                (languages?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("languages", it).add(language)
                 }
         }

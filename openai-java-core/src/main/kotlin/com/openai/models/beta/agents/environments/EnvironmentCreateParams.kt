@@ -885,9 +885,9 @@ private constructor(
              */
             fun addCapabilityDirectory(capabilityDirectory: String) = apply {
                 capabilityDirectories =
-                    (capabilityDirectories ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("capabilityDirectories", it).add(capabilityDirectory)
-                    }
+                    (capabilityDirectories?.takeUnless { it.isMissing() }
+                            ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("capabilityDirectories", it).add(capabilityDirectory) }
             }
 
             /**
@@ -965,7 +965,7 @@ private constructor(
              */
             fun addFile(file: HostedEnvironmentFileParam) = apply {
                 files =
-                    (files ?: JsonField.of(mutableListOf())).also {
+                    (files?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("files", it).add(file)
                     }
             }
@@ -1035,7 +1035,7 @@ private constructor(
              */
             fun addPlugin(plugin: HostedPluginParam) = apply {
                 plugins =
-                    (plugins ?: JsonField.of(mutableListOf())).also {
+                    (plugins?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("plugins", it).add(plugin)
                     }
             }
@@ -1066,9 +1066,8 @@ private constructor(
              */
             fun addSetupCommand(setupCommand: SetupCommandParam) = apply {
                 setupCommands =
-                    (setupCommands ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("setupCommands", it).add(setupCommand)
-                    }
+                    (setupCommands?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("setupCommands", it).add(setupCommand) }
             }
 
             /**
@@ -1098,7 +1097,7 @@ private constructor(
              */
             fun addSkill(skill: HostedSkillParam) = apply {
                 skills =
-                    (skills ?: JsonField.of(mutableListOf())).also {
+                    (skills?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("skills", it).add(skill)
                     }
             }
@@ -1685,9 +1684,9 @@ private constructor(
                  */
                 fun addAllowedDomain(allowedDomain: String) = apply {
                     allowedDomains =
-                        (allowedDomains ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("allowedDomains", it).add(allowedDomain)
-                        }
+                        (allowedDomains?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("allowedDomains", it).add(allowedDomain) }
                 }
 
                 /**
@@ -1722,9 +1721,9 @@ private constructor(
                  */
                 fun addBlockedDomain(blockedDomain: String) = apply {
                     blockedDomains =
-                        (blockedDomains ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("blockedDomains", it).add(blockedDomain)
-                        }
+                        (blockedDomains?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("blockedDomains", it).add(blockedDomain) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2118,9 +2117,8 @@ private constructor(
                  */
                 fun addNpm(npm: String) = apply {
                     this.npm =
-                        (this.npm ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("npm", it).add(npm)
-                        }
+                        (this.npm?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("npm", it).add(npm) }
                 }
 
                 /** Python packages to install. Defaults to an empty list. */
@@ -2147,9 +2145,9 @@ private constructor(
                  */
                 fun addPython(python: String) = apply {
                     this.python =
-                        (this.python ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("python", it).add(python)
-                        }
+                        (this.python?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("python", it).add(python) }
                 }
 
                 /** System packages to install. Defaults to an empty list. */
@@ -2176,9 +2174,9 @@ private constructor(
                  */
                 fun addSystem(system: String) = apply {
                     this.system =
-                        (this.system ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("system", it).add(system)
-                        }
+                        (this.system?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("system", it).add(system) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
