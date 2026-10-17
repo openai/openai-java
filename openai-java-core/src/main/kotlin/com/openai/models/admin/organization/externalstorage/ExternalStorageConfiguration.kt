@@ -754,6 +754,8 @@ private constructor(
 
             @JvmField val VALIDATED = of("validated")
 
+            @JvmField val DEGRADED = of("degraded")
+
             @JvmField val UNHEALTHY = of("unhealthy")
 
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
@@ -763,6 +765,7 @@ private constructor(
         enum class Known {
             PENDING,
             VALIDATED,
+            DEGRADED,
             UNHEALTHY,
         }
 
@@ -778,6 +781,7 @@ private constructor(
         enum class Value {
             PENDING,
             VALIDATED,
+            DEGRADED,
             UNHEALTHY,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
             _UNKNOWN,
@@ -794,6 +798,7 @@ private constructor(
             when (this) {
                 PENDING -> Value.PENDING
                 VALIDATED -> Value.VALIDATED
+                DEGRADED -> Value.DEGRADED
                 UNHEALTHY -> Value.UNHEALTHY
                 else -> Value._UNKNOWN
             }
@@ -811,6 +816,7 @@ private constructor(
             when (this) {
                 PENDING -> Known.PENDING
                 VALIDATED -> Known.VALIDATED
+                DEGRADED -> Known.DEGRADED
                 UNHEALTHY -> Known.UNHEALTHY
                 else -> throw OpenAIInvalidDataException("Unknown Status: $value")
             }
