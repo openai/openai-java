@@ -36,6 +36,7 @@ interface ResponseService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService
 
     /** Opens a typed WebSocket using the SDK-owned connection implementation. */
+    @MustBeClosed
     fun connectWebSocket():
         com.openai.core.http.WebSocketConnection<
             com.openai.models.beta.responses.BetaResponsesClientEvent,
@@ -46,6 +47,7 @@ interface ResponseService {
             com.openai.core.RequestOptions.none(),
         )
 
+    @MustBeClosed
     fun connectWebSocket(
         options: com.openai.core.http.WebSocketOptions
     ): com.openai.core.http.WebSocketConnection<
@@ -53,6 +55,7 @@ interface ResponseService {
         com.openai.models.beta.responses.BetaResponsesServerEvent,
     > = connectWebSocket(options, com.openai.core.RequestOptions.none())
 
+    @MustBeClosed
     fun connectWebSocket(
         options: com.openai.core.http.WebSocketOptions,
         requestOptions: com.openai.core.RequestOptions,

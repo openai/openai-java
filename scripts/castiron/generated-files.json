@@ -8103,7 +8103,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/beta/ResponseService.kt": {
       "mode": "100644",
-      "sha256": "63666a953271b91302ac044571dd3c51640eb4f6d857e4ffec5c5a1ec011c18c"
+      "sha256": "137804dd8a7d06e94fa35f7a850be62c6c30925518ee45cb7f970193fa6cff1a"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/beta/ResponseServiceImpl.kt": {
       "mode": "100644",
