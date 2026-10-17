@@ -20,7 +20,8 @@ interface AdminServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AdminServiceAsync
 
-    fun organization(): OrganizationServiceAsync
+    fun organization(): OrganizationServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** A view of [AdminServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -34,6 +35,9 @@ interface AdminServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): AdminServiceAsync.WithRawResponse
 
-        fun organization(): OrganizationServiceAsync.WithRawResponse
+        fun organization(): OrganizationServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
     }
 }

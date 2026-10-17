@@ -129,7 +129,7 @@ private constructor(
          */
         fun addSkill(skill: BetaLocalSkill) = apply {
             skills =
-                (skills ?: JsonField.of(mutableListOf())).also {
+                (skills?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("skills", it).add(skill)
                 }
         }

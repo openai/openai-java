@@ -303,7 +303,7 @@ private constructor(
          */
         fun addAnnotation(annotation: Annotation) = apply {
             annotations =
-                (annotations ?: JsonField.of(mutableListOf())).also {
+                (annotations?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("annotations", it).add(annotation)
                 }
         }
@@ -368,7 +368,7 @@ private constructor(
          */
         fun addToolCall(toolCall: ChatCompletionMessageToolCall) = apply {
             toolCalls =
-                (toolCalls ?: JsonField.of(mutableListOf())).also {
+                (toolCalls?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("toolCalls", it).add(toolCall)
                 }
         }

@@ -29,7 +29,8 @@ interface UploadService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): UploadService
 
     /** Use Uploads to upload large files in multiple parts. */
-    fun parts(): PartService
+    fun parts(): PartService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Creates an intermediate
@@ -136,7 +137,10 @@ interface UploadService {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): UploadService.WithRawResponse
 
         /** Use Uploads to upload large files in multiple parts. */
-        fun parts(): PartService.WithRawResponse
+        fun parts(): PartService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /uploads`, but is otherwise the same as

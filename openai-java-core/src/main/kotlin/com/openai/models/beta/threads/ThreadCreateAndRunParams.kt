@@ -2308,9 +2308,8 @@ private constructor(
              */
             fun addMessage(message: Message) = apply {
                 messages =
-                    (messages ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("messages", it).add(message)
-                    }
+                    (messages?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("messages", it).add(message) }
             }
 
             /**
@@ -2648,9 +2647,9 @@ private constructor(
                  */
                 fun addAttachment(attachment: Attachment) = apply {
                     attachments =
-                        (attachments ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("attachments", it).add(attachment)
-                        }
+                        (attachments?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("attachments", it).add(attachment) }
                 }
 
                 /**
@@ -3286,9 +3285,8 @@ private constructor(
                      */
                     fun addTool(tool: Tool) = apply {
                         tools =
-                            (tools ?: JsonField.of(mutableListOf())).also {
-                                checkKnown("tools", it).add(tool)
-                            }
+                            (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                                .also { checkKnown("tools", it).add(tool) }
                     }
 
                     /**
@@ -4186,9 +4184,9 @@ private constructor(
                      */
                     fun addFileId(fileId: String) = apply {
                         fileIds =
-                            (fileIds ?: JsonField.of(mutableListOf())).also {
-                                checkKnown("fileIds", it).add(fileId)
-                            }
+                            (fileIds?.takeUnless { it.isMissing() }
+                                    ?: JsonField.of(mutableListOf()))
+                                .also { checkKnown("fileIds", it).add(fileId) }
                     }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -4402,9 +4400,9 @@ private constructor(
                      */
                     fun addVectorStoreId(vectorStoreId: String) = apply {
                         vectorStoreIds =
-                            (vectorStoreIds ?: JsonField.of(mutableListOf())).also {
-                                checkKnown("vectorStoreIds", it).add(vectorStoreId)
-                            }
+                            (vectorStoreIds?.takeUnless { it.isMissing() }
+                                    ?: JsonField.of(mutableListOf()))
+                                .also { checkKnown("vectorStoreIds", it).add(vectorStoreId) }
                     }
 
                     /**
@@ -4434,9 +4432,9 @@ private constructor(
                      */
                     fun addVectorStore(vectorStore: VectorStore) = apply {
                         vectorStores =
-                            (vectorStores ?: JsonField.of(mutableListOf())).also {
-                                checkKnown("vectorStores", it).add(vectorStore)
-                            }
+                            (vectorStores?.takeUnless { it.isMissing() }
+                                    ?: JsonField.of(mutableListOf()))
+                                .also { checkKnown("vectorStores", it).add(vectorStore) }
                     }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -4710,9 +4708,9 @@ private constructor(
                          */
                         fun addFileId(fileId: String) = apply {
                             fileIds =
-                                (fileIds ?: JsonField.of(mutableListOf())).also {
-                                    checkKnown("fileIds", it).add(fileId)
-                                }
+                                (fileIds?.takeUnless { it.isMissing() }
+                                        ?: JsonField.of(mutableListOf()))
+                                    .also { checkKnown("fileIds", it).add(fileId) }
                         }
 
                         /**
@@ -6054,9 +6052,8 @@ private constructor(
                  */
                 fun addFileId(fileId: String) = apply {
                     fileIds =
-                        (fileIds ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("fileIds", it).add(fileId)
-                        }
+                        (fileIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("fileIds", it).add(fileId) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -6241,9 +6238,9 @@ private constructor(
                  */
                 fun addVectorStoreId(vectorStoreId: String) = apply {
                     vectorStoreIds =
-                        (vectorStoreIds ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("vectorStoreIds", it).add(vectorStoreId)
-                        }
+                        (vectorStoreIds?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("vectorStoreIds", it).add(vectorStoreId) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

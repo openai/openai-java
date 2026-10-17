@@ -617,9 +617,8 @@ private constructor(
              */
             fun addTopLogprob(topLogprob: TopLogprob) = apply {
                 topLogprobs =
-                    (topLogprobs ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("topLogprobs", it).add(topLogprob)
-                    }
+                    (topLogprobs?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("topLogprobs", it).add(topLogprob) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

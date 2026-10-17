@@ -201,7 +201,7 @@ private constructor(
          */
         fun addSegment(segment: TranscriptionSegment) = apply {
             segments =
-                (segments ?: JsonField.of(mutableListOf())).also {
+                (segments?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("segments", it).add(segment)
                 }
         }

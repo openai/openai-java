@@ -1370,9 +1370,8 @@ private constructor(
              */
             fun addAllowedTool(allowedTool: String) = apply {
                 allowedTools =
-                    (allowedTools ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("allowedTools", it).add(allowedTool)
-                    }
+                    (allowedTools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("allowedTools", it).add(allowedTool) }
             }
 
             /** Selects where outbound MCP HTTP connections originate. */
@@ -2037,9 +2036,8 @@ private constructor(
              */
             fun addAllowedDomain(allowedDomain: String) = apply {
                 allowedDomains =
-                    (allowedDomains ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("allowedDomains", it).add(allowedDomain)
-                    }
+                    (allowedDomains?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("allowedDomains", it).add(allowedDomain) }
             }
 
             /** The amount of search context made available to the model. Defaults to `medium`. */

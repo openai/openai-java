@@ -31,7 +31,8 @@ interface VaultServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VaultServiceAsync
 
-    fun credentials(): CredentialServiceAsync
+    fun credentials(): CredentialServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Creates a vault for the current project. See
@@ -191,7 +192,10 @@ interface VaultServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): VaultServiceAsync.WithRawResponse
 
-        fun credentials(): CredentialServiceAsync.WithRawResponse
+        fun credentials(): CredentialServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /vaults`, but is otherwise the same as

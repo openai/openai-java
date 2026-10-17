@@ -244,7 +244,7 @@ private constructor(
          */
         fun addLogprob(logprob: Logprob) = apply {
             logprobs =
-                (logprobs ?: JsonField.of(mutableListOf())).also {
+                (logprobs?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("logprobs", it).add(logprob)
                 }
         }

@@ -30,19 +30,24 @@ interface BetaServiceAsync {
     )
     fun realtime(): RealtimeServiceAsync
 
-    fun agents(): AgentServiceAsync
+    fun agents(): AgentServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create and manage model responses. */
-    fun responses(): ResponseServiceAsync
+    fun responses(): ResponseServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun chatkit(): ChatKitServiceAsync
+    fun chatkit(): ChatKitServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Build Assistants that can call models and use tools. */
-    fun assistants(): AssistantServiceAsync
+    fun assistants(): AssistantServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-    fun threads(): ThreadServiceAsync
+    fun threads(): ThreadServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** A view of [BetaServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -59,18 +64,33 @@ interface BetaServiceAsync {
         )
         fun realtime(): RealtimeServiceAsync.WithRawResponse
 
-        fun agents(): AgentServiceAsync.WithRawResponse
+        fun agents(): AgentServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /** Create and manage model responses. */
-        fun responses(): ResponseServiceAsync.WithRawResponse
+        fun responses(): ResponseServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun chatkit(): ChatKitServiceAsync.WithRawResponse
+        fun chatkit(): ChatKitServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /** Build Assistants that can call models and use tools. */
-        fun assistants(): AssistantServiceAsync.WithRawResponse
+        fun assistants(): AssistantServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-        fun threads(): ThreadServiceAsync.WithRawResponse
+        fun threads(): ThreadServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
     }
 }

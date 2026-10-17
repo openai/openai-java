@@ -1247,9 +1247,8 @@ private constructor(
              */
             fun addData(data: BatchError) = apply {
                 this.data =
-                    (this.data ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("data", it).add(data)
-                    }
+                    (this.data?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("data", it).add(data) }
             }
 
             /** The object type, which is always `list`. */

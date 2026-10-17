@@ -816,7 +816,9 @@ private constructor(
              */
             fun addArg(arg: String) = apply {
                 args =
-                    (args ?: JsonField.of(mutableListOf())).also { checkKnown("args", it).add(arg) }
+                    (args?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("args", it).add(arg)
+                    }
             }
 
             /** Environment variable names to inherit from the selected execution environment. */
@@ -843,7 +845,7 @@ private constructor(
              */
             fun addEnvVar(envVar: String) = apply {
                 envVars =
-                    (envVars ?: JsonField.of(mutableListOf())).also {
+                    (envVars?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("envVars", it).add(envVar)
                     }
             }

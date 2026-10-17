@@ -31,7 +31,8 @@ interface ConversationService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ConversationService
 
     /** Manage conversations and conversation items. */
-    fun items(): ItemService
+    fun items(): ItemService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create a conversation. */
     fun create(): Conversation = create(ConversationCreateParams.none())
@@ -154,7 +155,10 @@ interface ConversationService {
         ): ConversationService.WithRawResponse
 
         /** Manage conversations and conversation items. */
-        fun items(): ItemService.WithRawResponse
+        fun items(): ItemService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /conversations`, but is otherwise the same as

@@ -199,9 +199,8 @@ private constructor(
          */
         fun addDomainSecret(domainSecret: BetaContainerNetworkPolicyDomainSecret) = apply {
             domainSecrets =
-                (domainSecrets ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("domainSecrets", it).add(domainSecret)
-                }
+                (domainSecrets?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("domainSecrets", it).add(domainSecret) }
         }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

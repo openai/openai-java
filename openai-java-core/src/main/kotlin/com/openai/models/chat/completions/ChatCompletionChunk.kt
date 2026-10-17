@@ -1190,9 +1190,8 @@ private constructor(
                  */
                 fun addToolCall(toolCall: ToolCall) = apply {
                     toolCalls =
-                        (toolCalls ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("toolCalls", it).add(toolCall)
-                        }
+                        (toolCalls?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("toolCalls", it).add(toolCall) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

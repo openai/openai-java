@@ -15,6 +15,9 @@ import com.openai.core.JsonValue
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.live.CommentaryAppendEvent
+import com.openai.models.live.DecisionCreateEvent
+import com.openai.models.live.DecisionItemCreateEvent
+import com.openai.models.live.DecisionItemDeleteEvent
 import com.openai.models.live.ForkSessionStartEvent
 import com.openai.models.live.InputAudioAppendEvent
 import com.openai.models.live.InputAudioMuteEvent
@@ -48,6 +51,9 @@ private constructor(
     private val sessionInstructionsAppend: InstructionsAppendEvent? = null,
     private val sessionThinkingAppend: ThinkingAppendEvent? = null,
     private val sessionCommentaryAppend: CommentaryAppendEvent? = null,
+    private val decisionCreate: DecisionCreateEvent? = null,
+    private val decisionItemCreate: DecisionItemCreateEvent? = null,
+    private val decisionItemDelete: DecisionItemDeleteEvent? = null,
     private val responseItemCreate: ResponseItemCreateEvent? = null,
     private val responseCreate: ResponseCreateEvent? = null,
     private val sessionClose: SessionCloseEvent? = null,
@@ -61,8 +67,8 @@ private constructor(
     fun sessionStart(): Optional<ForkSessionStartEvent> = Optional.ofNullable(sessionStart)
 
     /**
-     * Update the delegation settings of an active Live session. The server acknowledges accepted
-     * changes with `session.updated`.
+     * Update the delegation settings or transcript triggers of an active Live session. The server
+     * acknowledges accepted changes with `session.updated`.
      */
     fun sessionUpdate(): Optional<SessionUpdateEvent> = Optional.ofNullable(sessionUpdate)
 
@@ -82,7 +88,8 @@ private constructor(
 
     /**
      * Resume audio input to a Live model after muting it. The server acknowledges with
-     * `session.input_audio.unmuted`.
+     * `session.input_audio.unmuted`. An active audio fixture still pauses inference until playback
+     * finishes.
      */
     fun sessionInputAudioUnmute(): Optional<InputAudioUnmuteEvent> =
         Optional.ofNullable(sessionInputAudioUnmute)
@@ -100,25 +107,48 @@ private constructor(
         Optional.ofNullable(sessionOutputAudioFixturePlay)
 
     /**
-     * Append instructions to the Live conversation while it is running, optionally associating them
-     * with an existing client delegation.
+     * Append developer instructions to the Live conversation while it is running, optionally
+     * associating them with an existing client delegation. Rejected while an audio fixture is
+     * active. These instructions remain in conversation history through compaction and are included
+     * in future backend delegations. For external audio, describe content already delivered so the
+     * assistant does not repeat it.
      */
     fun sessionInstructionsAppend(): Optional<InstructionsAppendEvent> =
         Optional.ofNullable(sessionInstructionsAppend)
 
     /**
      * Provide silent reasoning or progress context to the Live model, optionally for an existing
-     * client delegation.
+     * client delegation. Rejected while an audio fixture is active.
      */
     fun sessionThinkingAppend(): Optional<ThinkingAppendEvent> =
         Optional.ofNullable(sessionThinkingAppend)
 
     /**
      * Provide context the Live model can communicate to the user, optionally for an existing client
-     * delegation.
+     * delegation. Rejected while an audio fixture is active.
      */
     fun sessionCommentaryAppend(): Optional<CommentaryAppendEvent> =
         Optional.ofNullable(sessionCommentaryAppend)
+
+    /**
+     * Evaluate the configured questions using the current conversation and Decision inputs. Reusing
+     * an event_id is rejected for the lifetime of the session.
+     */
+    fun decisionCreate(): Optional<DecisionCreateEvent> = Optional.ofNullable(decisionCreate)
+
+    /**
+     * Append an input item for future decisions without starting an evaluation or changing Live
+     * voice context.
+     */
+    fun decisionItemCreate(): Optional<DecisionItemCreateEvent> =
+        Optional.ofNullable(decisionItemCreate)
+
+    /**
+     * Delete an input item from future decisions without starting an evaluation or changing Live
+     * voice context.
+     */
+    fun decisionItemDelete(): Optional<DecisionItemDeleteEvent> =
+        Optional.ofNullable(decisionItemDelete)
 
     /**
      * Add an input item to the Live session’s Responses backend. Requires Responses delegation; use
@@ -157,6 +187,12 @@ private constructor(
 
     fun isSessionCommentaryAppend(): Boolean = sessionCommentaryAppend != null
 
+    fun isDecisionCreate(): Boolean = decisionCreate != null
+
+    fun isDecisionItemCreate(): Boolean = decisionItemCreate != null
+
+    fun isDecisionItemDelete(): Boolean = decisionItemDelete != null
+
     fun isResponseItemCreate(): Boolean = responseItemCreate != null
 
     fun isResponseCreate(): Boolean = responseCreate != null
@@ -170,8 +206,8 @@ private constructor(
     fun asSessionStart(): ForkSessionStartEvent = sessionStart.getOrThrow("sessionStart")
 
     /**
-     * Update the delegation settings of an active Live session. The server acknowledges accepted
-     * changes with `session.updated`.
+     * Update the delegation settings or transcript triggers of an active Live session. The server
+     * acknowledges accepted changes with `session.updated`.
      */
     fun asSessionUpdate(): SessionUpdateEvent = sessionUpdate.getOrThrow("sessionUpdate")
 
@@ -191,7 +227,8 @@ private constructor(
 
     /**
      * Resume audio input to a Live model after muting it. The server acknowledges with
-     * `session.input_audio.unmuted`.
+     * `session.input_audio.unmuted`. An active audio fixture still pauses inference until playback
+     * finishes.
      */
     fun asSessionInputAudioUnmute(): InputAudioUnmuteEvent =
         sessionInputAudioUnmute.getOrThrow("sessionInputAudioUnmute")
@@ -209,25 +246,48 @@ private constructor(
         sessionOutputAudioFixturePlay.getOrThrow("sessionOutputAudioFixturePlay")
 
     /**
-     * Append instructions to the Live conversation while it is running, optionally associating them
-     * with an existing client delegation.
+     * Append developer instructions to the Live conversation while it is running, optionally
+     * associating them with an existing client delegation. Rejected while an audio fixture is
+     * active. These instructions remain in conversation history through compaction and are included
+     * in future backend delegations. For external audio, describe content already delivered so the
+     * assistant does not repeat it.
      */
     fun asSessionInstructionsAppend(): InstructionsAppendEvent =
         sessionInstructionsAppend.getOrThrow("sessionInstructionsAppend")
 
     /**
      * Provide silent reasoning or progress context to the Live model, optionally for an existing
-     * client delegation.
+     * client delegation. Rejected while an audio fixture is active.
      */
     fun asSessionThinkingAppend(): ThinkingAppendEvent =
         sessionThinkingAppend.getOrThrow("sessionThinkingAppend")
 
     /**
      * Provide context the Live model can communicate to the user, optionally for an existing client
-     * delegation.
+     * delegation. Rejected while an audio fixture is active.
      */
     fun asSessionCommentaryAppend(): CommentaryAppendEvent =
         sessionCommentaryAppend.getOrThrow("sessionCommentaryAppend")
+
+    /**
+     * Evaluate the configured questions using the current conversation and Decision inputs. Reusing
+     * an event_id is rejected for the lifetime of the session.
+     */
+    fun asDecisionCreate(): DecisionCreateEvent = decisionCreate.getOrThrow("decisionCreate")
+
+    /**
+     * Append an input item for future decisions without starting an evaluation or changing Live
+     * voice context.
+     */
+    fun asDecisionItemCreate(): DecisionItemCreateEvent =
+        decisionItemCreate.getOrThrow("decisionItemCreate")
+
+    /**
+     * Delete an input item from future decisions without starting an evaluation or changing Live
+     * voice context.
+     */
+    fun asDecisionItemDelete(): DecisionItemDeleteEvent =
+        decisionItemDelete.getOrThrow("decisionItemDelete")
 
     /**
      * Add an input item to the Live session’s Responses backend. Requires Responses delegation; use
@@ -297,6 +357,9 @@ private constructor(
                 visitor.visitSessionThinkingAppend(sessionThinkingAppend)
             sessionCommentaryAppend != null ->
                 visitor.visitSessionCommentaryAppend(sessionCommentaryAppend)
+            decisionCreate != null -> visitor.visitDecisionCreate(decisionCreate)
+            decisionItemCreate != null -> visitor.visitDecisionItemCreate(decisionItemCreate)
+            decisionItemDelete != null -> visitor.visitDecisionItemDelete(decisionItemDelete)
             responseItemCreate != null -> visitor.visitResponseItemCreate(responseItemCreate)
             responseCreate != null -> visitor.visitResponseCreate(responseCreate)
             sessionClose != null -> visitor.visitSessionClose(sessionClose)
@@ -370,6 +433,18 @@ private constructor(
                     sessionCommentaryAppend.validate()
                 }
 
+                override fun visitDecisionCreate(decisionCreate: DecisionCreateEvent) {
+                    decisionCreate.validate()
+                }
+
+                override fun visitDecisionItemCreate(decisionItemCreate: DecisionItemCreateEvent) {
+                    decisionItemCreate.validate()
+                }
+
+                override fun visitDecisionItemDelete(decisionItemDelete: DecisionItemDeleteEvent) {
+                    decisionItemDelete.validate()
+                }
+
                 override fun visitResponseItemCreate(responseItemCreate: ResponseItemCreateEvent) {
                     responseItemCreate.validate()
                 }
@@ -437,6 +512,15 @@ private constructor(
                     sessionCommentaryAppend: CommentaryAppendEvent
                 ) = sessionCommentaryAppend.validity()
 
+                override fun visitDecisionCreate(decisionCreate: DecisionCreateEvent) =
+                    decisionCreate.validity()
+
+                override fun visitDecisionItemCreate(decisionItemCreate: DecisionItemCreateEvent) =
+                    decisionItemCreate.validity()
+
+                override fun visitDecisionItemDelete(decisionItemDelete: DecisionItemDeleteEvent) =
+                    decisionItemDelete.validity()
+
                 override fun visitResponseItemCreate(responseItemCreate: ResponseItemCreateEvent) =
                     responseItemCreate.validity()
 
@@ -465,6 +549,9 @@ private constructor(
             sessionInstructionsAppend == other.sessionInstructionsAppend &&
             sessionThinkingAppend == other.sessionThinkingAppend &&
             sessionCommentaryAppend == other.sessionCommentaryAppend &&
+            decisionCreate == other.decisionCreate &&
+            decisionItemCreate == other.decisionItemCreate &&
+            decisionItemDelete == other.decisionItemDelete &&
             responseItemCreate == other.responseItemCreate &&
             responseCreate == other.responseCreate &&
             sessionClose == other.sessionClose
@@ -481,6 +568,9 @@ private constructor(
             sessionInstructionsAppend,
             sessionThinkingAppend,
             sessionCommentaryAppend,
+            decisionCreate,
+            decisionItemCreate,
+            decisionItemDelete,
             responseItemCreate,
             responseCreate,
             sessionClose,
@@ -504,6 +594,9 @@ private constructor(
                 "ForkClientEvent{sessionThinkingAppend=$sessionThinkingAppend}"
             sessionCommentaryAppend != null ->
                 "ForkClientEvent{sessionCommentaryAppend=$sessionCommentaryAppend}"
+            decisionCreate != null -> "ForkClientEvent{decisionCreate=$decisionCreate}"
+            decisionItemCreate != null -> "ForkClientEvent{decisionItemCreate=$decisionItemCreate}"
+            decisionItemDelete != null -> "ForkClientEvent{decisionItemDelete=$decisionItemDelete}"
             responseItemCreate != null -> "ForkClientEvent{responseItemCreate=$responseItemCreate}"
             responseCreate != null -> "ForkClientEvent{responseCreate=$responseCreate}"
             sessionClose != null -> "ForkClientEvent{sessionClose=$sessionClose}"
@@ -522,8 +615,8 @@ private constructor(
             ForkClientEvent(sessionStart = sessionStart)
 
         /**
-         * Update the delegation settings of an active Live session. The server acknowledges
-         * accepted changes with `session.updated`.
+         * Update the delegation settings or transcript triggers of an active Live session. The
+         * server acknowledges accepted changes with `session.updated`.
          */
         @JvmStatic
         fun ofSessionUpdate(sessionUpdate: SessionUpdateEvent) =
@@ -547,7 +640,8 @@ private constructor(
 
         /**
          * Resume audio input to a Live model after muting it. The server acknowledges with
-         * `session.input_audio.unmuted`.
+         * `session.input_audio.unmuted`. An active audio fixture still pauses inference until
+         * playback finishes.
          */
         @JvmStatic
         fun ofSessionInputAudioUnmute(sessionInputAudioUnmute: InputAudioUnmuteEvent) =
@@ -568,8 +662,11 @@ private constructor(
         ) = ForkClientEvent(sessionOutputAudioFixturePlay = sessionOutputAudioFixturePlay)
 
         /**
-         * Append instructions to the Live conversation while it is running, optionally associating
-         * them with an existing client delegation.
+         * Append developer instructions to the Live conversation while it is running, optionally
+         * associating them with an existing client delegation. Rejected while an audio fixture is
+         * active. These instructions remain in conversation history through compaction and are
+         * included in future backend delegations. For external audio, describe content already
+         * delivered so the assistant does not repeat it.
          */
         @JvmStatic
         fun ofSessionInstructionsAppend(sessionInstructionsAppend: InstructionsAppendEvent) =
@@ -577,7 +674,7 @@ private constructor(
 
         /**
          * Provide silent reasoning or progress context to the Live model, optionally for an
-         * existing client delegation.
+         * existing client delegation. Rejected while an audio fixture is active.
          */
         @JvmStatic
         fun ofSessionThinkingAppend(sessionThinkingAppend: ThinkingAppendEvent) =
@@ -585,11 +682,35 @@ private constructor(
 
         /**
          * Provide context the Live model can communicate to the user, optionally for an existing
-         * client delegation.
+         * client delegation. Rejected while an audio fixture is active.
          */
         @JvmStatic
         fun ofSessionCommentaryAppend(sessionCommentaryAppend: CommentaryAppendEvent) =
             ForkClientEvent(sessionCommentaryAppend = sessionCommentaryAppend)
+
+        /**
+         * Evaluate the configured questions using the current conversation and Decision inputs.
+         * Reusing an event_id is rejected for the lifetime of the session.
+         */
+        @JvmStatic
+        fun ofDecisionCreate(decisionCreate: DecisionCreateEvent) =
+            ForkClientEvent(decisionCreate = decisionCreate)
+
+        /**
+         * Append an input item for future decisions without starting an evaluation or changing Live
+         * voice context.
+         */
+        @JvmStatic
+        fun ofDecisionItemCreate(decisionItemCreate: DecisionItemCreateEvent) =
+            ForkClientEvent(decisionItemCreate = decisionItemCreate)
+
+        /**
+         * Delete an input item from future decisions without starting an evaluation or changing
+         * Live voice context.
+         */
+        @JvmStatic
+        fun ofDecisionItemDelete(decisionItemDelete: DecisionItemDeleteEvent) =
+            ForkClientEvent(decisionItemDelete = decisionItemDelete)
 
         /**
          * Add an input item to the Live session’s Responses backend. Requires Responses delegation;
@@ -630,8 +751,8 @@ private constructor(
             unknown(JsonValue.from(sessionStart))
 
         /**
-         * Update the delegation settings of an active Live session. The server acknowledges
-         * accepted changes with `session.updated`.
+         * Update the delegation settings or transcript triggers of an active Live session. The
+         * server acknowledges accepted changes with `session.updated`.
          */
         fun visitSessionUpdate(sessionUpdate: SessionUpdateEvent): T =
             unknown(JsonValue.from(sessionUpdate))
@@ -652,7 +773,8 @@ private constructor(
 
         /**
          * Resume audio input to a Live model after muting it. The server acknowledges with
-         * `session.input_audio.unmuted`.
+         * `session.input_audio.unmuted`. An active audio fixture still pauses inference until
+         * playback finishes.
          */
         fun visitSessionInputAudioUnmute(sessionInputAudioUnmute: InputAudioUnmuteEvent): T =
             unknown(JsonValue.from(sessionInputAudioUnmute))
@@ -671,25 +793,49 @@ private constructor(
         ): T = unknown(JsonValue.from(sessionOutputAudioFixturePlay))
 
         /**
-         * Append instructions to the Live conversation while it is running, optionally associating
-         * them with an existing client delegation.
+         * Append developer instructions to the Live conversation while it is running, optionally
+         * associating them with an existing client delegation. Rejected while an audio fixture is
+         * active. These instructions remain in conversation history through compaction and are
+         * included in future backend delegations. For external audio, describe content already
+         * delivered so the assistant does not repeat it.
          */
         fun visitSessionInstructionsAppend(sessionInstructionsAppend: InstructionsAppendEvent): T =
             unknown(JsonValue.from(sessionInstructionsAppend))
 
         /**
          * Provide silent reasoning or progress context to the Live model, optionally for an
-         * existing client delegation.
+         * existing client delegation. Rejected while an audio fixture is active.
          */
         fun visitSessionThinkingAppend(sessionThinkingAppend: ThinkingAppendEvent): T =
             unknown(JsonValue.from(sessionThinkingAppend))
 
         /**
          * Provide context the Live model can communicate to the user, optionally for an existing
-         * client delegation.
+         * client delegation. Rejected while an audio fixture is active.
          */
         fun visitSessionCommentaryAppend(sessionCommentaryAppend: CommentaryAppendEvent): T =
             unknown(JsonValue.from(sessionCommentaryAppend))
+
+        /**
+         * Evaluate the configured questions using the current conversation and Decision inputs.
+         * Reusing an event_id is rejected for the lifetime of the session.
+         */
+        fun visitDecisionCreate(decisionCreate: DecisionCreateEvent): T =
+            unknown(JsonValue.from(decisionCreate))
+
+        /**
+         * Append an input item for future decisions without starting an evaluation or changing Live
+         * voice context.
+         */
+        fun visitDecisionItemCreate(decisionItemCreate: DecisionItemCreateEvent): T =
+            unknown(JsonValue.from(decisionItemCreate))
+
+        /**
+         * Delete an input item from future decisions without starting an evaluation or changing
+         * Live voice context.
+         */
+        fun visitDecisionItemDelete(decisionItemDelete: DecisionItemDeleteEvent): T =
+            unknown(JsonValue.from(decisionItemDelete))
 
         /**
          * Add an input item to the Live session’s Responses backend. Requires Responses delegation;
@@ -782,6 +928,21 @@ private constructor(
                         ForkClientEvent(sessionCommentaryAppend = it, _json = json)
                     } ?: ForkClientEvent(_json = json)
                 }
+                "decision.create" -> {
+                    return tryDeserialize(node, jacksonTypeRef<DecisionCreateEvent>())?.let {
+                        ForkClientEvent(decisionCreate = it, _json = json)
+                    } ?: ForkClientEvent(_json = json)
+                }
+                "decision.item.create" -> {
+                    return tryDeserialize(node, jacksonTypeRef<DecisionItemCreateEvent>())?.let {
+                        ForkClientEvent(decisionItemCreate = it, _json = json)
+                    } ?: ForkClientEvent(_json = json)
+                }
+                "decision.item.delete" -> {
+                    return tryDeserialize(node, jacksonTypeRef<DecisionItemDeleteEvent>())?.let {
+                        ForkClientEvent(decisionItemDelete = it, _json = json)
+                    } ?: ForkClientEvent(_json = json)
+                }
                 "response.item.create" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseItemCreateEvent>())?.let {
                         ForkClientEvent(responseItemCreate = it, _json = json)
@@ -827,6 +988,9 @@ private constructor(
                     generator.writeObject(value.sessionThinkingAppend)
                 value.sessionCommentaryAppend != null ->
                     generator.writeObject(value.sessionCommentaryAppend)
+                value.decisionCreate != null -> generator.writeObject(value.decisionCreate)
+                value.decisionItemCreate != null -> generator.writeObject(value.decisionItemCreate)
+                value.decisionItemDelete != null -> generator.writeObject(value.decisionItemDelete)
                 value.responseItemCreate != null -> generator.writeObject(value.responseItemCreate)
                 value.responseCreate != null -> generator.writeObject(value.responseCreate)
                 value.sessionClose != null -> generator.writeObject(value.sessionClose)

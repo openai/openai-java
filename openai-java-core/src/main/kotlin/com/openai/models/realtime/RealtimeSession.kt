@@ -622,9 +622,8 @@ private constructor(
          */
         fun addInclude(include: Include) = apply {
             this.include =
-                (this.include ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("include", it).add(include)
-                }
+                (this.include?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("include", it).add(include) }
         }
 
         /**
@@ -775,7 +774,7 @@ private constructor(
          */
         fun addModality(modality: Modality) = apply {
             modalities =
-                (modalities ?: JsonField.of(mutableListOf())).also {
+                (modalities?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("modalities", it).add(modality)
                 }
         }
@@ -912,7 +911,9 @@ private constructor(
          */
         fun addTool(tool: RealtimeFunctionTool) = apply {
             tools =
-                (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
+                (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("tools", it).add(tool)
+                }
         }
 
         /**

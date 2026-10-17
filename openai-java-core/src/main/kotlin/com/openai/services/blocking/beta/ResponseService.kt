@@ -36,10 +36,12 @@ interface ResponseService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService
 
     /** Create and manage model responses. */
-    fun inputItems(): InputItemService
+    fun inputItems(): InputItemService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create and manage model responses. */
-    fun inputTokens(): InputTokenService
+    fun inputTokens(): InputTokenService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text)
@@ -261,10 +263,16 @@ interface ResponseService {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService.WithRawResponse
 
         /** Create and manage model responses. */
-        fun inputItems(): InputItemService.WithRawResponse
+        fun inputItems(): InputItemService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /** Create and manage model responses. */
-        fun inputTokens(): InputTokenService.WithRawResponse
+        fun inputTokens(): InputTokenService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /responses?beta=true`, but is otherwise the same as

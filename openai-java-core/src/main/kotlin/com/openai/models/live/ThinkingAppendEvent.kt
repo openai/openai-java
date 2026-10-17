@@ -19,7 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Provide silent reasoning or progress context to the Live model, optionally for an existing client
- * delegation.
+ * delegation. Rejected while an audio fixture is active.
  */
 class ThinkingAppendEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)

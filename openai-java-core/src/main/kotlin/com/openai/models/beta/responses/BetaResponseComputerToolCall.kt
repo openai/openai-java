@@ -412,7 +412,7 @@ private constructor(
          */
         fun addAction(action: BetaComputerAction) = apply {
             actions =
-                (actions ?: JsonField.of(mutableListOf())).also {
+                (actions?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("actions", it).add(action)
                 }
         }

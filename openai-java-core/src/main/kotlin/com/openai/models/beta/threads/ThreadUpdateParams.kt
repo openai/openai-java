@@ -925,9 +925,8 @@ private constructor(
                  */
                 fun addFileId(fileId: String) = apply {
                     fileIds =
-                        (fileIds ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("fileIds", it).add(fileId)
-                        }
+                        (fileIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("fileIds", it).add(fileId) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1112,9 +1111,9 @@ private constructor(
                  */
                 fun addVectorStoreId(vectorStoreId: String) = apply {
                     vectorStoreIds =
-                        (vectorStoreIds ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("vectorStoreIds", it).add(vectorStoreId)
-                        }
+                        (vectorStoreIds?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("vectorStoreIds", it).add(vectorStoreId) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

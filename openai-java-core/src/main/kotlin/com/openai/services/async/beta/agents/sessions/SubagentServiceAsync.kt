@@ -28,9 +28,11 @@ interface SubagentServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SubagentServiceAsync
 
-    fun items(): ItemServiceAsync
+    fun items(): ItemServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun turns(): TurnServiceAsync
+    fun turns(): TurnServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Retrieves a subagent belonging to this session. See
@@ -109,9 +111,15 @@ interface SubagentServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): SubagentServiceAsync.WithRawResponse
 
-        fun items(): ItemServiceAsync.WithRawResponse
+        fun items(): ItemServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun turns(): TurnServiceAsync.WithRawResponse
+        fun turns(): TurnServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `get

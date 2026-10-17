@@ -116,7 +116,7 @@ private constructor(
          */
         fun addAnnotation(annotation: AnnotationDelta) = apply {
             annotations =
-                (annotations ?: JsonField.of(mutableListOf())).also {
+                (annotations?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("annotations", it).add(annotation)
                 }
         }
