@@ -55,6 +55,20 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService =
         ResponseServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun connectWebSocket(
+        options: com.openai.core.http.WebSocketOptions,
+        requestOptions: com.openai.core.RequestOptions,
+    ): com.openai.core.http.WebSocketConnection<
+        com.openai.models.beta.responses.BetaResponsesClientEvent,
+        com.openai.models.beta.responses.BetaResponsesServerEvent,
+    > =
+        com.openai.core.http.WebSocketConnections.connect(
+            com.openai.models.beta.responses.ResponseWebSocketBinding.create(),
+            clientOptions,
+            options,
+            requestOptions,
+        )
+
     /** Create and manage model responses. */
     override fun inputItems(): InputItemService = inputItems
 
