@@ -108938,6 +108938,15 @@ x-oaiMeta:
       key: LiveCommentaryAppendParam
       path: <auto>
     - type: object
+      key: LiveDecisionCreateParam
+      path: <auto>
+    - type: object
+      key: LiveDecisionItemCreateParam
+      path: <auto>
+    - type: object
+      key: LiveDecisionItemDeleteParam
+      path: <auto>
+    - type: object
       key: LiveResponseItemCreateParam
       path: <auto>
     - type: object
@@ -108998,6 +109007,15 @@ x-oaiMeta:
       path: <auto>
     - type: object
       key: LiveDelegationCreated
+      path: <auto>
+    - type: object
+      key: LiveDecisionEvent
+      path: <auto>
+    - type: object
+      key: LiveDecisionItemCreated
+      path: <auto>
+    - type: object
+      key: LiveDecisionItemDeleted
       path: <auto>
     - type: object
       key: LiveResponseEvent
