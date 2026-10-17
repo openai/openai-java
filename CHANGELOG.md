@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.85.0](https://github.com/openai/openai-java/compare/v4.84.0...v4.85.0) (2026-10-17)
+
+
+### Features
+
+* **api:** add typed Live sideband events and beta connections ([#1216](https://github.com/openai/openai-java/issues/1216)) ([7a8ee6a](https://github.com/openai/openai-java/commit/7a8ee6ab1495eb26ad838f81e210fd203a5a145d))
+
+
+### Chores
+
+* **api:** clarify streaming response content types ([#1215](https://github.com/openai/openai-java/issues/1215)) ([6c1985b](https://github.com/openai/openai-java/commit/6c1985b6effe91f4f7ecb1498b8773acd4027867))
+
 ## [4.84.0](https://github.com/openai/openai-java/compare/v4.83.0...v4.84.0) (2026-10-17)
 
 
