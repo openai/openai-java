@@ -2339,7 +2339,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/assistants/AssistantUpdateParams.kt": {
       "mode": "100644",
-      "sha256": "4834738e1f3702da222b185a17bc513c930fd02e863da84de98f8e39a9664fa3"
+      "sha256": "b81bd939dcfd88c22af8efd258239a1326fcd0487ce2d66524ed8d1f4ff2ae18"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/assistants/CodeInterpreterTool.kt": {
       "mode": "100644",
