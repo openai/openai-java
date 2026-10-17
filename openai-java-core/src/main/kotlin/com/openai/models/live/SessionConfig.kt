@@ -103,7 +103,8 @@ private constructor(
 
     /**
      * Ordered text-only history supplied before startup. Supports developer, user, and assistant
-     * messages with one text part each; at most 128 messages and 8,192 rendered tokens in total.
+     * messages with one text part each; at most 128 messages and a configured rendered-token limit
+     * (8,192 by default).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -324,8 +325,8 @@ private constructor(
 
         /**
          * Ordered text-only history supplied before startup. Supports developer, user, and
-         * assistant messages with one text part each; at most 128 messages and 8,192 rendered
-         * tokens in total.
+         * assistant messages with one text part each; at most 128 messages and a configured
+         * rendered-token limit (8,192 by default).
          */
         fun input(input: List<InitialItem>) = input(JsonField.of(input))
 
