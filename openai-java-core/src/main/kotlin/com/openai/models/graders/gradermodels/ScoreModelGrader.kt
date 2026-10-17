@@ -285,7 +285,7 @@ private constructor(
          */
         fun addRange(range: Double) = apply {
             this.range =
-                (this.range ?: JsonField.of(mutableListOf())).also {
+                (this.range?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("range", it).add(range)
                 }
         }

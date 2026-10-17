@@ -669,9 +669,8 @@ private constructor(
              */
             fun addAllowedCaller(allowedCaller: AllowedCaller) = apply {
                 allowedCallers =
-                    (allowedCallers ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("allowedCallers", it).add(allowedCaller)
-                    }
+                    (allowedCallers?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("allowedCallers", it).add(allowedCaller) }
             }
 
             /** List of allowed tool names or a filter object. */
@@ -1474,9 +1473,9 @@ private constructor(
                      */
                     fun addToolName(toolName: String) = apply {
                         toolNames =
-                            (toolNames ?: JsonField.of(mutableListOf())).also {
-                                checkKnown("toolNames", it).add(toolName)
-                            }
+                            (toolNames?.takeUnless { it.isMissing() }
+                                    ?: JsonField.of(mutableListOf()))
+                                .also { checkKnown("toolNames", it).add(toolName) }
                     }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2489,9 +2488,9 @@ private constructor(
                          */
                         fun addToolName(toolName: String) = apply {
                             toolNames =
-                                (toolNames ?: JsonField.of(mutableListOf())).also {
-                                    checkKnown("toolNames", it).add(toolName)
-                                }
+                                (toolNames?.takeUnless { it.isMissing() }
+                                        ?: JsonField.of(mutableListOf()))
+                                    .also { checkKnown("toolNames", it).add(toolName) }
                         }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -2723,9 +2722,9 @@ private constructor(
                          */
                         fun addToolName(toolName: String) = apply {
                             toolNames =
-                                (toolNames ?: JsonField.of(mutableListOf())).also {
-                                    checkKnown("toolNames", it).add(toolName)
-                                }
+                                (toolNames?.takeUnless { it.isMissing() }
+                                        ?: JsonField.of(mutableListOf()))
+                                    .also { checkKnown("toolNames", it).add(toolName) }
                         }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =

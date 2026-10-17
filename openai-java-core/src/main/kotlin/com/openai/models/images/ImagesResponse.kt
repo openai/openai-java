@@ -289,7 +289,7 @@ private constructor(
          */
         fun addData(data: Image) = apply {
             this.data =
-                (this.data ?: JsonField.of(mutableListOf())).also {
+                (this.data?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("data", it).add(data)
                 }
         }

@@ -746,9 +746,8 @@ private constructor(
                  */
                 fun addQuery(query: String) = apply {
                     queries =
-                        (queries ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("queries", it).add(query)
-                        }
+                        (queries?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("queries", it).add(query) }
                 }
 
                 /** The search query. */
@@ -785,9 +784,8 @@ private constructor(
                  */
                 fun addSource(source: Source) = apply {
                     sources =
-                        (sources ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("sources", it).add(source)
-                        }
+                        (sources?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("sources", it).add(source) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

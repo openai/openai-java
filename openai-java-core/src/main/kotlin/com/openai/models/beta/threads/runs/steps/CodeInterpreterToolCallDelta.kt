@@ -411,7 +411,7 @@ private constructor(
              */
             fun addOutput(output: Output) = apply {
                 outputs =
-                    (outputs ?: JsonField.of(mutableListOf())).also {
+                    (outputs?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("outputs", it).add(output)
                     }
             }

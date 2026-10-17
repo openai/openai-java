@@ -121,9 +121,8 @@ private constructor(
          */
         fun addContent(content: MessageContentDelta) = apply {
             this.content =
-                (this.content ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("content", it).add(content)
-                }
+                (this.content?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("content", it).add(content) }
         }
 
         /** Alias for calling [addContent] with `MessageContentDelta.ofImageFile(imageFile)`. */

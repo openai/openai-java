@@ -562,9 +562,8 @@ private constructor(
          */
         fun addInclude(include: Include) = apply {
             this.include =
-                (this.include ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("include", it).add(include)
-                }
+                (this.include?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("include", it).add(include) }
         }
 
         /**
@@ -663,9 +662,8 @@ private constructor(
          */
         fun addOutputModality(outputModality: OutputModality) = apply {
             outputModalities =
-                (outputModalities ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("outputModalities", it).add(outputModality)
-                }
+                (outputModalities?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("outputModalities", it).add(outputModality) }
         }
 
         /**
@@ -745,7 +743,9 @@ private constructor(
          */
         fun addTool(tool: Tool) = apply {
             tools =
-                (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
+                (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("tools", it).add(tool)
+                }
         }
 
         /** Alias for calling [addTool] with `Tool.ofRealtimeFunction(realtimeFunction)`. */
@@ -5137,9 +5137,9 @@ private constructor(
                  */
                 fun addAllowedCaller(allowedCaller: AllowedCaller) = apply {
                     allowedCallers =
-                        (allowedCallers ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("allowedCallers", it).add(allowedCaller)
-                        }
+                        (allowedCallers?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("allowedCallers", it).add(allowedCaller) }
                 }
 
                 /** List of allowed tool names or a filter object. */
@@ -5963,9 +5963,9 @@ private constructor(
                          */
                         fun addToolName(toolName: String) = apply {
                             toolNames =
-                                (toolNames ?: JsonField.of(mutableListOf())).also {
-                                    checkKnown("toolNames", it).add(toolName)
-                                }
+                                (toolNames?.takeUnless { it.isMissing() }
+                                        ?: JsonField.of(mutableListOf()))
+                                    .also { checkKnown("toolNames", it).add(toolName) }
                         }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -7005,9 +7005,9 @@ private constructor(
                              */
                             fun addToolName(toolName: String) = apply {
                                 toolNames =
-                                    (toolNames ?: JsonField.of(mutableListOf())).also {
-                                        checkKnown("toolNames", it).add(toolName)
-                                    }
+                                    (toolNames?.takeUnless { it.isMissing() }
+                                            ?: JsonField.of(mutableListOf()))
+                                        .also { checkKnown("toolNames", it).add(toolName) }
                             }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -7244,9 +7244,9 @@ private constructor(
                              */
                             fun addToolName(toolName: String) = apply {
                                 toolNames =
-                                    (toolNames ?: JsonField.of(mutableListOf())).also {
-                                        checkKnown("toolNames", it).add(toolName)
-                                    }
+                                    (toolNames?.takeUnless { it.isMissing() }
+                                            ?: JsonField.of(mutableListOf()))
+                                        .also { checkKnown("toolNames", it).add(toolName) }
                             }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =

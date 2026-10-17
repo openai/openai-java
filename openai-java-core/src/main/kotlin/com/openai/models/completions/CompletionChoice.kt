@@ -574,9 +574,9 @@ private constructor(
              */
             fun addTextOffset(textOffset: Long) = apply {
                 this.textOffset =
-                    (this.textOffset ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("textOffset", it).add(textOffset)
-                    }
+                    (this.textOffset?.takeUnless { it.isMissing() }
+                            ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("textOffset", it).add(textOffset) }
             }
 
             fun tokenLogprobs(tokenLogprobs: List<Double>) =
@@ -600,9 +600,8 @@ private constructor(
              */
             fun addTokenLogprob(tokenLogprob: Double) = apply {
                 tokenLogprobs =
-                    (tokenLogprobs ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("tokenLogprobs", it).add(tokenLogprob)
-                    }
+                    (tokenLogprobs?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("tokenLogprobs", it).add(tokenLogprob) }
             }
 
             fun tokens(tokens: List<String>) = tokens(JsonField.of(tokens))
@@ -625,7 +624,7 @@ private constructor(
              */
             fun addToken(token: String) = apply {
                 tokens =
-                    (tokens ?: JsonField.of(mutableListOf())).also {
+                    (tokens?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("tokens", it).add(token)
                     }
             }
@@ -650,9 +649,8 @@ private constructor(
              */
             fun addTopLogprob(topLogprob: TopLogprob) = apply {
                 topLogprobs =
-                    (topLogprobs ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("topLogprobs", it).add(topLogprob)
-                    }
+                    (topLogprobs?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("topLogprobs", it).add(topLogprob) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

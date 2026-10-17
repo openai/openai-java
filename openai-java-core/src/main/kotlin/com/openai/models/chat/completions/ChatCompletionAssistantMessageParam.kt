@@ -354,7 +354,7 @@ private constructor(
          */
         fun addToolCall(toolCall: ChatCompletionMessageToolCall) = apply {
             toolCalls =
-                (toolCalls ?: JsonField.of(mutableListOf())).also {
+                (toolCalls?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("toolCalls", it).add(toolCall)
                 }
         }

@@ -5722,9 +5722,8 @@ private constructor(
                  */
                 fun addScope(scope: String) = apply {
                     scopes =
-                        (scopes ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("scopes", it).add(scope)
-                        }
+                        (scopes?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("scopes", it).add(scope) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -6245,9 +6244,8 @@ private constructor(
                  */
                 fun addScope(scope: String) = apply {
                     scopes =
-                        (scopes ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("scopes", it).add(scope)
-                        }
+                        (scopes?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("scopes", it).add(scope) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -7048,9 +7046,8 @@ private constructor(
              */
             fun addCertificate(certificate: Certificate) = apply {
                 certificates =
-                    (certificates ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("certificates", it).add(certificate)
-                    }
+                    (certificates?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("certificates", it).add(certificate) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -7414,9 +7411,8 @@ private constructor(
              */
             fun addCertificate(certificate: Certificate) = apply {
                 certificates =
-                    (certificates ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("certificates", it).add(certificate)
-                    }
+                    (certificates?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("certificates", it).add(certificate) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -11148,7 +11144,7 @@ private constructor(
              */
             fun addConfig(config: Config) = apply {
                 configs =
-                    (configs ?: JsonField.of(mutableListOf())).also {
+                    (configs?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("configs", it).add(config)
                     }
             }
@@ -11514,7 +11510,7 @@ private constructor(
              */
             fun addConfig(config: Config) = apply {
                 configs =
-                    (configs ?: JsonField.of(mutableListOf())).also {
+                    (configs?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("configs", it).add(config)
                     }
             }
@@ -11928,9 +11924,8 @@ private constructor(
              */
             fun addAllowedIp(allowedIp: String) = apply {
                 allowedIps =
-                    (allowedIps ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("allowedIps", it).add(allowedIp)
-                    }
+                    (allowedIps?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("allowedIps", it).add(allowedIp) }
             }
 
             /** The name of the IP allowlist configuration. */
@@ -12175,9 +12170,8 @@ private constructor(
              */
             fun addAllowedIp(allowedIp: String) = apply {
                 allowedIps =
-                    (allowedIps ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("allowedIps", it).add(allowedIp)
-                    }
+                    (allowedIps?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("allowedIps", it).add(allowedIp) }
             }
 
             /** The name of the IP allowlist configuration. */
@@ -12403,9 +12397,8 @@ private constructor(
              */
             fun addAllowedIp(allowedIp: String) = apply {
                 allowedIps =
-                    (allowedIps ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("allowedIps", it).add(allowedIp)
-                    }
+                    (allowedIps?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("allowedIps", it).add(allowedIp) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -16539,9 +16532,8 @@ private constructor(
              */
             fun addPermission(permission: String) = apply {
                 permissions =
-                    (permissions ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("permissions", it).add(permission)
-                    }
+                    (permissions?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("permissions", it).add(permission) }
             }
 
             /** The ID of the resource the role was bound to. */
@@ -17085,9 +17077,8 @@ private constructor(
              */
             fun addPermission(permission: String) = apply {
                 permissions =
-                    (permissions ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("permissions", it).add(permission)
-                    }
+                    (permissions?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("permissions", it).add(permission) }
             }
 
             /** The resource the role is scoped to. */
@@ -17733,9 +17724,8 @@ private constructor(
              */
             fun addPermission(permission: String) = apply {
                 permissions =
-                    (permissions ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("permissions", it).add(permission)
-                    }
+                    (permissions?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("permissions", it).add(permission) }
             }
 
             /** The ID of the resource the role was unbound from. */
@@ -18522,9 +18512,9 @@ private constructor(
                  */
                 fun addPermissionsAdded(permissionsAdded: String) = apply {
                     this.permissionsAdded =
-                        (this.permissionsAdded ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("permissionsAdded", it).add(permissionsAdded)
-                        }
+                        (this.permissionsAdded?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("permissionsAdded", it).add(permissionsAdded) }
                 }
 
                 /** The permissions removed from the role. */
@@ -18549,9 +18539,9 @@ private constructor(
                  */
                 fun addPermissionsRemoved(permissionsRemoved: String) = apply {
                     this.permissionsRemoved =
-                        (this.permissionsRemoved ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("permissionsRemoved", it).add(permissionsRemoved)
-                        }
+                        (this.permissionsRemoved?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("permissionsRemoved", it).add(permissionsRemoved) }
                 }
 
                 /** The resource the role is scoped to. */

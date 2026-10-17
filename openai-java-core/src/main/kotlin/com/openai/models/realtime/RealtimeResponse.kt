@@ -454,7 +454,7 @@ private constructor(
          */
         fun addOutput(output: ConversationItem) = apply {
             this.output =
-                (this.output ?: JsonField.of(mutableListOf())).also {
+                (this.output?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("output", it).add(output)
                 }
         }
@@ -590,9 +590,8 @@ private constructor(
          */
         fun addOutputModality(outputModality: OutputModality) = apply {
             outputModalities =
-                (outputModalities ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("outputModalities", it).add(outputModality)
-                }
+                (outputModalities?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("outputModalities", it).add(outputModality) }
         }
 
         /**

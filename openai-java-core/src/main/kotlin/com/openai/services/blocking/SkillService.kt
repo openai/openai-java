@@ -32,9 +32,11 @@ interface SkillService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SkillService
 
-    fun content(): ContentService
+    fun content(): ContentService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun versions(): VersionService
+    fun versions(): VersionService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create a new skill. */
     fun create(): Skill = create(SkillCreateParams.none())
@@ -156,9 +158,15 @@ interface SkillService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): SkillService.WithRawResponse
 
-        fun content(): ContentService.WithRawResponse
+        fun content(): ContentService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun versions(): VersionService.WithRawResponse
+        fun versions(): VersionService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /skills`, but is otherwise the same as

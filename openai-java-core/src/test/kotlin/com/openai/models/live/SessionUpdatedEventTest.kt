@@ -72,6 +72,21 @@ internal class SessionUpdatedEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
+                        .addTrigger(
+                            DecisionTrigger.builder()
+                                .decisions(
+                                    DecisionTrigger.Decisions.builder()
+                                        .addQuestion(
+                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                                .instructions("instructions")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                                .build()
+                        )
                         .build()
                 )
                 .clientEventId("evt_update_001")
@@ -135,6 +150,21 @@ internal class SessionUpdatedEventTest {
                         "Help the caller plan a restaurant reservation. Confirm details before booking."
                     )
                     .store(true)
+                    .addTrigger(
+                        DecisionTrigger.builder()
+                            .decisions(
+                                DecisionTrigger.Decisions.builder()
+                                    .addQuestion(
+                                        DecisionTrigger.Decisions.Question.Predicate.builder()
+                                            .instructions("instructions")
+                                            .name("name")
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                            .build()
+                    )
                     .build()
             )
         assertThat(sessionUpdatedEvent.clientEventId()).contains("evt_update_001")
@@ -204,6 +234,21 @@ internal class SessionUpdatedEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
+                        .addTrigger(
+                            DecisionTrigger.builder()
+                                .decisions(
+                                    DecisionTrigger.Decisions.builder()
+                                        .addQuestion(
+                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                                .instructions("instructions")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                                .build()
+                        )
                         .build()
                 )
                 .clientEventId("evt_update_001")

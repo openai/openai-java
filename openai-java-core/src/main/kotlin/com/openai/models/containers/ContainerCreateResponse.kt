@@ -1083,9 +1083,8 @@ private constructor(
              */
             fun addAllowedDomain(allowedDomain: String) = apply {
                 allowedDomains =
-                    (allowedDomains ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("allowedDomains", it).add(allowedDomain)
-                    }
+                    (allowedDomains?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("allowedDomains", it).add(allowedDomain) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

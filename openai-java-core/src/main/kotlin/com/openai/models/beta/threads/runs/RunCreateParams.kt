@@ -2473,9 +2473,8 @@ private constructor(
              */
             fun addAttachment(attachment: Attachment) = apply {
                 attachments =
-                    (attachments ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("attachments", it).add(attachment)
-                    }
+                    (attachments?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("attachments", it).add(attachment) }
             }
 
             /**
@@ -3097,9 +3096,8 @@ private constructor(
                  */
                 fun addTool(tool: Tool) = apply {
                     tools =
-                        (tools ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("tools", it).add(tool)
-                        }
+                        (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("tools", it).add(tool) }
                 }
 
                 /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */

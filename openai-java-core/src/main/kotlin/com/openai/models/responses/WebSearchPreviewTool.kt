@@ -198,9 +198,8 @@ private constructor(
          */
         fun addSearchContentType(searchContentType: SearchContentType) = apply {
             searchContentTypes =
-                (searchContentTypes ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("searchContentTypes", it).add(searchContentType)
-                }
+                (searchContentTypes?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("searchContentTypes", it).add(searchContentType) }
         }
 
         /**

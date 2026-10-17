@@ -21,9 +21,11 @@ interface SafetyServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SafetyServiceAsync
 
-    fun cases(): CaseServiceAsync
+    fun cases(): CaseServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun alerts(): AlertServiceAsync
+    fun alerts(): AlertServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * A view of [SafetyServiceAsync] that provides access to raw HTTP responses for each method.
@@ -39,8 +41,14 @@ interface SafetyServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): SafetyServiceAsync.WithRawResponse
 
-        fun cases(): CaseServiceAsync.WithRawResponse
+        fun cases(): CaseServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun alerts(): AlertServiceAsync.WithRawResponse
+        fun alerts(): AlertServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
     }
 }

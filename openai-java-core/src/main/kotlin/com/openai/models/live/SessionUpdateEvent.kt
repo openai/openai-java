@@ -18,8 +18,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Update the delegation settings of an active Live session. The server acknowledges accepted
- * changes with `session.updated`.
+ * Update the delegation settings or transcript triggers of an active Live session. The server
+ * acknowledges accepted changes with `session.updated`.
  */
 class SessionUpdateEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -40,9 +40,8 @@ private constructor(
     ) : this(session, type, eventId, mutableMapOf())
 
     /**
-     * Sparse delegation updates. Omitted settings retain their values. The delegation type cannot
-     * change, including resetting Responses delegation to null or client. Model, frontend
-     * instructions, audio, and startup input are immutable.
+     * Sparse delegation and trigger updates. Omitted settings retain their values. The delegation
+     * type cannot change. Model, frontend instructions, audio, and startup input are immutable.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -129,9 +128,9 @@ private constructor(
         }
 
         /**
-         * Sparse delegation updates. Omitted settings retain their values. The delegation type
-         * cannot change, including resetting Responses delegation to null or client. Model,
-         * frontend instructions, audio, and startup input are immutable.
+         * Sparse delegation and trigger updates. Omitted settings retain their values. The
+         * delegation type cannot change. Model, frontend instructions, audio, and startup input are
+         * immutable.
          */
         fun session(session: SessionUpdateConfig) = session(JsonField.of(session))
 

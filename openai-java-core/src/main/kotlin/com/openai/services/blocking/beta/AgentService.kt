@@ -33,11 +33,14 @@ interface AgentService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AgentService
 
-    fun environments(): EnvironmentService
+    fun environments(): EnvironmentService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun vaults(): VaultService
+    fun vaults(): VaultService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun sessions(): SessionService
+    fun sessions(): SessionService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Creates a reusable agent without storing credentials. See
@@ -173,11 +176,20 @@ interface AgentService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): AgentService.WithRawResponse
 
-        fun environments(): EnvironmentService.WithRawResponse
+        fun environments(): EnvironmentService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun vaults(): VaultService.WithRawResponse
+        fun vaults(): VaultService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun sessions(): SessionService.WithRawResponse
+        fun sessions(): SessionService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /agents`, but is otherwise the same as

@@ -368,7 +368,7 @@ private constructor(
              */
             fun addResult(result: Result) = apply {
                 results =
-                    (results ?: JsonField.of(mutableListOf())).also {
+                    (results?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("results", it).add(result)
                     }
             }
@@ -1022,9 +1022,9 @@ private constructor(
                  */
                 fun addContent(content: Content) = apply {
                     this.content =
-                        (this.content ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("content", it).add(content)
-                        }
+                        (this.content?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("content", it).add(content) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

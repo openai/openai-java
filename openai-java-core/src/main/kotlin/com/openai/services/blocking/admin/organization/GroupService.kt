@@ -33,9 +33,11 @@ interface GroupService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): GroupService
 
-    fun users(): UserService
+    fun users(): UserService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun roles(): RoleService
+    fun roles(): RoleService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Creates a new group in the organization. */
     fun create(params: GroupCreateParams): Group = create(params, RequestOptions.none())
@@ -151,9 +153,15 @@ interface GroupService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): GroupService.WithRawResponse
 
-        fun users(): UserService.WithRawResponse
+        fun users(): UserService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun roles(): RoleService.WithRawResponse
+        fun roles(): RoleService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /organization/groups`, but is otherwise the same as

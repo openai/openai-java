@@ -243,7 +243,7 @@ private constructor(
          */
         fun addSegment(segment: TranscriptionSegment) = apply {
             segments =
-                (segments ?: JsonField.of(mutableListOf())).also {
+                (segments?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("segments", it).add(segment)
                 }
         }
@@ -280,7 +280,9 @@ private constructor(
          */
         fun addWord(word: TranscriptionWord) = apply {
             words =
-                (words ?: JsonField.of(mutableListOf())).also { checkKnown("words", it).add(word) }
+                (words?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("words", it).add(word)
+                }
         }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

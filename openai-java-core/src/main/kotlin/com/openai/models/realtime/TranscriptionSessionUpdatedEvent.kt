@@ -511,9 +511,8 @@ private constructor(
              */
             fun addModality(modality: Modality) = apply {
                 modalities =
-                    (modalities ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("modalities", it).add(modality)
-                    }
+                    (modalities?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("modalities", it).add(modality) }
             }
 
             /**
