@@ -12,12 +12,14 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import java.util.concurrent.FutureTask
 import java.util.concurrent.RejectedExecutionException
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.locks.ReentrantLock
 import java.util.function.Consumer
+import java.util.function.LongSupplier
 import kotlin.concurrent.withLock
 import kotlin.math.ceil
 
@@ -50,7 +52,14 @@ import kotlin.math.ceil
  * finalization. Live deltas have no server turn identity, so this helper cannot identify arbitrary
  * replays of finalized turns. Start a new instance for each server session.
  */
-class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseable {
+class LiveTranscriptGrouper
+private constructor(
+    builder: Builder,
+    private val timerScheduler: ScheduledExecutorService,
+    private val nanoTime: LongSupplier,
+) : AutoCloseable {
+    private constructor(builder: Builder) : this(builder, scheduler, LongSupplier(System::nanoTime))
+
     enum class Speaker {
         USER,
         ASSISTANT,
@@ -141,6 +150,11 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         fun asyncCallbackExecutor(value: Executor) = apply { executor = value }
 
         fun build(): LiveTranscriptGrouper = LiveTranscriptGrouper(this)
+
+        // Tests control time per instance without changing the shared production scheduler.
+        @JvmSynthetic
+        internal fun build(scheduler: ScheduledExecutorService, nanoTime: LongSupplier) =
+            LiveTranscriptGrouper(this, scheduler, nanoTime)
 
         private fun checked(value: Duration): Duration {
             require(!value.isNegative && value <= Duration.ofMillis(Int.MAX_VALUE.toLong())) {
@@ -396,7 +410,7 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
         dispatch()
     }
 
-    private fun now() = System.nanoTime() / 1_000_000.0
+    private fun now() = nanoTime.asLong / 1_000_000.0
 
     private fun sourceNow() = anchorTime + (now() - anchorReceived).coerceAtLeast(0.0)
 
@@ -619,7 +633,7 @@ class LiveTranscriptGrouper private constructor(builder: Builder) : AutoCloseabl
                 ?: return
         // Ceil to milliseconds so fractional thresholds cannot spin on a zero-duration timer.
         timer =
-            scheduler.schedule(
+            timerScheduler.schedule(
                 tick@{
                     synchronized(lock) {
                         if (closed || generation != timerGeneration) return@tick

@@ -17,15 +17,49 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.FutureTask
 import java.util.concurrent.RejectedExecutionException
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.function.Consumer
+import java.util.function.LongSupplier
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.assertTimeout
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 internal class LiveTranscriptGrouperTest {
+    private class ManualTime {
+        private var nanos = 0L
+        private var tick: Runnable? = null
+        var nextDelayMillis = 0L
+            private set
+
+        private val scheduler = mock<ScheduledExecutorService>()
+
+        init {
+            whenever(scheduler.schedule(any<Runnable>(), any<Long>(), any<TimeUnit>())).thenAnswer {
+                tick = it.getArgument(0)
+                nextDelayMillis = it.getArgument<TimeUnit>(2).toMillis(it.getArgument(1))
+                mock<ScheduledFuture<Any>>()
+            }
+        }
+
+        fun grouper(events: MutableList<Update>) =
+            LiveTranscriptGrouper.builder { events.add(it) }
+                .build(scheduler, LongSupplier { nanos })
+
+        fun advanceAndRunTimer(millis: Long) {
+            nanos += TimeUnit.MILLISECONDS.toNanos(millis)
+            val scheduled = checkNotNull(tick)
+            tick = null
+            scheduled.run()
+        }
+    }
+
     private fun input(id: String, text: String, start: Long, end: Long) =
         InputTranscriptDeltaEvent.builder()
             .eventId(id)
@@ -96,7 +130,7 @@ internal class LiveTranscriptGrouperTest {
     @Test
     fun overlapPrefersUserEvenWhenAssistantArrivesFirst() {
         val events = updates()
-        val grouper = LiveTranscriptGrouper.create { events.add(it) }
+        val grouper = ManualTime().grouper(events)
         grouper.push(output("ack", "Okay", 0, 100))
         grouper.push(input("speech", "I want", 0, 100))
         grouper.push(input("continued", " to book", 100, 600))
@@ -108,14 +142,30 @@ internal class LiveTranscriptGrouperTest {
     @Test
     fun unequalInitialAssistantOverlapAlsoPrefersUser() {
         val events = updates()
-        LiveTranscriptGrouper.create { events.add(it) }
-            .use { grouper ->
-                grouper.push(output("ack", "Okay", 0, 100))
-                grouper.push(input("speech", "I want", 0, 500))
-                grouper.push(input("continued", " to book", 500, 700))
-            }
+        ManualTime().grouper(events).use { grouper ->
+            grouper.push(output("ack", "Okay", 0, 100))
+            grouper.push(input("speech", "I want", 0, 500))
+            grouper.push(input("continued", " to book", 500, 700))
+        }
         assertThat(finalized(events).map { it.segment().speaker() }).containsExactly(Speaker.USER)
         assertThat(finalized(events).single().segment().text()).isEqualTo("I want to book")
+    }
+
+    @Test
+    fun assistantIsPreservedWhenUserArrivesAfterReorderTimer() {
+        val events = updates()
+        val time = ManualTime()
+        time.grouper(events).use { grouper ->
+            grouper.push(output("ack", "Okay", 0, 100))
+            assertThat(time.nextDelayMillis).isEqualTo(50)
+            time.advanceAndRunTimer(50)
+            grouper.push(input("speech", "I want", 0, 500))
+            grouper.push(input("continued", " to book", 500, 700))
+        }
+        assertThat(finalized(events).map { it.segment().speaker() })
+            .containsExactly(Speaker.ASSISTANT, Speaker.USER)
+        assertThat(finalized(events).map { it.segment().text() })
+            .containsExactly("Okay", "I want to book")
     }
 
     @Test
