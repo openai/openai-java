@@ -39,7 +39,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/ChatModel.kt": {
       "mode": "100644",
-      "sha256": "57351aefd9074ae15ad60de10717ed256429ce7d0c39248267e51d5d931b739a"
+      "sha256": "154955e7a82c271255e6f7d5c7cc16b348ba70f18200b1a774a6f4bd2e516c52"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/ComparisonFilter.kt": {
       "mode": "100644",
@@ -2579,7 +2579,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/BetaResponse.kt": {
       "mode": "100644",
-      "sha256": "ecd105d0853d5e5e63f4533ac26b1bd2b30416ef8658fa33d94f9f3a4f58223c"
+      "sha256": "8ff1f0b037759d31f9899fb7635571b6e23af73ed26abf0670ddccb19d22c0d5"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/BetaResponseApplyPatchToolCall.kt": {
       "mode": "100644",
@@ -3091,7 +3091,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/BetaResponsesClientEvent.kt": {
       "mode": "100644",
-      "sha256": "75b2bda03aabf304a8604e2b6823079c90e1c7b387381f93670a617883b455cc"
+      "sha256": "9544758021fba6dd9f21ad22f04fa6b656752813763885286806e8a81ea9ccec"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/BetaResponsesServerEvent.kt": {
       "mode": "100644",
@@ -3159,11 +3159,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/ResponseCompactParams.kt": {
       "mode": "100644",
-      "sha256": "5a6e97497fe6cccadac989a2a2849b6478946d94729fbf418a60beea223927b4"
+      "sha256": "dc8df8612f40412abcb03beba7aa08fee0978586fb255f2fae61d31c4f355179"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/ResponseCreateParams.kt": {
       "mode": "100644",
-      "sha256": "8f89b4710b9fa4a40d7cf554dbd5854f96f91048ac2012d25f48f3a13426b52e"
+      "sha256": "7f37383104e5642050b184dd8da3e6fa2391723f1b75def827cf78ee9e85c90e"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/ResponseDeleteParams.kt": {
       "mode": "100644",
@@ -5407,7 +5407,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseCompactParams.kt": {
       "mode": "100644",
-      "sha256": "ce3797dd23bdf6b5278d755f59b5f8c1b3374646b891dcc0953f1453ee3ae506"
+      "sha256": "a097e58455edb152c60787189f012fc612d954b5c0e4acd5c184638528ea67b3"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseCompactionCompactingEvent.kt": {
       "mode": "100644",

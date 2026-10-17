@@ -3538,9 +3538,17 @@ private constructor(
             @JvmField
             val GPT_5_CHAT_LATEST = of("gpt-5-chat-latest")
 
-            @JvmField val GPT_4_1 = of("gpt-4.1")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1 = of("gpt-4.1")
 
-            @JvmField val GPT_4_1_MINI = of("gpt-4.1-mini")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1_MINI = of("gpt-4.1-mini")
 
             @Deprecated(
                 "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -3638,7 +3646,11 @@ private constructor(
             @JvmField
             val O1_MINI_2024_09_12 = of("o1-mini-2024-09-12")
 
-            @JvmField val GPT_4O = of("gpt-4o")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O = of("gpt-4o")
 
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -3742,7 +3754,11 @@ private constructor(
             @JvmField
             val CODEX_MINI_LATEST = of("codex-mini-latest")
 
-            @JvmField val GPT_4O_MINI = of("gpt-4o-mini")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_MINI = of("gpt-4o-mini")
 
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -4036,7 +4052,13 @@ private constructor(
                 "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             GPT_5_CHAT_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_MINI,
             @Deprecated(
                 "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -4102,6 +4124,9 @@ private constructor(
                 "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             O1_MINI_2024_09_12,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O,
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -4171,6 +4196,9 @@ private constructor(
                 "Announced shutdown date: 2026-02-12. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             CODEX_MINI_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI,
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -4397,7 +4425,13 @@ private constructor(
                 "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             GPT_5_CHAT_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_MINI,
             @Deprecated(
                 "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -4463,6 +4497,9 @@ private constructor(
                 "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             O1_MINI_2024_09_12,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O,
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -4532,6 +4569,9 @@ private constructor(
                 "Announced shutdown date: 2026-02-12. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             CODEX_MINI_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI,
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
