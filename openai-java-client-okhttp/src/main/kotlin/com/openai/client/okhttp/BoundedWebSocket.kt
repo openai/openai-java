@@ -5,6 +5,7 @@ import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketHandshakeException
 import com.openai.core.http.WebSocketWriteNotAttempted
 import java.io.IOException
+import java.net.ProtocolException
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
@@ -109,7 +110,7 @@ internal object BoundedWebSocket {
                         ) {
                             chain.call().cancel()
                             response.close()
-                            throw IOException("WebSocket extensions are disabled")
+                            throw ProtocolException("WebSocket extensions are disabled")
                         }
                         response
                     }
@@ -258,13 +259,17 @@ internal object BoundedWebSocket {
                             synchronized(callbacks) {
                                 if (ended.get()) return
                                 if (text.utf8Size() > maxMessageBytes) {
-                                    fail(IOException("WebSocket message exceeds maxMessageBytes"))
+                                    fail(
+                                        ProtocolException(
+                                            "WebSocket message exceeds maxMessageBytes"
+                                        )
+                                    )
                                 } else listener.onMessage(text)
                             }
                         }
 
                         override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-                            fail(IOException("Unexpected binary WebSocket message"))
+                            fail(ProtocolException("Unexpected binary WebSocket message"))
                         }
 
                         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {

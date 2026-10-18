@@ -20,6 +20,7 @@ import com.openai.errors.OpenAIIoException
 import com.openai.models.realtime.RealtimeClientEvent
 import com.openai.models.realtime.RealtimeServerEvent
 import java.io.IOException
+import java.net.ProtocolException
 import java.time.Duration
 import java.util.ArrayDeque
 import java.util.concurrent.CancellationException
@@ -203,8 +204,28 @@ private constructor(
                 }
             if (shouldCancel) pending.cancel(true)
             pending.whenComplete { active, error ->
-                if (synchronized(lock) { generation != epoch }) {
-                    val problem = synchronized(lock) { failure }
+                if (error != null) {
+                    if (disconnect(epoch, error, canRetry(error), result, blocking))
+                        synchronized(lock) { failure }
+                            ?.let { completeFailure(result, it, blocking) }
+                    return@whenComplete
+                }
+                val (stale, problem) =
+                    synchronized(lock) {
+                        if (generation != epoch) true to failure
+                        else {
+                            opening = null
+                            false to
+                                if (closed || failure != null)
+                                    failure ?: CancellationException("Realtime connection closed")
+                                else {
+                                    socket = active
+                                    recovering = false
+                                    null
+                                }
+                        }
+                    }
+                if (stale) {
                     try {
                         active?.close()
                     } catch (closing: Throwable) {
@@ -214,20 +235,6 @@ private constructor(
                     }
                     return@whenComplete
                 }
-                if (error != null && disconnect(epoch, error, canRetry(error), result, blocking))
-                    return@whenComplete
-                val problem =
-                    synchronized(lock) {
-                        this.opening = null
-                        if (error != null) error
-                        else if (this.closed || this.failure != null)
-                            this.failure ?: CancellationException("Realtime connection closed")
-                        else {
-                            this.socket = active
-                            this.recovering = false
-                            null
-                        }
-                    }
                 if (problem != null) {
                     try {
                         active?.close()
@@ -263,7 +270,7 @@ private constructor(
                         try {
                             options.onReconnected?.accept(this)
                         } catch (callbackError: Exception) {
-                            fail(callbackError)
+                            fail(callbackError, callbackEpoch = epoch)
                         }
                     }
                 }
@@ -281,7 +288,12 @@ private constructor(
         val seen =
             java.util.Collections.newSetFromMap(java.util.IdentityHashMap<Throwable, Boolean>())
         while (cause != null && seen.add(cause)) {
-            if (cause is SSLException || cause is CancellationException) return false
+            if (
+                cause is SSLException ||
+                    cause is CancellationException ||
+                    cause is ProtocolException
+            )
+                return false
             cause = cause.cause
         }
         val root =
@@ -623,10 +635,17 @@ private constructor(
         }
     }
 
-    private fun fail(error: Throwable) {
+    private fun fail(error: Throwable, callbackEpoch: Long? = null) {
         val detached =
             synchronized(lock) {
                 if (failure != null) return
+                if (
+                    callbackEpoch != null &&
+                        error is WebSocketWriteNotAttempted &&
+                        generation != callbackEpoch &&
+                        !closed
+                )
+                    return
                 failure = error
                 write?.disconnected = null
                 generation++

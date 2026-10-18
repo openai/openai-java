@@ -14,6 +14,7 @@ import com.openai.models.realtime.InputAudioBufferAppendEvent
 import com.openai.models.realtime.InputAudioBufferClearEvent
 import com.openai.models.realtime.RealtimeClientEvent
 import java.io.IOException
+import java.net.ProtocolException
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
@@ -25,6 +26,7 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okio.ByteString.Companion.encodeUtf8
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -76,7 +78,38 @@ class RealtimeConnectionTest {
     fun failureBeforeAcceptedSendRemainsTerminal() =
         failureDuringWrite(flush = false, rejected = false)
 
-    private fun failureDuringWrite(flush: Boolean, rejected: Boolean) {
+    @Test
+    fun rejectedFlushInRecoveryCallbackKeepsTheRetry() =
+        failureDuringWrite(flush = true, rejected = true, fromCallback = true)
+
+    @Test
+    fun callbackWriteRejectionWithoutAnotherRecoveryIsTerminal() {
+        MockWebServer().use { server ->
+            val peer = Listener()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            server.enqueue(MockResponse().withWebSocketUpgrade(Listener()))
+            val rejection = WebSocketWriteNotAttempted.Busy("application busy")
+            OkHttpClient.builder().build().use { http ->
+                val settings =
+                    RealtimeWebSocketOptions.builder()
+                        .reconnect(true)
+                        .reconnectDelayMillis(1)
+                        .onReconnected { throw rejection }
+                        .build()
+                RealtimeConnection.connect(options(server, http), settings).use { connection ->
+                    val waiting = connection.receiveAsync()
+                    peer.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
+                    assertThatThrownBy { waiting.get(5, TimeUnit.SECONDS) }.hasCause(rejection)
+                }
+            }
+        }
+    }
+
+    private fun failureDuringWrite(
+        flush: Boolean,
+        rejected: Boolean,
+        fromCallback: Boolean = false,
+    ) {
         val opening = CompletableFuture<Unit>()
         val opened = LinkedBlockingQueue<WebSocketClient.Listener>()
         val recovered = LinkedBlockingQueue<RealtimeConnection>()
@@ -117,18 +150,22 @@ class RealtimeConnectionTest {
                     .reconnect(true)
                     .reconnectDelayMillis(1)
                     .maxPendingBytes(1024)
-                    .onReconnected { recovered.add(it) }
+                    .onReconnected {
+                        if (fromCallback && attempts.get() == 2) it.flushPending()
+                        else recovered.add(it)
+                    }
                     .build()
             RealtimeConnection.connect(configuration, settings).use { connection ->
                 val first = opened.poll(5, TimeUnit.SECONDS)!!
+                val waiting = connection.receiveAsync()
                 if (flush) {
                     first.onFailure(IOException("initial disconnect"))
                     assertThat(opened.poll(5, TimeUnit.SECONDS)).isNotNull()
                     connection.send(command())
                     opening.complete(Unit)
-                    assertThat(recovered.poll(5, TimeUnit.SECONDS)).isSameAs(connection)
+                    if (!fromCallback)
+                        assertThat(recovered.poll(5, TimeUnit.SECONDS)).isSameAs(connection)
                 }
-                val waiting = connection.receiveAsync()
                 if (!rejected) {
                     connection.send(command())
                     assertThatThrownBy { waiting.get(5, TimeUnit.SECONDS) }
@@ -137,10 +174,11 @@ class RealtimeConnectionTest {
                     assertThat(sent).hasSize(1)
                     return
                 }
-                assertThatThrownBy {
-                        if (flush) connection.flushPending() else connection.send(command())
-                    }
-                    .isSameAs(rejection)
+                if (!fromCallback)
+                    assertThatThrownBy {
+                            if (flush) connection.flushPending() else connection.send(command())
+                        }
+                        .isSameAs(rejection)
                 assertThat(recovered.poll(5, TimeUnit.SECONDS)).isSameAs(connection)
                 assertThat(sent).isEmpty()
                 if (flush) connection.flushPending() else connection.send(command())
@@ -151,6 +189,93 @@ class RealtimeConnectionTest {
                 assertThat(waiting.get(5, TimeUnit.SECONDS).asInputAudioBufferCleared().eventId())
                     .isEqualTo("recovered")
             }
+        }
+    }
+
+    @Test
+    fun localProtocolFailuresDoNotReconnect() {
+        for (binary in listOf(false, true)) {
+            MockWebServer().use { server ->
+                val peer = Listener()
+                server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+                server.enqueue(MockResponse().setResponseCode(403))
+                OkHttpClient.builder().build().use { http ->
+                    val settings =
+                        RealtimeWebSocketOptions.builder()
+                            .reconnect(true)
+                            .reconnectDelayMillis(1)
+                            .maxMessageBytes(64)
+                            .build()
+                    RealtimeConnection.connect(options(server, http), settings).use { connection ->
+                        val waiting = connection.receiveAsync()
+                        val socket = peer.socket.get(5, TimeUnit.SECONDS)
+                        if (binary) socket.send("binary".encodeUtf8())
+                        else socket.send("x".repeat(65))
+                        assertThatThrownBy { waiting.get(5, TimeUnit.SECONDS) }
+                            .hasRootCauseInstanceOf(ProtocolException::class.java)
+                            .hasRootCauseMessage(
+                                if (binary) "Unexpected binary WebSocket message"
+                                else "WebSocket message exceeds maxMessageBytes"
+                            )
+                        assertThat(server.requestCount).isEqualTo(1)
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun disabledExtensionsOnReplacementDoNotReconnectAgain() {
+        MockWebServer().use { server ->
+            val peer = Listener()
+            server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+            server.enqueue(
+                MockResponse()
+                    .withWebSocketUpgrade(Listener())
+                    .setHeader("Sec-WebSocket-Extensions", "permessage-deflate")
+            )
+            server.enqueue(MockResponse().setResponseCode(403))
+            OkHttpClient.builder().build().use { http ->
+                val settings =
+                    RealtimeWebSocketOptions.builder()
+                        .reconnect(true)
+                        .reconnectDelayMillis(1)
+                        .build()
+                RealtimeConnection.connect(options(server, http), settings).use { connection ->
+                    val waiting = connection.receiveAsync()
+                    peer.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
+                    assertThatThrownBy { waiting.get(5, TimeUnit.SECONDS) }
+                        .hasRootCauseInstanceOf(ProtocolException::class.java)
+                        .hasRootCauseMessage("WebSocket extensions are disabled")
+                    assertThat(server.requestCount).isEqualTo(2)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun failureDuringOpeningCompletesThePublicFuture() {
+        val opening = CompletableFuture<WebSocketClient.Connection>()
+        val listening = CompletableFuture<WebSocketClient.Listener>()
+        OkHttpClient.builder().build().use { http ->
+            val transport =
+                object : HttpClient by http, WebSocketClient {
+                    override fun connectWebSocket(
+                        request: HttpRequest,
+                        options: RequestOptions,
+                        maxMessageBytes: Int,
+                        listener: WebSocketClient.Listener,
+                    ): CompletableFuture<WebSocketClient.Connection> {
+                        listening.complete(listener)
+                        return opening
+                    }
+                }
+            val configuration =
+                ClientOptions.builder().httpClient(transport).apiKey("fake-key").build()
+            val connection = RealtimeConnection.connectAsync(configuration)
+            listening.get(5, TimeUnit.SECONDS).onMessage("[]")
+            assertThatThrownBy { connection.get(5, TimeUnit.SECONDS) }
+                .hasRootCauseMessage("Invalid Realtime event")
         }
     }
 
