@@ -57,6 +57,11 @@ private constructor(
 
     private class Item(val event: RealtimeServerEvent, val bytes: Long)
 
+    private class Write {
+        var notAttempted: Boolean? = null
+        var disconnected: (() -> Unit)? = null
+    }
+
     private val queue = ArrayDeque<Item>()
     private var queuedBytes = 0L
     private var socket: WebSocketClient.Connection? = null
@@ -65,7 +70,7 @@ private constructor(
     private var failure: Throwable? = null
     private var closed = false
     private var sending = false
-    private var writeAttempted = false
+    private var write: Write? = null
     private var generation = 0L
     private var recovering = false
     private var attempts = 0
@@ -313,9 +318,18 @@ private constructor(
                         options.reconnect &&
                         retryable &&
                         (socket != null || recovering) &&
-                        !writeAttempted &&
                         attempts < options.maxReconnectAttempts
                 ) {
+                    val activeWrite = write
+                    if (activeWrite != null && activeWrite.notAttempted == null) {
+                        if (activeWrite.disconnected == null)
+                            activeWrite.disconnected = {
+                                disconnect(epoch, error, retryable, result, blocking)
+                            }
+                        return true
+                    }
+                    if (activeWrite?.notAttempted == false) return@synchronized null
+                    write = null
                     generation++
                     recovering = true
                     attempts++
@@ -388,10 +402,13 @@ private constructor(
                     "Realtime is not connected"
                 }
                 check(!flushing) { "A Realtime flush is already pending; command was not sent" }
-                check(!sending) { "A Realtime send is already pending; command was not sent" }
+                check(!sending && write == null) {
+                    "A Realtime send is already pending; command was not sent"
+                }
                 sending = true
                 generation to recovering
             }
+        var notAttempted = false
         try {
             val text = clientOptions.jsonMapper.writeValueAsString(event)
             val size = utf8Size(text)
@@ -409,20 +426,18 @@ private constructor(
                         return
                     }
                     val active = socket ?: throw IllegalStateException("Realtime is not connected")
-                    writeAttempted = true
+                    write = Write()
                     active
                 }
             try {
                 active.send(text)
             } catch (error: Throwable) {
-                if (error !is WebSocketWriteNotAttempted) fail(error)
+                notAttempted = error is WebSocketWriteNotAttempted
+                if (!notAttempted) fail(error)
                 throw error
             }
         } finally {
-            synchronized(lock) {
-                writeAttempted = false
-                sending = false
-            }
+            finishWrite(notAttempted) { sending = false }
         }
     }
 
@@ -440,12 +455,19 @@ private constructor(
     fun flushPending() {
         synchronized(lock) {
             check(
-                !flushing && !sending && !recovering && !closed && failure == null && socket != null
+                !flushing &&
+                    !sending &&
+                    write == null &&
+                    !recovering &&
+                    !closed &&
+                    failure == null &&
+                    socket != null
             ) {
                 "Realtime cannot flush now"
             }
             flushing = true
         }
+        var notAttempted = false
         try {
             while (true) {
                 val next =
@@ -463,7 +485,7 @@ private constructor(
                     }
                     pending.removeFirst()
                     pendingBytes -= utf8Size(next.second)
-                    writeAttempted = true
+                    write = Write()
                 }
                 try {
                     next.first.send(next.second)
@@ -472,15 +494,33 @@ private constructor(
                         synchronized(lock) {
                             pending.addFirst(next.second)
                             pendingBytes += utf8Size(next.second)
+                            notAttempted = true
                         }
                     else fail(error)
                     throw error
-                } finally {
-                    synchronized(lock) { writeAttempted = false }
                 }
+                finishWrite()
             }
         } finally {
-            synchronized(lock) { flushing = false }
+            finishWrite(notAttempted) { flushing = false }
+        }
+    }
+
+    private fun finishWrite(notAttempted: Boolean = false, release: () -> Unit = {}) {
+        var disconnected: (() -> Unit)? = null
+        val active =
+            synchronized(lock) {
+                val active = write
+                active?.notAttempted = notAttempted
+                disconnected = active?.disconnected
+                if (disconnected == null) write = null
+                release()
+                active
+            }
+        try {
+            disconnected?.invoke()
+        } finally {
+            synchronized(lock) { if (write === active) write = null }
         }
     }
 
@@ -588,6 +628,7 @@ private constructor(
             synchronized(lock) {
                 if (failure != null) return
                 failure = error
+                write?.disconnected = null
                 generation++
                 retryTimer?.cancel(false)
                 retryTimer = null

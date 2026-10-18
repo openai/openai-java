@@ -6,12 +6,14 @@ import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.WebSocketClient
+import com.openai.core.http.WebSocketWriteNotAttempted
 import com.openai.core.jsonMapper
 import com.openai.helpers.RealtimeConnection
 import com.openai.helpers.RealtimeWebSocketOptions
 import com.openai.models.realtime.InputAudioBufferAppendEvent
 import com.openai.models.realtime.InputAudioBufferClearEvent
 import com.openai.models.realtime.RealtimeClientEvent
+import java.io.IOException
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
@@ -63,6 +65,94 @@ class RealtimeConnectionTest {
             .apiKey("fake-realtime-key")
             .baseUrl(server.url("/v1?inherited=1").toString())
             .build()
+
+    @Test
+    fun failureBeforeSendRejectionRecovers() = failureDuringWrite(flush = false, rejected = true)
+
+    @Test
+    fun failureBeforeFlushRejectionRecovers() = failureDuringWrite(flush = true, rejected = true)
+
+    @Test
+    fun failureBeforeAcceptedSendRemainsTerminal() =
+        failureDuringWrite(flush = false, rejected = false)
+
+    private fun failureDuringWrite(flush: Boolean, rejected: Boolean) {
+        val opening = CompletableFuture<Unit>()
+        val opened = LinkedBlockingQueue<WebSocketClient.Listener>()
+        val recovered = LinkedBlockingQueue<RealtimeConnection>()
+        val sent = LinkedBlockingQueue<String>()
+        val rejection = WebSocketWriteNotAttempted.Closed("closed before enqueue")
+        val attempts = java.util.concurrent.atomic.AtomicInteger()
+        OkHttpClient.builder().build().use { http ->
+            val transport =
+                object : HttpClient by http, WebSocketClient {
+                    override fun connectWebSocket(
+                        request: HttpRequest,
+                        options: RequestOptions,
+                        maxMessageBytes: Int,
+                        listener: WebSocketClient.Listener,
+                    ): CompletableFuture<WebSocketClient.Connection> {
+                        val attempt = attempts.incrementAndGet()
+                        opened.add(listener)
+                        val connection =
+                            object : WebSocketClient.Connection {
+                                override fun send(text: String) {
+                                    if (attempt == if (flush) 2 else 1) {
+                                        listener.onFailure(IOException("peer reset"))
+                                        if (rejected) throw rejection
+                                    }
+                                    sent.add(text)
+                                }
+
+                                override fun close() {}
+                            }
+                        if (flush && attempt == 2) return opening.thenApply { connection }
+                        return CompletableFuture.completedFuture(connection)
+                    }
+                }
+            val configuration =
+                ClientOptions.builder().httpClient(transport).apiKey("fake-key").build()
+            val settings =
+                RealtimeWebSocketOptions.builder()
+                    .reconnect(true)
+                    .reconnectDelayMillis(1)
+                    .maxPendingBytes(1024)
+                    .onReconnected { recovered.add(it) }
+                    .build()
+            RealtimeConnection.connect(configuration, settings).use { connection ->
+                val first = opened.poll(5, TimeUnit.SECONDS)!!
+                if (flush) {
+                    first.onFailure(IOException("initial disconnect"))
+                    assertThat(opened.poll(5, TimeUnit.SECONDS)).isNotNull()
+                    connection.send(command())
+                    opening.complete(Unit)
+                    assertThat(recovered.poll(5, TimeUnit.SECONDS)).isSameAs(connection)
+                }
+                val waiting = connection.receiveAsync()
+                if (!rejected) {
+                    connection.send(command())
+                    assertThatThrownBy { waiting.get(5, TimeUnit.SECONDS) }
+                        .hasRootCauseMessage("peer reset")
+                    assertThat(attempts.get()).isEqualTo(1)
+                    assertThat(sent).hasSize(1)
+                    return
+                }
+                assertThatThrownBy {
+                        if (flush) connection.flushPending() else connection.send(command())
+                    }
+                    .isSameAs(rejection)
+                assertThat(recovered.poll(5, TimeUnit.SECONDS)).isSameAs(connection)
+                assertThat(sent).isEmpty()
+                if (flush) connection.flushPending() else connection.send(command())
+                assertThat(sent).hasSize(1)
+                opened
+                    .poll(5, TimeUnit.SECONDS)!!
+                    .onMessage("""{"type":"input_audio_buffer.cleared","event_id":"recovered"}""")
+                assertThat(waiting.get(5, TimeUnit.SECONDS).asInputAudioBufferCleared().eventId())
+                    .isEqualTo("recovered")
+            }
+        }
+    }
 
     @Test
     fun serializationStartedDuringRecoveryStillWaitsForExplicitFlush() =
