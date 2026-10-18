@@ -391,9 +391,7 @@ private constructor(
         try {
             val text = clientOptions.jsonMapper.writeValueAsString(event)
             val size = utf8Size(text)
-            require(size <= options.maxMessageBytes) {
-                "Realtime command exceeds maxMessageBytes"
-            }
+            require(size <= options.maxMessageBytes) { "Realtime command exceeds maxMessageBytes" }
             val active =
                 synchronized(lock) {
                     check(!closed && failure == null) { "Realtime is not connected" }
