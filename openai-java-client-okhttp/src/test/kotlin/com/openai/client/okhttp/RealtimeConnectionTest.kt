@@ -82,6 +82,120 @@ class RealtimeConnectionTest {
     fun rejectedFlushInRecoveryCallbackKeepsTheRetry() =
         failureDuringWrite(flush = true, rejected = true, fromCallback = true)
 
+    private enum class CallbackFailure {
+        FLUSH_ENTRY,
+        CAPACITY_WAIT,
+        APPLICATION,
+    }
+
+    @Test
+    fun staleCallbackFlushEntryPreservesRecovery() = staleCallback(CallbackFailure.FLUSH_ENTRY)
+
+    @Test
+    fun staleCallbackCapacityWaitPreservesRecovery() = staleCallback(CallbackFailure.CAPACITY_WAIT)
+
+    @Test
+    fun staleCallbackApplicationFailureRemainsTerminal() =
+        staleCallback(CallbackFailure.APPLICATION)
+
+    private fun staleCallback(mode: CallbackFailure) {
+        val secondOpening = CompletableFuture<Unit>()
+        val thirdOpening = CompletableFuture<Unit>()
+        val opened = LinkedBlockingQueue<WebSocketClient.Listener>()
+        val sent = LinkedBlockingQueue<String>()
+        val callbackFinished = CountDownLatch(1)
+        val recovered = CompletableFuture<RealtimeConnection>()
+        val attempts = java.util.concurrent.atomic.AtomicInteger()
+        val callbacks = java.util.concurrent.atomic.AtomicInteger()
+        val applicationError = IllegalStateException("application callback failed")
+        OkHttpClient.builder().build().use { http ->
+            val transport =
+                object : HttpClient by http, WebSocketClient {
+                    override fun connectWebSocket(
+                        request: HttpRequest,
+                        options: RequestOptions,
+                        maxMessageBytes: Int,
+                        listener: WebSocketClient.Listener,
+                    ): CompletableFuture<WebSocketClient.Connection> {
+                        val attempt = attempts.incrementAndGet()
+                        opened.add(listener)
+                        val active =
+                            object : WebSocketClient.WritableConnection {
+                                override fun awaitWritable(timeout: Duration) {
+                                    if (attempt == 2 && mode == CallbackFailure.CAPACITY_WAIT) {
+                                        listener.onFailure(IOException("replacement failed"))
+                                        throw java.util.concurrent.TimeoutException("capacity wait")
+                                    }
+                                }
+
+                                override fun send(text: String) {
+                                    sent.add(text)
+                                }
+
+                                override fun close() {}
+                            }
+                        return when (attempt) {
+                            2 -> secondOpening.thenApply { active }
+                            3 -> thirdOpening.thenApply { active }
+                            else -> CompletableFuture.completedFuture(active)
+                        }
+                    }
+                }
+            val configuration =
+                ClientOptions.builder()
+                    .httpClient(transport)
+                    .apiKey("fake-key")
+                    .timeout(com.openai.core.Timeout.builder().write(Duration.ofSeconds(1)).build())
+                    .build()
+            val settings =
+                RealtimeWebSocketOptions.builder()
+                    .reconnect(true)
+                    .reconnectDelayMillis(1)
+                    .maxPendingBytes(1024)
+                    .onReconnected {
+                        if (callbacks.incrementAndGet() == 1) {
+                            try {
+                                val listener = opened.poll(5, TimeUnit.SECONDS)!!
+                                if (mode != CallbackFailure.CAPACITY_WAIT)
+                                    listener.onFailure(IOException("replacement failed"))
+                                if (mode == CallbackFailure.APPLICATION) throw applicationError
+                                it.flushPending()
+                            } finally {
+                                callbackFinished.countDown()
+                            }
+                        } else recovered.complete(it)
+                    }
+                    .build()
+            RealtimeConnection.connect(configuration, settings).use { connection ->
+                val waiting = connection.receiveAsync()
+                opened.poll(5, TimeUnit.SECONDS)!!.onFailure(IOException("initial disconnect"))
+                connection.send(command())
+                secondOpening.complete(Unit)
+                assertThat(callbackFinished.await(5, TimeUnit.SECONDS)).isTrue()
+                thirdOpening.complete(Unit)
+                if (mode == CallbackFailure.APPLICATION) {
+                    assertThatThrownBy { waiting.get(5, TimeUnit.SECONDS) }
+                        .hasCause(applicationError)
+                    assertThat(sent).isEmpty()
+                } else {
+                    assertThat(recovered.get(5, TimeUnit.SECONDS)).isSameAs(connection)
+                    assertThat(sent).isEmpty()
+                    connection.flushPending()
+                    assertThat(sent).hasSize(1)
+                    opened
+                        .poll(5, TimeUnit.SECONDS)!!
+                        .onMessage(
+                            """{"type":"input_audio_buffer.cleared","event_id":"restored"}"""
+                        )
+                    assertThat(
+                            waiting.get(5, TimeUnit.SECONDS).asInputAudioBufferCleared().eventId()
+                        )
+                        .isEqualTo("restored")
+                }
+            }
+        }
+    }
+
     @Test
     fun callbackWriteRejectionWithoutAnotherRecoveryIsTerminal() {
         MockWebServer().use { server ->

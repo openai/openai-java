@@ -199,9 +199,10 @@ internal object BoundedWebSocket {
                                         }
                                         val deadline = System.nanoTime() + timeout.toNanos()
                                         while (true) {
-                                            check(!ended.get() && closeDeadline.get() == null) {
-                                                "WebSocket is closed or closing"
-                                            }
+                                            if (ended.get() || closeDeadline.get() != null)
+                                                throw WebSocketWriteNotAttempted.Closed(
+                                                    "WebSocket is closed or closing"
+                                                )
                                             if (webSocket.queueSize() == 0L) return
                                             val remaining = deadline - System.nanoTime()
                                             if (remaining <= 0L)

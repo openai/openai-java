@@ -1555,6 +1555,14 @@ class ResponsesWebSocketTest {
                             assertThatThrownBy { connection.send(command) }
                                 .isInstanceOf(IllegalStateException::class.java)
                                 .isInstanceOf(WebSocketWriteNotAttempted::class.java)
+                            assertThatThrownBy {
+                                    (connection
+                                            as
+                                            com.openai.core.http.WebSocketClient.WritableConnection)
+                                        .awaitWritable(java.time.Duration.ofSeconds(1))
+                                }
+                                .isInstanceOf(WebSocketWriteNotAttempted.Closed::class.java)
+                                .hasMessage("WebSocket is closed or closing")
                         }
                     peer.await()
                 }

@@ -2165,8 +2165,8 @@ Closing the connection cancels pending retries.
 By default, the SDK rejects sends while reconnecting. Set `maxPendingBytes` to
 hold unsent commands up to that size in bytes. Use `onReconnected` to restore any
 session settings and conversation state your application needs. Pause other
-application sends while restoring state; the callback does not block them. Then call
-`flushPending()` to send the waiting commands. To remove them without sending,
+application sends and wait for in-flight sends to finish before restoring state;
+the callback does not block them. Then call `flushPending()` to send the waiting commands. To remove them without sending,
 call `takePending()` instead. The SDK does not resend commands it already tried
 to send. A successful send does not confirm that the server received the command.
 
