@@ -1763,6 +1763,8 @@ class ResponsesWebSocketTest {
                 }
                 out.writeBytes("]}")
                 out.flush()
+                // Wait for the client to finish parsing before it closes the connection.
+                socket.soTimeout = 0
                 while (socket.getInputStream().read() != -1) {}
             }
             .use { peer ->
