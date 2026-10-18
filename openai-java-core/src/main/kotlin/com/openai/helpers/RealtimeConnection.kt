@@ -263,10 +263,7 @@ private constructor(
                 if (blocking && !result.isDone) complete() else this.dispatch(complete)
             }
         } catch (error: Exception) {
-            if (!disconnect(epoch, error, canRetry(error), result, blocking)) {
-                fail(error)
-                completeFailure(result, error, blocking)
-            }
+            disconnect(epoch, error, canRetry(error), result, blocking)
         }
     }
 
@@ -393,14 +390,14 @@ private constructor(
             }
         try {
             val text = clientOptions.jsonMapper.writeValueAsString(event)
-            require(utf8Size(text) <= options.maxMessageBytes) {
+            val size = utf8Size(text)
+            require(size <= options.maxMessageBytes) {
                 "Realtime command exceeds maxMessageBytes"
             }
             val active =
                 synchronized(lock) {
                     check(!closed && failure == null) { "Realtime is not connected" }
                     if (admittedDuringRecovery || recovering) {
-                        val size = utf8Size(text)
                         if (size > options.maxPendingBytes - pendingBytes)
                             throw WebSocketWriteNotAttempted.Busy(
                                 "Realtime recovery queue is full; command was not sent"

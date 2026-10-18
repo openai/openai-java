@@ -2149,30 +2149,29 @@ We take backwards-compatibility seriously and work hard to ensure you can rely o
 
 We are keen for your feedback; please open an [issue](https://www.github.com/openai/openai-java/issues) with questions, bugs, or suggestions.
 
+## Reconnecting to Realtime
+
+Set `RealtimeWebSocketOptions.builder().reconnect(true).build()` to reconnect
+after a temporary connection failure. This option is off by default. It does not
+support transcription sessions or connections to an existing call. The SDK does
+not retry normal closures, rejected credentials, or TLS failures.
+
+Reconnecting keeps the same Java object but starts a new server session. The SDK
+refreshes credentials for each attempt and allows five reconnect attempts in
+total by default. Use `maxReconnectAttempts` to change this limit and
+`reconnectDelayMillis` to set the initial delay. Delays grow to eight seconds.
+Closing the connection cancels pending retries.
+
+By default, the SDK rejects sends while reconnecting. Set `maxPendingBytes` to
+hold unsent commands up to that size in bytes. Use `onReconnected` to restore any
+session settings and conversation state your application needs. Then call
+`flushPending()` to send the waiting commands. To remove them without sending,
+call `takePending()` instead. The SDK does not resend commands it already tried
+to send. A successful send does not confirm that the server received the command.
+
 ## Contributing
 
 Please share bug reports and feature requests through [GitHub issues](https://github.com/openai/openai-java/issues).
 Pull requests are limited to repository collaborators; we do not accept pull requests from non-collaborators.
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for the contribution policy and development guide.
 For security vulnerabilities, follow [SECURITY.md](SECURITY.md).
-
-
-### Optional Realtime transport recovery
-
-GA Realtime model connections can opt into transport recovery with
-`RealtimeWebSocketOptions.builder().reconnect(true).build()`. It is disabled by
-default. A recovered connection keeps the same Java object, but opens a **new
-server session**. Transcription and existing-call connections do not support this
-option. Normal closure, authentication rejection, and TLS failures remain terminal.
-
-Recovery refreshes credentials for each attempt and stops after five additional
-attempts over the connection's lifetime. `maxReconnectAttempts` and
-`reconnectDelayMillis` configure this bound and the initial backoff; backoff is
-capped at eight seconds. Closing the connection cancels recovery.
-
-Sends during recovery are rejected unless `maxPendingBytes` permits a bounded
-queue. Only commands that have never been attempted can enter that queue.
-Use `onReconnected` to restore application-owned session state, then explicitly
-call `flushPending()`. `takePending()` instead returns the retained JSON commands
-without sending them. The SDK never replays an uncertain write or restores server
-state automatically. Send success is not a server acknowledgment.
