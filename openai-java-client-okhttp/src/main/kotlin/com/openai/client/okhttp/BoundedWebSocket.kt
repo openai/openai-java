@@ -3,7 +3,9 @@ package com.openai.client.okhttp
 import com.openai.core.RequestOptions
 import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketHandshakeException
+import com.openai.core.http.WebSocketWriteNotAttempted
 import java.io.IOException
+import java.net.ProtocolException
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
@@ -108,7 +110,7 @@ internal object BoundedWebSocket {
                         ) {
                             chain.call().cancel()
                             response.close()
-                            throw IOException("WebSocket extensions are disabled")
+                            throw ProtocolException("WebSocket extensions are disabled")
                         }
                         response
                     }
@@ -197,9 +199,10 @@ internal object BoundedWebSocket {
                                         }
                                         val deadline = System.nanoTime() + timeout.toNanos()
                                         while (true) {
-                                            check(!ended.get() && closeDeadline.get() == null) {
-                                                "WebSocket is closed or closing"
-                                            }
+                                            if (ended.get() || closeDeadline.get() != null)
+                                                throw WebSocketWriteNotAttempted.Closed(
+                                                    "WebSocket is closed or closing"
+                                                )
                                             if (webSocket.queueSize() == 0L) return
                                             val remaining = deadline - System.nanoTime()
                                             if (remaining <= 0L)
@@ -214,32 +217,31 @@ internal object BoundedWebSocket {
 
                                     override fun send(text: String) {
                                         synchronized(this) {
-                                            check(!ended.get()) { "WebSocket is closed" }
-                                            require(text.isNotEmpty()) {
-                                                "WebSocket command must not be empty"
-                                            }
+                                            if (ended.get())
+                                                throw WebSocketWriteNotAttempted.Closed(
+                                                    "WebSocket is closed"
+                                                )
+                                            if (text.isEmpty())
+                                                throw WebSocketWriteNotAttempted.Message(
+                                                    "WebSocket command must not be empty"
+                                                )
                                             val size = text.utf8Size()
                                             if (size > maxMessageBytes)
-                                                throw com.openai.core.http
-                                                    .WebSocketWriteNotAttempted
-                                                    .Message(
-                                                        "WebSocket command exceeds maxMessageBytes"
-                                                    )
+                                                throw WebSocketWriteNotAttempted.Message(
+                                                    "WebSocket command exceeds maxMessageBytes"
+                                                )
                                             if (size > MAX_SEND_BYTES)
-                                                throw com.openai.core.http
-                                                    .WebSocketWriteNotAttempted
-                                                    .Message(
-                                                        "WebSocket command exceeds OkHttp's 16 MiB send limit"
-                                                    )
+                                                throw WebSocketWriteNotAttempted.Message(
+                                                    "WebSocket command exceeds OkHttp's 16 MiB send limit"
+                                                )
                                             if (webSocket.queueSize() != 0L)
-                                                throw com.openai.core.http
-                                                    .WebSocketWriteNotAttempted
-                                                    .Busy(
-                                                        "WebSocket send buffer is full; command was not queued"
-                                                    )
-                                            check(webSocket.send(text)) {
-                                                "WebSocket is closed; command was not queued"
-                                            }
+                                                throw WebSocketWriteNotAttempted.Busy(
+                                                    "WebSocket send buffer is full; command was not queued"
+                                                )
+                                            if (!webSocket.send(text))
+                                                throw WebSocketWriteNotAttempted.Closed(
+                                                    "WebSocket is closed; command was not queued"
+                                                )
                                         }
                                     }
 
@@ -258,13 +260,17 @@ internal object BoundedWebSocket {
                             synchronized(callbacks) {
                                 if (ended.get()) return
                                 if (text.utf8Size() > maxMessageBytes) {
-                                    fail(IOException("WebSocket message exceeds maxMessageBytes"))
+                                    fail(
+                                        ProtocolException(
+                                            "WebSocket message exceeds maxMessageBytes"
+                                        )
+                                    )
                                 } else listener.onMessage(text)
                             }
                         }
 
                         override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-                            fail(IOException("Unexpected binary WebSocket message"))
+                            fail(ProtocolException("Unexpected binary WebSocket message"))
                         }
 
                         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {

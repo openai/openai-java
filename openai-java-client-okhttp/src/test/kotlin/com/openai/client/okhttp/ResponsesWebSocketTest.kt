@@ -2,6 +2,7 @@ package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.openai.core.http.ResponseWebSocketOptions
+import com.openai.core.http.WebSocketWriteNotAttempted
 import com.openai.core.jsonMapper
 import com.openai.models.responses.ResponsesClientEvent
 import java.io.DataInputStream
@@ -1541,6 +1542,7 @@ class ResponsesWebSocketTest {
                         .use { connection ->
                             assertThatThrownBy { connection.send("") }
                                 .isInstanceOf(IllegalArgumentException::class.java)
+                                .isInstanceOf(WebSocketWriteNotAttempted::class.java)
                                 .hasMessageContaining("empty")
                             connection.send(command)
                             assertThat(
@@ -1549,6 +1551,18 @@ class ResponsesWebSocketTest {
                                         .asText()
                                 )
                                 .isEqualTo("response.completed")
+                            connection.close()
+                            assertThatThrownBy { connection.send(command) }
+                                .isInstanceOf(IllegalStateException::class.java)
+                                .isInstanceOf(WebSocketWriteNotAttempted::class.java)
+                            assertThatThrownBy {
+                                    (connection
+                                            as
+                                            com.openai.core.http.WebSocketClient.WritableConnection)
+                                        .awaitWritable(java.time.Duration.ofSeconds(1))
+                                }
+                                .isInstanceOf(WebSocketWriteNotAttempted.Closed::class.java)
+                                .hasMessage("WebSocket is closed or closing")
                         }
                     peer.await()
                 }

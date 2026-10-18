@@ -10,4 +10,7 @@ interface WebSocketWriteNotAttempted {
 
     /** The transport is busy. Retains the original IllegalStateException contract. */
     class Busy(message: String) : IllegalStateException(message), WebSocketWriteNotAttempted
+
+    /** The transport is closed. Retains the original IllegalStateException contract. */
+    class Closed(message: String) : IllegalStateException(message), WebSocketWriteNotAttempted
 }
