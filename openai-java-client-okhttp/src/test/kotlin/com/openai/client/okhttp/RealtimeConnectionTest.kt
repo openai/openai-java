@@ -70,6 +70,19 @@ class RealtimeConnectionTest {
             .baseUrl(server.url("/v1?inherited=1").toString())
             .build()
 
+    private fun fakeWebSocketTransport(
+        http: HttpClient,
+        open: (WebSocketClient.Listener) -> CompletableFuture<WebSocketClient.Connection>,
+    ): HttpClient =
+        object : HttpClient by http, WebSocketClient {
+            override fun connectWebSocket(
+                request: HttpRequest,
+                options: RequestOptions,
+                maxMessageBytes: Int,
+                listener: WebSocketClient.Listener,
+            ): CompletableFuture<WebSocketClient.Connection> = open(listener)
+        }
+
     @Test
     fun failureBeforeSendRejectionRecovers() = failureDuringWrite(flush = false, rejected = true)
 
@@ -112,35 +125,28 @@ class RealtimeConnectionTest {
         val applicationError = IllegalStateException("application callback failed")
         OkHttpClient.builder().build().use { http ->
             val transport =
-                object : HttpClient by http, WebSocketClient {
-                    override fun connectWebSocket(
-                        request: HttpRequest,
-                        options: RequestOptions,
-                        maxMessageBytes: Int,
-                        listener: WebSocketClient.Listener,
-                    ): CompletableFuture<WebSocketClient.Connection> {
-                        val attempt = attempts.incrementAndGet()
-                        opened.add(listener)
-                        val active =
-                            object : WebSocketClient.WritableConnection {
-                                override fun awaitWritable(timeout: Duration) {
-                                    if (attempt == 2 && mode == CallbackFailure.CAPACITY_WAIT) {
-                                        listener.onFailure(IOException("replacement failed"))
-                                        throw java.util.concurrent.TimeoutException("capacity wait")
-                                    }
+                fakeWebSocketTransport(http) { listener ->
+                    val attempt = attempts.incrementAndGet()
+                    opened.add(listener)
+                    val active =
+                        object : WebSocketClient.WritableConnection {
+                            override fun awaitWritable(timeout: Duration) {
+                                if (attempt == 2 && mode == CallbackFailure.CAPACITY_WAIT) {
+                                    listener.onFailure(IOException("replacement failed"))
+                                    throw java.util.concurrent.TimeoutException("capacity wait")
                                 }
-
-                                override fun send(text: String) {
-                                    sent.add(text)
-                                }
-
-                                override fun close() {}
                             }
-                        return when (attempt) {
-                            2 -> secondOpening.thenApply { active }
-                            3 -> thirdOpening.thenApply { active }
-                            else -> CompletableFuture.completedFuture(active)
+
+                            override fun send(text: String) {
+                                sent.add(text)
+                            }
+
+                            override fun close() {}
                         }
+                    when (attempt) {
+                        2 -> secondOpening.thenApply { active }
+                        3 -> thirdOpening.thenApply { active }
+                        else -> CompletableFuture.completedFuture(active)
                     }
                 }
             val configuration =
@@ -234,30 +240,23 @@ class RealtimeConnectionTest {
         val attempts = java.util.concurrent.atomic.AtomicInteger()
         OkHttpClient.builder().build().use { http ->
             val transport =
-                object : HttpClient by http, WebSocketClient {
-                    override fun connectWebSocket(
-                        request: HttpRequest,
-                        options: RequestOptions,
-                        maxMessageBytes: Int,
-                        listener: WebSocketClient.Listener,
-                    ): CompletableFuture<WebSocketClient.Connection> {
-                        val attempt = attempts.incrementAndGet()
-                        opened.add(listener)
-                        val connection =
-                            object : WebSocketClient.Connection {
-                                override fun send(text: String) {
-                                    if (attempt == if (flush) 2 else 1) {
-                                        listener.onFailure(IOException("peer reset"))
-                                        if (rejected) throw rejection
-                                    }
-                                    sent.add(text)
+                fakeWebSocketTransport(http) { listener ->
+                    val attempt = attempts.incrementAndGet()
+                    opened.add(listener)
+                    val connection =
+                        object : WebSocketClient.Connection {
+                            override fun send(text: String) {
+                                if (attempt == if (flush) 2 else 1) {
+                                    listener.onFailure(IOException("peer reset"))
+                                    if (rejected) throw rejection
                                 }
-
-                                override fun close() {}
+                                sent.add(text)
                             }
-                        if (flush && attempt == 2) return opening.thenApply { connection }
-                        return CompletableFuture.completedFuture(connection)
-                    }
+
+                            override fun close() {}
+                        }
+                    if (flush && attempt == 2) opening.thenApply { connection }
+                    else CompletableFuture.completedFuture(connection)
                 }
             val configuration =
                 ClientOptions.builder().httpClient(transport).apiKey("fake-key").build()
@@ -375,16 +374,9 @@ class RealtimeConnectionTest {
         val listening = CompletableFuture<WebSocketClient.Listener>()
         OkHttpClient.builder().build().use { http ->
             val transport =
-                object : HttpClient by http, WebSocketClient {
-                    override fun connectWebSocket(
-                        request: HttpRequest,
-                        options: RequestOptions,
-                        maxMessageBytes: Int,
-                        listener: WebSocketClient.Listener,
-                    ): CompletableFuture<WebSocketClient.Connection> {
-                        listening.complete(listener)
-                        return opening
-                    }
+                fakeWebSocketTransport(http) { listener ->
+                    listening.complete(listener)
+                    opening
                 }
             val configuration =
                 ClientOptions.builder().httpClient(transport).apiKey("fake-key").build()
@@ -739,25 +731,18 @@ class RealtimeConnectionTest {
         val retired = java.util.concurrent.atomic.AtomicInteger()
         OkHttpClient.builder().build().use { http ->
             val transport =
-                object : HttpClient by http, WebSocketClient {
-                    override fun connectWebSocket(
-                        request: HttpRequest,
-                        options: RequestOptions,
-                        maxMessageBytes: Int,
-                        listener: WebSocketClient.Listener,
-                    ): CompletableFuture<WebSocketClient.Connection> {
-                        opens.incrementAndGet()
-                        openedListener.complete(listener)
-                        return CompletableFuture.completedFuture(
-                            object : WebSocketClient.Connection {
-                                override fun send(text: String) = error("no command expected")
+                fakeWebSocketTransport(http) { listener ->
+                    opens.incrementAndGet()
+                    openedListener.complete(listener)
+                    CompletableFuture.completedFuture(
+                        object : WebSocketClient.Connection {
+                            override fun send(text: String) = error("no command expected")
 
-                                override fun close() {
-                                    retired.incrementAndGet()
-                                }
+                            override fun close() {
+                                retired.incrementAndGet()
                             }
-                        )
-                    }
+                        }
+                    )
                 }
             val configuration =
                 ClientOptions.builder().httpClient(transport).apiKey("fake-key").build()
