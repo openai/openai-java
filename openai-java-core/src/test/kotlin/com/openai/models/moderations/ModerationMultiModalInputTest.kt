@@ -56,7 +56,7 @@ internal class ModerationMultiModalInputTest {
 
     @Test
     fun ofText() {
-        val text = ModerationTextInput.builder().text("I want to kill them").build()
+        val text = ModerationTextInput.builder().text("...text to classify goes here...").build()
 
         val moderationMultiModalInput = ModerationMultiModalInput.ofText(text)
 
@@ -69,7 +69,7 @@ internal class ModerationMultiModalInputTest {
         val jsonMapper = jsonMapper()
         val moderationMultiModalInput =
             ModerationMultiModalInput.ofText(
-                ModerationTextInput.builder().text("I want to kill them").build()
+                ModerationTextInput.builder().text("...text to classify goes here...").build()
             )
 
         val roundtrippedModerationMultiModalInput =
