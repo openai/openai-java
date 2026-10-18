@@ -155,13 +155,11 @@ private constructor(
         }
     }
 
-    // Derived client options share the transport owner, including openings awaiting authentication.
+    // Derived client options share the transport owner, including openings and recovering sessions.
     private class WebSocketLifecycle {
         val pending =
             java.util.concurrent.ConcurrentHashMap.newKeySet<
-                java.util.concurrent.CompletableFuture<
-                    com.openai.core.http.WebSocketClient.Connection
-                >
+                java.util.concurrent.CompletableFuture<*>
             >()
         val closed = java.util.concurrent.atomic.AtomicBoolean()
     }
@@ -193,6 +191,13 @@ private constructor(
     @JvmSynthetic internal fun isWebSocketClosed(): Boolean = webSocketLifecycle.closed.get()
 
     @JvmSynthetic
+    internal fun trackWebSocketLifetime(lifetime: java.util.concurrent.CompletableFuture<*>) {
+        webSocketLifecycle.pending.add(lifetime)
+        lifetime.whenComplete { _, _ -> webSocketLifecycle.pending.remove(lifetime) }
+        if (webSocketLifecycle.closed.get()) lifetime.cancel(true)
+    }
+
+    @JvmSynthetic
     internal fun connectWebSocket(
         request: com.openai.core.http.HttpRequest,
         options: RequestOptions,
@@ -205,12 +210,8 @@ private constructor(
             java.util.concurrent.CompletableFuture<
                 com.openai.core.http.WebSocketClient.Connection
             >()
-        webSocketLifecycle.pending.add(result)
-        result.whenComplete { _, _ -> webSocketLifecycle.pending.remove(result) }
-        if (webSocketLifecycle.closed.get()) {
-            result.cancel(true)
-            return result
-        }
+        trackWebSocketLifetime(result)
+        if (result.isCancelled) return result
         val authenticated =
             try {
                 when {

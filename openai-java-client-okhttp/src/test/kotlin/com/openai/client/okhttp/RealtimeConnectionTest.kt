@@ -8,6 +8,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketWriteNotAttempted
 import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIIoException
 import com.openai.helpers.RealtimeConnection
 import com.openai.helpers.RealtimeWebSocketOptions
 import com.openai.models.realtime.InputAudioBufferAppendEvent
@@ -17,6 +18,7 @@ import java.io.IOException
 import java.net.ProtocolException
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
@@ -725,6 +727,146 @@ class RealtimeConnectionTest {
                         .isInstanceOf(java.util.concurrent.CancellationException::class.java)
                     assertThat(connection.takePending()).isEmpty()
                     assertThat(server.requestCount).isEqualTo(1)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun closingOwnerDuringBackoffSettlesTheLogicalConnection() {
+        val openedListener = CompletableFuture<WebSocketClient.Listener>()
+        val opens = java.util.concurrent.atomic.AtomicInteger()
+        val retired = java.util.concurrent.atomic.AtomicInteger()
+        OkHttpClient.builder().build().use { http ->
+            val transport =
+                object : HttpClient by http, WebSocketClient {
+                    override fun connectWebSocket(
+                        request: HttpRequest,
+                        options: RequestOptions,
+                        maxMessageBytes: Int,
+                        listener: WebSocketClient.Listener,
+                    ): CompletableFuture<WebSocketClient.Connection> {
+                        opens.incrementAndGet()
+                        openedListener.complete(listener)
+                        return CompletableFuture.completedFuture(
+                            object : WebSocketClient.Connection {
+                                override fun send(text: String) = error("no command expected")
+
+                                override fun close() {
+                                    retired.incrementAndGet()
+                                }
+                            }
+                        )
+                    }
+                }
+            val configuration =
+                ClientOptions.builder().httpClient(transport).apiKey("fake-key").build()
+            val settings =
+                RealtimeWebSocketOptions.builder()
+                    .reconnect(true)
+                    .reconnectDelayMillis(8000)
+                    .build()
+            RealtimeConnection.connect(configuration, settings).use { connection ->
+                val pending = connection.receiveAsync()
+                openedListener
+                    .get(5, TimeUnit.SECONDS)
+                    .onFailure(IOException("temporary disconnect"))
+                assertThat(retired.get()).isEqualTo(1)
+                configuration.close()
+                assertThatThrownBy { pending.get(2, TimeUnit.SECONDS) }
+                    .isInstanceOf(java.util.concurrent.CancellationException::class.java)
+                    .hasMessage("Client is closed")
+                assertThatThrownBy {
+                        RealtimeConnection.connectAsync(configuration, settings)
+                            .get(2, TimeUnit.SECONDS)
+                    }
+                    .isInstanceOf(java.util.concurrent.CancellationException::class.java)
+                    .hasMessage("Client is closed")
+                assertThat(opens.get()).isEqualTo(1)
+            }
+        }
+    }
+
+    @Test
+    fun wrappedCredentialTransportIoRetries() =
+        credentialRefreshFailure(
+            CompletionException(
+                OpenAIIoException("token exchange failed", IOException("transient read"))
+            ),
+            retryable = true,
+        )
+
+    @Test
+    fun credentialRefreshExclusionsRemainTerminal() {
+        for (error in
+            listOf(
+                OpenAIIoException(
+                    "token exchange failed",
+                    javax.net.ssl.SSLException("TLS failure"),
+                ),
+                OpenAIIoException("token exchange failed", ProtocolException("protocol failure")),
+                OpenAIIoException(
+                    "token exchange failed",
+                    java.util.concurrent.CancellationException("credential canceled"),
+                ),
+                IllegalStateException("application failure", IOException("nested I/O")),
+            )) credentialRefreshFailure(error, retryable = false)
+    }
+
+    private fun credentialRefreshFailure(error: RuntimeException, retryable: Boolean) {
+        MockWebServer().use { server ->
+            val first = Listener()
+            val second = Listener()
+            server.enqueue(MockResponse().withWebSocketUpgrade(first))
+            server.enqueue(MockResponse().withWebSocketUpgrade(second))
+            val calls = java.util.concurrent.atomic.AtomicInteger()
+            OkHttpClient.builder().build().use { http ->
+                val configuration =
+                    options(server, http)
+                        .toBuilder()
+                        .credential(
+                            com.openai.credential.BearerTokenCredential.create {
+                                val call = calls.incrementAndGet()
+                                if (call == 2) throw error
+                                "fake-recovery-$call"
+                            }
+                        )
+                        .build()
+                val settings =
+                    RealtimeWebSocketOptions.builder()
+                        .reconnect(true)
+                        .reconnectDelayMillis(1)
+                        .build()
+                RealtimeConnection.connect(configuration, settings).use { connection ->
+                    val pending = connection.receiveAsync()
+                    first.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
+                    if (retryable) {
+                        second.socket
+                            .get(5, TimeUnit.SECONDS)
+                            .send(
+                                """{"type":"input_audio_buffer.cleared","event_id":"refreshed"}"""
+                            )
+                        assertThat(
+                                pending
+                                    .get(5, TimeUnit.SECONDS)
+                                    .asInputAudioBufferCleared()
+                                    .eventId()
+                            )
+                            .isEqualTo("refreshed")
+                        assertThat(
+                                server.takeRequest(5, TimeUnit.SECONDS)!!.getHeader("Authorization")
+                            )
+                            .isEqualTo("Bearer fake-recovery-1")
+                        assertThat(
+                                server.takeRequest(5, TimeUnit.SECONDS)!!.getHeader("Authorization")
+                            )
+                            .isEqualTo("Bearer fake-recovery-3")
+                    } else {
+                        assertThatThrownBy { pending.get(5, TimeUnit.SECONDS) }
+                            .hasRootCauseMessage(error.cause!!.message)
+                    }
+                    assertThat(calls.get()).isEqualTo(if (retryable) 3 else 2)
+                    assertThat(server.requestCount).isEqualTo(if (retryable) 2 else 1)
                 }
             }
         }

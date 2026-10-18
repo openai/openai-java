@@ -25,6 +25,7 @@ import java.time.Duration
 import java.util.ArrayDeque
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -79,6 +80,7 @@ private constructor(
     private val pending = ArrayDeque<String>()
     private var pendingBytes = 0L
     private var flushing = false
+    private val ownerLifetime = if (options.reconnect) CompletableFuture<Void>() else null
 
     companion object {
         private val recoveryTimer =
@@ -115,6 +117,16 @@ private constructor(
             val connection = RealtimeConnection(clientOptions, options, requestOptions)
             val result = CompletableFuture<RealtimeConnection>()
             result.whenComplete { _, _ -> if (result.isCancelled) connection.close() }
+            connection.ownerLifetime?.let { lifetime ->
+                lifetime.whenComplete { _, _ ->
+                    if (lifetime.isCancelled) {
+                        val error = CancellationException("Client is closed")
+                        connection.fail(error)
+                        if (!result.isDone) connection.completeFailure(result, error, blocking)
+                    }
+                }
+                clientOptions.trackWebSocketLifetime(lifetime)
+            }
             connection.open(result, blocking)
             return result
         }
@@ -285,6 +297,7 @@ private constructor(
 
     private fun canRetry(error: Throwable): Boolean {
         var cause: Throwable? = error
+        var root = error
         val seen =
             java.util.Collections.newSetFromMap(java.util.IdentityHashMap<Throwable, Boolean>())
         while (cause != null && seen.add(cause)) {
@@ -294,12 +307,10 @@ private constructor(
                     cause is ProtocolException
             )
                 return false
+            if (cause === root && (cause is CompletionException || cause is OpenAIIoException))
+                root = cause.cause ?: cause
             cause = cause.cause
         }
-        val root =
-            if (error is java.util.concurrent.CompletionException && error.cause != null)
-                error.cause!!
-            else error
         return root is IOException ||
             (root is WebSocketHandshakeException &&
                 root.statusCode in setOf(408, 429, 500, 502, 503, 504))
@@ -666,6 +677,7 @@ private constructor(
                     opening = null
                 }
             }
+        ownerLifetime?.complete(null)
         detached.second?.cancel(true)
         // Complete the detached read before cleanup: injected close() may depend on the reader
         // having received its failure. Only private blocking futures complete on this thread.
