@@ -15,7 +15,7 @@ public final class ModerationsExample {
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
         ModerationCreateParams createParams = ModerationCreateParams.builder()
-                .input("I want to kill them.")
+                .input("...text to classify goes here...")
                 .model(ModerationModel.OMNI_MODERATION_LATEST)
                 .build();
 

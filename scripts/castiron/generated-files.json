@@ -12643,7 +12643,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/moderations/ModerationCreateParamsTest.kt": {
       "mode": "100644",
-      "sha256": "22cd4b72092f844cc62406412e17d0433bb7cce7b2634c8491411680b65d301d"
+      "sha256": "13dd73e4e9f7b6b48ac5a23561a26bc16fb7e2b8e05e4f6f71c040dbc8758df7"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/moderations/ModerationCreateResponseTest.kt": {
       "mode": "100644",
@@ -12655,7 +12655,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/moderations/ModerationMultiModalInputTest.kt": {
       "mode": "100644",
-      "sha256": "cde26d29b8a5bcc0ff1ddfaf695f29e3020b152ce078ded0bd4c4725b0904b7e"
+      "sha256": "2b0c86fcbcd3e2ad612183faf050aa2a2d9d84bcdc1e942181dc5b2cbb55be76"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/moderations/ModerationTest.kt": {
       "mode": "100644",
@@ -12663,7 +12663,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/moderations/ModerationTextInputTest.kt": {
       "mode": "100644",
-      "sha256": "115b7af9de33cbadfd9ca8ee3eeb07955f0d4d119931129a31f4d5de2d65022c"
+      "sha256": "23ff5306f2e0205239da8db604a5f96743ea6f5f22ac626d7dcd5a2a01a9eef7"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/realtime/AudioTranscriptionTest.kt": {
       "mode": "100644",
@@ -14387,7 +14387,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/services/async/ModerationServiceAsyncTest.kt": {
       "mode": "100644",
-      "sha256": "b0fca04c4cbf3b63e58d71b1f932a833b9ab8d7c5425e42288c38e4f7e843ab1"
+      "sha256": "5ef37960af3f4b81b4a772f4fad4ffba8d48c7e8ad2ccccd3d923e2abd2f6031"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/async/ResponseServiceAsyncTest.kt": {
       "mode": "100644",
@@ -14811,7 +14811,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/ModerationServiceTest.kt": {
       "mode": "100644",
-      "sha256": "b7f2099fe59b2fa7ef6b7478cb87933ab90904cfa1172b959bbf47090641399c"
+      "sha256": "7395badf93cd427408b1dc773c8235ffc764ebd2c940d91eb604df3adca16104"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/ResponseServiceTest.kt": {
       "mode": "100644",
