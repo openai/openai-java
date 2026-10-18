@@ -12,6 +12,7 @@ import com.openai.helpers.RealtimeWebSocketOptions
 import com.openai.models.realtime.InputAudioBufferAppendEvent
 import com.openai.models.realtime.InputAudioBufferClearEvent
 import com.openai.models.realtime.RealtimeClientEvent
+import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
@@ -193,33 +194,47 @@ class RealtimeConnectionTest {
     }
 
     @Test
-    fun synchronousRecoveryCallbackCanWaitForAnEvent() {
-        MockWebServer().use { server ->
-            val first = Listener()
-            val second = Listener()
-            server.enqueue(MockResponse().withWebSocketUpgrade(first))
-            server.enqueue(MockResponse().withWebSocketUpgrade(second))
-            val callbackStarted = CountDownLatch(1)
-            val received = CompletableFuture<String>()
-            OkHttpClient.builder().build().use { http ->
-                val settings =
-                    RealtimeWebSocketOptions.builder()
-                        .reconnect(true)
-                        .reconnectDelayMillis(1)
-                        .onReconnected {
-                            callbackStarted.countDown()
-                            received.complete(it.receive().asInputAudioBufferCleared().eventId())
-                        }
-                        .build()
-                RealtimeConnection.connect(options(server, http), settings).use {
-                    first.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
-                    assertThat(callbackStarted.await(5, TimeUnit.SECONDS)).isTrue()
-                    second.socket
-                        .get(5, TimeUnit.SECONDS)
-                        .send("""{"type":"input_audio_buffer.cleared","event_id":"restored"}""")
-                    assertThat(received.get(5, TimeUnit.SECONDS)).isEqualTo("restored")
+    fun blockingRecoveryCallbackDoesNotBlockLaterRecovery() {
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            MockWebServer().use { server ->
+                val first = Listener()
+                val second = Listener()
+                val third = Listener()
+                server.enqueue(MockResponse().withWebSocketUpgrade(first))
+                server.enqueue(MockResponse().withWebSocketUpgrade(second))
+                server.enqueue(MockResponse().withWebSocketUpgrade(third))
+                val callbackStarted = CountDownLatch(1)
+                val received = CompletableFuture<String>()
+                OkHttpClient.builder().build().use { http ->
+                    val settings =
+                        RealtimeWebSocketOptions.builder()
+                            .reconnect(true)
+                            .reconnectDelayMillis(1)
+                            .onReconnected {
+                                if (!received.isDone) {
+                                    callbackStarted.countDown()
+                                    received.complete(
+                                        it.receive().asInputAudioBufferCleared().eventId()
+                                    )
+                                }
+                            }
+                            .build()
+                    val configuration =
+                        options(server, http).toBuilder().streamHandlerExecutor(executor).build()
+                    RealtimeConnection.connect(configuration, settings).use {
+                        first.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
+                        assertThat(callbackStarted.await(5, TimeUnit.SECONDS)).isTrue()
+                        second.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
+                        third.socket
+                            .get(5, TimeUnit.SECONDS)
+                            .send("""{"type":"input_audio_buffer.cleared","event_id":"restored"}""")
+                        assertThat(received.get(5, TimeUnit.SECONDS)).isEqualTo("restored")
+                    }
                 }
             }
+        } finally {
+            executor.shutdownNow()
         }
     }
 
@@ -235,10 +250,33 @@ class RealtimeConnectionTest {
                 val allowRefresh = CountDownLatch(1)
                 val calls = java.util.concurrent.atomic.AtomicInteger()
                 val recovered = CompletableFuture<RealtimeConnection>()
+                val writeTimeout = Duration.ofSeconds(3)
+                val observedTimeouts = mutableListOf<Duration>()
                 OkHttpClient.builder().build().use { http ->
+                    val observedHttp =
+                        object : HttpClient by http, WebSocketClient {
+                            override fun connectWebSocket(
+                                request: HttpRequest,
+                                options: RequestOptions,
+                                maxMessageBytes: Int,
+                                listener: WebSocketClient.Listener,
+                            ): CompletableFuture<WebSocketClient.Connection> =
+                                http
+                                    .connectWebSocket(request, options, maxMessageBytes, listener)
+                                    .thenApply { active ->
+                                        val writable = active as WebSocketClient.WritableConnection
+                                        object : WebSocketClient.WritableConnection by writable {
+                                            override fun awaitWritable(timeout: Duration) {
+                                                observedTimeouts.add(timeout)
+                                                writable.awaitWritable(timeout)
+                                            }
+                                        }
+                                    }
+                        }
                     val configuration =
-                        options(server, http)
+                        options(server, observedHttp)
                             .toBuilder()
+                            .timeout(com.openai.core.Timeout.builder().write(writeTimeout).build())
                             .credential(
                                 com.openai.credential.BearerTokenCredential.create {
                                     val attempt = calls.incrementAndGet()
@@ -258,11 +296,19 @@ class RealtimeConnectionTest {
                             .maxPendingBytes(100)
                             .onReconnected { recovered.complete(it) }
                             .build()
+                    val requestOptions =
+                        RequestOptions.builder()
+                            .timeout(
+                                com.openai.core.Timeout.builder()
+                                    .connect(Duration.ofSeconds(2))
+                                    .build()
+                            )
+                            .build()
                     val connection =
                         if (async)
-                            RealtimeConnection.connectAsync(configuration, settings)
+                            RealtimeConnection.connectAsync(configuration, settings, requestOptions)
                                 .get(5, TimeUnit.SECONDS)
-                        else RealtimeConnection.connect(configuration, settings)
+                        else RealtimeConnection.connect(configuration, settings, requestOptions)
                     connection.use {
                         it.send(command())
                         assertThat(first.messages.poll(5, TimeUnit.SECONDS))
@@ -280,6 +326,7 @@ class RealtimeConnectionTest {
                         assertThat(recovered.get(5, TimeUnit.SECONDS)).isSameAs(it)
                         assertThat(second.messages).isEmpty()
                         it.flushPending()
+                        assertThat(observedTimeouts).containsExactly(writeTimeout, writeTimeout)
                         assertThat(second.messages.poll(5, TimeUnit.SECONDS))
                             .contains("input_audio_buffer.clear")
                         assertThat(second.messages.poll(5, TimeUnit.SECONDS)).contains("second")

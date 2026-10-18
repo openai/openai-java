@@ -327,7 +327,7 @@ private constructor(
                             .coerceAtMost(8000)
                     retryTimer =
                         recoveryTimer.schedule(
-                            { dispatch { open(result, blocking) } },
+                            { CompletableFuture.runAsync { open(result, blocking) } },
                             delay,
                             TimeUnit.MILLISECONDS,
                         )
@@ -486,7 +486,8 @@ private constructor(
 
     private fun awaitWritable(active: WebSocketClient.Connection) {
         if (active !is WebSocketClient.WritableConnection) return
-        val timeout = (requestOptions.timeout ?: clientOptions.timeout).write()
+        val timeout =
+            (requestOptions.timeout?.assign(clientOptions.timeout) ?: clientOptions.timeout).write()
         while (true) {
             try {
                 active.awaitWritable(if (timeout.isZero) Duration.ofSeconds(1) else timeout)
