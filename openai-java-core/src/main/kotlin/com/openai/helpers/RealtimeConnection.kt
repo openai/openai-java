@@ -9,6 +9,7 @@ import com.openai.core.RequestOptions
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.WebSocketClient
+import com.openai.core.http.WebSocketHandshakeException
 import com.openai.core.http.WebSocketReadFuture
 import com.openai.core.http.WebSocketWriteNotAttempted
 import com.openai.core.http.awaitWebSocketFuture
@@ -21,6 +22,10 @@ import java.io.IOException
 import java.util.ArrayDeque
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLException
 
 /**
  * Managed GA Realtime connection. Consume typed events synchronously or asynchronously, with one
@@ -57,8 +62,21 @@ private constructor(
     private var failure: Throwable? = null
     private var closed = false
     private var sending = false
+    private var generation = 0L
+    private var recovering = false
+    private var attempts = 0
+    private var retryTimer: ScheduledFuture<*>? = null
+    private val pending = ArrayDeque<String>()
+    private var pendingBytes = 0L
+    private var flushing = false
 
     companion object {
+        private val recoveryTimer =
+            ScheduledThreadPoolExecutor(1) { task ->
+                    Thread(task, "openai-realtime-recovery").apply { isDaemon = true }
+                }
+                .apply { removeOnCancelPolicy = true }
+
         @JvmStatic
         @JvmOverloads
         @MustBeClosed
@@ -87,109 +105,246 @@ private constructor(
             val connection = RealtimeConnection(clientOptions, options, requestOptions)
             val result = CompletableFuture<RealtimeConnection>()
             result.whenComplete { _, _ -> if (result.isCancelled) connection.close() }
-            try {
-                clientOptions.requireWebSocketTransport()
-                require(
-                    AzureUrlCategory.categorizeBaseUrl(
-                        clientOptions.baseUrl(),
-                        clientOptions.azureUrlPathMode,
-                    ) != AzureUrlCategory.AZURE_LEGACY
-                ) {
-                    "GA Realtime WebSockets require unified Azure routing"
-                }
-                val request =
-                    HttpRequest.builder()
-                        .method(HttpMethod.GET)
-                        .baseUrl(clientOptions.baseUrl())
-                        .pathSegments(
-                            com.openai.models.realtime.RealtimeWebSocketBinding.create()
-                                .pathSegments
-                        )
-                        .build()
-                        .prepare(
-                            clientOptions,
-                            options,
-                            com.openai.models.realtime.RealtimeWebSocketBinding.create().security,
-                        )
-                val pending =
-                    clientOptions.connectWebSocket(
-                        request,
-                        requestOptions,
-                        options.maxMessageBytes,
-                        object : WebSocketClient.Listener {
-                            override fun onMessage(text: String) = connection.accept(text)
-
-                            override fun onClosed(code: Int) =
-                                connection.fail(
-                                    IOException("GA Realtime WebSocket closed (code $code)")
-                                )
-
-                            override fun onFailure(error: Throwable) = connection.fail(error)
-                        },
-                    )
-                val shouldCancel =
-                    synchronized(connection.lock) {
-                        if (connection.closed || connection.failure != null) true
-                        else {
-                            connection.opening = pending
-                            false
-                        }
-                    }
-                if (shouldCancel) pending.cancel(true)
-                pending.whenComplete { active, error ->
-                    val problem =
-                        synchronized(connection.lock) {
-                            connection.opening = null
-                            if (error != null) error
-                            else if (connection.closed || connection.failure != null)
-                                connection.failure
-                                    ?: CancellationException("Realtime connection closed")
-                            else {
-                                connection.socket = active
-                                null
-                            }
-                        }
-                    if (problem != null) {
-                        try {
-                            active?.close()
-                        } catch (closing: Throwable) {
-                            if (closing !== problem) problem.addSuppressed(closing)
-                        }
-                        connection.fail(problem)
-                    }
-                    val complete: () -> Unit = {
-                        // The owner or socket can close while completion waits on the executor.
-                        // Inspect state here, but keep user callbacks outside the lock.
-                        val completionError =
-                            problem
-                                ?: synchronized(connection.lock) {
-                                    when {
-                                        connection.failure != null -> connection.failure
-                                        connection.closed ->
-                                            CancellationException("Realtime connection closed")
-                                        clientOptions.isWebSocketClosed() ->
-                                            CancellationException("Client is closed")
-                                        else -> null
-                                    }
-                                }
-                        if (completionError != null) {
-                            connection.fail(completionError)
-                            result.completeExceptionally(completionError)
-                        } else if (!result.complete(connection)) connection.close()
-                    }
-                    // Blocking futures are private: a caller may already occupy the stream
-                    // executor. Public async continuations must still leave the transport reader.
-                    if (blocking) complete() else connection.dispatch(complete)
-                }
-            } catch (error: Exception) {
-                connection.fail(error)
-                result.completeExceptionally(error)
-            }
+            connection.open(result, blocking)
             return result
         }
 
         private fun <T> await(future: CompletableFuture<T>): T =
             awaitWebSocketFuture(future, "Realtime")
+    }
+
+    private fun open(result: CompletableFuture<RealtimeConnection>, blocking: Boolean) {
+        val epoch =
+            synchronized(lock) {
+                if (closed || failure != null) return
+                retryTimer = null
+                ++generation
+            }
+        try {
+            clientOptions.requireWebSocketTransport()
+            require(
+                AzureUrlCategory.categorizeBaseUrl(
+                    clientOptions.baseUrl(),
+                    clientOptions.azureUrlPathMode,
+                ) != AzureUrlCategory.AZURE_LEGACY
+            ) {
+                "GA Realtime WebSockets require unified Azure routing"
+            }
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .pathSegments(
+                        com.openai.models.realtime.RealtimeWebSocketBinding.create().pathSegments
+                    )
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        options,
+                        com.openai.models.realtime.RealtimeWebSocketBinding.create().security,
+                    )
+            if (options.reconnect) {
+                val baseQueryKeys =
+                    java.net
+                        .URI(request.baseUrl)
+                        .rawQuery
+                        ?.split('&')
+                        ?.map { java.net.URLDecoder.decode(it.substringBefore('='), "UTF-8") }
+                        .orEmpty()
+                require(
+                    "intent" !in baseQueryKeys &&
+                        "call_id" !in baseQueryKeys &&
+                        request.queryParams.values("intent").isEmpty() &&
+                        request.queryParams.values("call_id").isEmpty()
+                ) {
+                    "Automatic Realtime recovery requires a model session"
+                }
+            }
+            if (synchronized(lock) { generation != epoch || closed || failure != null }) return
+            val pending =
+                clientOptions.connectWebSocket(
+                    request,
+                    requestOptions,
+                    options.maxMessageBytes,
+                    object : WebSocketClient.Listener {
+                        override fun onMessage(text: String) = accept(text, epoch)
+
+                        override fun onClosed(code: Int) {
+                            disconnect(
+                                epoch,
+                                IOException("GA Realtime WebSocket closed (code $code)"),
+                                code in setOf(1006, 1011, 1012, 1013),
+                                result,
+                                blocking,
+                            )
+                        }
+
+                        override fun onFailure(error: Throwable) {
+                            disconnect(epoch, error, canRetry(error), result, blocking)
+                        }
+                    },
+                )
+            val shouldCancel =
+                synchronized(lock) {
+                    if (closed || failure != null || generation != epoch) true
+                    else {
+                        this.opening = pending
+                        false
+                    }
+                }
+            if (shouldCancel) pending.cancel(true)
+            pending.whenComplete { active, error ->
+                if (synchronized(lock) { generation != epoch }) {
+                    val problem = synchronized(lock) { failure }
+                    try {
+                        active?.close()
+                    } catch (closing: Throwable) {
+                        if (problem != null && closing !== problem) problem.addSuppressed(closing)
+                    } finally {
+                        problem?.let { completeFailure(result, it, blocking) }
+                    }
+                    return@whenComplete
+                }
+                if (error != null && disconnect(epoch, error, canRetry(error), result, blocking))
+                    return@whenComplete
+                val problem =
+                    synchronized(lock) {
+                        this.opening = null
+                        if (error != null) error
+                        else if (this.closed || this.failure != null)
+                            this.failure ?: CancellationException("Realtime connection closed")
+                        else {
+                            this.socket = active
+                            this.recovering = false
+                            null
+                        }
+                    }
+                if (problem != null) {
+                    try {
+                        active?.close()
+                    } catch (closing: Throwable) {
+                        if (closing !== problem) problem.addSuppressed(closing)
+                    }
+                    this.fail(problem)
+                }
+                val complete: () -> Unit = completion@{
+                    if (result.isDone && synchronized(lock) { generation != epoch })
+                        return@completion
+                    // The owner or socket can close while completion waits on the executor.
+                    // Inspect state here, but keep user callbacks outside the lock.
+                    val completionError =
+                        problem
+                            ?: synchronized(lock) {
+                                when {
+                                    this.failure != null -> this.failure
+                                    this.closed ->
+                                        CancellationException("Realtime connection closed")
+                                    clientOptions.isWebSocketClosed() ->
+                                        CancellationException("Client is closed")
+                                    else -> null
+                                }
+                            }
+                    if (completionError != null) {
+                        this.fail(completionError)
+                        result.completeExceptionally(completionError)
+                    } else if (!result.isDone) {
+                        if (!result.complete(this)) close()
+                    } else if (result.isCancelled) close()
+                    else {
+                        try {
+                            options.onReconnected?.accept(this)
+                        } catch (callbackError: Exception) {
+                            fail(callbackError)
+                        }
+                    }
+                }
+                // Blocking futures are private: a caller may already occupy the stream
+                // executor. Public async continuations must still leave the transport reader.
+                if (blocking && !result.isDone) complete() else this.dispatch(complete)
+            }
+        } catch (error: Exception) {
+            if (!disconnect(epoch, error, canRetry(error), result, blocking)) {
+                fail(error)
+                completeFailure(result, error, blocking)
+            }
+        }
+    }
+
+    private fun canRetry(error: Throwable): Boolean {
+        var cause: Throwable? = error
+        val seen =
+            java.util.Collections.newSetFromMap(java.util.IdentityHashMap<Throwable, Boolean>())
+        while (cause != null && seen.add(cause)) {
+            if (cause is SSLException || cause is CancellationException) return false
+            cause = cause.cause
+        }
+        val root =
+            if (error is java.util.concurrent.CompletionException && error.cause != null)
+                error.cause!!
+            else error
+        return root is IOException ||
+            (root is WebSocketHandshakeException &&
+                root.statusCode in setOf(408, 429, 500, 502, 503, 504))
+    }
+
+    private fun completeFailure(
+        result: CompletableFuture<RealtimeConnection>,
+        error: Throwable,
+        blocking: Boolean,
+    ) {
+        if (blocking) result.completeExceptionally(error)
+        else dispatch { result.completeExceptionally(error) }
+    }
+
+    private fun disconnect(
+        epoch: Long,
+        error: Throwable,
+        retryable: Boolean,
+        result: CompletableFuture<RealtimeConnection>,
+        blocking: Boolean,
+    ): Boolean {
+        val retired =
+            synchronized(lock) {
+                if (generation != epoch) return true
+                if (
+                    !closed &&
+                        failure == null &&
+                        options.reconnect &&
+                        retryable &&
+                        (socket != null || recovering) &&
+                        !sending &&
+                        attempts < options.maxReconnectAttempts
+                ) {
+                    generation++
+                    recovering = true
+                    attempts++
+                    val old = Pair(socket, opening)
+                    socket = null
+                    opening = null
+                    val delay =
+                        (options.reconnectDelayMillis * (1L shl minOf(attempts - 1, 14)))
+                            .coerceAtMost(8000)
+                    retryTimer =
+                        recoveryTimer.schedule(
+                            { dispatch { open(result, blocking) } },
+                            delay,
+                            TimeUnit.MILLISECONDS,
+                        )
+                    old
+                } else null
+            }
+        if (retired != null) {
+            retired.second?.cancel(true)
+            try {
+                retired.first?.close()
+            } catch (_: Exception) {
+                /* Preserve the initiating error. */
+            }
+            return true
+        }
+        fail(error)
+        completeFailure(result, error, blocking)
+        return false
     }
 
     /** Returns one event, even if the peer closes immediately after it. */
@@ -226,11 +381,16 @@ private constructor(
      * resends the command.
      */
     fun send(event: RealtimeClientEvent) {
-        synchronized(lock) {
-            check(!closed && failure == null && socket != null) { "Realtime is not connected" }
-            check(!sending) { "A Realtime send is already pending; command was not sent" }
-            sending = true
-        }
+        val admittedDuringRecovery =
+            synchronized(lock) {
+                check(!closed && failure == null && (socket != null || recovering)) {
+                    "Realtime is not connected"
+                }
+                check(!flushing) { "A Realtime flush is already pending; command was not sent" }
+                check(!sending) { "A Realtime send is already pending; command was not sent" }
+                sending = true
+                recovering
+            }
         try {
             val text = clientOptions.jsonMapper.writeValueAsString(event)
             require(utf8Size(text) <= options.maxMessageBytes) {
@@ -239,6 +399,16 @@ private constructor(
             val active =
                 synchronized(lock) {
                     check(!closed && failure == null) { "Realtime is not connected" }
+                    if (admittedDuringRecovery || recovering) {
+                        val size = utf8Size(text)
+                        if (size > options.maxPendingBytes - pendingBytes)
+                            throw WebSocketWriteNotAttempted.Busy(
+                                "Realtime recovery queue is full; command was not sent"
+                            )
+                        pending.addLast(text)
+                        pendingBytes += size
+                        return
+                    }
                     socket ?: throw IllegalStateException("Realtime is not connected")
                 }
             try {
@@ -249,6 +419,58 @@ private constructor(
             }
         } finally {
             synchronized(lock) { sending = false }
+        }
+    }
+
+    /** Remove retained, never-attempted JSON commands without sending them. */
+    fun takePending(): List<String> =
+        synchronized(lock) {
+            check(!flushing) { "A Realtime flush is pending" }
+            pending.toList().also {
+                pending.clear()
+                pendingBytes = 0
+            }
+        }
+
+    /** Send retained commands in order after the application restores session state. */
+    fun flushPending() {
+        synchronized(lock) {
+            check(
+                !flushing && !sending && !recovering && !closed && failure == null && socket != null
+            ) {
+                "Realtime cannot flush now"
+            }
+            flushing = true
+        }
+        try {
+            while (true) {
+                val next =
+                    synchronized(lock) {
+                        check(!closed && failure == null && !recovering) {
+                            "Realtime is not connected"
+                        }
+                        if (pending.isEmpty()) return
+                        val text = pending.removeFirst()
+                        pendingBytes -= utf8Size(text)
+                        sending = true
+                        Pair(socket!!, text)
+                    }
+                try {
+                    next.first.send(next.second)
+                } catch (error: Throwable) {
+                    if (error is WebSocketWriteNotAttempted)
+                        synchronized(lock) {
+                            pending.addFirst(next.second)
+                            pendingBytes += utf8Size(next.second)
+                        }
+                    else fail(error)
+                    throw error
+                } finally {
+                    synchronized(lock) { sending = false }
+                }
+            }
+        } finally {
+            synchronized(lock) { flushing = false }
         }
     }
 
@@ -279,7 +501,8 @@ private constructor(
         fail(CancellationException("Realtime connection closed"))
     }
 
-    private fun accept(text: String) {
+    private fun accept(text: String, epoch: Long) {
+        if (synchronized(lock) { epoch != generation }) return
         try {
             // Reject malformed envelopes independently of lenient or user-supplied model readers.
             clientOptions.jsonMapper.factory.createParser(text).use { parser ->
@@ -305,7 +528,7 @@ private constructor(
             val bytes = utf8Size(text)
             val target =
                 synchronized(lock) {
-                    if (closed || failure != null) return
+                    if (closed || failure != null || epoch != generation) return
                     val available =
                         waiter?.takeUnless { it.claimed || it.cancellationReserved || it.isDone }
                     if (available == null) {
@@ -323,7 +546,7 @@ private constructor(
                 if (target.blocking) target.complete(event) else dispatch { target.complete(event) }
             }
         } catch (error: Exception) {
-            fail(error)
+            if (synchronized(lock) { epoch == generation }) fail(error)
         }
     }
 
@@ -332,6 +555,9 @@ private constructor(
             synchronized(lock) {
                 if (failure != null) return
                 failure = error
+                generation++
+                retryTimer?.cancel(false)
+                retryTimer = null
                 val unassigned =
                     waiter?.takeUnless { it.claimed || it.cancellationReserved || it.isDone }
                 waiter = null

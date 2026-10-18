@@ -2155,3 +2155,24 @@ Please share bug reports and feature requests through [GitHub issues](https://gi
 Pull requests are limited to repository collaborators; we do not accept pull requests from non-collaborators.
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for the contribution policy and development guide.
 For security vulnerabilities, follow [SECURITY.md](SECURITY.md).
+
+
+### Optional Realtime transport recovery
+
+GA Realtime model connections can opt into transport recovery with
+`RealtimeWebSocketOptions.builder().reconnect(true).build()`. It is disabled by
+default. A recovered connection keeps the same Java object, but opens a **new
+server session**. Transcription and existing-call connections do not support this
+option. Normal closure, authentication rejection, and TLS failures remain terminal.
+
+Recovery refreshes credentials for each attempt and stops after five additional
+attempts over the connection's lifetime. `maxReconnectAttempts` and
+`reconnectDelayMillis` configure this bound and the initial backoff; backoff is
+capped at eight seconds. Closing the connection cancels recovery.
+
+Sends during recovery are rejected unless `maxPendingBytes` permits a bounded
+queue. Only commands that have never been attempted can enter that queue.
+Use `onReconnected` to restore application-owned session state, then explicitly
+call `flushPending()`. `takePending()` instead returns the retained JSON commands
+without sending them. The SDK never replays an uncertain write or restores server
+state automatically. Send success is not a server acknowledgment.

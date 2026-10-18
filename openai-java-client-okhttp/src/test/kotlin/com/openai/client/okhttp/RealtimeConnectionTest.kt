@@ -64,6 +64,302 @@ class RealtimeConnectionTest {
             .build()
 
     @Test
+    fun serializationStartedDuringRecoveryStillWaitsForExplicitFlush() {
+        MockWebServer().use { server ->
+            val first = Listener()
+            val second = Listener()
+            server.enqueue(MockResponse().withWebSocketUpgrade(first))
+            server.enqueue(MockResponse().withWebSocketUpgrade(second))
+            val opening = CountDownLatch(1)
+            val allowOpen = CountDownLatch(1)
+            val encoding = CountDownLatch(1)
+            val allowEncode = CountDownLatch(1)
+            val recovered = CompletableFuture<RealtimeConnection>()
+            val calls = java.util.concurrent.atomic.AtomicInteger()
+            val customMapper =
+                jsonMapper()
+                    .rebuild()
+                    .addModule(
+                        com.fasterxml.jackson.databind.module
+                            .SimpleModule()
+                            .addSerializer(
+                                String::class.java,
+                                object : com.fasterxml.jackson.databind.JsonSerializer<String>() {
+                                    override fun serialize(
+                                        value: String,
+                                        generator: com.fasterxml.jackson.core.JsonGenerator,
+                                        provider: com.fasterxml.jackson.databind.SerializerProvider,
+                                    ) {
+                                        if (value == "pending-audio") {
+                                            encoding.countDown()
+                                            check(allowEncode.await(5, TimeUnit.SECONDS))
+                                        }
+                                        generator.writeString(value)
+                                    }
+                                },
+                            )
+                    )
+                    .build()
+            OkHttpClient.builder().build().use { http ->
+                val configuration =
+                    options(server, http)
+                        .toBuilder()
+                        .jsonMapper(customMapper)
+                        .credential(
+                            com.openai.credential.BearerTokenCredential.create {
+                                if (calls.incrementAndGet() == 2) {
+                                    opening.countDown()
+                                    check(allowOpen.await(5, TimeUnit.SECONDS))
+                                }
+                                "fake-recovery"
+                            }
+                        )
+                        .build()
+                val settings =
+                    RealtimeWebSocketOptions.builder()
+                        .reconnect(true)
+                        .reconnectDelayMillis(1)
+                        .maxPendingBytes(1024)
+                        .onReconnected { recovered.complete(it) }
+                        .build()
+                RealtimeConnection.connect(configuration, settings).use { connection ->
+                    first.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
+                    assertThat(opening.await(5, TimeUnit.SECONDS)).isTrue()
+                    val sent =
+                        CompletableFuture.runAsync {
+                            connection.send(
+                                RealtimeClientEvent.ofInputAudioBufferAppend(
+                                    InputAudioBufferAppendEvent.builder()
+                                        .audio("pending-audio")
+                                        .build()
+                                )
+                            )
+                        }
+                    try {
+                        assertThat(encoding.await(5, TimeUnit.SECONDS)).isTrue()
+                        allowOpen.countDown()
+                        recovered.get(5, TimeUnit.SECONDS)
+                        allowEncode.countDown()
+                        sent.get(5, TimeUnit.SECONDS)
+                        assertThat(second.messages).isEmpty()
+                        connection.flushPending()
+                        assertThat(second.messages.poll(5, TimeUnit.SECONDS))
+                            .contains("pending-audio")
+                    } finally {
+                        allowOpen.countDown()
+                        allowEncode.countDown()
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun recoveryRejectsInheritedSessionSelectorsBeforeOpening() {
+        MockWebServer().use { server ->
+            OkHttpClient.builder().build().use { http ->
+                for (query in
+                    listOf("call_id=existing", "intent=transcription", "%63all_id=existing")) {
+                    val configuration =
+                        options(server, http)
+                            .toBuilder()
+                            .baseUrl(server.url("/v1?$query").toString())
+                            .build()
+                    assertThatThrownBy {
+                            RealtimeConnection.connect(
+                                configuration,
+                                RealtimeWebSocketOptions.builder().reconnect(true).build(),
+                            )
+                        }
+                        .hasMessageContaining("requires a model session")
+                }
+                assertThat(server.requestCount).isZero()
+            }
+        }
+    }
+
+    @Test
+    fun synchronousRecoveryCallbackCanWaitForAnEvent() {
+        MockWebServer().use { server ->
+            val first = Listener()
+            val second = Listener()
+            server.enqueue(MockResponse().withWebSocketUpgrade(first))
+            server.enqueue(MockResponse().withWebSocketUpgrade(second))
+            val callbackStarted = CountDownLatch(1)
+            val received = CompletableFuture<String>()
+            OkHttpClient.builder().build().use { http ->
+                val settings =
+                    RealtimeWebSocketOptions.builder()
+                        .reconnect(true)
+                        .reconnectDelayMillis(1)
+                        .onReconnected {
+                            callbackStarted.countDown()
+                            received.complete(it.receive().asInputAudioBufferCleared().eventId())
+                        }
+                        .build()
+                RealtimeConnection.connect(options(server, http), settings).use {
+                    first.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
+                    assertThat(callbackStarted.await(5, TimeUnit.SECONDS)).isTrue()
+                    second.socket
+                        .get(5, TimeUnit.SECONDS)
+                        .send("""{"type":"input_audio_buffer.cleared","event_id":"restored"}""")
+                    assertThat(received.get(5, TimeUnit.SECONDS)).isEqualTo("restored")
+                }
+            }
+        }
+    }
+
+    @Test
+    fun automaticRecoveryRefreshesCredentialsAndOnlyFlushesWhenAsked() {
+        for (async in listOf(false, true)) {
+            MockWebServer().use { server ->
+                val first = Listener()
+                val second = Listener()
+                server.enqueue(MockResponse().withWebSocketUpgrade(first))
+                server.enqueue(MockResponse().withWebSocketUpgrade(second))
+                val refreshing = CountDownLatch(1)
+                val allowRefresh = CountDownLatch(1)
+                val calls = java.util.concurrent.atomic.AtomicInteger()
+                val recovered = CompletableFuture<RealtimeConnection>()
+                OkHttpClient.builder().build().use { http ->
+                    val configuration =
+                        options(server, http)
+                            .toBuilder()
+                            .credential(
+                                com.openai.credential.BearerTokenCredential.create {
+                                    val attempt = calls.incrementAndGet()
+                                    if (attempt == 2) {
+                                        refreshing.countDown()
+                                        check(allowRefresh.await(5, TimeUnit.SECONDS))
+                                    }
+                                    "fake-recovery-$attempt"
+                                }
+                            )
+                            .build()
+                    val settings =
+                        RealtimeWebSocketOptions.builder()
+                            .reconnect(true)
+                            .maxReconnectAttempts(1)
+                            .reconnectDelayMillis(1)
+                            .maxPendingBytes(100)
+                            .onReconnected { recovered.complete(it) }
+                            .build()
+                    val connection =
+                        if (async)
+                            RealtimeConnection.connectAsync(configuration, settings)
+                                .get(5, TimeUnit.SECONDS)
+                        else RealtimeConnection.connect(configuration, settings)
+                    connection.use {
+                        it.send(command())
+                        assertThat(first.messages.poll(5, TimeUnit.SECONDS))
+                            .contains("input_audio_buffer.clear")
+                        val nextEvent = it.receiveAsync()
+                        first.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
+                        assertThat(refreshing.await(5, TimeUnit.SECONDS)).isTrue()
+                        it.send(command())
+                        allowRefresh.countDown()
+                        assertThat(recovered.get(5, TimeUnit.SECONDS)).isSameAs(it)
+                        assertThat(second.messages).isEmpty()
+                        it.flushPending()
+                        assertThat(second.messages.poll(5, TimeUnit.SECONDS))
+                            .contains("input_audio_buffer.clear")
+                        assertThat(it.takePending()).isEmpty()
+                        second.socket
+                            .get(5, TimeUnit.SECONDS)
+                            .send("""{"type":"input_audio_buffer.cleared","event_id":"fresh"}""")
+                        assertThat(
+                                nextEvent
+                                    .get(5, TimeUnit.SECONDS)
+                                    .asInputAudioBufferCleared()
+                                    .eventId()
+                            )
+                            .isEqualTo("fresh")
+                        val exhausted = it.receiveAsync()
+                        second.socket.get().close(1012, "again")
+                        assertThatThrownBy { exhausted.get(5, TimeUnit.SECONDS) }
+                            .hasRootCauseMessage("GA Realtime WebSocket closed (code 1012)")
+                    }
+                    assertThat(calls.get()).isEqualTo(2)
+                    assertThat(server.takeRequest(5, TimeUnit.SECONDS)!!.getHeader("Authorization"))
+                        .isEqualTo("Bearer fake-recovery-1")
+                    assertThat(server.takeRequest(5, TimeUnit.SECONDS)!!.getHeader("Authorization"))
+                        .isEqualTo("Bearer fake-recovery-2")
+                    assertThat(server.requestCount).isEqualTo(2)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun recoveryCanBeCanceledWhileRefreshingAndDoesNotAdmitUnboundedPendingWork() {
+        MockWebServer().use { server ->
+            val first = Listener()
+            server.enqueue(MockResponse().withWebSocketUpgrade(first))
+            val refreshing = CountDownLatch(1)
+            val allowRefresh = CountDownLatch(1)
+            val calls = java.util.concurrent.atomic.AtomicInteger()
+            OkHttpClient.builder().build().use { http ->
+                val configuration =
+                    options(server, http)
+                        .toBuilder()
+                        .credential(
+                            com.openai.credential.BearerTokenCredential.create {
+                                if (calls.incrementAndGet() > 1) {
+                                    refreshing.countDown()
+                                    check(allowRefresh.await(5, TimeUnit.SECONDS))
+                                }
+                                "fake-recovery"
+                            }
+                        )
+                        .build()
+                val settings =
+                    RealtimeWebSocketOptions.builder()
+                        .reconnect(true)
+                        .reconnectDelayMillis(1)
+                        .build()
+                RealtimeConnection.connect(configuration, settings).use { connection ->
+                    val nextEvent = connection.receiveAsync()
+                    first.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
+                    assertThat(refreshing.await(5, TimeUnit.SECONDS)).isTrue()
+                    assertThatThrownBy { connection.send(command()) }
+                        .hasMessageContaining("queue is full")
+                    connection.close()
+                    allowRefresh.countDown()
+                    assertThatThrownBy { nextEvent.get(5, TimeUnit.SECONDS) }
+                        .isInstanceOf(java.util.concurrent.CancellationException::class.java)
+                    assertThat(connection.takePending()).isEmpty()
+                    assertThat(server.requestCount).isEqualTo(1)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun recoveryDoesNotRetryAuthenticationRejection() {
+        MockWebServer().use { server ->
+            val first = Listener()
+            server.enqueue(MockResponse().withWebSocketUpgrade(first))
+            server.enqueue(MockResponse().setResponseCode(401))
+            OkHttpClient.builder().build().use { http ->
+                RealtimeConnection.connect(
+                        options(server, http),
+                        RealtimeWebSocketOptions.builder()
+                            .reconnect(true)
+                            .reconnectDelayMillis(1)
+                            .build(),
+                    )
+                    .use { connection ->
+                        val pending = connection.receiveAsync()
+                        first.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
+                        assertThatThrownBy { pending.get(5, TimeUnit.SECONDS) }
+                            .hasRootCauseMessage("WebSocket handshake failed (HTTP 401)")
+                        assertThat(server.requestCount).isEqualTo(2)
+                    }
+            }
+        }
+    }
+
+    @Test
     fun blockingContinuationAfterHandshakeDoesNotBlockIncomingFrames() {
         MockWebServer().use { server ->
             val peer = Listener()
