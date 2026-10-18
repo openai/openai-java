@@ -16,15 +16,18 @@ import com.openai.core.http.awaitWebSocketFuture
 import com.openai.core.http.dispatchWebSocketCallback
 import com.openai.core.http.utf8Size
 import com.openai.core.prepare
+import com.openai.errors.OpenAIIoException
 import com.openai.models.realtime.RealtimeClientEvent
 import com.openai.models.realtime.RealtimeServerEvent
 import java.io.IOException
+import java.time.Duration
 import java.util.ArrayDeque
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import javax.net.ssl.SSLException
 
 /**
@@ -62,6 +65,7 @@ private constructor(
     private var failure: Throwable? = null
     private var closed = false
     private var sending = false
+    private var writeAttempted = false
     private var generation = 0L
     private var recovering = false
     private var attempts = 0
@@ -309,7 +313,7 @@ private constructor(
                         options.reconnect &&
                         retryable &&
                         (socket != null || recovering) &&
-                        !sending &&
+                        !writeAttempted &&
                         attempts < options.maxReconnectAttempts
                 ) {
                     generation++
@@ -378,7 +382,7 @@ private constructor(
      * resends the command.
      */
     fun send(event: RealtimeClientEvent) {
-        val admittedDuringRecovery =
+        val (epoch, admittedDuringRecovery) =
             synchronized(lock) {
                 check(!closed && failure == null && (socket != null || recovering)) {
                     "Realtime is not connected"
@@ -386,7 +390,7 @@ private constructor(
                 check(!flushing) { "A Realtime flush is already pending; command was not sent" }
                 check(!sending) { "A Realtime send is already pending; command was not sent" }
                 sending = true
-                recovering
+                generation to recovering
             }
         try {
             val text = clientOptions.jsonMapper.writeValueAsString(event)
@@ -395,7 +399,7 @@ private constructor(
             val active =
                 synchronized(lock) {
                     check(!closed && failure == null) { "Realtime is not connected" }
-                    if (admittedDuringRecovery || recovering) {
+                    if (admittedDuringRecovery || generation != epoch) {
                         if (size > options.maxPendingBytes - pendingBytes)
                             throw WebSocketWriteNotAttempted.Busy(
                                 "Realtime recovery queue is full; command was not sent"
@@ -404,7 +408,9 @@ private constructor(
                         pendingBytes += size
                         return
                     }
-                    socket ?: throw IllegalStateException("Realtime is not connected")
+                    val active = socket ?: throw IllegalStateException("Realtime is not connected")
+                    writeAttempted = true
+                    active
                 }
             try {
                 active.send(text)
@@ -413,7 +419,10 @@ private constructor(
                 throw error
             }
         } finally {
-            synchronized(lock) { sending = false }
+            synchronized(lock) {
+                writeAttempted = false
+                sending = false
+            }
         }
     }
 
@@ -445,11 +454,17 @@ private constructor(
                             "Realtime is not connected"
                         }
                         if (pending.isEmpty()) return
-                        val text = pending.removeFirst()
-                        pendingBytes -= utf8Size(text)
-                        sending = true
-                        Pair(socket!!, text)
+                        Pair(socket!!, pending.first)
                     }
+                awaitWritable(next.first)
+                synchronized(lock) {
+                    check(!closed && failure == null && !recovering && socket === next.first) {
+                        "Realtime is not connected"
+                    }
+                    pending.removeFirst()
+                    pendingBytes -= utf8Size(next.second)
+                    writeAttempted = true
+                }
                 try {
                     next.first.send(next.second)
                 } catch (error: Throwable) {
@@ -461,11 +476,33 @@ private constructor(
                     else fail(error)
                     throw error
                 } finally {
-                    synchronized(lock) { sending = false }
+                    synchronized(lock) { writeAttempted = false }
                 }
             }
         } finally {
             synchronized(lock) { flushing = false }
+        }
+    }
+
+    private fun awaitWritable(active: WebSocketClient.Connection) {
+        if (active !is WebSocketClient.WritableConnection) return
+        val timeout = (requestOptions.timeout ?: clientOptions.timeout).write()
+        while (true) {
+            try {
+                active.awaitWritable(if (timeout.isZero) Duration.ofSeconds(1) else timeout)
+                return
+            } catch (error: InterruptedException) {
+                Thread.currentThread().interrupt()
+                throw OpenAIIoException("Realtime WebSocket operation interrupted", error)
+            } catch (error: TimeoutException) {
+                if (!timeout.isZero)
+                    throw OpenAIIoException("Realtime WebSocket operation failed", error)
+                synchronized(lock) {
+                    check(!closed && failure == null && !recovering && socket === active) {
+                        "Realtime is not connected"
+                    }
+                }
+            }
         }
     }
 

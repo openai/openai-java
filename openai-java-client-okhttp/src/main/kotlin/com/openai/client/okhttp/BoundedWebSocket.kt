@@ -3,6 +3,7 @@ package com.openai.client.okhttp
 import com.openai.core.RequestOptions
 import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketHandshakeException
+import com.openai.core.http.WebSocketWriteNotAttempted
 import java.io.IOException
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
@@ -214,32 +215,31 @@ internal object BoundedWebSocket {
 
                                     override fun send(text: String) {
                                         synchronized(this) {
-                                            check(!ended.get()) { "WebSocket is closed" }
-                                            require(text.isNotEmpty()) {
-                                                "WebSocket command must not be empty"
-                                            }
+                                            if (ended.get())
+                                                throw WebSocketWriteNotAttempted.Closed(
+                                                    "WebSocket is closed"
+                                                )
+                                            if (text.isEmpty())
+                                                throw WebSocketWriteNotAttempted.Message(
+                                                    "WebSocket command must not be empty"
+                                                )
                                             val size = text.utf8Size()
                                             if (size > maxMessageBytes)
-                                                throw com.openai.core.http
-                                                    .WebSocketWriteNotAttempted
-                                                    .Message(
-                                                        "WebSocket command exceeds maxMessageBytes"
-                                                    )
+                                                throw WebSocketWriteNotAttempted.Message(
+                                                    "WebSocket command exceeds maxMessageBytes"
+                                                )
                                             if (size > MAX_SEND_BYTES)
-                                                throw com.openai.core.http
-                                                    .WebSocketWriteNotAttempted
-                                                    .Message(
-                                                        "WebSocket command exceeds OkHttp's 16 MiB send limit"
-                                                    )
+                                                throw WebSocketWriteNotAttempted.Message(
+                                                    "WebSocket command exceeds OkHttp's 16 MiB send limit"
+                                                )
                                             if (webSocket.queueSize() != 0L)
-                                                throw com.openai.core.http
-                                                    .WebSocketWriteNotAttempted
-                                                    .Busy(
-                                                        "WebSocket send buffer is full; command was not queued"
-                                                    )
-                                            check(webSocket.send(text)) {
-                                                "WebSocket is closed; command was not queued"
-                                            }
+                                                throw WebSocketWriteNotAttempted.Busy(
+                                                    "WebSocket send buffer is full; command was not queued"
+                                                )
+                                            if (!webSocket.send(text))
+                                                throw WebSocketWriteNotAttempted.Closed(
+                                                    "WebSocket is closed; command was not queued"
+                                                )
                                         }
                                     }
 

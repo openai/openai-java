@@ -64,7 +64,14 @@ class RealtimeConnectionTest {
             .build()
 
     @Test
-    fun serializationStartedDuringRecoveryStillWaitsForExplicitFlush() {
+    fun serializationStartedDuringRecoveryStillWaitsForExplicitFlush() =
+        serializationWaitsForExplicitFlush(startDuringRecovery = true)
+
+    @Test
+    fun serializationStartedBeforeRecoveryStillWaitsForExplicitFlush() =
+        serializationWaitsForExplicitFlush(startDuringRecovery = false)
+
+    private fun serializationWaitsForExplicitFlush(startDuringRecovery: Boolean) {
         MockWebServer().use { server ->
             val first = Listener()
             val second = Listener()
@@ -123,8 +130,11 @@ class RealtimeConnectionTest {
                         .onReconnected { recovered.complete(it) }
                         .build()
                 RealtimeConnection.connect(configuration, settings).use { connection ->
-                    first.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
-                    assertThat(opening.await(5, TimeUnit.SECONDS)).isTrue()
+                    val original = first.socket.get(5, TimeUnit.SECONDS)
+                    if (startDuringRecovery) {
+                        original.close(1012, "restart")
+                        assertThat(opening.await(5, TimeUnit.SECONDS)).isTrue()
+                    }
                     val sent =
                         CompletableFuture.runAsync {
                             connection.send(
@@ -137,6 +147,10 @@ class RealtimeConnectionTest {
                         }
                     try {
                         assertThat(encoding.await(5, TimeUnit.SECONDS)).isTrue()
+                        if (!startDuringRecovery) {
+                            original.close(1012, "restart")
+                            assertThat(opening.await(5, TimeUnit.SECONDS)).isTrue()
+                        }
                         allowOpen.countDown()
                         recovered.get(5, TimeUnit.SECONDS)
                         allowEncode.countDown()
@@ -257,12 +271,18 @@ class RealtimeConnectionTest {
                         first.socket.get(5, TimeUnit.SECONDS).close(1012, "restart")
                         assertThat(refreshing.await(5, TimeUnit.SECONDS)).isTrue()
                         it.send(command())
+                        it.send(
+                            RealtimeClientEvent.ofInputAudioBufferClear(
+                                InputAudioBufferClearEvent.builder().eventId("second").build()
+                            )
+                        )
                         allowRefresh.countDown()
                         assertThat(recovered.get(5, TimeUnit.SECONDS)).isSameAs(it)
                         assertThat(second.messages).isEmpty()
                         it.flushPending()
                         assertThat(second.messages.poll(5, TimeUnit.SECONDS))
                             .contains("input_audio_buffer.clear")
+                        assertThat(second.messages.poll(5, TimeUnit.SECONDS)).contains("second")
                         assertThat(it.takePending()).isEmpty()
                         second.socket
                             .get(5, TimeUnit.SECONDS)
