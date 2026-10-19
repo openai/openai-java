@@ -90,12 +90,18 @@ gates remain in effect. No developer-facing breaking changes are allowed.
 | Slice | Review | Head | Validation and state |
 | --- | --- | --- | --- |
 | Inventory and plan | [Java #1234](https://github.com/openai/openai-java/pull/1234) | Initial `f76f0730dcce87a1de5a5b58614f59c24552b3f9`; subsequent documentation commits remain on the same PR | 99 rows checked against committed blobs and verified reporter; open for review; no SDK changes |
-| C13 generated comment | [Java #1235](https://github.com/openai/openai-java/pull/1235) | `e2040c78ea4816e81adcfe647939e707c0af2ed9` | 95 Python tests pass (one existing skip), Ruff passes, AST unchanged, verified report 99→98 files and 2,031→2,029 lines; open, SDK team review required |
+| C13 generated comment | [Java #1235](https://github.com/openai/openai-java/pull/1235) | `e2040c78ea4816e81adcfe647939e707c0af2ed9` | 95 Python tests pass (one existing skip), Ruff passes, AST unchanged, verified report 99→98 files and 2,031→2,029 lines; Conductor verified current-head CI green; root SDK review requested; approval still required |
 | C1 User-Agent compiler | Compiler Delta 2565485 | `ecfc447de4083f1458c0df48544b2db419ad01a2` | 5 client renderer tests pass, both profiles/modes covered, full client output equality except intended setter/header, intact push hooks pass; open, SDK team review requested, no approval; compiler merge and SDK regeneration still required |
-| Supplemental JVM comparator | [Java #1236](https://github.com/openai/openai-java/pull/1236) | `8e4558134876ec50815c28e36cc830fdb78f08ba` | 13 javac/JVM tests pass, lint and mutation checks pass, independent review addressed bytecode-version detection; open, SDK team review required; no production or generated changes |
+| Supplemental JVM comparator | [Java #1236](https://github.com/openai/openai-java/pull/1236) | `8e4558134876ec50815c28e36cc830fdb78f08ba` | 13 javac/JVM tests pass, lint and mutation checks pass, independent review addressed bytecode-version detection; Conductor verified current-head CI green; root SDK review requested; approval still required; no production or generated changes |
 | C12 credential assertion ownership | [Java #1237](https://github.com/openai/openai-java/pull/1237) | `baf96b579753c40e62003dd435c096ebda23abc0` | Ready for review; 24 focused tests pass with zero failures/errors/skips; production shards compile; every exact assertion retained; verified report 99→98 files and 2,031→2,027 lines; SDK team review requested |
 | C2 async multipart compiler | Compiler Delta 2565512 | `0e5d4607f264812270396db68111298a363f52a0` | Draft; prior full renderer suite 791 passed / 8 ignored, final 4 focused regressions pass; typed/nullable-Void/raw/streaming Kotlin probes pass against current runtime; 248-service draft covers all 12 groups; expected 5 files / 53 lines; audio handler integration and newly affected endpoint lifecycle verification still required |
 
 Record exact current heads when acting on CI or review events. Never record a
 proposed reduction as landed merely because its compiler change exists or CI is
 green. Compiler and SDK follow-up reviews will be added as they are published.
+
+On 2026-10-19 Conductor verified this chat owns Java PRs 1234–1237 and registered
+routing. After checking for existing requests, one combined root `#sdk-reviews`
+post requested reviews of the exact green heads of 1235 and 1236. Pending approval
+is a normal wait; rely on Conductor notifications rather than polling or duplicating
+review posts. No merge or queue enrollment is implied by green CI.
