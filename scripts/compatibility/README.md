@@ -3,8 +3,10 @@
 Use this supplemental, conservative check before changing generated SDK APIs or
 moving custom code into Castiron. It compares all declared public/protected JVM
 classes, constructors, methods, and fields in a baseline JAR with a replacement
-JAR. It reads class files without loading or executing their code and has no
-third-party dependencies. Python 3.10+ is required.
+JAR, including declarations in their transitive in-JAR superclasses and
+superinterfaces. This retains inherited public/protected members from
+package-private ancestors. It reads class files without loading or executing their
+code and has no third-party dependencies. Python 3.10+ is required.
 
 ```sh
 python3 scripts/compatibility/check_binary_api.py \
@@ -44,6 +46,12 @@ The comparison reports:
 This is a declared-surface comparison, not a complete JVM method resolution
 implementation. Moving a method to a superclass or removing an abstract
 declaration already inherited can produce conservative findings requiring review.
+Non-public ancestors retain their actual access flags; unrelated non-public
+classes are excluded. Ancestor declarations are compared conservatively, including
+constructors and shadowed declarations, rather than resolving their effective
+inherited surface. Equivalent declaration moves or ancestors becoming unreachable
+can therefore produce findings requiring review. Ancestors in dependency JARs
+are not resolved; dependency compatibility still requires separate validation.
 Every added direct interface is reported, including marker interfaces: an added
 superinterface can impose abstract methods on previously compiled implementations,
 and this tool does not resolve its inherited obligations.
@@ -76,8 +84,10 @@ Fixtures compile synthetic APIs with `javac`, create JARs with Python's standard
 library, and verify both additive and incompatible changes. Consumer fixtures
 compile **only against the old JAR**, then run the unchanged consumers with
 replacement JARs. They succeed for compatible replacements and reproduce
-`NoSuchMethodError` for a changed return descriptor and `AbstractMethodError` for
-an added superinterface obligation. The comparator reports both changes.
+`NoSuchMethodError` for a changed return descriptor, `AbstractMethodError` for
+an added superinterface obligation, and method/field linkage errors when protected
+members are removed from a package-private ancestor of a public API class.
+The comparator reports these changes.
 These fixtures validate detection of real linkage failures; they are not an old
 SDK consumer suite. For an SDK migration, also run representative
 consumers compiled against the selected release with the proposed SDK JARs and

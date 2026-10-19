@@ -137,7 +137,7 @@ def parse_class(data):
 
 
 def read_jar(path):
-    classes = {}
+    definitions = {}
     try:
         with zipfile.ZipFile(path) as archive:
             names = archive.namelist()
@@ -153,14 +153,24 @@ def read_jar(path):
                 class_name, api = parse_class(archive.read(name))
                 if name != class_name + ".class":
                     raise ValueError(f"{path}: class name does not match entry {name}")
-                if visibility(api.flags):
-                    classes[class_name] = api
+                definitions[class_name] = api
     except ZIP_READ_ERRORS as error:
         raise ValueError(
             f"{path}: unsupported or unreadable ZIP input: {error}"
         ) from error
-    if not classes:
+    pending = [name for name, api in definitions.items() if visibility(api.flags)]
+    if not pending:
         raise ValueError(f"{path}: no public/protected classes found")
+    classes = {}
+    while pending:
+        name = pending.pop()
+        if name in classes or name not in definitions:
+            continue
+        api = definitions[name]
+        classes[name] = api
+        # Hidden ancestors can expose inherited public/protected members through
+        # an exported subclass. Keep their declarations, but not unrelated helpers.
+        pending.extend((api.superclass, *api.interfaces))
     return classes
 
 
@@ -169,7 +179,12 @@ def compare(old, new):
     for name, before in sorted(old.items()):
         after = new.get(name)
         if after is None:
-            issues.append(f"{name}: exported class removed or inaccessible")
+            reason = (
+                "exported class removed or inaccessible"
+                if visibility(before.flags)
+                else "in-JAR ancestor removed or no longer reachable"
+            )
+            issues.append(f"{name}: {reason}")
             continue
         if visibility(after.flags) < visibility(before.flags):
             issues.append(f"{name}: class visibility narrowed")
@@ -235,7 +250,7 @@ def main():
     for issue in issues:
         print(issue)
     print(
-        f"Compared {len(old)} baseline exported classes; {len(issues)} potential incompatibilities."
+        f"Compared {len(old)} baseline API classes (including in-JAR ancestors); {len(issues)} potential incompatibilities."
     )
     return 1 if issues else 0
 

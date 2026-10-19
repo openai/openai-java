@@ -103,6 +103,86 @@ class BinaryApiTest(unittest.TestCase):
         )
         self.assertTrue(any("#value ()Ljava/lang/String;" in issue for issue in issues))
 
+    def test_protected_members_of_hidden_ancestors_break_old_subclass(self):
+        sources = {
+            "api/Api.java": "package api; public class Api extends Middle {}",
+            "api/Middle.java": "package api; class Middle extends Base {}",
+            "api/Base.java": 'package api; class Base { protected String value() { return "ok"; } protected int number = 7; }',
+        }
+        old = self.compile_jar(sources)
+        new = self.compile_jar(
+            {**sources, "api/Base.java": "package api; class Base {}"}
+        )
+        client = self.root / "Consumer.java"
+        client.write_text(
+            'package client; public class Consumer extends api.Api { public static void main(String[] args) { Consumer value = new Consumer(); if (args[0].equals("field")) System.out.print(value.number); else System.out.print(value.value()); } }'
+        )
+        output = self.root / "client"
+        subprocess.run(
+            [
+                "javac",
+                "--release",
+                "8",
+                "-cp",
+                str(old),
+                "-d",
+                str(output),
+                str(client),
+            ],
+            check=True,
+            capture_output=True,
+        )
+        for mode, text, error in [
+            ("method", "ok", "NoSuchMethodError"),
+            ("field", "7", "NoSuchFieldError"),
+        ]:
+            for replacement in (old, new):
+                with self.subTest(mode=mode, replacement=replacement):
+                    result = subprocess.run(
+                        [
+                            "java",
+                            "-cp",
+                            str(output) + os.pathsep + str(replacement),
+                            "client.Consumer",
+                            mode,
+                        ],
+                        capture_output=True,
+                        text=True,
+                    )
+                    if replacement == old:
+                        self.assertEqual(0, result.returncode, result.stderr)
+                        self.assertEqual(text, result.stdout)
+                    else:
+                        self.assertNotEqual(0, result.returncode)
+                        self.assertIn(error, result.stderr)
+        issues = compare(read_jar(old), read_jar(new))
+        for descriptor in ("api/Base#value ()Ljava/lang/String;", "api/Base#number I"):
+            with self.subTest(descriptor=descriptor):
+                self.assertTrue(any(descriptor in issue for issue in issues), issues)
+
+    def test_unrelated_hidden_classes_are_not_api(self):
+        sources = {
+            "Api.java": "public class Api {}",
+            "Hidden.java": "class Hidden { protected void removed() {} }",
+        }
+        old = self.compile_jar(sources)
+        new = self.compile_jar({**sources, "Hidden.java": "class Hidden {}"})
+        self.assertNotIn("Hidden", read_jar(old))
+        self.assertEqual([], compare(read_jar(old), read_jar(new)))
+
+    def test_hidden_interface_ancestors_are_retained(self):
+        sources = {
+            "Api.java": "public interface Api extends Middle {}",
+            "Middle.java": "interface Middle extends Base {}",
+            "Base.java": "interface Base { default void removed() {} }",
+        }
+        old = self.compile_jar(sources)
+        new = self.compile_jar({**sources, "Base.java": "interface Base {}"})
+        self.assertIn(
+            "Base#removed ()V: method removed, inaccessible, or descriptor changed",
+            compare(read_jar(old), read_jar(new)),
+        )
+
     def test_constructor_field_and_class_removal(self):
         issues = self.issues(
             "public class Api { public Api(String s) {} protected int value; public static class Nested {} }",
