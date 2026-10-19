@@ -105,9 +105,10 @@ resource-name allowlists or rewrite immutable Stainless fixtures.
 Generate models, public service/client surfaces, and thin calls into handwritten
 helpers. Keep transport, credential providers, schema reflection, stream/session
 orchestration, verification algorithms, and their dedicated regression tests in
-SDK-owned files. Public members must stay in their current owning classes and
-interfaces: replacing Java-callable members with Kotlin extensions is a breaking
-change. Preserve all existing deprecations and compatibility aliases.
+SDK-owned files. Public members, including existing public synthetic JVM members,
+must stay in their current owning classes and interfaces: replacing Java-callable
+members with Kotlin extensions is a breaking change. Preserve all existing
+deprecations and compatibility aliases.
 
 Compiler work belongs in the authoritative Castiron source, currently
 `api/castiron` in the compiler monorepo. The standalone Castiron repository is
@@ -163,9 +164,11 @@ schema-requiredness change cannot replace these contracts.
 * `VectorStoreFileBatch` accepts both longstanding plural and current singular
   object tags; `Video` accepts arbitrary duration strings while retaining the
   `VideoSeconds` API and raw serialization.
-* `AudioResponseFormat` has an internal JSON-versus-text classifier that belongs
-  with C3 dispatch. The four compaction stream/server union patches are visitor
-  documentation only; don't count them as missing visitor implementations.
+* `AudioResponseFormat.isJson` is an existing synthetic JVM compatibility member
+  to retain in its current enum class with its current behavior. C3 service
+  dispatch uses the handwritten audio handlers, not that classifier.
+* The four compaction stream/server union patches are visitor documentation only;
+  don't count them as missing visitor implementations.
 * Chat params retain Class-based format/tool methods but suppress unshipped
   prediction convenience aliases. Function-call models provide `arguments(Class)`;
   tool message and response function-output builders provide JSON convenience
@@ -191,9 +194,14 @@ from `schema/object_view_memo_key.rs`; canonical tool-list overloads flow throug
 `object_list_item_union_builder_aliases.kt.askama` and
 `body_param_union_builder_aliases.kt.askama`. Preserve nested declarations.
 
-`AudioResponseFormat.isJson` is internal and may instead move into the handwritten
-audio adapter, if generated services delegate there. That can eliminate the enum
-patch without adding a public compiler feature.
+`AudioResponseFormat.isJson` is Kotlin-internal and `@JvmSynthetic`, but it emits
+an existing public JVM member. The compiler must generate that same member in
+`AudioResponseFormat`, preserving its descriptor, visibility/annotations and
+behavior; moving it into an adapter or removing it is not part of this migration.
+The enum remains in the mixed-file inventory until compiler support reproduces
+that member. Keep service response dispatch in the existing audio handlers,
+including their distinct format fallbacks; do not change the classifier to drive
+dispatch or count an adapter-only change as removal of the enum patch.
 
 ### Important coupled cases
 
