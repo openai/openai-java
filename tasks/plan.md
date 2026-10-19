@@ -19,7 +19,7 @@ generation `c951a9fc-cdc1-4f8f-8f09-fca90b82c501`, with verified content hash
 | Reporting tooling | 1 | 1 | 1 | 2 | 737 |
 | **Total** | **99** | **1,332** | **699** | **2,031** | **133,881** |
 
-The current ceiling is 3,000 custom patch lines, with 969 lines of headroom.
+The audited ceiling is 3,000 custom patch lines, with 969 lines of baseline headroom.
 Added plus deleted lines measure the *entire remaining patch* against generated
 output, including deletions and comments. They are not an estimate of newly
 written logic. Physical lines include comments and blanks. The appendix also
@@ -55,6 +55,50 @@ generation `4b2c79c9-7da9-402a-972f-15915bc1b58e`, with verified content hash
 The appendix remains the original audited baseline, including the two now-restored
 files; the task ledger records landed slices separately. These counts describe
 this exact merged commit, not future main or pending compiler/SDK candidates.
+
+## Compiler compatibility evidence
+
+The initial inventory, comparator and two cleanup PRs have all merged. Compiler
+work is still pending review and integration; its projected reductions are not
+included in the landed counts above. See the dated [task ledger](todo.md) for
+exact heads and separate post-merge CI results.
+
+C1's complete Java renderer suite passes 789 tests with eight existing ignored.
+Both actual client sources drafted from authoritative inputs compile against the
+shipped SDK and pass 92 public-client cases / 128 loopback requests, including
+telemetry overrides, retries, clones and explicit User-Agent removal/replacement.
+Class-location assertions require the newly compiled clients. A supplemental
+comparison of both client class families finds no potential JVM incompatibilities
+(116 classfiles per side, four exported API classes). This is scoped evidence;
+human helper-contract review and SDK regeneration/compatibility gates still apply.
+
+C2's actual generated implementations for five additional service groups pass
+62 lifecycle cases covering cancellation, HTTP/transport failures, validated
+typed success, raw response ownership, malformed JSON and body-read failures.
+The committed opt-in runner checks the loaded service classes and preserves
+close-once and diagnostic assertions. Audio format/streaming integration remains
+pending, so the compiler Delta stays draft and SDK promotion remains blocked.
+
+The next compiler foundations preserve two contracts that cannot be inferred
+from optionality or media types alone:
+
+- Transcription treats `diarized_json` and `verbose_json` with explicit parsers;
+  `json` and absent/null/non-string format values use union JSON, while every
+  other string uses text. Translation uses text only for `text`, `srt` and `vtt`;
+  other values use union JSON. Retain the existing handwritten handlers and
+  effective multipart-body selection; keep SSE handling unchanged. A shared
+  JSON/text classifier would change behavior. Preserve the existing synthetic
+  `AudioResponseFormat.isJson` JVM member and behavior even though current
+  sources do not call it.
+- API-key expiry retains its legacy `Long` getter and separate optional getter,
+  including shipped missing/null handling and validation. Its source property is
+  optional, and lowered method properties may retain source identity through
+  `schema_paths` provenance rather than their own `oas_ref`. Preserve wire
+  requiredness and resolve explicit accessor policy through that provenance.
+
+These foundations use explicit typed policies from authoritative inputs, with
+absent policies preserving existing output. They must not select behavior from
+resource-name allowlists or rewrite immutable Stainless fixtures.
 
 ## Intended boundary
 

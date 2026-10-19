@@ -14,8 +14,8 @@ gates remain in effect. No developer-facing breaking changes are allowed.
   linkage coverage before broad model/service regeneration. Preserve existing
   compatibility policy and test manifests. Verify deliberate binary incompatibility
   is caught and unchanged artifacts pass.
-  Supplemental comparator and 24 synthetic javac/JVM tests are submitted in
-  #1236; actual selected-release SDK consumer/runtime validation remains required.
+  Supplemental comparator and 24 synthetic javac/JVM tests merged in #1236;
+  actual selected-release SDK consumer/runtime validation remains required.
 
 ## Independent initial slices
 
@@ -87,7 +87,7 @@ gates remain in effect. No developer-facing breaking changes are allowed.
 
 ## PR/Delta ledger
 
-State captured on 2026-10-19 after the two SDK cleanup merges. This ledger is an
+State captured on 2026-10-19 after all four initial SDK PRs merged. This ledger is an
 audit snapshot, not merge authorization: re-read the live head, complete feedback,
 required reviews and checks before acting. Approval/CI on an older head never
 stands in for validation of a newer candidate.
@@ -108,12 +108,57 @@ git apply --numstat /tmp/java-transition-merged/custom-code.patch
 
 | Slice | Review | Head | Validation and state |
 | --- | --- | --- | --- |
-| Inventory and plan | [Java #1234](https://github.com/openai/openai-java/pull/1234) | Initial `f76f0730dcce87a1de5a5b58614f59c24552b3f9`; subsequent documentation commits remain on the same PR | 99 baseline rows checked against committed blobs and verified reporter; dpiet-oai approved prior heads `9deae91d948e6ddbb6a1c15d7816299c79fda661` and `58c6e514b00a27520dac88c455f11ee972fb9a81`; comparator repairs required further ledger refreshes; this documentation repair needs fresh-head checks/review before queue enrollment; no SDK changes |
+| Inventory and plan | [Java #1234](https://github.com/openai/openai-java/pull/1234) | `7df7cd08e45d1f583783676995e32bc15902d110` | **Merged** as `1499ace53dda09c46af2feb693a876c7b6eed890`; current-head approvals, CI and automated reviews completed before protected queue. Original 99-file audit retained. Conductor verified post-merge push CI, examples smoke and release checks succeeded: [run 39318380957](https://github.com/openai/openai-java/actions/runs/39318380957) |
 | C13 generated comment | [Java #1235](https://github.com/openai/openai-java/pull/1235) | `e2040c78ea4816e81adcfe647939e707c0af2ed9` | **Merged** as `479972a1ee2a7cd181f67f478c95aad9d1d1e261` on 2026-10-19; markstuart-oai approval and protected queue completed. 95 Python tests pass (one existing skip), Ruff passes, AST unchanged; slice removes one mixed file / two patch lines |
-| C1 User-Agent compiler | Compiler Delta 2565485 | `ecfc447de4083f1458c0df48544b2db419ad01a2` | 5 client renderer tests pass, both profiles/modes covered, full client output equality except intended setter/header, intact push hooks pass; open, SDK team review requested, no approval; compiler merge and SDK regeneration still required |
-| Supplemental JVM comparator | [Java #1236](https://github.com/openai/openai-java/pull/1236) | `77eb7b8ac74f918d702706162f3b3d3448822565` | 24 offline javac/JVM tests pass. Exported roots now retain transitive in-JAR superclass/interface declarations, including inherited public/protected members from package-private ancestors; unrelated hidden helpers remain excluded. An unchanged external subclass reproduces method/field linkage failures through two hidden ancestors; both findings and a hidden-interface removal failed before repair. Access flags are preserved; conservative declaration moves/shadowing/constructors and external-ancestor limits are documented. Prior ZIP/modifier/abstract-obligation repairs remain covered; lint/format/diff and independent review pass. Evidence posted, P1 thread resolved. Earlier approvals/CI do not cover this head: fresh hosted checks and required review remain pending. No SDK APIs/runtime, dependencies, policy or generation ownership changes |
-| C12 credential assertion ownership | [Java #1237](https://github.com/openai/openai-java/pull/1237) | `baf96b579753c40e62003dd435c096ebda23abc0` | **Merged** as `d445a6a2db03d6f0979efb2d8355452029f08a00` on 2026-10-19; GitHub confirms merge at 19:35:10 UTC after markstuart-oai approval and protected queue. All 24 focused tests pass with zero failures/errors/skips; production shards compile; every exact assertion retained; slice removes one mixed file / four patch lines |
-| C2 async multipart compiler | Compiler Delta 2565512 | `0e5d4607f264812270396db68111298a363f52a0` | Draft; prior full renderer suite 791 passed / 8 ignored, final 4 focused regressions pass; typed/nullable-Void/raw/streaming Kotlin probes pass against current runtime; 248-service draft covers all 12 groups; expected 5 files / 53 lines; audio handler integration and newly affected endpoint lifecycle verification still required |
+| C1 User-Agent compiler | Compiler Delta 2565485 | `d9b3b86accb2846e27d7440f755e6871d217f0d1` | Open; 789 renderer tests passed / eight existing ignored, including both profiles/modes and complete client-body comparisons. Nine-line cross-profile test expectation repair preserves immutable fixtures. Both actual drafted client sources compile against shipped SDK and pass 92 cases / 128 loopback requests with class-location checks. Client-family JVM comparison: 116 classfiles per side, four exported API classes, zero potential incompatibilities. Normal hooks pass; required human helper-contract review and current-head hosted checks remain gates. No compiler merge or SDK promotion |
+| Supplemental JVM comparator | [Java #1236](https://github.com/openai/openai-java/pull/1236) | `77eb7b8ac74f918d702706162f3b3d3448822565` | **Merged** as `19d2967ca52b91c108e76da84f9dcff441a17f17`; all actionable feedback addressed, 24 offline javac/JVM tests and current-head approvals/CI/automated reviews completed before protected queue. Retains public/protected declarations through hidden in-JAR ancestors; ZIP input errors and modifier/interface obligations are covered. Conservative declaration/external-ancestor limits remain documented. Separate post-merge failure and bounded diagnostic rerun are recorded below; no SDK APIs/runtime, dependencies, policy or generation ownership changed |
+| C12 credential assertion ownership | [Java #1237](https://github.com/openai/openai-java/pull/1237) | `baf96b579753c40e62003dd435c096ebda23abc0` | **Merged** as `d445a6a2db03d6f0979efb2d8355452029f08a00`; approval and protected queue completed. All 24 focused tests pass with zero failures/errors/skips; production shards compile; every exact assertion retained; slice removes one mixed file / four patch lines. Conductor verified post-merge checks all green: [run 39312222532](https://github.com/openai/openai-java/actions/runs/39312222532) |
+| C2 async multipart compiler | Compiler Delta 2565512 | `55424d34eac7b5cb00802b483b15d40fabc6d25e` | Draft; prior renderer suite 791 passed / eight ignored, four focused regressions passed; typed/nullable-Void/raw/streaming Kotlin probes remain separate evidence. Actual generated sources for five additional service groups compile and pass 62 lifecycle cases: original cancellation/error/transport coverage plus typed success, raw ownership, malformed JSON and read failures. Independent test-tooling review and normal hooks pass. The 248-service draft covers all 12 groups; audio format/streaming integration and complete rollout validation remain required. Expected five-file / 53-line reduction is not landed |
+
+### Separate post-merge validation
+
+On merge `19d2967ca52b91c108e76da84f9dcff441a17f17`, #1236 post-merge
+[run 39318051617](https://github.com/openai/openai-java/actions/runs/39318051617)
+failed in the existing translation WebSocket test
+`TranslationConnectionTest.blockedCleanupsOfOtherSocketsDoNotHoldAnIndependentFinishDeadline`:
+its outer wait timed out while expecting the wrapped finish-timeout exception.
+The test and relevant runtime sources are unchanged by this tooling-only PR.
+Ten direct invocations and all 42 methods under concurrent JUnit execution passed
+with their original deadlines and assertions; the standalone JVM exited normally.
+Those results do not establish the hosted root cause or classify the test as flaky.
+After a freshness/deduplication check, one normal failed-job rerun requested
+attempt 2. Its outcome remains pending Conductor notification; no source edits,
+timeout changes or post-merge all-green claim were made. Examples smoke was also
+cancelled in the original post-merge run. #1234's successful post-merge checks do
+not clear this separate failure. #1235 post-merge verification is not recorded
+complete in this checkpoint.
+
+### Next typed compiler foundations
+
+C3 audio response-adapter facts are published as Compiler Delta 2566856, head
+`50487874ebbe2a6709d87753033a6061abf0a3e9`. Three compiler tests and one
+configuration test pass; an actual 23-component transcription reference-closure
+probe validates the explicit binding against current source shapes. SDK JSON,
+absent serialization and inactive profile/target behavior are preserved. Root
+review found no blockers and normal hooks passed; hosted checks and normal
+review remain required. No authoritative input binding is activated and no
+renderer or SDK output changes. Helper structure/ABI and full runtime behavior
+remain dependent-renderer acceptance gates.
+
+C5a legacy-accessor policies are published as Compiler Delta 2566858, head
+`32cf1f48b5266483525b53b995b1d0c51e6b4737`. Both compiler tests and all
+75 OAS-transform tests pass, including exact render-input comparisons for the
+11 inactive target/profile combinations. A negative control catches disabled
+`compile_paths` validation. Independent review and normal hooks pass; hosted
+checks and normal review remain required. There is no active production policy
+or renderer/SDK output change. The fallible source-shape preflight applies to
+`compile_paths`; in-memory APIs still need dependent activation validation.
+Future rendering must reject unmatched/ambiguous provenance and allocated
+JVM-name/signature collisions.
+
+Both foundations preserve existing SDK-owned helper behavior and explicit
+source provenance. Renderer consumers and authoritative input bindings follow
+in dependent slices; none of this work counts as landed SDK reduction.
 
 Record exact current heads when acting on CI or review events. Never record a
 proposed reduction as landed merely because its compiler change exists or CI is
@@ -121,7 +166,7 @@ green. Compiler and SDK follow-up reviews will be added as they are published.
 
 On 2026-10-19 Conductor verified this chat owns Java PRs 1234–1237 and registered
 routing. One combined root `#sdk-reviews` post is edited in place as heads and
-review states change; it covers both remaining review candidates and records the
-completed cleanup PRs. Pending approval is a normal wait; rely on Conductor
+review states change; the initial SDK review requests are complete, and the post
+records their distinct post-merge states plus the required C1 compiler review. Pending approval is a normal wait; rely on Conductor
 notifications rather than polling or duplicating review posts. No merge or queue
 enrollment is implied by green CI.
