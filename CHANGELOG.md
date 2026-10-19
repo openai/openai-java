@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.86.0](https://github.com/openai/openai-java/compare/v4.85.0...v4.86.0) (2026-10-19)
+
+
+### Features
+
+* **api:** add ultrafast service tier for Agents ([#1218](https://github.com/openai/openai-java/issues/1218)) ([5d6fc3c](https://github.com/openai/openai-java/commit/5d6fc3c5a58bf7ce1988f06ad3db770c61f469f8))
+* **realtime:** add opt-in bounded transport recovery ([#1221](https://github.com/openai/openai-java/issues/1221)) ([ef044b3](https://github.com/openai/openai-java/commit/ef044b33e7ad335dd28582c1dadd3bf7fbf9bd0b))
+
+
+### Chores
+
+* **api:** use neutral moderation examples ([#1222](https://github.com/openai/openai-java/issues/1222)) ([1a2fe5c](https://github.com/openai/openai-java/commit/1a2fe5c1742e0ee5f30b2f07859039b8c230d5c9))
+
 ## [4.85.0](https://github.com/openai/openai-java/compare/v4.84.0...v4.85.0) (2026-10-17)
 
 
