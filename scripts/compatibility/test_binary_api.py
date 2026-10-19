@@ -9,6 +9,7 @@ import sys
 import tempfile
 import unittest
 import zipfile
+import zlib
 
 from check_binary_api import compare, read_jar
 
@@ -409,6 +410,37 @@ class BinaryApiTest(unittest.TestCase):
                     self.assertEqual(2, result.returncode, result.stderr)
                     self.assertIn("Cannot compare JARs:", result.stderr)
                     self.assertNotIn("Traceback", result.stderr)
+
+    def test_corrupt_deflate_inputs_have_input_error_exit_status(self):
+        source = self.compile_jar({"Api.java": "public class Api {}"})
+        good = self.root / "deflated.jar"
+        with zipfile.ZipFile(source) as original:
+            with zipfile.ZipFile(
+                good, "w", compression=zipfile.ZIP_DEFLATED
+            ) as archive:
+                archive.writestr("Api.class", original.read("Api.class"))
+        self.assertEqual([], compare(read_jar(source), read_jar(good)))
+        data = bytearray(good.read_bytes())
+        name_size, extra_size = struct.unpack_from("<HH", data, 26)
+        offset = 30 + name_size + extra_size
+        # Keep the ZIP structure intact, but use DEFLATE's reserved block type.
+        data[offset] = (data[offset] & ~0x07) | 0x07
+        bad = self.root / "corrupt-deflate.jar"
+        bad.write_bytes(data)
+        with zipfile.ZipFile(bad) as archive:
+            with self.assertRaises(zlib.error):
+                archive.read("Api.class")
+        script = Path(__file__).with_name("check_binary_api.py")
+        for before, after in [(bad, good), (good, bad)]:
+            with self.subTest(input="old" if before == bad else "new"):
+                result = subprocess.run(
+                    [sys.executable, str(script), str(before), str(after)],
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(2, result.returncode, result.stderr)
+                self.assertIn("Cannot compare JARs:", result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
 
     def test_truncated_class_is_rejected(self):
         jar = self.root / "truncated.jar"

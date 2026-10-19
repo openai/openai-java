@@ -22,8 +22,8 @@ Exit status is `0` for no detected changes, `1` for potential incompatibilities,
 and `2` for unsupported, unreadable, malformed, or empty exported API inputs.
 Findings are sorted and include exact JVM descriptors, including return types.
 Do not treat an error or an unsupported input as a passing comparison.
-Unsupported ZIP compression and encrypted class entries are input errors (status
-`2`), with a diagnostic instead of an uncaught traceback.
+Unsupported ZIP compression, encrypted class entries, and corrupt DEFLATE data
+are input errors (status `2`), with a diagnostic instead of an uncaught traceback.
 
 The comparison reports:
 

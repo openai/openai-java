@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import sys
 import zipfile
+import zlib
 
 PUBLIC, PRIVATE, PROTECTED = 0x0001, 0x0002, 0x0004
 STATIC, FINAL, INTERFACE, ABSTRACT = 0x0008, 0x0010, 0x0200, 0x0400
@@ -145,7 +146,7 @@ def read_jar(path):
                     raise ValueError(f"{path}: class name does not match entry {name}")
                 if visibility(api.flags):
                     classes[class_name] = api
-    except (NotImplementedError, RuntimeError) as error:
+    except (NotImplementedError, RuntimeError, zlib.error) as error:
         raise ValueError(
             f"{path}: unsupported or unreadable ZIP input: {error}"
         ) from error
