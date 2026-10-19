@@ -640,7 +640,9 @@ private constructor(
 
                 override fun visitCompactionTrigger(compactionTrigger: JsonValue) {
                     compactionTrigger.let {
-                        if (it != JsonValue.from(mapOf("type" to "compaction_trigger"))) {
+                        val discriminator =
+                            it.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+                        if (discriminator != "compaction_trigger") {
                             throw OpenAIInvalidDataException(
                                 "'compactionTrigger' is invalid, received $it"
                             )
@@ -770,7 +772,12 @@ private constructor(
 
                 override fun visitCompactionTrigger(compactionTrigger: JsonValue) =
                     compactionTrigger.let {
-                        if (it == JsonValue.from(mapOf("type" to "compaction_trigger"))) 1 else 0
+                        if (
+                            it.asObject().getOrNull()?.get("type")?.asString()?.getOrNull() ==
+                                "compaction_trigger"
+                        )
+                            1
+                        else 0
                     }
 
                 override fun visitItemReference(itemReference: ItemReference) =
@@ -1094,6 +1101,10 @@ private constructor(
             ResponseInputItem(
                 compactionTrigger = JsonValue.from(mapOf("type" to "compaction_trigger"))
             )
+
+        @JvmStatic
+        fun ofCompactionTrigger(compactionTrigger: JsonValue) =
+            ResponseInputItem(compactionTrigger = compactionTrigger)
 
         /** An internal identifier for an item to reference. */
         @JvmStatic

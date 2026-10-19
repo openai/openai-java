@@ -3,14 +3,10 @@
 package com.openai.services.async.beta.threads
 
 import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
-import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.findAll
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
-import com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath
-import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.okJson
-import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.reset
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
@@ -105,27 +101,14 @@ internal class RunServiceAsyncTest {
 
     @Disabled("Prism does not support SSE streaming mock responses")
     @Test
-    fun createStreaming(wmRuntimeInfo: WireMockRuntimeInfo) {
+    fun createStreaming() {
         val client =
             OpenAIOkHttpClientAsync.builder()
-                .baseUrl(wmRuntimeInfo.httpBaseUrl)
+                .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .adminApiKey("My Admin API Key")
                 .build()
         val runServiceAsync = client.beta().threads().runs()
-
-        stubFor(
-            post(anyUrl())
-                .withHeader("Accept", equalTo("text/event-stream"))
-                .withRequestBody(matchingJsonPath("\$[\"stream\"]", equalTo("true")))
-                .willReturn(
-                    ok()
-                        .withHeader("Content-Type", "text/event-stream")
-                        .withBody(
-                            "event: thread.created\ndata: {\"id\":\"id\",\"created_at\":0,\"metadata\":{\"foo\":\"string\"},\"object\":\"thread\",\"tool_resources\":{\"code_interpreter\":{\"file_ids\":[\"string\"]},\"file_search\":{\"vector_store_ids\":[\"string\"]}}}\n\n"
-                        )
-                )
-        )
 
         val runStreamResponse =
             runServiceAsync.createStreaming(
@@ -378,27 +361,14 @@ internal class RunServiceAsyncTest {
 
     @Disabled("Prism does not support SSE streaming mock responses")
     @Test
-    fun submitToolOutputsStreaming(wmRuntimeInfo: WireMockRuntimeInfo) {
+    fun submitToolOutputsStreaming() {
         val client =
             OpenAIOkHttpClientAsync.builder()
-                .baseUrl(wmRuntimeInfo.httpBaseUrl)
+                .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .adminApiKey("My Admin API Key")
                 .build()
         val runServiceAsync = client.beta().threads().runs()
-
-        stubFor(
-            post(anyUrl())
-                .withHeader("Accept", equalTo("text/event-stream"))
-                .withRequestBody(matchingJsonPath("\$[\"stream\"]", equalTo("true")))
-                .willReturn(
-                    ok()
-                        .withHeader("Content-Type", "text/event-stream")
-                        .withBody(
-                            "event: thread.created\ndata: {\"id\":\"id\",\"created_at\":0,\"metadata\":{\"foo\":\"string\"},\"object\":\"thread\",\"tool_resources\":{\"code_interpreter\":{\"file_ids\":[\"string\"]},\"file_search\":{\"vector_store_ids\":[\"string\"]}}}\n\n"
-                        )
-                )
-        )
 
         val runStreamResponse =
             runServiceAsync.submitToolOutputsStreaming(
