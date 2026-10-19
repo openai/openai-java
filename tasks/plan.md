@@ -257,7 +257,7 @@ dispatch or count an adapter-only change as removal of the enum patch.
 
 The user clarified the delivery ceiling on 2026-10-19: **at most ten public Java
 SDK PRs and at most ten compiler Deltas; internal generation PRs are unlimited**.
-The six existing public SDK PRs and six existing compiler Deltas count toward
+The six existing public SDK PRs and seven existing compiler Deltas count toward
 their respective limits. Track both counters before publishing. Internal PRs
 still follow normal ownership, compatibility and promotion requirements.
 
@@ -294,7 +294,7 @@ entire policy PR to contain only `.castiron-ratchet.json`. Slot 10 preserves tha
 option without exceeding the public cap. Do not change policy until trusted
 measurement proves zero, and do not use an additional PR outside the cap.
 
-### Compiler allocation: six opened, four remaining
+### Compiler allocation: seven opened, three remaining
 
 | Slot | Existing review or reserved bundle | Scope |
 | ---: | --- | --- |
@@ -303,7 +303,7 @@ measurement proves zero, and do not use an additional PR outside the cap.
 | 3 | Compiler Delta 2566856 | Shared typed helper/model/test ownership policies and compiler validation, including existing audio facts |
 | 4 | Compiler Delta 2566858 | Ready C5 expiry accessor, raw-property lookup and enum-predicate consumers; retain the published checkpoint's scope |
 | 5 | Reserved structured-output/model bundle | C4 public service/parameter helpers and remaining C5 alias, accepted-value and validation contracts |
-| 6 | Reserved Responses bridge bundle | C9 WebSocket/stream validation delegates |
+| 6 | Compiler Delta 2568196 | C9 WebSocket/stream validation delegates; complete composed Chat/Responses/Agent API and frozen-runtime proof retained |
 | 7 | Compiler Delta 2568122 | C6 representation, decoder/accessor and builder-default contracts |
 | 8 | Compiler Delta 2568148 | C7 individual Visitor defaults and C8 existing diagnostic contracts; remaining alias/documentation work stays in the model bundle |
 | 9 | Reserved remaining service/helper bundle | C10 agent/idempotency, C11 retained legacy/auth selection and C14 webhook entrypoints |

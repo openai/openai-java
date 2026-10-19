@@ -7,9 +7,9 @@ gates remain in effect. No developer-facing breaking changes are allowed.
 ## Delivery ceilings
 
 The clarified limits are ten public Java SDK PRs, ten compiler Deltas and
-unlimited internal generation PRs. Six public PRs and six Deltas already exist;
+unlimited internal generation PRs. Six public PRs and seven Deltas already exist;
 [the consolidated delivery plan](plan.md#execution-and-parallelism) reserves the
-remaining four public slots and four compiler slots. Workstream checkboxes are
+remaining four public slots and three compiler slots. Workstream checkboxes are
 implementation and verification steps, not permission for unbounded micro-PRs.
 
 - [x] Allocate the existing reviews and the remaining public/compiler capacity.
@@ -18,7 +18,7 @@ implementation and verification steps, not permission for unbounded micro-PRs.
 - [ ] Finish multipart/audio integration in existing Delta 2565512.
 - [ ] Finish legacy model/accessor consumers in existing Delta 2566858.
 - [ ] Complete C1's existing Delta 2565485 human helper-contract review.
-- [ ] Publish complete remaining compiler bundles within the four reserved slots.
+- [ ] Publish complete remaining compiler bundles within the three reserved slots.
 - [ ] After compiler merge, use normal internal checkpoints and public promotion
   for consolidated SDK batches within the four reserved public slots.
 - [ ] Keep all code/test/inventory work in public slots 7–9; reserve slot 10 for
