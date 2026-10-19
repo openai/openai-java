@@ -13,6 +13,11 @@ import zlib
 
 from check_binary_api import compare, read_jar
 
+try:
+    import lzma
+except ImportError:
+    lzma = None
+
 
 def class_header_offset(data):
     """Locate access_flags so fixtures can transform the header independently."""
@@ -448,6 +453,91 @@ class BinaryApiTest(unittest.TestCase):
             archive.writestr("Api.class", b"\xca\xfe\xba\xbe")
         with self.assertRaisesRegex(ValueError, "truncated"):
             read_jar(jar)
+
+    @unittest.skipUnless(lzma is not None, "requires the optional lzma module")
+    def test_corrupt_lzma_inputs_have_input_error_exit_status(self):
+        self.assert_corrupt_compressed_input(zipfile.ZIP_LZMA, lzma.LZMAError)
+
+    def test_corrupt_bzip2_inputs_have_input_error_exit_status(self):
+        try:
+            import bz2  # noqa: F401
+        except ImportError:
+            self.skipTest("requires the optional bz2 module")
+        self.assert_corrupt_compressed_input(zipfile.ZIP_BZIP2, OSError)
+
+    @unittest.skipUnless(lzma is not None, "requires lzma to create the fixture")
+    def test_cli_keeps_lzma_optional(self):
+        source = self.compile_jar({"Api.java": "public class Api {}"})
+        compressed = self.root / "lzma.jar"
+        with zipfile.ZipFile(source) as original:
+            with zipfile.ZipFile(
+                compressed, "w", compression=zipfile.ZIP_LZMA
+            ) as archive:
+                archive.writestr("Api.class", original.read("Api.class"))
+        # Block lzma before importing either zipfile or the comparator, as on a
+        # Python build without this optional standard-library module.
+        launcher = """
+import builtins, runpy, sys
+original_import = builtins.__import__
+def without_lzma(name, *args, **kwargs):
+    if name == "lzma":
+        raise ImportError("disabled by offline fixture")
+    return original_import(name, *args, **kwargs)
+builtins.__import__ = without_lzma
+sys.argv = sys.argv[1:]
+runpy.run_path(sys.argv[0], run_name="__main__")
+"""
+        script = Path(__file__).with_name("check_binary_api.py")
+        for candidate, status in [(source, 0), (compressed, 2)]:
+            with self.subTest(compressed=candidate == compressed):
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        "-c",
+                        launcher,
+                        str(script),
+                        str(source),
+                        str(candidate),
+                    ],
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(status, result.returncode, result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+                if status:
+                    self.assertIn("Cannot compare JARs:", result.stderr)
+
+    def assert_corrupt_compressed_input(self, compression, error):
+        source = self.compile_jar({"Api.java": "public class Api {}"})
+        good = self.root / "compressed.jar"
+        with zipfile.ZipFile(source) as original:
+            with zipfile.ZipFile(good, "w", compression=compression) as archive:
+                archive.writestr("Api.class", original.read("Api.class"))
+        self.assertEqual([], compare(read_jar(source), read_jar(good)))
+        data = bytearray(good.read_bytes())
+        name_size, extra_size = struct.unpack_from("<HH", data, 26)
+        offset = 30 + name_size + extra_size
+        if compression == zipfile.ZIP_LZMA:
+            # Preserve the LZMA properties, but corrupt its range-coded payload.
+            properties_size = struct.unpack_from("<H", data, offset + 2)[0]
+            offset += 4 + properties_size
+        data[offset] = 0xFF
+        bad = self.root / "corrupt-compressed.jar"
+        bad.write_bytes(data)
+        with zipfile.ZipFile(bad) as archive:
+            with self.assertRaises(error):
+                archive.read("Api.class")
+        script = Path(__file__).with_name("check_binary_api.py")
+        for before, after in [(bad, good), (good, bad)]:
+            with self.subTest(input="old" if before == bad else "new"):
+                result = subprocess.run(
+                    [sys.executable, str(script), str(before), str(after)],
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(2, result.returncode, result.stderr)
+                self.assertIn("Cannot compare JARs:", result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
 
 
 if __name__ == "__main__":

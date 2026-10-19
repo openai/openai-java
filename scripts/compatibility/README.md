@@ -22,8 +22,11 @@ Exit status is `0` for no detected changes, `1` for potential incompatibilities,
 and `2` for unsupported, unreadable, malformed, or empty exported API inputs.
 Findings are sorted and include exact JVM descriptors, including return types.
 Do not treat an error or an unsupported input as a passing comparison.
-Unsupported ZIP compression, encrypted class entries, and corrupt DEFLATE data
-are input errors (status `2`), with a diagnostic instead of an uncaught traceback.
+Unsupported ZIP compression, encrypted class entries, and corrupt compressed data
+(DEFLATE, BZIP2 or LZMA) are input errors (status `2`), with a diagnostic instead
+of an uncaught traceback. Valid archives using these codecs remain supported
+when their standard-library compression modules are available; LZMA is optional
+and is not required to compare ordinary stored/DEFLATE JARs.
 
 The comparison reports:
 

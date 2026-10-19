@@ -8,6 +8,15 @@ import sys
 import zipfile
 import zlib
 
+try:
+    import lzma
+except ImportError:
+    lzma = None
+
+ZIP_READ_ERRORS = (NotImplementedError, RuntimeError, zlib.error)
+if lzma is not None:
+    ZIP_READ_ERRORS += (lzma.LZMAError,)
+
 PUBLIC, PRIVATE, PROTECTED = 0x0001, 0x0002, 0x0004
 STATIC, FINAL, INTERFACE, ABSTRACT = 0x0008, 0x0010, 0x0200, 0x0400
 INNER_CLASS_ACCESS = PUBLIC | PRIVATE | PROTECTED | STATIC
@@ -146,7 +155,7 @@ def read_jar(path):
                     raise ValueError(f"{path}: class name does not match entry {name}")
                 if visibility(api.flags):
                     classes[class_name] = api
-    except (NotImplementedError, RuntimeError, zlib.error) as error:
+    except ZIP_READ_ERRORS as error:
         raise ValueError(
             f"{path}: unsupported or unreadable ZIP input: {error}"
         ) from error
