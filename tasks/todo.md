@@ -88,6 +88,8 @@ gates remain in effect. No developer-facing breaking changes are allowed.
 | Slice | Review | Head | Validation and state |
 | --- | --- | --- | --- |
 | Inventory and plan | [Java #1234](https://github.com/openai/openai-java/pull/1234) | Initial `f76f0730dcce87a1de5a5b58614f59c24552b3f9`; subsequent documentation commits remain on the same PR | 99 rows checked against committed blobs and verified reporter; open for review; no SDK changes |
+| C13 generated comment | [Java #1235](https://github.com/openai/openai-java/pull/1235) | `e2040c78ea4816e81adcfe647939e707c0af2ed9` | 95 Python tests pass (one existing skip), Ruff passes, AST unchanged, verified report 99→98 files and 2,031→2,029 lines; open, SDK team review required |
+| C1 User-Agent compiler | Compiler Delta 2565485 | `ecfc447de4083` on `jbeckwith/java-default-user-agent` | 5 client renderer tests pass, both profiles/modes covered, full client output equality except intended setter/header, intact push hooks pass; open, compiler merge and SDK regeneration still required |
 
 Record exact current heads when acting on CI or review events. Never record a
 proposed reduction as landed merely because its compiler change exists or CI is

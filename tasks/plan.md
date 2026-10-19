@@ -62,7 +62,7 @@ do not sum overlapping estimates as if they were independent reductions.
 | ID | Current customization | Authoritative change and retained handwritten boundary | Acceptance evidence |
 | --- | --- | --- | --- |
 | C1 | Sync/async default User-Agent provenance | `templates/client.kt.askama`, `templates.rs` and `rendering/generated_files.rs`: emit `defaultUserAgent(...)` rather than caller-header insertion in the OpenAI profile. Keep the explicit-header guard and original options passed to peer clients. | Both impls match shipped source; `TelemetryTest` covers toggles, explicit headers, clones, retries, and isolated system properties. Exactly 2 files / 4 patch lines can disappear after regeneration. |
-| C2 | Async multipart result mapping | `services.rs`, `views.rs`, `templates/service_impl_method.kt.askama`, `templates/service_impl_raw_method.kt.askama`: select cancellation/cleanup-aware mapping from multipart facts. Keep `MultipartFuture.kt` and multipart runtime handwritten. | Cover cancellation before preparation, while executing, after response arrival, parse failure, and successful body ownership. Compare all newly affected multipart endpoints, not only the five currently patched services. |
+| C2 | Async multipart result mapping | `services.rs`, `views.rs`, `templates/service_impl_method.kt.askama`, `templates/service_impl_raw_method.kt.askama`: select cancellation/cleanup-aware mapping from multipart facts. Keep `MultipartFuture.kt` and multipart runtime handwritten. | Cover cancellation before preparation, while executing, after response arrival, parse failure, and successful body ownership. Five current files account for 53 patch lines; validate the seven additional affected services before promotion. |
 | C3 | Audio response-format dispatch | Derive text/JSON response handling from response-format and response-content facts. Generate dispatch into `AudioResponseHandlers.kt` for transcription/translation in blocking and async methods. | Existing audio media tests preserve text formats, JSON variants, validation and resource cleanup. Do not turn valid non-JSON responses into parse errors. |
 | C4 | Structured-output overloads and convenience builders | Model/service templates must emit current `Class<T>` overloads, generic wrappers, `@JvmOverloads`, and conversions; keep reflection/schema logic and accumulators handwritten. | Structured-output public API manifests, prior Java/Kotlin consumer compilation and linkage, current structured-output tests. Covers Responses/Chat interfaces, create params, text config and function/tool helpers. |
 | C5 | Legacy public accessors, aliases and JSON shape | Add typed accessor/storage compatibility facts. Preserve required `expiresInSeconds(): Long` plus optional accessor; preserve legacy additional-property lookups without serializing duplicate known fields; preserve tool-search model aliases, enum constants, nullable builder defaults, accepted object tags and duration strings. | Api-key, error/enum, tool-search, and webhook model compatibility tests; JVM descriptors and JSON roundtrips. Regenerating the currently incompatible baseline is prohibited. |
@@ -136,6 +136,11 @@ patch without adding a public compiler feature.
 * Transcription and translation combine response dispatch with async request-body
   handling. A general multipart rule can affect more endpoints than today's custom
   patch. New output needs runtime tests even when public signatures are unchanged.
+  The five currently patched async services are Images, Skills, Videos, audio
+  Voices and skill Versions. The additional services are Files, ContentProvenance
+  Checks, container Files, Realtime Calls, upload Parts, Transcriptions and
+  Translations. Nonmultipart methods such as video content download remain outside
+  that rule.
 * Credential union files combine default visitor methods and diagnostic redaction.
   Tool-search output models combine public type aliases and visitor compatibility.
 * The largest patch, `ResponseTest.kt` (+1/-235), consolidates duplicate large
