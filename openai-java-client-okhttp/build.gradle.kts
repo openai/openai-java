@@ -30,12 +30,12 @@ listOf(configurations.testCompileClasspath, configurations.testRuntimeClasspath)
 dependencies {
     api(project(":openai-java-core"))
 
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:5.5.0")
 
     testImplementation(kotlin("test"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation(platform(libs.jackson.bom))
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
-    testImplementation("com.squareup.okhttp3:okhttp-tls:4.12.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver:5.5.0")
+    testImplementation("com.squareup.okhttp3:okhttp-tls:5.5.0")
 }
