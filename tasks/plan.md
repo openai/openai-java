@@ -191,6 +191,47 @@ parallel edits to shared object/union templates. C10/C11 require configuration a
 security review. C14 is an independent webhook slice. C12 can proceed alongside
 each corresponding feature slice.
 
+### PR-sized delivery slices
+
+The workstream checklist is an index, not permission to combine a whole area into
+one PR. Use these bounded slices, normally 1–5 handwritten source/template/test
+files per compiler PR. Generated output and metadata are reviewed as artifacts.
+Split further if adding compiler facts would exceed that scope. Each slice
+inherits its workstream's acceptance checks and the compatibility gates above.
+
+| Slice | Bounded deliverable | Dependency |
+| --- | --- | --- |
+| C1a | Default User-Agent template/profile plus both-client regression | None; published |
+| C2a | Multipart mapping templates/view/import plus focused renderer tests | None; draft published; runtime proof required |
+| C3a / C3b | Transcription dispatch, then translation dispatch, each blocking/async pair and focused media tests | C2 shared method-view integration |
+| C4a / C4b | Chat service structured overload pair; Responses service structured overload pair | Typed helper facts; C9 coordinates Responses interface |
+| C4c | Chat params Class-based format/tool helpers, retaining omitted prediction aliases | C4 helper contract |
+| C4d | Response params and text config Class/Consumer builders | C4 helper contract |
+| C4e | Function-call argument decoders and JSON tool-output builders, split into decoder/output pairs | C4 helper contract |
+| C5a | Api-key expiry legacy/optional accessor with compatibility fixture | Accessor facts |
+| C5b / C5c | Stable/beta/video error additional-property compatibility; nested Realtime error separately | Accessor/serialization facts |
+| C5d | Canonical stable/beta tool-search output list types, preserving nested Tool ABI | Alias/type-selection facts |
+| C5e / C5f | Inject-event canonical helper types; conversation/item/Live helper types | C5d contract |
+| C5g | Stable/beta response nullable builder defaults | Construction facts |
+| C5h / C5i | Vector-store accepted object tags; video open durations, separately | Accepted-value facts |
+| C6a | Embedding representation/decoder/accessor adapter and default encoding | Preserve list accessor contract first |
+| C7a | Per-variant visitor default policy and lowering regression | Preserve existing union-policy gates |
+| C7b / C7c | Credential visitor defaults; webhook agent/safety defaults | C7a merged |
+| C7d / C7e | Shipped web-search Find naming; four compaction visitor documentation patches | Naming facts / documentation template |
+| C8a / C8b | Credential diagnostic sensitivity facts and renderer support; apply to credential models with focused fixtures | Coordinate C7 union template |
+| C8c / C8d | Environment diagnostics; webhook secret diagnostics, separately | C8 sensitivity contract and maintainer review |
+| C9a / C9b | Responses WebSocket interface/implementation bridges; stream validation delegates, separately | Coordinate C4b; runtime remains handwritten |
+| C10a / C10b | Session public stream/tool-handler contracts; orchestration delegates | Existing handwritten orchestration; preserve binary contracts |
+| C10c / C10d | Environment retry-stable idempotency; Turn unsupported-service diagnostics, separately | Typed operation facts / diagnostics contract |
+| C11a / C11b | Legacy beta Realtime subservices; permission-operation credential selection, separately | Auth input facts and maintainer review for C11b |
+| C12a | Credential diagnostic assertion ownership | SDK-only; draft published |
+| C12b / C12c | Consolidated response model fixture; isolated Skill pagination test generation, separately | Preserve deliberate test/shard optimizations |
+| C12d | Deterministic SSE fixtures and agent session/event test pairs | Typed test response/streaming facts; separate each service pair |
+| C12e | Replace unsupported streaming mock tests by service pair | C12d fixture infrastructure; preserve assertions |
+| C12f / C12g | Webhook signed/missing-secret test generation; canonical model test samples | C14 / C5 contracts |
+| C13a | Restore generated lint annotation | SDK-only; published |
+| C14a / C14b | Webhook public verification signatures; implementation/helper delegates | Current verified parameter contract and maintainer review |
+
 Every slice follows: compiler regression test, implementation, draft generation,
 current-SDK behavior and API comparison, compiler review/merge, regeneration with
 the merged compiler, SDK verification, SDK review/merge, inventory refresh.
