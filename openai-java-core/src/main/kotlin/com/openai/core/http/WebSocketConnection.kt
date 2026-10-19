@@ -268,16 +268,16 @@ internal constructor(
         // Listener callbacks can run on a custom transport's dedicated reader, and its
         // close() may join that reader. Never cancel an opening or close a socket on that thread.
         CompletableFuture.runAsync {
+            // A transport close can depend on this receiver having observed the failure.
+            detached.third?.let { read ->
+                if (read.blocking) read.completeExceptionally(error)
+                else dispatch { read.completeExceptionally(error) }
+            }
             try {
                 detached.second?.cancel(true)
                 detached.first?.close()
             } catch (closing: Throwable) {
                 if (closing !== error) error.addSuppressed(closing)
-            } finally {
-                detached.third?.let { read ->
-                    if (read.blocking) read.completeExceptionally(error)
-                    else dispatch { read.completeExceptionally(error) }
-                }
             }
         }
     }
