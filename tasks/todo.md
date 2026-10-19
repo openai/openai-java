@@ -14,6 +14,8 @@ gates remain in effect. No developer-facing breaking changes are allowed.
   linkage coverage before broad model/service regeneration. Preserve existing
   compatibility policy and test manifests. Verify deliberate binary incompatibility
   is caught and unchanged artifacts pass.
+  Supplemental comparator and 13 synthetic javac/JVM fixtures are submitted in
+  #1236; actual selected-release SDK consumer/runtime validation remains required.
 
 ## Independent initial slices
 
@@ -89,7 +91,8 @@ gates remain in effect. No developer-facing breaking changes are allowed.
 | --- | --- | --- | --- |
 | Inventory and plan | [Java #1234](https://github.com/openai/openai-java/pull/1234) | Initial `f76f0730dcce87a1de5a5b58614f59c24552b3f9`; subsequent documentation commits remain on the same PR | 99 rows checked against committed blobs and verified reporter; open for review; no SDK changes |
 | C13 generated comment | [Java #1235](https://github.com/openai/openai-java/pull/1235) | `e2040c78ea4816e81adcfe647939e707c0af2ed9` | 95 Python tests pass (one existing skip), Ruff passes, AST unchanged, verified report 99→98 files and 2,031→2,029 lines; open, SDK team review required |
-| C1 User-Agent compiler | Compiler Delta 2565485 | `ecfc447de4083` on `jbeckwith/java-default-user-agent` | 5 client renderer tests pass, both profiles/modes covered, full client output equality except intended setter/header, intact push hooks pass; open, compiler merge and SDK regeneration still required |
+| C1 User-Agent compiler | Compiler Delta 2565485 | `ecfc447de4083f1458c0df48544b2db419ad01a2` | 5 client renderer tests pass, both profiles/modes covered, full client output equality except intended setter/header, intact push hooks pass; open, SDK team review requested, no approval; compiler merge and SDK regeneration still required |
+| Supplemental JVM comparator | [Java #1236](https://github.com/openai/openai-java/pull/1236) | `8e4558134876ec50815c28e36cc830fdb78f08ba` | 13 javac/JVM tests pass, lint and mutation checks pass, independent review addressed bytecode-version detection; open, SDK team review required; no production or generated changes |
 
 Record exact current heads when acting on CI or review events. Never record a
 proposed reduction as landed merely because its compiler change exists or CI is
