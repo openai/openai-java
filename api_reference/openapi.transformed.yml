@@ -3579,7 +3579,115 @@ paths:
                 $ref: '#/components/schemas/CreateCompletionResponse'
             text/event-stream:
               schema:
-                $ref: '#/components/schemas/CreateCompletionResponse'
+                type: object
+                description: |
+                  Represents a completion response from the API. Note: both the streamed and non-streamed response objects share the same shape (unlike the chat endpoint).
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the completion.
+                  choices:
+                    type: array
+                    description: The list of completion choices the model generated for the input prompt.
+                    items:
+                      type: object
+                      required:
+                      - finish_reason
+                      - index
+                      - logprobs
+                      - text
+                      properties:
+                        finish_reason:
+                          anyOf:
+                          - type: string
+                            enum:
+                            - stop
+                            - length
+                            - content_filter
+                          - type: 'null'
+                          description: |
+                            The reason the model stopped generating tokens. This will be `stop` if the model hit a natural stop point or a provided stop sequence,
+                            `length` if the maximum number of tokens specified in the request was reached,
+                            or `content_filter` if content was omitted due to a flag from our content filters. The value is null while a streamed completion is unfinished.
+                        index:
+                          type: integer
+                        logprobs:
+                          anyOf:
+                          - type: object
+                            properties:
+                              text_offset:
+                                type: array
+                                items:
+                                  type: integer
+                              token_logprobs:
+                                type: array
+                                items:
+                                  type: number
+                              tokens:
+                                type: array
+                                items:
+                                  type: string
+                              top_logprobs:
+                                type: array
+                                items:
+                                  type: object
+                                  additionalProperties:
+                                    type: number
+                          - type: 'null'
+                        text:
+                          type: string
+                  created:
+                    type: integer
+                    format: unixtime
+                    description: The Unix timestamp (in seconds) of when the completion was created.
+                  model:
+                    type: string
+                    description: The model used for completion.
+                  system_fingerprint:
+                    type: string
+                    description: |
+                      This fingerprint represents the backend configuration that the model runs with.
+
+                      Can be used in conjunction with the `seed` request parameter to understand when backend changes have been made that might impact determinism.
+                  object:
+                    type: string
+                    description: The object type, which is always "text_completion"
+                    enum:
+                    - text_completion
+                    x-stainless-const: true
+                  usage:
+                    anyOf:
+                    - $ref: '#/components/schemas/CompletionUsage'
+                    - type: 'null'
+                required:
+                - id
+                - object
+                - created
+                - model
+                - choices
+                x-oaiMeta:
+                  name: The completion object
+                  legacy: true
+                  example: |
+                    {
+                      "id": "cmpl-uqkvlQyYK7bGYrRHQ0eXlWi7",
+                      "object": "text_completion",
+                      "created": 1589478378,
+                      "model": "gpt-3.5-turbo-instruct",
+                      "choices": [
+                        {
+                          "text": "\n\nThis is indeed a test",
+                          "index": 0,
+                          "logprobs": null,
+                          "finish_reason": "length"
+                        }
+                      ],
+                      "usage": {
+                        "prompt_tokens": 5,
+                        "completion_tokens": 7,
+                        "total_tokens": 12
+                      }
+                    }
         '400':
           description: Invalid completion request or incompatible request parameters.
           content:
@@ -21712,6 +21820,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RunObject'
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/AssistantStreamEvent'
         '429':
           $ref: '#/components/responses/TooManyRequests'
       x-oaiMeta:
@@ -22996,6 +23107,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RunObject'
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/AssistantStreamEvent'
         '429':
           $ref: '#/components/responses/TooManyRequests'
       x-oaiMeta:
@@ -23936,6 +24050,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RunObject'
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/AssistantStreamEvent'
         '429':
           $ref: '#/components/responses/TooManyRequests'
       x-oaiMeta:
@@ -34083,6 +34200,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RotateVaultCredentialParams'
+            example:
+              metadata: {}
         required: true
       responses:
         '200':
@@ -36946,96 +37065,6 @@ webhooks:
           description: Return any 2xx status code to acknowledge receipt. A 410 Gone response also stops retries; other non-2xx responses are retried.
 components:
   schemas:
-    ImageGenToolCallError:
-      properties:
-        code:
-          anyOf:
-          - type: string
-            description: The error code.
-          - type: 'null'
-        type:
-          type: string
-          description: The error type.
-        message:
-          type: string
-          description: A description of the error.
-        param:
-          anyOf:
-          - type: string
-            description: The related request parameter.
-          - type: 'null'
-        moderation_details:
-          $ref: '#/components/schemas/ImageGenToolCallModerationDetails'
-          description: Public details for a `moderation_blocked` error, when available.
-      type: object
-      required:
-      - code
-      - type
-      - message
-      - param
-    ImageGenToolCallModerationDetails:
-      properties:
-        moderation_stage:
-          type: string
-          enum:
-          - input
-          - output
-          - unknown
-          description: The stage where moderation blocked the image generation call.
-        categories:
-          items:
-            type: string
-          type: array
-          description: Public moderation categories. New category values may be added over time.
-      type: object
-      required:
-      - moderation_stage
-      - categories
-    BetaImageGenToolCallError:
-      properties:
-        code:
-          anyOf:
-          - type: string
-            description: The error code.
-          - type: 'null'
-        type:
-          type: string
-          description: The error type.
-        message:
-          type: string
-          description: A description of the error.
-        param:
-          anyOf:
-          - type: string
-            description: The related request parameter.
-          - type: 'null'
-        moderation_details:
-          $ref: '#/components/schemas/BetaImageGenToolCallModerationDetails'
-          description: Public details for a `moderation_blocked` error, when available.
-      type: object
-      required:
-      - code
-      - type
-      - message
-      - param
-    BetaImageGenToolCallModerationDetails:
-      properties:
-        moderation_stage:
-          type: string
-          enum:
-          - input
-          - output
-          - unknown
-          description: The stage where moderation blocked the image generation call.
-        categories:
-          items:
-            type: string
-          type: array
-          description: Public moderation categories. New category values may be added over time.
-      type: object
-      required:
-      - moderation_stage
-      - categories
     AddUploadPartRequest:
       type: object
       additionalProperties: false
@@ -41452,6 +41481,7 @@ components:
             anyOf:
             - $ref: '#/components/schemas/ResponseFormatText'
             - $ref: '#/components/schemas/ResponseFormatJsonSchema'
+              x-openai-ruby-json-schema-input: true
             - $ref: '#/components/schemas/ResponseFormatJsonObject'
           audio:
             type:
@@ -41471,7 +41501,8 @@ components:
                   `alloy`, `ash`, `ballad`, `coral`, `echo`, `fable`, `nova`, `onyx`,
                   `sage`, `shimmer`, `marin`, and `cedar`. You may also provide a
                   custom voice object with an `id`, for example `{ "id": "voice_1234" }`.
-                  Custom voices must be created from audio samples. Voices created from text prompts are supported only in Live.
+                  Custom voices must be created from audio samples. Voices created from text
+                  prompts are supported only in Live.
               format:
                 type: string
                 enum:
@@ -41604,6 +41635,7 @@ components:
                 propertyName: type
               x-stainless-go-variant-constructor:
                 naming: chat_completion_{variant}_tool
+            x-openai-ruby-json-schema-input: true
           tool_choice:
             $ref: '#/components/schemas/ChatCompletionToolChoiceOption'
           parallel_tool_calls:
@@ -43304,11 +43336,18 @@ components:
             The compression level (0-100%) for the generated images. This parameter
             is only supported for the GPT image models with the `webp` or `jpeg` output
             formats, and defaults to 100.
+        safety_identifier:
+          type:
+          - string
+          - 'null'
+          maxLength: 128
+          example: user-1234
+          description: A stable identifier for an end user in your organization, used for safety monitoring and abuse detection. Hash a username or email address to avoid sending identifying information. A non-empty value takes precedence over the deprecated `user` parameter. If omitted, null, or empty, the API uses `user` when available. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
         user:
           type: string
           example: user-1234
-          description: 'Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward compatibility and is used when `safety_identifier` is omitted, null, or empty. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).'
           deprecated: true
+          description: 'Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward compatibility and is used when `safety_identifier` is omitted, null, or empty. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).'
         input_fidelity:
           anyOf:
           - $ref: '#/components/schemas/InputFidelity'
@@ -43343,13 +43382,6 @@ components:
           example: high
           description: |
             The quality of the image that will be generated for GPT image models. The GPT image models support `low`, `medium`, and `high`. `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08` snapshots, also support `xhigh` and `max`. Defaults to `auto`.
-        safety_identifier:
-          type:
-          - string
-          - 'null'
-          maxLength: 128
-          example: user-1234
-          description: A stable identifier for an end user in your organization, used for safety monitoring and abuse detection. Hash a username or email address to avoid sending identifying information. A non-empty value takes precedence over the deprecated `user` parameter. If omitted, null, or empty, the API uses `user` when available. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
       required:
       - prompt
       - image
@@ -43531,11 +43563,6 @@ components:
           example: vivid
           deprecated: true
           description: Legacy style parameter for retired image models. Unsupported for GPT image models; describe the desired style in the prompt instead.
-        user:
-          type: string
-          example: user-1234
-          description: 'Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward compatibility and is used when `safety_identifier` is omitted, null, or empty. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).'
-          deprecated: true
         safety_identifier:
           type:
           - string
@@ -43543,6 +43570,11 @@ components:
           maxLength: 128
           example: user-1234
           description: A stable identifier for an end user in your organization, used for safety monitoring and abuse detection. Hash a username or email address to avoid sending identifying information. A non-empty value takes precedence over the deprecated `user` parameter. If omitted, null, or empty, the API uses `user` when available. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+        user:
+          type: string
+          example: user-1234
+          deprecated: true
+          description: 'Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward compatibility and is used when `safety_identifier` is omitted, null, or empty. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).'
       required:
       - prompt
     CreateImageVariationRequest:
@@ -45213,6 +45245,45 @@ components:
       - name
       - audio_sample
       - consent
+    CreateVoicePromptRequest:
+      type: object
+      title: Prompt
+      description: Creates a synthetic voice from a text description. Supports application/json or multipart/form-data.
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum:
+          - prompt
+          description: Set to `prompt` to create a voice from a text description.
+        name:
+          type: string
+          minLength: 1
+          maxLength: 256
+          description: The name of the new voice.
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: A description of the desired voice. Must not contain only whitespace.
+        script_hint:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Optional text for the voice to speak during creation. If omitted, a script is generated from the prompt. Must not be blank after trimming whitespace; scripts that are too short are rejected.
+        model:
+          anyOf:
+          - type: string
+          - type: string
+            enum:
+            - auto
+            - 2026-10-08
+          default: auto
+          description: The voice creation model to use. Defaults to `auto`.
+      required:
+      - type
+      - name
+      - prompt
     CreateVoiceRequest:
       discriminator:
         propertyName: type
@@ -45763,11 +45834,18 @@ components:
           default: auto
           example: 1024x1024
           description: The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum supported resolution is `3840x2160`. The requested size must also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for models that allow automatic sizing.
+        safety_identifier:
+          type:
+          - string
+          - 'null'
+          maxLength: 128
+          example: user-1234
+          description: A stable identifier for an end user in your organization, used for safety monitoring and abuse detection. Hash a username or email address to avoid sending identifying information. A non-empty value takes precedence over the deprecated `user` parameter. If omitted, null, or empty, the API uses `user` when available. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
         user:
           type: string
           example: user-1234
-          description: 'Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward compatibility and is used when `safety_identifier` is omitted, null, or empty. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).'
           deprecated: true
+          description: 'Deprecated: use `safety_identifier` instead. This parameter remains accepted for backward compatibility and is used when `safety_identifier` is omitted, null, or empty. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).'
         output_format:
           anyOf:
           - type: string
@@ -45817,13 +45895,6 @@ components:
           description: Stream partial image results as events.
         partial_images:
           $ref: '#/components/schemas/PartialImages'
-        safety_identifier:
-          type:
-          - string
-          - 'null'
-          maxLength: 128
-          example: user-1234
-          description: A stable identifier for an end user in your organization, used for safety monitoring and abuse detection. Hash a username or email address to avoid sending identifying information. A non-empty value takes precedence over the deprecated `user` parameter. If omitted, null, or empty, the API uses `user` when available. [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
       required:
       - images
       - prompt
@@ -49063,6 +49134,11 @@ components:
       description: |
         Emitted when image editing has completed and the final image is available.
       properties:
+        safety_identifier:
+          type:
+          - string
+          - 'null'
+          description: The effective safety identifier used for safety monitoring and abuse detection. This is the non-empty `safety_identifier` from the request, or the deprecated `user` value when `safety_identifier` is omitted, null, or empty.
         type:
           type: string
           description: |
@@ -49119,11 +49195,6 @@ components:
           - jpeg
         usage:
           $ref: '#/components/schemas/ImagesUsage'
-        safety_identifier:
-          type:
-          - string
-          - 'null'
-          description: The effective safety identifier used for safety monitoring and abuse detection. This is the non-empty `safety_identifier` from the request, or the deprecated `user` value when `safety_identifier` is omitted, null, or empty.
       required:
       - type
       - b64_json
@@ -49252,6 +49323,11 @@ components:
       description: |
         Emitted when image generation has completed and the final image is available.
       properties:
+        safety_identifier:
+          type:
+          - string
+          - 'null'
+          description: The effective safety identifier used for safety monitoring and abuse detection. This is the non-empty `safety_identifier` from the request, or the deprecated `user` value when `safety_identifier` is omitted, null, or empty.
         type:
           type: string
           description: |
@@ -49308,11 +49384,6 @@ components:
           - jpeg
         usage:
           $ref: '#/components/schemas/ImagesUsage'
-        safety_identifier:
-          type:
-          - string
-          - 'null'
-          description: The effective safety identifier used for safety monitoring and abuse detection. This is the non-empty `safety_identifier` from the request, or the deprecated `user` value when `safety_identifier` is omitted, null, or empty.
       required:
       - type
       - b64_json
@@ -49605,6 +49676,11 @@ components:
       title: Image generation response
       description: The response from the image generation endpoint.
       properties:
+        safety_identifier:
+          type:
+          - string
+          - 'null'
+          description: The effective safety identifier used for safety monitoring and abuse detection. This is the non-empty `safety_identifier` from the request, or the deprecated `user` value when `safety_identifier` is omitted, null, or empty.
         created:
           type: integer
           format: unixtime
@@ -49648,11 +49724,6 @@ components:
           - max
         usage:
           $ref: '#/components/schemas/ImageGenUsage'
-        safety_identifier:
-          type:
-          - string
-          - 'null'
-          description: The effective safety identifier used for safety monitoring and abuse detection. This is the non-empty `safety_identifier` from the request, or the deprecated `user` value when `safety_identifier` is omitted, null, or empty.
       required:
       - created
       x-oaiMeta:
@@ -63825,6 +63896,16 @@ components:
         description: |
           An error object returned when the model fails to generate a Response.
         properties:
+          type:
+            anyOf:
+            - type: string
+            - type: 'null'
+            description: The original error type, or null if it was not recorded.
+          param:
+            anyOf:
+            - type: string
+            - type: 'null'
+            description: The request parameter associated with the error, or null if none was recorded.
           code:
             $ref: '#/components/schemas/ResponseErrorCode'
           message:
@@ -63833,16 +63914,6 @@ components:
               A human-readable description of the error.
           misalignment:
             $ref: '#/components/schemas/MisalignmentErrorDetailsResource'
-          param:
-            anyOf:
-            - type: string
-            - type: 'null'
-            description: The request parameter associated with the error, or null if none was recorded.
-          type:
-            anyOf:
-            - type: string
-            - type: 'null'
-            description: The original error type, or null if it was not recorded.
         required:
         - code
         - message
@@ -69149,6 +69220,7 @@ components:
       anyOf:
       - $ref: '#/components/schemas/ResponseFormatText'
       - $ref: '#/components/schemas/TextResponseFormatJsonSchema'
+        x-openai-ruby-json-schema-input: true
       - $ref: '#/components/schemas/ResponseFormatJsonObject'
       discriminator:
         propertyName: type
@@ -69300,6 +69372,7 @@ components:
         propertyName: type
       anyOf:
       - $ref: '#/components/schemas/FunctionTool'
+        x-openai-ruby-json-schema-input: true
       - $ref: '#/components/schemas/FileSearchTool'
       - $ref: '#/components/schemas/ComputerTool'
       - $ref: '#/components/schemas/ComputerUsePreviewTool'
@@ -71794,6 +71867,9 @@ components:
       - type
       - url
       - pattern
+      x-stainless-naming:
+        go:
+          type_name: ResponseFunctionWebSearchActionFind
     WebSearchActionOpenPage:
       type: object
       title: Open page action
@@ -74460,6 +74536,51 @@ components:
       - completed
       - failed
       - incomplete
+    ImageGenToolCallModerationDetails:
+      properties:
+        moderation_stage:
+          type: string
+          enum:
+          - input
+          - output
+          - unknown
+          description: The stage where moderation blocked the image generation call.
+        categories:
+          items:
+            type: string
+          type: array
+          description: Public moderation categories. New category values may be added over time.
+      type: object
+      required:
+      - moderation_stage
+      - categories
+    ImageGenToolCallError:
+      properties:
+        code:
+          anyOf:
+          - type: string
+            description: The error code.
+          - type: 'null'
+        type:
+          type: string
+          description: The error type.
+        message:
+          type: string
+          description: A description of the error.
+        param:
+          anyOf:
+          - type: string
+            description: The related request parameter.
+          - type: 'null'
+        moderation_details:
+          $ref: '#/components/schemas/ImageGenToolCallModerationDetails'
+          description: Public details for a `moderation_blocked` error, when available.
+      type: object
+      required:
+      - code
+      - type
+      - message
+      - param
     ImageGenActionEnum:
       type: string
       enum:
@@ -74480,9 +74601,6 @@ components:
       - jpeg
     ImageGenToolCall:
       properties:
-        error:
-          $ref: '#/components/schemas/ImageGenToolCallError'
-          description: Details of a moderation failure, when available.
         type:
           type: string
           enum:
@@ -74505,6 +74623,10 @@ components:
           - type: string
             description: The generated image encoded in base64.
           - type: 'null'
+        error:
+          $ref: '#/components/schemas/ImageGenToolCallError'
+          description: Details of a moderation failure, when available.
+          x-openai-go-skip-union-projection: true
         size:
           anyOf:
           - anyOf:
@@ -77096,6 +77218,7 @@ components:
       - type
       title: Compaction trigger
       description: Compacts the current context. Must be the final input item.
+      x-openai-java-raw-discriminator-variant: true
     ItemReferenceParam:
       properties:
         type:
@@ -78044,6 +78167,125 @@ components:
       required:
       - type
       - responses
+    LiveDecisionChoiceParam:
+      type: object
+      properties:
+        value:
+          anyOf:
+          - type: string
+          - type: boolean
+        description:
+          type: string
+      required:
+      - value
+    LiveDecisionChoiceQuestionParam:
+      type: object
+      properties:
+        type:
+          default: choice
+          x-stainless-const: true
+          type: string
+          enum:
+          - choice
+        name:
+          type: string
+        instructions:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/LiveDecisionChoiceParam'
+          minItems: 2
+          maxItems: 255
+      required:
+      - type
+      - instructions
+      - choices
+    LiveDecisionPredicateQuestionParam:
+      type: object
+      properties:
+        type:
+          default: predicate
+          x-stainless-const: true
+          type: string
+          enum:
+          - predicate
+        name:
+          type: string
+        instructions:
+          type: string
+      required:
+      - type
+      - instructions
+    LiveDecisionScoreLevelParam:
+      type: object
+      properties:
+        label:
+          type: string
+        description:
+          type: string
+      required:
+      - label
+    LiveDecisionScoreQuestionParam:
+      type: object
+      properties:
+        type:
+          default: score
+          x-stainless-const: true
+          type: string
+          enum:
+          - score
+        name:
+          type: string
+        instructions:
+          type: string
+        levels:
+          type: array
+          items:
+            $ref: '#/components/schemas/LiveDecisionScoreLevelParam'
+          minItems: 2
+          maxItems: 10
+      required:
+      - type
+      - instructions
+      - levels
+    LiveDecisionQuestion:
+      discriminator:
+        propertyName: type
+      anyOf:
+      - $ref: '#/components/schemas/LiveDecisionChoiceQuestionParam'
+      - $ref: '#/components/schemas/LiveDecisionPredicateQuestionParam'
+      - $ref: '#/components/schemas/LiveDecisionScoreQuestionParam'
+    LiveDecisionsSettingsInputParam:
+      type: object
+      properties:
+        questions:
+          description: Native Decision API questions evaluated together, in order.
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionParam'
+          minItems: 1
+          maxItems: 64
+        model:
+          type: string
+          minLength: 1
+      required:
+      - questions
+      - model
+    LiveDecisionsDelegationParam:
+      type: object
+      properties:
+        type:
+          default: decisions
+          x-stainless-const: true
+          type: string
+          enum:
+          - decisions
+        decisions:
+          $ref: '#/components/schemas/LiveDecisionsSettingsInputParam'
+      required:
+      - type
+      - decisions
     delegation:
       anyOf:
       - description: Who handles tasks delegated by the Live model. Omitted or null selects your application; use `responses` or `decisions` to delegate to the corresponding API.
@@ -78054,6 +78296,47 @@ components:
         - $ref: '#/components/schemas/LiveResponsesDelegationParam'
         - $ref: '#/components/schemas/LiveDecisionsDelegationParam'
       - type: 'null'
+    LiveDecisionQuestionsInputParam:
+      description: Questions evaluated using the current transcript and the session's shared Decision items.
+      type: object
+      properties:
+        questions:
+          description: Native Decision API questions evaluated together, in order.
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionParam'
+          minItems: 1
+          maxItems: 64
+      required:
+      - questions
+    LiveDecisionTriggerInputParam:
+      type: object
+      properties:
+        type:
+          default: decisions
+          x-stainless-const: true
+          type: string
+          enum:
+          - decisions
+        event_type:
+          type: string
+          enum:
+          - session.input_transcript.delta
+          - session.output_transcript.delta
+        decisions:
+          description: Questions evaluated using the current transcript and the session's shared Decision items.
+          $ref: '#/components/schemas/LiveDecisionQuestionsInputParam'
+      required:
+      - type
+      - event_type
+      - decisions
+      additionalProperties: false
+    triggers:
+      description: At most one Decisions trigger per transcript event type. Triggers run independently of delegation. On update, omit triggers to keep the current configuration, send a list to replace it, or send an empty list to disable triggers.
+      type: array
+      items:
+        $ref: '#/components/schemas/LiveDecisionTriggerInputParam'
+      maxItems: 2
     store:
       description: Whether to store the session for later forking and recording download. Defaults to false for new sessions.
       type: boolean
@@ -79945,6 +80228,16 @@ components:
         code:
           type: string
           description: A machine-readable error code that was returned.
+        type:
+          anyOf:
+          - type: string
+            description: The original error type, or null if it was not recorded.
+          - type: 'null'
+        param:
+          anyOf:
+          - type: string
+            description: The request parameter associated with the error, or null if none was recorded.
+          - type: 'null'
         message:
           type: string
           description: A human-readable description of the error that was returned.
@@ -79957,16 +80250,6 @@ components:
           x-oaiTypeLabel: map
         misalignment:
           $ref: '#/components/schemas/MisalignmentErrorDetailsResource'
-        param:
-          anyOf:
-          - type: string
-            description: The request parameter associated with the error, or null if none was recorded.
-          - type: 'null'
-        type:
-          anyOf:
-          - type: string
-            description: The original error type, or null if it was not recorded.
-          - type: 'null'
       type: object
       required:
       - code
@@ -81896,35 +82179,69 @@ components:
           - type: 'null'
           description: The image detail level, using the selected model's image profile. Defaults to auto.
           default: auto
+        prompt_cache_breakpoint:
+          anyOf:
+          - $ref: '#/components/schemas/DecisionPromptCacheBreakpoint'
+          - type: 'null'
         type:
           type: string
           enum:
           - input_image
           default: input_image
           x-stainless-const: true
-        prompt_cache_breakpoint:
-          anyOf:
-          - $ref: '#/components/schemas/DecisionPromptCacheBreakpoint'
-          - type: 'null'
       required:
       - image_url
       - type
       additionalProperties: false
       description: An image provided as a base64 data URL or a publicly accessible HTTP(S) URL. File IDs are not supported.
+    DecisionInputOutputText:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - output_text
+          default: output_text
+          x-stainless-const: true
+        text:
+          type: string
+          minLength: 0
+          maxLength: 10485760
+      required:
+      - type
+      - text
+      additionalProperties: false
+    DecisionInputRefusal:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - refusal
+          default: refusal
+          x-stainless-const: true
+        refusal:
+          type: string
+          minLength: 0
+          maxLength: 10485760
+      required:
+      - type
+      - refusal
+      additionalProperties: false
     DecisionInputContentParts:
       type: array
       items:
-        x-oai-discriminator-values:
-        - input_text
-        - input_image
+        oneOf:
+        - $ref: '#/components/schemas/DecisionInputText'
+        - $ref: '#/components/schemas/DecisionInputImage'
         discriminator:
           propertyName: type
           mapping:
             input_text: '#/components/schemas/DecisionInputText'
             input_image: '#/components/schemas/DecisionInputImage'
-        anyOf:
-        - $ref: '#/components/schemas/DecisionInputText'
-        - $ref: '#/components/schemas/DecisionInputImage'
+        x-oai-discriminator-values:
+        - input_text
+        - input_image
       minItems: 0
       maxItems: 16384
     DecisionInputContent:
@@ -81935,6 +82252,11 @@ components:
         maxLength: 10485760
       - $ref: '#/components/schemas/DecisionInputContentParts'
         title: Parts
+    MessagePhaseParam:
+      type: string
+      enum:
+      - commentary
+      - final_answer
     DecisionInputMessage:
       type: object
       properties:
@@ -81957,25 +82279,205 @@ components:
       - content
       additionalProperties: false
       description: A user message containing text or images.
-    DecisionInput:
-      description: The text or images to evaluate for every question. Provide a text string or user messages containing text and images. Images can be base64 data URLs or publicly accessible HTTP(S) URLs; at most 128 images are allowed across all messages in one request. Files, audio, tools, and item references are not supported.
+    FunctionCallStatusParam:
+      type: string
+      enum:
+      - in_progress
+      - completed
+      - incomplete
+    DecisionInputFunctionCall:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+          minLength: 0
+          maxLength: 1048576
+        call_id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        namespace:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_-]+$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: ^[a-zA-Z0-9_.-]+$
+        arguments:
+          type: string
+          minLength: 0
+          maxLength: 1048576
+        status:
+          anyOf:
+          - $ref: '#/components/schemas/FunctionCallStatusParam'
+          - type: 'null'
+        type:
+          type: string
+          enum:
+          - function_call
+          default: function_call
+          x-stainless-const: true
+      required:
+      - call_id
+      - name
+      - arguments
+      - type
+      additionalProperties: false
+    DecisionInputToolOutputContentParts:
+      type: array
+      items:
+        x-oai-discriminator-values:
+        - input_text
+        - input_image
+        discriminator:
+          propertyName: type
+          mapping:
+            input_text: '#/components/schemas/DecisionInputText'
+            input_image: '#/components/schemas/DecisionInputImage'
+        anyOf:
+        - $ref: '#/components/schemas/DecisionInputText'
+        - $ref: '#/components/schemas/DecisionInputImage'
+      minItems: 0
+      maxItems: 16384
+    DecisionInputToolOutputContent:
+      description: Text evidence or an ordered list of text and image parts.
       anyOf:
+      - type: string
+        minLength: 0
+        maxLength: 10485760
+      - $ref: '#/components/schemas/DecisionInputToolOutputContentParts'
+        title: Parts
+    DecisionInputFunctionCallOutput:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+          minLength: 0
+          maxLength: 1048576
+        call_id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        output:
+          $ref: '#/components/schemas/DecisionInputToolOutputContent'
+        status:
+          anyOf:
+          - $ref: '#/components/schemas/FunctionCallStatusParam'
+          - type: 'null'
+        type:
+          type: string
+          enum:
+          - function_call_output
+          default: function_call_output
+          x-stainless-const: true
+      required:
+      - call_id
+      - output
+      - type
+      additionalProperties: false
+    DecisionInputCustomToolCall:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+          minLength: 0
+          maxLength: 1048576
+        call_id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        namespace:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_-]+$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: ^[a-zA-Z0-9_-]+$
+        input:
+          type: string
+          minLength: 0
+          maxLength: 1048576
+        status:
+          anyOf:
+          - $ref: '#/components/schemas/FunctionCallStatusParam'
+          - type: 'null'
+        type:
+          type: string
+          enum:
+          - custom_tool_call
+          default: custom_tool_call
+          x-stainless-const: true
+      required:
+      - call_id
+      - name
+      - input
+      - type
+      additionalProperties: false
+    DecisionInputCustomToolCallOutput:
+      type: object
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+          minLength: 0
+          maxLength: 1048576
+        call_id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        output:
+          $ref: '#/components/schemas/DecisionInputToolOutputContent'
+        status:
+          anyOf:
+          - $ref: '#/components/schemas/FunctionCallStatusParam'
+          - type: 'null'
+        type:
+          type: string
+          enum:
+          - custom_tool_call_output
+          default: custom_tool_call_output
+          x-stainless-const: true
+      required:
+      - call_id
+      - output
+      - type
+      additionalProperties: false
+    DecisionInput:
+      oneOf:
       - type: string
         minLength: 0
         maxLength: 10485760
       - type: array
         items:
-          x-oai-default-discriminator-value: message
+          oneOf:
+          - $ref: '#/components/schemas/DecisionInputMessage'
           discriminator:
             propertyName: type
             mapping:
               message: '#/components/schemas/DecisionInputMessage'
           x-oai-discriminator-values:
           - message
-          anyOf:
-          - $ref: '#/components/schemas/DecisionInputMessage'
+          x-oai-default-discriminator-value: message
         minItems: 0
         maxItems: 131072
+      description: The text or images to evaluate for every question. Provide a text string or user messages containing text and images. Images can be base64 data URLs or publicly accessible HTTP(S) URLs; at most 128 images are allowed across all messages in one request. Files, audio, tools, and item references are not supported.
     QuestionParamPredicate:
       type: object
       properties:
@@ -82113,19 +82615,19 @@ components:
       type: object
       properties:
         model:
-          description: The model to use. Only `gpt-6-luna` is supported.
           type: string
           minLength: 0
           maxLength: 1048576
+          description: The model to use. Only `gpt-6-luna` is supported.
         input:
           $ref: '#/components/schemas/DecisionInput'
         questions:
-          description: Ask 1–200 questions about the input. Each question can be a predicate, choice, or score. Answers come back in the same order.
           type: array
           items:
             $ref: '#/components/schemas/QuestionParam'
           minItems: 1
           maxItems: 200
+          description: Ask 1–200 questions about the input. Each question can be a predicate, choice, or score. Answers come back in the same order.
         safety_identifier:
           type:
           - string
@@ -82161,6 +82663,7 @@ components:
               - explicit
               - null
               description: Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults to `implicit`. With `implicit`, OpenAI creates one implicit breakpoint and writes up to the latest three explicit breakpoints in the request. With `explicit`, OpenAI does not create an implicit breakpoint and writes up to the latest four explicit breakpoints. If there are no explicit breakpoints, the request does not use prompt caching.
+              x-openai-go-optional-enum: true
           additionalProperties: false
           title: Prompt cache options
           description: Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for current details.
@@ -82388,19 +82891,19 @@ components:
       type: object
       properties:
         model:
-          description: The model used.
           type: string
           minLength: 0
+          description: The model used.
         answers:
-          description: 'Answers in question order. Any question can return a refusal instead of an answer; other questions can still receive answers. A refusal has `type: "refusal"` and the question''s `name`, or `null` if it was unnamed.'
           type: array
           items:
             $ref: '#/components/schemas/AnswerResource'
           minItems: 0
           maxItems: 2000
+          description: 'Answers in question order. Any question can return a refusal instead of an answer; other questions can still receive answers. A refusal has `type: "refusal"` and the question''s `name`, or `null` if it was unnamed.'
         usage:
-          description: Token usage for the request.
           $ref: '#/components/schemas/ResponseUsageResource'
+          description: Token usage for the request.
       required:
       - model
       - answers
@@ -86796,26 +87299,6 @@ components:
       - deleted
       additionalProperties: false
       description: A deleted reusable environment template.
-    SessionSpendControlResource:
-      type: object
-      properties:
-        limit:
-          type: integer
-          format: int64
-          minimum: 1
-          maximum: 4503599627370495
-          description: The configured positive limit in USD cents.
-        consumed:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-          description: Best-effort recorded spend floored to whole USD cents, or null when unavailable.
-      required:
-      - limit
-      - consumed
-      additionalProperties: false
-      description: Session-wide spending control, present only when a limit is configured.
     SessionStatusResource:
       type: string
       enum:
@@ -87474,9 +87957,6 @@ components:
     SessionResource:
       type: object
       properties:
-        spend_control:
-          $ref: '#/components/schemas/SessionSpendControlResource'
-          description: Configured spending limit and best-effort consumption, in USD cents. Unlimited sessions omit this object.
         metadata:
           type: object
           additionalProperties:
@@ -87541,6 +88021,9 @@ components:
           - $ref: '#/components/schemas/TokenUsageResource'
           - type: 'null'
           description: Best-effort token usage for the session, or null if unknown. Recorded usage may change.
+        spend_control:
+          $ref: '#/components/schemas/SessionSpendControlResource'
+          description: Configured spending limit and best-effort consumption, in USD cents. Unlimited sessions omit this object.
       required:
       - metadata
       - id
@@ -87596,21 +88079,6 @@ components:
       - has_more
       additionalProperties: false
       description: A page of Agents API resources, with IDs for retrieving additional pages.
-    SessionSpendControlParam:
-      type: object
-      properties:
-        limit:
-          type:
-          - integer
-          - 'null'
-          format: int64
-          minimum: 1
-          maximum: 4503599627370495
-          description: Positive USD cents, or null to remove the limit.
-      required:
-      - limit
-      additionalProperties: false
-      description: Sets the session-wide limit without changing recorded spend.
     AgentToolConfigParamFunction:
       type: object
       properties:
@@ -88292,11 +88760,6 @@ components:
     CreateAgentSessionParams:
       type: object
       properties:
-        spend_control:
-          anyOf:
-          - $ref: '#/components/schemas/SessionSpendControlParam'
-          - type: 'null'
-          description: Optional spending limit in USD cents. Omission or null creates an unlimited session.
         metadata:
           type:
           - object
@@ -88343,10 +88806,134 @@ components:
           type: boolean
           default: false
           description: Whether to stream session events as server-sent events. Defaults to `false`.
+        spend_control:
+          anyOf:
+          - $ref: '#/components/schemas/SessionSpendControlParam'
+          - type: 'null'
+          description: Optional spending limit in USD cents. Omission or null creates an unlimited session.
       required:
       - environment
       additionalProperties: false
       description: Parameters for creating a Managed Agents session.
+    SessionEventAgentSessionTurnReasoningSummaryTextDelta:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - agent.session.turn.reasoning_summary_text.delta
+          default: agent.session.turn.reasoning_summary_text.delta
+          x-stainless-const: true
+          description: The type of the object. Always `agent.session.turn.reasoning_summary_text.delta`.
+        event_id:
+          type: string
+          minLength: 0
+          description: The unique ID of the event.
+        session_id:
+          type: string
+          minLength: 0
+          description: The ID of the session associated with the event.
+        turn_id:
+          type:
+          - string
+          - 'null'
+          minLength: 0
+          description: The ID of the turn associated with the event, when applicable.
+        item_id:
+          type: string
+          minLength: 0
+          description: The ID of the reasoning item.
+        output_index:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 4294967295
+          description: The index of the item in the turn output.
+        summary_index:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 4294967295
+          description: The index of the summary content part.
+        delta:
+          type: string
+          minLength: 0
+          description: The summary text that was appended.
+      required:
+      - type
+      - event_id
+      - session_id
+      - turn_id
+      - item_id
+      - output_index
+      - summary_index
+      - delta
+      additionalProperties: false
+      description: Emitted when text is appended to a reasoning summary.
+    SessionEventAgentSessionTurnReasoningSummaryPartDone:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - agent.session.turn.reasoning_summary_part.done
+          default: agent.session.turn.reasoning_summary_part.done
+          x-stainless-const: true
+          description: The type of the object. Always `agent.session.turn.reasoning_summary_part.done`.
+        event_id:
+          type: string
+          minLength: 0
+          description: The unique ID of the event.
+        session_id:
+          type: string
+          minLength: 0
+          description: The ID of the session associated with the event.
+        turn_id:
+          type:
+          - string
+          - 'null'
+          minLength: 0
+          description: The ID of the turn associated with the event, when applicable.
+        item_id:
+          type: string
+          minLength: 0
+          description: The ID of the reasoning item.
+        output_index:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 4294967295
+          description: The index of the item in the turn output.
+        summary_index:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 4294967295
+          description: The index of the summary part.
+        part:
+          $ref: '#/components/schemas/SummaryTextResource'
+          description: The completed summary part.
+        status:
+          type:
+          - string
+          - 'null'
+          enum:
+          - incomplete
+          - null
+          description: Present as `incomplete` when summary generation was interrupted.
+          x-stainless-const: true
+      required:
+      - type
+      - event_id
+      - session_id
+      - turn_id
+      - item_id
+      - output_index
+      - summary_index
+      - part
+      - status
+      additionalProperties: false
+      description: Emitted when a reasoning summary part is complete.
     SessionEventAgentSessionTurnReasoningSummaryTextDone:
       type: object
       properties:
@@ -89695,130 +90282,13 @@ components:
       - part
       additionalProperties: false
       description: Emitted when a reasoning summary content part is added.
-    SessionEventAgentSessionTurnReasoningSummaryPartDone:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - agent.session.turn.reasoning_summary_part.done
-          default: agent.session.turn.reasoning_summary_part.done
-          x-stainless-const: true
-          description: The type of the object. Always `agent.session.turn.reasoning_summary_part.done`.
-        event_id:
-          type: string
-          minLength: 0
-          description: The unique ID of the event.
-        session_id:
-          type: string
-          minLength: 0
-          description: The ID of the session associated with the event.
-        turn_id:
-          type:
-          - string
-          - 'null'
-          minLength: 0
-          description: The ID of the turn associated with the event, when applicable.
-        item_id:
-          type: string
-          minLength: 0
-          description: The ID of the reasoning item.
-        output_index:
-          type: integer
-          format: int64
-          minimum: 0
-          maximum: 4294967295
-          description: The index of the item in the turn output.
-        summary_index:
-          type: integer
-          format: int64
-          minimum: 0
-          maximum: 4294967295
-          description: The index of the summary part.
-        part:
-          $ref: '#/components/schemas/SummaryTextResource'
-          description: The completed summary part.
-        status:
-          type:
-          - string
-          - 'null'
-          enum:
-          - incomplete
-          - null
-          description: Present as `incomplete` when summary generation was interrupted.
-          x-stainless-const: true
-      required:
-      - type
-      - event_id
-      - session_id
-      - turn_id
-      - item_id
-      - output_index
-      - summary_index
-      - part
-      - status
-      additionalProperties: false
-      description: Emitted when a reasoning summary part is complete.
-    SessionEventAgentSessionTurnReasoningSummaryTextDelta:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - agent.session.turn.reasoning_summary_text.delta
-          default: agent.session.turn.reasoning_summary_text.delta
-          x-stainless-const: true
-          description: The type of the object. Always `agent.session.turn.reasoning_summary_text.delta`.
-        event_id:
-          type: string
-          minLength: 0
-          description: The unique ID of the event.
-        session_id:
-          type: string
-          minLength: 0
-          description: The ID of the session associated with the event.
-        turn_id:
-          type:
-          - string
-          - 'null'
-          minLength: 0
-          description: The ID of the turn associated with the event, when applicable.
-        item_id:
-          type: string
-          minLength: 0
-          description: The ID of the reasoning item.
-        output_index:
-          type: integer
-          format: int64
-          minimum: 0
-          maximum: 4294967295
-          description: The index of the item in the turn output.
-        summary_index:
-          type: integer
-          format: int64
-          minimum: 0
-          maximum: 4294967295
-          description: The index of the summary content part.
-        delta:
-          type: string
-          minLength: 0
-          description: The summary text that was appended.
-      required:
-      - type
-      - event_id
-      - session_id
-      - turn_id
-      - item_id
-      - output_index
-      - summary_index
-      - delta
-      additionalProperties: false
-      description: Emitted when text is appended to a reasoning summary.
     SessionEvent:
       description: An event emitted by a Managed Agents session.
       discriminator:
         propertyName: type
         mapping:
+          agent.session.turn.reasoning_summary_text.delta: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryTextDelta'
+          agent.session.turn.reasoning_summary_part.done: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryPartDone'
           agent.session.turn.reasoning_summary_text.done: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryTextDone'
           error: '#/components/schemas/SessionEventError'
           agent.session.environment.ready: '#/components/schemas/SessionEventAgentSessionEnvironmentReady'
@@ -89850,8 +90320,6 @@ components:
           agent.session.turn.output_text.delta: '#/components/schemas/SessionEventAgentSessionTurnOutputTextDelta'
           agent.session.turn.output_text.done: '#/components/schemas/SessionEventAgentSessionTurnOutputTextDone'
           agent.session.turn.reasoning_summary_part.added: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryPartAdded'
-          agent.session.turn.reasoning_summary_part.done: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryPartDone'
-          agent.session.turn.reasoning_summary_text.delta: '#/components/schemas/SessionEventAgentSessionTurnReasoningSummaryTextDelta'
       x-oai-discriminator-values:
       - error
       - agent.session.environment.ready
@@ -89953,11 +90421,6 @@ components:
     UpdateAgentSessionParams:
       type: object
       properties:
-        spend_control:
-          anyOf:
-          - $ref: '#/components/schemas/SessionSpendControlParam'
-          - type: 'null'
-          description: Omit to retain the limit; null or a null limit removes it without resetting spend.
         agent:
           $ref: '#/components/schemas/UpdateSessionAgentParam'
           description: Model settings for subsequent turns. Omitted fields stay unchanged.
@@ -89976,6 +90439,11 @@ components:
           minProperties: 0
           maxProperties: 16
           description: Replaces all metadata. Omit to leave unchanged, or pass null or {} to clear it. Up to 16 string key-value pairs, with keys up to 64 and values up to 512 characters.
+        spend_control:
+          anyOf:
+          - $ref: '#/components/schemas/SessionSpendControlParam'
+          - type: 'null'
+          description: Omit to retain the limit; null or a null limit removes it without resetting spend.
       additionalProperties: false
       description: Fields to update on an existing session.
     DeletedSessionResource:
@@ -91949,6 +92417,71 @@ components:
           description: The voice used for speech generated by the Live model.
           $ref: '#/components/schemas/LiveInitialSessionAudioOutputParam'
       required: []
+    LiveDecisionsSettingsInputParam-2:
+      type: object
+      properties:
+        questions:
+          description: Native Decision API questions evaluated together, in order.
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionParam'
+          minItems: 1
+          maxItems: 64
+        model:
+          type: string
+          minLength: 1
+      required:
+      - questions
+      - model
+    LiveDecisionsDelegationParam-2:
+      type: object
+      properties:
+        type:
+          default: decisions
+          x-stainless-const: true
+          type: string
+          enum:
+          - decisions
+        decisions:
+          $ref: '#/components/schemas/LiveDecisionsSettingsInputParam-2'
+      required:
+      - type
+      - decisions
+    LiveDecisionQuestionsInputParam-2:
+      description: Questions evaluated using the current transcript and the session's shared Decision items.
+      type: object
+      properties:
+        questions:
+          description: Native Decision API questions evaluated together, in order.
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionParam'
+          minItems: 1
+          maxItems: 64
+      required:
+      - questions
+    LiveDecisionTriggerInputParam-2:
+      type: object
+      properties:
+        type:
+          default: decisions
+          x-stainless-const: true
+          type: string
+          enum:
+          - decisions
+        event_type:
+          type: string
+          enum:
+          - session.input_transcript.delta
+          - session.output_transcript.delta
+        decisions:
+          description: Questions evaluated using the current transcript and the session's shared Decision items.
+          $ref: '#/components/schemas/LiveDecisionQuestionsInputParam-2'
+      required:
+      - type
+      - event_type
+      - decisions
+      additionalProperties: false
     LiveSessionCreateParams:
       description: Initial configuration for a Live session, including its model, conversation instructions, audio, and delegated task handling.
       type: object
@@ -92045,6 +92578,33 @@ components:
                 voice: marin
             delegation:
               type: client
+    LiveDecisionsSettingsUpdateParam:
+      type: object
+      properties:
+        model:
+          type: string
+          minLength: 1
+        questions:
+          description: Native Decision API questions evaluated together, in order.
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionParam'
+          minItems: 1
+          maxItems: 64
+      required: []
+    LiveDecisionsDelegationUpdateParam:
+      type: object
+      properties:
+        type:
+          default: decisions
+          x-stainless-const: true
+          type: string
+          enum:
+          - decisions
+        decisions:
+          $ref: '#/components/schemas/LiveDecisionsSettingsUpdateParam'
+      required:
+      - type
     LiveSessionUpdateParams:
       description: Changes to an active Live session's delegation settings and transcript triggers.
       type: object
@@ -92343,6 +92903,189 @@ components:
           event_id: evt_commentary_001
           delegation_id: del_abc123
           content: There is an outdoor table for two at 7 PM. Ask whether to reserve it.
+    LiveDecisionCreateParam:
+      description: Evaluate the configured questions using the current conversation and Decision inputs. Reusing an event_id is rejected for the lifetime of the session.
+      example:
+        type: decision.create
+        event_id: decision_1
+      type: object
+      properties:
+        event_id:
+          type: string
+          minLength: 1
+          maxLength: 256
+        type:
+          default: decision.create
+          x-stainless-const: true
+          type: string
+          enum:
+          - decision.create
+      required:
+      - event_id
+      - type
+      x-oaiMeta:
+        example:
+          type: decision.create
+          event_id: decision_1
+    LiveDecisionInputTextParam:
+      type: object
+      properties:
+        type:
+          description: The type of the input item. Always `input_text`.
+          default: input_text
+          x-stainless-const: true
+          type: string
+          enum:
+          - input_text
+        text:
+          description: The text input to the model.
+          type: string
+          maxLength: 10485760
+      required:
+      - type
+      - text
+    LiveDetailEnum:
+      type: string
+      enum:
+      - low
+      - high
+      - auto
+      - original
+    LiveDecisionInputImageParam:
+      type: object
+      properties:
+        type:
+          description: The type of the input item. Always `input_image`.
+          default: input_image
+          x-stainless-const: true
+          type: string
+          enum:
+          - input_image
+        image_url:
+          description: An inline image encoded as a data URL.
+          type: string
+          maxLength: 20971520
+          pattern: '^data:'
+        detail:
+          anyOf:
+          - description: The detail level of the image to be sent to the model. One of `high`, `low`, `auto`, or `original`. Defaults to `auto`.
+            $ref: '#/components/schemas/LiveDetailEnum'
+          - type: 'null'
+      required:
+      - type
+      - image_url
+    LiveDecisionInputItemParam:
+      type: object
+      properties:
+        id:
+          anyOf:
+          - description: The unique ID of this message item.
+            type: string
+          - type: 'null'
+        type:
+          default: message
+          x-stainless-const: true
+          type: string
+          enum:
+          - message
+        role:
+          description: The message role. Always `user`.
+          default: user
+          x-stainless-const: true
+          type: string
+          enum:
+          - user
+        content:
+          anyOf:
+          - description: The text input to the model.
+            type: string
+            maxLength: 10485760
+          - type: array
+            items:
+              discriminator:
+                propertyName: type
+              anyOf:
+              - $ref: '#/components/schemas/LiveDecisionInputTextParam'
+              - $ref: '#/components/schemas/LiveDecisionInputImageParam'
+            x-stainless-variantName: parts
+            x-stainless-naming:
+              java:
+                variant_constructor: DecisionItemCreateEventItemContentItems
+      required:
+      - role
+      - content
+    LiveDecisionItemCreateParam:
+      description: Append an input item for future decisions without starting an evaluation or changing Live voice context.
+      example:
+        type: decision.item.create
+        event_id: browser_1
+        item:
+          type: message
+          role: user
+          content:
+          - type: input_text
+            text: Wikipedia is open.
+      type: object
+      properties:
+        event_id:
+          anyOf:
+          - description: Optional client identifier for correlating this command with a server event's client_event_id or error.client_event_id.
+            type: string
+            maxLength: 512
+          - type: 'null'
+        type:
+          default: decision.item.create
+          x-stainless-const: true
+          type: string
+          enum:
+          - decision.item.create
+        item:
+          $ref: '#/components/schemas/LiveDecisionInputItemParam'
+          x-openai-go-skip-union-projection: true
+      required:
+      - type
+      - item
+      x-oaiMeta:
+        example:
+          type: decision.item.create
+          event_id: browser_1
+          item:
+            type: message
+            role: user
+            content:
+            - type: input_text
+              text: Wikipedia is open.
+    LiveDecisionItemDeleteParam:
+      description: Delete an input item from future decisions without starting an evaluation or changing Live voice context.
+      example:
+        type: decision.item.delete
+        event_id: remove_browser_1
+        item_id: msg_browser_1
+      type: object
+      properties:
+        event_id:
+          anyOf:
+          - description: Optional client identifier for correlating this command with a server event's client_event_id or error.client_event_id.
+            type: string
+            maxLength: 512
+          - type: 'null'
+        type:
+          default: decision.item.delete
+          x-stainless-const: true
+          type: string
+          enum:
+          - decision.item.delete
+        item_id:
+          type: string
+          minLength: 1
+      required:
+      - type
+      - item_id
+      x-oaiMeta:
+        example:
+          type: decision.item.delete
+          event_id: remove_browser_1
+          item_id: msg_browser_1
     LiveResponseItemCreateParam:
       description: Add an input item to the Live session’s Responses backend. Requires Responses delegation; use `response.create` to request a response.
       example:
@@ -93151,6 +93894,239 @@ components:
             id: del_abc123
             type: delegation
             target: client
+    LiveDecisionCompleted:
+      type: object
+      properties:
+        type:
+          default: decision.completed
+          x-stainless-const: true
+          type: string
+          enum:
+          - decision.completed
+        decision:
+          description: The native Decision API response, including its model, ordered answers, and token usage.
+          $ref: '#/components/schemas/DecisionResponse'
+      required:
+      - type
+      - decision
+    LiveDecisionEvent:
+      description: A Decision API event for a Live delegation or transcript trigger. For a trigger, source_event_id identifies the transcript delta that caused this evaluation.
+      example:
+        type: decision.event
+        event_id: evt_decision_1
+        delegation_id: del_abc123
+        trigger_id: null
+        source_event_type: null
+        source_event_id: null
+        event:
+          type: decision.completed
+          decision:
+            model: gpt-6-luna
+            answers:
+            - type: predicate
+              name: damaged
+              probability: 0.95
+            usage:
+              input_tokens: 42
+              input_tokens_details:
+                cached_tokens: 0
+                cache_write_tokens: 0
+              output_tokens: 0
+              output_tokens_details:
+                reasoning_tokens: 0
+              total_tokens: 42
+      type: object
+      properties:
+        type:
+          default: decision.event
+          x-stainless-const: true
+          type: string
+          enum:
+          - decision.event
+        event_id:
+          description: The unique ID of this Live server event.
+          type: string
+        delegation_id:
+          anyOf:
+          - description: The Live delegation ID, or null for a transcript trigger.
+            type: string
+          - type: 'null'
+        trigger_id:
+          anyOf:
+          - description: The Live-assigned ID of this trigger firing, or null for a delegation.
+            type: string
+          - type: 'null'
+        source_event_type:
+          anyOf:
+          - anyOf:
+            - default: session.input_transcript.delta
+              x-stainless-const: true
+              type: string
+              enum:
+              - session.input_transcript.delta
+            - default: session.output_transcript.delta
+              x-stainless-const: true
+              type: string
+              enum:
+              - session.output_transcript.delta
+          - type: 'null'
+        source_event_id:
+          anyOf:
+          - description: The event_id of the transcript delta that fired this trigger, or null for a delegation.
+            type: string
+          - type: 'null'
+        event:
+          $ref: '#/components/schemas/LiveDecisionCompleted'
+      required:
+      - type
+      - event_id
+      - delegation_id
+      - trigger_id
+      - source_event_type
+      - source_event_id
+      - event
+      x-oaiMeta:
+        example:
+          type: decision.event
+          event_id: evt_decision_1
+          delegation_id: del_abc123
+          trigger_id: null
+          source_event_type: null
+          source_event_id: null
+          event:
+            type: decision.completed
+            decision:
+              model: gpt-6-luna
+              answers:
+              - type: predicate
+                name: damaged
+                probability: 0.95
+              usage:
+                input_tokens: 42
+                input_tokens_details:
+                  cached_tokens: 0
+                  cache_write_tokens: 0
+                output_tokens: 0
+                output_tokens_details:
+                  reasoning_tokens: 0
+                total_tokens: 42
+    LiveDecisionStoredInputItemParam:
+      type: object
+      properties:
+        id:
+          description: The ID of the stored Decision input item.
+          type: string
+        type:
+          default: message
+          x-stainless-const: true
+          type: string
+          enum:
+          - message
+        role:
+          description: The message role. Always `user`.
+          default: user
+          x-stainless-const: true
+          type: string
+          enum:
+          - user
+        content:
+          anyOf:
+          - description: The text input to the model.
+            type: string
+            maxLength: 10485760
+          - type: array
+            items:
+              discriminator:
+                propertyName: type
+              anyOf:
+              - $ref: '#/components/schemas/LiveDecisionInputTextParam'
+              - $ref: '#/components/schemas/LiveDecisionInputImageParam'
+            x-stainless-variantName: parts
+            x-stainless-naming:
+              java:
+                variant_constructor: DecisionItemCreatedEventItemContentItems
+      required:
+      - id
+      - role
+      - content
+    LiveDecisionItemCreated:
+      description: An input item was appended for future decisions.
+      example:
+        type: decision.item.created
+        event_id: evt_item_1
+        client_event_id: browser_1
+        item:
+          id: msg_browser_1
+          type: message
+          role: user
+          content:
+          - type: input_text
+            text: Wikipedia is open.
+      type: object
+      properties:
+        event_id:
+          description: The unique ID of the Live server event.
+          type: string
+        client_event_id:
+          description: The event_id of the client command associated with this server event, when supplied.
+          type: string
+        type:
+          default: decision.item.created
+          x-stainless-const: true
+          type: string
+          enum:
+          - decision.item.created
+        item:
+          $ref: '#/components/schemas/LiveDecisionStoredInputItemParam'
+      required:
+      - event_id
+      - type
+      - item
+      x-oaiMeta:
+        example:
+          type: decision.item.created
+          event_id: evt_item_1
+          client_event_id: browser_1
+          item:
+            id: msg_browser_1
+            type: message
+            role: user
+            content:
+            - type: input_text
+              text: Wikipedia is open.
+    LiveDecisionItemDeleted:
+      description: An input item was removed from future decisions.
+      example:
+        type: decision.item.deleted
+        event_id: evt_item_deleted_1
+        client_event_id: remove_browser_1
+        item_id: msg_browser_1
+      type: object
+      properties:
+        event_id:
+          description: The unique ID of the Live server event.
+          type: string
+        client_event_id:
+          description: The event_id of the client command associated with this server event, when supplied.
+          type: string
+        type:
+          default: decision.item.deleted
+          x-stainless-const: true
+          type: string
+          enum:
+          - decision.item.deleted
+        item_id:
+          type: string
+      required:
+      - event_id
+      - type
+      - item_id
+      x-oaiMeta:
+        example:
+          type: decision.item.deleted
+          event_id: evt_item_deleted_1
+          client_event_id: remove_browser_1
+          item_id: msg_browser_1
     LiveResponseEvent:
       description: A streaming Responses API event from a backend delegated to by the Live session. Use the outer delegation_id to associate the nested stream with its Live delegation.
       example:
@@ -93390,6 +94366,9 @@ components:
       - type
       - code
       - message
+      x-stainless-naming:
+        go:
+          model_name: LiveError
     LiveErrorEvent:
       description: Reports an error in the Live session, such as an invalid client command. Use error.client_event_id, when present, to identify the command that caused the error.
       example:
@@ -96998,9 +97977,6 @@ components:
       description: The logs output from the code interpreter.
     BetaImageGenToolCall:
       properties:
-        error:
-          $ref: '#/components/schemas/BetaImageGenToolCallError'
-          description: Details of a moderation failure, when available.
         agent:
           anyOf:
           - $ref: '#/components/schemas/BetaAgentTag'
@@ -97028,6 +98004,10 @@ components:
           - type: string
             description: The generated image encoded in base64.
           - type: 'null'
+        error:
+          $ref: '#/components/schemas/BetaImageGenToolCallError'
+          description: Details of a moderation failure, when available.
+          x-openai-go-skip-union-projection: true
         size:
           anyOf:
           - anyOf:
@@ -97094,6 +98074,51 @@ components:
       - transparent
       - opaque
       - auto
+    BetaImageGenToolCallError:
+      properties:
+        code:
+          anyOf:
+          - type: string
+            description: The error code.
+          - type: 'null'
+        type:
+          type: string
+          description: The error type.
+        message:
+          type: string
+          description: A description of the error.
+        param:
+          anyOf:
+          - type: string
+            description: The related request parameter.
+          - type: 'null'
+        moderation_details:
+          $ref: '#/components/schemas/BetaImageGenToolCallModerationDetails'
+          description: Public details for a `moderation_blocked` error, when available.
+      type: object
+      required:
+      - code
+      - type
+      - message
+      - param
+    BetaImageGenToolCallModerationDetails:
+      properties:
+        moderation_stage:
+          type: string
+          enum:
+          - input
+          - output
+          - unknown
+          description: The stage where moderation blocked the image generation call.
+        categories:
+          items:
+            type: string
+          type: array
+          description: Public moderation categories. New category values may be added over time.
+      type: object
+      required:
+      - moderation_stage
+      - categories
     BetaCompactionSummaryItemParam:
       properties:
         agent:
@@ -101245,6 +102270,16 @@ components:
         description: |
           An error object returned when the model fails to generate a Response.
         properties:
+          type:
+            anyOf:
+            - type: string
+            - type: 'null'
+            description: The original error type, or null if it was not recorded.
+          param:
+            anyOf:
+            - type: string
+            - type: 'null'
+            description: The request parameter associated with the error, or null if none was recorded.
           code:
             $ref: '#/components/schemas/BetaResponseErrorCode'
           message:
@@ -101253,16 +102288,6 @@ components:
               A human-readable description of the error.
           misalignment:
             $ref: '#/components/schemas/BetaMisalignmentErrorDetailsResource'
-          param:
-            anyOf:
-            - type: string
-            - type: 'null'
-            description: The request parameter associated with the error, or null if none was recorded.
-          type:
-            anyOf:
-            - type: string
-            - type: 'null'
-            description: The original error type, or null if it was not recorded.
         required:
         - code
         - message
@@ -106401,704 +107426,41 @@ components:
       - $ref: '#/components/schemas/BetaResponseCustomToolCallInputDoneEvent'
       discriminator:
         propertyName: type
-    CreateVoicePromptRequest:
+    SessionSpendControlResource:
       type: object
-      title: Prompt
-      description: Creates a synthetic voice from a text description. Supports application/json or multipart/form-data.
+      properties:
+        limit:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 4503599627370495
+          description: The configured positive limit in USD cents.
+        consumed:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          description: Best-effort recorded spend floored to whole USD cents, or null when unavailable.
+      required:
+      - limit
+      - consumed
       additionalProperties: false
-      properties:
-        type:
-          type: string
-          enum:
-          - prompt
-          description: Set to `prompt` to create a voice from a text description.
-        name:
-          type: string
-          minLength: 1
-          maxLength: 256
-          description: The name of the new voice.
-        prompt:
-          type: string
-          minLength: 1
-          maxLength: 2000
-          description: A description of the desired voice. Must not contain only whitespace.
-        script_hint:
-          type: string
-          minLength: 1
-          maxLength: 2000
-          description: Optional text for the voice to speak during creation. If omitted, a script is generated from the prompt. Must not be blank after trimming whitespace; scripts that are too short are rejected.
-        model:
-          anyOf:
-          - type: string
-          - type: string
-            enum:
-            - auto
-            - 2026-10-08
-          default: auto
-          description: The voice creation model to use. Defaults to `auto`.
-      required:
-      - type
-      - name
-      - prompt
-    LiveDecisionChoiceParam:
+      description: Session-wide spending control, present only when a limit is configured.
+    SessionSpendControlParam:
       type: object
       properties:
-        value:
-          anyOf:
-          - type: string
-          - type: boolean
-        description:
-          type: string
+        limit:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+          maximum: 4503599627370495
+          description: Positive USD cents, or null to remove the limit.
       required:
-      - value
-    LiveDecisionChoiceQuestionParam:
-      type: object
-      properties:
-        type:
-          default: choice
-          x-stainless-const: true
-          type: string
-          enum:
-          - choice
-        name:
-          type: string
-        instructions:
-          type: string
-        choices:
-          type: array
-          items:
-            $ref: '#/components/schemas/LiveDecisionChoiceParam'
-          minItems: 2
-          maxItems: 255
-      required:
-      - type
-      - instructions
-      - choices
-    LiveDecisionPredicateQuestionParam:
-      type: object
-      properties:
-        type:
-          default: predicate
-          x-stainless-const: true
-          type: string
-          enum:
-          - predicate
-        name:
-          type: string
-        instructions:
-          type: string
-      required:
-      - type
-      - instructions
-    LiveDecisionScoreLevelParam:
-      type: object
-      properties:
-        label:
-          type: string
-        description:
-          type: string
-      required:
-      - label
-    LiveDecisionScoreQuestionParam:
-      type: object
-      properties:
-        type:
-          default: score
-          x-stainless-const: true
-          type: string
-          enum:
-          - score
-        name:
-          type: string
-        instructions:
-          type: string
-        levels:
-          type: array
-          items:
-            $ref: '#/components/schemas/LiveDecisionScoreLevelParam'
-          minItems: 2
-          maxItems: 10
-      required:
-      - type
-      - instructions
-      - levels
-    LiveDecisionQuestion:
-      discriminator:
-        propertyName: type
-      anyOf:
-      - $ref: '#/components/schemas/LiveDecisionChoiceQuestionParam'
-      - $ref: '#/components/schemas/LiveDecisionPredicateQuestionParam'
-      - $ref: '#/components/schemas/LiveDecisionScoreQuestionParam'
-    LiveDecisionsSettingsInputParam:
-      type: object
-      properties:
-        questions:
-          description: Native Decision API questions evaluated together, in order.
-          type: array
-          items:
-            $ref: '#/components/schemas/QuestionParam'
-          minItems: 1
-          maxItems: 64
-        model:
-          type: string
-          minLength: 1
-      required:
-      - questions
-      - model
-    LiveDecisionsDelegationParam:
-      type: object
-      properties:
-        type:
-          default: decisions
-          x-stainless-const: true
-          type: string
-          enum:
-          - decisions
-        decisions:
-          $ref: '#/components/schemas/LiveDecisionsSettingsInputParam'
-      required:
-      - type
-      - decisions
-    LiveDecisionQuestionsInputParam:
-      description: Questions evaluated using the current transcript and the session's shared Decision items.
-      type: object
-      properties:
-        questions:
-          description: Native Decision API questions evaluated together, in order.
-          type: array
-          items:
-            $ref: '#/components/schemas/QuestionParam'
-          minItems: 1
-          maxItems: 64
-      required:
-      - questions
-    LiveDecisionTriggerInputParam:
-      type: object
-      properties:
-        type:
-          default: decisions
-          x-stainless-const: true
-          type: string
-          enum:
-          - decisions
-        event_type:
-          type: string
-          enum:
-          - session.input_transcript.delta
-          - session.output_transcript.delta
-        decisions:
-          description: Questions evaluated using the current transcript and the session's shared Decision items.
-          $ref: '#/components/schemas/LiveDecisionQuestionsInputParam'
-      required:
-      - type
-      - event_type
-      - decisions
+      - limit
       additionalProperties: false
-    triggers:
-      description: At most one Decisions trigger per transcript event type. Triggers run independently of delegation. On update, omit triggers to keep the current configuration, send a list to replace it, or send an empty list to disable triggers.
-      type: array
-      items:
-        $ref: '#/components/schemas/LiveDecisionTriggerInputParam'
-      maxItems: 2
-    LiveDecisionsSettingsInputParam-2:
-      type: object
-      properties:
-        questions:
-          description: Native Decision API questions evaluated together, in order.
-          type: array
-          items:
-            $ref: '#/components/schemas/QuestionParam'
-          minItems: 1
-          maxItems: 64
-        model:
-          type: string
-          minLength: 1
-      required:
-      - questions
-      - model
-    LiveDecisionsDelegationParam-2:
-      type: object
-      properties:
-        type:
-          default: decisions
-          x-stainless-const: true
-          type: string
-          enum:
-          - decisions
-        decisions:
-          $ref: '#/components/schemas/LiveDecisionsSettingsInputParam-2'
-      required:
-      - type
-      - decisions
-    LiveDecisionQuestionsInputParam-2:
-      description: Questions evaluated using the current transcript and the session's shared Decision items.
-      type: object
-      properties:
-        questions:
-          description: Native Decision API questions evaluated together, in order.
-          type: array
-          items:
-            $ref: '#/components/schemas/QuestionParam'
-          minItems: 1
-          maxItems: 64
-      required:
-      - questions
-    LiveDecisionTriggerInputParam-2:
-      type: object
-      properties:
-        type:
-          default: decisions
-          x-stainless-const: true
-          type: string
-          enum:
-          - decisions
-        event_type:
-          type: string
-          enum:
-          - session.input_transcript.delta
-          - session.output_transcript.delta
-        decisions:
-          description: Questions evaluated using the current transcript and the session's shared Decision items.
-          $ref: '#/components/schemas/LiveDecisionQuestionsInputParam-2'
-      required:
-      - type
-      - event_type
-      - decisions
-      additionalProperties: false
-    LiveDecisionsSettingsUpdateParam:
-      type: object
-      properties:
-        model:
-          type: string
-          minLength: 1
-        questions:
-          description: Native Decision API questions evaluated together, in order.
-          type: array
-          items:
-            $ref: '#/components/schemas/QuestionParam'
-          minItems: 1
-          maxItems: 64
-      required: []
-    LiveDecisionsDelegationUpdateParam:
-      type: object
-      properties:
-        type:
-          default: decisions
-          x-stainless-const: true
-          type: string
-          enum:
-          - decisions
-        decisions:
-          $ref: '#/components/schemas/LiveDecisionsSettingsUpdateParam'
-      required:
-      - type
-    LiveDecisionCreateParam:
-      description: Evaluate the configured questions using the current conversation and Decision inputs. Reusing an event_id is rejected for the lifetime of the session.
-      example:
-        type: decision.create
-        event_id: decision_1
-      type: object
-      properties:
-        event_id:
-          type: string
-          minLength: 1
-          maxLength: 256
-        type:
-          default: decision.create
-          x-stainless-const: true
-          type: string
-          enum:
-          - decision.create
-      required:
-      - event_id
-      - type
-      x-oaiMeta:
-        example:
-          type: decision.create
-          event_id: decision_1
-    LiveDecisionInputTextParam:
-      type: object
-      properties:
-        type:
-          description: The type of the input item. Always `input_text`.
-          default: input_text
-          x-stainless-const: true
-          type: string
-          enum:
-          - input_text
-        text:
-          description: The text input to the model.
-          type: string
-          maxLength: 10485760
-      required:
-      - type
-      - text
-    LiveDetailEnum:
-      type: string
-      enum:
-      - low
-      - high
-      - auto
-      - original
-    LiveDecisionInputImageParam:
-      type: object
-      properties:
-        type:
-          description: The type of the input item. Always `input_image`.
-          default: input_image
-          x-stainless-const: true
-          type: string
-          enum:
-          - input_image
-        image_url:
-          description: An inline image encoded as a data URL.
-          type: string
-          maxLength: 20971520
-          pattern: '^data:'
-        detail:
-          anyOf:
-          - description: The detail level of the image to be sent to the model. One of `high`, `low`, `auto`, or `original`. Defaults to `auto`.
-            $ref: '#/components/schemas/LiveDetailEnum'
-          - type: 'null'
-      required:
-      - type
-      - image_url
-    LiveDecisionInputItemParam:
-      type: object
-      properties:
-        id:
-          anyOf:
-          - description: The unique ID of this message item.
-            type: string
-          - type: 'null'
-        type:
-          default: message
-          x-stainless-const: true
-          type: string
-          enum:
-          - message
-        role:
-          description: The message role. Always `user`.
-          default: user
-          x-stainless-const: true
-          type: string
-          enum:
-          - user
-        content:
-          anyOf:
-          - description: The text input to the model.
-            type: string
-            maxLength: 10485760
-          - type: array
-            items:
-              discriminator:
-                propertyName: type
-              anyOf:
-              - $ref: '#/components/schemas/LiveDecisionInputTextParam'
-              - $ref: '#/components/schemas/LiveDecisionInputImageParam'
-      required:
-      - role
-      - content
-    LiveDecisionItemCreateParam:
-      description: Append an input item for future decisions without starting an evaluation or changing Live voice context.
-      example:
-        type: decision.item.create
-        event_id: browser_1
-        item:
-          type: message
-          role: user
-          content:
-          - type: input_text
-            text: Wikipedia is open.
-      type: object
-      properties:
-        event_id:
-          anyOf:
-          - description: Optional client identifier for correlating this command with a server event's client_event_id or error.client_event_id.
-            type: string
-            maxLength: 512
-          - type: 'null'
-        type:
-          default: decision.item.create
-          x-stainless-const: true
-          type: string
-          enum:
-          - decision.item.create
-        item:
-          $ref: '#/components/schemas/LiveDecisionInputItemParam'
-      required:
-      - type
-      - item
-      x-oaiMeta:
-        example:
-          type: decision.item.create
-          event_id: browser_1
-          item:
-            type: message
-            role: user
-            content:
-            - type: input_text
-              text: Wikipedia is open.
-    LiveDecisionItemDeleteParam:
-      description: Delete an input item from future decisions without starting an evaluation or changing Live voice context.
-      example:
-        type: decision.item.delete
-        event_id: remove_browser_1
-        item_id: msg_browser_1
-      type: object
-      properties:
-        event_id:
-          anyOf:
-          - description: Optional client identifier for correlating this command with a server event's client_event_id or error.client_event_id.
-            type: string
-            maxLength: 512
-          - type: 'null'
-        type:
-          default: decision.item.delete
-          x-stainless-const: true
-          type: string
-          enum:
-          - decision.item.delete
-        item_id:
-          type: string
-          minLength: 1
-      required:
-      - type
-      - item_id
-      x-oaiMeta:
-        example:
-          type: decision.item.delete
-          event_id: remove_browser_1
-          item_id: msg_browser_1
-    LiveDecisionCompleted:
-      type: object
-      properties:
-        type:
-          default: decision.completed
-          x-stainless-const: true
-          type: string
-          enum:
-          - decision.completed
-        decision:
-          description: The native Decision API response, including its model, ordered answers, and token usage.
-          $ref: '#/components/schemas/DecisionResponse'
-      required:
-      - type
-      - decision
-    LiveDecisionEvent:
-      description: A Decision API event for a Live delegation or transcript trigger. For a trigger, source_event_id identifies the transcript delta that caused this evaluation.
-      example:
-        type: decision.event
-        event_id: evt_decision_1
-        delegation_id: del_abc123
-        trigger_id: null
-        source_event_type: null
-        source_event_id: null
-        event:
-          type: decision.completed
-          decision:
-            model: gpt-6-luna
-            answers:
-            - type: predicate
-              name: damaged
-              probability: 0.95
-            usage:
-              input_tokens: 42
-              input_tokens_details:
-                cached_tokens: 0
-                cache_write_tokens: 0
-              output_tokens: 0
-              output_tokens_details:
-                reasoning_tokens: 0
-              total_tokens: 42
-      type: object
-      properties:
-        type:
-          default: decision.event
-          x-stainless-const: true
-          type: string
-          enum:
-          - decision.event
-        event_id:
-          description: The unique ID of this Live server event.
-          type: string
-        delegation_id:
-          anyOf:
-          - description: The Live delegation ID, or null for a transcript trigger.
-            type: string
-          - type: 'null'
-        trigger_id:
-          anyOf:
-          - description: The Live-assigned ID of this trigger firing, or null for a delegation.
-            type: string
-          - type: 'null'
-        source_event_type:
-          anyOf:
-          - anyOf:
-            - default: session.input_transcript.delta
-              x-stainless-const: true
-              type: string
-              enum:
-              - session.input_transcript.delta
-            - default: session.output_transcript.delta
-              x-stainless-const: true
-              type: string
-              enum:
-              - session.output_transcript.delta
-          - type: 'null'
-        source_event_id:
-          anyOf:
-          - description: The event_id of the transcript delta that fired this trigger, or null for a delegation.
-            type: string
-          - type: 'null'
-        event:
-          $ref: '#/components/schemas/LiveDecisionCompleted'
-      required:
-      - type
-      - event_id
-      - delegation_id
-      - trigger_id
-      - source_event_type
-      - source_event_id
-      - event
-      x-oaiMeta:
-        example:
-          type: decision.event
-          event_id: evt_decision_1
-          delegation_id: del_abc123
-          trigger_id: null
-          source_event_type: null
-          source_event_id: null
-          event:
-            type: decision.completed
-            decision:
-              model: gpt-6-luna
-              answers:
-              - type: predicate
-                name: damaged
-                probability: 0.95
-              usage:
-                input_tokens: 42
-                input_tokens_details:
-                  cached_tokens: 0
-                  cache_write_tokens: 0
-                output_tokens: 0
-                output_tokens_details:
-                  reasoning_tokens: 0
-                total_tokens: 42
-    LiveDecisionStoredInputItemParam:
-      type: object
-      properties:
-        id:
-          description: The ID of the stored Decision input item.
-          type: string
-        type:
-          default: message
-          x-stainless-const: true
-          type: string
-          enum:
-          - message
-        role:
-          description: The message role. Always `user`.
-          default: user
-          x-stainless-const: true
-          type: string
-          enum:
-          - user
-        content:
-          anyOf:
-          - description: The text input to the model.
-            type: string
-            maxLength: 10485760
-          - type: array
-            items:
-              discriminator:
-                propertyName: type
-              anyOf:
-              - $ref: '#/components/schemas/LiveDecisionInputTextParam'
-              - $ref: '#/components/schemas/LiveDecisionInputImageParam'
-      required:
-      - id
-      - role
-      - content
-    LiveDecisionItemCreated:
-      description: An input item was appended for future decisions.
-      example:
-        type: decision.item.created
-        event_id: evt_item_1
-        client_event_id: browser_1
-        item:
-          id: msg_browser_1
-          type: message
-          role: user
-          content:
-          - type: input_text
-            text: Wikipedia is open.
-      type: object
-      properties:
-        event_id:
-          description: The unique ID of the Live server event.
-          type: string
-        client_event_id:
-          description: The event_id of the client command associated with this server event, when supplied.
-          type: string
-        type:
-          default: decision.item.created
-          x-stainless-const: true
-          type: string
-          enum:
-          - decision.item.created
-        item:
-          $ref: '#/components/schemas/LiveDecisionStoredInputItemParam'
-      required:
-      - event_id
-      - type
-      - item
-      x-oaiMeta:
-        example:
-          type: decision.item.created
-          event_id: evt_item_1
-          client_event_id: browser_1
-          item:
-            id: msg_browser_1
-            type: message
-            role: user
-            content:
-            - type: input_text
-              text: Wikipedia is open.
-    LiveDecisionItemDeleted:
-      description: An input item was removed from future decisions.
-      example:
-        type: decision.item.deleted
-        event_id: evt_item_deleted_1
-        client_event_id: remove_browser_1
-        item_id: msg_browser_1
-      type: object
-      properties:
-        event_id:
-          description: The unique ID of the Live server event.
-          type: string
-        client_event_id:
-          description: The event_id of the client command associated with this server event, when supplied.
-          type: string
-        type:
-          default: decision.item.deleted
-          x-stainless-const: true
-          type: string
-          enum:
-          - decision.item.deleted
-        item_id:
-          type: string
-      required:
-      - event_id
-      - type
-      - item_id
-      x-oaiMeta:
-        example:
-          type: decision.item.deleted
-          event_id: evt_item_deleted_1
-          client_event_id: remove_browser_1
-          item_id: msg_browser_1
+      description: Sets the session-wide limit without changing recorded spend.
     DecisionPromptCacheBreakpoint:
       type: object
       properties:
@@ -107356,6 +107718,28 @@ components:
       - gpt-3.5-turbo-0125
       - gpt-3.5-turbo-16k-0613
       x-openai-enum-deprecations:
+        gpt-5.4-nano:
+          message: 'Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
+        gpt-5.1:
+          message: 'Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
+        gpt-4.1-2025-04-14:
+          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
+        gpt-4.1:
+          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
+        gpt-4.1-mini:
+          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
+        gpt-4.1-mini-2025-04-14:
+          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
+        gpt-4o:
+          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
+        gpt-4o-2024-08-06:
+          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
+        gpt-4o-2024-11-20:
+          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
+        gpt-4o-mini:
+          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
+        gpt-4o-mini-2024-07-18:
+          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
         gpt-5.3-chat-latest:
           message: 'Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
         gpt-5.2-chat-latest:
@@ -107476,28 +107860,6 @@ components:
           message: 'Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
         gpt-5.1-mini:
           message: Not a supported model ID. Retained for SDK compatibility.
-        gpt-4.1-2025-04-14:
-          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
-        gpt-4.1-mini-2025-04-14:
-          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
-        gpt-4o-2024-08-06:
-          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
-        gpt-4o-2024-11-20:
-          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
-        gpt-4o-mini-2024-07-18:
-          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
-        gpt-5.1:
-          message: 'Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
-        gpt-5.4-nano:
-          message: 'Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
-        gpt-4.1:
-          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
-        gpt-4.1-mini:
-          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
-        gpt-4o:
-          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
-        gpt-4o-mini:
-          message: 'Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements.'
       x-stainless-nominal: false
     LiveBuiltInVoice:
       type: string
