@@ -38,6 +38,24 @@ helpers are absent from this snapshot. Moving those files does not reduce this
 inventory. `DataResidency.kt` and `MultipartEncoding.kt` are generated and currently
 unmodified. Examples are explicitly outside generator ownership.
 
+## Landed progress
+
+On 2026-10-19, #1235 merged as `479972a1ee2a7cd181f67f478c95aad9d1d1e261`
+and #1237 merged as `d445a6a2db03d6f0979efb2d8355452029f08a00`.
+The reporter was rerun at the latter merged SDK commit with generated hashes
+required. It verifies **97 mixed files and 2,025 custom patch lines**
+(1,328 additions + 697 deletions): two files and six patch lines removed from the
+pinned baseline above. All 97 remaining customizations are classified unchanged.
+The generated reporting comment and credential smoke test now match generation;
+the credential diagnostic assertions remain in the handwritten regression suite.
+
+This merged SDK uses generated snapshot `796d4eb4ee6b79f8c52b573d4639abe3d824ed8c`,
+generation `4b2c79c9-7da9-402a-972f-15915bc1b58e`, with verified content hash
+`4694ab8bc5b55e700ffe78cd2eb1cfb0f0cc5bb1659880bf2f14edd824006a1d`.
+The appendix remains the original audited baseline, including the two now-restored
+files; the task ledger records landed slices separately. These counts describe
+this exact merged commit, not future main or pending compiler/SDK candidates.
+
 ## Intended boundary
 
 Generate models, public service/client surfaces, and thin calls into handwritten
