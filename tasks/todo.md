@@ -4,22 +4,23 @@ See [the measured plan and per-file inventory](plan.md). User authorization cove
 implementation and PR submission; normal review and compiler-before-promotion
 gates remain in effect. No developer-facing breaking changes are allowed.
 
-## Ten-review execution ceiling
+## Delivery ceilings
 
-The user requires at most ten PRs total across the SDK and compiler. All ten
-existing review slots are allocated in [the consolidated delivery plan](plan.md#execution-and-parallelism).
-Workstream checkboxes below describe implementation/verification work, not
-additional PRs. Fold changes and feedback into the existing reviews.
+The clarified limits are ten public Java SDK PRs, ten compiler Deltas and
+unlimited internal generation PRs. Six public PRs and four Deltas already exist;
+[the consolidated delivery plan](plan.md#execution-and-parallelism) reserves the
+remaining four public slots and six compiler slots. Workstream checkboxes are
+implementation and verification steps, not permission for unbounded micro-PRs.
 
-- [x] Reserve the six existing SDK PRs and four existing compiler Deltas; no new PRs.
-- [x] Convert #1239 to draft; hold its test-only candidate for the consolidated SDK rollout.
-- [ ] Complete shared facts/test infrastructure in Delta 2566856.
-- [ ] Complete service contracts/rendering/test generation in Delta 2565512.
-- [ ] Complete model/parameter contracts and tests in Delta 2566858.
-- [ ] Complete the existing C1 review in Delta 2565485.
-- [ ] Merge compiler bundles, run normal generation, integrate remaining handwritten
-  regressions and update measured debt in #1239; obtain fresh exact-head reviews
-  and all checks before protected merge.
+- [x] Allocate the existing reviews and the remaining public/compiler capacity.
+- [ ] Complete #1239 expiry regressions/plan through normal fresh exact-head gates.
+- [ ] Finish shared typed policies in existing Delta 2566856.
+- [ ] Finish multipart/audio integration in existing Delta 2565512.
+- [ ] Finish legacy model/accessor consumers in existing Delta 2566858.
+- [ ] Complete C1's existing Delta 2565485 human helper-contract review.
+- [ ] Publish complete remaining compiler bundles within the six reserved slots.
+- [ ] After compiler merge, use normal internal checkpoints and public promotion
+  for consolidated SDK batches within the four reserved public slots.
 
 ## Foundation
 
@@ -180,7 +181,7 @@ in dependent slices; none of this work counts as landed SDK reduction.
 
 Record exact current heads when acting on CI or review events. Never record a
 proposed reduction as landed merely because its compiler change exists or CI is
-green. All remaining compiler and SDK work reuses the ten allocated reviews; no follow-up reviews are opened.
+green. Publish follow-up bundles only within the separately reserved public SDK and compiler limits.
 
 On 2026-10-19 Conductor verified this chat owns Java PRs 1234–1237 and registered
 routing. One combined root `#sdk-reviews` post is edited in place as heads and
@@ -191,18 +192,29 @@ enrollment is implied by green CI.
 
 ## Consolidation checkpoint (2026-10-19)
 
-#1238 is AWAITING_CHECKS at protected queue position 1 on head
-`0429eb4a5d288deb540d000ec16fa567b97d1598`; still open, not merged.
-Its separate OkTest passed 236/236. #1239 was converted to draft after the user's
-ten-PR instruction. Its earlier test-only head
-`8ecd5c0b93d5633062c7aa2dc0d40dacca4d3c65` had approval, successful check rollup
-and clean automated reviews; separate OkTest completion was not established here.
-Those states do not authorize merging a future expanded SDK rollout.
+#1238 merged through the protected queue as
+`b79d85f90c13c9cdc6d536b29704dfc50e8f9df8` from head
+`0429eb4a5d288deb540d000ec16fa567b97d1598`. Conductor verified all post-merge
+push workflows succeeded, including [CI run 39327996521](https://github.com/openai/openai-java/actions/runs/39327996521)
+and examples smoke. Its separate pre-merge OkTest passed 236/236.
 
-The local transcription draft passed an active/cleared full-input comparison:
-3,794 rendered paths, exactly two changed transcription implementations, SDK JSON
-and all other facts unchanged, SSE sections byte-identical. Exact full-input
-output passed 79 transcription tests and four public JVM surface comparisons;
-98 translation tests passed against the unchanged shipped control. No generated
-SDK output has been promoted. Remaining model/service work and full integrated
-acceptance are still required; these checks do not establish project completion.
+#1239 was temporarily held as draft under the earlier combined ten-review
+interpretation. The user clarified ten public SDK PRs plus ten compiler Deltas,
+with internal generation PRs unlimited. #1239 can proceed as the test/plan PR;
+rollout batches use normal supported promotion. Its earlier head
+`73a90a7ffddb7a69f5396906cfe4072da1155a55` had successful CI; its separate
+OkTest failure belongs to superseded head `8ecd5c0`, not that newer head. New
+head changes still require fresh review and checks; no merge is implied here.
+
+The local audio draft passed a full-current-input comparison: 3,794 rendered
+paths, exactly four changed transcription/translation implementations; SDK JSON
+and other facts unchanged, transcription SSE byte-identical. Exact full-source
+output passed all 79 transcription and 98 translation tests, and eight public
+JVM surfaces match shipped classes. The translation tests now exercise generated
+translation implementations, superseding the earlier shipped-only control.
+
+C5a's full-source output changed only ApiKeyUpdateParams and its test; its exact
+candidate passed frozen Java/Kotlin consumers and seven handwritten JUnit tests.
+Additional-property, embedding, visitor/diagnostic and service helper work remains
+in progress. No generated SDK output has been promoted; final integration,
+whole-artifact acceptance and zero-debt verification are still required.

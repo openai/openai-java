@@ -255,67 +255,85 @@ dispatch or count an adapter-only change as removal of the enum patch.
 
 ## Execution and parallelism
 
-On 2026-10-19 the user imposed a **hard ceiling of ten PRs for the entire Java
-transition**. Count SDK PRs and compiler Deltas together, including already opened
-or merged reviews. All ten slots below are allocated. Do not open another review
-for a test, fact, renderer, activation, inventory update or SDK generation slice.
-The earlier micro-PR delivery plan is superseded; workstream IDs remain useful
-for implementation and acceptance evidence, not publication boundaries.
+The user clarified the delivery ceiling on 2026-10-19: **at most ten public Java
+SDK PRs and at most ten compiler Deltas; internal generation PRs are unlimited**.
+The six existing public SDK PRs and four existing compiler Deltas count toward
+their respective limits. Track both counters before publishing. Internal PRs
+still follow normal ownership, compatibility and promotion requirements.
 
-| Slot | Existing review | Consolidated scope and landing order |
+The earlier micro-PR plan is superseded. Workstream IDs describe implementation
+and acceptance evidence; they do not each require a PR. Use ordinary commits for
+bounded testable steps, integrate related changes, and request review on complete
+bundles. Additional test fixes, fact/consumer steps and inventory updates stay
+within their bundle. Do not create replacement PRs to evade either ceiling.
+
+### Public SDK allocation: six opened, four remaining
+
+| Slot | Existing review or reserved batch | Scope |
 | ---: | --- | --- |
-| 1 | [Java #1234](https://github.com/openai/openai-java/pull/1234) | Merged inventory and transition plan |
+| 1 | [Java #1234](https://github.com/openai/openai-java/pull/1234) | Merged baseline inventory and transition plan |
 | 2 | [Java #1235](https://github.com/openai/openai-java/pull/1235) | Merged generated reporting-comment restoration |
-| 3 | [Java #1236](https://github.com/openai/openai-java/pull/1236) | Merged supplemental JVM comparator and regression coverage |
+| 3 | [Java #1236](https://github.com/openai/openai-java/pull/1236) | Merged supplemental JVM comparator and regressions |
 | 4 | [Java #1237](https://github.com/openai/openai-java/pull/1237) | Merged credential assertion ownership cleanup |
-| 5 | [Java #1238](https://github.com/openai/openai-java/pull/1238) | Existing documentation checkpoint; awaiting protected queue checks at head `0429eb4a5d288deb540d000ec16fa567b97d1598` when this plan was revised |
-| 6 | [Java #1239](https://github.com/openai/openai-java/pull/1239) | **Draft; final integrated SDK rollout.** Retain expiry regressions, add remaining handwritten compatibility tests, normal generated output and final measured inventory in this review. Do not merge its current test-only candidate separately |
-| 7 | Compiler Delta 2565485 | Existing C1 client/telemetry compatibility change; retain its current focused scope and human helper-contract review |
-| 8 | Compiler Delta 2565512 | Consolidated service rendering and service-test behavior: C2 multipart, C3 audio dispatch, C4 service overloads, C9 WebSocket/validation bridges, C10 agent/idempotency delegates, C11 legacy/auth selection, C14 webhook delegates, corresponding C12 service fixtures |
-| 9 | Compiler Delta 2566856 | Shared typed facts/configuration and generated-test fixture infrastructure needed by service/model consumers, including existing audio policy facts and the remaining C12 fixture/consolidation work |
-| 10 | Compiler Delta 2566858 | Consolidated model/parameter compatibility: C4 builder helpers, C5 accessor/storage/alias/default contracts, C6 embedding representation, C7 visitor compatibility, C8 diagnostic redaction, and corresponding model tests |
+| 5 | [Java #1238](https://github.com/openai/openai-java/pull/1238) | Merged documentation checkpoint; post-merge workflows verified successful |
+| 6 | [Java #1239](https://github.com/openai/openai-java/pull/1239) | Handwritten expiry compatibility regressions and revised delivery plan; may proceed after fresh exact-head gates |
+| 7 | Reserved compatible runtime/model rollout | Batch ready client, multipart/audio and legacy-accessor/model cleanup after its compiler changes merge |
+| 8 | Reserved model/structured-output rollout | Batch compatible params/helpers, embeddings, visitors and diagnostics after their compiler changes merge |
+| 9 | Reserved service/helper rollout | Batch remaining Responses/agent/legacy/auth/webhook delegates and corresponding tests |
+| 10 | Reserved final test-fidelity and inventory rollout | Remaining generation fidelity, final trusted debt report and completion evidence |
 
-Public SDK documentation identifies private compiler reviews by Delta number;
-it does not link private source or inputs. Local dependent drafts are folded into
-the appropriate existing review. Use ordinary commits for independently testable
-steps and retain a workstream-to-commit/evidence index in review descriptions.
-No replacement or superseding PR is created to evade the ceiling.
+These are capacity reservations, not a requirement to open four more PRs. Combine
+ready batches where it reduces review cycles without delaying independent work.
+Normal Castiron promotion creates or updates public candidate PRs; use that
+supported workflow rather than manually attaching generated output to #1239.
+No generated rollout is public before its compiler prerequisites merge.
 
-Implement the independent client work and shared-facts work in isolated worktrees.
-After shared contracts settle, service and model consumers can proceed in
-parallel, coordinating shared view/import/template files. Shared facts must be
-reviewed together with all consumer requirements before landing; use explicit
-stacking or integration drafts to verify dependencies without promoting output.
-Batch review requests around complete compiler bundles instead of every internal
-step. Fix feedback in place. Never count a local draft or green CI as landed debt
-reduction.
+### Compiler allocation: four opened, six remaining
 
-All compiler changes, including authoritative input activation, must merge to
-compiler mainline **before** SDK output depending on them is promoted. After the
-compiler bundles are integrated, run the normal generation/checkpoint workflow
-and review the complete SDK diff in #1239. Preserve baseline tests and keep
-synthetic Java/Kotlin consumers compiled against the old SDK. Run whole-artifact
-API checks, source/behavior regressions, security-focused review where applicable,
-normal CI and final trusted ownership accounting on the exact integrated head.
-Unrelated API churn is not part of this maintenance rollout.
+| Slot | Existing review or reserved bundle | Scope |
+| ---: | --- | --- |
+| 1 | Compiler Delta 2565485 | C1 client/telemetry compatibility; retain human helper-contract review |
+| 2 | Compiler Delta 2565512 | C2 multipart plus integrated C3 transcription/translation dispatch and lifecycle evidence |
+| 3 | Compiler Delta 2566856 | Shared typed helper/model/test ownership policies and compiler validation, including existing audio facts |
+| 4 | Compiler Delta 2566858 | C5 legacy accessor/model binding, aliases, storage/default/validation contracts and corresponding tests |
+| 5 | Reserved structured-output bundle | C4 public service overloads and parameter/builder helper contracts |
+| 6 | Reserved Responses bridge bundle | C9 WebSocket/stream validation delegates |
+| 7 | Reserved embedding bundle | C6 representation, decoder/accessor and default encoding contracts |
+| 8 | Reserved evolving union/diagnostic bundle | C7 visitor/default/alias contracts and C8 existing diagnostic redaction |
+| 9 | Reserved remaining service/helper bundle | C10 agent/idempotency, C11 retained legacy/auth selection and C14 webhook entrypoints |
+| 10 | Reserved generated-test fidelity bundle | C12 fixture reuse, isolated pagination ownership, deterministic streaming/server fixtures and canonical model samples |
 
-The ten-PR ceiling does not relax any compatibility, security, ownership, approval
-or merge-queue gate. Preserve every public/protected and synthetic JVM contract,
-JSON/default/error behavior and resource lifecycle. Keep the existing budget and
-exclusions unchanged. Budget decreases and strict zero-budget activation are not
-part of this execution plan; they require a separately authorized later project,
-not an eleventh transition PR.
+Public SDK documentation identifies private compiler reviews by Delta number.
+Shared facts land before their consumers, with explicit integration drafts proving
+the combined behavior. Use separate worktrees for service, model, embedding,
+visitor/diagnostic and test-fixture work; coordinate shared view/import/config
+files. Review related fact and consumer commits together for contract coherence,
+then publish within the available bundle slots. Avoid cycles between foundation
+and consumer reviews. Internal checkpoints may be created through the standard
+workflow without consuming public or compiler slots.
 
-The user authorizes implementation and submission without routine confirmation.
+All compiler changes must merge to compiler mainline **before** SDK output that
+depends on them is promoted. After each ready compiler batch, run normal
+checkpoint generation and promotion and review the complete SDK diff. Preserve
+old compiled Java/Kotlin consumers, whole-artifact API checks, source and behavior
+regressions, maintainer security review where applicable, normal CI and trusted
+ownership accounting on the exact integrated head. Do not carry unrelated API
+churn into this maintenance project.
+
+Neither PR limit relaxes compatibility, security, ownership, approval or merge
+queue gates. Preserve every public/protected and synthetic JVM contract,
+JSON/default/error behavior and resource lifecycle. Keep the current budget and
+exclusions unchanged. Budget-policy activation is outside the current rollout
+allocation; it must not consume an unreserved eleventh public SDK PR.
+
+Implementation and submission are authorized without routine confirmation.
 Handle Conductor events on the exact head, deduplicate requests and address
-feedback within these reviews. #1239 is explicitly held as draft until the
-consolidated SDK candidate is ready; earlier test-only approvals and checks do
-not authorize that future expanded candidate. Re-request normal review and run
-all required checks after scope/head changes. Do not poll when an update says no
-polling is requested.
+feedback in place. Earlier approvals and CI do not authorize a changed candidate;
+run required checks and obtain current review before protected merge. Do not poll
+when an update says no polling is requested.
 
 Success remains zero mixed generated-owned files and zero custom patch lines on
-the merged SDK, repeatable generation, and unchanged developer contracts. The
+merged SDK main, repeatable generation and unchanged developer contracts. The
 verified baseline and appendix are retained unchanged.
 
 ## Reproduce the baseline
