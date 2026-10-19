@@ -38,7 +38,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // Keep WireMock's transitive Jackson runtime aligned on a secure release.
-    testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
+    testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.22.3"))
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testImplementation("org.junit-pioneer:junit-pioneer:1.9.1")
