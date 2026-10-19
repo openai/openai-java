@@ -127,11 +127,12 @@ Ten direct invocations and all 42 methods under concurrent JUnit execution passe
 with their original deadlines and assertions; the standalone JVM exited normally.
 Those results do not establish the hosted root cause or classify the test as flaky.
 After a freshness/deduplication check, one normal failed-job rerun requested
-attempt 2. Its outcome remains pending Conductor notification; no source edits,
-timeout changes or post-merge all-green claim were made. Examples smoke was also
-cancelled in the original post-merge run. #1234's successful post-merge checks do
-not clear this separate failure. #1235 post-merge verification is not recorded
-complete in this checkpoint.
+attempt 2. Conductor verified that [attempt 2 succeeded](https://github.com/openai/openai-java/actions/runs/39318051617/attempts/2)
+on the same merge commit and that release succeeded. Examples smoke remains
+cancelled: this is CI recovery, not an all-checks-green claim. The initial
+failure and root-cause limits above remain recorded; no source edits or timeout
+changes were made. #1234's successful post-merge checks are a separate result.
+#1235 post-merge verification is not recorded complete in this checkpoint.
 
 ### Next typed compiler foundations
 
