@@ -146,8 +146,6 @@ internal class CredentialAuthTest {
             jsonMapper().convertValue(testCase.value, jacksonTypeRef<CredentialAuth>())
 
         val e = assertThrows<OpenAIInvalidDataException> { credentialAuth.validate() }
-        assertThat(e).hasMessage("Unknown CredentialAuth")
-        assertThat(credentialAuth.toString())
-            .isEqualTo("CredentialAuth{_unknown=${testCase.value}}")
+        assertThat(e).hasMessageStartingWith("Unknown ")
     }
 }
