@@ -7,9 +7,9 @@ gates remain in effect. No developer-facing breaking changes are allowed.
 ## Delivery ceilings
 
 The clarified limits are ten public Java SDK PRs, ten compiler Deltas and
-unlimited internal generation PRs. Six public PRs and seven Deltas already exist;
+unlimited internal generation PRs. Six public PRs and eight Deltas already exist;
 [the consolidated delivery plan](plan.md#execution-and-parallelism) reserves the
-remaining four public slots and three compiler slots. Workstream checkboxes are
+remaining four public slots and two compiler slots. Workstream checkboxes are
 implementation and verification steps, not permission for unbounded micro-PRs.
 
 - [x] Allocate the existing reviews and the remaining public/compiler capacity.
@@ -18,7 +18,7 @@ implementation and verification steps, not permission for unbounded micro-PRs.
 - [ ] Finish multipart/audio integration in existing Delta 2565512.
 - [ ] Finish legacy model/accessor consumers in existing Delta 2566858.
 - [ ] Complete C1's existing Delta 2565485 human helper-contract review.
-- [ ] Publish complete remaining compiler bundles within the three reserved slots.
+- [ ] Publish complete remaining compiler bundles within the two reserved slots.
 - [ ] After compiler merge, use normal internal checkpoints and public promotion
   for consolidated SDK batches within the four reserved public slots.
 - [ ] Keep all code/test/inventory work in public slots 7–9; reserve slot 10 for
@@ -220,3 +220,20 @@ candidate passed frozen Java/Kotlin consumers and seven handwritten JUnit tests.
 Additional-property, embedding, visitor/diagnostic and service helper work remains
 in progress. No generated SDK output has been promoted; final integration,
 whole-artifact acceptance and zero-debt verification are still required.
+
+C9 is published as Compiler Delta 2568196, head
+`53fe72eb5b4eab75e80ba6c0c8d7a89b9a660af3`. Combined service evidence covers
+ten of 3,794 generated paths, twenty JVM API surfaces, 72 frozen consumer cases
+and 221 original runtime tests. C12 is published as Compiler Delta 2568349, head
+`1901d2861ec8344407f613816ba7db018886ae42`. Its combined fixture work passed
+798 renderer, three streaming compiler and one configuration tests before two
+module-order swaps and documentation; recorded source equivalence qualifies
+that proof. A redundant final rerun stopped on disk exhaustion. Exact-head
+hosted CI remains required. Both reviews have SDK-team requests, deduplicated
+against their active request lists; neither compiler bundle has been merged or
+promoted here.
+
+Conductor reports #1239 at `f7afebe45964a048033860f62a66d04ae9c0f6e4` has
+successful CI, clean automated reviews and required approval. Its separate
+exact-head OkTest run 39330403137 is still running, so merge remains held.
+No external polling is scheduled.

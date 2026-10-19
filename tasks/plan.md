@@ -257,7 +257,7 @@ dispatch or count an adapter-only change as removal of the enum patch.
 
 The user clarified the delivery ceiling on 2026-10-19: **at most ten public Java
 SDK PRs and at most ten compiler Deltas; internal generation PRs are unlimited**.
-The six existing public SDK PRs and seven existing compiler Deltas count toward
+The six existing public SDK PRs and eight existing compiler Deltas count toward
 their respective limits. Track both counters before publishing. Internal PRs
 still follow normal ownership, compatibility and promotion requirements.
 
@@ -294,7 +294,7 @@ entire policy PR to contain only `.castiron-ratchet.json`. Slot 10 preserves tha
 option without exceeding the public cap. Do not change policy until trusted
 measurement proves zero, and do not use an additional PR outside the cap.
 
-### Compiler allocation: seven opened, three remaining
+### Compiler allocation: eight opened, two remaining
 
 | Slot | Existing review or reserved bundle | Scope |
 | ---: | --- | --- |
@@ -307,7 +307,7 @@ measurement proves zero, and do not use an additional PR outside the cap.
 | 7 | Compiler Delta 2568122 | C6 representation, decoder/accessor and builder-default contracts |
 | 8 | Compiler Delta 2568148 | C7 individual Visitor defaults and C8 existing diagnostic contracts; remaining alias/documentation work stays in the model bundle |
 | 9 | Reserved remaining service/helper bundle | C10 agent/idempotency, C11 retained legacy/auth selection and C14 webhook entrypoints |
-| 10 | Reserved generated-test fidelity bundle | C12 fixture reuse, isolated pagination ownership, deterministic streaming/server fixtures and canonical model samples |
+| 10 | Compiler Delta 2568349 | C12 fixture reuse, isolated pagination ownership, deterministic streaming/server fixtures and canonical model samples |
 
 Public SDK documentation identifies private compiler reviews by Delta number.
 Shared facts land before their consumers, with explicit integration drafts proving
