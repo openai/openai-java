@@ -173,6 +173,11 @@ def compare(old, new):
             after.interfaces
         ):
             issues.append(f"{name}: superclass changed or direct interface removed")
+        # An added interface can introduce inherited abstract obligations for
+        # previously compiled implementations. Without full JVM resolution,
+        # conservatively report every addition, including marker interfaces.
+        for interface in sorted(set(after.interfaces) - set(before.interfaces)):
+            issues.append(f"{name}: direct interface added: {interface}")
         for flag, label in (
             (FINAL, "final"),
             (ABSTRACT, "abstract"),

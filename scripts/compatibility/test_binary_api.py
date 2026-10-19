@@ -153,6 +153,75 @@ class BinaryApiTest(unittest.TestCase):
             )
         )
 
+    def test_added_superinterface_can_break_an_old_implementation(self):
+        old = self.compile_jar(
+            {
+                "Api.java": "public interface Api {}",
+                "Invoker.java": "public class Invoker { public static void run(Api value) {} }",
+            }
+        )
+        new = self.compile_jar(
+            {
+                "Api.java": "public interface Api extends Requirement {}",
+                "Requirement.java": "public interface Requirement { void added(); }",
+                "Invoker.java": "public class Invoker { public static void run(Api value) { value.added(); } }",
+            }
+        )
+        client = self.root / "Consumer.java"
+        client.write_text(
+            "public class Consumer implements Api { public static void main(String[] args) { Invoker.run(new Consumer()); } }"
+        )
+        output = self.root / "client"
+        subprocess.run(
+            [
+                "javac",
+                "--release",
+                "8",
+                "-cp",
+                str(old),
+                "-d",
+                str(output),
+                str(client),
+            ],
+            check=True,
+            capture_output=True,
+        )
+        for replacement, expected_status in [(old, 0), (new, 1)]:
+            result = subprocess.run(
+                [
+                    "java",
+                    "-cp",
+                    str(output) + os.pathsep + str(replacement),
+                    "Consumer",
+                ],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(expected_status, result.returncode, result.stderr)
+            if expected_status:
+                self.assertIn("AbstractMethodError", result.stderr)
+        self.assertIn(
+            "Api: direct interface added: Requirement",
+            compare(read_jar(old), read_jar(new)),
+        )
+
+    def test_added_marker_interface_is_conservatively_reported(self):
+        for before, after in [
+            (
+                "public interface Api {}",
+                "public interface Api extends java.io.Serializable {}",
+            ),
+            (
+                "public class Api {}",
+                "public class Api implements java.io.Serializable {}",
+            ),
+        ]:
+            with self.subTest(before=before):
+                self.assertIn(
+                    "Api: direct interface added: java/io/Serializable",
+                    self.issues(before, after),
+                )
+
     def test_protected_nested_class_access_is_counted(self):
         issues = self.issues(
             "public class Api { protected static class Nested { public void run() {} } }",

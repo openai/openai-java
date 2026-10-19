@@ -31,7 +31,7 @@ The comparison reports:
   classes, and removal of public synthetic bridge methods.
 - Method, constructor, and field descriptor changes (reported as removed old
   descriptors), and static/instance changes.
-- Class/interface kind changes, superclass changes, direct interface removals,
+- Class/interface kind changes, superclass changes, direct interface changes,
   class modifier changes, increased class file versions (including preview
   minor versions), and members becoming final or abstract.
 - New abstract methods on existing classes or interfaces, and interface default
@@ -41,6 +41,9 @@ The comparison reports:
 This is a declared-surface comparison, not a complete JVM method resolution
 implementation. Moving a method to a superclass or removing an abstract
 declaration already inherited can produce conservative findings requiring review.
+Every added direct interface is reported, including marker interfaces: an added
+superinterface can impose abstract methods on previously compiled implementations,
+and this tool does not resolve its inherited obligations.
 Public/protected nested classes inside inaccessible outer classes are also
 included conservatively. All public/protected JVM declarations are included,
 even Kotlin `internal` declarations emitted as public bytecode.
@@ -67,11 +70,12 @@ python3 -m unittest discover -s scripts/compatibility -p 'test_*.py'
 ```
 
 Fixtures compile synthetic APIs with `javac`, create JARs with Python's standard
-library, and verify both additive and incompatible changes. One fixture compiles
-a consumer **only against the old JAR**, then runs the unchanged consumer with
-the replacement JAR. It succeeds for an additive replacement and produces
-`NoSuchMethodError` for a changed return descriptor that the comparator also
-reports. This fixture validates the tool's detection of a real linkage failure;
-it is not an old SDK consumer suite. For an SDK migration, also run representative
+library, and verify both additive and incompatible changes. Consumer fixtures
+compile **only against the old JAR**, then run the unchanged consumers with
+replacement JARs. They succeed for compatible replacements and reproduce
+`NoSuchMethodError` for a changed return descriptor and `AbstractMethodError` for
+an added superinterface obligation. The comparator reports both changes.
+These fixtures validate detection of real linkage failures; they are not an old
+SDK consumer suite. For an SDK migration, also run representative
 consumers compiled against the selected release with the proposed SDK JARs and
 their complete runtime dependencies, without recompiling the consumers.
