@@ -9,7 +9,7 @@ gates remain in effect. No developer-facing breaking changes are allowed.
 - [x] Verify current public generated snapshot and measure every mixed file.
 - [x] Classify runtime, models, services, tests, and tooling with exact patch counts.
 - [x] Record compiler ownership, compatibility gates, parallel work and dependencies.
-- [ ] Publish inventory/plan PR and record its URL here.
+- [x] Publish inventory/plan PR and record its URL here.
 - [ ] Add full public/protected JAR API comparison and previously compiled consumer
   linkage coverage before broad model/service regeneration. Preserve existing
   compatibility policy and test manifests. Verify deliberate binary incompatibility
@@ -85,6 +85,10 @@ gates remain in effect. No developer-facing breaking changes are allowed.
 
 ## PR/Delta ledger
 
-Record URL, exact current head, validation result, review state, compiler dependency,
-and merge state here as work is published. Never record a proposed reduction as
-landed merely because its compiler change exists or CI is green.
+| Slice | Review | Head | Validation and state |
+| --- | --- | --- | --- |
+| Inventory and plan | [Java #1234](https://github.com/openai/openai-java/pull/1234) | Initial `f76f0730dcce87a1de5a5b58614f59c24552b3f9`; subsequent documentation commits remain on the same PR | 99 rows checked against committed blobs and verified reporter; open for review; no SDK changes |
+
+Record exact current heads when acting on CI or review events. Never record a
+proposed reduction as landed merely because its compiler change exists or CI is
+green. Compiler and SDK follow-up reviews will be added as they are published.
