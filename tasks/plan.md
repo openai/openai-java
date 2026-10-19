@@ -27,6 +27,11 @@ provides nonblank lines for each file; neither measure is a language-aware SLOC
 count. All counts refer to the pinned commit, not a moving main branch.
 
 Ownership comes from the verified snapshot, not generated-file headers or blame.
+As a completeness cross-check, all 3,807 entries in the generated ownership
+manifest were compared with current file contents: the same 99 files differ and
+no additional manifest-owned files differ. The two generated custom-code
+workflows match their recorded hashes; they add no hidden workflow customizations
+outside the reporter's workflow exclusion.
 Most runtime code is already wholly handwritten: `ClientOptions`, transport,
 authentication, WebSocket connections, structured-output utilities, and most
 helpers are absent from this snapshot. Moving those files does not reduce this
