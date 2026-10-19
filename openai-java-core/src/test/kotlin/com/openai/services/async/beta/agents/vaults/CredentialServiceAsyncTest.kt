@@ -131,11 +131,7 @@ internal class CredentialServiceAsyncTest {
                             )
                             .build()
                     )
-                    .metadata(
-                        CredentialUpdateParams.Metadata.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("string"))
-                            .build()
-                    )
+                    .metadata(CredentialUpdateParams.Metadata.builder().build())
                     .build()
             )
 
