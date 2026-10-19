@@ -9,6 +9,7 @@ import zipfile
 
 PUBLIC, PRIVATE, PROTECTED = 0x0001, 0x0002, 0x0004
 STATIC, FINAL, INTERFACE, ABSTRACT = 0x0008, 0x0010, 0x0200, 0x0400
+INNER_CLASS_ACCESS = PUBLIC | PRIVATE | PROTECTED | STATIC
 
 
 class Reader:
@@ -113,8 +114,11 @@ def parse_class(data):
                 inner_flags = nested.number(2)
                 if inner == this_class:
                     # Protected nested classes have no ACC_PROTECTED in the
-                    # class header; their actual access lives in InnerClasses.
-                    flags = inner_flags
+                    # class header. Overlay visibility/static access only;
+                    # JVM modifiers remain authoritative in the class header.
+                    flags = (flags & ~INNER_CLASS_ACCESS) | (
+                        inner_flags & INNER_CLASS_ACCESS
+                    )
     if reader.pos != len(data):
         raise ValueError("trailing class file data")
     return name, ClassApi(
@@ -124,22 +128,27 @@ def parse_class(data):
 
 def read_jar(path):
     classes = {}
-    with zipfile.ZipFile(path) as archive:
-        names = archive.namelist()
-        if len(names) != len(set(names)):
-            raise ValueError(f"{path}: duplicate JAR entries")
-        for name in names:
-            if not name.endswith(".class"):
-                continue
-            if name.startswith("META-INF/versions/") or name == "module-info.class":
-                raise ValueError(
-                    f"{path}: multi-release/modular JARs are not supported"
-                )
-            class_name, api = parse_class(archive.read(name))
-            if name != class_name + ".class":
-                raise ValueError(f"{path}: class name does not match entry {name}")
-            if visibility(api.flags):
-                classes[class_name] = api
+    try:
+        with zipfile.ZipFile(path) as archive:
+            names = archive.namelist()
+            if len(names) != len(set(names)):
+                raise ValueError(f"{path}: duplicate JAR entries")
+            for name in names:
+                if not name.endswith(".class"):
+                    continue
+                if name.startswith("META-INF/versions/") or name == "module-info.class":
+                    raise ValueError(
+                        f"{path}: multi-release/modular JARs are not supported"
+                    )
+                class_name, api = parse_class(archive.read(name))
+                if name != class_name + ".class":
+                    raise ValueError(f"{path}: class name does not match entry {name}")
+                if visibility(api.flags):
+                    classes[class_name] = api
+    except (NotImplementedError, RuntimeError) as error:
+        raise ValueError(
+            f"{path}: unsupported or unreadable ZIP input: {error}"
+        ) from error
     if not classes:
         raise ValueError(f"{path}: no public/protected classes found")
     return classes

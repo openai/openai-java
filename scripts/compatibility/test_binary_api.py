@@ -3,6 +3,7 @@
 from pathlib import Path
 import os
 import shutil
+import struct
 import subprocess
 import sys
 import tempfile
@@ -10,6 +11,39 @@ import unittest
 import zipfile
 
 from check_binary_api import compare, read_jar
+
+
+def class_header_offset(data):
+    """Locate access_flags so fixtures can transform the header independently."""
+    count = struct.unpack_from(">H", data, 8)[0]
+    offset, index = 10, 1
+    widths = {
+        3: 4,
+        4: 4,
+        5: 8,
+        6: 8,
+        7: 2,
+        8: 2,
+        9: 4,
+        10: 4,
+        11: 4,
+        12: 4,
+        15: 3,
+        16: 2,
+        17: 4,
+        18: 4,
+        19: 2,
+        20: 2,
+    }
+    while index < count:
+        tag = data[offset]
+        offset += 1
+        if tag == 1:
+            offset += 2 + struct.unpack_from(">H", data, offset)[0]
+        else:
+            offset += widths[tag]
+        index += 2 if tag in (5, 6) else 1
+    return offset
 
 
 @unittest.skipUnless(shutil.which("javac") and shutil.which("java"), "requires a JDK")
@@ -128,6 +162,29 @@ class BinaryApiTest(unittest.TestCase):
             any("Api$Nested: exported class removed" in issue for issue in issues),
             issues,
         )
+
+    def test_nested_class_header_modifiers_survive_stale_inner_classes(self):
+        old = self.compile_jar(
+            {"Api.java": "public class Api { public static class Nested {} }"}
+        )
+        with zipfile.ZipFile(old) as archive:
+            entries = [(info, archive.read(info)) for info in archive.infolist()]
+        for flag, label in [(0x0010, "final"), (0x0400, "abstract")]:
+            with self.subTest(modifier=label):
+                changed = self.root / f"nested-{label}.jar"
+                with zipfile.ZipFile(changed, "w") as archive:
+                    for info, content in entries:
+                        if info.filename == "Api$Nested.class":
+                            content = bytearray(content)
+                            offset = class_header_offset(content)
+                            flags = struct.unpack_from(">H", content, offset)[0]
+                            struct.pack_into(">H", content, offset, flags | flag)
+                            # Leave the original InnerClasses attribute unchanged.
+                        archive.writestr(info, content)
+                self.assertIn(
+                    f"Api$Nested: class {label} modifier changed",
+                    compare(read_jar(old), read_jar(changed)),
+                )
 
     def test_raised_bytecode_target_is_reported(self):
         source = {"Api.java": "public class Api {}"}
@@ -256,6 +313,33 @@ class BinaryApiTest(unittest.TestCase):
             archive.writestr("META-INF/versions/9/Api.class", b"unsupported")
         with self.assertRaisesRegex(ValueError, "multi-release"):
             read_jar(jar)
+
+    def test_unsupported_zip_inputs_have_input_error_exit_status(self):
+        good = self.compile_jar({"Api.java": "public class Api {}"})
+        script = Path(__file__).with_name("check_binary_api.py")
+        for label, flags, compression in [
+            ("unsupported-compression", 0, 99),
+            ("encrypted", 1, zipfile.ZIP_STORED),
+        ]:
+            data = bytearray(good.read_bytes())
+            # This single-entry ZIP has no comment or data descriptor. Patch the
+            # local and central headers consistently, preserving its class data.
+            end = data.rindex(b"PK\x05\x06")
+            central = struct.unpack_from("<I", data, end + 16)[0]
+            struct.pack_into("<HH", data, 6, flags, compression)
+            struct.pack_into("<HH", data, central + 8, flags, compression)
+            bad = self.root / f"{label}.jar"
+            bad.write_bytes(data)
+            for before, after in [(bad, good), (good, bad)]:
+                with self.subTest(kind=label, input="old" if before == bad else "new"):
+                    result = subprocess.run(
+                        [sys.executable, str(script), str(before), str(after)],
+                        capture_output=True,
+                        text=True,
+                    )
+                    self.assertEqual(2, result.returncode, result.stderr)
+                    self.assertIn("Cannot compare JARs:", result.stderr)
+                    self.assertNotIn("Traceback", result.stderr)
 
     def test_truncated_class_is_rejected(self):
         jar = self.root / "truncated.jar"

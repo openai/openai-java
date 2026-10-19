@@ -22,6 +22,8 @@ Exit status is `0` for no detected changes, `1` for potential incompatibilities,
 and `2` for unsupported, unreadable, malformed, or empty exported API inputs.
 Findings are sorted and include exact JVM descriptors, including return types.
 Do not treat an error or an unsupported input as a passing comparison.
+Unsupported ZIP compression and encrypted class entries are input errors (status
+`2`), with a diagnostic instead of an uncaught traceback.
 
 The comparison reports:
 
@@ -42,6 +44,9 @@ declaration already inherited can produce conservative findings requiring review
 Public/protected nested classes inside inaccessible outer classes are also
 included conservatively. All public/protected JVM declarations are included,
 even Kotlin `internal` declarations emitted as public bytecode.
+For nested classes, visibility and static membership come from `InnerClasses`;
+JVM modifiers such as final, abstract and interface remain authoritative in the
+class header, including when a bytecode transformer leaves the attribute stale.
 
 It does **not** prove compatibility of behavior, Java/Kotlin source, generics,
 Kotlin metadata, nullability, checked exceptions, annotations, inlined constants,
