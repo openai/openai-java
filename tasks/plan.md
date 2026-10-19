@@ -145,7 +145,10 @@ patch without adding a public compiler feature.
   Voices and skill Versions. The additional services are Files, ContentProvenance
   Checks, container Files, Realtime Calls, upload Parts, Transcriptions and
   Translations. Nonmultipart methods such as video content download remain outside
-  that rule.
+  that rule. High-level void-return methods retain their existing `thenAccept`
+  behavior; raw multipart HTTP responses still use the mapper. Current inputs have
+  no high-level void multipart endpoints. Compile probes must use the generator's
+  actual nullable `Void?` signature rather than assume a nonnullable return type.
 * Credential union files combine default visitor methods and diagnostic redaction.
   Tool-search output models combine public type aliases and visitor compatibility.
 * The largest patch, `ResponseTest.kt` (+1/-235), consolidates duplicate large
