@@ -257,7 +257,7 @@ dispatch or count an adapter-only change as removal of the enum patch.
 
 The user clarified the delivery ceiling on 2026-10-19: **at most ten public Java
 SDK PRs and at most ten compiler Deltas; internal generation PRs are unlimited**.
-The six existing public SDK PRs and four existing compiler Deltas count toward
+The six existing public SDK PRs and six existing compiler Deltas count toward
 their respective limits. Track both counters before publishing. Internal PRs
 still follow normal ownership, compatibility and promotion requirements.
 
@@ -278,9 +278,9 @@ within their bundle. Do not create replacement PRs to evade either ceiling.
 | 5 | [Java #1238](https://github.com/openai/openai-java/pull/1238) | Merged documentation checkpoint; post-merge workflows verified successful |
 | 6 | [Java #1239](https://github.com/openai/openai-java/pull/1239) | Handwritten expiry compatibility regressions and revised delivery plan; may proceed after fresh exact-head gates |
 | 7 | Reserved compatible runtime/model rollout | Batch ready client, multipart/audio and legacy-accessor/model cleanup after its compiler changes merge |
-| 8 | Reserved model/structured-output rollout | Batch compatible params/helpers, embeddings, visitors and diagnostics after their compiler changes merge |
-| 9 | Reserved service/helper rollout | Batch remaining Responses/agent/legacy/auth/webhook delegates and corresponding tests |
-| 10 | Reserved final test-fidelity and inventory rollout | Remaining generation fidelity, final trusted debt report and completion evidence |
+| 8 | Reserved model/structured-output rollout | Batch compatible params/helpers, embeddings, visitors, diagnostics and model fixture reuse after their compiler changes merge |
+| 9 | Reserved service/helper and test-fidelity rollout | Batch Responses/agent/legacy/auth/webhook delegates, extracted handwritten streaming/pagination regressions, generated service fixtures and final inventory |
+| 10 | Reserved optional policy-only completion | After trusted zero customizations and generated ownership verification, a separate `.castiron-ratchet.json`-only PR may enable zero-budget strict ownership |
 
 These are capacity reservations, not a requirement to open four more PRs. Combine
 ready batches where it reduces review cycles without delaying independent work.
@@ -288,18 +288,24 @@ Normal Castiron promotion creates or updates public candidate PRs; use that
 supported workflow rather than manually attaching generated output to #1239.
 No generated rollout is public before its compiler prerequisites merge.
 
-### Compiler allocation: four opened, six remaining
+Complete code, test and inventory changes within slots 7–9. Budget or strict-policy
+changes cannot share a PR with those files: repository guidance requires the
+entire policy PR to contain only `.castiron-ratchet.json`. Slot 10 preserves that
+option without exceeding the public cap. Do not change policy until trusted
+measurement proves zero, and do not use an additional PR outside the cap.
+
+### Compiler allocation: six opened, four remaining
 
 | Slot | Existing review or reserved bundle | Scope |
 | ---: | --- | --- |
 | 1 | Compiler Delta 2565485 | C1 client/telemetry compatibility; retain human helper-contract review |
 | 2 | Compiler Delta 2565512 | C2 multipart plus integrated C3 transcription/translation dispatch and lifecycle evidence |
 | 3 | Compiler Delta 2566856 | Shared typed helper/model/test ownership policies and compiler validation, including existing audio facts |
-| 4 | Compiler Delta 2566858 | C5 legacy accessor/model binding, aliases, storage/default/validation contracts and corresponding tests |
-| 5 | Reserved structured-output bundle | C4 public service overloads and parameter/builder helper contracts |
+| 4 | Compiler Delta 2566858 | Ready C5 expiry accessor, raw-property lookup and enum-predicate consumers; retain the published checkpoint's scope |
+| 5 | Reserved structured-output/model bundle | C4 public service/parameter helpers and remaining C5 alias, accepted-value and validation contracts |
 | 6 | Reserved Responses bridge bundle | C9 WebSocket/stream validation delegates |
-| 7 | Reserved embedding bundle | C6 representation, decoder/accessor and default encoding contracts |
-| 8 | Reserved evolving union/diagnostic bundle | C7 visitor/default/alias contracts and C8 existing diagnostic redaction |
+| 7 | Compiler Delta 2568122 | C6 representation, decoder/accessor and builder-default contracts |
+| 8 | Compiler Delta 2568148 | C7 individual Visitor defaults and C8 existing diagnostic contracts; remaining alias/documentation work stays in the model bundle |
 | 9 | Reserved remaining service/helper bundle | C10 agent/idempotency, C11 retained legacy/auth selection and C14 webhook entrypoints |
 | 10 | Reserved generated-test fidelity bundle | C12 fixture reuse, isolated pagination ownership, deterministic streaming/server fixtures and canonical model samples |
 
