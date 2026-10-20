@@ -2859,7 +2859,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/BetaResponseInputItem.kt": {
       "mode": "100644",
-      "sha256": "8af0ac4936e09bcb1646b4eaa3448ddeb9f1e4ff32ceed5663005368a9376f10"
+      "sha256": "f766ac32f85459b4fa3811a43c6b0a4843eee2ce706b811c922771885ecfdb5a"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/BetaResponseInputMessageItem.kt": {
       "mode": "100644",
@@ -10959,7 +10959,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseInputItemTest.kt": {
       "mode": "100644",
-      "sha256": "35c5aa03f2d1f8bfdde93e876219014af7d7e2d8f6f799eac3812fcf68fbafab"
+      "sha256": "e6902e34d7b581483c294430fbfac638d363385781fbc24d1ee23ffc6707b260"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseInputMessageItemTest.kt": {
       "mode": "100644",
