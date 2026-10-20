@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.audio.transcriptions
 
@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -18,7 +19,7 @@ import java.util.Objects
 /**
  * Emitted when a diarized transcription returns a completed segment with speaker information. Only
  * emitted when you
- * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+ * [create a transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
  * with `stream` set to `true` and `response_format` set to `diarized_json`.
  */
 class TranscriptionTextSegmentEvent
@@ -136,6 +137,32 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "id" to this.id,
+            "end" to this.end,
+            "speaker" to this.speaker,
+            "start" to this.start,
+            "text" to this.text,
+            "type" to this.type,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =

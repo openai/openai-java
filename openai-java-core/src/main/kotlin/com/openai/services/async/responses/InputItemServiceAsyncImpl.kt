@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.responses
 
@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Create and manage model responses. */
 class InputItemServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     InputItemServiceAsync {
 

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.responses
 
@@ -21,6 +21,7 @@ import com.openai.models.responses.inputtokens.InputTokenCountResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 class InputTokenServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     InputTokenServiceAsync {
 

@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
-
-set -e
+set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-find . -name "*.kt" -not -path "./buildSrc/build/*" -print0 | xargs -0 -r ktfmt --kotlinlang-style "$@"
+case "$*" in
+    "") task=formatKotlin ;;
+    "--dry-run --set-exit-if-changed"|"--set-exit-if-changed --dry-run") task=lintKotlin ;;
+    *) echo "Usage: $0 [--dry-run --set-exit-if-changed]" >&2; exit 2 ;;
+esac
+
+exec ./scripts/gradle "$task"

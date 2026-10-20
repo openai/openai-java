@@ -1,19 +1,12 @@
 # OpenAI Java API Library
 
-<!-- x-release-please-start-version -->
-
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/4.49.0)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/4.49.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/4.49.0)
-
-<!-- x-release-please-end -->
+<!-- These URLs intentionally omit versions and stay outside Release Please markers so they track the latest release. -->
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java)
 
 The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://platform.openai.com/docs) from applications written in Java.
 
-<!-- x-release-please-start-version -->
-
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/4.49.0).
-
-<!-- x-release-please-end -->
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java).
 
 ## Installation
 
@@ -22,7 +15,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.49.0")
+implementation("com.openai:openai-java:4.87.0")
 ```
 
 ### Maven
@@ -31,7 +24,7 @@ implementation("com.openai:openai-java:4.49.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.49.0</version>
+  <version>4.87.0</version>
 </dependency>
 ```
 
@@ -41,6 +34,18 @@ implementation("com.openai:openai-java:4.49.0")
 
 The framework-neutral SDK artifacts require Java 8 or later. Runtime floors and lifecycle states
 are declared per artifact in the [Java version support policy](docs/version-support-policy.md).
+
+### Local development
+
+Before building the repository, check that the local environment uses the development JDK declared
+by `build.jdk` in `gradle/version-support.properties`, then run lint:
+
+```sh
+./scripts/check-env
+./scripts/lint
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the complete development workflow.
 
 ## Usage
 
@@ -94,7 +99,7 @@ with normal AWS credentials:
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java-bedrock:4.49.0")
+implementation("com.openai:openai-java-bedrock:4.87.0")
 ```
 
 <!-- x-release-please-end -->
@@ -209,6 +214,48 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .workloadIdentity(workloadIdentity)
     .build();
 ```
+
+#### X.509 client certificate authentication
+
+Applications with a client certificate can exchange that certificate directly for short-lived
+OpenAI access tokens without providing a JWT or implementing `SubjectTokenProvider`:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.client.okhttp.X509Transport;
+import com.openai.client.okhttp.X509WorkloadIdentity;
+import java.time.Duration;
+import javax.net.ssl.X509ExtendedKeyManager;
+import javax.net.ssl.X509TrustManager;
+
+X509ExtendedKeyManager keyManager = /* load your PKCS#12 key manager */;
+X509TrustManager trustManager = /* load your trusted server roots */;
+
+X509Transport transport = X509Transport.builder()
+    .keyManager(keyManager)
+    .certificateAlias("client-certificate")
+    .trustManager(trustManager)
+    .build();
+
+X509WorkloadIdentity identity = X509WorkloadIdentity.builder()
+    .identityProviderId("your-identity-provider-id")
+    .serviceAccountId("your-service-account-id")
+    .transport(transport)
+    .refreshBuffer(Duration.ofMinutes(10)) // Optional; defaults to 20 minutes.
+    .build();
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .x509WorkloadIdentity(identity)
+    .build();
+```
+
+`OpenAIOkHttpClientAsync.builder()` supports the same `x509WorkloadIdentity` option. Tokens are
+obtained lazily, cached, and refreshed before expiration. Both the token exchange and API requests
+use the configured fixed certificate alias, isolated direct mutual-TLS connections, and native
+hostname verification; redirects and custom transport settings are not supported. Close the SDK
+client to release both connection pools. For a complete compilable PKCS#12 setup, see
+[`X509WorkloadIdentityExample`](openai-java-example/src/main/java/com/openai/example/X509WorkloadIdentityExample.java).
 
 #### Kubernetes service account token provider
 
@@ -741,6 +788,21 @@ properties can be derived. This may occur if, for example:
   If you need arbitrary key/value data, model it as a list of entry objects with named fields so the
   generated schema still has concrete property names.
 
+For example, replace `Map<String, Integer> coolMap` with a list of entries:
+
+```java
+class TestMap {
+    public List<Entry> coolMap;
+}
+
+class Entry {
+    public String key;
+    public int value;
+}
+```
+
+The entry list does not enforce unique keys; handle duplicates when converting it back to a map.
+
 ### Annotating classes and JSON schemas
 
 You can use annotations to add further information to the JSON schema derived from your Java
@@ -975,7 +1037,7 @@ may make the process of function calling simpler to understand and implement.
 _Function Calling_ is also supported for the Responses API. The usage is the same as described
 except where the Responses API differs slightly from the Chat Completions API. Pass the top-level
 class to `addTool(Class<T>)` when building the parameters. In the response, look for
-[`RepoonseOutputItem`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseOutputItem.kt)
+[`ResponseOutputItem`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseOutputItem.kt)
 instances that are function calls. Parse the parameters to each function call to an instance of the
 class using
 [`ResponseFunctionToolCall.arguments(Class<T>)`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseFunctionToolCall.kt).
@@ -988,6 +1050,21 @@ API to define and parse function parameters, see
 For a full example of the usage of _Function Calling_ with the Responses API using Java classes to
 define and parse function parameters, see
 [`ResponsesFunctionCallingExample`](openai-java-example/src/main/java/com/openai/example/ResponsesFunctionCallingExample.java).
+
+Configure a class-derived Responses tool with an optional builder callback, including when using
+structured responses or streaming:
+
+```java
+var params = ResponseCreateParams.builder()
+    .model(MODEL)
+    .input("Look up item A123.")
+    .addTool(ToolSearchTool.builder().build())
+    .addTool(LookupItem.class, tool -> tool.deferLoading(true))
+    .build();
+```
+
+The callback runs after the usual schema generation and local validation. Function arguments still
+parse with `call.arguments(LookupItem.class)`; the API validates tool-search configuration.
 
 ### Local function JSON schema validation
 
@@ -1104,6 +1181,10 @@ FileCreateParams params = FileCreateParams.builder()
     .build();
 FileObject fileObject = client.files().create(params);
 ```
+
+If serializing a multipart upload fails, the SDK attempts to close all of its input streams,
+including files it has not read yet. Rebuild the upload parameters with fresh streams before
+retrying after a serialization failure.
 
 ## Webhook Verification
 
@@ -1309,7 +1390,9 @@ The SDK throws custom unchecked exception types:
 
 - [`OpenAIInvalidDataException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIInvalidDataException.kt): Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
 
-- [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
+- [`InvalidResourceIdException`](openai-java-core/src/main/kotlin/com/openai/errors/InvalidResourceIdException.kt): Local rejection of an empty resource ID or one exactly equal to `.` or `..`. Extends `IllegalArgumentException`, not `OpenAIException`; no HTTP request is sent.
+
+- [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for SDK service, I/O, and data exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
 
 ## Pagination
 
@@ -1350,12 +1433,12 @@ import java.util.concurrent.CompletableFuture;
 
 CompletableFuture<JobListPageAsync> pageFuture = client.async().fineTuning().jobs().list();
 
-pageFuture.thenRun(page -> page.autoPager().subscribe(job -> {
+pageFuture.thenAccept(page -> page.autoPager().subscribe(job -> {
     System.out.println(job);
 }));
 
 // If you need to handle errors or completion of the stream
-pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
+pageFuture.thenAccept(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
     @Override
     public void onNext(FineTuningJob job) {
         System.out.println(job);
@@ -1373,7 +1456,7 @@ pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Ha
 }));
 
 // Or use futures
-pageFuture.thenRun(page -> page.autoPager()
+pageFuture.thenAccept(page -> page.autoPager()
     .subscribe(job -> {
         System.out.println(job);
     })
@@ -1467,7 +1550,7 @@ for the final legacy configuration and usage instructions.
 
 ## Jackson
 
-The SDK depends on [Jackson](https://github.com/FasterXML/jackson) for JSON serialization/deserialization. It is compatible with version 2.13.4 or higher, but depends on version 2.18.9 by default.
+The SDK depends on [Jackson](https://github.com/FasterXML/jackson) for JSON serialization/deserialization. It is compatible with version 2.13.4 or higher, and its default dependency is the [published Jackson version](gradle/libs.versions.toml).
 
 The SDK throws an exception if it detects an incompatible Jackson version at runtime (e.g. if the default version was overridden in your Maven or Gradle config).
 
@@ -1503,6 +1586,33 @@ The [`ClientOptions`](openai-java-core/src/main/kotlin/com/openai/core/ClientOpt
 - `AzureUrlPathMode.AUTO`: automatically detects the path mode based on the base URL. Default value.
 
 ## Network options
+
+### Telemetry headers
+
+Disable SDK-generated telemetry for a client:
+
+```java
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .fromEnv()
+    .disableTelemetry(true)
+    .build();
+```
+
+To set the default for newly built clients in the JVM, set the system property before constructing
+clients, or pass `-Dopenai.disableTelemetry=true` to Java:
+
+```java
+System.setProperty("openai.disableTelemetry", "true");
+```
+
+An explicit `.disableTelemetry(true)` or `.disableTelemetry(false)` overrides the system property.
+Without either setting, telemetry remains enabled. The property is read at build time; existing
+clients and `withOptions` clones retain their resolved setting unless explicitly overridden.
+
+Disabling telemetry omits SDK-generated `X-Stainless-*` headers and the SDK's `User-Agent` from API
+requests, including retries and WebSocket handshakes. Explicit caller headers are preserved, including
+caller-supplied telemetry headers. Authentication, Azure API versions, and actual timeout behavior
+are unchanged. The HTTP transport may still supply its own `User-Agent`.
 
 ### Retries
 
@@ -1768,10 +1878,10 @@ The SDK consists of three artifacts:
 
 - `openai-java-core`
   - Contains core SDK logic
-  - Does not depend on [OkHttp](https://square.github.io/okhttp)
+  - Does not depend on [OkHttp](https://lysine.dev/okhttp/)
   - Exposes [`OpenAIClient`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt), [`OpenAIClientAsync`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsync.kt), [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt), and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), all of which can work with any HTTP client
 - `openai-java-client-okhttp`
-  - Depends on [OkHttp](https://square.github.io/okhttp)
+  - Depends on [OkHttp](https://lysine.dev/okhttp/)
   - Exposes [`OpenAIOkHttpClient`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt) and [`OpenAIOkHttpClientAsync`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClientAsync.kt), which provide a way to construct [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt) and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), respectively, using OkHttp
 - `openai-java`
   - Depends on and exposes the APIs of both `openai-java-core` and `openai-java-client-okhttp`
@@ -1779,7 +1889,7 @@ The SDK consists of three artifacts:
 
 This structure allows replacing the SDK's default HTTP client without pulling in unnecessary dependencies.
 
-#### Customized [`OkHttpClient`](https://square.github.io/okhttp/3.x/okhttp/okhttp3/OkHttpClient.html)
+#### Customized [`OkHttpClient`](https://lysine.dev/okhttp/4.x/okhttp/okhttp3/-ok-http-client/)
 
 > [!TIP]
 > Try the available [network options](#network-options) before replacing the default client.
@@ -1832,7 +1942,7 @@ ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .build();
 ```
 
-These properties can be accessed on the nested built object later using the `_additionalProperties()` method.
+To read raw JSON properties from a nested JSON-backed object, call `_allProperties()`. It returns both declared and additional properties.
 
 To set a documented parameter or property to an undocumented or not yet supported _value_, pass a [`JsonValue`](openai-java-core/src/main/kotlin/com/openai/core/Values.kt) object to its setter:
 
@@ -1903,14 +2013,14 @@ ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
 
 ### Response properties
 
-To access undocumented response properties, call the `_additionalProperties()` method:
+To access raw response properties, including undocumented properties, call the `_allProperties()` method:
 
 ```java
 import com.openai.core.JsonValue;
 import java.util.Map;
 
-Map<String, JsonValue> additionalProperties = client.chat().completions().create(params)._additionalProperties();
-JsonValue secretPropertyValue = additionalProperties.get("secretProperty");
+Map<String, JsonValue> allProperties = client.chat().completions().create(params)._allProperties();
+JsonValue secretPropertyValue = allProperties.get("secretProperty");
 
 String result = secretPropertyValue.accept(new JsonValue.Visitor<>() {
     @Override
@@ -1998,7 +2108,7 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
 
 ### Why don't you use plain `enum` classes?
 
-Java `enum` classes are not trivially [forwards compatible](https://www.stainless.com/blog/making-java-enums-forwards-compatible). Using them in the SDK could cause runtime exceptions if the API is updated to respond with a new enum value.
+Java `enum` classes are not trivially forwards compatible. Using them in the SDK could cause runtime exceptions if the API is updated to respond with a new enum value.
 
 ### Why do you represent fields using `JsonField<T>` instead of just plain `T`?
 
@@ -2038,3 +2148,31 @@ changing the last available artifact may be a minor release.
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
 We are keen for your feedback; please open an [issue](https://www.github.com/openai/openai-java/issues) with questions, bugs, or suggestions.
+
+## Reconnecting to Realtime
+
+Set `RealtimeWebSocketOptions.builder().reconnect(true).build()` to reconnect
+after a temporary connection failure. This option is off by default. It does not
+support transcription sessions or connections to an existing call. The SDK does
+not retry normal closures, rejected credentials, or TLS failures.
+
+Reconnecting keeps the same Java object but starts a new server session. The SDK
+refreshes credentials for each attempt and allows five reconnect attempts in
+total by default. Use `maxReconnectAttempts` to change this limit and
+`reconnectDelayMillis` to set the initial delay. Delays grow to eight seconds.
+Closing the connection cancels pending retries.
+
+By default, the SDK rejects sends while reconnecting. Set `maxPendingBytes` to
+hold unsent commands up to that size in bytes. Use `onReconnected` to restore any
+session settings and conversation state your application needs. Pause other
+application sends and wait for in-flight sends to finish before restoring state;
+the callback does not block them. Then call `flushPending()` to send the waiting commands. To remove them without sending,
+call `takePending()` instead. The SDK does not resend commands it already tried
+to send. A successful send does not confirm that the server received the command.
+
+## Contributing
+
+Please share bug reports and feature requests through [GitHub issues](https://github.com/openai/openai-java/issues).
+Pull requests are limited to repository collaborators; we do not accept pull requests from non-collaborators.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the contribution policy and development guide.
+For security vulnerabilities, follow [SECURITY.md](SECURITY.md).

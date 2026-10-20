@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -16,6 +16,7 @@ internal class BetaCustomToolTest {
             BetaCustomTool.builder()
                 .name("name")
                 .addAllowedCaller(BetaCustomTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .formatText()
@@ -24,6 +25,7 @@ internal class BetaCustomToolTest {
         assertThat(betaCustomTool.name()).isEqualTo("name")
         assertThat(betaCustomTool.allowedCallers().getOrNull())
             .containsExactly(BetaCustomTool.AllowedCaller.DIRECT)
+        assertThat(betaCustomTool.async()).contains(true)
         assertThat(betaCustomTool.deferLoading()).contains(true)
         assertThat(betaCustomTool.description()).contains("description")
         assertThat(betaCustomTool.format()).contains(BetaCustomTool.Format.ofText())
@@ -36,6 +38,7 @@ internal class BetaCustomToolTest {
             BetaCustomTool.builder()
                 .name("name")
                 .addAllowedCaller(BetaCustomTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .formatText()

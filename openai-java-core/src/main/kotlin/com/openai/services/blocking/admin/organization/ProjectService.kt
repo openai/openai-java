@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization
 
@@ -41,29 +41,41 @@ interface ProjectService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ProjectService
 
-    fun users(): UserService
+    fun users(): UserService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun serviceAccounts(): ServiceAccountService
+    fun serviceAccounts(): ServiceAccountService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun apiKeys(): ApiKeyService
+    fun apiKeys(): ApiKeyService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun rateLimits(): RateLimitService
+    fun rateLimits(): RateLimitService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun modelPermissions(): ModelPermissionService
+    fun modelPermissions(): ModelPermissionService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun hostedToolPermissions(): HostedToolPermissionService
+    fun hostedToolPermissions(): HostedToolPermissionService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun groups(): GroupService
+    fun groups(): GroupService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun roles(): RoleService
+    fun roles(): RoleService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun dataRetention(): DataRetentionService
+    fun dataRetention(): DataRetentionService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun spendLimit(): SpendLimitService
+    fun spendLimit(): SpendLimitService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun spendAlerts(): SpendAlertService
+    fun spendAlerts(): SpendAlertService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun certificates(): CertificateService
+    fun certificates(): CertificateService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Create a new project in the organization. Projects can be created and archived, but cannot be
@@ -191,29 +203,65 @@ interface ProjectService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ProjectService.WithRawResponse
 
-        fun users(): UserService.WithRawResponse
+        fun users(): UserService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun serviceAccounts(): ServiceAccountService.WithRawResponse
+        fun serviceAccounts(): ServiceAccountService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun apiKeys(): ApiKeyService.WithRawResponse
+        fun apiKeys(): ApiKeyService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun rateLimits(): RateLimitService.WithRawResponse
+        fun rateLimits(): RateLimitService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun modelPermissions(): ModelPermissionService.WithRawResponse
+        fun modelPermissions(): ModelPermissionService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun hostedToolPermissions(): HostedToolPermissionService.WithRawResponse
+        fun hostedToolPermissions(): HostedToolPermissionService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun groups(): GroupService.WithRawResponse
+        fun groups(): GroupService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun roles(): RoleService.WithRawResponse
+        fun roles(): RoleService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun dataRetention(): DataRetentionService.WithRawResponse
+        fun dataRetention(): DataRetentionService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun spendLimit(): SpendLimitService.WithRawResponse
+        fun spendLimit(): SpendLimitService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun spendAlerts(): SpendAlertService.WithRawResponse
+        fun spendAlerts(): SpendAlertService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun certificates(): CertificateService.WithRawResponse
+        fun certificates(): CertificateService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /organization/projects`, but is otherwise the same

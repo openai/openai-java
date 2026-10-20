@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.admin.organization.projects
 
@@ -23,6 +23,7 @@ import com.openai.models.admin.organization.projects.apikeys.ApiKeyListPageAsync
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyListPageResponse
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyListParams
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyRetrieveParams
+import com.openai.models.admin.organization.projects.apikeys.ApiKeyUpdateParams
 import com.openai.models.admin.organization.projects.apikeys.ProjectApiKey
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -46,6 +47,13 @@ class ApiKeyServiceAsyncImpl internal constructor(private val clientOptions: Cli
     ): CompletableFuture<ProjectApiKey> =
         // get /organization/projects/{project_id}/api_keys/{api_key_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
+
+    override fun update(
+        params: ApiKeyUpdateParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ProjectApiKey> =
+        // post /organization/projects/{project_id}/api_keys/{api_key_id}
+        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
 
     override fun list(
         params: ApiKeyListParams,
@@ -108,6 +116,50 @@ class ApiKeyServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val updateHandler: Handler<ProjectApiKey> =
+            jsonHandler<ProjectApiKey>(clientOptions.jsonMapper)
+
+        override fun update(
+            params: ApiKeyUpdateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ProjectApiKey>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("apiKeyId", params.apiKeyId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "organization",
+                        "projects",
+                        params._pathParam(0),
+                        "api_keys",
+                        params._pathParam(1),
+                    )
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { updateHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

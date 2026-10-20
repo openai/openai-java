@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.images
 
@@ -81,6 +81,7 @@ internal class ImageEditStreamEventTest {
                         .totalTokens(0L)
                         .build()
                 )
+                .safetyIdentifier("safety_identifier")
                 .build()
 
         val imageEditStreamEvent = ImageEditStreamEvent.ofCompleted(completed)
@@ -114,6 +115,7 @@ internal class ImageEditStreamEventTest {
                             .totalTokens(0L)
                             .build()
                     )
+                    .safetyIdentifier("safety_identifier")
                     .build()
             )
 

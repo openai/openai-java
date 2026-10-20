@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.client
 
@@ -12,16 +12,19 @@ import com.openai.services.blocking.CompletionService
 import com.openai.services.blocking.ContainerService
 import com.openai.services.blocking.ContentProvenanceCheckService
 import com.openai.services.blocking.ConversationService
+import com.openai.services.blocking.DecisionService
 import com.openai.services.blocking.EmbeddingService
 import com.openai.services.blocking.EvalService
 import com.openai.services.blocking.FileService
 import com.openai.services.blocking.FineTuningService
 import com.openai.services.blocking.GraderService
 import com.openai.services.blocking.ImageService
+import com.openai.services.blocking.LiveService
 import com.openai.services.blocking.ModelService
 import com.openai.services.blocking.ModerationService
 import com.openai.services.blocking.RealtimeService
 import com.openai.services.blocking.ResponseService
+import com.openai.services.blocking.SafetyService
 import com.openai.services.blocking.SkillService
 import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.VectorStoreService
@@ -33,11 +36,12 @@ import java.util.function.Consumer
  * A client for interacting with the OpenAI REST API synchronously. You can also switch to
  * asynchronous execution via the [async] method.
  *
- * This client performs best when you create a single instance and reuse it for all interactions
- * with the REST API. This is because each client holds its own connection pool and thread pools.
- * Reusing connections and threads reduces latency and saves memory. The client also handles rate
- * limiting per client. This means that creating and using multiple instances at the same time will
- * not respect rate limits.
+ * This client performs best when you create a single instance and reuse it for interactions with
+ * the REST API. Reusing the client allows requests to share underlying connections and threads,
+ * reducing latency and saving memory. The client automatically retries certain failed requests when
+ * retries are enabled, but it does not coordinate request rates across concurrent requests or
+ * client instances. Applications should manage their request rate as needed to stay within API rate
+ * limits.
  *
  * The threads and connections that are held will be released automatically if they remain idle. But
  * if you are writing an application that needs to aggressively release unused resources, then you
@@ -64,6 +68,8 @@ interface OpenAIClient {
      * The original service is not modified.
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClient
+
+    fun decisions(): DecisionService
 
     /**
      * Given a prompt, the model will return one or more predicted completions, and can also return
@@ -104,6 +110,8 @@ interface OpenAIClient {
 
     fun vectorStores(): VectorStoreService
 
+    fun safety(): SafetyService
+
     fun webhooks(): WebhookService
 
     fun beta(): BetaService
@@ -116,7 +124,10 @@ interface OpenAIClient {
 
     fun admin(): AdminService
 
+    /** Create and manage model responses. */
     fun responses(): ResponseService
+
+    fun live(): LiveService
 
     fun realtime(): RealtimeService
 
@@ -154,6 +165,8 @@ interface OpenAIClient {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClient.WithRawResponse
+
+        fun decisions(): DecisionService.WithRawResponse
 
         /**
          * Given a prompt, the model will return one or more predicted completions, and can also
@@ -194,6 +207,8 @@ interface OpenAIClient {
 
         fun vectorStores(): VectorStoreService.WithRawResponse
 
+        fun safety(): SafetyService.WithRawResponse
+
         fun webhooks(): WebhookService.WithRawResponse
 
         fun beta(): BetaService.WithRawResponse
@@ -206,7 +221,10 @@ interface OpenAIClient {
 
         fun admin(): AdminService.WithRawResponse
 
+        /** Create and manage model responses. */
         fun responses(): ResponseService.WithRawResponse
+
+        fun live(): LiveService.WithRawResponse
 
         fun realtime(): RealtimeService.WithRawResponse
 

@@ -1,7 +1,9 @@
 package com.openai.core
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 
@@ -140,5 +142,19 @@ internal class ValuesTest {
         val obj = testCase.value.asObject()
 
         assertThat(obj).isEqualTo(testCase.expectedAsObject)
+    }
+
+    private class MultipartJson(private val value: MultipartField<String>) {
+        @JsonProperty("value") @ExcludeMissing fun value(): MultipartField<String> = value
+    }
+
+    @Test
+    fun excludesMissingMultipartValuesButPreservesNullAndKnownValues() {
+        assertThat(JsonValue.from(MultipartJson(MultipartField.of(JsonMissing.of()))))
+            .isEqualTo(JsonObject.of(emptyMap()))
+        assertThat(JsonValue.from(MultipartJson(MultipartField.of(JsonNull.of()))))
+            .isEqualTo(JsonObject.of(mapOf("value" to JsonNull.of())))
+        assertThat(JsonValue.from(MultipartJson(MultipartField.of("text"))))
+            .isEqualTo(JsonObject.of(mapOf("value" to JsonString.of("text"))))
     }
 }

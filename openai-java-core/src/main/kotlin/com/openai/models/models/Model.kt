@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.models
 
@@ -11,9 +11,13 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
+import java.time.LocalDate
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Describes an OpenAI model offering that can be used with the API. */
 class Model
@@ -23,6 +27,7 @@ private constructor(
     private val created: JsonField<Long>,
     private val object_: JsonValue,
     private val ownedBy: JsonField<String>,
+    private val shutdownDate: JsonField<LocalDate>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -32,7 +37,10 @@ private constructor(
         @JsonProperty("created") @ExcludeMissing created: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("owned_by") @ExcludeMissing ownedBy: JsonField<String> = JsonMissing.of(),
-    ) : this(id, created, object_, ownedBy, mutableMapOf())
+        @JsonProperty("shutdown_date")
+        @ExcludeMissing
+        shutdownDate: JsonField<LocalDate> = JsonMissing.of(),
+    ) : this(id, created, object_, ownedBy, shutdownDate, mutableMapOf())
 
     /**
      * The model identifier, which can be referenced in the API endpoints.
@@ -72,6 +80,14 @@ private constructor(
     fun ownedBy(): String = ownedBy.getRequired("owned_by")
 
     /**
+     * The date when the model will shut down, or null if not announced.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun shutdownDate(): Optional<LocalDate> = shutdownDate.getOptional("shutdown_date")
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -92,11 +108,45 @@ private constructor(
      */
     @JsonProperty("owned_by") @ExcludeMissing fun _ownedBy(): JsonField<String> = ownedBy
 
+    /**
+     * Returns the raw JSON value of [shutdownDate].
+     *
+     * Unlike [shutdownDate], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("shutdown_date")
+    @ExcludeMissing
+    fun _shutdownDate(): JsonField<LocalDate> = shutdownDate
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "id" to this.id,
+            "created" to this.created,
+            "object" to this.object_,
+            "owned_by" to this.ownedBy,
+            "shutdown_date" to this.shutdownDate,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -126,6 +176,7 @@ private constructor(
         private var created: JsonField<Long>? = null
         private var object_: JsonValue = JsonValue.from("model")
         private var ownedBy: JsonField<String>? = null
+        private var shutdownDate: JsonField<LocalDate> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -134,6 +185,7 @@ private constructor(
             created = model.created
             object_ = model.object_
             ownedBy = model.ownedBy
+            shutdownDate = model.shutdownDate
             additionalProperties = model.additionalProperties.toMutableMap()
         }
 
@@ -184,6 +236,24 @@ private constructor(
          */
         fun ownedBy(ownedBy: JsonField<String>) = apply { this.ownedBy = ownedBy }
 
+        /** The date when the model will shut down, or null if not announced. */
+        fun shutdownDate(shutdownDate: LocalDate?) =
+            shutdownDate(JsonField.ofNullable(shutdownDate))
+
+        /** Alias for calling [Builder.shutdownDate] with `shutdownDate.orElse(null)`. */
+        fun shutdownDate(shutdownDate: Optional<LocalDate>) = shutdownDate(shutdownDate.getOrNull())
+
+        /**
+         * Sets [Builder.shutdownDate] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.shutdownDate] with a well-typed [LocalDate] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun shutdownDate(shutdownDate: JsonField<LocalDate>) = apply {
+            this.shutdownDate = shutdownDate
+        }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -223,6 +293,7 @@ private constructor(
                 checkRequired("created", created),
                 object_,
                 checkRequired("ownedBy", ownedBy),
+                shutdownDate,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -250,6 +321,7 @@ private constructor(
             }
         }
         ownedBy()
+        shutdownDate()
         validated = true
     }
 
@@ -271,7 +343,8 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (created.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("model")) 1 else 0 } +
-            (if (ownedBy.asKnown().isPresent) 1 else 0)
+            (if (ownedBy.asKnown().isPresent) 1 else 0) +
+            (if (shutdownDate.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -283,15 +356,16 @@ private constructor(
             created == other.created &&
             object_ == other.object_ &&
             ownedBy == other.ownedBy &&
+            shutdownDate == other.shutdownDate &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, created, object_, ownedBy, additionalProperties)
+        Objects.hash(id, created, object_, ownedBy, shutdownDate, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Model{id=$id, created=$created, object_=$object_, ownedBy=$ownedBy, additionalProperties=$additionalProperties}"
+        "Model{id=$id, created=$created, object_=$object_, ownedBy=$ownedBy, shutdownDate=$shutdownDate, additionalProperties=$additionalProperties}"
 }

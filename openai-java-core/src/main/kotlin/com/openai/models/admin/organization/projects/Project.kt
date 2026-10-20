@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects
 
@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -27,6 +28,7 @@ private constructor(
     private val archivedAt: JsonField<Long>,
     private val externalKeyId: JsonField<String>,
     private val name: JsonField<String>,
+    private val residency: JsonField<ProjectResidency>,
     private val status: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -41,8 +43,21 @@ private constructor(
         @ExcludeMissing
         externalKeyId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("residency")
+        @ExcludeMissing
+        residency: JsonField<ProjectResidency> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<String> = JsonMissing.of(),
-    ) : this(id, createdAt, object_, archivedAt, externalKeyId, name, status, mutableMapOf())
+    ) : this(
+        id,
+        createdAt,
+        object_,
+        archivedAt,
+        externalKeyId,
+        name,
+        residency,
+        status,
+        mutableMapOf(),
+    )
 
     /**
      * The identifier, which can be referenced in API endpoints
@@ -98,6 +113,14 @@ private constructor(
     fun name(): Optional<String> = name.getOptional("name")
 
     /**
+     * The residency configuration for the project.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun residency(): Optional<ProjectResidency> = residency.getOptional("residency")
+
+    /**
      * `active` or `archived`
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -143,6 +166,15 @@ private constructor(
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /**
+     * Returns the raw JSON value of [residency].
+     *
+     * Unlike [residency], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("residency")
+    @ExcludeMissing
+    fun _residency(): JsonField<ProjectResidency> = residency
+
+    /**
      * Returns the raw JSON value of [status].
      *
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
@@ -154,6 +186,34 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "id" to this.id,
+            "created_at" to this.createdAt,
+            "object" to this.object_,
+            "archived_at" to this.archivedAt,
+            "external_key_id" to this.externalKeyId,
+            "name" to this.name,
+            "residency" to this.residency,
+            "status" to this.status,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -184,6 +244,7 @@ private constructor(
         private var archivedAt: JsonField<Long> = JsonMissing.of()
         private var externalKeyId: JsonField<String> = JsonMissing.of()
         private var name: JsonField<String> = JsonMissing.of()
+        private var residency: JsonField<ProjectResidency> = JsonMissing.of()
         private var status: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -195,6 +256,7 @@ private constructor(
             archivedAt = project.archivedAt
             externalKeyId = project.externalKeyId
             name = project.name
+            residency = project.residency
             status = project.status
             additionalProperties = project.additionalProperties.toMutableMap()
         }
@@ -289,6 +351,18 @@ private constructor(
          */
         fun name(name: JsonField<String>) = apply { this.name = name }
 
+        /** The residency configuration for the project. */
+        fun residency(residency: ProjectResidency) = residency(JsonField.of(residency))
+
+        /**
+         * Sets [Builder.residency] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.residency] with a well-typed [ProjectResidency] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun residency(residency: JsonField<ProjectResidency>) = apply { this.residency = residency }
+
         /** `active` or `archived` */
         fun status(status: String?) = status(JsonField.ofNullable(status))
 
@@ -343,6 +417,7 @@ private constructor(
                 archivedAt,
                 externalKeyId,
                 name,
+                residency,
                 status,
                 additionalProperties.toMutableMap(),
             )
@@ -373,6 +448,7 @@ private constructor(
         archivedAt()
         externalKeyId()
         name()
+        residency().ifPresent { it.validate() }
         status()
         validated = true
     }
@@ -398,6 +474,7 @@ private constructor(
             (if (archivedAt.asKnown().isPresent) 1 else 0) +
             (if (externalKeyId.asKnown().isPresent) 1 else 0) +
             (if (name.asKnown().isPresent) 1 else 0) +
+            (residency.asKnown().getOrNull()?.validity() ?: 0) +
             (if (status.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
@@ -412,6 +489,7 @@ private constructor(
             archivedAt == other.archivedAt &&
             externalKeyId == other.externalKeyId &&
             name == other.name &&
+            residency == other.residency &&
             status == other.status &&
             additionalProperties == other.additionalProperties
     }
@@ -424,6 +502,7 @@ private constructor(
             archivedAt,
             externalKeyId,
             name,
+            residency,
             status,
             additionalProperties,
         )
@@ -432,5 +511,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Project{id=$id, createdAt=$createdAt, object_=$object_, archivedAt=$archivedAt, externalKeyId=$externalKeyId, name=$name, status=$status, additionalProperties=$additionalProperties}"
+        "Project{id=$id, createdAt=$createdAt, object_=$object_, archivedAt=$archivedAt, externalKeyId=$externalKeyId, name=$name, residency=$residency, status=$status, additionalProperties=$additionalProperties}"
 }

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.images
 
@@ -10,6 +10,7 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -35,8 +36,8 @@ private constructor(
     ) : this(b64Json, revisedPrompt, url, mutableMapOf())
 
     /**
-     * The base64-encoded JSON of the generated image. Returned by default for the GPT image models,
-     * and only present if `response_format` is set to `b64_json` for `dall-e-2` and `dall-e-3`.
+     * The base64-encoded JSON of the generated image. Returned by default for GPT image models, or
+     * when `response_format` is set to `b64_json` for models that support that parameter.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -44,7 +45,8 @@ private constructor(
     fun b64Json(): Optional<String> = b64Json.getOptional("b64_json")
 
     /**
-     * For `dall-e-3` only, the revised prompt that was used to generate the image.
+     * The revised prompt used to generate the image, for models that support prompt revision. Not
+     * returned by GPT image models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -52,8 +54,8 @@ private constructor(
     fun revisedPrompt(): Optional<String> = revisedPrompt.getOptional("revised_prompt")
 
     /**
-     * When using `dall-e-2` or `dall-e-3`, the URL of the generated image if `response_format` is
-     * set to `url` (default value). Unsupported for the GPT image models.
+     * The URL of the generated image when `response_format` is set to `url` for models that support
+     * that parameter. Unsupported for GPT image models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -88,6 +90,29 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "b64_json" to this.b64Json,
+            "revised_prompt" to this.revisedPrompt,
+            "url" to this.url,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -118,9 +143,8 @@ private constructor(
         }
 
         /**
-         * The base64-encoded JSON of the generated image. Returned by default for the GPT image
-         * models, and only present if `response_format` is set to `b64_json` for `dall-e-2` and
-         * `dall-e-3`.
+         * The base64-encoded JSON of the generated image. Returned by default for GPT image models,
+         * or when `response_format` is set to `b64_json` for models that support that parameter.
          */
         fun b64Json(b64Json: String) = b64Json(JsonField.of(b64Json))
 
@@ -132,7 +156,10 @@ private constructor(
          */
         fun b64Json(b64Json: JsonField<String>) = apply { this.b64Json = b64Json }
 
-        /** For `dall-e-3` only, the revised prompt that was used to generate the image. */
+        /**
+         * The revised prompt used to generate the image, for models that support prompt revision.
+         * Not returned by GPT image models.
+         */
         fun revisedPrompt(revisedPrompt: String) = revisedPrompt(JsonField.of(revisedPrompt))
 
         /**
@@ -147,8 +174,8 @@ private constructor(
         }
 
         /**
-         * When using `dall-e-2` or `dall-e-3`, the URL of the generated image if `response_format`
-         * is set to `url` (default value). Unsupported for the GPT image models.
+         * The URL of the generated image when `response_format` is set to `url` for models that
+         * support that parameter. Unsupported for GPT image models.
          */
         fun url(url: String) = url(JsonField.of(url))
 

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -182,7 +183,7 @@ private constructor(
      * Configuration for input audio transcription, defaults to off and can be set to `null` to turn
      * off once on. Input audio transcription is not native to the model, since the model consumes
      * audio directly. Transcription runs asynchronously through
-     * [the /audio/transcriptions endpoint](https://platform.openai.com/docs/api-reference/audio/createTranscription)
+     * [the /audio/transcriptions endpoint](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
      * and should be treated as guidance of input audio content rather than precisely what the model
      * heard. The client can optionally set the language and prompt for transcription, these offer
      * additional guidance to the transcription service.
@@ -256,7 +257,7 @@ private constructor(
 
     /**
      * Reference to a prompt template and its variables.
-     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+     * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -509,6 +510,46 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "id" to this.id,
+            "expires_at" to this.expiresAt,
+            "include" to this.include,
+            "input_audio_format" to this.inputAudioFormat,
+            "input_audio_noise_reduction" to this.inputAudioNoiseReduction,
+            "input_audio_transcription" to this.inputAudioTranscription,
+            "instructions" to this.instructions,
+            "max_response_output_tokens" to this.maxResponseOutputTokens,
+            "modalities" to this.modalities,
+            "model" to this.model,
+            "object" to this.object_,
+            "output_audio_format" to this.outputAudioFormat,
+            "prompt" to this.prompt,
+            "speed" to this.speed,
+            "temperature" to this.temperature,
+            "tool_choice" to this.toolChoice,
+            "tools" to this.tools,
+            "tracing" to this.tracing,
+            "turn_detection" to this.turnDetection,
+            "voice" to this.voice,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -622,9 +663,8 @@ private constructor(
          */
         fun addInclude(include: Include) = apply {
             this.include =
-                (this.include ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("include", it).add(include)
-                }
+                (this.include?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("include", it).add(include) }
         }
 
         /**
@@ -670,7 +710,7 @@ private constructor(
          * Configuration for input audio transcription, defaults to off and can be set to `null` to
          * turn off once on. Input audio transcription is not native to the model, since the model
          * consumes audio directly. Transcription runs asynchronously through
-         * [the /audio/transcriptions endpoint](https://platform.openai.com/docs/api-reference/audio/createTranscription)
+         * [the /audio/transcriptions endpoint](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create)
          * and should be treated as guidance of input audio content rather than precisely what the
          * model heard. The client can optionally set the language and prompt for transcription,
          * these offer additional guidance to the transcription service.
@@ -775,7 +815,7 @@ private constructor(
          */
         fun addModality(modality: Modality) = apply {
             modalities =
-                (modalities ?: JsonField.of(mutableListOf())).also {
+                (modalities?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("modalities", it).add(modality)
                 }
         }
@@ -830,7 +870,7 @@ private constructor(
 
         /**
          * Reference to a prompt template and its variables.
-         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
          */
         fun prompt(prompt: ResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
 
@@ -912,7 +952,9 @@ private constructor(
          */
         fun addTool(tool: RealtimeFunctionTool) = apply {
             tools =
-                (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
+                (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("tools", it).add(tool)
+                }
         }
 
         /**
@@ -1455,6 +1497,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "type" to this.type)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1749,7 +1809,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown MaxResponseOutputTokens: $json")
+                throw OpenAIInvalidDataException("Unknown MaxResponseOutputTokens")
             }
         }
 
@@ -2622,7 +2682,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Tracing: $json")
+                throw OpenAIInvalidDataException("Unknown Tracing")
             }
         }
 
@@ -2745,6 +2805,31 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "group_id" to this.groupId,
+                    "metadata" to this.metadata,
+                    "workflow_name" to this.workflowName,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -3126,7 +3211,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown TurnDetection: $json")
+                throw OpenAIInvalidDataException("Unknown TurnDetection")
             }
         }
 
@@ -3372,6 +3457,35 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "type" to this.type,
+                    "create_response" to this.createResponse,
+                    "idle_timeout_ms" to this.idleTimeoutMs,
+                    "interrupt_response" to this.interruptResponse,
+                    "prefix_padding_ms" to this.prefixPaddingMs,
+                    "silence_duration_ms" to this.silenceDurationMs,
+                    "threshold" to this.threshold,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -3795,6 +3909,32 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "type" to this.type,
+                    "create_response" to this.createResponse,
+                    "eagerness" to this.eagerness,
+                    "interrupt_response" to this.interruptResponse,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =

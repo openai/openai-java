@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -20,6 +20,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -27,7 +28,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+/** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
 @JsonDeserialize(using = ChatCompletionContentPart.Deserializer::class)
 @JsonSerialize(using = ChatCompletionContentPart.Serializer::class)
 class ChatCompletionContentPart
@@ -39,18 +40,19 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+    /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
     fun text(): Optional<ChatCompletionContentPartText> = Optional.ofNullable(text)
 
-    /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+    /** Learn about [image inputs](https://developers.openai.com/api/docs/guides/images-vision). */
     fun imageUrl(): Optional<ChatCompletionContentPartImage> = Optional.ofNullable(imageUrl)
 
-    /** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
+    /** Learn about [audio inputs](https://developers.openai.com/api/docs/guides/audio). */
     fun inputAudio(): Optional<ChatCompletionContentPartInputAudio> =
         Optional.ofNullable(inputAudio)
 
     /**
-     * Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text generation.
+     * Learn about [file inputs](https://developers.openai.com/api/docs/guides/text) for text
+     * generation.
      */
     fun file(): Optional<File> = Optional.ofNullable(file)
 
@@ -62,17 +64,18 @@ private constructor(
 
     fun isFile(): Boolean = file != null
 
-    /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+    /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
     fun asText(): ChatCompletionContentPartText = text.getOrThrow("text")
 
-    /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+    /** Learn about [image inputs](https://developers.openai.com/api/docs/guides/images-vision). */
     fun asImageUrl(): ChatCompletionContentPartImage = imageUrl.getOrThrow("imageUrl")
 
-    /** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
+    /** Learn about [audio inputs](https://developers.openai.com/api/docs/guides/audio). */
     fun asInputAudio(): ChatCompletionContentPartInputAudio = inputAudio.getOrThrow("inputAudio")
 
     /**
-     * Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text generation.
+     * Learn about [file inputs](https://developers.openai.com/api/docs/guides/text) for text
+     * generation.
      */
     fun asFile(): File = file.getOrThrow("file")
 
@@ -210,22 +213,24 @@ private constructor(
 
     companion object {
 
-        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+        /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
         @JvmStatic
         fun ofText(text: ChatCompletionContentPartText) = ChatCompletionContentPart(text = text)
 
-        /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+        /**
+         * Learn about [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
+         */
         @JvmStatic
         fun ofImageUrl(imageUrl: ChatCompletionContentPartImage) =
             ChatCompletionContentPart(imageUrl = imageUrl)
 
-        /** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
+        /** Learn about [audio inputs](https://developers.openai.com/api/docs/guides/audio). */
         @JvmStatic
         fun ofInputAudio(inputAudio: ChatCompletionContentPartInputAudio) =
             ChatCompletionContentPart(inputAudio = inputAudio)
 
         /**
-         * Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text
+         * Learn about [file inputs](https://developers.openai.com/api/docs/guides/text) for text
          * generation.
          */
         @JvmStatic fun ofFile(file: File) = ChatCompletionContentPart(file = file)
@@ -237,17 +242,19 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+        /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
         fun visitText(text: ChatCompletionContentPartText): T
 
-        /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+        /**
+         * Learn about [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
+         */
         fun visitImageUrl(imageUrl: ChatCompletionContentPartImage): T
 
-        /** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
+        /** Learn about [audio inputs](https://developers.openai.com/api/docs/guides/audio). */
         fun visitInputAudio(inputAudio: ChatCompletionContentPartInputAudio): T
 
         /**
-         * Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text
+         * Learn about [file inputs](https://developers.openai.com/api/docs/guides/text) for text
          * generation.
          */
         fun visitFile(file: File): T
@@ -263,7 +270,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown ChatCompletionContentPart: $json")
+            throw OpenAIInvalidDataException("Unknown ChatCompletionContentPart")
         }
     }
 
@@ -324,7 +331,8 @@ private constructor(
     }
 
     /**
-     * Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text generation.
+     * Learn about [file inputs](https://developers.openai.com/api/docs/guides/text) for text
+     * generation.
      */
     class File
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -395,6 +403,29 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "file" to this.file,
+                "type" to this.type,
+                "prompt_cache_breakpoint" to this.promptCacheBreakpoint,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -636,6 +667,31 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "file_data" to this.fileData,
+                    "file_id" to this.fileId,
+                    "filename" to this.filename,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -834,6 +890,26 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties, "mode" to this.mode)
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =

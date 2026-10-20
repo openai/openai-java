@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.alpha.graders
 
@@ -21,6 +21,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -53,7 +54,7 @@ private constructor(
 
     /**
      * The model sample to be evaluated. This value will be used to populate the `sample` namespace.
-     * See [the guide](https://platform.openai.com/docs/guides/graders) for more details. The
+     * See [the guide](https://developers.openai.com/api/docs/guides/graders) for more details. The
      * `output_json` variable will be populated if the model sample is a valid JSON string.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -63,7 +64,7 @@ private constructor(
 
     /**
      * The dataset item provided to the grader. This will be used to populate the `item` namespace.
-     * See [the guide](https://platform.openai.com/docs/guides/graders) for more details.
+     * See [the guide](https://developers.openai.com/api/docs/guides/graders) for more details.
      *
      * This arbitrary value can be deserialized into a custom type using the `convert` method:
      * ```java
@@ -163,9 +164,9 @@ private constructor(
 
         /**
          * The model sample to be evaluated. This value will be used to populate the `sample`
-         * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
-         * details. The `output_json` variable will be populated if the model sample is a valid JSON
-         * string.
+         * namespace. See [the guide](https://developers.openai.com/api/docs/guides/graders) for
+         * more details. The `output_json` variable will be populated if the model sample is a valid
+         * JSON string.
          */
         fun modelSample(modelSample: String) = apply { body.modelSample(modelSample) }
 
@@ -180,8 +181,8 @@ private constructor(
 
         /**
          * The dataset item provided to the grader. This will be used to populate the `item`
-         * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
-         * details.
+         * namespace. See [the guide](https://developers.openai.com/api/docs/guides/graders) for
+         * more details.
          */
         fun item(item: JsonValue) = apply { body.item(item) }
 
@@ -353,9 +354,9 @@ private constructor(
 
         /**
          * The model sample to be evaluated. This value will be used to populate the `sample`
-         * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
-         * details. The `output_json` variable will be populated if the model sample is a valid JSON
-         * string.
+         * namespace. See [the guide](https://developers.openai.com/api/docs/guides/graders) for
+         * more details. The `output_json` variable will be populated if the model sample is a valid
+         * JSON string.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -364,8 +365,8 @@ private constructor(
 
         /**
          * The dataset item provided to the grader. This will be used to populate the `item`
-         * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
-         * details.
+         * namespace. See [the guide](https://developers.openai.com/api/docs/guides/graders) for
+         * more details.
          *
          * This arbitrary value can be deserialized into a custom type using the `convert` method:
          * ```java
@@ -395,6 +396,29 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "grader" to this.grader,
+                "model_sample" to this.modelSample,
+                "item" to this.item,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -462,9 +486,9 @@ private constructor(
 
             /**
              * The model sample to be evaluated. This value will be used to populate the `sample`
-             * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
-             * details. The `output_json` variable will be populated if the model sample is a valid
-             * JSON string.
+             * namespace. See [the guide](https://developers.openai.com/api/docs/guides/graders) for
+             * more details. The `output_json` variable will be populated if the model sample is a
+             * valid JSON string.
              */
             fun modelSample(modelSample: String) = modelSample(JsonField.of(modelSample))
 
@@ -481,8 +505,8 @@ private constructor(
 
             /**
              * The dataset item provided to the grader. This will be used to populate the `item`
-             * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
-             * details.
+             * namespace. See [the guide](https://developers.openai.com/api/docs/guides/graders) for
+             * more details.
              */
             fun item(item: JsonValue) = apply { this.item = item }
 
@@ -860,7 +884,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Grader: $json")
+                throw OpenAIInvalidDataException("Unknown Grader")
             }
         }
 

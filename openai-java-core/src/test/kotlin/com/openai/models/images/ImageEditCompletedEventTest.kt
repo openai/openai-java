@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.images
 
@@ -32,6 +32,7 @@ internal class ImageEditCompletedEventTest {
                         .totalTokens(0L)
                         .build()
                 )
+                .safetyIdentifier("safety_identifier")
                 .build()
 
         assertThat(imageEditCompletedEvent.b64Json()).isEqualTo("b64_json")
@@ -57,6 +58,7 @@ internal class ImageEditCompletedEventTest {
                     .totalTokens(0L)
                     .build()
             )
+        assertThat(imageEditCompletedEvent.safetyIdentifier()).contains("safety_identifier")
     }
 
     @Test
@@ -83,6 +85,7 @@ internal class ImageEditCompletedEventTest {
                         .totalTokens(0L)
                         .build()
                 )
+                .safetyIdentifier("safety_identifier")
                 .build()
 
         val roundtrippedImageEditCompletedEvent =

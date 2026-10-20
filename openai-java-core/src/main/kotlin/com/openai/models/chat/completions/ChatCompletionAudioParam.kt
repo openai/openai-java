@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -31,7 +32,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Parameters for audio output. Required when audio output is requested with `modalities:
- * ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
+ * ["audio"]`. [Learn more](https://developers.openai.com/api/docs/guides/audio).
  */
 class ChatCompletionAudioParam
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -58,7 +59,9 @@ private constructor(
     /**
      * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`, `ballad`,
      * `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and `cedar`. You may
-     * also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`.
+     * also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Custom
+     * voices must be created from audio samples. Voices created from text prompts are supported
+     * only in Live.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -84,6 +87,24 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(additionalProperties, "format" to this.format, "voice" to this.voice)
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -137,7 +158,8 @@ private constructor(
          * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`,
          * `ballad`, `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and
          * `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id":
-         * "voice_1234" }`.
+         * "voice_1234" }`. Custom voices must be created from audio samples. Voices created from
+         * text prompts are supported only in Live.
          */
         fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -400,7 +422,9 @@ private constructor(
     /**
      * The voice the model uses to respond. Supported built-in voices are `alloy`, `ash`, `ballad`,
      * `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer`, `marin`, and `cedar`. You may
-     * also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`.
+     * also provide a custom voice object with an `id`, for example `{ "id": "voice_1234" }`. Custom
+     * voices must be created from audio samples. Voices created from text prompts are supported
+     * only in Live.
      */
     @JsonDeserialize(using = Voice.Deserializer::class)
     @JsonSerialize(using = Voice.Serializer::class)
@@ -586,7 +610,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Voice: $json")
+                throw OpenAIInvalidDataException("Unknown Voice")
             }
         }
 
@@ -863,6 +887,26 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties, "id" to this.id)
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =

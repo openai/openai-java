@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -42,7 +43,9 @@ private constructor(
     ) : this(item, outputIndex, sequenceNumber, type, mutableMapOf())
 
     /**
-     * The output item that was added.
+     * The output item that was added. For reasoning items, `encrypted_content` may be incomplete
+     * while the item is in progress. Use the reasoning item from the corresponding
+     * `response.output_item.done` event when passing it as input to a subsequent request.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -106,6 +109,30 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "item" to this.item,
+            "output_index" to this.outputIndex,
+            "sequence_number" to this.sequenceNumber,
+            "type" to this.type,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -146,7 +173,11 @@ private constructor(
             additionalProperties = responseOutputItemAddedEvent.additionalProperties.toMutableMap()
         }
 
-        /** The output item that was added. */
+        /**
+         * The output item that was added. For reasoning items, `encrypted_content` may be
+         * incomplete while the item is in progress. Use the reasoning item from the corresponding
+         * `response.output_item.done` event when passing it as input to a subsequent request.
+         */
         fun item(item: ResponseOutputItem) = item(JsonField.of(item))
 
         /**

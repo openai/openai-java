@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -23,6 +23,7 @@ import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -57,38 +58,38 @@ private constructor(
 
     /**
      * Defines a function in your own code the model can choose to call. Learn more about
-     * [function calling](https://platform.openai.com/docs/guides/function-calling).
+     * [function calling](https://developers.openai.com/api/docs/guides/function-calling).
      */
     fun function(): Optional<BetaFunctionTool> = Optional.ofNullable(function)
 
     /**
      * A tool that searches for relevant content from uploaded files. Learn more about the
-     * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
+     * [file search tool](https://developers.openai.com/api/docs/guides/tools-file-search).
      */
     fun fileSearch(): Optional<BetaFileSearchTool> = Optional.ofNullable(fileSearch)
 
     /**
      * A tool that controls a virtual computer. Learn more about the
-     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+     * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
      */
     fun computer(): Optional<BetaComputerTool> = Optional.ofNullable(computer)
 
     /**
      * A tool that controls a virtual computer. Learn more about the
-     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+     * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
      */
     fun computerUsePreview(): Optional<BetaComputerUsePreviewTool> =
         Optional.ofNullable(computerUsePreview)
 
     /**
      * Search the Internet for sources related to the prompt. Learn more about the
-     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+     * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
      */
     fun webSearch(): Optional<BetaWebSearchTool> = Optional.ofNullable(webSearch)
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     fun mcp(): Optional<Mcp> = Optional.ofNullable(mcp)
 
@@ -109,7 +110,7 @@ private constructor(
 
     /**
      * A custom tool that processes input using a specified format. Learn more about
-     * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+     * [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools)
      */
     fun custom(): Optional<BetaCustomTool> = Optional.ofNullable(custom)
 
@@ -121,7 +122,7 @@ private constructor(
 
     /**
      * This tool searches the web for relevant results to use in a response. Learn more about the
-     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+     * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
      */
     fun webSearchPreview(): Optional<BetaWebSearchPreviewTool> =
         Optional.ofNullable(webSearchPreview)
@@ -163,38 +164,38 @@ private constructor(
 
     /**
      * Defines a function in your own code the model can choose to call. Learn more about
-     * [function calling](https://platform.openai.com/docs/guides/function-calling).
+     * [function calling](https://developers.openai.com/api/docs/guides/function-calling).
      */
     fun asFunction(): BetaFunctionTool = function.getOrThrow("function")
 
     /**
      * A tool that searches for relevant content from uploaded files. Learn more about the
-     * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
+     * [file search tool](https://developers.openai.com/api/docs/guides/tools-file-search).
      */
     fun asFileSearch(): BetaFileSearchTool = fileSearch.getOrThrow("fileSearch")
 
     /**
      * A tool that controls a virtual computer. Learn more about the
-     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+     * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
      */
     fun asComputer(): BetaComputerTool = computer.getOrThrow("computer")
 
     /**
      * A tool that controls a virtual computer. Learn more about the
-     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+     * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
      */
     fun asComputerUsePreview(): BetaComputerUsePreviewTool =
         computerUsePreview.getOrThrow("computerUsePreview")
 
     /**
      * Search the Internet for sources related to the prompt. Learn more about the
-     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+     * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
      */
     fun asWebSearch(): BetaWebSearchTool = webSearch.getOrThrow("webSearch")
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     fun asMcp(): Mcp = mcp.getOrThrow("mcp")
 
@@ -215,7 +216,7 @@ private constructor(
 
     /**
      * A custom tool that processes input using a specified format. Learn more about
-     * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+     * [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools)
      */
     fun asCustom(): BetaCustomTool = custom.getOrThrow("custom")
 
@@ -227,7 +228,7 @@ private constructor(
 
     /**
      * This tool searches the web for relevant results to use in a response. Learn more about the
-     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+     * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
      */
     fun asWebSearchPreview(): BetaWebSearchPreviewTool =
         webSearchPreview.getOrThrow("webSearchPreview")
@@ -523,26 +524,26 @@ private constructor(
 
         /**
          * Defines a function in your own code the model can choose to call. Learn more about
-         * [function calling](https://platform.openai.com/docs/guides/function-calling).
+         * [function calling](https://developers.openai.com/api/docs/guides/function-calling).
          */
         @JvmStatic fun ofFunction(function: BetaFunctionTool) = BetaTool(function = function)
 
         /**
          * A tool that searches for relevant content from uploaded files. Learn more about the
-         * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
+         * [file search tool](https://developers.openai.com/api/docs/guides/tools-file-search).
          */
         @JvmStatic
         fun ofFileSearch(fileSearch: BetaFileSearchTool) = BetaTool(fileSearch = fileSearch)
 
         /**
          * A tool that controls a virtual computer. Learn more about the
-         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+         * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
          */
         @JvmStatic fun ofComputer(computer: BetaComputerTool) = BetaTool(computer = computer)
 
         /**
          * A tool that controls a virtual computer. Learn more about the
-         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+         * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
          */
         @JvmStatic
         fun ofComputerUsePreview(computerUsePreview: BetaComputerUsePreviewTool) =
@@ -550,14 +551,14 @@ private constructor(
 
         /**
          * Search the Internet for sources related to the prompt. Learn more about the
-         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+         * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
          */
         @JvmStatic fun ofWebSearch(webSearch: BetaWebSearchTool) = BetaTool(webSearch = webSearch)
 
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
-         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
         @JvmStatic fun ofMcp(mcp: Mcp) = BetaTool(mcp = mcp)
 
@@ -587,7 +588,7 @@ private constructor(
 
         /**
          * A custom tool that processes input using a specified format. Learn more about
-         * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+         * [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools)
          */
         @JvmStatic fun ofCustom(custom: BetaCustomTool) = BetaTool(custom = custom)
 
@@ -600,7 +601,7 @@ private constructor(
 
         /**
          * This tool searches the web for relevant results to use in a response. Learn more about
-         * the [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+         * the [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
          */
         @JvmStatic
         fun ofWebSearchPreview(webSearchPreview: BetaWebSearchPreviewTool) =
@@ -616,38 +617,38 @@ private constructor(
 
         /**
          * Defines a function in your own code the model can choose to call. Learn more about
-         * [function calling](https://platform.openai.com/docs/guides/function-calling).
+         * [function calling](https://developers.openai.com/api/docs/guides/function-calling).
          */
         fun visitFunction(function: BetaFunctionTool): T
 
         /**
          * A tool that searches for relevant content from uploaded files. Learn more about the
-         * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
+         * [file search tool](https://developers.openai.com/api/docs/guides/tools-file-search).
          */
         fun visitFileSearch(fileSearch: BetaFileSearchTool): T
 
         /**
          * A tool that controls a virtual computer. Learn more about the
-         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+         * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
          */
         fun visitComputer(computer: BetaComputerTool): T
 
         /**
          * A tool that controls a virtual computer. Learn more about the
-         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+         * [computer tool](https://developers.openai.com/api/docs/guides/tools-computer-use).
          */
         fun visitComputerUsePreview(computerUsePreview: BetaComputerUsePreviewTool): T
 
         /**
          * Search the Internet for sources related to the prompt. Learn more about the
-         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+         * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
          */
         fun visitWebSearch(webSearch: BetaWebSearchTool): T
 
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
-         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
         fun visitMcp(mcp: Mcp): T
 
@@ -667,7 +668,7 @@ private constructor(
 
         /**
          * A custom tool that processes input using a specified format. Learn more about
-         * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+         * [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools)
          */
         fun visitCustom(custom: BetaCustomTool): T
 
@@ -679,7 +680,7 @@ private constructor(
 
         /**
          * This tool searches the web for relevant results to use in a response. Learn more about
-         * the [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+         * the [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
          */
         fun visitWebSearchPreview(webSearchPreview: BetaWebSearchPreviewTool): T
 
@@ -696,7 +697,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown BetaTool: $json")
+            throw OpenAIInvalidDataException("Unknown BetaTool")
         }
     }
 
@@ -836,7 +837,7 @@ private constructor(
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     class Mcp
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -957,7 +958,10 @@ private constructor(
         /**
          * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
-         * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+         * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
+         *
+         * This field is deprecated for models released after September 1, 2026. Use `server_url` to
+         * connect to a remote MCP server, or `tunnel_id` to connect through a Secure MCP Tunnel.
          *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`
@@ -972,6 +976,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        @Deprecated("deprecated")
         fun connectorId(): Optional<ConnectorId> = connectorId.getOptional("connector_id")
 
         /**
@@ -1071,6 +1076,7 @@ private constructor(
          *
          * Unlike [connectorId], this method doesn't throw if the JSON field has an unexpected type.
          */
+        @Deprecated("deprecated")
         @JsonProperty("connector_id")
         @ExcludeMissing
         fun _connectorId(): JsonField<ConnectorId> = connectorId
@@ -1131,6 +1137,38 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "server_label" to this.serverLabel,
+                "type" to this.type,
+                "allowed_callers" to this.allowedCallers,
+                "allowed_tools" to this.allowedTools,
+                "authorization" to this.authorization,
+                "connector_id" to this.connectorId,
+                "defer_loading" to this.deferLoading,
+                "headers" to this.headers,
+                "require_approval" to this.requireApproval,
+                "server_description" to this.serverDescription,
+                "server_url" to this.serverUrl,
+                "tunnel_id" to this.tunnelId,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1239,9 +1277,8 @@ private constructor(
              */
             fun addAllowedCaller(allowedCaller: AllowedCaller) = apply {
                 allowedCallers =
-                    (allowedCallers ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("allowedCallers", it).add(allowedCaller)
-                    }
+                    (allowedCallers?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("allowedCallers", it).add(allowedCaller) }
             }
 
             /** List of allowed tool names or a filter object. */
@@ -1294,7 +1331,11 @@ private constructor(
              * Identifier for service connectors, like those available in ChatGPT. One of
              * `server_url`, `connector_id`, or `tunnel_id` must be provided. Learn more about
              * service connectors
-             * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+             * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
+             *
+             * This field is deprecated for models released after September 1, 2026. Use
+             * `server_url` to connect to a remote MCP server, or `tunnel_id` to connect through a
+             * Secure MCP Tunnel.
              *
              * Currently supported `connector_id` values are:
              * - Dropbox: `connector_dropbox`
@@ -1306,6 +1347,7 @@ private constructor(
              * - Outlook Email: `connector_outlookemail`
              * - SharePoint: `connector_sharepoint`
              */
+            @Deprecated("deprecated")
             fun connectorId(connectorId: ConnectorId) = connectorId(JsonField.of(connectorId))
 
             /**
@@ -1315,6 +1357,7 @@ private constructor(
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
+            @Deprecated("deprecated")
             fun connectorId(connectorId: JsonField<ConnectorId>) = apply {
                 this.connectorId = connectorId
             }
@@ -1858,7 +1901,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown AllowedTools: $json")
+                    throw OpenAIInvalidDataException("Unknown AllowedTools")
                 }
             }
 
@@ -1971,6 +2014,30 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "read_only" to this.readOnly,
+                        "tool_names" to this.toolNames,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -2038,9 +2105,9 @@ private constructor(
                      */
                     fun addToolName(toolName: String) = apply {
                         toolNames =
-                            (toolNames ?: JsonField.of(mutableListOf())).also {
-                                checkKnown("toolNames", it).add(toolName)
-                            }
+                            (toolNames?.takeUnless { it.isMissing() }
+                                    ?: JsonField.of(mutableListOf()))
+                                .also { checkKnown("toolNames", it).add(toolName) }
                     }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2144,7 +2211,10 @@ private constructor(
         /**
          * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
-         * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+         * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
+         *
+         * This field is deprecated for models released after September 1, 2026. Use `server_url` to
+         * connect to a remote MCP server, or `tunnel_id` to connect through a Secure MCP Tunnel.
          *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`
@@ -2156,6 +2226,7 @@ private constructor(
          * - Outlook Email: `connector_outlookemail`
          * - SharePoint: `connector_sharepoint`
          */
+        @Deprecated("deprecated")
         class ConnectorId @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
 
@@ -2344,6 +2415,26 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue>
         ) {
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties)
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -2373,6 +2464,11 @@ private constructor(
 
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                     additionalProperties.put(key, value)
+                }
+
+                /** Adds a string-valued property. */
+                fun putProperty(key: String, value: String) = apply {
+                    putAdditionalProperty(key, JsonValue.from(value))
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -2672,7 +2768,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown RequireApproval: $json")
+                    throw OpenAIInvalidDataException("Unknown RequireApproval")
                 }
             }
 
@@ -2785,6 +2881,30 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "always" to this.always,
+                        "never" to this.never,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -2975,6 +3095,31 @@ private constructor(
                         additionalProperties.put(key, value)
                     }
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(
+                            additionalProperties,
+                            "read_only" to this.readOnly,
+                            "tool_names" to this.toolNames,
+                        )
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> =
@@ -3044,9 +3189,9 @@ private constructor(
                          */
                         fun addToolName(toolName: String) = apply {
                             toolNames =
-                                (toolNames ?: JsonField.of(mutableListOf())).also {
-                                    checkKnown("toolNames", it).add(toolName)
-                                }
+                                (toolNames?.takeUnless { it.isMissing() }
+                                        ?: JsonField.of(mutableListOf()))
+                                    .also { checkKnown("toolNames", it).add(toolName) }
                         }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -3209,6 +3354,31 @@ private constructor(
                         additionalProperties.put(key, value)
                     }
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(
+                            additionalProperties,
+                            "read_only" to this.readOnly,
+                            "tool_names" to this.toolNames,
+                        )
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> =
@@ -3278,9 +3448,9 @@ private constructor(
                          */
                         fun addToolName(toolName: String) = apply {
                             toolNames =
-                                (toolNames ?: JsonField.of(mutableListOf())).also {
-                                    checkKnown("toolNames", it).add(toolName)
-                                }
+                                (toolNames?.takeUnless { it.isMissing() }
+                                        ?: JsonField.of(mutableListOf()))
+                                    .also { checkKnown("toolNames", it).add(toolName) }
                         }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -3676,6 +3846,29 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "container" to this.container,
+                "type" to this.type,
+                "allowed_callers" to this.allowedCallers,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -3778,9 +3971,8 @@ private constructor(
              */
             fun addAllowedCaller(allowedCaller: AllowedCaller) = apply {
                 allowedCallers =
-                    (allowedCallers ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("allowedCallers", it).add(allowedCaller)
-                    }
+                    (allowedCallers?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("allowedCallers", it).add(allowedCaller) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -4069,7 +4261,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Container: $json")
+                    throw OpenAIInvalidDataException("Unknown Container")
                 }
             }
 
@@ -4220,6 +4412,32 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "type" to this.type,
+                        "file_ids" to this.fileIds,
+                        "memory_limit" to this.memoryLimit,
+                        "network_policy" to this.networkPolicy,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -4290,9 +4508,9 @@ private constructor(
                      */
                     fun addFileId(fileId: String) = apply {
                         fileIds =
-                            (fileIds ?: JsonField.of(mutableListOf())).also {
-                                checkKnown("fileIds", it).add(fileId)
-                            }
+                            (fileIds?.takeUnless { it.isMissing() }
+                                    ?: JsonField.of(mutableListOf()))
+                                .also { checkKnown("fileIds", it).add(fileId) }
                     }
 
                     /** The memory limit for the code interpreter container. */
@@ -4785,7 +5003,7 @@ private constructor(
                          * @throws OpenAIInvalidDataException in the default implementation.
                          */
                         fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException("Unknown NetworkPolicy: $json")
+                            throw OpenAIInvalidDataException("Unknown NetworkPolicy")
                         }
                     }
 
@@ -5110,17 +5328,15 @@ private constructor(
         fun action(): Optional<Action> = action.getOptional("action")
 
         /**
-         * Allows to set transparency for the background of the generated image(s). This parameter
-         * is only supported for GPT image models that support transparent backgrounds. Must be one
-         * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
-         * will automatically determine the best background for the image.
+         * Allows to set transparency for the background of the generated image(s). Must be one of
+         * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
+         * automatically determine the best background for the image.
          *
-         * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
-         * Requests with `background` set to `transparent` will return an error for these models;
-         * use `opaque` or `auto` instead.
-         *
-         * If `transparent`, the output format needs to support transparency, so it should be set to
-         * either `png` (default value) or `webp`.
+         * `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
+         * snapshots, support `opaque` and `transparent` backgrounds. Transparent backgrounds are
+         * available for supported GPT Image models. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
+         * this support is in preview. When using `transparent`, set the output format to `png` or
+         * `webp`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5129,9 +5345,9 @@ private constructor(
 
         /**
          * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. This parameter is only supported for `gpt-image-1` and
-         * `gpt-image-1.5` and later models, unsupported for `gpt-image-1-mini`. Supports `high` and
-         * `low`. Defaults to `low`.
+         * facial features, of input images. Supports `high` and `low` on `gpt-image-1` and
+         * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
+         * parameter. Defaults to `low` on supported models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5149,7 +5365,10 @@ private constructor(
             inputImageMask.getOptional("input_image_mask")
 
         /**
-         * The image generation model to use. Default: `gpt-image-1`.
+         * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
+         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+         * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`. Default: `gpt-image-1`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5191,8 +5410,9 @@ private constructor(
         fun partialImages(): Optional<Long> = partialImages.getOptional("partial_images")
 
         /**
-         * The quality of the generated image. One of `low`, `medium`, `high`, or `auto`. Default:
-         * `auto`.
+         * The quality of the generated image. The GPT image models support `low`, `medium`, and
+         * `high`. `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
+         * snapshots, also support `xhigh` and `max`. Default: `auto`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5200,15 +5420,15 @@ private constructor(
         fun quality(): Optional<Quality> = quality.getOptional("quality")
 
         /**
-         * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
-         * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`.
-         * Width and height must both be divisible by 16 and the requested aspect ratio must be
-         * between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum
-         * supported resolution is `3840x2160`. The requested size must also satisfy the model's
-         * current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and
-         * `1024x1536` are supported by the GPT image models; `auto` is supported for models that
-         * allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
-         * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+         * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
+         * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+         * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
+         * strings, for example `1536x864`. Width and height must both be divisible by 16 and the
+         * requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are
+         * experimental, and the maximum supported resolution is `3840x2160`. The requested size
+         * must also satisfy the model's current pixel and edge limits. The standard sizes
+         * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
+         * is supported for models that allow automatic sizing.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5316,6 +5536,38 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "type" to this.type,
+                "action" to this.action,
+                "background" to this.background,
+                "input_fidelity" to this.inputFidelity,
+                "input_image_mask" to this.inputImageMask,
+                "model" to this.model,
+                "moderation" to this.moderation,
+                "output_compression" to this.outputCompression,
+                "output_format" to this.outputFormat,
+                "partial_images" to this.partialImages,
+                "quality" to this.quality,
+                "size" to this.size,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -5390,18 +5642,15 @@ private constructor(
             fun action(action: JsonField<Action>) = apply { this.action = action }
 
             /**
-             * Allows to set transparency for the background of the generated image(s). This
-             * parameter is only supported for GPT image models that support transparent
-             * backgrounds. Must be one of `transparent`, `opaque`, or `auto` (default value). When
-             * `auto` is used, the model will automatically determine the best background for the
-             * image.
+             * Allows to set transparency for the background of the generated image(s). Must be one
+             * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
+             * will automatically determine the best background for the image.
              *
-             * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
-             * Requests with `background` set to `transparent` will return an error for these
-             * models; use `opaque` or `auto` instead.
-             *
-             * If `transparent`, the output format needs to support transparency, so it should be
-             * set to either `png` (default value) or `webp`.
+             * `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
+             * snapshots, support `opaque` and `transparent` backgrounds. Transparent backgrounds
+             * are available for supported GPT Image models. For `gpt-image-2` and
+             * `gpt-image-2-2026-04-21`, this support is in preview. When using `transparent`, set
+             * the output format to `png` or `webp`.
              */
             fun background(background: Background) = background(JsonField.of(background))
 
@@ -5418,9 +5667,9 @@ private constructor(
 
             /**
              * Control how much effort the model will exert to match the style and features,
-             * especially facial features, of input images. This parameter is only supported for
-             * `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for
-             * `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
+             * especially facial features, of input images. Supports `high` and `low` on
+             * `gpt-image-1` and `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For
+             * `gpt-image-2`, omit this parameter. Defaults to `low` on supported models.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(JsonField.ofNullable(inputFidelity))
@@ -5458,7 +5707,12 @@ private constructor(
                 this.inputImageMask = inputImageMask
             }
 
-            /** The image generation model to use. Default: `gpt-image-1`. */
+            /**
+             * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
+             * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+             * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`. Default: `gpt-image-1`.
+             */
             fun model(model: Model) = model(JsonField.of(model))
 
             /**
@@ -5542,8 +5796,9 @@ private constructor(
             }
 
             /**
-             * The quality of the generated image. One of `low`, `medium`, `high`, or `auto`.
-             * Default: `auto`.
+             * The quality of the generated image. The GPT image models support `low`, `medium`, and
+             * `high`. `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their
+             * `2026-09-08` snapshots, also support `xhigh` and `max`. Default: `auto`.
              */
             fun quality(quality: Quality) = quality(JsonField.of(quality))
 
@@ -5557,16 +5812,16 @@ private constructor(
             fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
 
             /**
-             * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
-             * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example
-             * `1536x864`. Width and height must both be divisible by 16 and the requested aspect
-             * ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental,
-             * and the maximum supported resolution is `3840x2160`. The requested size must also
-             * satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`,
-             * `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is
-             * supported for models that allow automatic sizing. For `dall-e-2`, use one of
-             * `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`,
-             * `1792x1024`, or `1024x1792`.
+             * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
+             * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+             * and `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as
+             * `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be
+             * divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1.
+             * Resolutions above `2560x1440` are experimental, and the maximum supported resolution
+             * is `3840x2160`. The requested size must also satisfy the model's current pixel and
+             * edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are
+             * supported by the GPT image models; `auto` is supported for models that allow
+             * automatic sizing.
              */
             fun size(size: Size) = size(JsonField.of(size))
 
@@ -5840,17 +6095,15 @@ private constructor(
         }
 
         /**
-         * Allows to set transparency for the background of the generated image(s). This parameter
-         * is only supported for GPT image models that support transparent backgrounds. Must be one
-         * of `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model
-         * will automatically determine the best background for the image.
+         * Allows to set transparency for the background of the generated image(s). Must be one of
+         * `transparent`, `opaque`, or `auto` (default value). When `auto` is used, the model will
+         * automatically determine the best background for the image.
          *
-         * `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent backgrounds.
-         * Requests with `background` set to `transparent` will return an error for these models;
-         * use `opaque` or `auto` instead.
-         *
-         * If `transparent`, the output format needs to support transparency, so it should be set to
-         * either `png` (default value) or `webp`.
+         * `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
+         * snapshots, support `opaque` and `transparent` backgrounds. Transparent backgrounds are
+         * available for supported GPT Image models. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
+         * this support is in preview. When using `transparent`, set the output format to `png` or
+         * `webp`.
          */
         class Background @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
@@ -6001,9 +6254,9 @@ private constructor(
 
         /**
          * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. This parameter is only supported for `gpt-image-1` and
-         * `gpt-image-1.5` and later models, unsupported for `gpt-image-1-mini`. Supports `high` and
-         * `low`. Defaults to `low`.
+         * facial features, of input images. Supports `high` and `low` on `gpt-image-1` and
+         * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
+         * parameter. Defaults to `low` on supported models.
          */
         class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
@@ -6204,6 +6457,30 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "file_id" to this.fileId,
+                    "image_url" to this.imageUrl,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -6348,7 +6625,12 @@ private constructor(
                 "InputImageMask{fileId=$fileId, imageUrl=$imageUrl, additionalProperties=$additionalProperties}"
         }
 
-        /** The image generation model to use. Default: `gpt-image-1`. */
+        /**
+         * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
+         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+         * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`. Default: `gpt-image-1`.
+         */
         class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
@@ -6371,6 +6653,15 @@ private constructor(
 
                 @JvmField val GPT_IMAGE_2_2026_04_21 = of("gpt-image-2-2026-04-21")
 
+                @JvmField val GPT_IMAGE_2_5_SUNBURST = of("gpt-image-2.5-sunburst")
+
+                @JvmField
+                val GPT_IMAGE_2_5_SUNBURST_2026_09_08 = of("gpt-image-2.5-sunburst-2026-09-08")
+
+                @JvmField val GPT_IMAGE_2_5_FLARE = of("gpt-image-2.5-flare")
+
+                @JvmField val GPT_IMAGE_2_5_FLARE_2026_09_08 = of("gpt-image-2.5-flare-2026-09-08")
+
                 @JvmField val GPT_IMAGE_1_5 = of("gpt-image-1.5")
 
                 @JvmField val CHATGPT_IMAGE_LATEST = of("chatgpt-image-latest")
@@ -6384,6 +6675,10 @@ private constructor(
                 GPT_IMAGE_1_MINI,
                 GPT_IMAGE_2,
                 GPT_IMAGE_2_2026_04_21,
+                GPT_IMAGE_2_5_SUNBURST,
+                GPT_IMAGE_2_5_SUNBURST_2026_09_08,
+                GPT_IMAGE_2_5_FLARE,
+                GPT_IMAGE_2_5_FLARE_2026_09_08,
                 GPT_IMAGE_1_5,
                 CHATGPT_IMAGE_LATEST,
             }
@@ -6402,6 +6697,10 @@ private constructor(
                 GPT_IMAGE_1_MINI,
                 GPT_IMAGE_2,
                 GPT_IMAGE_2_2026_04_21,
+                GPT_IMAGE_2_5_SUNBURST,
+                GPT_IMAGE_2_5_SUNBURST_2026_09_08,
+                GPT_IMAGE_2_5_FLARE,
+                GPT_IMAGE_2_5_FLARE_2026_09_08,
                 GPT_IMAGE_1_5,
                 CHATGPT_IMAGE_LATEST,
                 /**
@@ -6423,6 +6722,10 @@ private constructor(
                     GPT_IMAGE_1_MINI -> Value.GPT_IMAGE_1_MINI
                     GPT_IMAGE_2 -> Value.GPT_IMAGE_2
                     GPT_IMAGE_2_2026_04_21 -> Value.GPT_IMAGE_2_2026_04_21
+                    GPT_IMAGE_2_5_SUNBURST -> Value.GPT_IMAGE_2_5_SUNBURST
+                    GPT_IMAGE_2_5_SUNBURST_2026_09_08 -> Value.GPT_IMAGE_2_5_SUNBURST_2026_09_08
+                    GPT_IMAGE_2_5_FLARE -> Value.GPT_IMAGE_2_5_FLARE
+                    GPT_IMAGE_2_5_FLARE_2026_09_08 -> Value.GPT_IMAGE_2_5_FLARE_2026_09_08
                     GPT_IMAGE_1_5 -> Value.GPT_IMAGE_1_5
                     CHATGPT_IMAGE_LATEST -> Value.CHATGPT_IMAGE_LATEST
                     else -> Value._UNKNOWN
@@ -6443,6 +6746,10 @@ private constructor(
                     GPT_IMAGE_1_MINI -> Known.GPT_IMAGE_1_MINI
                     GPT_IMAGE_2 -> Known.GPT_IMAGE_2
                     GPT_IMAGE_2_2026_04_21 -> Known.GPT_IMAGE_2_2026_04_21
+                    GPT_IMAGE_2_5_SUNBURST -> Known.GPT_IMAGE_2_5_SUNBURST
+                    GPT_IMAGE_2_5_SUNBURST_2026_09_08 -> Known.GPT_IMAGE_2_5_SUNBURST_2026_09_08
+                    GPT_IMAGE_2_5_FLARE -> Known.GPT_IMAGE_2_5_FLARE
+                    GPT_IMAGE_2_5_FLARE_2026_09_08 -> Known.GPT_IMAGE_2_5_FLARE_2026_09_08
                     GPT_IMAGE_1_5 -> Known.GPT_IMAGE_1_5
                     CHATGPT_IMAGE_LATEST -> Known.CHATGPT_IMAGE_LATEST
                     else -> throw OpenAIInvalidDataException("Unknown Model: $value")
@@ -6806,8 +7113,9 @@ private constructor(
         }
 
         /**
-         * The quality of the generated image. One of `low`, `medium`, `high`, or `auto`. Default:
-         * `auto`.
+         * The quality of the generated image. The GPT image models support `low`, `medium`, and
+         * `high`. `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare`, including their `2026-09-08`
+         * snapshots, also support `xhigh` and `max`. Default: `auto`.
          */
         class Quality @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
@@ -6830,6 +7138,10 @@ private constructor(
 
                 @JvmField val HIGH = of("high")
 
+                @JvmField val XHIGH = of("xhigh")
+
+                @JvmField val MAX = of("max")
+
                 @JvmField val AUTO = of("auto")
 
                 @JvmStatic fun of(value: String) = Quality(JsonField.of(value))
@@ -6840,6 +7152,8 @@ private constructor(
                 LOW,
                 MEDIUM,
                 HIGH,
+                XHIGH,
+                MAX,
                 AUTO,
             }
 
@@ -6856,6 +7170,8 @@ private constructor(
                 LOW,
                 MEDIUM,
                 HIGH,
+                XHIGH,
+                MAX,
                 AUTO,
                 /**
                  * An enum member indicating that [Quality] was instantiated with an unknown value.
@@ -6875,6 +7191,8 @@ private constructor(
                     LOW -> Value.LOW
                     MEDIUM -> Value.MEDIUM
                     HIGH -> Value.HIGH
+                    XHIGH -> Value.XHIGH
+                    MAX -> Value.MAX
                     AUTO -> Value.AUTO
                     else -> Value._UNKNOWN
                 }
@@ -6893,6 +7211,8 @@ private constructor(
                     LOW -> Known.LOW
                     MEDIUM -> Known.MEDIUM
                     HIGH -> Known.HIGH
+                    XHIGH -> Known.XHIGH
+                    MAX -> Known.MAX
                     AUTO -> Known.AUTO
                     else -> throw OpenAIInvalidDataException("Unknown Quality: $value")
                 }
@@ -6962,15 +7282,15 @@ private constructor(
         }
 
         /**
-         * The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`,
-         * arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`.
-         * Width and height must both be divisible by 16 and the requested aspect ratio must be
-         * between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum
-         * supported resolution is `3840x2160`. The requested size must also satisfy the model's
-         * current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and
-         * `1024x1536` are supported by the GPT image models; `auto` is supported for models that
-         * allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`.
-         * For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`.
+         * The size of the generated images. For `gpt-image-2`, `gpt-image-2-2026-04-21`,
+         * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+         * `gpt-image-2.5-flare-2026-09-08`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
+         * strings, for example `1536x864`. Width and height must both be divisible by 16 and the
+         * requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are
+         * experimental, and the maximum supported resolution is `3840x2160`. The requested size
+         * must also satisfy the model's current pixel and edge limits. The standard sizes
+         * `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto`
+         * is supported for models that allow automatic sizing.
          */
         class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

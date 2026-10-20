@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core.http
 
 import java.io.InputStream
@@ -27,4 +25,15 @@ interface HttpResponse : AutoCloseable {
 
         fun handle(response: HttpResponse): T
     }
+}
+
+/** Implemented by bodies that distinguish protocol completion from transport EOF. */
+internal interface StreamCompletionListener {
+    fun onComplete()
+}
+
+/** Records protocol completion without waiting for transport EOF or closing the body. */
+@JvmSynthetic
+internal fun HttpResponse.markBodyComplete() {
+    (body() as? StreamCompletionListener)?.onComplete()
 }

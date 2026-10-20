@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
@@ -29,7 +29,7 @@ internal class ImageServiceTest {
             imageService.createVariation(
                 ImageCreateVariationParams.builder()
                     .image("Example data".byteInputStream())
-                    .model(ImageModel.GPT_IMAGE_1)
+                    .model(ImageModel.GPT_IMAGE_1_5)
                     .n(1L)
                     .responseFormat(ImageCreateVariationParams.ResponseFormat.URL)
                     .size(ImageCreateVariationParams.Size._1024X1024)
@@ -58,14 +58,15 @@ internal class ImageServiceTest {
                     .background(ImageEditParams.Background.TRANSPARENT)
                     .inputFidelity(ImageEditParams.InputFidelity.HIGH)
                     .mask("Example data".byteInputStream())
-                    .model(ImageModel.GPT_IMAGE_2)
+                    .model(ImageModel.GPT_IMAGE_1_5)
                     .n(1L)
                     .outputCompression(100L)
                     .outputFormat(ImageEditParams.OutputFormat.PNG)
                     .partialImages(1L)
                     .quality(ImageEditParams.Quality.HIGH)
                     .responseFormat(ImageEditParams.ResponseFormat.URL)
-                    .size(ImageEditParams.Size._256X256)
+                    .safetyIdentifier("user-1234")
+                    .size(ImageEditParams.Size._1024X1024)
                     .user("user-1234")
                     .build()
             )
@@ -92,23 +93,27 @@ internal class ImageServiceTest {
                     .background(ImageEditParams.Background.TRANSPARENT)
                     .inputFidelity(ImageEditParams.InputFidelity.HIGH)
                     .mask("Example data".byteInputStream())
-                    .model(ImageModel.GPT_IMAGE_2)
+                    .model(ImageModel.GPT_IMAGE_1_5)
                     .n(1L)
                     .outputCompression(100L)
                     .outputFormat(ImageEditParams.OutputFormat.PNG)
                     .partialImages(1L)
                     .quality(ImageEditParams.Quality.HIGH)
                     .responseFormat(ImageEditParams.ResponseFormat.URL)
-                    .size(ImageEditParams.Size._256X256)
+                    .safetyIdentifier("user-1234")
+                    .size(ImageEditParams.Size._1024X1024)
                     .user("user-1234")
                     .build()
             )
 
+        var received = 0
         imagesResponseStreamResponse.use {
-            imagesResponseStreamResponse.stream().forEach { imagesResponse ->
-                imagesResponse.validate()
+            imagesResponseStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
             }
         }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 
     @Test
@@ -126,7 +131,7 @@ internal class ImageServiceTest {
                 ImageGenerateParams.builder()
                     .prompt("A cute baby sea otter")
                     .background(ImageGenerateParams.Background.TRANSPARENT)
-                    .model(ImageModel.GPT_IMAGE_2)
+                    .model(ImageModel.GPT_IMAGE_2_5_FLARE)
                     .moderation(ImageGenerateParams.Moderation.LOW)
                     .n(1L)
                     .outputCompression(100L)
@@ -134,7 +139,8 @@ internal class ImageServiceTest {
                     .partialImages(1L)
                     .quality(ImageGenerateParams.Quality.MEDIUM)
                     .responseFormat(ImageGenerateParams.ResponseFormat.URL)
-                    .size(ImageGenerateParams.Size.AUTO)
+                    .safetyIdentifier("user-1234")
+                    .size(ImageGenerateParams.Size._1024X1024)
                     .style(ImageGenerateParams.Style.VIVID)
                     .user("user-1234")
                     .build()
@@ -159,7 +165,7 @@ internal class ImageServiceTest {
                 ImageGenerateParams.builder()
                     .prompt("A cute baby sea otter")
                     .background(ImageGenerateParams.Background.TRANSPARENT)
-                    .model(ImageModel.GPT_IMAGE_2)
+                    .model(ImageModel.GPT_IMAGE_2_5_FLARE)
                     .moderation(ImageGenerateParams.Moderation.LOW)
                     .n(1L)
                     .outputCompression(100L)
@@ -167,16 +173,20 @@ internal class ImageServiceTest {
                     .partialImages(1L)
                     .quality(ImageGenerateParams.Quality.MEDIUM)
                     .responseFormat(ImageGenerateParams.ResponseFormat.URL)
-                    .size(ImageGenerateParams.Size.AUTO)
+                    .safetyIdentifier("user-1234")
+                    .size(ImageGenerateParams.Size._1024X1024)
                     .style(ImageGenerateParams.Style.VIVID)
                     .user("user-1234")
                     .build()
             )
 
+        var received = 0
         imagesResponseStreamResponse.use {
-            imagesResponseStreamResponse.stream().forEach { imagesResponse ->
-                imagesResponse.validate()
+            imagesResponseStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
             }
         }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 }

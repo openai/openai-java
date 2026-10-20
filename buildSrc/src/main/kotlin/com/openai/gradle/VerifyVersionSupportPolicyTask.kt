@@ -56,9 +56,7 @@ abstract class VerifyVersionSupportPolicyTask : DefaultTask() {
         check(targetCompatibility.get() == floor) {
             "$name target compatibility must be Java $floor"
         }
-        check(javaRelease.get() == floor) {
-            "$name Java compiler must enforce --release $floor"
-        }
+        check(javaRelease.get() == floor) { "$name Java compiler must enforce --release $floor" }
 
         val expectedKotlinTarget = if (floor == 8) "1.8" else floor.toString()
         check(kotlinJvmTarget.get() == expectedKotlinTarget) {

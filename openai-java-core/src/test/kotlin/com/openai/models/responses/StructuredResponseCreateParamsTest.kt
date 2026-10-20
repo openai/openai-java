@@ -31,6 +31,7 @@ import com.openai.models.ChatModel
 import com.openai.models.Reasoning
 import com.openai.models.ResponsesModel
 import java.util.Optional
+import java.util.function.Consumer
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -135,6 +136,13 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("input", JSON_FIELD),
                 DelegationWriteTestCase("input", STRING),
                 DelegationWriteTestCase("inputOfResponse", LIST),
+                DelegationWriteTestCase(
+                    "accessPrograms",
+                    ResponseCreateParams.AccessPrograms.builder()
+                        .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                        .build(),
+                ),
+                DelegationWriteTestCase("accessPrograms", JSON_FIELD),
                 DelegationWriteTestCase("model", RESPONSES_MODEL),
                 DelegationWriteTestCase("model", JSON_FIELD),
                 DelegationWriteTestCase("model", STRING),
@@ -343,7 +351,8 @@ internal class StructuredResponseCreateParamsTest {
         checkAllDelegatorWriteFunctionsAreTested(
             builderDelegator::class,
             builderDelegationTestCases(),
-            exceptionalTestedFns = listOf("text", "text"), // Two overloads. Two custom tests below.
+            // Custom tests cover text conversion and the three-argument tool customizer.
+            exceptionalTestedFns = listOf("text", "text", "addTool"),
             nonDelegatingFns = setOf("build", "wrap", "inject"),
         )
     }
@@ -352,6 +361,14 @@ internal class StructuredResponseCreateParamsTest {
     @MethodSource("builderDelegationTestCases")
     fun `delegation of Builder write functions`(testCase: DelegationWriteTestCase) {
         checkOneDelegationWrite(builderDelegator, mockBuilderDelegate, testCase)
+    }
+
+    @Test
+    fun `delegation of tool customization`() {
+        val customize = Consumer<FunctionTool.Builder> { it.deferLoading(true) }
+        builderDelegator.addTool(CLASS, VALIDATION, customize)
+        verify(mockBuilderDelegate).addTool(CLASS, VALIDATION, customize)
+        verifyNoMoreInteractions(mockBuilderDelegate)
     }
 
     @Test

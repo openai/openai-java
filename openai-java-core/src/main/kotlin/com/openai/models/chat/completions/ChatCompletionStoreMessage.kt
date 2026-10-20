@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -22,6 +22,7 @@ import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -122,7 +123,7 @@ private constructor(
 
     /**
      * Annotations for the message, when applicable, as when using the
-     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+     * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -132,7 +133,7 @@ private constructor(
 
     /**
      * If the audio output modality is requested, this object contains data about the audio response
-     * from the model. [Learn more](https://platform.openai.com/docs/guides/audio).
+     * from the model. [Learn more](https://developers.openai.com/api/docs/guides/audio).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -246,6 +247,35 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "content" to this.content,
+            "refusal" to this.refusal,
+            "role" to this.role,
+            "annotations" to this.annotations,
+            "audio" to this.audio,
+            "function_call" to this.functionCall,
+            "tool_calls" to this.toolCalls,
+            "id" to this.id,
+            "content_parts" to this.contentParts,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -340,7 +370,7 @@ private constructor(
 
         /**
          * Annotations for the message, when applicable, as when using the
-         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+         * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
          */
         fun annotations(annotations: List<ChatCompletionMessage.Annotation>) =
             annotations(JsonField.of(annotations))
@@ -363,14 +393,15 @@ private constructor(
          */
         fun addAnnotation(annotation: ChatCompletionMessage.Annotation) = apply {
             annotations =
-                (annotations ?: JsonField.of(mutableListOf())).also {
+                (annotations?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("annotations", it).add(annotation)
                 }
         }
 
         /**
          * If the audio output modality is requested, this object contains data about the audio
-         * response from the model. [Learn more](https://platform.openai.com/docs/guides/audio).
+         * response from the model.
+         * [Learn more](https://developers.openai.com/api/docs/guides/audio).
          */
         fun audio(audio: ChatCompletionAudio?) = audio(JsonField.ofNullable(audio))
 
@@ -428,7 +459,7 @@ private constructor(
          */
         fun addToolCall(toolCall: ChatCompletionMessageToolCall) = apply {
             toolCalls =
-                (toolCalls ?: JsonField.of(mutableListOf())).also {
+                (toolCalls?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("toolCalls", it).add(toolCall)
                 }
         }
@@ -486,9 +517,8 @@ private constructor(
          */
         fun addContentPart(contentPart: ContentPart) = apply {
             contentParts =
-                (contentParts ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("contentParts", it).add(contentPart)
-                }
+                (contentParts?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("contentParts", it).add(contentPart) }
         }
 
         /**
@@ -613,7 +643,7 @@ private constructor(
             (if (id.asKnown().isPresent) 1 else 0) +
             (contentParts.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
-    /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+    /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
     @JsonDeserialize(using = ContentPart.Deserializer::class)
     @JsonSerialize(using = ContentPart.Serializer::class)
     class ContentPart
@@ -623,11 +653,13 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+        /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
         fun chatCompletionContentPartText(): Optional<ChatCompletionContentPartText> =
             Optional.ofNullable(chatCompletionContentPartText)
 
-        /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+        /**
+         * Learn about [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
+         */
         fun chatCompletionContentPartImage(): Optional<ChatCompletionContentPartImage> =
             Optional.ofNullable(chatCompletionContentPartImage)
 
@@ -635,11 +667,13 @@ private constructor(
 
         fun isChatCompletionContentPartImage(): Boolean = chatCompletionContentPartImage != null
 
-        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+        /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
         fun asChatCompletionContentPartText(): ChatCompletionContentPartText =
             chatCompletionContentPartText.getOrThrow("chatCompletionContentPartText")
 
-        /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+        /**
+         * Learn about [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
+         */
         fun asChatCompletionContentPartImage(): ChatCompletionContentPartImage =
             chatCompletionContentPartImage.getOrThrow("chatCompletionContentPartImage")
 
@@ -772,15 +806,16 @@ private constructor(
 
         companion object {
 
-            /**
-             * Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-             */
+            /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
             @JvmStatic
             fun ofChatCompletionContentPartText(
                 chatCompletionContentPartText: ChatCompletionContentPartText
             ) = ContentPart(chatCompletionContentPartText = chatCompletionContentPartText)
 
-            /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+            /**
+             * Learn about
+             * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
+             */
             @JvmStatic
             fun ofChatCompletionContentPartImage(
                 chatCompletionContentPartImage: ChatCompletionContentPartImage
@@ -793,14 +828,15 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            /**
-             * Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-             */
+            /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
             fun visitChatCompletionContentPartText(
                 chatCompletionContentPartText: ChatCompletionContentPartText
             ): T
 
-            /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+            /**
+             * Learn about
+             * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
+             */
             fun visitChatCompletionContentPartImage(
                 chatCompletionContentPartImage: ChatCompletionContentPartImage
             ): T
@@ -816,7 +852,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ContentPart: $json")
+                throw OpenAIInvalidDataException("Unknown ContentPart")
             }
         }
 

@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.models.beta.realtime
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
@@ -11,6 +9,8 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.legacyAdditionalProperties
+import com.openai.core.serializableAdditionalProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -229,6 +229,7 @@ private constructor(
     class Error
     private constructor(
         private val code: JsonField<String>,
+        private val message: JsonField<String>,
         private val type: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -236,8 +237,9 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("code") @ExcludeMissing code: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("message") @ExcludeMissing message: JsonField<String> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonField<String> = JsonMissing.of(),
-        ) : this(code, type, mutableMapOf())
+        ) : this(code, message, type, mutableMapOf())
 
         /**
          * Error code, if any.
@@ -246,6 +248,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun code(): Optional<String> = code.getOptional("code")
+
+        /**
+         * A human-readable error message.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun message(): Optional<String> = message.getOptional("message")
 
         /**
          * The type of error.
@@ -263,6 +273,13 @@ private constructor(
         @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
 
         /**
+         * Returns the raw JSON value of [message].
+         *
+         * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
+
+        /**
          * Returns the raw JSON value of [type].
          *
          * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
@@ -274,10 +291,14 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        // Retain the legacy message lookup until _additionalProperties is removed.
+        fun _additionalProperties(): Map<String, JsonValue> =
+            legacyAdditionalProperties(additionalProperties, mapOf("message" to message))
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
+        private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
+            serializableAdditionalProperties(additionalProperties, mapOf("message" to message))
 
         fun toBuilder() = Builder().from(this)
 
@@ -291,12 +312,14 @@ private constructor(
         class Builder internal constructor() {
 
             private var code: JsonField<String> = JsonMissing.of()
+            private var message: JsonField<String> = JsonMissing.of()
             private var type: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(error: Error) = apply {
                 code = error.code
+                message = error.message
                 type = error.type
                 additionalProperties = error.additionalProperties.toMutableMap()
             }
@@ -312,6 +335,18 @@ private constructor(
              * value.
              */
             fun code(code: JsonField<String>) = apply { this.code = code }
+
+            /** A human-readable error message. */
+            fun message(message: String) = message(JsonField.of(message))
+
+            /**
+             * Sets [Builder.message] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.message] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun message(message: JsonField<String>) = apply { this.message = message }
 
             /** The type of error. */
             fun type(type: String) = type(JsonField.of(type))
@@ -349,7 +384,7 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Error = Error(code, type, additionalProperties.toMutableMap())
+            fun build(): Error = Error(code, message, type, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -360,6 +395,7 @@ private constructor(
             }
 
             code()
+            message()
             type()
             validated = true
         }
@@ -380,7 +416,9 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (code.asKnown().isPresent) 1 else 0) + (if (type.asKnown().isPresent) 1 else 0)
+            (if (code.asKnown().isPresent) 1 else 0) +
+                (if (message.asKnown().isPresent) 1 else 0) +
+                (if (type.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -389,16 +427,19 @@ private constructor(
 
             return other is Error &&
                 code == other.code &&
+                message == other.message &&
                 type == other.type &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(code, type, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(code, message, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Error{code=$code, type=$type, additionalProperties=$additionalProperties}"
+            "Error{code=$code, message=$message, type=$type, additionalProperties=$additionalProperties}"
     }
 
     /**

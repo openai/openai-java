@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.images
 
@@ -17,14 +17,15 @@ internal class ImageEditParamsTest {
             .background(ImageEditParams.Background.TRANSPARENT)
             .inputFidelity(ImageEditParams.InputFidelity.HIGH)
             .mask("Example data".byteInputStream())
-            .model(ImageModel.GPT_IMAGE_2)
+            .model(ImageModel.GPT_IMAGE_1_5)
             .n(1L)
             .outputCompression(100L)
             .outputFormat(ImageEditParams.OutputFormat.PNG)
             .partialImages(1L)
             .quality(ImageEditParams.Quality.HIGH)
             .responseFormat(ImageEditParams.ResponseFormat.URL)
-            .size(ImageEditParams.Size._256X256)
+            .safetyIdentifier("user-1234")
+            .size(ImageEditParams.Size._1024X1024)
             .user("user-1234")
             .build()
     }
@@ -38,14 +39,15 @@ internal class ImageEditParamsTest {
                 .background(ImageEditParams.Background.TRANSPARENT)
                 .inputFidelity(ImageEditParams.InputFidelity.HIGH)
                 .mask("Example data".byteInputStream())
-                .model(ImageModel.GPT_IMAGE_2)
+                .model(ImageModel.GPT_IMAGE_1_5)
                 .n(1L)
                 .outputCompression(100L)
                 .outputFormat(ImageEditParams.OutputFormat.PNG)
                 .partialImages(1L)
                 .quality(ImageEditParams.Quality.HIGH)
                 .responseFormat(ImageEditParams.ResponseFormat.URL)
-                .size(ImageEditParams.Size._256X256)
+                .safetyIdentifier("user-1234")
+                .size(ImageEditParams.Size._1024X1024)
                 .user("user-1234")
                 .build()
 
@@ -74,14 +76,15 @@ internal class ImageEditParamsTest {
                         "background" to MultipartField.of(ImageEditParams.Background.TRANSPARENT),
                         "input_fidelity" to MultipartField.of(ImageEditParams.InputFidelity.HIGH),
                         "mask" to MultipartField.of("Example data".byteInputStream()),
-                        "model" to MultipartField.of(ImageModel.GPT_IMAGE_2),
+                        "model" to MultipartField.of(ImageModel.GPT_IMAGE_1_5),
                         "n" to MultipartField.of(1L),
                         "output_compression" to MultipartField.of(100L),
                         "output_format" to MultipartField.of(ImageEditParams.OutputFormat.PNG),
                         "partial_images" to MultipartField.of(1L),
                         "quality" to MultipartField.of(ImageEditParams.Quality.HIGH),
                         "response_format" to MultipartField.of(ImageEditParams.ResponseFormat.URL),
-                        "size" to MultipartField.of(ImageEditParams.Size._256X256),
+                        "safety_identifier" to MultipartField.of("user-1234"),
+                        "size" to MultipartField.of(ImageEditParams.Size._1024X1024),
                         "user" to MultipartField.of("user-1234"),
                     )
                     .mapValues { (_, field) ->

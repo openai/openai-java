@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects
 
@@ -12,6 +12,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -50,13 +51,25 @@ private constructor(
     /**
      * Create the project with the specified data residency region. Your organization must have
      * access to Data residency functionality in order to use. See
-     * [data residency controls](https://platform.openai.com/docs/guides/your-data#data-residency-controls)
+     * [data residency controls](https://developers.openai.com/api/docs/guides/your-data#data-residency-controls)
+     * to review the functionality and limitations of setting this field. Deprecated: use
+     * `residency` instead. Do not provide both `geography` and `residency`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    @Deprecated("deprecated") fun geography(): Optional<String> = body.geography()
+
+    /**
+     * Create the project with the specified residency configuration. Your organization must have
+     * access to the requested residency configuration in order to use it. See
+     * [data residency controls](https://developers.openai.com/api/docs/guides/your-data#data-residency-controls)
      * to review the functionality and limitations of setting this field.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun geography(): Optional<String> = body.geography()
+    fun residency(): Optional<ProjectResidency> = body.residency()
 
     /**
      * Returns the raw JSON value of [name].
@@ -77,7 +90,14 @@ private constructor(
      *
      * Unlike [geography], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _geography(): JsonField<String> = body._geography()
+    @Deprecated("deprecated") fun _geography(): JsonField<String> = body._geography()
+
+    /**
+     * Returns the raw JSON value of [residency].
+     *
+     * Unlike [residency], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _residency(): JsonField<ProjectResidency> = body._residency()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -124,6 +144,7 @@ private constructor(
          * - [name]
          * - [externalKeyId]
          * - [geography]
+         * - [residency]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -159,12 +180,15 @@ private constructor(
         /**
          * Create the project with the specified data residency region. Your organization must have
          * access to Data residency functionality in order to use. See
-         * [data residency controls](https://platform.openai.com/docs/guides/your-data#data-residency-controls)
-         * to review the functionality and limitations of setting this field.
+         * [data residency controls](https://developers.openai.com/api/docs/guides/your-data#data-residency-controls)
+         * to review the functionality and limitations of setting this field. Deprecated: use
+         * `residency` instead. Do not provide both `geography` and `residency`.
          */
+        @Deprecated("deprecated")
         fun geography(geography: String?) = apply { body.geography(geography) }
 
         /** Alias for calling [Builder.geography] with `geography.orElse(null)`. */
+        @Deprecated("deprecated")
         fun geography(geography: Optional<String>) = geography(geography.getOrNull())
 
         /**
@@ -174,7 +198,28 @@ private constructor(
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
+        @Deprecated("deprecated")
         fun geography(geography: JsonField<String>) = apply { body.geography(geography) }
+
+        /**
+         * Create the project with the specified residency configuration. Your organization must
+         * have access to the requested residency configuration in order to use it. See
+         * [data residency controls](https://developers.openai.com/api/docs/guides/your-data#data-residency-controls)
+         * to review the functionality and limitations of setting this field.
+         */
+        fun residency(residency: ProjectResidency?) = apply { body.residency(residency) }
+
+        /** Alias for calling [Builder.residency] with `residency.orElse(null)`. */
+        fun residency(residency: Optional<ProjectResidency>) = residency(residency.getOrNull())
+
+        /**
+         * Sets [Builder.residency] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.residency] with a well-typed [ProjectResidency] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun residency(residency: JsonField<ProjectResidency>) = apply { body.residency(residency) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -325,6 +370,7 @@ private constructor(
         private val name: JsonField<String>,
         private val externalKeyId: JsonField<String>,
         private val geography: JsonField<String>,
+        private val residency: JsonField<ProjectResidency>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -337,7 +383,10 @@ private constructor(
             @JsonProperty("geography")
             @ExcludeMissing
             geography: JsonField<String> = JsonMissing.of(),
-        ) : this(name, externalKeyId, geography, mutableMapOf())
+            @JsonProperty("residency")
+            @ExcludeMissing
+            residency: JsonField<ProjectResidency> = JsonMissing.of(),
+        ) : this(name, externalKeyId, geography, residency, mutableMapOf())
 
         /**
          * The friendly name of the project, this name appears in reports.
@@ -358,13 +407,26 @@ private constructor(
         /**
          * Create the project with the specified data residency region. Your organization must have
          * access to Data residency functionality in order to use. See
-         * [data residency controls](https://platform.openai.com/docs/guides/your-data#data-residency-controls)
+         * [data residency controls](https://developers.openai.com/api/docs/guides/your-data#data-residency-controls)
+         * to review the functionality and limitations of setting this field. Deprecated: use
+         * `residency` instead. Do not provide both `geography` and `residency`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        @Deprecated("deprecated")
+        fun geography(): Optional<String> = geography.getOptional("geography")
+
+        /**
+         * Create the project with the specified residency configuration. Your organization must
+         * have access to the requested residency configuration in order to use it. See
+         * [data residency controls](https://developers.openai.com/api/docs/guides/your-data#data-residency-controls)
          * to review the functionality and limitations of setting this field.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun geography(): Optional<String> = geography.getOptional("geography")
+        fun residency(): Optional<ProjectResidency> = residency.getOptional("residency")
 
         /**
          * Returns the raw JSON value of [name].
@@ -388,13 +450,49 @@ private constructor(
          *
          * Unlike [geography], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("geography") @ExcludeMissing fun _geography(): JsonField<String> = geography
+        @Deprecated("deprecated")
+        @JsonProperty("geography")
+        @ExcludeMissing
+        fun _geography(): JsonField<String> = geography
+
+        /**
+         * Returns the raw JSON value of [residency].
+         *
+         * Unlike [residency], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("residency")
+        @ExcludeMissing
+        fun _residency(): JsonField<ProjectResidency> = residency
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "name" to this.name,
+                "external_key_id" to this.externalKeyId,
+                "geography" to this.geography,
+                "residency" to this.residency,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -421,6 +519,7 @@ private constructor(
             private var name: JsonField<String>? = null
             private var externalKeyId: JsonField<String> = JsonMissing.of()
             private var geography: JsonField<String> = JsonMissing.of()
+            private var residency: JsonField<ProjectResidency> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -428,6 +527,7 @@ private constructor(
                 name = body.name
                 externalKeyId = body.externalKeyId
                 geography = body.geography
+                residency = body.residency
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -465,12 +565,15 @@ private constructor(
             /**
              * Create the project with the specified data residency region. Your organization must
              * have access to Data residency functionality in order to use. See
-             * [data residency controls](https://platform.openai.com/docs/guides/your-data#data-residency-controls)
-             * to review the functionality and limitations of setting this field.
+             * [data residency controls](https://developers.openai.com/api/docs/guides/your-data#data-residency-controls)
+             * to review the functionality and limitations of setting this field. Deprecated: use
+             * `residency` instead. Do not provide both `geography` and `residency`.
              */
+            @Deprecated("deprecated")
             fun geography(geography: String?) = geography(JsonField.ofNullable(geography))
 
             /** Alias for calling [Builder.geography] with `geography.orElse(null)`. */
+            @Deprecated("deprecated")
             fun geography(geography: Optional<String>) = geography(geography.getOrNull())
 
             /**
@@ -480,7 +583,30 @@ private constructor(
              * This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
+            @Deprecated("deprecated")
             fun geography(geography: JsonField<String>) = apply { this.geography = geography }
+
+            /**
+             * Create the project with the specified residency configuration. Your organization must
+             * have access to the requested residency configuration in order to use it. See
+             * [data residency controls](https://developers.openai.com/api/docs/guides/your-data#data-residency-controls)
+             * to review the functionality and limitations of setting this field.
+             */
+            fun residency(residency: ProjectResidency?) = residency(JsonField.ofNullable(residency))
+
+            /** Alias for calling [Builder.residency] with `residency.orElse(null)`. */
+            fun residency(residency: Optional<ProjectResidency>) = residency(residency.getOrNull())
+
+            /**
+             * Sets [Builder.residency] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.residency] with a well-typed [ProjectResidency]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun residency(residency: JsonField<ProjectResidency>) = apply {
+                this.residency = residency
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -518,6 +644,7 @@ private constructor(
                     checkRequired("name", name),
                     externalKeyId,
                     geography,
+                    residency,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -541,6 +668,7 @@ private constructor(
             name()
             externalKeyId()
             geography()
+            residency().ifPresent { it.validate() }
             validated = true
         }
 
@@ -562,7 +690,8 @@ private constructor(
         internal fun validity(): Int =
             (if (name.asKnown().isPresent) 1 else 0) +
                 (if (externalKeyId.asKnown().isPresent) 1 else 0) +
-                (if (geography.asKnown().isPresent) 1 else 0)
+                (if (geography.asKnown().isPresent) 1 else 0) +
+                (residency.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -573,17 +702,18 @@ private constructor(
                 name == other.name &&
                 externalKeyId == other.externalKeyId &&
                 geography == other.geography &&
+                residency == other.residency &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(name, externalKeyId, geography, additionalProperties)
+            Objects.hash(name, externalKeyId, geography, residency, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{name=$name, externalKeyId=$externalKeyId, geography=$geography, additionalProperties=$additionalProperties}"
+            "Body{name=$name, externalKeyId=$externalKeyId, geography=$geography, residency=$residency, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

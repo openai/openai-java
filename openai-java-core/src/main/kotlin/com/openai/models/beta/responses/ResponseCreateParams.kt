@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -24,6 +24,7 @@ import com.openai.core.Params
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -35,15 +36,15 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
- * [image](https://platform.openai.com/docs/guides/images) inputs to generate
- * [text](https://platform.openai.com/docs/guides/text) or
- * [JSON](https://platform.openai.com/docs/guides/structured-outputs) outputs. Have the model call
- * your own [custom code](https://platform.openai.com/docs/guides/function-calling) or use built-in
- * [tools](https://platform.openai.com/docs/guides/tools) like
- * [web search](https://platform.openai.com/docs/guides/tools-web-search) or
- * [file search](https://platform.openai.com/docs/guides/tools-file-search) to use your own data as
- * input for the model's response.
+ * Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text) or
+ * [image](https://developers.openai.com/api/docs/guides/images-vision) inputs to generate
+ * [text](https://developers.openai.com/api/docs/guides/text) or
+ * [JSON](https://developers.openai.com/api/docs/guides/structured-outputs) outputs. Have the model
+ * call your own [custom code](https://developers.openai.com/api/docs/guides/function-calling) or
+ * use built-in [tools](https://developers.openai.com/api/docs/guides/tools) like
+ * [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+ * [file search](https://developers.openai.com/api/docs/guides/tools-file-search) to use your own
+ * data as input for the model's response.
  */
 class ResponseCreateParams
 private constructor(
@@ -56,8 +57,16 @@ private constructor(
     fun betas(): Optional<List<Beta>> = Optional.ofNullable(betas)
 
     /**
+     * Domain-specific access programs to use for this request.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun accessPrograms(): Optional<AccessPrograms> = body.accessPrograms()
+
+    /**
      * Whether to run the model response in the background.
-     * [Learn more](https://platform.openai.com/docs/guides/background).
+     * [Learn more](https://developers.openai.com/api/docs/guides/background).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -106,11 +115,11 @@ private constructor(
      * Text, image, or file inputs to the model, used to generate a response.
      *
      * Learn more:
-     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-     * - [Image inputs](https://platform.openai.com/docs/guides/images)
-     * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-     * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-     * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+     * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+     * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+     * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+     * - [Conversation state](https://developers.openai.com/api/docs/guides/conversation-state)
+     * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -132,7 +141,7 @@ private constructor(
     /**
      * An upper bound for the number of tokens that can be generated for a response, including
      * visible output tokens and
-     * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+     * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -163,10 +172,10 @@ private constructor(
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
+     * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
+     * available models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -200,8 +209,8 @@ private constructor(
     /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
-     * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot be
-     * used in conjunction with `conversation`.
+     * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+     * Cannot be used in conjunction with `conversation`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -210,7 +219,7 @@ private constructor(
 
     /**
      * Reference to a prompt template and its variables.
-     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+     * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -220,7 +229,7 @@ private constructor(
     /**
      * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
      * Replaces the `user` field.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+     * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -234,8 +243,8 @@ private constructor(
      * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
      * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
      * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
-     * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for current
-     * details.
+     * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
+     * current details.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -247,7 +256,7 @@ private constructor(
      *
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
      * This field expresses a maximum retention policy, while `prompt_cache_options.ttl` expresses a
      * minimum cache lifetime. The two fields are independent and do not interact. For `gpt-5.5`,
      * `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -265,10 +274,8 @@ private constructor(
     fun promptCacheRetention(): Optional<PromptCacheRetention> = body.promptCacheRetention()
 
     /**
-     * **gpt-5 and o-series models only**
-     *
      * Configuration options for
-     * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+     * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -278,9 +285,9 @@ private constructor(
     /**
      * A stable identifier used to help detect users of your application that may be violating
      * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user, with
-     * a maximum length of 64 characters. We recommend hashing their username or email address, in
+     * a maximum length of 128 characters. We recommend hashing their username or email address, in
      * order to avoid sending us any identifying information.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -293,12 +300,15 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
      *   request will be processed with the Flex Processing service tier.
-     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
-     *   The response will show `service_tier=priority` regardless of if you specify
-     *   `service_tier=fast` or `priority` in your request.
+     * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the
+     *   request level, include the `service_tier=fast` or `service_tier=priority` parameter for
+     *   Responses or Chat Completions. The response will show `service_tier=priority` regardless of
+     *   if you specify `service_tier=fast` or `priority` in your request.
+     * - If set to 'ultrafast', then the request will be processed with the access-controlled
+     *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`; a
+     *   response served through it will show `service_tier=ultrafast`.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -311,7 +321,10 @@ private constructor(
     fun serviceTier(): Optional<ServiceTier> = body.serviceTier()
 
     /**
-     * Whether to store the generated model response for later retrieval via API.
+     * Whether to store the generated model response for later retrieval via API. Defaults to true
+     * when omitted. If set to true, response data will be stored for at least 30 days, subject to
+     * the
+     * [data retention exceptions](https://developers.openai.com/api/docs/guides/your-data#v1responses).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -339,8 +352,8 @@ private constructor(
     /**
      * Configuration options for a text response from the model. Can be plain text or structured
      * JSON data. Learn more:
-     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-     * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+     * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+     * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -362,16 +375,16 @@ private constructor(
      *
      * We support the following categories of tools:
      * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's capabilities,
-     *   like [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-     *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more about
-     *   [built-in tools](https://platform.openai.com/docs/guides/tools).
+     *   like [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+     *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn more
+     *   about [built-in tools](https://developers.openai.com/api/docs/guides/tools).
      * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or predefined
      *   connectors such as Google Drive and SharePoint. Learn more about
-     *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+     *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      * - **Function calls (custom tools)**: Functions that are defined by you, enabling the model to
      *   call your own code with strongly typed arguments and outputs. Learn more about
-     *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can also
-     *   use custom tools to call your own code.
+     *   [function calling](https://developers.openai.com/api/docs/guides/function-calling). You can
+     *   also use custom tools to call your own code.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -418,12 +431,19 @@ private constructor(
      * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for your
      * end-users. Used to boost cache hit rates by better bucketing similar requests and to help
      * OpenAI detect and prevent abuse.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     @Deprecated("deprecated") fun user(): Optional<String> = body.user()
+
+    /**
+     * Returns the raw JSON value of [accessPrograms].
+     *
+     * Unlike [accessPrograms], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _accessPrograms(): JsonField<AccessPrograms> = body._accessPrograms()
 
     /**
      * Returns the raw JSON value of [background].
@@ -700,18 +720,34 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [accessPrograms]
          * - [background]
          * - [contextManagement]
          * - [conversation]
          * - [include]
-         * - [input]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
+        /** Domain-specific access programs to use for this request. */
+        fun accessPrograms(accessPrograms: AccessPrograms) = apply {
+            body.accessPrograms(accessPrograms)
+        }
+
+        /**
+         * Sets [Builder.accessPrograms] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.accessPrograms] with a well-typed [AccessPrograms] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun accessPrograms(accessPrograms: JsonField<AccessPrograms>) = apply {
+            body.accessPrograms(accessPrograms)
+        }
+
         /**
          * Whether to run the model response in the background.
-         * [Learn more](https://platform.openai.com/docs/guides/background).
+         * [Learn more](https://developers.openai.com/api/docs/guides/background).
          */
         fun background(background: Boolean?) = apply { body.background(background) }
 
@@ -840,11 +876,11 @@ private constructor(
          * Text, image, or file inputs to the model, used to generate a response.
          *
          * Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Image inputs](https://platform.openai.com/docs/guides/images)
-         * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-         * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-         * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+         * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+         * - [Conversation state](https://developers.openai.com/api/docs/guides/conversation-state)
+         * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
          */
         fun input(input: Input) = apply { body.input(input) }
 
@@ -890,7 +926,7 @@ private constructor(
         /**
          * An upper bound for the number of tokens that can be generated for a response, including
          * visible output tokens and
-         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
          */
         fun maxOutputTokens(maxOutputTokens: Long?) = apply {
             body.maxOutputTokens(maxOutputTokens)
@@ -967,9 +1003,9 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
          * available models.
          */
         fun model(model: Model) = apply { body.model(model) }
@@ -1051,8 +1087,8 @@ private constructor(
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
-         * be used in conjunction with `conversation`.
+         * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+         * Cannot be used in conjunction with `conversation`.
          */
         fun previousResponseId(previousResponseId: String?) = apply {
             body.previousResponseId(previousResponseId)
@@ -1077,7 +1113,7 @@ private constructor(
 
         /**
          * Reference to a prompt template and its variables.
-         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
          */
         fun prompt(prompt: BetaResponsePrompt?) = apply { body.prompt(prompt) }
 
@@ -1096,7 +1132,7 @@ private constructor(
         /**
          * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
          * Replaces the `user` field.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
          */
         fun promptCacheKey(promptCacheKey: String?) = apply { body.promptCacheKey(promptCacheKey) }
 
@@ -1123,7 +1159,7 @@ private constructor(
          * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
          * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
          * supported value. See the
-         * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+         * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
          * current details.
          */
         fun promptCacheOptions(promptCacheOptions: PromptCacheOptions) = apply {
@@ -1146,7 +1182,7 @@ private constructor(
          *
          * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
          * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
          * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
          * expresses a minimum cache lifetime. The two fields are independent and do not interact.
          * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -1183,10 +1219,8 @@ private constructor(
         }
 
         /**
-         * **gpt-5 and o-series models only**
-         *
          * Configuration options for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
          */
         fun reasoning(reasoning: Reasoning?) = apply { body.reasoning(reasoning) }
 
@@ -1205,9 +1239,9 @@ private constructor(
         /**
          * A stable identifier used to help detect users of your application that may be violating
          * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user,
-         * with a maximum length of 64 characters. We recommend hashing their username or email
+         * with a maximum length of 128 characters. We recommend hashing their username or email
          * address, in order to avoid sending us any identifying information.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          */
         fun safetyIdentifier(safetyIdentifier: String?) = apply {
             body.safetyIdentifier(safetyIdentifier)
@@ -1234,12 +1268,15 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
-         *   request will be processed with the Flex Processing service tier.
-         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         *   Completions. The response will show `service_tier=priority` regardless of if you
-         *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then
+         *   the request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at
+         *   the request level, include the `service_tier=fast` or `service_tier=priority` parameter
+         *   for Responses or Chat Completions. The response will show `service_tier=priority`
+         *   regardless of if you specify `service_tier=fast` or `priority` in your request.
+         * - If set to 'ultrafast', then the request will be processed with the access-controlled
+         *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`;
+         *   a response served through it will show `service_tier=ultrafast`.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -1262,7 +1299,12 @@ private constructor(
             body.serviceTier(serviceTier)
         }
 
-        /** Whether to store the generated model response for later retrieval via API. */
+        /**
+         * Whether to store the generated model response for later retrieval via API. Defaults to
+         * true when omitted. If set to true, response data will be stored for at least 30 days,
+         * subject to the
+         * [data retention exceptions](https://developers.openai.com/api/docs/guides/your-data#v1responses).
+         */
         fun store(store: Boolean?) = apply { body.store(store) }
 
         /**
@@ -1332,8 +1374,8 @@ private constructor(
         /**
          * Configuration options for a text response from the model. Can be plain text or structured
          * JSON data. Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
          */
         fun text(text: BetaResponseTextConfig) = apply { body.text(text) }
 
@@ -1439,16 +1481,16 @@ private constructor(
          * We support the following categories of tools:
          * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
          *   capabilities, like
-         *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-         *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
-         *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
+         *   [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+         *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn
+         *   more about [built-in tools](https://developers.openai.com/api/docs/guides/tools).
          * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
          *   predefined connectors such as Google Drive and SharePoint. Learn more about
-         *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+         *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
          *   model to call your own code with strongly typed arguments and outputs. Learn more about
-         *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can
-         *   also use custom tools to call your own code.
+         *   [function calling](https://developers.openai.com/api/docs/guides/function-calling). You
+         *   can also use custom tools to call your own code.
          */
         fun tools(tools: List<BetaTool>) = apply { body.tools(tools) }
 
@@ -1665,7 +1707,7 @@ private constructor(
          * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for
          * your end-users. Used to boost cache hit rates by better bucketing similar requests and to
          * help OpenAI detect and prevent abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          */
         @Deprecated("deprecated") fun user(user: String) = apply { body.user(user) }
 
@@ -1823,6 +1865,7 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val accessPrograms: JsonField<AccessPrograms>,
         private val background: JsonField<Boolean>,
         private val contextManagement: JsonField<List<ContextManagement>>,
         private val conversation: JsonField<Conversation>,
@@ -1859,6 +1902,9 @@ private constructor(
 
         @JsonCreator
         private constructor(
+            @JsonProperty("access_programs")
+            @ExcludeMissing
+            accessPrograms: JsonField<AccessPrograms> = JsonMissing.of(),
             @JsonProperty("background")
             @ExcludeMissing
             background: JsonField<Boolean> = JsonMissing.of(),
@@ -1943,6 +1989,7 @@ private constructor(
             truncation: JsonField<Truncation> = JsonMissing.of(),
             @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
         ) : this(
+            accessPrograms,
             background,
             contextManagement,
             conversation,
@@ -1978,8 +2025,17 @@ private constructor(
         )
 
         /**
+         * Domain-specific access programs to use for this request.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun accessPrograms(): Optional<AccessPrograms> =
+            accessPrograms.getOptional("access_programs")
+
+        /**
          * Whether to run the model response in the background.
-         * [Learn more](https://platform.openai.com/docs/guides/background).
+         * [Learn more](https://developers.openai.com/api/docs/guides/background).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2031,11 +2087,11 @@ private constructor(
          * Text, image, or file inputs to the model, used to generate a response.
          *
          * Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Image inputs](https://platform.openai.com/docs/guides/images)
-         * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-         * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-         * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+         * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+         * - [Conversation state](https://developers.openai.com/api/docs/guides/conversation-state)
+         * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2057,7 +2113,7 @@ private constructor(
         /**
          * An upper bound for the number of tokens that can be generated for a response, including
          * visible output tokens and
-         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2088,9 +2144,9 @@ private constructor(
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
          * available models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -2126,8 +2182,8 @@ private constructor(
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
-         * be used in conjunction with `conversation`.
+         * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+         * Cannot be used in conjunction with `conversation`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2137,7 +2193,7 @@ private constructor(
 
         /**
          * Reference to a prompt template and its variables.
-         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2147,7 +2203,7 @@ private constructor(
         /**
          * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
          * Replaces the `user` field.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2162,7 +2218,7 @@ private constructor(
          * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
          * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
          * supported value. See the
-         * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
+         * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
          * current details.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -2176,7 +2232,7 @@ private constructor(
          *
          * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
          * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
          * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
          * expresses a minimum cache lifetime. The two fields are independent and do not interact.
          * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -2195,10 +2251,8 @@ private constructor(
             promptCacheRetention.getOptional("prompt_cache_retention")
 
         /**
-         * **gpt-5 and o-series models only**
-         *
          * Configuration options for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2208,9 +2262,9 @@ private constructor(
         /**
          * A stable identifier used to help detect users of your application that may be violating
          * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user,
-         * with a maximum length of 64 characters. We recommend hashing their username or email
+         * with a maximum length of 128 characters. We recommend hashing their username or email
          * address, in order to avoid sending us any identifying information.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2223,12 +2277,15 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
-         *   request will be processed with the Flex Processing service tier.
-         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         *   Completions. The response will show `service_tier=priority` regardless of if you
-         *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then
+         *   the request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at
+         *   the request level, include the `service_tier=fast` or `service_tier=priority` parameter
+         *   for Responses or Chat Completions. The response will show `service_tier=priority`
+         *   regardless of if you specify `service_tier=fast` or `priority` in your request.
+         * - If set to 'ultrafast', then the request will be processed with the access-controlled
+         *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`;
+         *   a response served through it will show `service_tier=ultrafast`.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -2241,7 +2298,10 @@ private constructor(
         fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
 
         /**
-         * Whether to store the generated model response for later retrieval via API.
+         * Whether to store the generated model response for later retrieval via API. Defaults to
+         * true when omitted. If set to true, response data will be stored for at least 30 days,
+         * subject to the
+         * [data retention exceptions](https://developers.openai.com/api/docs/guides/your-data#v1responses).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2269,8 +2329,8 @@ private constructor(
         /**
          * Configuration options for a text response from the model. Can be plain text or structured
          * JSON data. Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2293,16 +2353,16 @@ private constructor(
          * We support the following categories of tools:
          * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
          *   capabilities, like
-         *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-         *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
-         *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
+         *   [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+         *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn
+         *   more about [built-in tools](https://developers.openai.com/api/docs/guides/tools).
          * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
          *   predefined connectors such as Google Drive and SharePoint. Learn more about
-         *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+         *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
          *   model to call your own code with strongly typed arguments and outputs. Learn more about
-         *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can
-         *   also use custom tools to call your own code.
+         *   [function calling](https://developers.openai.com/api/docs/guides/function-calling). You
+         *   can also use custom tools to call your own code.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2350,12 +2410,22 @@ private constructor(
          * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for
          * your end-users. Used to boost cache hit rates by better bucketing similar requests and to
          * help OpenAI detect and prevent abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         @Deprecated("deprecated") fun user(): Optional<String> = user.getOptional("user")
+
+        /**
+         * Returns the raw JSON value of [accessPrograms].
+         *
+         * Unlike [accessPrograms], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("access_programs")
+        @ExcludeMissing
+        fun _accessPrograms(): JsonField<AccessPrograms> = accessPrograms
 
         /**
          * Returns the raw JSON value of [background].
@@ -2642,6 +2712,58 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "access_programs" to this.accessPrograms,
+                "background" to this.background,
+                "context_management" to this.contextManagement,
+                "conversation" to this.conversation,
+                "include" to this.include,
+                "input" to this.input,
+                "instructions" to this.instructions,
+                "max_output_tokens" to this.maxOutputTokens,
+                "max_tool_calls" to this.maxToolCalls,
+                "metadata" to this.metadata,
+                "model" to this.model,
+                "moderation" to this.moderation,
+                "multi_agent" to this.multiAgent,
+                "parallel_tool_calls" to this.parallelToolCalls,
+                "previous_response_id" to this.previousResponseId,
+                "prompt" to this.prompt,
+                "prompt_cache_key" to this.promptCacheKey,
+                "prompt_cache_options" to this.promptCacheOptions,
+                "prompt_cache_retention" to this.promptCacheRetention,
+                "reasoning" to this.reasoning,
+                "safety_identifier" to this.safetyIdentifier,
+                "service_tier" to this.serviceTier,
+                "store" to this.store,
+                "stream_options" to this.streamOptions,
+                "temperature" to this.temperature,
+                "text" to this.text,
+                "tool_choice" to this.toolChoice,
+                "tools" to this.tools,
+                "top_logprobs" to this.topLogprobs,
+                "top_p" to this.topP,
+                "truncation" to this.truncation,
+                "user" to this.user,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -2658,6 +2780,7 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
+            private var accessPrograms: JsonField<AccessPrograms> = JsonMissing.of()
             private var background: JsonField<Boolean> = JsonMissing.of()
             private var contextManagement: JsonField<MutableList<ContextManagement>>? = null
             private var conversation: JsonField<Conversation> = JsonMissing.of()
@@ -2693,6 +2816,7 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
+                accessPrograms = body.accessPrograms
                 background = body.background
                 contextManagement = body.contextManagement.map { it.toMutableList() }
                 conversation = body.conversation
@@ -2727,9 +2851,24 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
+            /** Domain-specific access programs to use for this request. */
+            fun accessPrograms(accessPrograms: AccessPrograms) =
+                accessPrograms(JsonField.of(accessPrograms))
+
+            /**
+             * Sets [Builder.accessPrograms] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.accessPrograms] with a well-typed [AccessPrograms]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun accessPrograms(accessPrograms: JsonField<AccessPrograms>) = apply {
+                this.accessPrograms = accessPrograms
+            }
+
             /**
              * Whether to run the model response in the background.
-             * [Learn more](https://platform.openai.com/docs/guides/background).
+             * [Learn more](https://developers.openai.com/api/docs/guides/background).
              */
             fun background(background: Boolean?) = background(JsonField.ofNullable(background))
 
@@ -2780,9 +2919,9 @@ private constructor(
              */
             fun addContextManagement(contextManagement: ContextManagement) = apply {
                 this.contextManagement =
-                    (this.contextManagement ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("contextManagement", it).add(contextManagement)
-                    }
+                    (this.contextManagement?.takeUnless { it.isMissing() }
+                            ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("contextManagement", it).add(contextManagement) }
             }
 
             /**
@@ -2864,20 +3003,20 @@ private constructor(
              */
             fun addInclude(include: BetaResponseIncludable) = apply {
                 this.include =
-                    (this.include ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("include", it).add(include)
-                    }
+                    (this.include?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("include", it).add(include) }
             }
 
             /**
              * Text, image, or file inputs to the model, used to generate a response.
              *
              * Learn more:
-             * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-             * - [Image inputs](https://platform.openai.com/docs/guides/images)
-             * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-             * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-             * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+             * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+             * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+             * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+             * - [Conversation
+             *   state](https://developers.openai.com/api/docs/guides/conversation-state)
+             * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
              */
             fun input(input: Input) = input(JsonField.of(input))
 
@@ -2925,7 +3064,7 @@ private constructor(
             /**
              * An upper bound for the number of tokens that can be generated for a response,
              * including visible output tokens and
-             * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+             * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
              */
             fun maxOutputTokens(maxOutputTokens: Long?) =
                 maxOutputTokens(JsonField.ofNullable(maxOutputTokens))
@@ -3003,10 +3142,10 @@ private constructor(
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /**
-             * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
-             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
-             * and compare available models.
+             * points. Refer to the [model guide](https://developers.openai.com/api/docs/models) to
+             * browse and compare available models.
              */
             fun model(model: Model) = model(JsonField.of(model))
 
@@ -3094,7 +3233,7 @@ private constructor(
             /**
              * The unique ID of the previous response to the model. Use this to create multi-turn
              * conversations. Learn more about
-             * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+             * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
              * Cannot be used in conjunction with `conversation`.
              */
             fun previousResponseId(previousResponseId: String?) =
@@ -3120,7 +3259,7 @@ private constructor(
 
             /**
              * Reference to a prompt template and its variables.
-             * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+             * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
              */
             fun prompt(prompt: BetaResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
 
@@ -3139,7 +3278,7 @@ private constructor(
             /**
              * Used by OpenAI to cache responses for similar requests to optimize your cache hit
              * rates. Replaces the `user` field.
-             * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+             * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
              */
             fun promptCacheKey(promptCacheKey: String?) =
                 promptCacheKey(JsonField.ofNullable(promptCacheKey))
@@ -3167,8 +3306,8 @@ private constructor(
              * breakpoints in the conversation, without a content-block lookback limit. Set `mode`
              * to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which
              * is currently the only supported value. See the
-             * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for
-             * current details.
+             * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching)
+             * for current details.
              */
             fun promptCacheOptions(promptCacheOptions: PromptCacheOptions) =
                 promptCacheOptions(JsonField.of(promptCacheOptions))
@@ -3189,7 +3328,7 @@ private constructor(
              *
              * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
              * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-             * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+             * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
              * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
              * expresses a minimum cache lifetime. The two fields are independent and do not
              * interact. For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -3226,10 +3365,8 @@ private constructor(
                 }
 
             /**
-             * **gpt-5 and o-series models only**
-             *
              * Configuration options for
-             * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+             * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
              */
             fun reasoning(reasoning: Reasoning?) = reasoning(JsonField.ofNullable(reasoning))
 
@@ -3248,10 +3385,10 @@ private constructor(
             /**
              * A stable identifier used to help detect users of your application that may be
              * violating OpenAI's usage policies. The IDs should be a string that uniquely
-             * identifies each user, with a maximum length of 64 characters. We recommend hashing
+             * identifies each user, with a maximum length of 128 characters. We recommend hashing
              * their username or email address, in order to avoid sending us any identifying
              * information.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+             * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
              */
             fun safetyIdentifier(safetyIdentifier: String?) =
                 safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
@@ -3280,12 +3417,17 @@ private constructor(
              *   use 'default'.
              * - If set to 'default', then the request will be processed with the standard pricing
              *   and performance for the selected model.
-             * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then
-             *   the request will be processed with the Flex Processing service tier.
-             * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include
-             *   the `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-             *   Completions. The response will show `service_tier=priority` regardless of if you
-             *   specify `service_tier=fast` or `priority` in your request.
+             * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)',
+             *   then the request will be processed with the Flex Processing service tier.
+             * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode)
+             *   at the request level, include the `service_tier=fast` or `service_tier=priority`
+             *   parameter for Responses or Chat Completions. The response will show
+             *   `service_tier=priority` regardless of if you specify `service_tier=fast` or
+             *   `priority` in your request.
+             * - If set to 'ultrafast', then the request will be processed with the
+             *   access-controlled Ultrafast Processing service tier. This tier is currently
+             *   available for `gpt-5.6-sol`; a response served through it will show
+             *   `service_tier=ultrafast`.
              * - When not set, the default behavior is 'auto'.
              *
              *   When the `service_tier` parameter is set, the response body will include the
@@ -3310,7 +3452,12 @@ private constructor(
                 this.serviceTier = serviceTier
             }
 
-            /** Whether to store the generated model response for later retrieval via API. */
+            /**
+             * Whether to store the generated model response for later retrieval via API. Defaults
+             * to true when omitted. If set to true, response data will be stored for at least 30
+             * days, subject to the
+             * [data retention exceptions](https://developers.openai.com/api/docs/guides/your-data#v1responses).
+             */
             fun store(store: Boolean?) = store(JsonField.ofNullable(store))
 
             /**
@@ -3382,8 +3529,9 @@ private constructor(
             /**
              * Configuration options for a text response from the model. Can be plain text or
              * structured JSON data. Learn more:
-             * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-             * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+             * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+             * - [Structured
+             *   Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
              */
             fun text(text: BetaResponseTextConfig) = text(JsonField.of(text))
 
@@ -3483,15 +3631,17 @@ private constructor(
              * We support the following categories of tools:
              * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
              *   capabilities, like
-             *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-             *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn
-             *   more about [built-in tools](https://platform.openai.com/docs/guides/tools).
+             *   [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+             *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search).
+             *   Learn more about
+             *   [built-in tools](https://developers.openai.com/api/docs/guides/tools).
              * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
              *   predefined connectors such as Google Drive and SharePoint. Learn more about
-             *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+             *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
              * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
              *   model to call your own code with strongly typed arguments and outputs. Learn more
-             *   about [function calling](https://platform.openai.com/docs/guides/function-calling).
+             *   about
+             *   [function calling](https://developers.openai.com/api/docs/guides/function-calling).
              *   You can also use custom tools to call your own code.
              */
             fun tools(tools: List<BetaTool>) = tools(JsonField.of(tools))
@@ -3514,7 +3664,7 @@ private constructor(
              */
             fun addTool(tool: BetaTool) = apply {
                 tools =
-                    (tools ?: JsonField.of(mutableListOf())).also {
+                    (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("tools", it).add(tool)
                     }
             }
@@ -3722,7 +3872,7 @@ private constructor(
              * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for
              * your end-users. Used to boost cache hit rates by better bucketing similar requests
              * and to help OpenAI detect and prevent abuse.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+             * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
              */
             @Deprecated("deprecated") fun user(user: String) = user(JsonField.of(user))
 
@@ -3761,6 +3911,7 @@ private constructor(
              */
             fun build(): Body =
                 Body(
+                    accessPrograms,
                     background,
                     (contextManagement ?: JsonMissing.of()).map { it.toImmutable() },
                     conversation,
@@ -3812,6 +3963,7 @@ private constructor(
                 return@apply
             }
 
+            accessPrograms().ifPresent { it.validate() }
             background()
             contextManagement().ifPresent { it.forEach { it.validate() } }
             conversation().ifPresent { it.validate() }
@@ -3862,7 +4014,8 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (background.asKnown().isPresent) 1 else 0) +
+            (accessPrograms.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (background.asKnown().isPresent) 1 else 0) +
                 (contextManagement.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (conversation.asKnown().getOrNull()?.validity() ?: 0) +
                 (include.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
@@ -3900,6 +4053,7 @@ private constructor(
             }
 
             return other is Body &&
+                accessPrograms == other.accessPrograms &&
                 background == other.background &&
                 contextManagement == other.contextManagement &&
                 conversation == other.conversation &&
@@ -3936,6 +4090,7 @@ private constructor(
 
         private val hashCode: Int by lazy {
             Objects.hash(
+                accessPrograms,
                 background,
                 contextManagement,
                 conversation,
@@ -3974,7 +4129,350 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, multiAgent=$multiAgent, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "Body{accessPrograms=$accessPrograms, background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, multiAgent=$multiAgent, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+    }
+
+    /** Domain-specific access programs to use for this request. */
+    class AccessPrograms
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val cyber: JsonField<Cyber>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("cyber") @ExcludeMissing cyber: JsonField<Cyber> = JsonMissing.of()
+        ) : this(cyber, mutableMapOf())
+
+        /**
+         * The Cyber access program to use for this request. Supported values are `standard`,
+         * `daybreak_blue`, and `daybreak_red`. If omitted, the API resolves the program from the
+         * model's Cyber tier and your organization and project access, subject to model-specific
+         * eligibility restrictions. By default, models without a Cyber tier use Standard. Blue-tier
+         * models use Daybreak Blue when authorized; otherwise they fall back to Standard unless the
+         * model requires Daybreak access. Red-tier models use Daybreak Red and require
+         * authorization. Requests that require unavailable Daybreak access return 403. An implicit
+         * Standard fallback is represented by null in the response's access_programs field, rather
+         * than an explicit Standard selection.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun cyber(): Optional<Cyber> = cyber.getOptional("cyber")
+
+        /**
+         * Returns the raw JSON value of [cyber].
+         *
+         * Unlike [cyber], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("cyber") @ExcludeMissing fun _cyber(): JsonField<Cyber> = cyber
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "cyber" to this.cyber)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [AccessPrograms]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [AccessPrograms]. */
+        class Builder internal constructor() {
+
+            private var cyber: JsonField<Cyber> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(accessPrograms: AccessPrograms) = apply {
+                cyber = accessPrograms.cyber
+                additionalProperties = accessPrograms.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The Cyber access program to use for this request. Supported values are `standard`,
+             * `daybreak_blue`, and `daybreak_red`. If omitted, the API resolves the program from
+             * the model's Cyber tier and your organization and project access, subject to
+             * model-specific eligibility restrictions. By default, models without a Cyber tier use
+             * Standard. Blue-tier models use Daybreak Blue when authorized; otherwise they fall
+             * back to Standard unless the model requires Daybreak access. Red-tier models use
+             * Daybreak Red and require authorization. Requests that require unavailable Daybreak
+             * access return 403. An implicit Standard fallback is represented by null in the
+             * response's access_programs field, rather than an explicit Standard selection.
+             */
+            fun cyber(cyber: Cyber) = cyber(JsonField.of(cyber))
+
+            /**
+             * Sets [Builder.cyber] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.cyber] with a well-typed [Cyber] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun cyber(cyber: JsonField<Cyber>) = apply { this.cyber = cyber }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [AccessPrograms].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): AccessPrograms = AccessPrograms(cyber, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): AccessPrograms = apply {
+            if (validated) {
+                return@apply
+            }
+
+            cyber().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (cyber.asKnown().getOrNull()?.validity() ?: 0)
+
+        /**
+         * The Cyber access program to use for this request. Supported values are `standard`,
+         * `daybreak_blue`, and `daybreak_red`. If omitted, the API resolves the program from the
+         * model's Cyber tier and your organization and project access, subject to model-specific
+         * eligibility restrictions. By default, models without a Cyber tier use Standard. Blue-tier
+         * models use Daybreak Blue when authorized; otherwise they fall back to Standard unless the
+         * model requires Daybreak access. Red-tier models use Daybreak Red and require
+         * authorization. Requests that require unavailable Daybreak access return 403. An implicit
+         * Standard fallback is represented by null in the response's access_programs field, rather
+         * than an explicit Standard selection.
+         */
+        class Cyber @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val STANDARD = of("standard")
+
+                @JvmField val DAYBREAK_BLUE = of("daybreak_blue")
+
+                @JvmField val DAYBREAK_RED = of("daybreak_red")
+
+                @JvmStatic fun of(value: String) = Cyber(JsonField.of(value))
+            }
+
+            /** An enum containing [Cyber]'s known values. */
+            enum class Known {
+                STANDARD,
+                DAYBREAK_BLUE,
+                DAYBREAK_RED,
+            }
+
+            /**
+             * An enum containing [Cyber]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Cyber] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                STANDARD,
+                DAYBREAK_BLUE,
+                DAYBREAK_RED,
+                /**
+                 * An enum member indicating that [Cyber] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    STANDARD -> Value.STANDARD
+                    DAYBREAK_BLUE -> Value.DAYBREAK_BLUE
+                    DAYBREAK_RED -> Value.DAYBREAK_RED
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    STANDARD -> Known.STANDARD
+                    DAYBREAK_BLUE -> Known.DAYBREAK_BLUE
+                    DAYBREAK_RED -> Known.DAYBREAK_RED
+                    else -> throw OpenAIInvalidDataException("Unknown Cyber: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Cyber = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Cyber && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is AccessPrograms &&
+                cyber == other.cyber &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(cyber, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "AccessPrograms{cyber=$cyber, additionalProperties=$additionalProperties}"
     }
 
     class ContextManagement
@@ -4031,6 +4529,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "type" to this.type,
+                "compact_threshold" to this.compactThreshold,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -4393,7 +4913,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Conversation: $json")
+                throw OpenAIInvalidDataException("Unknown Conversation")
             }
         }
 
@@ -4450,11 +4970,11 @@ private constructor(
      * Text, image, or file inputs to the model, used to generate a response.
      *
      * Learn more:
-     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-     * - [Image inputs](https://platform.openai.com/docs/guides/images)
-     * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-     * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-     * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+     * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+     * - [Image inputs](https://developers.openai.com/api/docs/guides/images-vision)
+     * - [File inputs](https://developers.openai.com/api/docs/guides/file-inputs)
+     * - [Conversation state](https://developers.openai.com/api/docs/guides/conversation-state)
+     * - [Function calling](https://developers.openai.com/api/docs/guides/function-calling)
      */
     @JsonDeserialize(using = Input.Deserializer::class)
     @JsonSerialize(using = Input.Serializer::class)
@@ -4628,7 +5148,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Input: $json")
+                throw OpenAIInvalidDataException("Unknown Input")
             }
         }
 
@@ -4693,6 +5213,23 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -4722,6 +5259,11 @@ private constructor(
 
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
+            }
+
+            /** Adds a string-valued property. */
+            fun putProperty(key: String, value: String) = apply {
+                putAdditionalProperty(key, JsonValue.from(value))
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -4795,10 +5337,10 @@ private constructor(
     }
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
+     * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
+     * available models.
      */
     class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -4814,6 +5356,14 @@ private constructor(
 
         companion object {
 
+            @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
+
+            @JvmField val GPT_6_1_SOL = of("gpt-6.1-sol")
+
+            @JvmField val GPT_6_SOL = of("gpt-6-sol")
+
+            @JvmField val GPT_6_LUNA = of("gpt-6-luna")
+
             @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
             @JvmField val GPT_5_6_TERRA = of("gpt-5.6-terra")
@@ -4822,293 +5372,912 @@ private constructor(
 
             @JvmField val GPT_5_5 = of("gpt-5.5")
 
+            @JvmField val GPT_5_5_2026_04_23 = of("gpt-5.5-2026-04-23")
+
             @JvmField val GPT_5_4 = of("gpt-5.4")
 
             @JvmField val GPT_5_4_MINI = of("gpt-5.4-mini")
 
-            @JvmField val GPT_5_4_NANO = of("gpt-5.4-nano")
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_4_NANO = of("gpt-5.4-nano")
 
             @JvmField val GPT_5_4_MINI_2026_03_17 = of("gpt-5.4-mini-2026-03-17")
 
             @JvmField val GPT_5_4_NANO_2026_03_17 = of("gpt-5.4-nano-2026-03-17")
 
-            @JvmField val GPT_5_3_CHAT_LATEST = of("gpt-5.3-chat-latest")
+            @Deprecated(
+                "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_3_CHAT_LATEST = of("gpt-5.3-chat-latest")
 
             @JvmField val GPT_5_2 = of("gpt-5.2")
 
             @JvmField val GPT_5_2_2025_12_11 = of("gpt-5.2-2025-12-11")
 
-            @JvmField val GPT_5_2_CHAT_LATEST = of("gpt-5.2-chat-latest")
+            @Deprecated(
+                "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_2_CHAT_LATEST = of("gpt-5.2-chat-latest")
 
             @JvmField val GPT_5_2_PRO = of("gpt-5.2-pro")
 
             @JvmField val GPT_5_2_PRO_2025_12_11 = of("gpt-5.2-pro-2025-12-11")
 
-            @JvmField val GPT_5_1 = of("gpt-5.1")
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_1 = of("gpt-5.1")
 
             @JvmField val GPT_5_1_2025_11_13 = of("gpt-5.1-2025-11-13")
 
-            @JvmField val GPT_5_1_CODEX = of("gpt-5.1-codex")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_1_CODEX = of("gpt-5.1-codex")
 
-            @JvmField val GPT_5_1_MINI = of("gpt-5.1-mini")
+            @Deprecated("Not a supported model ID. Retained for SDK compatibility.")
+            @JvmField
+            val GPT_5_1_MINI = of("gpt-5.1-mini")
 
-            @JvmField val GPT_5_1_CHAT_LATEST = of("gpt-5.1-chat-latest")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_1_CHAT_LATEST = of("gpt-5.1-chat-latest")
 
-            @JvmField val GPT_5 = of("gpt-5")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5 = of("gpt-5")
 
-            @JvmField val GPT_5_MINI = of("gpt-5-mini")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_MINI = of("gpt-5-mini")
 
-            @JvmField val GPT_5_NANO = of("gpt-5-nano")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_NANO = of("gpt-5-nano")
 
-            @JvmField val GPT_5_2025_08_07 = of("gpt-5-2025-08-07")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_2025_08_07 = of("gpt-5-2025-08-07")
 
-            @JvmField val GPT_5_MINI_2025_08_07 = of("gpt-5-mini-2025-08-07")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_MINI_2025_08_07 = of("gpt-5-mini-2025-08-07")
 
-            @JvmField val GPT_5_NANO_2025_08_07 = of("gpt-5-nano-2025-08-07")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_NANO_2025_08_07 = of("gpt-5-nano-2025-08-07")
 
-            @JvmField val GPT_5_CHAT_LATEST = of("gpt-5-chat-latest")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_CHAT_LATEST = of("gpt-5-chat-latest")
 
-            @JvmField val GPT_4_1 = of("gpt-4.1")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1 = of("gpt-4.1")
 
-            @JvmField val GPT_4_1_MINI = of("gpt-4.1-mini")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1_MINI = of("gpt-4.1-mini")
 
-            @JvmField val GPT_4_1_NANO = of("gpt-4.1-nano")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1_NANO = of("gpt-4.1-nano")
 
-            @JvmField val GPT_4_1_2025_04_14 = of("gpt-4.1-2025-04-14")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1_2025_04_14 = of("gpt-4.1-2025-04-14")
 
-            @JvmField val GPT_4_1_MINI_2025_04_14 = of("gpt-4.1-mini-2025-04-14")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1_MINI_2025_04_14 = of("gpt-4.1-mini-2025-04-14")
 
-            @JvmField val GPT_4_1_NANO_2025_04_14 = of("gpt-4.1-nano-2025-04-14")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1_NANO_2025_04_14 = of("gpt-4.1-nano-2025-04-14")
 
-            @JvmField val O4_MINI = of("o4-mini")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O4_MINI = of("o4-mini")
 
-            @JvmField val O4_MINI_2025_04_16 = of("o4-mini-2025-04-16")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O4_MINI_2025_04_16 = of("o4-mini-2025-04-16")
 
-            @JvmField val O3 = of("o3")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3 = of("o3")
 
-            @JvmField val O3_2025_04_16 = of("o3-2025-04-16")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_2025_04_16 = of("o3-2025-04-16")
 
-            @JvmField val O3_MINI = of("o3-mini")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_MINI = of("o3-mini")
 
-            @JvmField val O3_MINI_2025_01_31 = of("o3-mini-2025-01-31")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_MINI_2025_01_31 = of("o3-mini-2025-01-31")
 
-            @JvmField val O1 = of("o1")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1 = of("o1")
 
-            @JvmField val O1_2024_12_17 = of("o1-2024-12-17")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_2024_12_17 = of("o1-2024-12-17")
 
-            @JvmField val O1_PREVIEW = of("o1-preview")
+            @Deprecated(
+                "Announced shutdown date: 2025-07-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_PREVIEW = of("o1-preview")
 
-            @JvmField val O1_PREVIEW_2024_09_12 = of("o1-preview-2024-09-12")
+            @Deprecated(
+                "Announced shutdown date: 2025-07-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_PREVIEW_2024_09_12 = of("o1-preview-2024-09-12")
 
-            @JvmField val O1_MINI = of("o1-mini")
+            @Deprecated(
+                "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_MINI = of("o1-mini")
 
-            @JvmField val O1_MINI_2024_09_12 = of("o1-mini-2024-09-12")
+            @Deprecated(
+                "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_MINI_2024_09_12 = of("o1-mini-2024-09-12")
 
-            @JvmField val GPT_4O = of("gpt-4o")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O = of("gpt-4o")
 
-            @JvmField val GPT_4O_2024_11_20 = of("gpt-4o-2024-11-20")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_2024_11_20 = of("gpt-4o-2024-11-20")
 
-            @JvmField val GPT_4O_2024_08_06 = of("gpt-4o-2024-08-06")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_2024_08_06 = of("gpt-4o-2024-08-06")
 
-            @JvmField val GPT_4O_2024_05_13 = of("gpt-4o-2024-05-13")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_2024_05_13 = of("gpt-4o-2024-05-13")
 
-            @JvmField val GPT_4O_AUDIO_PREVIEW = of("gpt-4o-audio-preview")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_AUDIO_MINI = of("gpt-audio-mini")
 
-            @JvmField val GPT_4O_AUDIO_PREVIEW_2024_10_01 = of("gpt-4o-audio-preview-2024-10-01")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_AUDIO_MINI_2025_12_15 = of("gpt-audio-mini-2025-12-15")
 
-            @JvmField val GPT_4O_AUDIO_PREVIEW_2024_12_17 = of("gpt-4o-audio-preview-2024-12-17")
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_AUDIO_PREVIEW = of("gpt-4o-audio-preview")
 
-            @JvmField val GPT_4O_AUDIO_PREVIEW_2025_06_03 = of("gpt-4o-audio-preview-2025-06-03")
+            @Deprecated(
+                "Announced shutdown date: 2025-10-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_AUDIO_PREVIEW_2024_10_01 = of("gpt-4o-audio-preview-2024-10-01")
 
-            @JvmField val GPT_4O_MINI_AUDIO_PREVIEW = of("gpt-4o-mini-audio-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_AUDIO_PREVIEW_2024_12_17 = of("gpt-4o-audio-preview-2024-12-17")
 
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_AUDIO_PREVIEW_2025_06_03 = of("gpt-4o-audio-preview-2025-06-03")
+
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_MINI_AUDIO_PREVIEW = of("gpt-4o-mini-audio-preview")
+
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             @JvmField
             val GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17 = of("gpt-4o-mini-audio-preview-2024-12-17")
 
-            @JvmField val GPT_4O_SEARCH_PREVIEW = of("gpt-4o-search-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_SEARCH_PREVIEW = of("gpt-4o-search-preview")
 
-            @JvmField val GPT_4O_MINI_SEARCH_PREVIEW = of("gpt-4o-mini-search-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_MINI_SEARCH_PREVIEW = of("gpt-4o-mini-search-preview")
 
-            @JvmField val GPT_4O_SEARCH_PREVIEW_2025_03_11 = of("gpt-4o-search-preview-2025-03-11")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_SEARCH_PREVIEW_2025_03_11 = of("gpt-4o-search-preview-2025-03-11")
 
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             @JvmField
             val GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11 = of("gpt-4o-mini-search-preview-2025-03-11")
 
-            @JvmField val CHATGPT_4O_LATEST = of("chatgpt-4o-latest")
+            @Deprecated(
+                "Announced shutdown date: 2026-02-17. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val CHATGPT_4O_LATEST = of("chatgpt-4o-latest")
 
-            @JvmField val CODEX_MINI_LATEST = of("codex-mini-latest")
+            @Deprecated(
+                "Announced shutdown date: 2026-02-12. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val CODEX_MINI_LATEST = of("codex-mini-latest")
 
-            @JvmField val GPT_4O_MINI = of("gpt-4o-mini")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_MINI = of("gpt-4o-mini")
 
-            @JvmField val GPT_4O_MINI_2024_07_18 = of("gpt-4o-mini-2024-07-18")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_MINI_2024_07_18 = of("gpt-4o-mini-2024-07-18")
 
-            @JvmField val GPT_4_TURBO = of("gpt-4-turbo")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_TURBO = of("gpt-4-turbo")
 
-            @JvmField val GPT_4_TURBO_2024_04_09 = of("gpt-4-turbo-2024-04-09")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_TURBO_2024_04_09 = of("gpt-4-turbo-2024-04-09")
 
-            @JvmField val GPT_4_0125_PREVIEW = of("gpt-4-0125-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_0125_PREVIEW = of("gpt-4-0125-preview")
 
-            @JvmField val GPT_4_TURBO_PREVIEW = of("gpt-4-turbo-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_TURBO_PREVIEW = of("gpt-4-turbo-preview")
 
-            @JvmField val GPT_4_1106_PREVIEW = of("gpt-4-1106-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1106_PREVIEW = of("gpt-4-1106-preview")
 
-            @JvmField val GPT_4_VISION_PREVIEW = of("gpt-4-vision-preview")
+            @Deprecated(
+                "Announced shutdown date: 2024-12-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_VISION_PREVIEW = of("gpt-4-vision-preview")
 
-            @JvmField val GPT_4 = of("gpt-4")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4 = of("gpt-4")
 
-            @JvmField val GPT_4_0314 = of("gpt-4-0314")
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_0314 = of("gpt-4-0314")
 
-            @JvmField val GPT_4_0613 = of("gpt-4-0613")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_0613 = of("gpt-4-0613")
 
-            @JvmField val GPT_4_32K = of("gpt-4-32k")
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_32K = of("gpt-4-32k")
 
-            @JvmField val GPT_4_32K_0314 = of("gpt-4-32k-0314")
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_32K_0314 = of("gpt-4-32k-0314")
 
-            @JvmField val GPT_4_32K_0613 = of("gpt-4-32k-0613")
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_32K_0613 = of("gpt-4-32k-0613")
 
-            @JvmField val GPT_3_5_TURBO = of("gpt-3.5-turbo")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO = of("gpt-3.5-turbo")
 
-            @JvmField val GPT_3_5_TURBO_16K = of("gpt-3.5-turbo-16k")
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO_16K = of("gpt-3.5-turbo-16k")
 
-            @JvmField val GPT_3_5_TURBO_0301 = of("gpt-3.5-turbo-0301")
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO_0301 = of("gpt-3.5-turbo-0301")
 
-            @JvmField val GPT_3_5_TURBO_0613 = of("gpt-3.5-turbo-0613")
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO_0613 = of("gpt-3.5-turbo-0613")
 
-            @JvmField val GPT_3_5_TURBO_1106 = of("gpt-3.5-turbo-1106")
+            @Deprecated(
+                "Announced shutdown date: 2026-09-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO_1106 = of("gpt-3.5-turbo-1106")
 
-            @JvmField val GPT_3_5_TURBO_0125 = of("gpt-3.5-turbo-0125")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO_0125 = of("gpt-3.5-turbo-0125")
 
-            @JvmField val GPT_3_5_TURBO_16K_0613 = of("gpt-3.5-turbo-16k-0613")
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO_16K_0613 = of("gpt-3.5-turbo-16k-0613")
 
-            @JvmField val O1_PRO = of("o1-pro")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_PRO = of("o1-pro")
 
-            @JvmField val O1_PRO_2025_03_19 = of("o1-pro-2025-03-19")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_PRO_2025_03_19 = of("o1-pro-2025-03-19")
 
-            @JvmField val O3_PRO = of("o3-pro")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_PRO = of("o3-pro")
 
-            @JvmField val O3_PRO_2025_06_10 = of("o3-pro-2025-06-10")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_PRO_2025_06_10 = of("o3-pro-2025-06-10")
 
-            @JvmField val O3_DEEP_RESEARCH = of("o3-deep-research")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_DEEP_RESEARCH = of("o3-deep-research")
 
-            @JvmField val O3_DEEP_RESEARCH_2025_06_26 = of("o3-deep-research-2025-06-26")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_DEEP_RESEARCH_2025_06_26 = of("o3-deep-research-2025-06-26")
 
-            @JvmField val O4_MINI_DEEP_RESEARCH = of("o4-mini-deep-research")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O4_MINI_DEEP_RESEARCH = of("o4-mini-deep-research")
 
-            @JvmField val O4_MINI_DEEP_RESEARCH_2025_06_26 = of("o4-mini-deep-research-2025-06-26")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O4_MINI_DEEP_RESEARCH_2025_06_26 = of("o4-mini-deep-research-2025-06-26")
 
-            @JvmField val COMPUTER_USE_PREVIEW = of("computer-use-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val COMPUTER_USE_PREVIEW = of("computer-use-preview")
 
-            @JvmField val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
 
-            @JvmField val GPT_5_CODEX = of("gpt-5-codex")
+            @JvmField val GPT_5_5_PRO = of("gpt-5.5-pro")
 
-            @JvmField val GPT_5_PRO = of("gpt-5-pro")
+            @JvmField val GPT_5_5_PRO_2026_04_23 = of("gpt-5.5-pro-2026-04-23")
 
-            @JvmField val GPT_5_PRO_2025_10_06 = of("gpt-5-pro-2025-10-06")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_CODEX = of("gpt-5-codex")
 
-            @JvmField val GPT_5_1_CODEX_MAX = of("gpt-5.1-codex-max")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_PRO = of("gpt-5-pro")
+
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_PRO_2025_10_06 = of("gpt-5-pro-2025-10-06")
+
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_1_CODEX_MAX = of("gpt-5.1-codex-max")
+
+            @JvmField val GPT_DAYBREAK_BLUE_LATEST = of("gpt-daybreak-blue-latest")
+
+            @JvmField val GPT_DAYBREAK_RED_LATEST = of("gpt-daybreak-red-latest")
+
+            @JvmField val GPT_5_6_CYBER = of("gpt-5.6-cyber")
+
+            @JvmField val GPT_ROSALIND_RESEARCH = of("gpt-rosalind-research")
 
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            GPT_6_ASTRA,
+            GPT_6_1_SOL,
+            GPT_6_SOL,
+            GPT_6_LUNA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
             GPT_5_5,
+            GPT_5_5_2026_04_23,
             GPT_5_4,
             GPT_5_4_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_4_NANO,
             GPT_5_4_MINI_2026_03_17,
             GPT_5_4_NANO_2026_03_17,
+            @Deprecated(
+                "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_3_CHAT_LATEST,
             GPT_5_2,
             GPT_5_2_2025_12_11,
+            @Deprecated(
+                "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_2_CHAT_LATEST,
             GPT_5_2_PRO,
             GPT_5_2_PRO_2025_12_11,
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1,
             GPT_5_1_2025_11_13,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_CODEX,
-            GPT_5_1_MINI,
+            @Deprecated("Not a supported model ID. Retained for SDK compatibility.") GPT_5_1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_CHAT_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_NANO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_MINI_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_NANO_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_CHAT_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_NANO,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_2025_04_14,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_MINI_2025_04_14,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_NANO_2025_04_14,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI_2025_04_16,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_2025_04_16,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_MINI_2025_01_31,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2025-07-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2025-07-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PREVIEW_2024_09_12,
+            @Deprecated(
+                "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_MINI_2024_09_12,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_2024_11_20,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_2024_08_06,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_2024_05_13,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            GPT_AUDIO_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            GPT_AUDIO_MINI_2025_12_15,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2025-10-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW_2024_10_01,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW_2025_06_03,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_AUDIO_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_SEARCH_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_SEARCH_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_SEARCH_PREVIEW_2025_03_11,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11,
+            @Deprecated(
+                "Announced shutdown date: 2026-02-17. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             CHATGPT_4O_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2026-02-12. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             CODEX_MINI_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_2024_07_18,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_TURBO,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_TURBO_2024_04_09,
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_0125_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_TURBO_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1106_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2024-12-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_VISION_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4,
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_0314,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_0613,
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_32K,
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_32K_0314,
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_32K_0613,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_16K,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_0301,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_0613,
+            @Deprecated(
+                "Announced shutdown date: 2026-09-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_1106,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_0125,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_16K_0613,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PRO,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PRO_2025_03_19,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_PRO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_PRO_2025_06_10,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_DEEP_RESEARCH,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_DEEP_RESEARCH_2025_06_26,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI_DEEP_RESEARCH,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI_DEEP_RESEARCH_2025_06_26,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             COMPUTER_USE_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_5_PRO,
+            GPT_5_5_PRO_2026_04_23,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_CODEX,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_PRO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_PRO_2025_10_06,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_CODEX_MAX,
+            GPT_DAYBREAK_BLUE_LATEST,
+            GPT_DAYBREAK_RED_LATEST,
+            GPT_5_6_CYBER,
+            GPT_ROSALIND_RESEARCH,
         }
 
         /**
@@ -5121,102 +6290,367 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            GPT_6_ASTRA,
+            GPT_6_1_SOL,
+            GPT_6_SOL,
+            GPT_6_LUNA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
             GPT_5_5,
+            GPT_5_5_2026_04_23,
             GPT_5_4,
             GPT_5_4_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_4_NANO,
             GPT_5_4_MINI_2026_03_17,
             GPT_5_4_NANO_2026_03_17,
+            @Deprecated(
+                "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_3_CHAT_LATEST,
             GPT_5_2,
             GPT_5_2_2025_12_11,
+            @Deprecated(
+                "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_2_CHAT_LATEST,
             GPT_5_2_PRO,
             GPT_5_2_PRO_2025_12_11,
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1,
             GPT_5_1_2025_11_13,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_CODEX,
-            GPT_5_1_MINI,
+            @Deprecated("Not a supported model ID. Retained for SDK compatibility.") GPT_5_1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_CHAT_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_NANO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_MINI_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_NANO_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_CHAT_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_NANO,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_2025_04_14,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_MINI_2025_04_14,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_NANO_2025_04_14,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI_2025_04_16,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_2025_04_16,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_MINI_2025_01_31,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2025-07-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2025-07-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PREVIEW_2024_09_12,
+            @Deprecated(
+                "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_MINI_2024_09_12,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_2024_11_20,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_2024_08_06,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_2024_05_13,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            GPT_AUDIO_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            GPT_AUDIO_MINI_2025_12_15,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2025-10-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW_2024_10_01,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW_2025_06_03,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_AUDIO_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_SEARCH_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_SEARCH_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_SEARCH_PREVIEW_2025_03_11,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11,
+            @Deprecated(
+                "Announced shutdown date: 2026-02-17. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             CHATGPT_4O_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2026-02-12. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             CODEX_MINI_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_2024_07_18,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_TURBO,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_TURBO_2024_04_09,
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_0125_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_TURBO_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1106_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2024-12-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_VISION_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4,
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_0314,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_0613,
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_32K,
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_32K_0314,
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_32K_0613,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_16K,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_0301,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_0613,
+            @Deprecated(
+                "Announced shutdown date: 2026-09-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_1106,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_0125,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_16K_0613,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PRO,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PRO_2025_03_19,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_PRO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_PRO_2025_06_10,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_DEEP_RESEARCH,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_DEEP_RESEARCH_2025_06_26,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI_DEEP_RESEARCH,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI_DEEP_RESEARCH_2025_06_26,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             COMPUTER_USE_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_5_PRO,
+            GPT_5_5_PRO_2026_04_23,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_CODEX,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_PRO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_PRO_2025_10_06,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_CODEX_MAX,
+            GPT_DAYBREAK_BLUE_LATEST,
+            GPT_DAYBREAK_RED_LATEST,
+            GPT_5_6_CYBER,
+            GPT_ROSALIND_RESEARCH,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -5230,10 +6664,15 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                GPT_6_ASTRA -> Value.GPT_6_ASTRA
+                GPT_6_1_SOL -> Value.GPT_6_1_SOL
+                GPT_6_SOL -> Value.GPT_6_SOL
+                GPT_6_LUNA -> Value.GPT_6_LUNA
                 GPT_5_6_SOL -> Value.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
                 GPT_5_5 -> Value.GPT_5_5
+                GPT_5_5_2026_04_23 -> Value.GPT_5_5_2026_04_23
                 GPT_5_4 -> Value.GPT_5_4
                 GPT_5_4_MINI -> Value.GPT_5_4_MINI
                 GPT_5_4_NANO -> Value.GPT_5_4_NANO
@@ -5279,6 +6718,8 @@ private constructor(
                 GPT_4O_2024_11_20 -> Value.GPT_4O_2024_11_20
                 GPT_4O_2024_08_06 -> Value.GPT_4O_2024_08_06
                 GPT_4O_2024_05_13 -> Value.GPT_4O_2024_05_13
+                GPT_AUDIO_MINI -> Value.GPT_AUDIO_MINI
+                GPT_AUDIO_MINI_2025_12_15 -> Value.GPT_AUDIO_MINI_2025_12_15
                 GPT_4O_AUDIO_PREVIEW -> Value.GPT_4O_AUDIO_PREVIEW
                 GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Value.GPT_4O_AUDIO_PREVIEW_2024_10_01
                 GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Value.GPT_4O_AUDIO_PREVIEW_2024_12_17
@@ -5322,10 +6763,16 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Value.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Value.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_5_PRO -> Value.GPT_5_5_PRO
+                GPT_5_5_PRO_2026_04_23 -> Value.GPT_5_5_PRO_2026_04_23
                 GPT_5_CODEX -> Value.GPT_5_CODEX
                 GPT_5_PRO -> Value.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Value.GPT_5_PRO_2025_10_06
                 GPT_5_1_CODEX_MAX -> Value.GPT_5_1_CODEX_MAX
+                GPT_DAYBREAK_BLUE_LATEST -> Value.GPT_DAYBREAK_BLUE_LATEST
+                GPT_DAYBREAK_RED_LATEST -> Value.GPT_DAYBREAK_RED_LATEST
+                GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
+                GPT_ROSALIND_RESEARCH -> Value.GPT_ROSALIND_RESEARCH
                 else -> Value._UNKNOWN
             }
 
@@ -5340,10 +6787,15 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                GPT_6_ASTRA -> Known.GPT_6_ASTRA
+                GPT_6_1_SOL -> Known.GPT_6_1_SOL
+                GPT_6_SOL -> Known.GPT_6_SOL
+                GPT_6_LUNA -> Known.GPT_6_LUNA
                 GPT_5_6_SOL -> Known.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
                 GPT_5_5 -> Known.GPT_5_5
+                GPT_5_5_2026_04_23 -> Known.GPT_5_5_2026_04_23
                 GPT_5_4 -> Known.GPT_5_4
                 GPT_5_4_MINI -> Known.GPT_5_4_MINI
                 GPT_5_4_NANO -> Known.GPT_5_4_NANO
@@ -5389,6 +6841,8 @@ private constructor(
                 GPT_4O_2024_11_20 -> Known.GPT_4O_2024_11_20
                 GPT_4O_2024_08_06 -> Known.GPT_4O_2024_08_06
                 GPT_4O_2024_05_13 -> Known.GPT_4O_2024_05_13
+                GPT_AUDIO_MINI -> Known.GPT_AUDIO_MINI
+                GPT_AUDIO_MINI_2025_12_15 -> Known.GPT_AUDIO_MINI_2025_12_15
                 GPT_4O_AUDIO_PREVIEW -> Known.GPT_4O_AUDIO_PREVIEW
                 GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Known.GPT_4O_AUDIO_PREVIEW_2024_10_01
                 GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Known.GPT_4O_AUDIO_PREVIEW_2024_12_17
@@ -5432,10 +6886,16 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Known.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_5_PRO -> Known.GPT_5_5_PRO
+                GPT_5_5_PRO_2026_04_23 -> Known.GPT_5_5_PRO_2026_04_23
                 GPT_5_CODEX -> Known.GPT_5_CODEX
                 GPT_5_PRO -> Known.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Known.GPT_5_PRO_2025_10_06
                 GPT_5_1_CODEX_MAX -> Known.GPT_5_1_CODEX_MAX
+                GPT_DAYBREAK_BLUE_LATEST -> Known.GPT_DAYBREAK_BLUE_LATEST
+                GPT_DAYBREAK_RED_LATEST -> Known.GPT_DAYBREAK_RED_LATEST
+                GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
+                GPT_ROSALIND_RESEARCH -> Known.GPT_ROSALIND_RESEARCH
                 else -> throw OpenAIInvalidDataException("Unknown Model: $value")
             }
 
@@ -5550,6 +7010,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "model" to this.model,
+                "policy" to this.policy,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -5742,6 +7224,30 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "input" to this.input,
+                    "output" to this.output,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -5903,6 +7409,26 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(additionalProperties, "mode" to this.mode)
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -6216,6 +7742,26 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(additionalProperties, "mode" to this.mode)
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -6595,6 +8141,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "enabled" to this.enabled,
+                "max_concurrent_subagents" to this.maxConcurrentSubagents,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -6770,22 +8338,38 @@ private constructor(
      * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
      * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
      * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
-     * [prompt caching guide](https://platform.openai.com/docs/guides/prompt-caching) for current
-     * details.
+     * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
+     * current details.
      */
     class PromptCacheOptions
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val comparisonResponseId: JsonField<String>,
         private val mode: JsonField<Mode>,
+        private val prewarm: JsonField<Boolean>,
         private val ttl: JsonField<Ttl>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
+            @JsonProperty("comparison_response_id")
+            @ExcludeMissing
+            comparisonResponseId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
+            @JsonProperty("prewarm") @ExcludeMissing prewarm: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
-        ) : this(mode, ttl, mutableMapOf())
+        ) : this(comparisonResponseId, mode, prewarm, ttl, mutableMapOf())
+
+        /**
+         * The ID of a response to compare when diagnosing prompt cache reuse. Supplying this field
+         * requests prompt cache diagnostics when the feature is enabled.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun comparisonResponseId(): Optional<String> =
+            comparisonResponseId.getOptional("comparison_response_id")
 
         /**
          * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults to
@@ -6800,6 +8384,15 @@ private constructor(
         fun mode(): Optional<Mode> = mode.getOptional("mode")
 
         /**
+         * Prepares the prompt cache without generating output. Defaults to `false`. When set to
+         * `true`, overrides the `generate` field to `false`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun prewarm(): Optional<Boolean> = prewarm.getOptional("prewarm")
+
+        /**
          * The minimum lifetime applied to every implicit and explicit cache breakpoint written by
          * the request. Defaults to `30m`, which is currently the only supported value. The backend
          * may retain cache entries for longer.
@@ -6810,11 +8403,28 @@ private constructor(
         fun ttl(): Optional<Ttl> = ttl.getOptional("ttl")
 
         /**
+         * Returns the raw JSON value of [comparisonResponseId].
+         *
+         * Unlike [comparisonResponseId], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("comparison_response_id")
+        @ExcludeMissing
+        fun _comparisonResponseId(): JsonField<String> = comparisonResponseId
+
+        /**
          * Returns the raw JSON value of [mode].
          *
          * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
+
+        /**
+         * Returns the raw JSON value of [prewarm].
+         *
+         * Unlike [prewarm], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("prewarm") @ExcludeMissing fun _prewarm(): JsonField<Boolean> = prewarm
 
         /**
          * Returns the raw JSON value of [ttl].
@@ -6828,6 +8438,30 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "comparison_response_id" to this.comparisonResponseId,
+                "mode" to this.mode,
+                "prewarm" to this.prewarm,
+                "ttl" to this.ttl,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -6844,15 +8478,44 @@ private constructor(
         /** A builder for [PromptCacheOptions]. */
         class Builder internal constructor() {
 
+            private var comparisonResponseId: JsonField<String> = JsonMissing.of()
             private var mode: JsonField<Mode> = JsonMissing.of()
+            private var prewarm: JsonField<Boolean> = JsonMissing.of()
             private var ttl: JsonField<Ttl> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
+                comparisonResponseId = promptCacheOptions.comparisonResponseId
                 mode = promptCacheOptions.mode
+                prewarm = promptCacheOptions.prewarm
                 ttl = promptCacheOptions.ttl
                 additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The ID of a response to compare when diagnosing prompt cache reuse. Supplying this
+             * field requests prompt cache diagnostics when the feature is enabled.
+             */
+            fun comparisonResponseId(comparisonResponseId: String?) =
+                comparisonResponseId(JsonField.ofNullable(comparisonResponseId))
+
+            /**
+             * Alias for calling [Builder.comparisonResponseId] with
+             * `comparisonResponseId.orElse(null)`.
+             */
+            fun comparisonResponseId(comparisonResponseId: Optional<String>) =
+                comparisonResponseId(comparisonResponseId.getOrNull())
+
+            /**
+             * Sets [Builder.comparisonResponseId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.comparisonResponseId] with a well-typed [String]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun comparisonResponseId(comparisonResponseId: JsonField<String>) = apply {
+                this.comparisonResponseId = comparisonResponseId
             }
 
             /**
@@ -6873,6 +8536,21 @@ private constructor(
              * value.
              */
             fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
+
+            /**
+             * Prepares the prompt cache without generating output. Defaults to `false`. When set to
+             * `true`, overrides the `generate` field to `false`.
+             */
+            fun prewarm(prewarm: Boolean) = prewarm(JsonField.of(prewarm))
+
+            /**
+             * Sets [Builder.prewarm] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.prewarm] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun prewarm(prewarm: JsonField<Boolean>) = apply { this.prewarm = prewarm }
 
             /**
              * The minimum lifetime applied to every implicit and explicit cache breakpoint written
@@ -6915,7 +8593,13 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): PromptCacheOptions =
-                PromptCacheOptions(mode, ttl, additionalProperties.toMutableMap())
+                PromptCacheOptions(
+                    comparisonResponseId,
+                    mode,
+                    prewarm,
+                    ttl,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -6934,7 +8618,9 @@ private constructor(
                 return@apply
             }
 
+            comparisonResponseId()
             mode().ifPresent { it.validate() }
+            prewarm()
             ttl().ifPresent { it.validate() }
             validated = true
         }
@@ -6955,7 +8641,9 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (mode.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (comparisonResponseId.asKnown().isPresent) 1 else 0) +
+                (mode.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (prewarm.asKnown().isPresent) 1 else 0) +
                 (ttl.asKnown().getOrNull()?.validity() ?: 0)
 
         /**
@@ -7244,17 +8932,21 @@ private constructor(
             }
 
             return other is PromptCacheOptions &&
+                comparisonResponseId == other.comparisonResponseId &&
                 mode == other.mode &&
+                prewarm == other.prewarm &&
                 ttl == other.ttl &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(mode, ttl, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(comparisonResponseId, mode, prewarm, ttl, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "PromptCacheOptions{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+            "PromptCacheOptions{comparisonResponseId=$comparisonResponseId, mode=$mode, prewarm=$prewarm, ttl=$ttl, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -7262,7 +8954,7 @@ private constructor(
      *
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
      * This field expresses a maximum retention policy, while `prompt_cache_options.ttl` expresses a
      * minimum cache lifetime. The two fields are independent and do not interact. For `gpt-5.5`,
      * `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -7415,10 +9107,8 @@ private constructor(
     }
 
     /**
-     * **gpt-5 and o-series models only**
-     *
      * Configuration options for
-     * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+     * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
      */
     class Reasoning
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -7460,8 +9150,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -7547,6 +9237,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "context" to this.context,
+                "effort" to this.effort,
+                "generate_summary" to this.generateSummary,
+                "mode" to this.mode,
+                "summary" to this.summary,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -7607,7 +9322,7 @@ private constructor(
              * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning
              * effort can result in faster responses and fewer tokens used on reasoning in a
              * response. Not all reasoning models support every value. See the
-             * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+             * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
              * model-specific support.
              */
             fun effort(effort: Effort?) = effort(JsonField.ofNullable(effort))
@@ -7938,8 +9653,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          */
         class Effort @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -8590,12 +10305,15 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
      *   request will be processed with the Flex Processing service tier.
-     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
-     *   The response will show `service_tier=priority` regardless of if you specify
-     *   `service_tier=fast` or `priority` in your request.
+     * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the
+     *   request level, include the `service_tier=fast` or `service_tier=priority` parameter for
+     *   Responses or Chat Completions. The response will show `service_tier=priority` regardless of
+     *   if you specify `service_tier=fast` or `priority` in your request.
+     * - If set to 'ultrafast', then the request will be processed with the access-controlled
+     *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`; a
+     *   response served through it will show `service_tier=ultrafast`.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -8629,6 +10347,8 @@ private constructor(
 
             @JvmField val FAST = of("fast")
 
+            @JvmField val ULTRAFAST = of("ultrafast")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -8640,6 +10360,7 @@ private constructor(
             SCALE,
             PRIORITY,
             FAST,
+            ULTRAFAST,
         }
 
         /**
@@ -8658,6 +10379,7 @@ private constructor(
             SCALE,
             PRIORITY,
             FAST,
+            ULTRAFAST,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -8679,6 +10401,7 @@ private constructor(
                 SCALE -> Value.SCALE
                 PRIORITY -> Value.PRIORITY
                 FAST -> Value.FAST
+                ULTRAFAST -> Value.ULTRAFAST
                 else -> Value._UNKNOWN
             }
 
@@ -8699,6 +10422,7 @@ private constructor(
                 SCALE -> Known.SCALE
                 PRIORITY -> Known.PRIORITY
                 FAST -> Known.FAST
+                ULTRAFAST -> Known.ULTRAFAST
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 
@@ -8807,6 +10531,27 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "include_obfuscation" to this.includeObfuscation,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -8976,7 +10721,7 @@ private constructor(
 
         /**
          * Indicates that the model should use a built-in tool to generate a response.
-         * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+         * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
          */
         fun betaToolChoiceTypes(): Optional<BetaToolChoiceTypes> =
             Optional.ofNullable(betaToolChoiceTypes)
@@ -9042,7 +10787,7 @@ private constructor(
 
         /**
          * Indicates that the model should use a built-in tool to generate a response.
-         * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+         * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
          */
         fun asBetaToolChoiceTypes(): BetaToolChoiceTypes =
             betaToolChoiceTypes.getOrThrow("betaToolChoiceTypes")
@@ -9346,7 +11091,7 @@ private constructor(
 
             /**
              * Indicates that the model should use a built-in tool to generate a response.
-             * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+             * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
              */
             @JvmStatic
             fun ofBetaToolChoiceTypes(betaToolChoiceTypes: BetaToolChoiceTypes) =
@@ -9409,7 +11154,7 @@ private constructor(
 
             /**
              * Indicates that the model should use a built-in tool to generate a response.
-             * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+             * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
              */
             fun visitBetaToolChoiceTypes(betaToolChoiceTypes: BetaToolChoiceTypes): T
 
@@ -9445,7 +11190,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ToolChoice: $json")
+                throw OpenAIInvalidDataException("Unknown ToolChoice")
             }
         }
 

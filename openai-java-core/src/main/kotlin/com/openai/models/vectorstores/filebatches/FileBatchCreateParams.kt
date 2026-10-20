@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.vectorstores.filebatches
 
@@ -13,6 +13,7 @@ import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -58,11 +59,12 @@ private constructor(
     fun chunkingStrategy(): Optional<FileChunkingStrategyParam> = body.chunkingStrategy()
 
     /**
-     * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the vector
-     * store should use. Useful for tools like `file_search` that can access files. If `attributes`
-     * or `chunking_strategy` are provided, they will be applied to all files in the batch. The
-     * maximum batch size is 2000 files. This endpoint is recommended for multi-file ingestion and
-     * helps reduce per-vector-store write request pressure. Mutually exclusive with `files`.
+     * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that the
+     * vector store should use. Useful for tools like `file_search` that can access files. If
+     * `attributes` or `chunking_strategy` are provided, they will be applied to all files in the
+     * batch. The maximum batch size is 2000 files. This endpoint is recommended for multi-file
+     * ingestion and helps reduce per-vector-store write request pressure. Mutually exclusive with
+     * `files`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -228,9 +230,9 @@ private constructor(
         }
 
         /**
-         * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-         * vector store should use. Useful for tools like `file_search` that can access files. If
-         * `attributes` or `chunking_strategy` are provided, they will be applied to all files in
+         * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that
+         * the vector store should use. Useful for tools like `file_search` that can access files.
+         * If `attributes` or `chunking_strategy` are provided, they will be applied to all files in
          * the batch. The maximum batch size is 2000 files. This endpoint is recommended for
          * multi-file ingestion and helps reduce per-vector-store write request pressure. Mutually
          * exclusive with `files`.
@@ -469,9 +471,9 @@ private constructor(
             chunkingStrategy.getOptional("chunking_strategy")
 
         /**
-         * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-         * vector store should use. Useful for tools like `file_search` that can access files. If
-         * `attributes` or `chunking_strategy` are provided, they will be applied to all files in
+         * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that
+         * the vector store should use. Useful for tools like `file_search` that can access files.
+         * If `attributes` or `chunking_strategy` are provided, they will be applied to all files in
          * the batch. The maximum batch size is 2000 files. This endpoint is recommended for
          * multi-file ingestion and helps reduce per-vector-store write request pressure. Mutually
          * exclusive with `files`.
@@ -532,6 +534,30 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "attributes" to this.attributes,
+                "chunking_strategy" to this.chunkingStrategy,
+                "file_ids" to this.fileIds,
+                "files" to this.files,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -631,10 +657,10 @@ private constructor(
                 )
 
             /**
-             * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-             * vector store should use. Useful for tools like `file_search` that can access files.
-             * If `attributes` or `chunking_strategy` are provided, they will be applied to all
-             * files in the batch. The maximum batch size is 2000 files. This endpoint is
+             * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs
+             * that the vector store should use. Useful for tools like `file_search` that can access
+             * files. If `attributes` or `chunking_strategy` are provided, they will be applied to
+             * all files in the batch. The maximum batch size is 2000 files. This endpoint is
              * recommended for multi-file ingestion and helps reduce per-vector-store write request
              * pressure. Mutually exclusive with `files`.
              */
@@ -658,7 +684,7 @@ private constructor(
              */
             fun addFileId(fileId: String) = apply {
                 fileIds =
-                    (fileIds ?: JsonField.of(mutableListOf())).also {
+                    (fileIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("fileIds", it).add(fileId)
                     }
             }
@@ -691,7 +717,7 @@ private constructor(
              */
             fun addFile(file: File) = apply {
                 files =
-                    (files ?: JsonField.of(mutableListOf())).also {
+                    (files?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("files", it).add(file)
                     }
             }
@@ -810,6 +836,23 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -932,10 +975,10 @@ private constructor(
         ) : this(fileId, attributes, chunkingStrategy, mutableMapOf())
 
         /**
-         * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-         * should use. Useful for tools like `file_search` that can access files. For multi-file
-         * ingestion, we recommend
-         * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+         * A [File](https://developers.openai.com/api/reference/resources/files) ID that the vector
+         * store should use. Useful for tools like `file_search` that can access files. For
+         * multi-file ingestion, we recommend
+         * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
          * to minimize per-vector-store write requests.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -996,6 +1039,29 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "file_id" to this.fileId,
+                "attributes" to this.attributes,
+                "chunking_strategy" to this.chunkingStrategy,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1033,10 +1099,10 @@ private constructor(
             }
 
             /**
-             * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector
-             * store should use. Useful for tools like `file_search` that can access files. For
-             * multi-file ingestion, we recommend
-             * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+             * A [File](https://developers.openai.com/api/reference/resources/files) ID that the
+             * vector store should use. Useful for tools like `file_search` that can access files.
+             * For multi-file ingestion, we recommend
+             * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
              * to minimize per-vector-store write requests.
              */
             fun fileId(fileId: String) = fileId(JsonField.of(fileId))
@@ -1213,6 +1279,26 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue>
         ) {
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties)
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties

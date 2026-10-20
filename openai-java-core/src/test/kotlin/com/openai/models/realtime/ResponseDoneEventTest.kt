@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -64,6 +64,7 @@ internal class ResponseDoneEventTest {
                                 .error(
                                     RealtimeResponseStatus.Error.builder()
                                         .code("code")
+                                        .message("message")
                                         .type("type")
                                         .build()
                                 )
@@ -156,6 +157,7 @@ internal class ResponseDoneEventTest {
                             .error(
                                 RealtimeResponseStatus.Error.builder()
                                     .code("code")
+                                    .message("message")
                                     .type("type")
                                     .build()
                             )
@@ -251,6 +253,7 @@ internal class ResponseDoneEventTest {
                                 .error(
                                     RealtimeResponseStatus.Error.builder()
                                         .code("code")
+                                        .message("message")
                                         .type("type")
                                         .build()
                                 )

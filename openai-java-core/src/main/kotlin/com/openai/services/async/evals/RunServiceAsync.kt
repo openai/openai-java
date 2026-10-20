@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.evals
 
@@ -35,7 +35,8 @@ interface RunServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunServiceAsync
 
     /** Manage and run evals in the OpenAI platform. */
-    fun outputItems(): OutputItemServiceAsync
+    fun outputItems(): OutputItemServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Kicks off a new run for a given evaluation, specifying the data source, and what model
@@ -172,7 +173,10 @@ interface RunServiceAsync {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunServiceAsync.WithRawResponse
 
         /** Manage and run evals in the OpenAI platform. */
-        fun outputItems(): OutputItemServiceAsync.WithRawResponse
+        fun outputItems(): OutputItemServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /evals/{eval_id}/runs`, but is otherwise the same
@@ -300,8 +304,8 @@ interface RunServiceAsync {
         ): CompletableFuture<HttpResponseFor<RunDeleteResponse>>
 
         /**
-         * Returns a raw HTTP response for `post /evals/{eval_id}/runs/{run_id}`, but is otherwise
-         * the same as [RunServiceAsync.cancel].
+         * Returns a raw HTTP response for `post /evals/{eval_id}/runs/{run_id}/cancel`, but is
+         * otherwise the same as [RunServiceAsync.cancel].
          */
         fun cancel(
             runId: String,

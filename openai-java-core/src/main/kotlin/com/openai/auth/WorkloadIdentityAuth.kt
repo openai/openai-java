@@ -214,6 +214,16 @@ internal class WorkloadIdentityAuth(
         }
     }
 
+    @JvmSynthetic
+    internal fun invalidateToken(rejectedAuthorization: String?) {
+        lock.withLock {
+            if (cachedToken != null && rejectedAuthorization == "Bearer $cachedToken") {
+                cachedToken = null
+                tokenExpiry = null
+            }
+        }
+    }
+
     private fun unexpiredCachedTokenUnsafe(): String? {
         val token = cachedToken
         val expiry = tokenExpiry

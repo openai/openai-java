@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
@@ -25,6 +23,7 @@ import com.openai.credential.Credential
 import com.openai.credential.WorkloadIdentityCredential
 import java.time.Clock
 import java.time.Duration
+import java.util.Locale
 import java.util.Optional
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
@@ -88,8 +87,14 @@ private constructor(
      */
     @get:JvmName("clock") val clock: Clock,
     private val baseUrl: String?,
+    private val dataResidencySelected: Boolean,
     /** Headers to send with the request. */
     @get:JvmName("headers") val headers: Headers,
+    private val removedSecurityHeaders: Set<String>,
+    private val customHeaders: Headers,
+    private val defaultUserAgent: String?,
+    /** Whether SDK-generated telemetry headers are disabled. */
+    @get:JvmName("disableTelemetry") val disableTelemetry: Boolean,
     /** Query params to send with the request. */
     @get:JvmName("queryParams") val queryParams: QueryParams,
     /**
@@ -141,12 +146,22 @@ private constructor(
     private val organization: String?,
     private val project: String?,
     private val webhookSecret: String?,
+    private val webSocketLifecycle: WebSocketLifecycle,
 ) {
 
     init {
         if (checkJacksonVersionCompatibility) {
             checkJacksonVersionCompatibility()
         }
+    }
+
+    // Derived client options share the transport owner, including openings and recovering sessions.
+    private class WebSocketLifecycle {
+        val pending =
+            java.util.concurrent.ConcurrentHashMap.newKeySet<
+                java.util.concurrent.CompletableFuture<*>
+            >()
+        val closed = java.util.concurrent.atomic.AtomicBoolean()
     }
 
     /**
@@ -165,6 +180,107 @@ private constructor(
     fun project(): Optional<String> = Optional.ofNullable(project)
 
     fun webhookSecret(): Optional<String> = Optional.ofNullable(webhookSecret)
+
+    @JvmSynthetic
+    internal fun requireWebSocketTransport(): com.openai.core.http.WebSocketClient =
+        originalHttpClient as? com.openai.core.http.WebSocketClient
+            ?: throw UnsupportedOperationException(
+                "The configured HTTP client does not support WebSockets"
+            )
+
+    @JvmSynthetic internal fun isWebSocketClosed(): Boolean = webSocketLifecycle.closed.get()
+
+    @JvmSynthetic
+    internal fun trackWebSocketLifetime(lifetime: java.util.concurrent.CompletableFuture<*>) {
+        webSocketLifecycle.pending.add(lifetime)
+        lifetime.whenComplete { _, _ -> webSocketLifecycle.pending.remove(lifetime) }
+        if (webSocketLifecycle.closed.get()) lifetime.cancel(true)
+    }
+
+    @JvmSynthetic
+    internal fun connectWebSocket(
+        request: com.openai.core.http.HttpRequest,
+        options: RequestOptions,
+        maxMessageBytes: Int,
+        listener: com.openai.core.http.WebSocketClient.Listener,
+    ): java.util.concurrent.CompletableFuture<com.openai.core.http.WebSocketClient.Connection> {
+        val transport = requireWebSocketTransport()
+        check(!webSocketLifecycle.closed.get()) { "Client is closed" }
+        val result =
+            java.util.concurrent.CompletableFuture<
+                com.openai.core.http.WebSocketClient.Connection
+            >()
+        trackWebSocketLifetime(result)
+        if (result.isCancelled) return result
+        val authenticated =
+            try {
+                when {
+                    httpRequestAuthenticator != null ->
+                        httpRequestAuthenticator.authenticateAsync(request)
+                    credential is WorkloadIdentityCredential &&
+                        !isSecurityHeaderRemoved("Authorization") ->
+                        credential.getAuth().getTokenAsync().thenApply {
+                            request
+                                .toBuilder()
+                                .replaceHeaders("Authorization", "Bearer $it")
+                                .build()
+                        }
+                    else -> java.util.concurrent.CompletableFuture.completedFuture(request)
+                }
+            } catch (error: Exception) {
+                result.completeExceptionally(error)
+                return result
+            }
+        val opening =
+            java.util.concurrent.atomic.AtomicReference<
+                java.util.concurrent.CompletableFuture<
+                    com.openai.core.http.WebSocketClient.Connection
+                >
+            >()
+        result.whenComplete { _, _ ->
+            if (result.isCancelled) {
+                authenticated.cancel(true)
+                opening.get()?.cancel(true)
+            }
+        }
+        authenticated.whenComplete { prepared, failure ->
+            if (failure != null) result.completeExceptionally(failure)
+            else if (!result.isDone) {
+                try {
+                    val pending =
+                        transport.connectWebSocket(
+                            prepared,
+                            options.applyDefaults(RequestOptions.from(this)),
+                            maxMessageBytes,
+                            listener,
+                        )
+                    opening.set(pending)
+                    if (result.isCancelled) pending.cancel(true)
+                    pending.whenComplete { connection, error ->
+                        if (error != null) {
+                            if (
+                                httpRequestAuthenticator == null &&
+                                    credential is WorkloadIdentityCredential &&
+                                    !isSecurityHeaderRemoved("Authorization") &&
+                                    error is com.openai.core.http.WebSocketHandshakeException &&
+                                    error.statusCode == 401
+                            ) {
+                                credential
+                                    .getAuth()
+                                    .invalidateToken(
+                                        prepared.headers.values("Authorization").singleOrNull()
+                                    )
+                            }
+                            result.completeExceptionally(error)
+                        } else if (!result.complete(connection)) connection.close()
+                    }
+                } catch (error: Exception) {
+                    result.completeExceptionally(error)
+                }
+            }
+        }
+        return result
+    }
 
     fun toBuilder() = Builder().from(this)
 
@@ -195,6 +311,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var httpClient: HttpClient? = null
+        private var webSocketLifecycle = WebSocketLifecycle()
         private var httpRequestAuthenticator: HttpRequestAuthenticator? = null
         private var checkJacksonVersionCompatibility: Boolean = true
         private var jsonMapper: JsonMapper = jsonMapper()
@@ -202,7 +319,15 @@ private constructor(
         private var sleeper: Sleeper? = null
         private var clock: Clock = Clock.systemUTC()
         private var baseUrl: String? = null
+        // Retain only whether the resolved URL came from residency, not a competing URL value.
+        private var dataResidencySelected: Boolean = false
+        private var explicitBaseUrl: Boolean = false
+        private var explicitDataResidency: Boolean = false
+        private var inheritedAzureEndpoint: Boolean = false
         private var headers: Headers.Builder = Headers.builder()
+        private var defaultUserAgent: String? = null
+        private var disableTelemetry: Boolean? = null
+        private var removedSecurityHeaders: MutableSet<String> = mutableSetOf()
         private var queryParams: QueryParams.Builder = QueryParams.builder()
         private var responseValidation: Boolean = false
         private var timeout: Timeout = Timeout.default()
@@ -221,6 +346,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
             httpClient = clientOptions.originalHttpClient
+            webSocketLifecycle = clientOptions.webSocketLifecycle
             httpRequestAuthenticator = clientOptions.httpRequestAuthenticator
             checkJacksonVersionCompatibility = clientOptions.checkJacksonVersionCompatibility
             jsonMapper = clientOptions.jsonMapper
@@ -228,7 +354,15 @@ private constructor(
             sleeper = clientOptions.sleeper
             clock = clientOptions.clock
             baseUrl = clientOptions.baseUrl
-            headers = clientOptions.headers.toBuilder()
+            dataResidencySelected = clientOptions.dataResidencySelected
+            inheritedAzureEndpoint =
+                clientOptions.baseUrl?.let {
+                    AzureUrlCategory.categorizeBaseUrl(it, AzureUrlPathMode.AUTO).isAzure()
+                } ?: false
+            headers = clientOptions.customHeaders.toBuilder()
+            defaultUserAgent = clientOptions.defaultUserAgent
+            disableTelemetry = clientOptions.disableTelemetry
+            removedSecurityHeaders = clientOptions.removedSecurityHeaders.toMutableSet()
             queryParams = clientOptions.queryParams.toBuilder()
             responseValidation = clientOptions.responseValidation
             timeout = clientOptions.timeout
@@ -255,7 +389,8 @@ private constructor(
          * This class takes ownership of the client and closes it when closed.
          */
         fun httpClient(httpClient: HttpClient) = apply {
-            this.httpClient = PhantomReachableClosingHttpClient(httpClient)
+            this.httpClient = PhantomReachableClosingHttpClient.wrap(httpClient)
+            webSocketLifecycle = WebSocketLifecycle()
         }
 
         /**
@@ -329,10 +464,48 @@ private constructor(
          *
          * Defaults to the production environment: `https://api.openai.com/v1`.
          */
-        fun baseUrl(baseUrl: String?) = apply { this.baseUrl = baseUrl }
+        fun baseUrl(baseUrl: String?) = apply {
+            require(!explicitDataResidency) { "baseUrl and dataResidency are mutually exclusive" }
+            this.baseUrl = baseUrl
+            dataResidencySelected = false
+            explicitBaseUrl = true
+        }
 
         /** Alias for calling [Builder.baseUrl] with `baseUrl.orElse(null)`. */
         fun baseUrl(baseUrl: Optional<String>) = baseUrl(baseUrl.getOrNull())
+
+        /**
+         * Selects an OpenAI endpoint for request-scoped data and compute residency.
+         *
+         * Cannot be combined with [baseUrl] on the same builder or with third-party provider
+         * configuration. An inherited or environment-derived URL may be replaced. A null value
+         * leaves the endpoint unchanged. Availability is determined by the API.
+         */
+        fun dataResidency(dataResidency: DataResidency?) = apply {
+            if (dataResidency != null) {
+                require(!explicitBaseUrl) { "baseUrl and dataResidency are mutually exclusive" }
+                baseUrl = dataResidency.baseUrl
+                dataResidencySelected = true
+                explicitDataResidency = true
+            }
+        }
+
+        /** Alias for calling [dataResidency] with `dataResidency.orElse(null)`. */
+        fun dataResidency(dataResidency: Optional<DataResidency>) =
+            dataResidency(dataResidency.getOrNull())
+
+        /**
+         * Disables SDK-generated `X-Stainless-*` and `User-Agent` headers. Explicit caller headers
+         * are preserved. This overrides the `openai.disableTelemetry` system property, which is
+         * read when building a new client and defaults to `false`. Clones retain the resolved
+         * value.
+         */
+        fun disableTelemetry(disableTelemetry: Boolean) = apply {
+            this.disableTelemetry = disableTelemetry
+        }
+
+        @JvmSynthetic
+        internal fun defaultUserAgent(userAgent: String) = apply { defaultUserAgent = userAgent }
 
         /**
          * Whether to call `validate` on every response before returning it.
@@ -442,11 +615,13 @@ private constructor(
 
         fun headers(headers: Headers) = apply {
             this.headers.clear()
+            defaultUserAgent = null
             putAllHeaders(headers)
         }
 
         fun headers(headers: Map<String, Iterable<String>>) = apply {
             this.headers.clear()
+            defaultUserAgent = null
             putAllHeaders(headers)
         }
 
@@ -460,21 +635,34 @@ private constructor(
             this.headers.putAll(headers)
         }
 
-        fun replaceHeaders(name: String, value: String) = apply { headers.replace(name, value) }
+        fun replaceHeaders(name: String, value: String) = replaceHeaders(name, listOf(value))
 
         fun replaceHeaders(name: String, values: Iterable<String>) = apply {
-            headers.replace(name, values)
+            val replacement = values.toList()
+            if (replacement.isEmpty()) {
+                removeHeaders(name)
+            } else {
+                headers.replace(name, replacement)
+                if (name.equals("User-Agent", ignoreCase = true)) defaultUserAgent = null
+            }
         }
 
-        fun replaceAllHeaders(headers: Headers) = apply { this.headers.replaceAll(headers) }
+        fun replaceAllHeaders(headers: Headers) = apply {
+            headers.names().forEach { replaceHeaders(it, headers.values(it)) }
+        }
 
         fun replaceAllHeaders(headers: Map<String, Iterable<String>>) = apply {
-            this.headers.replaceAll(headers)
+            headers.forEach(::replaceHeaders)
         }
 
-        fun removeHeaders(name: String) = apply { headers.remove(name) }
+        fun removeHeaders(name: String) = apply {
+            headers.remove(name)
+            if (name.equals("User-Agent", ignoreCase = true)) defaultUserAgent = null
+            // Security headers are applied per route, after this builder has finished.
+            removedSecurityHeaders.add(name.lowercase(Locale.ROOT))
+        }
 
-        fun removeAllHeaders(names: Set<String>) = apply { headers.removeAll(names) }
+        fun removeAllHeaders(names: Set<String>) = apply { names.forEach(::removeHeaders) }
 
         fun queryParams(queryParams: QueryParams) = apply {
             this.queryParams.clear()
@@ -583,7 +771,11 @@ private constructor(
         fun fromEnv() = apply {
             logLevel(LogLevel.fromEnv())
             (System.getProperty("openai.baseUrl") ?: System.getenv("OPENAI_BASE_URL"))?.let {
-                baseUrl(it)
+                if (!dataResidencySelected) {
+                    inheritedAzureEndpoint =
+                        AzureUrlCategory.categorizeBaseUrl(it, AzureUrlPathMode.AUTO).isAzure()
+                    baseUrl = it
+                }
             }
 
             val openAIKey = System.getProperty("openai.apiKey") ?: System.getenv("OPENAI_API_KEY")
@@ -640,6 +832,16 @@ private constructor(
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ClientOptions {
+            require(
+                !dataResidencySelected ||
+                    (!inheritedAzureEndpoint &&
+                        httpRequestAuthenticator == null &&
+                        credential !is AzureApiKeyCredential &&
+                        azureServiceVersion == null &&
+                        azureUrlPathMode == AzureUrlPathMode.AUTO)
+            ) {
+                "dataResidency cannot be combined with third-party provider configuration"
+            }
             val httpClient = checkRequired("httpClient", httpClient)
             val streamHandlerExecutor =
                 streamHandlerExecutor
@@ -663,14 +865,21 @@ private constructor(
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
-            headers.put("X-Stainless-Lang", "java")
-            headers.put("X-Stainless-Arch", getOsArch())
-            headers.put("X-Stainless-OS", getOsName())
-            headers.put("X-Stainless-OS-Version", getOsVersion())
-            headers.put("X-Stainless-Package-Version", getPackageVersion())
-            headers.put("X-Stainless-Runtime", "JRE")
-            headers.put("X-Stainless-Runtime-Version", getJavaVersion())
-            headers.put("X-Stainless-Kotlin-Version", KotlinVersion.CURRENT.toString())
+            val disableTelemetry =
+                disableTelemetry ?: java.lang.Boolean.getBoolean("openai.disableTelemetry")
+            if (!disableTelemetry) {
+                headers.put("X-Stainless-Lang", "java")
+                headers.put("X-Stainless-Arch", getOsArch())
+                headers.put("X-Stainless-OS", getOsName())
+                headers.put("X-Stainless-OS-Version", getOsVersion())
+                headers.put("X-Stainless-Package-Version", getPackageVersion())
+                headers.put("X-Stainless-Runtime", "JRE")
+                headers.put("X-Stainless-Runtime-Version", getJavaVersion())
+                headers.put("X-Stainless-Kotlin-Version", KotlinVersion.CURRENT.toString())
+                defaultUserAgent?.let { headers.put("User-Agent", it) }
+            }
+            // Honor explicit removals before applying caller-supplied values.
+            headers.removeAll(removedSecurityHeaders)
             // We replace after all the default headers to allow end-users to overwrite them.
             headers.replaceAll(this.headers.build())
 
@@ -707,6 +916,7 @@ private constructor(
                     WorkloadIdentityHttpClient(
                         delegate = httpClient,
                         workloadIdentityAuth = effectiveWorkloadIdentityAuth,
+                        authorizationRemoved = "authorization" in removedSecurityHeaders,
                     )
 
             val loggingHttpClient =
@@ -742,7 +952,12 @@ private constructor(
                 sleeper,
                 clock,
                 baseUrl,
+                dataResidencySelected,
                 headers.build(),
+                removedSecurityHeaders.toSet(),
+                this.headers.build(),
+                defaultUserAgent,
+                disableTelemetry,
                 queryParams.build(),
                 responseValidation,
                 timeout,
@@ -756,6 +971,7 @@ private constructor(
                 organization,
                 project,
                 webhookSecret,
+                webSocketLifecycle,
             )
         }
     }
@@ -771,10 +987,17 @@ private constructor(
      * that needs to aggressively release unused resources, then you may call this method.
      */
     fun close() {
+        webSocketLifecycle.closed.set(true)
+        webSocketLifecycle.pending.forEach { it.cancel(true) }
+        webSocketLifecycle.pending.clear()
         httpClient.close()
         (streamHandlerExecutor as? ExecutorService)?.shutdown()
         sleeper.close()
     }
+
+    @JvmSynthetic
+    internal fun isSecurityHeaderRemoved(name: String): Boolean =
+        name.lowercase(Locale.ROOT) in removedSecurityHeaders
 
     @JvmSynthetic
     internal fun securityHeaders(security: SecurityOptions): Headers {
@@ -786,10 +1009,14 @@ private constructor(
         if (security.bearerAuth) {
             when {
                 credential is BearerTokenCredential -> {
-                    val token = credential.token()
-                    if (!token.isEmpty()) {
-                        headers.replace("Authorization", "Bearer $token")
+                    if (isSecurityHeaderRemoved("Authorization")) {
                         isSatisfied = true
+                    } else {
+                        val token = credential.token()
+                        if (!token.isEmpty()) {
+                            headers.replace("Authorization", "Bearer $token")
+                            isSatisfied = true
+                        }
                     }
                 }
                 credential is AzureApiKeyCredential -> {
@@ -824,7 +1051,7 @@ private constructor(
             )
         }
 
-        return headers.build()
+        return headers.removeAll(removedSecurityHeaders).build()
     }
 }
 

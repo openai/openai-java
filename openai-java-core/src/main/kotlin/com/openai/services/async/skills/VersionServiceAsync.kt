@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.skills
 
@@ -30,7 +30,8 @@ interface VersionServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VersionServiceAsync
 
-    fun content(): ContentServiceAsync
+    fun content(): ContentServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create a new immutable skill version. */
     fun create(skillId: String): CompletableFuture<SkillVersion> =
@@ -159,7 +160,10 @@ interface VersionServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): VersionServiceAsync.WithRawResponse
 
-        fun content(): ContentServiceAsync.WithRawResponse
+        fun content(): ContentServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /skills/{skill_id}/versions`, but is otherwise the

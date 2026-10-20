@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.usage
 
@@ -23,8 +23,16 @@ internal class UsageCompletionsResponseTest {
                                 .numModelRequests(0L)
                                 .outputTokens(0L)
                                 .apiKeyId("api_key_id")
+                                .apiSource(
+                                    UsageCompletionsResponse.Data.Result
+                                        .OrganizationUsageCompletionsResult
+                                        .ApiSource
+                                        .AGENTS_API
+                                )
                                 .batch(true)
                                 .inputAudioTokens(0L)
+                                .inputCacheWrite12hTokens(0L)
+                                .inputCacheWrite30mTokens(0L)
                                 .inputCacheWriteTokens(0L)
                                 .inputCachedAudioTokens(0L)
                                 .inputCachedImageTokens(0L)
@@ -60,8 +68,16 @@ internal class UsageCompletionsResponseTest {
                             .numModelRequests(0L)
                             .outputTokens(0L)
                             .apiKeyId("api_key_id")
+                            .apiSource(
+                                UsageCompletionsResponse.Data.Result
+                                    .OrganizationUsageCompletionsResult
+                                    .ApiSource
+                                    .AGENTS_API
+                            )
                             .batch(true)
                             .inputAudioTokens(0L)
+                            .inputCacheWrite12hTokens(0L)
+                            .inputCacheWrite30mTokens(0L)
                             .inputCacheWriteTokens(0L)
                             .inputCachedAudioTokens(0L)
                             .inputCachedImageTokens(0L)
@@ -101,8 +117,16 @@ internal class UsageCompletionsResponseTest {
                                 .numModelRequests(0L)
                                 .outputTokens(0L)
                                 .apiKeyId("api_key_id")
+                                .apiSource(
+                                    UsageCompletionsResponse.Data.Result
+                                        .OrganizationUsageCompletionsResult
+                                        .ApiSource
+                                        .AGENTS_API
+                                )
                                 .batch(true)
                                 .inputAudioTokens(0L)
+                                .inputCacheWrite12hTokens(0L)
+                                .inputCacheWrite30mTokens(0L)
                                 .inputCacheWriteTokens(0L)
                                 .inputCachedAudioTokens(0L)
                                 .inputCachedImageTokens(0L)

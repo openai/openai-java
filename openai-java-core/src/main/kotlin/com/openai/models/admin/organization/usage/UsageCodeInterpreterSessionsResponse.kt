@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.usage
 
@@ -15,12 +15,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -102,6 +104,30 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "data" to this.data,
+            "has_more" to this.hasMore,
+            "next_page" to this.nextPage,
+            "object" to this.object_,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -373,6 +399,30 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "end_time" to this.endTime,
+                "object" to this.object_,
+                "results" to this.results,
+                "start_time" to this.startTime,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1291,7 +1341,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Result: $json")
+                    throw OpenAIInvalidDataException("Unknown Result")
                 }
             }
 
@@ -1444,8 +1494,11 @@ private constructor(
                 private val object_: JsonValue,
                 private val outputTokens: JsonField<Long>,
                 private val apiKeyId: JsonField<String>,
+                private val apiSource: JsonField<ApiSource>,
                 private val batch: JsonField<Boolean>,
                 private val inputAudioTokens: JsonField<Long>,
+                private val inputCacheWrite12hTokens: JsonField<Long>,
+                private val inputCacheWrite30mTokens: JsonField<Long>,
                 private val inputCacheWriteTokens: JsonField<Long>,
                 private val inputCachedAudioTokens: JsonField<Long>,
                 private val inputCachedImageTokens: JsonField<Long>,
@@ -1479,12 +1532,21 @@ private constructor(
                     @JsonProperty("api_key_id")
                     @ExcludeMissing
                     apiKeyId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("api_source")
+                    @ExcludeMissing
+                    apiSource: JsonField<ApiSource> = JsonMissing.of(),
                     @JsonProperty("batch")
                     @ExcludeMissing
                     batch: JsonField<Boolean> = JsonMissing.of(),
                     @JsonProperty("input_audio_tokens")
                     @ExcludeMissing
                     inputAudioTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_cache_write_12h_tokens")
+                    @ExcludeMissing
+                    inputCacheWrite12hTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("input_cache_write_30m_tokens")
+                    @ExcludeMissing
+                    inputCacheWrite30mTokens: JsonField<Long> = JsonMissing.of(),
                     @JsonProperty("input_cache_write_tokens")
                     @ExcludeMissing
                     inputCacheWriteTokens: JsonField<Long> = JsonMissing.of(),
@@ -1536,8 +1598,11 @@ private constructor(
                     object_,
                     outputTokens,
                     apiKeyId,
+                    apiSource,
                     batch,
                     inputAudioTokens,
+                    inputCacheWrite12hTokens,
+                    inputCacheWrite30mTokens,
                     inputCacheWriteTokens,
                     inputCachedAudioTokens,
                     inputCachedImageTokens,
@@ -1607,6 +1672,17 @@ private constructor(
                 fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
 
                 /**
+                 * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                 * activity and `unlabeled` includes all records without published source
+                 * attribution, including historical and unknown origins. Unlabeled does not imply
+                 * direct API usage. Without source grouping, this field is null.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun apiSource(): Optional<ApiSource> = apiSource.getOptional("api_source")
+
+                /**
                  * When `group_by=batch`, this field tells whether the grouped usage result is batch
                  * or not.
                  *
@@ -1625,7 +1701,28 @@ private constructor(
                     inputAudioTokens.getOptional("input_audio_tokens")
 
                 /**
-                 * The aggregated number of input tokens written to the cache.
+                 * The aggregated number of input tokens written to the cache with a 12-hour
+                 * retention period.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputCacheWrite12hTokens(): Optional<Long> =
+                    inputCacheWrite12hTokens.getOptional("input_cache_write_12h_tokens")
+
+                /**
+                 * The aggregated number of input tokens written to the cache with a 30-minute
+                 * retention period. May be absent or null for older responses.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun inputCacheWrite30mTokens(): Optional<Long> =
+                    inputCacheWrite30mTokens.getOptional("input_cache_write_30m_tokens")
+
+                /**
+                 * The aggregated number of input tokens written to the cache across 30-minute and
+                 * 12-hour retention periods.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -1803,6 +1900,16 @@ private constructor(
                 fun _apiKeyId(): JsonField<String> = apiKeyId
 
                 /**
+                 * Returns the raw JSON value of [apiSource].
+                 *
+                 * Unlike [apiSource], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("api_source")
+                @ExcludeMissing
+                fun _apiSource(): JsonField<ApiSource> = apiSource
+
+                /**
                  * Returns the raw JSON value of [batch].
                  *
                  * Unlike [batch], this method doesn't throw if the JSON field has an unexpected
@@ -1819,6 +1926,26 @@ private constructor(
                 @JsonProperty("input_audio_tokens")
                 @ExcludeMissing
                 fun _inputAudioTokens(): JsonField<Long> = inputAudioTokens
+
+                /**
+                 * Returns the raw JSON value of [inputCacheWrite12hTokens].
+                 *
+                 * Unlike [inputCacheWrite12hTokens], this method doesn't throw if the JSON field
+                 * has an unexpected type.
+                 */
+                @JsonProperty("input_cache_write_12h_tokens")
+                @ExcludeMissing
+                fun _inputCacheWrite12hTokens(): JsonField<Long> = inputCacheWrite12hTokens
+
+                /**
+                 * Returns the raw JSON value of [inputCacheWrite30mTokens].
+                 *
+                 * Unlike [inputCacheWrite30mTokens], this method doesn't throw if the JSON field
+                 * has an unexpected type.
+                 */
+                @JsonProperty("input_cache_write_30m_tokens")
+                @ExcludeMissing
+                fun _inputCacheWrite30mTokens(): JsonField<Long> = inputCacheWrite30mTokens
 
                 /**
                  * Returns the raw JSON value of [inputCacheWriteTokens].
@@ -1971,6 +2098,53 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "input_tokens" to this.inputTokens,
+                        "num_model_requests" to this.numModelRequests,
+                        "object" to this.object_,
+                        "output_tokens" to this.outputTokens,
+                        "api_key_id" to this.apiKeyId,
+                        "api_source" to this.apiSource,
+                        "batch" to this.batch,
+                        "input_audio_tokens" to this.inputAudioTokens,
+                        "input_cache_write_12h_tokens" to this.inputCacheWrite12hTokens,
+                        "input_cache_write_30m_tokens" to this.inputCacheWrite30mTokens,
+                        "input_cache_write_tokens" to this.inputCacheWriteTokens,
+                        "input_cached_audio_tokens" to this.inputCachedAudioTokens,
+                        "input_cached_image_tokens" to this.inputCachedImageTokens,
+                        "input_cached_text_tokens" to this.inputCachedTextTokens,
+                        "input_cached_tokens" to this.inputCachedTokens,
+                        "input_image_tokens" to this.inputImageTokens,
+                        "input_text_tokens" to this.inputTextTokens,
+                        "input_uncached_tokens" to this.inputUncachedTokens,
+                        "model" to this.model,
+                        "output_audio_tokens" to this.outputAudioTokens,
+                        "output_image_tokens" to this.outputImageTokens,
+                        "output_text_tokens" to this.outputTextTokens,
+                        "project_id" to this.projectId,
+                        "service_tier" to this.serviceTier,
+                        "user_id" to this.userId,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -2003,8 +2177,11 @@ private constructor(
                         JsonValue.from("organization.usage.completions.result")
                     private var outputTokens: JsonField<Long>? = null
                     private var apiKeyId: JsonField<String> = JsonMissing.of()
+                    private var apiSource: JsonField<ApiSource> = JsonMissing.of()
                     private var batch: JsonField<Boolean> = JsonMissing.of()
                     private var inputAudioTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputCacheWrite12hTokens: JsonField<Long> = JsonMissing.of()
+                    private var inputCacheWrite30mTokens: JsonField<Long> = JsonMissing.of()
                     private var inputCacheWriteTokens: JsonField<Long> = JsonMissing.of()
                     private var inputCachedAudioTokens: JsonField<Long> = JsonMissing.of()
                     private var inputCachedImageTokens: JsonField<Long> = JsonMissing.of()
@@ -2031,8 +2208,13 @@ private constructor(
                         object_ = organizationUsageCompletionsResult.object_
                         outputTokens = organizationUsageCompletionsResult.outputTokens
                         apiKeyId = organizationUsageCompletionsResult.apiKeyId
+                        apiSource = organizationUsageCompletionsResult.apiSource
                         batch = organizationUsageCompletionsResult.batch
                         inputAudioTokens = organizationUsageCompletionsResult.inputAudioTokens
+                        inputCacheWrite12hTokens =
+                            organizationUsageCompletionsResult.inputCacheWrite12hTokens
+                        inputCacheWrite30mTokens =
+                            organizationUsageCompletionsResult.inputCacheWrite30mTokens
                         inputCacheWriteTokens =
                             organizationUsageCompletionsResult.inputCacheWriteTokens
                         inputCachedAudioTokens =
@@ -2140,6 +2322,29 @@ private constructor(
                     fun apiKeyId(apiKeyId: JsonField<String>) = apply { this.apiKeyId = apiKeyId }
 
                     /**
+                     * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                     * activity and `unlabeled` includes all records without published source
+                     * attribution, including historical and unknown origins. Unlabeled does not
+                     * imply direct API usage. Without source grouping, this field is null.
+                     */
+                    fun apiSource(apiSource: ApiSource?) =
+                        apiSource(JsonField.ofNullable(apiSource))
+
+                    /** Alias for calling [Builder.apiSource] with `apiSource.orElse(null)`. */
+                    fun apiSource(apiSource: Optional<ApiSource>) = apiSource(apiSource.getOrNull())
+
+                    /**
+                     * Sets [Builder.apiSource] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.apiSource] with a well-typed [ApiSource]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun apiSource(apiSource: JsonField<ApiSource>) = apply {
+                        this.apiSource = apiSource
+                    }
+
+                    /**
                      * When `group_by=batch`, this field tells whether the grouped usage result is
                      * batch or not.
                      */
@@ -2179,7 +2384,63 @@ private constructor(
                         this.inputAudioTokens = inputAudioTokens
                     }
 
-                    /** The aggregated number of input tokens written to the cache. */
+                    /**
+                     * The aggregated number of input tokens written to the cache with a 12-hour
+                     * retention period.
+                     */
+                    fun inputCacheWrite12hTokens(inputCacheWrite12hTokens: Long) =
+                        inputCacheWrite12hTokens(JsonField.of(inputCacheWrite12hTokens))
+
+                    /**
+                     * Sets [Builder.inputCacheWrite12hTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputCacheWrite12hTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputCacheWrite12hTokens(inputCacheWrite12hTokens: JsonField<Long>) =
+                        apply {
+                            this.inputCacheWrite12hTokens = inputCacheWrite12hTokens
+                        }
+
+                    /**
+                     * The aggregated number of input tokens written to the cache with a 30-minute
+                     * retention period. May be absent or null for older responses.
+                     */
+                    fun inputCacheWrite30mTokens(inputCacheWrite30mTokens: Long?) =
+                        inputCacheWrite30mTokens(JsonField.ofNullable(inputCacheWrite30mTokens))
+
+                    /**
+                     * Alias for [Builder.inputCacheWrite30mTokens].
+                     *
+                     * This unboxed primitive overload exists for backwards compatibility.
+                     */
+                    fun inputCacheWrite30mTokens(inputCacheWrite30mTokens: Long) =
+                        inputCacheWrite30mTokens(inputCacheWrite30mTokens as Long?)
+
+                    /**
+                     * Alias for calling [Builder.inputCacheWrite30mTokens] with
+                     * `inputCacheWrite30mTokens.orElse(null)`.
+                     */
+                    fun inputCacheWrite30mTokens(inputCacheWrite30mTokens: Optional<Long>) =
+                        inputCacheWrite30mTokens(inputCacheWrite30mTokens.getOrNull())
+
+                    /**
+                     * Sets [Builder.inputCacheWrite30mTokens] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.inputCacheWrite30mTokens] with a well-typed
+                     * [Long] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun inputCacheWrite30mTokens(inputCacheWrite30mTokens: JsonField<Long>) =
+                        apply {
+                            this.inputCacheWrite30mTokens = inputCacheWrite30mTokens
+                        }
+
+                    /**
+                     * The aggregated number of input tokens written to the cache across 30-minute
+                     * and 12-hour retention periods.
+                     */
                     fun inputCacheWriteTokens(inputCacheWriteTokens: Long) =
                         inputCacheWriteTokens(JsonField.of(inputCacheWriteTokens))
 
@@ -2475,8 +2736,11 @@ private constructor(
                             object_,
                             checkRequired("outputTokens", outputTokens),
                             apiKeyId,
+                            apiSource,
                             batch,
                             inputAudioTokens,
+                            inputCacheWrite12hTokens,
+                            inputCacheWrite30mTokens,
                             inputCacheWriteTokens,
                             inputCachedAudioTokens,
                             inputCachedImageTokens,
@@ -2522,8 +2786,11 @@ private constructor(
                     }
                     outputTokens()
                     apiKeyId()
+                    apiSource().ifPresent { it.validate() }
                     batch()
                     inputAudioTokens()
+                    inputCacheWrite12hTokens()
+                    inputCacheWrite30mTokens()
                     inputCacheWriteTokens()
                     inputCachedAudioTokens()
                     inputCachedImageTokens()
@@ -2566,8 +2833,11 @@ private constructor(
                         } +
                         (if (outputTokens.asKnown().isPresent) 1 else 0) +
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
+                        (apiSource.asKnown().getOrNull()?.validity() ?: 0) +
                         (if (batch.asKnown().isPresent) 1 else 0) +
                         (if (inputAudioTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputCacheWrite12hTokens.asKnown().isPresent) 1 else 0) +
+                        (if (inputCacheWrite30mTokens.asKnown().isPresent) 1 else 0) +
                         (if (inputCacheWriteTokens.asKnown().isPresent) 1 else 0) +
                         (if (inputCachedAudioTokens.asKnown().isPresent) 1 else 0) +
                         (if (inputCachedImageTokens.asKnown().isPresent) 1 else 0) +
@@ -2584,6 +2854,157 @@ private constructor(
                         (if (serviceTier.asKnown().isPresent) 1 else 0) +
                         (if (userId.asKnown().isPresent) 1 else 0)
 
+                /**
+                 * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                 * activity and `unlabeled` includes all records without published source
+                 * attribution, including historical and unknown origins. Unlabeled does not imply
+                 * direct API usage. Without source grouping, this field is null.
+                 */
+                class ApiSource
+                @JsonCreator
+                private constructor(private val value: JsonField<String>) : Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val AGENTS_API = of("agents_api")
+
+                        @JvmField val UNLABELED = of("unlabeled")
+
+                        @JvmStatic fun of(value: String) = ApiSource(JsonField.of(value))
+                    }
+
+                    /** An enum containing [ApiSource]'s known values. */
+                    enum class Known {
+                        AGENTS_API,
+                        UNLABELED,
+                    }
+
+                    /**
+                     * An enum containing [ApiSource]'s known values, as well as an [_UNKNOWN]
+                     * member.
+                     *
+                     * An instance of [ApiSource] can contain an unknown value in a couple of cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        AGENTS_API,
+                        UNLABELED,
+                        /**
+                         * An enum member indicating that [ApiSource] was instantiated with an
+                         * unknown value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            AGENTS_API -> Value.AGENTS_API
+                            UNLABELED -> Value.UNLABELED
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            AGENTS_API -> Known.AGENTS_API
+                            UNLABELED -> Known.UNLABELED
+                            else -> throw OpenAIInvalidDataException("Unknown ApiSource: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): ApiSource = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is ApiSource && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
+
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
@@ -2595,8 +3016,11 @@ private constructor(
                         object_ == other.object_ &&
                         outputTokens == other.outputTokens &&
                         apiKeyId == other.apiKeyId &&
+                        apiSource == other.apiSource &&
                         batch == other.batch &&
                         inputAudioTokens == other.inputAudioTokens &&
+                        inputCacheWrite12hTokens == other.inputCacheWrite12hTokens &&
+                        inputCacheWrite30mTokens == other.inputCacheWrite30mTokens &&
                         inputCacheWriteTokens == other.inputCacheWriteTokens &&
                         inputCachedAudioTokens == other.inputCachedAudioTokens &&
                         inputCachedImageTokens == other.inputCachedImageTokens &&
@@ -2622,8 +3046,11 @@ private constructor(
                         object_,
                         outputTokens,
                         apiKeyId,
+                        apiSource,
                         batch,
                         inputAudioTokens,
+                        inputCacheWrite12hTokens,
+                        inputCacheWrite30mTokens,
                         inputCacheWriteTokens,
                         inputCachedAudioTokens,
                         inputCachedImageTokens,
@@ -2646,7 +3073,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationUsageCompletionsResult{inputTokens=$inputTokens, numModelRequests=$numModelRequests, object_=$object_, outputTokens=$outputTokens, apiKeyId=$apiKeyId, batch=$batch, inputAudioTokens=$inputAudioTokens, inputCacheWriteTokens=$inputCacheWriteTokens, inputCachedAudioTokens=$inputCachedAudioTokens, inputCachedImageTokens=$inputCachedImageTokens, inputCachedTextTokens=$inputCachedTextTokens, inputCachedTokens=$inputCachedTokens, inputImageTokens=$inputImageTokens, inputTextTokens=$inputTextTokens, inputUncachedTokens=$inputUncachedTokens, model=$model, outputAudioTokens=$outputAudioTokens, outputImageTokens=$outputImageTokens, outputTextTokens=$outputTextTokens, projectId=$projectId, serviceTier=$serviceTier, userId=$userId, additionalProperties=$additionalProperties}"
+                    "OrganizationUsageCompletionsResult{inputTokens=$inputTokens, numModelRequests=$numModelRequests, object_=$object_, outputTokens=$outputTokens, apiKeyId=$apiKeyId, apiSource=$apiSource, batch=$batch, inputAudioTokens=$inputAudioTokens, inputCacheWrite12hTokens=$inputCacheWrite12hTokens, inputCacheWrite30mTokens=$inputCacheWrite30mTokens, inputCacheWriteTokens=$inputCacheWriteTokens, inputCachedAudioTokens=$inputCachedAudioTokens, inputCachedImageTokens=$inputCachedImageTokens, inputCachedTextTokens=$inputCachedTextTokens, inputCachedTokens=$inputCachedTokens, inputImageTokens=$inputImageTokens, inputTextTokens=$inputTextTokens, inputUncachedTokens=$inputUncachedTokens, model=$model, outputAudioTokens=$outputAudioTokens, outputImageTokens=$outputImageTokens, outputTextTokens=$outputTextTokens, projectId=$projectId, serviceTier=$serviceTier, userId=$userId, additionalProperties=$additionalProperties}"
             }
 
             /** The aggregated embeddings usage details of the specific time bucket. */
@@ -2821,6 +3248,35 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "input_tokens" to this.inputTokens,
+                        "num_model_requests" to this.numModelRequests,
+                        "object" to this.object_,
+                        "api_key_id" to this.apiKeyId,
+                        "model" to this.model,
+                        "project_id" to this.projectId,
+                        "user_id" to this.userId,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -3301,6 +3757,35 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "input_tokens" to this.inputTokens,
+                        "num_model_requests" to this.numModelRequests,
+                        "object" to this.object_,
+                        "api_key_id" to this.apiKeyId,
+                        "model" to this.model,
+                        "project_id" to this.projectId,
+                        "user_id" to this.userId,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -3823,6 +4308,37 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "images" to this.images,
+                        "num_model_requests" to this.numModelRequests,
+                        "object" to this.object_,
+                        "api_key_id" to this.apiKeyId,
+                        "model" to this.model,
+                        "project_id" to this.projectId,
+                        "size" to this.size,
+                        "source" to this.source,
+                        "user_id" to this.userId,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -4351,6 +4867,35 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "characters" to this.characters,
+                        "num_model_requests" to this.numModelRequests,
+                        "object" to this.object_,
+                        "api_key_id" to this.apiKeyId,
+                        "model" to this.model,
+                        "project_id" to this.projectId,
+                        "user_id" to this.userId,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -4829,6 +5374,35 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "num_model_requests" to this.numModelRequests,
+                        "object" to this.object_,
+                        "seconds" to this.seconds,
+                        "api_key_id" to this.apiKeyId,
+                        "model" to this.model,
+                        "project_id" to this.projectId,
+                        "user_id" to this.userId,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -5220,6 +5794,31 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "object" to this.object_,
+                        "usage_bytes" to this.usageBytes,
+                        "project_id" to this.projectId,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -5501,6 +6100,31 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "num_sessions" to this.numSessions,
+                        "object" to this.object_,
+                        "project_id" to this.projectId,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -5869,6 +6493,34 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "num_requests" to this.numRequests,
+                        "object" to this.object_,
+                        "api_key_id" to this.apiKeyId,
+                        "project_id" to this.projectId,
+                        "user_id" to this.userId,
+                        "vector_store_id" to this.vectorStoreId,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -6167,6 +6819,7 @@ private constructor(
                 private val numRequests: JsonField<Long>,
                 private val object_: JsonValue,
                 private val apiKeyId: JsonField<String>,
+                private val apiSource: JsonField<ApiSource>,
                 private val contextLevel: JsonField<String>,
                 private val model: JsonField<String>,
                 private val projectId: JsonField<String>,
@@ -6186,6 +6839,9 @@ private constructor(
                     @JsonProperty("api_key_id")
                     @ExcludeMissing
                     apiKeyId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("api_source")
+                    @ExcludeMissing
+                    apiSource: JsonField<ApiSource> = JsonMissing.of(),
                     @JsonProperty("context_level")
                     @ExcludeMissing
                     contextLevel: JsonField<String> = JsonMissing.of(),
@@ -6203,6 +6859,7 @@ private constructor(
                     numRequests,
                     object_,
                     apiKeyId,
+                    apiSource,
                     contextLevel,
                     model,
                     projectId,
@@ -6247,6 +6904,17 @@ private constructor(
                  *   if the server responded with an unexpected value).
                  */
                 fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
+
+                /**
+                 * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                 * activity and `unlabeled` includes all records without published source
+                 * attribution, including historical and unknown origins. Unlabeled does not imply
+                 * direct API usage. Without source grouping, this field is null.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun apiSource(): Optional<ApiSource> = apiSource.getOptional("api_source")
 
                 /**
                  * When `group_by=context_level`, this field provides the search context size of the
@@ -6315,6 +6983,16 @@ private constructor(
                 fun _apiKeyId(): JsonField<String> = apiKeyId
 
                 /**
+                 * Returns the raw JSON value of [apiSource].
+                 *
+                 * Unlike [apiSource], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("api_source")
+                @ExcludeMissing
+                fun _apiSource(): JsonField<ApiSource> = apiSource
+
+                /**
                  * Returns the raw JSON value of [contextLevel].
                  *
                  * Unlike [contextLevel], this method doesn't throw if the JSON field has an
@@ -6355,6 +7033,37 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "num_model_requests" to this.numModelRequests,
+                        "num_requests" to this.numRequests,
+                        "object" to this.object_,
+                        "api_key_id" to this.apiKeyId,
+                        "api_source" to this.apiSource,
+                        "context_level" to this.contextLevel,
+                        "model" to this.model,
+                        "project_id" to this.projectId,
+                        "user_id" to this.userId,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -6385,6 +7094,7 @@ private constructor(
                     private var object_: JsonValue =
                         JsonValue.from("organization.usage.web_searches.result")
                     private var apiKeyId: JsonField<String> = JsonMissing.of()
+                    private var apiSource: JsonField<ApiSource> = JsonMissing.of()
                     private var contextLevel: JsonField<String> = JsonMissing.of()
                     private var model: JsonField<String> = JsonMissing.of()
                     private var projectId: JsonField<String> = JsonMissing.of()
@@ -6399,6 +7109,7 @@ private constructor(
                         numRequests = organizationUsageWebSearchesResult.numRequests
                         object_ = organizationUsageWebSearchesResult.object_
                         apiKeyId = organizationUsageWebSearchesResult.apiKeyId
+                        apiSource = organizationUsageWebSearchesResult.apiSource
                         contextLevel = organizationUsageWebSearchesResult.contextLevel
                         model = organizationUsageWebSearchesResult.model
                         projectId = organizationUsageWebSearchesResult.projectId
@@ -6467,6 +7178,29 @@ private constructor(
                      * not yet supported value.
                      */
                     fun apiKeyId(apiKeyId: JsonField<String>) = apply { this.apiKeyId = apiKeyId }
+
+                    /**
+                     * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                     * activity and `unlabeled` includes all records without published source
+                     * attribution, including historical and unknown origins. Unlabeled does not
+                     * imply direct API usage. Without source grouping, this field is null.
+                     */
+                    fun apiSource(apiSource: ApiSource?) =
+                        apiSource(JsonField.ofNullable(apiSource))
+
+                    /** Alias for calling [Builder.apiSource] with `apiSource.orElse(null)`. */
+                    fun apiSource(apiSource: Optional<ApiSource>) = apiSource(apiSource.getOrNull())
+
+                    /**
+                     * Sets [Builder.apiSource] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.apiSource] with a well-typed [ApiSource]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun apiSource(apiSource: JsonField<ApiSource>) = apply {
+                        this.apiSource = apiSource
+                    }
 
                     /**
                      * When `group_by=context_level`, this field provides the search context size of
@@ -6589,6 +7323,7 @@ private constructor(
                             checkRequired("numRequests", numRequests),
                             object_,
                             apiKeyId,
+                            apiSource,
                             contextLevel,
                             model,
                             projectId,
@@ -6622,6 +7357,7 @@ private constructor(
                         }
                     }
                     apiKeyId()
+                    apiSource().ifPresent { it.validate() }
                     contextLevel()
                     model()
                     projectId()
@@ -6652,10 +7388,162 @@ private constructor(
                             else 0
                         } +
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
+                        (apiSource.asKnown().getOrNull()?.validity() ?: 0) +
                         (if (contextLevel.asKnown().isPresent) 1 else 0) +
                         (if (model.asKnown().isPresent) 1 else 0) +
                         (if (projectId.asKnown().isPresent) 1 else 0) +
                         (if (userId.asKnown().isPresent) 1 else 0)
+
+                /**
+                 * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                 * activity and `unlabeled` includes all records without published source
+                 * attribution, including historical and unknown origins. Unlabeled does not imply
+                 * direct API usage. Without source grouping, this field is null.
+                 */
+                class ApiSource
+                @JsonCreator
+                private constructor(private val value: JsonField<String>) : Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val AGENTS_API = of("agents_api")
+
+                        @JvmField val UNLABELED = of("unlabeled")
+
+                        @JvmStatic fun of(value: String) = ApiSource(JsonField.of(value))
+                    }
+
+                    /** An enum containing [ApiSource]'s known values. */
+                    enum class Known {
+                        AGENTS_API,
+                        UNLABELED,
+                    }
+
+                    /**
+                     * An enum containing [ApiSource]'s known values, as well as an [_UNKNOWN]
+                     * member.
+                     *
+                     * An instance of [ApiSource] can contain an unknown value in a couple of cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        AGENTS_API,
+                        UNLABELED,
+                        /**
+                         * An enum member indicating that [ApiSource] was instantiated with an
+                         * unknown value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            AGENTS_API -> Value.AGENTS_API
+                            UNLABELED -> Value.UNLABELED
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            AGENTS_API -> Known.AGENTS_API
+                            UNLABELED -> Known.UNLABELED
+                            else -> throw OpenAIInvalidDataException("Unknown ApiSource: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): ApiSource = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is ApiSource && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -6667,6 +7555,7 @@ private constructor(
                         numRequests == other.numRequests &&
                         object_ == other.object_ &&
                         apiKeyId == other.apiKeyId &&
+                        apiSource == other.apiSource &&
                         contextLevel == other.contextLevel &&
                         model == other.model &&
                         projectId == other.projectId &&
@@ -6680,6 +7569,7 @@ private constructor(
                         numRequests,
                         object_,
                         apiKeyId,
+                        apiSource,
                         contextLevel,
                         model,
                         projectId,
@@ -6691,7 +7581,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationUsageWebSearchesResult{numModelRequests=$numModelRequests, numRequests=$numRequests, object_=$object_, apiKeyId=$apiKeyId, contextLevel=$contextLevel, model=$model, projectId=$projectId, userId=$userId, additionalProperties=$additionalProperties}"
+                    "OrganizationUsageWebSearchesResult{numModelRequests=$numModelRequests, numRequests=$numRequests, object_=$object_, apiKeyId=$apiKeyId, apiSource=$apiSource, contextLevel=$contextLevel, model=$model, projectId=$projectId, userId=$userId, additionalProperties=$additionalProperties}"
             }
 
             /** The aggregated costs details of the specific time bucket. */
@@ -6701,9 +7591,12 @@ private constructor(
                 private val object_: JsonValue,
                 private val amount: JsonField<Amount>,
                 private val apiKeyId: JsonField<String>,
+                private val apiSource: JsonField<ApiSource>,
                 private val lineItem: JsonField<String>,
                 private val projectId: JsonField<String>,
                 private val quantity: JsonField<Double>,
+                private val quantityUnit: JsonField<CostQuantityUnit>,
+                private val userId: JsonField<String>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
@@ -6716,6 +7609,9 @@ private constructor(
                     @JsonProperty("api_key_id")
                     @ExcludeMissing
                     apiKeyId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("api_source")
+                    @ExcludeMissing
+                    apiSource: JsonField<ApiSource> = JsonMissing.of(),
                     @JsonProperty("line_item")
                     @ExcludeMissing
                     lineItem: JsonField<String> = JsonMissing.of(),
@@ -6725,7 +7621,24 @@ private constructor(
                     @JsonProperty("quantity")
                     @ExcludeMissing
                     quantity: JsonField<Double> = JsonMissing.of(),
-                ) : this(object_, amount, apiKeyId, lineItem, projectId, quantity, mutableMapOf())
+                    @JsonProperty("quantity_unit")
+                    @ExcludeMissing
+                    quantityUnit: JsonField<CostQuantityUnit> = JsonMissing.of(),
+                    @JsonProperty("user_id")
+                    @ExcludeMissing
+                    userId: JsonField<String> = JsonMissing.of(),
+                ) : this(
+                    object_,
+                    amount,
+                    apiKeyId,
+                    apiSource,
+                    lineItem,
+                    projectId,
+                    quantity,
+                    quantityUnit,
+                    userId,
+                    mutableMapOf(),
+                )
 
                 /**
                  * Expected to always return the following:
@@ -6756,6 +7669,17 @@ private constructor(
                 fun apiKeyId(): Optional<String> = apiKeyId.getOptional("api_key_id")
 
                 /**
+                 * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                 * activity and `unlabeled` includes all records without published source
+                 * attribution, including historical and unknown origins. Unlabeled does not imply
+                 * direct API usage. Without source grouping, this field is null.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun apiSource(): Optional<ApiSource> = apiSource.getOptional("api_source")
+
+                /**
                  * When `group_by=line_item`, this field provides the line item of the grouped costs
                  * result.
                  *
@@ -6783,6 +7707,25 @@ private constructor(
                 fun quantity(): Optional<Double> = quantity.getOptional("quantity")
 
                 /**
+                 * The unit of the `quantity` value. If no single supported unit applies to the
+                 * result, this field is `null`.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun quantityUnit(): Optional<CostQuantityUnit> =
+                    quantityUnit.getOptional("quantity_unit")
+
+                /**
+                 * When `group_by=user_id`, this field provides the user ID of the grouped costs
+                 * result.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun userId(): Optional<String> = userId.getOptional("user_id")
+
+                /**
                  * Returns the raw JSON value of [amount].
                  *
                  * Unlike [amount], this method doesn't throw if the JSON field has an unexpected
@@ -6799,6 +7742,16 @@ private constructor(
                 @JsonProperty("api_key_id")
                 @ExcludeMissing
                 fun _apiKeyId(): JsonField<String> = apiKeyId
+
+                /**
+                 * Returns the raw JSON value of [apiSource].
+                 *
+                 * Unlike [apiSource], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("api_source")
+                @ExcludeMissing
+                fun _apiSource(): JsonField<ApiSource> = apiSource
 
                 /**
                  * Returns the raw JSON value of [lineItem].
@@ -6830,11 +7783,60 @@ private constructor(
                 @ExcludeMissing
                 fun _quantity(): JsonField<Double> = quantity
 
+                /**
+                 * Returns the raw JSON value of [quantityUnit].
+                 *
+                 * Unlike [quantityUnit], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("quantity_unit")
+                @ExcludeMissing
+                fun _quantityUnit(): JsonField<CostQuantityUnit> = quantityUnit
+
+                /**
+                 * Returns the raw JSON value of [userId].
+                 *
+                 * Unlike [userId], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("user_id") @ExcludeMissing fun _userId(): JsonField<String> = userId
+
                 @JsonAnySetter
                 private fun putAdditionalProperty(key: String, value: JsonValue) {
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "object" to this.object_,
+                        "amount" to this.amount,
+                        "api_key_id" to this.apiKeyId,
+                        "api_source" to this.apiSource,
+                        "line_item" to this.lineItem,
+                        "project_id" to this.projectId,
+                        "quantity" to this.quantity,
+                        "quantity_unit" to this.quantityUnit,
+                        "user_id" to this.userId,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -6857,9 +7859,12 @@ private constructor(
                     private var object_: JsonValue = JsonValue.from("organization.costs.result")
                     private var amount: JsonField<Amount> = JsonMissing.of()
                     private var apiKeyId: JsonField<String> = JsonMissing.of()
+                    private var apiSource: JsonField<ApiSource> = JsonMissing.of()
                     private var lineItem: JsonField<String> = JsonMissing.of()
                     private var projectId: JsonField<String> = JsonMissing.of()
                     private var quantity: JsonField<Double> = JsonMissing.of()
+                    private var quantityUnit: JsonField<CostQuantityUnit> = JsonMissing.of()
+                    private var userId: JsonField<String> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -6867,9 +7872,12 @@ private constructor(
                         object_ = organizationCostsResult.object_
                         amount = organizationCostsResult.amount
                         apiKeyId = organizationCostsResult.apiKeyId
+                        apiSource = organizationCostsResult.apiSource
                         lineItem = organizationCostsResult.lineItem
                         projectId = organizationCostsResult.projectId
                         quantity = organizationCostsResult.quantity
+                        quantityUnit = organizationCostsResult.quantityUnit
+                        userId = organizationCostsResult.userId
                         additionalProperties =
                             organizationCostsResult.additionalProperties.toMutableMap()
                     }
@@ -6917,6 +7925,29 @@ private constructor(
                      * not yet supported value.
                      */
                     fun apiKeyId(apiKeyId: JsonField<String>) = apply { this.apiKeyId = apiKeyId }
+
+                    /**
+                     * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                     * activity and `unlabeled` includes all records without published source
+                     * attribution, including historical and unknown origins. Unlabeled does not
+                     * imply direct API usage. Without source grouping, this field is null.
+                     */
+                    fun apiSource(apiSource: ApiSource?) =
+                        apiSource(JsonField.ofNullable(apiSource))
+
+                    /** Alias for calling [Builder.apiSource] with `apiSource.orElse(null)`. */
+                    fun apiSource(apiSource: Optional<ApiSource>) = apiSource(apiSource.getOrNull())
+
+                    /**
+                     * Sets [Builder.apiSource] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.apiSource] with a well-typed [ApiSource]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun apiSource(apiSource: JsonField<ApiSource>) = apply {
+                        this.apiSource = apiSource
+                    }
 
                     /**
                      * When `group_by=line_item`, this field provides the line item of the grouped
@@ -6981,6 +8012,57 @@ private constructor(
                      */
                     fun quantity(quantity: JsonField<Double>) = apply { this.quantity = quantity }
 
+                    /**
+                     * The unit of the `quantity` value. If no single supported unit applies to the
+                     * result, this field is `null`.
+                     */
+                    fun quantityUnit(quantityUnit: CostQuantityUnit?) =
+                        quantityUnit(JsonField.ofNullable(quantityUnit))
+
+                    /**
+                     * Alias for calling [Builder.quantityUnit] with `quantityUnit.orElse(null)`.
+                     */
+                    fun quantityUnit(quantityUnit: Optional<CostQuantityUnit>) =
+                        quantityUnit(quantityUnit.getOrNull())
+
+                    /**
+                     * Sets [Builder.quantityUnit] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.quantityUnit] with a well-typed
+                     * [CostQuantityUnit] value instead. This method is primarily for setting the
+                     * field to an undocumented or not yet supported value.
+                     */
+                    fun quantityUnit(quantityUnit: JsonField<CostQuantityUnit>) = apply {
+                        this.quantityUnit = quantityUnit
+                    }
+
+                    /**
+                     * Sets [quantityUnit] to an arbitrary [String].
+                     *
+                     * You should usually call [quantityUnit] with a well-typed [CostQuantityUnit]
+                     * constant instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun quantityUnit(value: String) = quantityUnit(CostQuantityUnit.of(value))
+
+                    /**
+                     * When `group_by=user_id`, this field provides the user ID of the grouped costs
+                     * result.
+                     */
+                    fun userId(userId: String?) = userId(JsonField.ofNullable(userId))
+
+                    /** Alias for calling [Builder.userId] with `userId.orElse(null)`. */
+                    fun userId(userId: Optional<String>) = userId(userId.getOrNull())
+
+                    /**
+                     * Sets [Builder.userId] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.userId] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun userId(userId: JsonField<String>) = apply { this.userId = userId }
+
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
                         putAllAdditionalProperties(additionalProperties)
@@ -7013,9 +8095,12 @@ private constructor(
                             object_,
                             amount,
                             apiKeyId,
+                            apiSource,
                             lineItem,
                             projectId,
                             quantity,
+                            quantityUnit,
+                            userId,
                             additionalProperties.toMutableMap(),
                         )
                 }
@@ -7044,9 +8129,12 @@ private constructor(
                     }
                     amount().ifPresent { it.validate() }
                     apiKeyId()
+                    apiSource().ifPresent { it.validate() }
                     lineItem()
                     projectId()
                     quantity()
+                    quantityUnit()
+                    userId()
                     validated = true
                 }
 
@@ -7071,9 +8159,12 @@ private constructor(
                     } +
                         (amount.asKnown().getOrNull()?.validity() ?: 0) +
                         (if (apiKeyId.asKnown().isPresent) 1 else 0) +
+                        (apiSource.asKnown().getOrNull()?.validity() ?: 0) +
                         (if (lineItem.asKnown().isPresent) 1 else 0) +
                         (if (projectId.asKnown().isPresent) 1 else 0) +
-                        (if (quantity.asKnown().isPresent) 1 else 0)
+                        (if (quantity.asKnown().isPresent) 1 else 0) +
+                        (if (quantityUnit.asKnown().isPresent) 1 else 0) +
+                        (if (userId.asKnown().isPresent) 1 else 0)
 
                 /** The monetary value in its associated currency. */
                 class Amount
@@ -7133,6 +8224,31 @@ private constructor(
                         additionalProperties.put(key, value)
                     }
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(
+                            additionalProperties,
+                            "currency" to this.currency,
+                            "value" to this.value,
+                        )
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> =
@@ -7280,6 +8396,157 @@ private constructor(
                         "Amount{currency=$currency, value=$value, additionalProperties=$additionalProperties}"
                 }
 
+                /**
+                 * When grouped by `api_source`, `agents_api` identifies attributed Agents API
+                 * activity and `unlabeled` includes all records without published source
+                 * attribution, including historical and unknown origins. Unlabeled does not imply
+                 * direct API usage. Without source grouping, this field is null.
+                 */
+                class ApiSource
+                @JsonCreator
+                private constructor(private val value: JsonField<String>) : Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val AGENTS_API = of("agents_api")
+
+                        @JvmField val UNLABELED = of("unlabeled")
+
+                        @JvmStatic fun of(value: String) = ApiSource(JsonField.of(value))
+                    }
+
+                    /** An enum containing [ApiSource]'s known values. */
+                    enum class Known {
+                        AGENTS_API,
+                        UNLABELED,
+                    }
+
+                    /**
+                     * An enum containing [ApiSource]'s known values, as well as an [_UNKNOWN]
+                     * member.
+                     *
+                     * An instance of [ApiSource] can contain an unknown value in a couple of cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        AGENTS_API,
+                        UNLABELED,
+                        /**
+                         * An enum member indicating that [ApiSource] was instantiated with an
+                         * unknown value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            AGENTS_API -> Value.AGENTS_API
+                            UNLABELED -> Value.UNLABELED
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            AGENTS_API -> Known.AGENTS_API
+                            UNLABELED -> Known.UNLABELED
+                            else -> throw OpenAIInvalidDataException("Unknown ApiSource: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): ApiSource = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is ApiSource && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
+
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
@@ -7289,9 +8556,12 @@ private constructor(
                         object_ == other.object_ &&
                         amount == other.amount &&
                         apiKeyId == other.apiKeyId &&
+                        apiSource == other.apiSource &&
                         lineItem == other.lineItem &&
                         projectId == other.projectId &&
                         quantity == other.quantity &&
+                        quantityUnit == other.quantityUnit &&
+                        userId == other.userId &&
                         additionalProperties == other.additionalProperties
                 }
 
@@ -7300,9 +8570,12 @@ private constructor(
                         object_,
                         amount,
                         apiKeyId,
+                        apiSource,
                         lineItem,
                         projectId,
                         quantity,
+                        quantityUnit,
+                        userId,
                         additionalProperties,
                     )
                 }
@@ -7310,7 +8583,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "OrganizationCostsResult{object_=$object_, amount=$amount, apiKeyId=$apiKeyId, lineItem=$lineItem, projectId=$projectId, quantity=$quantity, additionalProperties=$additionalProperties}"
+                    "OrganizationCostsResult{object_=$object_, amount=$amount, apiKeyId=$apiKeyId, apiSource=$apiSource, lineItem=$lineItem, projectId=$projectId, quantity=$quantity, quantityUnit=$quantityUnit, userId=$userId, additionalProperties=$additionalProperties}"
             }
         }
 

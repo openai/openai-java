@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.moderations
 
@@ -22,6 +22,7 @@ import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -34,7 +35,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Classifies if text and/or image inputs are potentially harmful. Learn more in the
- * [moderation guide](https://platform.openai.com/docs/guides/moderation).
+ * [moderation guide](https://developers.openai.com/api/docs/guides/moderation).
  */
 class ModerationCreateParams
 private constructor(
@@ -54,8 +55,8 @@ private constructor(
 
     /**
      * The content moderation model you would like to use. Learn more in
-     * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn about
-     * available models [here](https://platform.openai.com/docs/models#moderation).
+     * [the moderation guide](https://developers.openai.com/api/docs/guides/moderation), and learn
+     * about available models [here](https://developers.openai.com/api/docs/guides/moderation).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -153,8 +154,9 @@ private constructor(
 
         /**
          * The content moderation model you would like to use. Learn more in
-         * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-         * about available models [here](https://platform.openai.com/docs/models#moderation).
+         * [the moderation guide](https://developers.openai.com/api/docs/guides/moderation), and
+         * learn about available models
+         * [here](https://developers.openai.com/api/docs/guides/moderation).
          */
         fun model(model: ModerationModel) = apply { body.model(model) }
 
@@ -346,8 +348,9 @@ private constructor(
 
         /**
          * The content moderation model you would like to use. Learn more in
-         * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-         * about available models [here](https://platform.openai.com/docs/models#moderation).
+         * [the moderation guide](https://developers.openai.com/api/docs/guides/moderation), and
+         * learn about available models
+         * [here](https://developers.openai.com/api/docs/guides/moderation).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -373,6 +376,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "input" to this.input, "model" to this.model)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -438,8 +459,9 @@ private constructor(
 
             /**
              * The content moderation model you would like to use. Learn more in
-             * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-             * about available models [here](https://platform.openai.com/docs/models#moderation).
+             * [the moderation guide](https://developers.openai.com/api/docs/guides/moderation), and
+             * learn about available models
+             * [here](https://developers.openai.com/api/docs/guides/moderation).
              */
             fun model(model: ModerationModel) = model(JsonField.of(model))
 
@@ -760,7 +782,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Input: $json")
+                throw OpenAIInvalidDataException("Unknown Input")
             }
         }
 

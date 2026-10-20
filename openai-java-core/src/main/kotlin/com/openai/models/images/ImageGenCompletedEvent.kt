@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.images
 
@@ -12,9 +12,11 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when image generation has completed and the final image is available. */
@@ -29,6 +31,7 @@ private constructor(
     private val size: JsonField<Size>,
     private val type: JsonValue,
     private val usage: JsonField<Usage>,
+    private val safetyIdentifier: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -46,6 +49,9 @@ private constructor(
         @JsonProperty("size") @ExcludeMissing size: JsonField<Size> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("usage") @ExcludeMissing usage: JsonField<Usage> = JsonMissing.of(),
+        @JsonProperty("safety_identifier")
+        @ExcludeMissing
+        safetyIdentifier: JsonField<String> = JsonMissing.of(),
     ) : this(
         b64Json,
         background,
@@ -55,6 +61,7 @@ private constructor(
         size,
         type,
         usage,
+        safetyIdentifier,
         mutableMapOf(),
     )
 
@@ -99,7 +106,7 @@ private constructor(
     fun quality(): Quality = quality.getRequired("quality")
 
     /**
-     * The size of the generated image.
+     * The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -126,6 +133,16 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun usage(): Usage = usage.getRequired("usage")
+
+    /**
+     * The effective safety identifier used for safety monitoring and abuse detection. This is the
+     * non-empty `safety_identifier` from the request, or the deprecated `user` value when
+     * `safety_identifier` is omitted, null, or empty.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun safetyIdentifier(): Optional<String> = safetyIdentifier.getOptional("safety_identifier")
 
     /**
      * Returns the raw JSON value of [b64Json].
@@ -180,11 +197,50 @@ private constructor(
      */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<Usage> = usage
 
+    /**
+     * Returns the raw JSON value of [safetyIdentifier].
+     *
+     * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("safety_identifier")
+    @ExcludeMissing
+    fun _safetyIdentifier(): JsonField<String> = safetyIdentifier
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "b64_json" to this.b64Json,
+            "background" to this.background,
+            "created_at" to this.createdAt,
+            "output_format" to this.outputFormat,
+            "quality" to this.quality,
+            "size" to this.size,
+            "type" to this.type,
+            "usage" to this.usage,
+            "safety_identifier" to this.safetyIdentifier,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -222,6 +278,7 @@ private constructor(
         private var size: JsonField<Size>? = null
         private var type: JsonValue = JsonValue.from("image_generation.completed")
         private var usage: JsonField<Usage>? = null
+        private var safetyIdentifier: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -234,6 +291,7 @@ private constructor(
             size = imageGenCompletedEvent.size
             type = imageGenCompletedEvent.type
             usage = imageGenCompletedEvent.usage
+            safetyIdentifier = imageGenCompletedEvent.safetyIdentifier
             additionalProperties = imageGenCompletedEvent.additionalProperties.toMutableMap()
         }
 
@@ -296,7 +354,7 @@ private constructor(
          */
         fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
 
-        /** The size of the generated image. */
+        /** The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. */
         fun size(size: Size) = size(JsonField.of(size))
 
         /**
@@ -306,6 +364,14 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun size(size: JsonField<Size>) = apply { this.size = size }
+
+        /**
+         * Sets [size] to an arbitrary [String].
+         *
+         * You should usually call [size] with a well-typed [Size] constant instead. This method is
+         * primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun size(value: String) = size(Size.of(value))
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -331,6 +397,29 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun usage(usage: JsonField<Usage>) = apply { this.usage = usage }
+
+        /**
+         * The effective safety identifier used for safety monitoring and abuse detection. This is
+         * the non-empty `safety_identifier` from the request, or the deprecated `user` value when
+         * `safety_identifier` is omitted, null, or empty.
+         */
+        fun safetyIdentifier(safetyIdentifier: String?) =
+            safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
+
+        /** Alias for calling [Builder.safetyIdentifier] with `safetyIdentifier.orElse(null)`. */
+        fun safetyIdentifier(safetyIdentifier: Optional<String>) =
+            safetyIdentifier(safetyIdentifier.getOrNull())
+
+        /**
+         * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+            this.safetyIdentifier = safetyIdentifier
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -379,6 +468,7 @@ private constructor(
                 checkRequired("size", size),
                 type,
                 checkRequired("usage", usage),
+                safetyIdentifier,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -403,13 +493,14 @@ private constructor(
         createdAt()
         outputFormat().validate()
         quality().validate()
-        size().validate()
+        size()
         _type().let {
             if (it != JsonValue.from("image_generation.completed")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
         usage().validate()
+        safetyIdentifier()
         validated = true
     }
 
@@ -433,9 +524,10 @@ private constructor(
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (outputFormat.asKnown().getOrNull()?.validity() ?: 0) +
             (quality.asKnown().getOrNull()?.validity() ?: 0) +
-            (size.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (size.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("image_generation.completed")) 1 else 0 } +
-            (usage.asKnown().getOrNull()?.validity() ?: 0)
+            (usage.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (safetyIdentifier.asKnown().isPresent) 1 else 0)
 
     /** The background setting for the generated image. */
     class Background @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -745,6 +837,10 @@ private constructor(
 
             @JvmField val HIGH = of("high")
 
+            @JvmField val XHIGH = of("xhigh")
+
+            @JvmField val MAX = of("max")
+
             @JvmField val AUTO = of("auto")
 
             @JvmStatic fun of(value: String) = Quality(JsonField.of(value))
@@ -755,6 +851,8 @@ private constructor(
             LOW,
             MEDIUM,
             HIGH,
+            XHIGH,
+            MAX,
             AUTO,
         }
 
@@ -771,6 +869,8 @@ private constructor(
             LOW,
             MEDIUM,
             HIGH,
+            XHIGH,
+            MAX,
             AUTO,
             /** An enum member indicating that [Quality] was instantiated with an unknown value. */
             _UNKNOWN,
@@ -788,6 +888,8 @@ private constructor(
                 LOW -> Value.LOW
                 MEDIUM -> Value.MEDIUM
                 HIGH -> Value.HIGH
+                XHIGH -> Value.XHIGH
+                MAX -> Value.MAX
                 AUTO -> Value.AUTO
                 else -> Value._UNKNOWN
             }
@@ -806,6 +908,8 @@ private constructor(
                 LOW -> Known.LOW
                 MEDIUM -> Known.MEDIUM
                 HIGH -> Known.HIGH
+                XHIGH -> Known.XHIGH
+                MAX -> Known.MAX
                 AUTO -> Known.AUTO
                 else -> throw OpenAIInvalidDataException("Unknown Quality: $value")
             }
@@ -871,7 +975,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The size of the generated image. */
+    /** The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. */
     class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -1121,6 +1225,30 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "input_tokens" to this.inputTokens,
+                "input_tokens_details" to this.inputTokensDetails,
+                "output_tokens" to this.outputTokens,
+                "total_tokens" to this.totalTokens,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1365,6 +1493,30 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "image_tokens" to this.imageTokens,
+                    "text_tokens" to this.textTokens,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -1574,6 +1726,7 @@ private constructor(
             size == other.size &&
             type == other.type &&
             usage == other.usage &&
+            safetyIdentifier == other.safetyIdentifier &&
             additionalProperties == other.additionalProperties
     }
 
@@ -1587,6 +1740,7 @@ private constructor(
             size,
             type,
             usage,
+            safetyIdentifier,
             additionalProperties,
         )
     }
@@ -1594,5 +1748,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ImageGenCompletedEvent{b64Json=$b64Json, background=$background, createdAt=$createdAt, outputFormat=$outputFormat, quality=$quality, size=$size, type=$type, usage=$usage, additionalProperties=$additionalProperties}"
+        "ImageGenCompletedEvent{b64Json=$b64Json, background=$background, createdAt=$createdAt, outputFormat=$outputFormat, quality=$quality, size=$size, type=$type, usage=$usage, safetyIdentifier=$safetyIdentifier, additionalProperties=$additionalProperties}"
 }

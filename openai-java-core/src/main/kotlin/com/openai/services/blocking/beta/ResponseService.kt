@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.beta
 
@@ -20,6 +20,7 @@ import com.openai.services.blocking.beta.responses.InputItemService
 import com.openai.services.blocking.beta.responses.InputTokenService
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 interface ResponseService {
 
     /**
@@ -34,20 +35,57 @@ interface ResponseService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService
 
-    fun inputItems(): InputItemService
+    /** Opens a typed WebSocket using the SDK-owned connection implementation. */
+    @MustBeClosed
+    fun connectWebSocket():
+        com.openai.core.http.WebSocketConnection<
+            com.openai.models.beta.responses.BetaResponsesClientEvent,
+            com.openai.models.beta.responses.BetaResponsesServerEvent,
+        > =
+        connectWebSocket(
+            com.openai.core.http.WebSocketOptions.defaults(),
+            com.openai.core.RequestOptions.none(),
+        )
 
-    fun inputTokens(): InputTokenService
+    @MustBeClosed
+    fun connectWebSocket(
+        options: com.openai.core.http.WebSocketOptions
+    ): com.openai.core.http.WebSocketConnection<
+        com.openai.models.beta.responses.BetaResponsesClientEvent,
+        com.openai.models.beta.responses.BetaResponsesServerEvent,
+    > = connectWebSocket(options, com.openai.core.RequestOptions.none())
+
+    @MustBeClosed
+    fun connectWebSocket(
+        options: com.openai.core.http.WebSocketOptions,
+        requestOptions: com.openai.core.RequestOptions,
+    ): com.openai.core.http.WebSocketConnection<
+        com.openai.models.beta.responses.BetaResponsesClientEvent,
+        com.openai.models.beta.responses.BetaResponsesServerEvent,
+    > =
+        throw UnsupportedOperationException(
+            "This service implementation does not support WebSockets"
+        )
+
+    /** Create and manage model responses. */
+    fun inputItems(): InputItemService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
+    /** Create and manage model responses. */
+    fun inputTokens(): InputTokenService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
-     * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
-     * [image](https://platform.openai.com/docs/guides/images) inputs to generate
-     * [text](https://platform.openai.com/docs/guides/text) or
-     * [JSON](https://platform.openai.com/docs/guides/structured-outputs) outputs. Have the model
-     * call your own [custom code](https://platform.openai.com/docs/guides/function-calling) or use
-     * built-in [tools](https://platform.openai.com/docs/guides/tools) like
-     * [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-     * [file search](https://platform.openai.com/docs/guides/tools-file-search) to use your own data
-     * as input for the model's response.
+     * Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text)
+     * or [image](https://developers.openai.com/api/docs/guides/images-vision) inputs to generate
+     * [text](https://developers.openai.com/api/docs/guides/text) or
+     * [JSON](https://developers.openai.com/api/docs/guides/structured-outputs) outputs. Have the
+     * model call your own
+     * [custom code](https://developers.openai.com/api/docs/guides/function-calling) or use built-in
+     * [tools](https://developers.openai.com/api/docs/guides/tools) like
+     * [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+     * [file search](https://developers.openai.com/api/docs/guides/tools-file-search) to use your
+     * own data as input for the model's response.
      */
     fun create(): BetaResponse = create(ResponseCreateParams.none())
 
@@ -66,15 +104,16 @@ interface ResponseService {
         create(ResponseCreateParams.none(), requestOptions)
 
     /**
-     * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
-     * [image](https://platform.openai.com/docs/guides/images) inputs to generate
-     * [text](https://platform.openai.com/docs/guides/text) or
-     * [JSON](https://platform.openai.com/docs/guides/structured-outputs) outputs. Have the model
-     * call your own [custom code](https://platform.openai.com/docs/guides/function-calling) or use
-     * built-in [tools](https://platform.openai.com/docs/guides/tools) like
-     * [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-     * [file search](https://platform.openai.com/docs/guides/tools-file-search) to use your own data
-     * as input for the model's response.
+     * Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text)
+     * or [image](https://developers.openai.com/api/docs/guides/images-vision) inputs to generate
+     * [text](https://developers.openai.com/api/docs/guides/text) or
+     * [JSON](https://developers.openai.com/api/docs/guides/structured-outputs) outputs. Have the
+     * model call your own
+     * [custom code](https://developers.openai.com/api/docs/guides/function-calling) or use built-in
+     * [tools](https://developers.openai.com/api/docs/guides/tools) like
+     * [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+     * [file search](https://developers.openai.com/api/docs/guides/tools-file-search) to use your
+     * own data as input for the model's response.
      */
     @MustBeClosed
     fun createStreaming(): StreamResponse<BetaResponseStreamEvent> =
@@ -198,7 +237,7 @@ interface ResponseService {
     /**
      * Cancels a model response with the given ID. Only responses created with the `background`
      * parameter set to `true` can be cancelled.
-     * [Learn more](https://platform.openai.com/docs/guides/background).
+     * [Learn more](https://developers.openai.com/api/docs/guides/background).
      */
     fun cancel(responseId: String): BetaResponse = cancel(responseId, ResponseCancelParams.none())
 
@@ -232,9 +271,9 @@ interface ResponseService {
      * Compact a conversation. Returns a compacted response object.
      *
      * Learn when and how to compact long-running conversations in the
-     * [conversation state guide](https://platform.openai.com/docs/guides/conversation-state#managing-the-context-window).
+     * [conversation state guide](https://developers.openai.com/api/docs/guides/conversation-state#managing-the-context-window).
      * For ZDR-compatible compaction details, see
-     * [Compaction (advanced)](https://platform.openai.com/docs/guides/conversation-state#compaction-advanced).
+     * [Compaction (advanced)](https://developers.openai.com/api/docs/guides/conversation-state#compaction-advanced).
      */
     fun compact(params: ResponseCompactParams): BetaCompactedResponse =
         compact(params, RequestOptions.none())
@@ -255,9 +294,17 @@ interface ResponseService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService.WithRawResponse
 
-        fun inputItems(): InputItemService.WithRawResponse
+        /** Create and manage model responses. */
+        fun inputItems(): InputItemService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun inputTokens(): InputTokenService.WithRawResponse
+        /** Create and manage model responses. */
+        fun inputTokens(): InputTokenService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /responses?beta=true`, but is otherwise the same as

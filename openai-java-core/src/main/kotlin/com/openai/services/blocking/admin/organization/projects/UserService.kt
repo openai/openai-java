@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization.projects
 
@@ -31,7 +31,8 @@ interface UserService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserService
 
-    fun roles(): RoleService
+    fun roles(): RoleService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Adds a user to the project. Users must already be members of the organization to be added to
@@ -158,7 +159,10 @@ interface UserService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserService.WithRawResponse
 
-        fun roles(): RoleService.WithRawResponse
+        fun roles(): RoleService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /organization/projects/{project_id}/users`, but is

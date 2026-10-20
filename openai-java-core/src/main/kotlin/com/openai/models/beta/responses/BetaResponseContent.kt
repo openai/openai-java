@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -21,6 +21,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -46,7 +47,7 @@ private constructor(
 
     /**
      * An image input to the model. Learn about
-     * [image inputs](https://platform.openai.com/docs/guides/vision).
+     * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
      */
     fun inputImage(): Optional<BetaResponseInputImage> = Optional.ofNullable(inputImage)
 
@@ -79,7 +80,7 @@ private constructor(
 
     /**
      * An image input to the model. Learn about
-     * [image inputs](https://platform.openai.com/docs/guides/vision).
+     * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
      */
     fun asInputImage(): BetaResponseInputImage = inputImage.getOrThrow("inputImage")
 
@@ -257,7 +258,7 @@ private constructor(
 
         /**
          * An image input to the model. Learn about
-         * [image inputs](https://platform.openai.com/docs/guides/vision).
+         * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
          */
         @JvmStatic
         fun ofInputImage(inputImage: BetaResponseInputImage) =
@@ -295,7 +296,7 @@ private constructor(
 
         /**
          * An image input to the model. Learn about
-         * [image inputs](https://platform.openai.com/docs/guides/vision).
+         * [image inputs](https://developers.openai.com/api/docs/guides/images-vision).
          */
         fun visitInputImage(inputImage: BetaResponseInputImage): T
 
@@ -322,7 +323,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown BetaResponseContent: $json")
+            throw OpenAIInvalidDataException("Unknown BetaResponseContent")
         }
     }
 
@@ -436,6 +437,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "text" to this.text, "type" to this.type)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =

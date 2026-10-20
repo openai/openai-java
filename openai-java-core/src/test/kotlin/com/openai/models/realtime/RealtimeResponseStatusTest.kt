@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -13,13 +13,25 @@ internal class RealtimeResponseStatusTest {
     fun create() {
         val realtimeResponseStatus =
             RealtimeResponseStatus.builder()
-                .error(RealtimeResponseStatus.Error.builder().code("code").type("type").build())
+                .error(
+                    RealtimeResponseStatus.Error.builder()
+                        .code("code")
+                        .message("message")
+                        .type("type")
+                        .build()
+                )
                 .reason(RealtimeResponseStatus.Reason.TURN_DETECTED)
                 .type(RealtimeResponseStatus.Type.COMPLETED)
                 .build()
 
         assertThat(realtimeResponseStatus.error())
-            .contains(RealtimeResponseStatus.Error.builder().code("code").type("type").build())
+            .contains(
+                RealtimeResponseStatus.Error.builder()
+                    .code("code")
+                    .message("message")
+                    .type("type")
+                    .build()
+            )
         assertThat(realtimeResponseStatus.reason())
             .contains(RealtimeResponseStatus.Reason.TURN_DETECTED)
         assertThat(realtimeResponseStatus.type()).contains(RealtimeResponseStatus.Type.COMPLETED)
@@ -30,7 +42,13 @@ internal class RealtimeResponseStatusTest {
         val jsonMapper = jsonMapper()
         val realtimeResponseStatus =
             RealtimeResponseStatus.builder()
-                .error(RealtimeResponseStatus.Error.builder().code("code").type("type").build())
+                .error(
+                    RealtimeResponseStatus.Error.builder()
+                        .code("code")
+                        .message("message")
+                        .type("type")
+                        .build()
+                )
                 .reason(RealtimeResponseStatus.Reason.TURN_DETECTED)
                 .type(RealtimeResponseStatus.Type.COMPLETED)
                 .build()

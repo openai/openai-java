@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core.http
 
 import com.openai.core.DefaultSleeper
@@ -14,9 +12,9 @@ import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import java.time.temporal.ChronoUnit
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 import java.util.function.Function
@@ -32,12 +30,56 @@ private constructor(
     private val idempotencyHeader: String?,
 ) : HttpClient {
 
-    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
+    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
+        try {
+            executeInternal(request, requestOptions)
+        } catch (failure: Throwable) {
+            request.body.closeMultipartOnFailure(failure)
+            throw failure
+        }
+
+    override fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<HttpResponse> =
+        try {
+            val response = executeAsyncInternal(request, requestOptions)
+            if (!request.body.isMultipartUpload()) {
+                response
+            } else {
+                val result = CompletableFuture<HttpResponse>()
+                response.whenComplete { received, failure ->
+                    if (failure != null) {
+                        request.body.closeMultipartOnFailure(failure)
+                        result.completeExceptionally(failure)
+                    } else if (!result.complete(received)) {
+                        received.close()
+                    }
+                }
+                result.whenComplete { _, failure ->
+                    if (result.isCancelled) {
+                        request.body.cancelMultipart(failure)
+                        // Nonrepeatable requests previously returned the transport future directly.
+                        if (!isRetryable(request)) response.cancel(true)
+                    }
+                }
+                result
+            }
+        } catch (failure: Throwable) {
+            request.body.closeMultipartOnFailure(failure)
+            throw failure
+        }
+
+    private fun executeInternal(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+    ): HttpResponse {
         var modifiedRequest = maybeAddIdempotencyHeader(request)
 
         // Don't send the current retry count in the headers if the caller set their own value.
         val shouldSendRetryCount =
-            !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
+            requestOptions.disableTelemetry != true &&
+                !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
 
         var retries = 0
 
@@ -66,14 +108,17 @@ private constructor(
                     null
                 }
 
-            val backoffDuration = getRetryBackoffDuration(retries, response)
-            // All responses must be closed, so close the failed one before retrying.
-            response?.close()
+            val backoffDuration =
+                try {
+                    getRetryBackoffDuration(retries, response)
+                } finally {
+                    response?.close()
+                }
             sleeper.sleep(backoffDuration)
         }
     }
 
-    override fun executeAsync(
+    private fun executeAsyncInternal(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> {
@@ -81,7 +126,8 @@ private constructor(
 
         // Don't send the current retry count in the headers if the caller set their own value.
         val shouldSendRetryCount =
-            !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
+            requestOptions.disableTelemetry != true &&
+                !modifiedRequest.headers.names().contains("X-Stainless-Retry-Count")
 
         var retries = 0
 
@@ -92,7 +138,14 @@ private constructor(
             val requestWithRetryCount =
                 if (shouldSendRetryCount) setRetryCountHeader(request, retries) else request
 
-            val responseFuture = httpClient.executeAsync(requestWithRetryCount, requestOptions)
+            val responseFuture =
+                try {
+                    request.body.beforeMultipartTransport {
+                        httpClient.executeAsync(requestWithRetryCount, requestOptions)
+                    }
+                } catch (throwable: Throwable) {
+                    CompletableFuture<HttpResponse>().also { it.completeExceptionally(throwable) }
+                }
             if (!isRetryable(requestWithRetryCount)) {
                 return responseFuture
             }
@@ -108,16 +161,22 @@ private constructor(
                                 return CompletableFuture.completedFuture(response)
                             }
                         } else {
-                            if (++retries > maxRetries || !shouldRetry(throwable!!)) {
+                            if (
+                                ++retries > maxRetries ||
+                                    !shouldRetry(unwrapCompletionException(throwable!!))
+                            ) {
                                 val failedFuture = CompletableFuture<HttpResponse>()
                                 failedFuture.completeExceptionally(throwable)
                                 return failedFuture
                             }
                         }
 
-                        val backoffDuration = getRetryBackoffDuration(retries, response)
-                        // All responses must be closed, so close the failed one before retrying.
-                        response?.close()
+                        val backoffDuration =
+                            try {
+                                getRetryBackoffDuration(retries, response)
+                            } finally {
+                                response?.close()
+                            }
                         return sleeper.sleepAsync(backoffDuration).thenCompose {
                             executeWithRetries(requestWithRetryCount, requestOptions)
                         }
@@ -133,7 +192,18 @@ private constructor(
     }
 
     override fun close() {
-        httpClient.close()
+        try {
+            httpClient.close()
+        } catch (httpClientFailure: Throwable) {
+            try {
+                sleeper.close()
+            } catch (sleeperFailure: Throwable) {
+                if (sleeperFailure !== httpClientFailure) {
+                    httpClientFailure.addSuppressed(sleeperFailure)
+                }
+            }
+            throw httpClientFailure
+        }
         sleeper.close()
     }
 
@@ -187,6 +257,11 @@ private constructor(
             throwable is OpenAIIoException ||
             throwable is OpenAIRetryableException
 
+    private tailrec fun unwrapCompletionException(throwable: Throwable): Throwable =
+        if (throwable is CompletionException && throwable.cause != null)
+            unwrapCompletionException(throwable.cause!!)
+        else throwable
+
     private fun getRetryBackoffDuration(retries: Int, response: HttpResponse?): Duration {
         // About the Retry-After header:
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After
@@ -201,25 +276,29 @@ private constructor(
                     ?: headers.values("Retry-After").getOrNull(0)?.let { retryAfter ->
                         retryAfter.toFloatOrNull()?.times(TimeUnit.SECONDS.toNanos(1))
                             ?: try {
-                                ChronoUnit.NANOS.between(
-                                    OffsetDateTime.now(clock),
+                                val now = OffsetDateTime.now(clock)
+                                val retryAt =
                                     OffsetDateTime.parse(
                                         retryAfter,
                                         DateTimeFormatter.RFC_1123_DATE_TIME,
-                                    ),
-                                )
+                                    )
+                                Duration.between(now, retryAt)
+                                    .coerceIn(Duration.ZERO, MAX_RETRY_DELAY)
+                                    .toNanos()
                             } catch (e: DateTimeParseException) {
                                 null
                             }
                     }
             }
             ?.let { retryAfterNanos ->
-                // If the API asks us to wait a certain amount of time, do what it says.
-                return Duration.ofNanos(retryAfterNanos.toLong())
+                // Server-directed delays share the exponential-backoff ceiling.
+                return Duration.ofNanos(
+                    retryAfterNanos.toLong().coerceIn(0, MAX_RETRY_DELAY.toNanos())
+                )
             }
 
         // Apply exponential backoff, but not more than the max.
-        val backoffSeconds = min(0.5 * 2.0.pow(retries - 1), 8.0)
+        val backoffSeconds = min(0.5 * 2.0.pow(retries - 1), MAX_RETRY_DELAY.seconds.toDouble())
 
         // Apply some jitter
         val jitter = 1.0 - 0.25 * ThreadLocalRandom.current().nextDouble()
@@ -228,6 +307,8 @@ private constructor(
     }
 
     companion object {
+
+        private val MAX_RETRY_DELAY = Duration.ofSeconds(8)
 
         @JvmStatic fun builder() = Builder()
     }

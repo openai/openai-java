@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.jobs
 
@@ -24,6 +24,7 @@ import com.openai.core.Params
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -43,7 +44,7 @@ import kotlin.jvm.optionals.getOrNull
  * Response includes details of the enqueued job including job status and the name of the fine-tuned
  * models once complete.
  *
- * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/model-optimization)
+ * [Learn more about fine-tuning](https://developers.openai.com/api/docs/guides/model-optimization)
  */
 class JobCreateParams
 private constructor(
@@ -54,7 +55,7 @@ private constructor(
 
     /**
      * The name of the model to fine-tune. You can select one of the
-     * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
+     * [supported models](https://developers.openai.com/api/docs/guides/model-optimization#fine-tuning-methods).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -64,21 +65,21 @@ private constructor(
     /**
      * The ID of an uploaded file that contains training data.
      *
-     * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
-     * upload a file.
+     * See [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
+     * for how to upload a file.
      *
      * Your dataset must be formatted as a JSONL file. Additionally, you must upload your file with
      * the purpose `fine-tune`.
      *
      * The contents of the file should differ depending on if the model uses the
-     * [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input),
-     * [completions](https://platform.openai.com/docs/api-reference/fine-tuning/completions-input)
+     * [chat](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data),
+     * [completions](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data)
      * format, or if the fine-tuning method uses the
-     * [preference](https://platform.openai.com/docs/api-reference/fine-tuning/preference-input)
+     * [preference](https://developers.openai.com/api/docs/guides/direct-preference-optimization)
      * format.
      *
-     * See the [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization) for
-     * more details.
+     * See the [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization)
+     * for more details.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -155,8 +156,8 @@ private constructor(
      * Your dataset must be formatted as a JSONL file. You must upload your file with the purpose
      * `fine-tune`.
      *
-     * See the [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization) for
-     * more details.
+     * See the [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization)
+     * for more details.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -281,7 +282,7 @@ private constructor(
 
         /**
          * The name of the model to fine-tune. You can select one of the
-         * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
+         * [supported models](https://developers.openai.com/api/docs/guides/model-optimization#fine-tuning-methods).
          */
         fun model(model: Model) = apply { body.model(model) }
 
@@ -304,21 +305,23 @@ private constructor(
         /**
          * The ID of an uploaded file that contains training data.
          *
-         * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
-         * upload a file.
+         * See
+         * [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
+         * for how to upload a file.
          *
          * Your dataset must be formatted as a JSONL file. Additionally, you must upload your file
          * with the purpose `fine-tune`.
          *
          * The contents of the file should differ depending on if the model uses the
-         * [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input),
-         * [completions](https://platform.openai.com/docs/api-reference/fine-tuning/completions-input)
+         * [chat](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data),
+         * [completions](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data)
          * format, or if the fine-tuning method uses the
-         * [preference](https://platform.openai.com/docs/api-reference/fine-tuning/preference-input)
+         * [preference](https://developers.openai.com/api/docs/guides/direct-preference-optimization)
          * format.
          *
-         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization)
-         * for more details.
+         * See the
+         * [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization) for
+         * more details.
          */
         fun trainingFile(trainingFile: String) = apply { body.trainingFile(trainingFile) }
 
@@ -468,8 +471,9 @@ private constructor(
          * Your dataset must be formatted as a JSONL file. You must upload your file with the
          * purpose `fine-tune`.
          *
-         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization)
-         * for more details.
+         * See the
+         * [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization) for
+         * more details.
          */
         fun validationFile(validationFile: String?) = apply { body.validationFile(validationFile) }
 
@@ -679,7 +683,7 @@ private constructor(
 
         /**
          * The name of the model to fine-tune. You can select one of the
-         * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
+         * [supported models](https://developers.openai.com/api/docs/guides/model-optimization#fine-tuning-methods).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -689,21 +693,23 @@ private constructor(
         /**
          * The ID of an uploaded file that contains training data.
          *
-         * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
-         * upload a file.
+         * See
+         * [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
+         * for how to upload a file.
          *
          * Your dataset must be formatted as a JSONL file. Additionally, you must upload your file
          * with the purpose `fine-tune`.
          *
          * The contents of the file should differ depending on if the model uses the
-         * [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input),
-         * [completions](https://platform.openai.com/docs/api-reference/fine-tuning/completions-input)
+         * [chat](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data),
+         * [completions](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data)
          * format, or if the fine-tuning method uses the
-         * [preference](https://platform.openai.com/docs/api-reference/fine-tuning/preference-input)
+         * [preference](https://developers.openai.com/api/docs/guides/direct-preference-optimization)
          * format.
          *
-         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization)
-         * for more details.
+         * See the
+         * [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization) for
+         * more details.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -781,8 +787,9 @@ private constructor(
          * Your dataset must be formatted as a JSONL file. You must upload your file with the
          * purpose `fine-tune`.
          *
-         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization)
-         * for more details.
+         * See the
+         * [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization) for
+         * more details.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -870,6 +877,35 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "model" to this.model,
+                "training_file" to this.trainingFile,
+                "hyperparameters" to this.hyperparameters,
+                "integrations" to this.integrations,
+                "metadata" to this.metadata,
+                "method" to this.method,
+                "seed" to this.seed,
+                "suffix" to this.suffix,
+                "validation_file" to this.validationFile,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -921,7 +957,7 @@ private constructor(
 
             /**
              * The name of the model to fine-tune. You can select one of the
-             * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
+             * [supported models](https://developers.openai.com/api/docs/guides/model-optimization#fine-tuning-methods).
              */
             fun model(model: Model) = model(JsonField.of(model))
 
@@ -946,22 +982,23 @@ private constructor(
             /**
              * The ID of an uploaded file that contains training data.
              *
-             * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for
-             * how to upload a file.
+             * See
+             * [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
+             * for how to upload a file.
              *
              * Your dataset must be formatted as a JSONL file. Additionally, you must upload your
              * file with the purpose `fine-tune`.
              *
              * The contents of the file should differ depending on if the model uses the
-             * [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input),
-             * [completions](https://platform.openai.com/docs/api-reference/fine-tuning/completions-input)
+             * [chat](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data),
+             * [completions](https://developers.openai.com/api/docs/guides/supervised-fine-tuning#formatting-your-data)
              * format, or if the fine-tuning method uses the
-             * [preference](https://platform.openai.com/docs/api-reference/fine-tuning/preference-input)
+             * [preference](https://developers.openai.com/api/docs/guides/direct-preference-optimization)
              * format.
              *
              * See the
-             * [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization) for
-             * more details.
+             * [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization)
+             * for more details.
              */
             fun trainingFile(trainingFile: String) = trainingFile(JsonField.of(trainingFile))
 
@@ -1022,9 +1059,8 @@ private constructor(
              */
             fun addIntegration(integration: Integration) = apply {
                 integrations =
-                    (integrations ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("integrations", it).add(integration)
-                    }
+                    (integrations?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("integrations", it).add(integration) }
             }
 
             /**
@@ -1118,8 +1154,8 @@ private constructor(
              * purpose `fine-tune`.
              *
              * See the
-             * [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization) for
-             * more details.
+             * [fine-tuning guide](https://developers.openai.com/api/docs/guides/model-optimization)
+             * for more details.
              */
             fun validationFile(validationFile: String?) =
                 validationFile(JsonField.ofNullable(validationFile))
@@ -1281,7 +1317,7 @@ private constructor(
 
     /**
      * The name of the model to fine-tune. You can select one of the
-     * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
+     * [supported models](https://developers.openai.com/api/docs/guides/model-optimization#fine-tuning-methods).
      */
     class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -1513,6 +1549,29 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "batch_size" to this.batchSize,
+                "learning_rate_multiplier" to this.learningRateMultiplier,
+                "n_epochs" to this.nEpochs,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1863,7 +1922,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown BatchSize: $json")
+                    throw OpenAIInvalidDataException("Unknown BatchSize")
                 }
             }
 
@@ -2088,7 +2147,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown LearningRateMultiplier: $json")
+                    throw OpenAIInvalidDataException("Unknown LearningRateMultiplier")
                 }
             }
 
@@ -2313,7 +2372,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown NEpochs: $json")
+                    throw OpenAIInvalidDataException("Unknown NEpochs")
                 }
             }
 
@@ -2437,6 +2496,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "type" to this.type, "wandb" to this.wandb)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -2685,6 +2762,32 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "project" to this.project,
+                    "entity" to this.entity,
+                    "name" to this.name,
+                    "tags" to this.tags,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -2797,9 +2900,8 @@ private constructor(
                  */
                 fun addTag(tag: String) = apply {
                     tags =
-                        (tags ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("tags", it).add(tag)
-                        }
+                        (tags?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("tags", it).add(tag) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2948,6 +3050,23 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -2977,6 +3096,11 @@ private constructor(
 
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
+            }
+
+            /** Adds a string-valued property. */
+            fun putProperty(key: String, value: String) = apply {
+                putAdditionalProperty(key, JsonValue.from(value))
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -3143,6 +3267,30 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "type" to this.type,
+                "dpo" to this.dpo,
+                "reinforcement" to this.reinforcement,
+                "supervised" to this.supervised,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =

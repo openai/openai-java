@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.audio.speech
 
@@ -23,6 +23,7 @@ import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -53,7 +54,8 @@ private constructor(
     fun input(): String = body.input()
 
     /**
-     * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`,
+     * One of the available
+     * [TTS models](https://developers.openai.com/api/docs/guides/text-to-speech): `tts-1`,
      * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -66,7 +68,9 @@ private constructor(
      * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`, and
      * `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id":
      * "voice_1234" }`. Previews of the voices are available in the
-     * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+     * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
+     * Custom voices must be created from audio samples. Voices created from text prompts are
+     * supported only in Live.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -221,7 +225,8 @@ private constructor(
         fun input(input: JsonField<String>) = apply { body.input(input) }
 
         /**
-         * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`,
+         * One of the available
+         * [TTS models](https://developers.openai.com/api/docs/guides/text-to-speech): `tts-1`,
          * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
          */
         fun model(model: SpeechModel) = apply { body.model(model) }
@@ -248,7 +253,9 @@ private constructor(
          * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`,
          * and `cedar`. You may also provide a custom voice object with an `id`, for example `{
          * "id": "voice_1234" }`. Previews of the voices are available in the
-         * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+         * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
+         * Custom voices must be created from audio samples. Voices created from text prompts are
+         * supported only in Live.
          */
         fun voice(voice: Voice) = apply { body.voice(voice) }
 
@@ -529,7 +536,8 @@ private constructor(
         fun input(): String = input.getRequired("input")
 
         /**
-         * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`,
+         * One of the available
+         * [TTS models](https://developers.openai.com/api/docs/guides/text-to-speech): `tts-1`,
          * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -542,7 +550,9 @@ private constructor(
          * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`,
          * and `cedar`. You may also provide a custom voice object with an `id`, for example `{
          * "id": "voice_1234" }`. Previews of the voices are available in the
-         * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+         * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
+         * Custom voices must be created from audio samples. Voices created from text prompts are
+         * supported only in Live.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -649,6 +659,33 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "input" to this.input,
+                "model" to this.model,
+                "voice" to this.voice,
+                "instructions" to this.instructions,
+                "response_format" to this.responseFormat,
+                "speed" to this.speed,
+                "stream_format" to this.streamFormat,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -708,8 +745,9 @@ private constructor(
             fun input(input: JsonField<String>) = apply { this.input = input }
 
             /**
-             * One of the available [TTS models](https://platform.openai.com/docs/models#tts):
-             * `tts-1`, `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
+             * One of the available
+             * [TTS models](https://developers.openai.com/api/docs/guides/text-to-speech): `tts-1`,
+             * `tts-1-hd`, `gpt-4o-mini-tts`, or `gpt-4o-mini-tts-2025-12-15`.
              */
             fun model(model: SpeechModel) = model(JsonField.of(model))
 
@@ -737,7 +775,9 @@ private constructor(
              * `verse`, `marin`, and `cedar`. You may also provide a custom voice object with an
              * `id`, for example `{ "id": "voice_1234" }`. Previews of the voices are available in
              * the
-             * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+             * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
+             * Custom voices must be created from audio samples. Voices created from text prompts
+             * are supported only in Live.
              */
             fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -962,7 +1002,9 @@ private constructor(
      * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`, and
      * `cedar`. You may also provide a custom voice object with an `id`, for example `{ "id":
      * "voice_1234" }`. Previews of the voices are available in the
-     * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+     * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
+     * Custom voices must be created from audio samples. Voices created from text prompts are
+     * supported only in Live.
      */
     @JsonDeserialize(using = Voice.Deserializer::class)
     @JsonSerialize(using = Voice.Serializer::class)
@@ -976,6 +1018,15 @@ private constructor(
 
         fun string(): Optional<String> = Optional.ofNullable(string)
 
+        /**
+         * The voice to use when generating the audio. Supported built-in voices are `alloy`, `ash`,
+         * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`,
+         * and `cedar`. You may also provide a custom voice object with an `id`, for example `{
+         * "id": "voice_1234" }`. Previews of the voices are available in the
+         * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
+         * Custom voices must be created from audio samples. Voices created from text prompts are
+         * supported only in Live.
+         */
         fun unionMember1(): Optional<UnionMember1> = Optional.ofNullable(unionMember1)
 
         /** Custom voice reference. */
@@ -989,6 +1040,15 @@ private constructor(
 
         fun asString(): String = string.getOrThrow("string")
 
+        /**
+         * The voice to use when generating the audio. Supported built-in voices are `alloy`, `ash`,
+         * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`,
+         * and `cedar`. You may also provide a custom voice object with an `id`, for example `{
+         * "id": "voice_1234" }`. Previews of the voices are available in the
+         * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
+         * Custom voices must be created from audio samples. Voices created from text prompts are
+         * supported only in Live.
+         */
         fun asUnionMember1(): UnionMember1 = unionMember1.getOrThrow("unionMember1")
 
         /** Custom voice reference. */
@@ -1120,6 +1180,16 @@ private constructor(
 
             @JvmStatic fun ofString(string: String) = Voice(string = string)
 
+            /**
+             * The voice to use when generating the audio. Supported built-in voices are `alloy`,
+             * `ash`, `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`,
+             * `verse`, `marin`, and `cedar`. You may also provide a custom voice object with an
+             * `id`, for example `{ "id": "voice_1234" }`. Previews of the voices are available in
+             * the
+             * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
+             * Custom voices must be created from audio samples. Voices created from text prompts
+             * are supported only in Live.
+             */
             @JvmStatic
             fun ofUnionMember1(unionMember1: UnionMember1) = Voice(unionMember1 = unionMember1)
 
@@ -1132,6 +1202,16 @@ private constructor(
 
             fun visitString(string: String): T
 
+            /**
+             * The voice to use when generating the audio. Supported built-in voices are `alloy`,
+             * `ash`, `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`,
+             * `verse`, `marin`, and `cedar`. You may also provide a custom voice object with an
+             * `id`, for example `{ "id": "voice_1234" }`. Previews of the voices are available in
+             * the
+             * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
+             * Custom voices must be created from audio samples. Voices created from text prompts
+             * are supported only in Live.
+             */
             fun visitUnionMember1(unionMember1: UnionMember1): T
 
             /** Custom voice reference. */
@@ -1148,7 +1228,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Voice: $json")
+                throw OpenAIInvalidDataException("Unknown Voice")
             }
         }
 
@@ -1202,6 +1282,15 @@ private constructor(
             }
         }
 
+        /**
+         * The voice to use when generating the audio. Supported built-in voices are `alloy`, `ash`,
+         * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, `verse`, `marin`,
+         * and `cedar`. You may also provide a custom voice object with an `id`, for example `{
+         * "id": "voice_1234" }`. Previews of the voices are available in the
+         * [Text to speech guide](https://developers.openai.com/api/docs/guides/text-to-speech#voice-options).
+         * Custom voices must be created from audio samples. Voices created from text prompts are
+         * supported only in Live.
+         */
         class UnionMember1 @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
 
@@ -1237,6 +1326,12 @@ private constructor(
 
                 @JvmField val CEDAR = of("cedar")
 
+                @JvmField val FABLE = of("fable")
+
+                @JvmField val ONYX = of("onyx")
+
+                @JvmField val NOVA = of("nova")
+
                 @JvmStatic fun of(value: String) = UnionMember1(JsonField.of(value))
             }
 
@@ -1252,6 +1347,9 @@ private constructor(
                 VERSE,
                 MARIN,
                 CEDAR,
+                FABLE,
+                ONYX,
+                NOVA,
             }
 
             /**
@@ -1274,6 +1372,9 @@ private constructor(
                 VERSE,
                 MARIN,
                 CEDAR,
+                FABLE,
+                ONYX,
+                NOVA,
                 /**
                  * An enum member indicating that [UnionMember1] was instantiated with an unknown
                  * value.
@@ -1300,6 +1401,9 @@ private constructor(
                     VERSE -> Value.VERSE
                     MARIN -> Value.MARIN
                     CEDAR -> Value.CEDAR
+                    FABLE -> Value.FABLE
+                    ONYX -> Value.ONYX
+                    NOVA -> Value.NOVA
                     else -> Value._UNKNOWN
                 }
 
@@ -1324,6 +1428,9 @@ private constructor(
                     VERSE -> Known.VERSE
                     MARIN -> Known.MARIN
                     CEDAR -> Known.CEDAR
+                    FABLE -> Known.FABLE
+                    ONYX -> Known.ONYX
+                    NOVA -> Known.NOVA
                     else -> throw OpenAIInvalidDataException("Unknown UnionMember1: $value")
                 }
 
@@ -1425,6 +1532,26 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties, "id" to this.id)
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =

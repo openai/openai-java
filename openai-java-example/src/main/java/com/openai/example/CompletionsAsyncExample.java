@@ -17,7 +17,7 @@ public final class CompletionsAsyncExample {
         ChatCompletionCreateParams createParams = ChatCompletionCreateParams.builder()
                 .model(ChatModel.GPT_3_5_TURBO)
                 .maxCompletionTokens(2048)
-                .addDeveloperMessage("Make sure you mention Stainless!")
+                .addDeveloperMessage("You are a helpful assistant.")
                 .addUserMessage("Tell me a story about building the best SDK!")
                 .build();
 

@@ -37,6 +37,9 @@ class StructuredChatCompletion<T : Any>(
     /** @see ChatCompletion.model */
     fun model(): String = rawChatCompletion.model()
 
+    /** @see ChatCompletion.metadata */
+    fun metadata(): Optional<ChatCompletion.Metadata> = rawChatCompletion.metadata()
+
     /** @see ChatCompletion.moderation */
     fun moderation(): Optional<ChatCompletion.Moderation> = rawChatCompletion.moderation()
 
@@ -64,6 +67,9 @@ class StructuredChatCompletion<T : Any>(
     /** @see ChatCompletion._model */
     fun _model(): JsonField<String> = rawChatCompletion._model()
 
+    /** @see ChatCompletion._metadata */
+    fun _metadata(): JsonField<ChatCompletion.Metadata> = rawChatCompletion._metadata()
+
     /** @see ChatCompletion._moderation */
     fun _moderation(): JsonField<ChatCompletion.Moderation> = rawChatCompletion._moderation()
 
@@ -76,7 +82,11 @@ class StructuredChatCompletion<T : Any>(
     /** @see ChatCompletion._usage */
     fun _usage(): JsonField<CompletionUsage> = rawChatCompletion._usage()
 
+    /** @see ChatCompletion._allProperties */
+    fun _allProperties(): Map<String, JsonValue> = rawChatCompletion._allProperties()
+
     /** @see ChatCompletion._additionalProperties */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     fun _additionalProperties(): Map<String, JsonValue> = rawChatCompletion._additionalProperties()
 
     class Choice<T : Any>
@@ -112,7 +122,11 @@ class StructuredChatCompletion<T : Any>(
         /** @see ChatCompletion.Choice._message */
         fun _message(): JsonField<StructuredChatCompletionMessage<T>> = message
 
+        /** @see ChatCompletion.Choice._allProperties */
+        fun _allProperties(): Map<String, JsonValue> = rawChoice._allProperties()
+
         /** @see ChatCompletion.Choice._additionalProperties */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         fun _additionalProperties(): Map<String, JsonValue> = rawChoice._additionalProperties()
 
         /** @see ChatCompletion.Choice.validate */

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects
 
@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
+import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -39,12 +40,13 @@ private constructor(
     fun externalKeyId(): Optional<String> = body.externalKeyId()
 
     /**
-     * Geography for the project.
+     * Geography for the project. Deprecated: use `residency` when creating a project to configure
+     * data residency. This field is retained for backward compatibility.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun geography(): Optional<String> = body.geography()
+    @Deprecated("deprecated") fun geography(): Optional<String> = body.geography()
 
     /**
      * The updated name of the project, this name appears in reports.
@@ -66,7 +68,7 @@ private constructor(
      *
      * Unlike [geography], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _geography(): JsonField<String> = body._geography()
+    @Deprecated("deprecated") fun _geography(): JsonField<String> = body._geography()
 
     /**
      * Returns the raw JSON value of [name].
@@ -143,10 +145,15 @@ private constructor(
             body.externalKeyId(externalKeyId)
         }
 
-        /** Geography for the project. */
+        /**
+         * Geography for the project. Deprecated: use `residency` when creating a project to
+         * configure data residency. This field is retained for backward compatibility.
+         */
+        @Deprecated("deprecated")
         fun geography(geography: String?) = apply { body.geography(geography) }
 
         /** Alias for calling [Builder.geography] with `geography.orElse(null)`. */
+        @Deprecated("deprecated")
         fun geography(geography: Optional<String>) = geography(geography.getOrNull())
 
         /**
@@ -156,6 +163,7 @@ private constructor(
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
+        @Deprecated("deprecated")
         fun geography(geography: JsonField<String>) = apply { body.geography(geography) }
 
         /** The updated name of the project, this name appears in reports. */
@@ -344,11 +352,13 @@ private constructor(
         fun externalKeyId(): Optional<String> = externalKeyId.getOptional("external_key_id")
 
         /**
-         * Geography for the project.
+         * Geography for the project. Deprecated: use `residency` when creating a project to
+         * configure data residency. This field is retained for backward compatibility.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
+        @Deprecated("deprecated")
         fun geography(): Optional<String> = geography.getOptional("geography")
 
         /**
@@ -374,7 +384,10 @@ private constructor(
          *
          * Unlike [geography], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("geography") @ExcludeMissing fun _geography(): JsonField<String> = geography
+        @Deprecated("deprecated")
+        @JsonProperty("geography")
+        @ExcludeMissing
+        fun _geography(): JsonField<String> = geography
 
         /**
          * Returns the raw JSON value of [name].
@@ -388,6 +401,29 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "external_key_id" to this.externalKeyId,
+                "geography" to this.geography,
+                "name" to this.name,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -436,10 +472,15 @@ private constructor(
                 this.externalKeyId = externalKeyId
             }
 
-            /** Geography for the project. */
+            /**
+             * Geography for the project. Deprecated: use `residency` when creating a project to
+             * configure data residency. This field is retained for backward compatibility.
+             */
+            @Deprecated("deprecated")
             fun geography(geography: String?) = geography(JsonField.ofNullable(geography))
 
             /** Alias for calling [Builder.geography] with `geography.orElse(null)`. */
+            @Deprecated("deprecated")
             fun geography(geography: Optional<String>) = geography(geography.getOrNull())
 
             /**
@@ -449,6 +490,7 @@ private constructor(
              * This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
+            @Deprecated("deprecated")
             fun geography(geography: JsonField<String>) = apply { this.geography = geography }
 
             /** The updated name of the project, this name appears in reports. */

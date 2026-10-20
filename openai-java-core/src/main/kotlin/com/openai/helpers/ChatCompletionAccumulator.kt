@@ -48,13 +48,36 @@ class ChatCompletionAccumulator private constructor() {
      * The accumulated content for each message. The keys correspond to the indexes in
      * [messageBuilders].
      */
-    private val messageContents = mutableMapOf<Long, String>()
+    private val messageContents = mutableMapOf<Long, StringBuilder>()
 
     /**
      * The accumulated refusal for each message. The keys correspond to the indexes in
      * [messageBuilders].
      */
-    private val messageRefusals = mutableMapOf<Long, String>()
+    private val messageRefusals = mutableMapOf<Long, StringBuilder>()
+
+    private val messageAudio = mutableMapOf<Long, AudioState>()
+
+    private class AudioState {
+        var id: String? = null
+        var expiresAt: Long? = null
+        var data: StringBuilder? = null
+        var transcript: StringBuilder? = null
+        val additionalProperties = mutableMapOf<String, JsonValue>()
+
+        fun isComplete() = id != null && expiresAt != null && data != null && transcript != null
+
+        fun build(): ChatCompletionAudio {
+            if (!isComplete()) throw OpenAIInvalidDataException("Incomplete streamed audio.")
+            return ChatCompletionAudio.builder()
+                .id(id!!)
+                .data(data.toString())
+                .transcript(transcript.toString())
+                .expiresAt(expiresAt!!)
+                .putAllAdditionalProperties(additionalProperties)
+                .build()
+        }
+    }
 
     /**
      * The builders for the [ChatCompletion.Choice.Logprobs] of each choice. These are only
@@ -86,7 +109,7 @@ class ChatCompletionAccumulator private constructor() {
      * The accumulated tool call function arguments that will be set on the function builders when
      * completed. The entries correspond to those in [toolCallFunctionBuilders].
      */
-    private val toolCallFunctionArgs = mutableMapOf<Long, MutableMap<Long, String>>()
+    private val toolCallFunctionArgs = mutableMapOf<Long, MutableMap<Long, StringBuilder>>()
 
     /**
      * The finished status of each of the `n` completions. When a chunk with a `finishReason` is
@@ -143,11 +166,12 @@ class ChatCompletionAccumulator private constructor() {
      * Accumulates a streamed chunk and uses it to construct a [ChatCompletion]. When all chunks
      * have been accumulated, the chat completion can be retrieved by calling [chatCompletion].
      *
-     * The last chunk is identified as that which provides the `finishReason`. At that point, the
-     * [ChatCompletion] is created and available. However, if the request was configured to include
-     * the usage details, one additional chunk may be accumulated which provides those usage details
-     * and the [ChatCompletion] will be recreated to reflect them. After that, no more chunks of any
-     * kind may be accumulated.
+     * The last chunk provides a `finishReason`, or an expiry-only audio update completing the
+     * accumulated audio. A finish reason received before the complete audio is retained. At that
+     * point, the [ChatCompletion] is created and available. However, if the request was configured
+     * to include the usage details, one additional chunk may be accumulated which provides those
+     * usage details and the [ChatCompletion] will be recreated to reflect them. After that, no more
+     * chunks of any kind may be accumulated.
      *
      * @return The given [chunk] for convenience, such as when chaining method calls.
      * @throws IllegalStateException If [accumulate] is called again after the last chunk has been
@@ -219,12 +243,27 @@ class ChatCompletionAccumulator private constructor() {
                 // chunks have been received, presumptively build the `ChatCompletion`. (One further
                 // usage chunk _might_ be notified.)
                 isFinished[index] = true
-                if (choiceBuilders.keys.all { isFinished[it] == true }) {
-                    chatCompletion = ensureChatCompletionBuilder().choices(buildChoices()).build()
+            } else if (isTerminalAudioUpdate(choice) && messageAudio[index]?.isComplete() == true) {
+                if (isFinished[index] != true) {
+                    choiceBuilder.finishReason(ChatCompletion.Choice.FinishReason.STOP)
                 }
-            } else {
+                isFinished[index] = true
+            } else if (isFinished[index] != true) {
                 choiceBuilder.finishReason(JsonNull.of())
             }
+        }
+
+        if (
+            chunk.choices().any { it.finishReason().isPresent || isTerminalAudioUpdate(it) } &&
+                choiceBuilders.keys.all { isFinished[it] == true } &&
+                messageAudio.values.all { it.isComplete() }
+        ) {
+            chatCompletion = chatCompletionBuilder.choices(buildChoices()).build()
+            // Release mutable storage only after the whole chunk and final build succeed.
+            toolCallFunctionArgs.clear()
+            messageContents.clear()
+            messageRefusals.clear()
+            messageAudio.clear()
         }
 
         return chunk
@@ -262,8 +301,23 @@ class ChatCompletionAccumulator private constructor() {
     internal fun accumulateMessage(index: Long, delta: ChatCompletionChunk.Choice.Delta) {
         val messageBuilder = messageBuilders.getOrPut(index) { ChatCompletionMessage.builder() }
 
-        delta.content().ifPresent { messageContents[index] = (messageContents[index] ?: "") + it }
-        delta.refusal().ifPresent { messageRefusals[index] = (messageRefusals[index] ?: "") + it }
+        delta.audio().ifPresent { audio ->
+            val state = messageAudio.getOrPut(index) { AudioState() }
+            audio.id().ifPresent { state.id = it }
+            audio.expiresAt().ifPresent { state.expiresAt = it }
+            audio.data().ifPresent {
+                val buffer = state.data ?: StringBuilder().also { state.data = it }
+                buffer.append(it)
+            }
+            audio.transcript().ifPresent {
+                val buffer = state.transcript ?: StringBuilder().also { state.transcript = it }
+                buffer.append(it)
+            }
+            state.additionalProperties.putAll(audio._additionalProperties())
+        }
+
+        delta.content().ifPresent { messageContents.getOrPut(index) { StringBuilder() }.append(it) }
+        delta.refusal().ifPresent { messageRefusals.getOrPut(index) { StringBuilder() }.append(it) }
         // The `role` defaults to "assistant", so if no other `role` is set on the delta, there is
         // no need to set it explicitly to anything else.
         delta.role().ifPresent { messageBuilder.role(JsonValue.from(it.asString())) }
@@ -296,9 +350,11 @@ class ChatCompletionAccumulator private constructor() {
                 val messageToolCallFunctionArgs =
                     toolCallFunctionArgs.getOrPut(index) { mutableMapOf() }
 
-                messageToolCallFunctionArgs[deltaToolCall.index()] =
-                    (messageToolCallFunctionArgs[deltaToolCall.index()] ?: "") +
-                        (ensureFunction(deltaToolCall.function()).arguments().getOrNull() ?: "")
+                val fragment =
+                    ensureFunction(deltaToolCall.function()).arguments().getOrNull() ?: ""
+                messageToolCallFunctionArgs
+                    .getOrPut(deltaToolCall.index()) { StringBuilder() }
+                    .append(fragment)
             }
         }
 
@@ -309,6 +365,14 @@ class ChatCompletionAccumulator private constructor() {
         function: Optional<ChatCompletionChunk.Choice.Delta.ToolCall.Function>
     ): ChatCompletionChunk.Choice.Delta.ToolCall.Function =
         function.orElseThrow { OpenAIInvalidDataException("Tool call chunk missing function.") }
+
+    private fun isTerminalAudioUpdate(choice: ChatCompletionChunk.Choice): Boolean =
+        choice.delta().audio().getOrNull()?.let {
+            it.expiresAt().isPresent &&
+                !it.id().isPresent &&
+                !it.data().isPresent &&
+                !it.transcript().isPresent
+        } ?: false
 
     private fun buildChoices() =
         choiceBuilders.entries
@@ -325,9 +389,10 @@ class ChatCompletionAccumulator private constructor() {
             .getOrElse(index) {
                 throw OpenAIInvalidDataException("Missing message for index $index.")
             }
-            .content(messageContents[index])
-            .refusal(messageRefusals[index])
+            .content(messageContents[index]?.toString())
+            .refusal(messageRefusals[index]?.toString())
             .toolCalls(buildToolCalls(index))
+            .apply { messageAudio[index]?.let { audio(it.build()) } }
             .build()
 
     private fun buildToolCalls(index: Long): List<ChatCompletionMessageToolCall> =
@@ -348,7 +413,7 @@ class ChatCompletionAccumulator private constructor() {
         toolCallFunctionBuilders[index]
             ?.get(toolCallIndex)
             ?.arguments(
-                toolCallFunctionArgs[index]?.get(toolCallIndex)
+                toolCallFunctionArgs[index]?.get(toolCallIndex)?.toString()
                     ?: throw OpenAIInvalidDataException(
                         "Missing function arguments for index $index.$toolCallIndex."
                     )

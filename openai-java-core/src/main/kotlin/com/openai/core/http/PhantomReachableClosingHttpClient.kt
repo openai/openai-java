@@ -1,7 +1,7 @@
 package com.openai.core.http
 
 import com.openai.core.RequestOptions
-import com.openai.core.closeWhenPhantomReachable
+import com.openai.core.registerPhantomCleanup
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -10,8 +10,20 @@ import java.util.concurrent.CompletableFuture
  * This class ensures the `HttpClient` is closed even if the user forgets to close it.
  */
 internal class PhantomReachableClosingHttpClient(private val httpClient: HttpClient) : HttpClient {
+    companion object {
+        @JvmSynthetic
+        internal fun wrap(httpClient: HttpClient): HttpClient {
+            val wrapper = PhantomReachableClosingHttpClient(httpClient)
+            return if (httpClient is WebSocketClient) {
+                object : HttpClient by wrapper, WebSocketClient by httpClient {}
+            } else wrapper
+        }
+    }
+
+    private val cleanup: AutoCloseable
+
     init {
-        closeWhenPhantomReachable(this, httpClient)
+        cleanup = registerPhantomCleanup(this, httpClient::close)
     }
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse =
@@ -22,5 +34,5 @@ internal class PhantomReachableClosingHttpClient(private val httpClient: HttpCli
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> = httpClient.executeAsync(request, requestOptions)
 
-    override fun close() = httpClient.close()
+    override fun close() = cleanup.close()
 }

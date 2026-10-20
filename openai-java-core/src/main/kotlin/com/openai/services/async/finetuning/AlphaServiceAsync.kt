@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.finetuning
 
@@ -21,7 +21,8 @@ interface AlphaServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AlphaServiceAsync
 
     /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-    fun graders(): GraderServiceAsync
+    fun graders(): GraderServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** A view of [AlphaServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -36,6 +37,9 @@ interface AlphaServiceAsync {
         ): AlphaServiceAsync.WithRawResponse
 
         /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-        fun graders(): GraderServiceAsync.WithRawResponse
+        fun graders(): GraderServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
     }
 }

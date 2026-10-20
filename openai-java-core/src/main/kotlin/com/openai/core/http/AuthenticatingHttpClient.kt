@@ -16,7 +16,9 @@ internal class AuthenticatingHttpClient(
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
         authenticator.authenticateAsync(request).thenCompose { authenticated ->
-            delegate.executeAsync(authenticated, requestOptions)
+            request.body.beforeMultipartTransport {
+                delegate.executeAsync(authenticated, requestOptions)
+            }
         }
 
     override fun close() {

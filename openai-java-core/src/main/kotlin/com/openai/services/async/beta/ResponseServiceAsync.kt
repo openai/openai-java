@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.beta
 
@@ -22,6 +22,7 @@ import com.openai.services.async.beta.responses.InputTokenServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 interface ResponseServiceAsync {
 
     /**
@@ -36,20 +37,60 @@ interface ResponseServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseServiceAsync
 
-    fun inputItems(): InputItemServiceAsync
+    /** Opens a typed WebSocket using the SDK-owned connection implementation. */
+    fun connectWebSocket():
+        CompletableFuture<
+            com.openai.core.http.WebSocketConnection<
+                com.openai.models.beta.responses.BetaResponsesClientEvent,
+                com.openai.models.beta.responses.BetaResponsesServerEvent,
+            >
+        > =
+        connectWebSocket(
+            com.openai.core.http.WebSocketOptions.defaults(),
+            com.openai.core.RequestOptions.none(),
+        )
 
-    fun inputTokens(): InputTokenServiceAsync
+    fun connectWebSocket(
+        options: com.openai.core.http.WebSocketOptions
+    ): CompletableFuture<
+        com.openai.core.http.WebSocketConnection<
+            com.openai.models.beta.responses.BetaResponsesClientEvent,
+            com.openai.models.beta.responses.BetaResponsesServerEvent,
+        >
+    > = connectWebSocket(options, com.openai.core.RequestOptions.none())
+
+    fun connectWebSocket(
+        options: com.openai.core.http.WebSocketOptions,
+        requestOptions: com.openai.core.RequestOptions,
+    ): CompletableFuture<
+        com.openai.core.http.WebSocketConnection<
+            com.openai.models.beta.responses.BetaResponsesClientEvent,
+            com.openai.models.beta.responses.BetaResponsesServerEvent,
+        >
+    > =
+        throw UnsupportedOperationException(
+            "This service implementation does not support WebSockets"
+        )
+
+    /** Create and manage model responses. */
+    fun inputItems(): InputItemServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
+    /** Create and manage model responses. */
+    fun inputTokens(): InputTokenServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
-     * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
-     * [image](https://platform.openai.com/docs/guides/images) inputs to generate
-     * [text](https://platform.openai.com/docs/guides/text) or
-     * [JSON](https://platform.openai.com/docs/guides/structured-outputs) outputs. Have the model
-     * call your own [custom code](https://platform.openai.com/docs/guides/function-calling) or use
-     * built-in [tools](https://platform.openai.com/docs/guides/tools) like
-     * [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-     * [file search](https://platform.openai.com/docs/guides/tools-file-search) to use your own data
-     * as input for the model's response.
+     * Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text)
+     * or [image](https://developers.openai.com/api/docs/guides/images-vision) inputs to generate
+     * [text](https://developers.openai.com/api/docs/guides/text) or
+     * [JSON](https://developers.openai.com/api/docs/guides/structured-outputs) outputs. Have the
+     * model call your own
+     * [custom code](https://developers.openai.com/api/docs/guides/function-calling) or use built-in
+     * [tools](https://developers.openai.com/api/docs/guides/tools) like
+     * [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+     * [file search](https://developers.openai.com/api/docs/guides/tools-file-search) to use your
+     * own data as input for the model's response.
      */
     fun create(): CompletableFuture<BetaResponse> = create(ResponseCreateParams.none())
 
@@ -69,15 +110,16 @@ interface ResponseServiceAsync {
         create(ResponseCreateParams.none(), requestOptions)
 
     /**
-     * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
-     * [image](https://platform.openai.com/docs/guides/images) inputs to generate
-     * [text](https://platform.openai.com/docs/guides/text) or
-     * [JSON](https://platform.openai.com/docs/guides/structured-outputs) outputs. Have the model
-     * call your own [custom code](https://platform.openai.com/docs/guides/function-calling) or use
-     * built-in [tools](https://platform.openai.com/docs/guides/tools) like
-     * [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-     * [file search](https://platform.openai.com/docs/guides/tools-file-search) to use your own data
-     * as input for the model's response.
+     * Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text)
+     * or [image](https://developers.openai.com/api/docs/guides/images-vision) inputs to generate
+     * [text](https://developers.openai.com/api/docs/guides/text) or
+     * [JSON](https://developers.openai.com/api/docs/guides/structured-outputs) outputs. Have the
+     * model call your own
+     * [custom code](https://developers.openai.com/api/docs/guides/function-calling) or use built-in
+     * [tools](https://developers.openai.com/api/docs/guides/tools) like
+     * [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+     * [file search](https://developers.openai.com/api/docs/guides/tools-file-search) to use your
+     * own data as input for the model's response.
      */
     fun createStreaming(): AsyncStreamResponse<BetaResponseStreamEvent> =
         createStreaming(ResponseCreateParams.none())
@@ -207,7 +249,7 @@ interface ResponseServiceAsync {
     /**
      * Cancels a model response with the given ID. Only responses created with the `background`
      * parameter set to `true` can be cancelled.
-     * [Learn more](https://platform.openai.com/docs/guides/background).
+     * [Learn more](https://developers.openai.com/api/docs/guides/background).
      */
     fun cancel(responseId: String): CompletableFuture<BetaResponse> =
         cancel(responseId, ResponseCancelParams.none())
@@ -247,9 +289,9 @@ interface ResponseServiceAsync {
      * Compact a conversation. Returns a compacted response object.
      *
      * Learn when and how to compact long-running conversations in the
-     * [conversation state guide](https://platform.openai.com/docs/guides/conversation-state#managing-the-context-window).
+     * [conversation state guide](https://developers.openai.com/api/docs/guides/conversation-state#managing-the-context-window).
      * For ZDR-compatible compaction details, see
-     * [Compaction (advanced)](https://platform.openai.com/docs/guides/conversation-state#compaction-advanced).
+     * [Compaction (advanced)](https://developers.openai.com/api/docs/guides/conversation-state#compaction-advanced).
      */
     fun compact(params: ResponseCompactParams): CompletableFuture<BetaCompactedResponse> =
         compact(params, RequestOptions.none())
@@ -274,9 +316,17 @@ interface ResponseServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): ResponseServiceAsync.WithRawResponse
 
-        fun inputItems(): InputItemServiceAsync.WithRawResponse
+        /** Create and manage model responses. */
+        fun inputItems(): InputItemServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun inputTokens(): InputTokenServiceAsync.WithRawResponse
+        /** Create and manage model responses. */
+        fun inputTokens(): InputTokenServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /responses?beta=true`, but is otherwise the same as
