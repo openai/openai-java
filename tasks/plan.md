@@ -76,8 +76,9 @@ C2's actual generated implementations for five additional service groups pass
 62 lifecycle cases covering cancellation, HTTP/transport failures, validated
 typed success, raw response ownership, malformed JSON and body-read failures.
 The committed opt-in runner checks the loaded service classes and preserves
-close-once and diagnostic assertions. Audio format/streaming integration remains
-pending, so the compiler Delta stays draft and SDK promotion remains blocked.
+close-once and diagnostic assertions. That early checkpoint did not yet cover audio integration. The composed runtime
+publication below now includes audio/streaming proof; SDK promotion remains blocked
+until the relevant compiler changes merge and rollout gates pass.
 
 The next compiler foundations preserve two contracts that cannot be inferred
 from optionality or media types alone:
@@ -259,10 +260,11 @@ The user clarified the delivery ceiling on 2026-10-19: **at most ten public Java
 SDK PRs and at most ten compiler Deltas; internal generation PRs are unlimited**.
 Six public SDK PRs have merged and ten compiler Deltas were opened. These are
 planning counts, not platform quotas. The compiler split created excessive review
-overhead. One compiler review (2565485) has merged, and three superseded
-reviews (2565512, 2568196, 2571652) are now closed without merge. Six remain open.
-Consolidate the remaining open reviews into the three existing reviews below;
-do not create replacement Deltas. Internal PRs still follow normal
+overhead. One compiler review (2565485) has merged. Six superseded reviews are closed
+without merge: 2565512, 2568196, 2571652, 2566858, 2568122 and 2568148.
+Exactly three transition compiler reviews remain open, with their expanded
+heads published in the runtime → model → test-fidelity stack below.
+Do not create replacement Deltas. Internal PRs still follow normal
 ownership, compatibility and promotion requirements.
 
 The earlier micro-PR plan is superseded. Workstream IDs describe implementation
@@ -298,18 +300,18 @@ entire policy PR to contain only `.castiron-ratchet.json`. Slot 10 preserves tha
 option without exceeding the public cap. Do not change policy until trusted
 measurement proves zero, and do not use an additional PR outside the cap.
 
-### Compiler consolidation: six open reviews to three existing reviews
+### Compiler consolidation: three retained reviews
 
 The ten-review split is superseded. Implementation steps belong in commits inside
-coherent reviews. Prepare and verify these replacements before closing any source
-review. Delta 2565485 is merged. Runtime consolidation 2566856 is published;
-its three superseded source reviews are closed with replacement links. Six
-reviews remain open, including the three model source reviews still to retire.
+coherent reviews. All three combined replacements are now verified and published.
+Delta 2565485 is merged; six superseded source reviews are closed with replacement
+links, without merging. Keep their branches and evidence. The three retained
+reviews remain open under actual-human, current-head CI and automated-review gates.
 
-| Kept review | Consolidated scope | Reviews to supersede after verification |
+| Kept review | Consolidated scope | Source-review disposition |
 | --- | --- | --- |
 | Compiler Delta 2566856 | Shared policies, clients/telemetry, multipart/audio, Responses bridges and remaining services/auth/webhooks | 2565512, 2568196, 2571652 CLOSED as superseded; 2565485 already merged |
-| Compiler Delta 2572073 | Legacy accessors/raw properties/enums, embeddings/defaults, Visitor/diagnostics and remaining model/structured helpers | 2566858, 2568122, 2568148 |
+| Compiler Delta 2572073 | Legacy accessors/raw properties/enums, embeddings/defaults, Visitor/diagnostics and remaining model/structured helpers | 2566858, 2568122, 2568148 CLOSED as superseded |
 | Compiler Delta 2568349 | Generated test fidelity and handwritten regression ownership | None |
 
 Keep the original source commits and evidence. Transfer every unresolved finding,
@@ -318,8 +320,11 @@ matrix. In particular, C1's human helper-contract review and security-focused
 auth, webhook and serialization reviews remain required. Superseding a review
 does not resolve its feedback. Verify the exact combined source, generation
 impact, old consumers and API surfaces before publishing the expanded heads.
-Close the three remaining superseded model reviews with links to their verified replacements,
-then deduplicate review requests and update the root SDK review post.
+All six closures carry verified replacement links. Runtime source commits are
+ancestors of their replacement; model sources were cherry-picked, with explicit
+commit/blob and overlap mappings. Model helper-import collision review-body
+feedback has a published fix/test reply; it had no inline thread to resolve.
+Keep SDK review requests deduplicated on the three retained reviews.
 
 Historical publication inventory (all open at consolidation start; 2565485 now merged):
 
@@ -346,20 +351,46 @@ selected-policy differences, coherent compilation of 36 production sources,
 749 classfiles / 279 API surfaces with zero incompatibilities, 610 runtime cases,
 two generated offline test bodies and 56 frozen Java/Kotlin cases. Five prior
 outputs differ only by blank lines; prior SOCKS flakiness remains qualified.
-Current-head hosted CI and human SDK/security review are still gates; the root
-SDK review request was updated in place, with the existing native team request
-retained rather than duplicated.
+Conductor verified exact-head Buildkite 8827390 SUCCESS. Actual-human SDK/Castiron
+security/helper-contract review remains explicitly required; prior agent approvals
+and green CI do not satisfy it. Current-head automated review completion is not
+inferred from CI. The existing root SDK review post and native team requests are
+reused.
 
-Model Delta 2572073's published `78e36cc` failed Buildkite 8821598 on the same
-OAS Clippy lint on both architectures. Its equivalent expression repair and the
-cross-adapter import-collision regressions are committed in the existing model
-consolidation, now composed with runtime source at `9b2b50d48a856`. Composed local
-suites pass (renderer 884 with eight existing ignored, OAS 122, compiler 1,925,
-IR 43), but genuine canonical preflight exposed a nullable-object diagnostic
-schema gap. The existing writer is repairing it before publication; no successful
-combined canonical model result is claimed yet. Test-fidelity source is composed
-locally with both bundles; its exact combined checks remain pending.
+Model Delta 2572073 is now published at
+`98ba664f260b092f2a37a94882748ba8cb523cde`, stacked on runtime75f006. It includes
+the Clippy, pending-helper import collision and bounded nullable diagnostic-object
+preflight fixes. Genuine source active/control renders produce 3,794 paths each;
+40 paths change under selected model policies. All 2,022 original model/service
+classes preserve the compared JVM/generic surfaces, including 15,136 model methods
+and 2,321 fields; 356/356 original JUnit tests pass on both baseline and candidate.
+All 15 unchanged-source Java/Kotlin consumer programs pass. Final10239 tests pass
+OAS123/compiler1,925; renderer884/eight existing ignored and IR43 run at a
+source-equivalent prior checkpoint. Four-crate exact CI Clippy passes. Published98ba
+only reorders private module declarations relative to tested10239; all other1,426
+crate files are byte-identical. The inherited API-reference expiry-accessor binding
+is explicitly disclosed. Human serialization/helper/security review and new
+published-head hosted CI/automated reviews remain required.
 
+Test-fidelity Delta 2568349 is published at
+`36fc5903a6f5cf0ee33f8ee6bbf3a4d648670541`, now retargeted onto the model branch.
+Its complete tree and all1,440 source hashes equal tested8693. All2,991 units pass
+(OAS126/compiler1,928/IR43/renderer894; eight existing ignored) and all-four-crate
+exact CI Clippy passes. Genuine ownership-active/control generation changes only
+five smoke paths and removes five duplicate contract suites (3,946→3,941); SDK JSON,
+transformed OpenAPI and unrelated facts are identical. All2,139 generated production
+files are byte-identical to B. Broader unconditional test changes preserve all5,827
+assertions across964 model tests through exact combined-body token proof;146 service
+suites retain unselected bodies in the corresponding smoke/isolated contracts.
+The five exact smokes compile with SDK-owned suites, missing-member negative controls
+fail as intended, pagination passes2/2 and original/extracted streaming passes4/4 each.
+Hosted CI and actual-human test-ownership/compatibility review remain required.
+
+The model/runtime proof uses JDK21 with JVM8 candidate targets, not an actual Java8
+runtime. No full-SDK compilation or general Kotlin-metadata equality is claimed.
+The two source publications ran all normal push hooks using their actual stack
+bases. The initial stale GitHub-master hook reference and a formatting-only failure
+were repaired; no hook, required CI or human gate was skipped.
 Separately assigned pre-existing Delta 2561775 remains at `b7db5ca57cf3` under its
 existing typed-map compatibility/release hold. Buildkite 8755059's only failed job
 ran out of worker disk during API-reference dependency installation. A new native

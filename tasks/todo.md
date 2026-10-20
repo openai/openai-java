@@ -9,24 +9,44 @@ gates remain in effect. No developer-facing breaking changes are allowed.
 The clarified limits are ten public Java SDK PRs, ten compiler Deltas and
 unlimited internal generation PRs. Six public PRs have merged and ten compiler
 Deltas were opened. The ten-review split created excessive overhead and is
-superseded by [consolidation into three existing reviews](plan.md#compiler-consolidation-ten-open-reviews-to-three-existing-reviews).
+superseded by [consolidation into three existing reviews](plan.md#compiler-consolidation-three-retained-reviews).
 Workstream checkboxes describe implementation and verification steps, not
 separate publications or platform quotas.
 
 - [x] Allocate the existing reviews and the remaining public/compiler capacity.
 - [x] Complete #1239 expiry regressions/plan through normal fresh exact-head gates.
-- [ ] Consolidate shared policies and runtime/services in existing Delta 2566856.
-- [ ] Consolidate all model/structured-helper consumers in existing Delta 2572073.
-- [ ] Finish generated test fidelity in existing Delta 2568349.
-- [ ] Preserve C1's required human helper-contract review in the kept runtime review.
+- [x] Consolidate shared policies and runtime/services in existing Delta 2566856.
+- [x] Consolidate all model/structured-helper consumers in existing Delta 2572073.
+- [x] Finish generated test fidelity in existing Delta 2568349.
+- [x] Preserve C1's required human helper-contract review in the kept runtime review.
 - [x] Publish the two final compiler bundles within the ten-Delta cap.
-- [ ] Carry forward and address every source-review finding in the kept reviews.
-- [ ] Verify combined replacements, then close seven superseded reviews with
-  replacement links and deduplicate their SDK review requests.
+- [x] Carry forward and address every source-review finding in the kept reviews.
+- [x] Verify/publish all three combined replacements; close six superseded
+  reviews without merge, preserving source/evidence and replacement links.
+  Delta2565485 already merged; it was not closed as superseded.
+- [ ] Obtain actual-human reviews and fresh current-head CI/automated review
+  completion for the three retained reviews, then use protected merging.
 - [ ] After compiler merge, use normal internal checkpoints and public promotion
   for consolidated SDK batches within the four reserved public slots.
 - [ ] Keep all code/test/inventory work in public slots 7–9; reserve slot 10 for
   an optional policy-only zero-budget/strict activation after trusted zero.
+
+## Published consolidation checkpoint — 2026-10-20
+
+| Retained review | Published head | Current disposition |
+| --- | --- | --- |
+| Runtime2566856 | `75f006fe69324b89ea538f08869646523505ade9` | CI8827390 SUCCESS; actual-human security/helper review remains required |
+| Models2572073 | `98ba664f260b092f2a37a94882748ba8cb523cde` | Published;2,022-class API proof,356 original tests and15 source consumers pass; hosted gates/human review pending |
+| Test fidelity2568349 | `36fc5903a6f5cf0ee33f8ee6bbf3a4d648670541` | Published on model parent;2,991 units, genuine generation, production-byte preservation and exact ownership tests pass; hosted gates/human review pending |
+
+Six source reviews are closed without merge:2565512/2568196/2571652 and
+2566858/2568122/2568148. Only three transition compiler reviews remain open.
+The C6 helper collision review-body finding has an explicit fix/test reply on its
+source review; no inline thread existed to resolve. Runtime's two P2 threads are
+resolved after publication. Native SDK team requests and root #sdk-reviews are
+reused. No new Delta, SDK promotion, budget change or landed debt reduction.
+Separately assigned held2561775 has pending infrastructure retry8827484; its
+compatibility/release hold remains independent. No external polling.
 
 ## Foundation
 
