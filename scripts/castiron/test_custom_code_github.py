@@ -73,6 +73,7 @@ class GitHubReportTests(GitTestCase):
         }
         next_pull: dict[str, Any] = {**main, "base": {**main["base"], "ref": "next"}}
         for numbers in ([3, 4], [4, 3]):
+
             def api_response(_method: str, path: str, numbers: list[int] = numbers) -> Any:
                 if "/commits/" in path:
                     return [{"number": number} for number in numbers]
@@ -629,6 +630,7 @@ class GitHubBudgetTests(unittest.TestCase):
                 pull_heads=None,
                 measurement=None,
                 policy_sha=self.base,
+                target_branch="main",
             )
 
     def test_stale_pull_and_wrong_target_fail_before_objects_created(self) -> None:
