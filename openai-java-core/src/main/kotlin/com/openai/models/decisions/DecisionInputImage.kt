@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -28,6 +29,7 @@ private constructor(
     private val imageUrl: JsonField<String>,
     private val type: JsonValue,
     private val detail: JsonField<Detail>,
+    private val promptCacheBreakpoint: JsonField<DecisionPromptCacheBreakpoint>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -36,7 +38,10 @@ private constructor(
         @JsonProperty("image_url") @ExcludeMissing imageUrl: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("detail") @ExcludeMissing detail: JsonField<Detail> = JsonMissing.of(),
-    ) : this(imageUrl, type, detail, mutableMapOf())
+        @JsonProperty("prompt_cache_breakpoint")
+        @ExcludeMissing
+        promptCacheBreakpoint: JsonField<DecisionPromptCacheBreakpoint> = JsonMissing.of(),
+    ) : this(imageUrl, type, detail, promptCacheBreakpoint, mutableMapOf())
 
     /**
      * A base64-encoded image in a data URL or a publicly accessible HTTP(S) image URL.
@@ -66,6 +71,16 @@ private constructor(
     fun detail(): Optional<Detail> = detail.getOptional("detail")
 
     /**
+     * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the
+     * request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheBreakpoint(): Optional<DecisionPromptCacheBreakpoint> =
+        promptCacheBreakpoint.getOptional("prompt_cache_breakpoint")
+
+    /**
      * Returns the raw JSON value of [imageUrl].
      *
      * Unlike [imageUrl], this method doesn't throw if the JSON field has an unexpected type.
@@ -79,11 +94,45 @@ private constructor(
      */
     @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<Detail> = detail
 
+    /**
+     * Returns the raw JSON value of [promptCacheBreakpoint].
+     *
+     * Unlike [promptCacheBreakpoint], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("prompt_cache_breakpoint")
+    @ExcludeMissing
+    fun _promptCacheBreakpoint(): JsonField<DecisionPromptCacheBreakpoint> = promptCacheBreakpoint
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "image_url" to this.imageUrl,
+            "type" to this.type,
+            "detail" to this.detail,
+            "prompt_cache_breakpoint" to this.promptCacheBreakpoint,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -110,6 +159,8 @@ private constructor(
         private var imageUrl: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("input_image")
         private var detail: JsonField<Detail> = JsonMissing.of()
+        private var promptCacheBreakpoint: JsonField<DecisionPromptCacheBreakpoint> =
+            JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -117,6 +168,7 @@ private constructor(
             imageUrl = decisionInputImage.imageUrl
             type = decisionInputImage.type
             detail = decisionInputImage.detail
+            promptCacheBreakpoint = decisionInputImage.promptCacheBreakpoint
             additionalProperties = decisionInputImage.additionalProperties.toMutableMap()
         }
 
@@ -159,6 +211,32 @@ private constructor(
          */
         fun detail(detail: JsonField<Detail>) = apply { this.detail = detail }
 
+        /**
+         * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the
+         * request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
+         */
+        fun promptCacheBreakpoint(promptCacheBreakpoint: DecisionPromptCacheBreakpoint?) =
+            promptCacheBreakpoint(JsonField.ofNullable(promptCacheBreakpoint))
+
+        /**
+         * Alias for calling [Builder.promptCacheBreakpoint] with
+         * `promptCacheBreakpoint.orElse(null)`.
+         */
+        fun promptCacheBreakpoint(promptCacheBreakpoint: Optional<DecisionPromptCacheBreakpoint>) =
+            promptCacheBreakpoint(promptCacheBreakpoint.getOrNull())
+
+        /**
+         * Sets [Builder.promptCacheBreakpoint] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheBreakpoint] with a well-typed
+         * [DecisionPromptCacheBreakpoint] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun promptCacheBreakpoint(promptCacheBreakpoint: JsonField<DecisionPromptCacheBreakpoint>) =
+            apply {
+                this.promptCacheBreakpoint = promptCacheBreakpoint
+            }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -195,6 +273,7 @@ private constructor(
                 checkRequired("imageUrl", imageUrl),
                 type,
                 detail,
+                promptCacheBreakpoint,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -221,6 +300,7 @@ private constructor(
             }
         }
         detail().ifPresent { it.validate() }
+        promptCacheBreakpoint().ifPresent { it.validate() }
         validated = true
     }
 
@@ -241,7 +321,8 @@ private constructor(
     internal fun validity(): Int =
         (if (imageUrl.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("input_image")) 1 else 0 } +
-            (detail.asKnown().getOrNull()?.validity() ?: 0)
+            (detail.asKnown().getOrNull()?.validity() ?: 0) +
+            (promptCacheBreakpoint.asKnown().getOrNull()?.validity() ?: 0)
 
     /** The image detail level, using the selected model's image profile. Defaults to auto. */
     class Detail @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -399,13 +480,16 @@ private constructor(
             imageUrl == other.imageUrl &&
             type == other.type &&
             detail == other.detail &&
+            promptCacheBreakpoint == other.promptCacheBreakpoint &&
             additionalProperties == other.additionalProperties
     }
 
-    private val hashCode: Int by lazy { Objects.hash(imageUrl, type, detail, additionalProperties) }
+    private val hashCode: Int by lazy {
+        Objects.hash(imageUrl, type, detail, promptCacheBreakpoint, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "DecisionInputImage{imageUrl=$imageUrl, type=$type, detail=$detail, additionalProperties=$additionalProperties}"
+        "DecisionInputImage{imageUrl=$imageUrl, type=$type, detail=$detail, promptCacheBreakpoint=$promptCacheBreakpoint, additionalProperties=$additionalProperties}"
 }

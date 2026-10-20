@@ -10,6 +10,10 @@ import com.openai.models.live.AudioFormat
 import com.openai.models.live.ClientConfig
 import com.openai.models.live.CommentaryAppendEvent
 import com.openai.models.live.DataChannelConfig
+import com.openai.models.live.DecisionCreateEvent
+import com.openai.models.live.DecisionItemCreateEvent
+import com.openai.models.live.DecisionItemDeleteEvent
+import com.openai.models.live.DecisionTrigger
 import com.openai.models.live.ForkSessionConfig
 import com.openai.models.live.ForkSessionStartEvent
 import com.openai.models.live.FunctionTool
@@ -128,6 +132,9 @@ internal class ForkClientEventTest {
         assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
         assertThat(forkClientEvent.responseItemCreate()).isEmpty
         assertThat(forkClientEvent.responseCreate()).isEmpty
         assertThat(forkClientEvent.sessionClose()).isEmpty
@@ -294,6 +301,21 @@ internal class ForkClientEventTest {
                                 )
                                 .build()
                         )
+                        .addTrigger(
+                            DecisionTrigger.builder()
+                                .decisions(
+                                    DecisionTrigger.Decisions.builder()
+                                        .addQuestion(
+                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                                .instructions("instructions")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                                .build()
+                        )
                         .build()
                 )
                 .eventId("evt_update_001")
@@ -310,6 +332,9 @@ internal class ForkClientEventTest {
         assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
         assertThat(forkClientEvent.responseItemCreate()).isEmpty
         assertThat(forkClientEvent.responseCreate()).isEmpty
         assertThat(forkClientEvent.sessionClose()).isEmpty
@@ -383,6 +408,24 @@ internal class ForkClientEventTest {
                                     )
                                     .build()
                             )
+                            .addTrigger(
+                                DecisionTrigger.builder()
+                                    .decisions(
+                                        DecisionTrigger.Decisions.builder()
+                                            .addQuestion(
+                                                DecisionTrigger.Decisions.Question.Predicate
+                                                    .builder()
+                                                    .instructions("instructions")
+                                                    .name("name")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .eventType(
+                                        DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
+                                    )
+                                    .build()
+                            )
                             .build()
                     )
                     .eventId("evt_update_001")
@@ -417,6 +460,9 @@ internal class ForkClientEventTest {
         assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
         assertThat(forkClientEvent.responseItemCreate()).isEmpty
         assertThat(forkClientEvent.responseCreate()).isEmpty
         assertThat(forkClientEvent.sessionClose()).isEmpty
@@ -457,6 +503,9 @@ internal class ForkClientEventTest {
         assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
         assertThat(forkClientEvent.responseItemCreate()).isEmpty
         assertThat(forkClientEvent.responseCreate()).isEmpty
         assertThat(forkClientEvent.sessionClose()).isEmpty
@@ -495,6 +544,9 @@ internal class ForkClientEventTest {
         assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
         assertThat(forkClientEvent.responseItemCreate()).isEmpty
         assertThat(forkClientEvent.responseCreate()).isEmpty
         assertThat(forkClientEvent.sessionClose()).isEmpty
@@ -535,6 +587,9 @@ internal class ForkClientEventTest {
         assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
         assertThat(forkClientEvent.responseItemCreate()).isEmpty
         assertThat(forkClientEvent.responseCreate()).isEmpty
         assertThat(forkClientEvent.sessionClose()).isEmpty
@@ -580,6 +635,9 @@ internal class ForkClientEventTest {
         assertThat(forkClientEvent.sessionInstructionsAppend()).contains(sessionInstructionsAppend)
         assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
         assertThat(forkClientEvent.responseItemCreate()).isEmpty
         assertThat(forkClientEvent.responseCreate()).isEmpty
         assertThat(forkClientEvent.sessionClose()).isEmpty
@@ -626,6 +684,9 @@ internal class ForkClientEventTest {
         assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(forkClientEvent.sessionThinkingAppend()).contains(sessionThinkingAppend)
         assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
         assertThat(forkClientEvent.responseItemCreate()).isEmpty
         assertThat(forkClientEvent.responseCreate()).isEmpty
         assertThat(forkClientEvent.sessionClose()).isEmpty
@@ -672,6 +733,9 @@ internal class ForkClientEventTest {
         assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(forkClientEvent.sessionCommentaryAppend()).contains(sessionCommentaryAppend)
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
         assertThat(forkClientEvent.responseItemCreate()).isEmpty
         assertThat(forkClientEvent.responseCreate()).isEmpty
         assertThat(forkClientEvent.sessionClose()).isEmpty
@@ -688,6 +752,152 @@ internal class ForkClientEventTest {
                     )
                     .delegationId("del_abc123")
                     .eventId("evt_commentary_001")
+                    .build()
+            )
+
+        val roundtrippedForkClientEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(forkClientEvent),
+                jacksonTypeRef<ForkClientEvent>(),
+            )
+
+        assertThat(roundtrippedForkClientEvent).isEqualTo(forkClientEvent)
+    }
+
+    @Test
+    fun ofDecisionCreate() {
+        val decisionCreate = DecisionCreateEvent.builder().eventId("decision_1").build()
+
+        val forkClientEvent = ForkClientEvent.ofDecisionCreate(decisionCreate)
+
+        assertThat(forkClientEvent.sessionStart()).isEmpty
+        assertThat(forkClientEvent.sessionUpdate()).isEmpty
+        assertThat(forkClientEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(forkClientEvent.sessionInputAudioMute()).isEmpty
+        assertThat(forkClientEvent.sessionInputAudioUnmute()).isEmpty
+        assertThat(forkClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
+        assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
+        assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).contains(decisionCreate)
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
+        assertThat(forkClientEvent.responseItemCreate()).isEmpty
+        assertThat(forkClientEvent.responseCreate()).isEmpty
+        assertThat(forkClientEvent.sessionClose()).isEmpty
+    }
+
+    @Test
+    fun ofDecisionCreateRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val forkClientEvent =
+            ForkClientEvent.ofDecisionCreate(
+                DecisionCreateEvent.builder().eventId("decision_1").build()
+            )
+
+        val roundtrippedForkClientEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(forkClientEvent),
+                jacksonTypeRef<ForkClientEvent>(),
+            )
+
+        assertThat(roundtrippedForkClientEvent).isEqualTo(forkClientEvent)
+    }
+
+    @Test
+    fun ofDecisionItemCreate() {
+        val decisionItemCreate =
+            DecisionItemCreateEvent.builder()
+                .item(
+                    DecisionItemCreateEvent.Item.builder()
+                        .content("string")
+                        .id("id")
+                        .type(DecisionItemCreateEvent.Item.Type.MESSAGE)
+                        .build()
+                )
+                .eventId("browser_1")
+                .build()
+
+        val forkClientEvent = ForkClientEvent.ofDecisionItemCreate(decisionItemCreate)
+
+        assertThat(forkClientEvent.sessionStart()).isEmpty
+        assertThat(forkClientEvent.sessionUpdate()).isEmpty
+        assertThat(forkClientEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(forkClientEvent.sessionInputAudioMute()).isEmpty
+        assertThat(forkClientEvent.sessionInputAudioUnmute()).isEmpty
+        assertThat(forkClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
+        assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
+        assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).contains(decisionItemCreate)
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
+        assertThat(forkClientEvent.responseItemCreate()).isEmpty
+        assertThat(forkClientEvent.responseCreate()).isEmpty
+        assertThat(forkClientEvent.sessionClose()).isEmpty
+    }
+
+    @Test
+    fun ofDecisionItemCreateRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val forkClientEvent =
+            ForkClientEvent.ofDecisionItemCreate(
+                DecisionItemCreateEvent.builder()
+                    .item(
+                        DecisionItemCreateEvent.Item.builder()
+                            .content("string")
+                            .id("id")
+                            .type(DecisionItemCreateEvent.Item.Type.MESSAGE)
+                            .build()
+                    )
+                    .eventId("browser_1")
+                    .build()
+            )
+
+        val roundtrippedForkClientEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(forkClientEvent),
+                jacksonTypeRef<ForkClientEvent>(),
+            )
+
+        assertThat(roundtrippedForkClientEvent).isEqualTo(forkClientEvent)
+    }
+
+    @Test
+    fun ofDecisionItemDelete() {
+        val decisionItemDelete =
+            DecisionItemDeleteEvent.builder()
+                .itemId("msg_browser_1")
+                .eventId("remove_browser_1")
+                .build()
+
+        val forkClientEvent = ForkClientEvent.ofDecisionItemDelete(decisionItemDelete)
+
+        assertThat(forkClientEvent.sessionStart()).isEmpty
+        assertThat(forkClientEvent.sessionUpdate()).isEmpty
+        assertThat(forkClientEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(forkClientEvent.sessionInputAudioMute()).isEmpty
+        assertThat(forkClientEvent.sessionInputAudioUnmute()).isEmpty
+        assertThat(forkClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
+        assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
+        assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).contains(decisionItemDelete)
+        assertThat(forkClientEvent.responseItemCreate()).isEmpty
+        assertThat(forkClientEvent.responseCreate()).isEmpty
+        assertThat(forkClientEvent.sessionClose()).isEmpty
+    }
+
+    @Test
+    fun ofDecisionItemDeleteRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val forkClientEvent =
+            ForkClientEvent.ofDecisionItemDelete(
+                DecisionItemDeleteEvent.builder()
+                    .itemId("msg_browser_1")
+                    .eventId("remove_browser_1")
                     .build()
             )
 
@@ -726,6 +936,9 @@ internal class ForkClientEventTest {
         assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
         assertThat(forkClientEvent.responseItemCreate()).contains(responseItemCreate)
         assertThat(forkClientEvent.responseCreate()).isEmpty
         assertThat(forkClientEvent.sessionClose()).isEmpty
@@ -773,6 +986,9 @@ internal class ForkClientEventTest {
         assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
         assertThat(forkClientEvent.responseItemCreate()).isEmpty
         assertThat(forkClientEvent.responseCreate()).contains(responseCreate)
         assertThat(forkClientEvent.sessionClose()).isEmpty
@@ -810,6 +1026,9 @@ internal class ForkClientEventTest {
         assertThat(forkClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(forkClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(forkClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(forkClientEvent.decisionCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemCreate()).isEmpty
+        assertThat(forkClientEvent.decisionItemDelete()).isEmpty
         assertThat(forkClientEvent.responseItemCreate()).isEmpty
         assertThat(forkClientEvent.responseCreate()).isEmpty
         assertThat(forkClientEvent.sessionClose()).contains(sessionClose)

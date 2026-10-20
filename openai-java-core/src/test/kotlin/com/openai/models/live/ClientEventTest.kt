@@ -60,6 +60,21 @@ internal class ClientEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
+                        .addTrigger(
+                            DecisionTrigger.builder()
+                                .decisions(
+                                    DecisionTrigger.Decisions.builder()
+                                        .addQuestion(
+                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                                .instructions("instructions")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                                .build()
+                        )
                         .build()
                 )
                 .eventId("evt_start_001")
@@ -76,6 +91,9 @@ internal class ClientEventTest {
         assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(clientEvent.sessionThinkingAppend()).isEmpty
         assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
         assertThat(clientEvent.responseItemCreate()).isEmpty
         assertThat(clientEvent.responseCreate()).isEmpty
         assertThat(clientEvent.sessionClose()).isEmpty
@@ -128,6 +146,24 @@ internal class ClientEventTest {
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
                             .store(true)
+                            .addTrigger(
+                                DecisionTrigger.builder()
+                                    .decisions(
+                                        DecisionTrigger.Decisions.builder()
+                                            .addQuestion(
+                                                DecisionTrigger.Decisions.Question.Predicate
+                                                    .builder()
+                                                    .instructions("instructions")
+                                                    .name("name")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .eventType(
+                                        DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
+                                    )
+                                    .build()
+                            )
                             .build()
                     )
                     .eventId("evt_start_001")
@@ -207,6 +243,21 @@ internal class ClientEventTest {
                                 )
                                 .build()
                         )
+                        .addTrigger(
+                            DecisionTrigger.builder()
+                                .decisions(
+                                    DecisionTrigger.Decisions.builder()
+                                        .addQuestion(
+                                            DecisionTrigger.Decisions.Question.Predicate.builder()
+                                                .instructions("instructions")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
+                                .build()
+                        )
                         .build()
                 )
                 .eventId("evt_update_001")
@@ -223,6 +274,9 @@ internal class ClientEventTest {
         assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(clientEvent.sessionThinkingAppend()).isEmpty
         assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
         assertThat(clientEvent.responseItemCreate()).isEmpty
         assertThat(clientEvent.responseCreate()).isEmpty
         assertThat(clientEvent.sessionClose()).isEmpty
@@ -296,6 +350,24 @@ internal class ClientEventTest {
                                     )
                                     .build()
                             )
+                            .addTrigger(
+                                DecisionTrigger.builder()
+                                    .decisions(
+                                        DecisionTrigger.Decisions.builder()
+                                            .addQuestion(
+                                                DecisionTrigger.Decisions.Question.Predicate
+                                                    .builder()
+                                                    .instructions("instructions")
+                                                    .name("name")
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .eventType(
+                                        DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
+                                    )
+                                    .build()
+                            )
                             .build()
                     )
                     .eventId("evt_update_001")
@@ -330,6 +402,9 @@ internal class ClientEventTest {
         assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(clientEvent.sessionThinkingAppend()).isEmpty
         assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
         assertThat(clientEvent.responseItemCreate()).isEmpty
         assertThat(clientEvent.responseCreate()).isEmpty
         assertThat(clientEvent.sessionClose()).isEmpty
@@ -370,6 +445,9 @@ internal class ClientEventTest {
         assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(clientEvent.sessionThinkingAppend()).isEmpty
         assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
         assertThat(clientEvent.responseItemCreate()).isEmpty
         assertThat(clientEvent.responseCreate()).isEmpty
         assertThat(clientEvent.sessionClose()).isEmpty
@@ -408,6 +486,9 @@ internal class ClientEventTest {
         assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(clientEvent.sessionThinkingAppend()).isEmpty
         assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
         assertThat(clientEvent.responseItemCreate()).isEmpty
         assertThat(clientEvent.responseCreate()).isEmpty
         assertThat(clientEvent.sessionClose()).isEmpty
@@ -447,6 +528,9 @@ internal class ClientEventTest {
         assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(clientEvent.sessionThinkingAppend()).isEmpty
         assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
         assertThat(clientEvent.responseItemCreate()).isEmpty
         assertThat(clientEvent.responseCreate()).isEmpty
         assertThat(clientEvent.sessionClose()).isEmpty
@@ -492,6 +576,9 @@ internal class ClientEventTest {
         assertThat(clientEvent.sessionInstructionsAppend()).contains(sessionInstructionsAppend)
         assertThat(clientEvent.sessionThinkingAppend()).isEmpty
         assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
         assertThat(clientEvent.responseItemCreate()).isEmpty
         assertThat(clientEvent.responseCreate()).isEmpty
         assertThat(clientEvent.sessionClose()).isEmpty
@@ -538,6 +625,9 @@ internal class ClientEventTest {
         assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(clientEvent.sessionThinkingAppend()).contains(sessionThinkingAppend)
         assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
         assertThat(clientEvent.responseItemCreate()).isEmpty
         assertThat(clientEvent.responseCreate()).isEmpty
         assertThat(clientEvent.sessionClose()).isEmpty
@@ -584,6 +674,9 @@ internal class ClientEventTest {
         assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(clientEvent.sessionThinkingAppend()).isEmpty
         assertThat(clientEvent.sessionCommentaryAppend()).contains(sessionCommentaryAppend)
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
         assertThat(clientEvent.responseItemCreate()).isEmpty
         assertThat(clientEvent.responseCreate()).isEmpty
         assertThat(clientEvent.sessionClose()).isEmpty
@@ -600,6 +693,152 @@ internal class ClientEventTest {
                     )
                     .delegationId("del_abc123")
                     .eventId("evt_commentary_001")
+                    .build()
+            )
+
+        val roundtrippedClientEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(clientEvent),
+                jacksonTypeRef<ClientEvent>(),
+            )
+
+        assertThat(roundtrippedClientEvent).isEqualTo(clientEvent)
+    }
+
+    @Test
+    fun ofDecisionCreate() {
+        val decisionCreate = DecisionCreateEvent.builder().eventId("decision_1").build()
+
+        val clientEvent = ClientEvent.ofDecisionCreate(decisionCreate)
+
+        assertThat(clientEvent.sessionStart()).isEmpty
+        assertThat(clientEvent.sessionUpdate()).isEmpty
+        assertThat(clientEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(clientEvent.sessionInputAudioMute()).isEmpty
+        assertThat(clientEvent.sessionInputAudioUnmute()).isEmpty
+        assertThat(clientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
+        assertThat(clientEvent.sessionThinkingAppend()).isEmpty
+        assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).contains(decisionCreate)
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
+        assertThat(clientEvent.responseItemCreate()).isEmpty
+        assertThat(clientEvent.responseCreate()).isEmpty
+        assertThat(clientEvent.sessionClose()).isEmpty
+    }
+
+    @Test
+    fun ofDecisionCreateRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val clientEvent =
+            ClientEvent.ofDecisionCreate(
+                DecisionCreateEvent.builder().eventId("decision_1").build()
+            )
+
+        val roundtrippedClientEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(clientEvent),
+                jacksonTypeRef<ClientEvent>(),
+            )
+
+        assertThat(roundtrippedClientEvent).isEqualTo(clientEvent)
+    }
+
+    @Test
+    fun ofDecisionItemCreate() {
+        val decisionItemCreate =
+            DecisionItemCreateEvent.builder()
+                .item(
+                    DecisionItemCreateEvent.Item.builder()
+                        .content("string")
+                        .id("id")
+                        .type(DecisionItemCreateEvent.Item.Type.MESSAGE)
+                        .build()
+                )
+                .eventId("browser_1")
+                .build()
+
+        val clientEvent = ClientEvent.ofDecisionItemCreate(decisionItemCreate)
+
+        assertThat(clientEvent.sessionStart()).isEmpty
+        assertThat(clientEvent.sessionUpdate()).isEmpty
+        assertThat(clientEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(clientEvent.sessionInputAudioMute()).isEmpty
+        assertThat(clientEvent.sessionInputAudioUnmute()).isEmpty
+        assertThat(clientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
+        assertThat(clientEvent.sessionThinkingAppend()).isEmpty
+        assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).contains(decisionItemCreate)
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
+        assertThat(clientEvent.responseItemCreate()).isEmpty
+        assertThat(clientEvent.responseCreate()).isEmpty
+        assertThat(clientEvent.sessionClose()).isEmpty
+    }
+
+    @Test
+    fun ofDecisionItemCreateRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val clientEvent =
+            ClientEvent.ofDecisionItemCreate(
+                DecisionItemCreateEvent.builder()
+                    .item(
+                        DecisionItemCreateEvent.Item.builder()
+                            .content("string")
+                            .id("id")
+                            .type(DecisionItemCreateEvent.Item.Type.MESSAGE)
+                            .build()
+                    )
+                    .eventId("browser_1")
+                    .build()
+            )
+
+        val roundtrippedClientEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(clientEvent),
+                jacksonTypeRef<ClientEvent>(),
+            )
+
+        assertThat(roundtrippedClientEvent).isEqualTo(clientEvent)
+    }
+
+    @Test
+    fun ofDecisionItemDelete() {
+        val decisionItemDelete =
+            DecisionItemDeleteEvent.builder()
+                .itemId("msg_browser_1")
+                .eventId("remove_browser_1")
+                .build()
+
+        val clientEvent = ClientEvent.ofDecisionItemDelete(decisionItemDelete)
+
+        assertThat(clientEvent.sessionStart()).isEmpty
+        assertThat(clientEvent.sessionUpdate()).isEmpty
+        assertThat(clientEvent.sessionInputAudioAppend()).isEmpty
+        assertThat(clientEvent.sessionInputAudioMute()).isEmpty
+        assertThat(clientEvent.sessionInputAudioUnmute()).isEmpty
+        assertThat(clientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
+        assertThat(clientEvent.sessionThinkingAppend()).isEmpty
+        assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).contains(decisionItemDelete)
+        assertThat(clientEvent.responseItemCreate()).isEmpty
+        assertThat(clientEvent.responseCreate()).isEmpty
+        assertThat(clientEvent.sessionClose()).isEmpty
+    }
+
+    @Test
+    fun ofDecisionItemDeleteRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val clientEvent =
+            ClientEvent.ofDecisionItemDelete(
+                DecisionItemDeleteEvent.builder()
+                    .itemId("msg_browser_1")
+                    .eventId("remove_browser_1")
                     .build()
             )
 
@@ -638,6 +877,9 @@ internal class ClientEventTest {
         assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(clientEvent.sessionThinkingAppend()).isEmpty
         assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
         assertThat(clientEvent.responseItemCreate()).contains(responseItemCreate)
         assertThat(clientEvent.responseCreate()).isEmpty
         assertThat(clientEvent.sessionClose()).isEmpty
@@ -685,6 +927,9 @@ internal class ClientEventTest {
         assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(clientEvent.sessionThinkingAppend()).isEmpty
         assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
         assertThat(clientEvent.responseItemCreate()).isEmpty
         assertThat(clientEvent.responseCreate()).contains(responseCreate)
         assertThat(clientEvent.sessionClose()).isEmpty
@@ -722,6 +967,9 @@ internal class ClientEventTest {
         assertThat(clientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(clientEvent.sessionThinkingAppend()).isEmpty
         assertThat(clientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(clientEvent.decisionCreate()).isEmpty
+        assertThat(clientEvent.decisionItemCreate()).isEmpty
+        assertThat(clientEvent.decisionItemDelete()).isEmpty
         assertThat(clientEvent.responseItemCreate()).isEmpty
         assertThat(clientEvent.responseCreate()).isEmpty
         assertThat(clientEvent.sessionClose()).contains(sessionClose)

@@ -32,7 +32,8 @@ interface ServiceAccountService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ServiceAccountService
 
-    fun apiKeys(): ApiKeyService
+    fun apiKeys(): ApiKeyService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Creates a new service account in the project. By default, this also returns an unredacted API
@@ -184,7 +185,10 @@ interface ServiceAccountService {
             modifier: Consumer<ClientOptions.Builder>
         ): ServiceAccountService.WithRawResponse
 
-        fun apiKeys(): ApiKeyService.WithRawResponse
+        fun apiKeys(): ApiKeyService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post

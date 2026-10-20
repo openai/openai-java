@@ -25,7 +25,7 @@ internal class ModerationServiceTest {
         val moderation =
             moderationService.create(
                 ModerationCreateParams.builder()
-                    .input("I want to kill them.")
+                    .input("...text to classify goes here...")
                     .model(ModerationModel.OMNI_MODERATION_2024_09_26)
                     .build()
             )

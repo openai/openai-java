@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -23,6 +24,7 @@ import com.openai.core.Params
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -73,6 +75,29 @@ private constructor(
     fun questions(): List<Question> = body.questions()
 
     /**
+     * Partition prompt cache reuse by caller-provided key.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheKey(): Optional<String> = body.promptCacheKey()
+
+    /**
+     * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
+     * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
+     * content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints.
+     * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
+     * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
+     * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
+     * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
+     * current details.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheOptions(): Optional<PromptCacheOptions> = body.promptCacheOptions()
+
+    /**
      * Opaque caller-provided end-user identifier, scoped by the verified org. Match Responses'
      * limit; this is never the authenticated user identity.
      *
@@ -101,6 +126,21 @@ private constructor(
      * Unlike [questions], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _questions(): JsonField<List<Question>> = body._questions()
+
+    /**
+     * Returns the raw JSON value of [promptCacheKey].
+     *
+     * Unlike [promptCacheKey], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _promptCacheKey(): JsonField<String> = body._promptCacheKey()
+
+    /**
+     * Returns the raw JSON value of [promptCacheOptions].
+     *
+     * Unlike [promptCacheOptions], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _promptCacheOptions(): JsonField<PromptCacheOptions> = body._promptCacheOptions()
 
     /**
      * Returns the raw JSON value of [safetyIdentifier].
@@ -157,7 +197,9 @@ private constructor(
          * - [input]
          * - [model]
          * - [questions]
-         * - [safetyIdentifier]
+         * - [promptCacheKey]
+         * - [promptCacheOptions]
+         * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -241,6 +283,56 @@ private constructor(
 
         /** Alias for calling [addQuestion] with `Question.ofScore(score)`. */
         fun addQuestion(score: Question.Score) = apply { body.addQuestion(score) }
+
+        /** Partition prompt cache reuse by caller-provided key. */
+        fun promptCacheKey(promptCacheKey: String?) = apply { body.promptCacheKey(promptCacheKey) }
+
+        /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+        fun promptCacheKey(promptCacheKey: Optional<String>) =
+            promptCacheKey(promptCacheKey.getOrNull())
+
+        /**
+         * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheKey] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun promptCacheKey(promptCacheKey: JsonField<String>) = apply {
+            body.promptCacheKey(promptCacheKey)
+        }
+
+        /**
+         * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
+         * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
+         * content blocks with `prompt_cache_breakpoint`. Each request can write up to four
+         * breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the
+         * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
+         * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
+         * supported value. See the
+         * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
+         * current details.
+         */
+        fun promptCacheOptions(promptCacheOptions: PromptCacheOptions?) = apply {
+            body.promptCacheOptions(promptCacheOptions)
+        }
+
+        /**
+         * Alias for calling [Builder.promptCacheOptions] with `promptCacheOptions.orElse(null)`.
+         */
+        fun promptCacheOptions(promptCacheOptions: Optional<PromptCacheOptions>) =
+            promptCacheOptions(promptCacheOptions.getOrNull())
+
+        /**
+         * Sets [Builder.promptCacheOptions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheOptions] with a well-typed
+         * [PromptCacheOptions] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
+         */
+        fun promptCacheOptions(promptCacheOptions: JsonField<PromptCacheOptions>) = apply {
+            body.promptCacheOptions(promptCacheOptions)
+        }
 
         /**
          * Opaque caller-provided end-user identifier, scoped by the verified org. Match Responses'
@@ -416,6 +508,8 @@ private constructor(
         private val input: JsonField<Input>,
         private val model: JsonField<String>,
         private val questions: JsonField<List<Question>>,
+        private val promptCacheKey: JsonField<String>,
+        private val promptCacheOptions: JsonField<PromptCacheOptions>,
         private val safetyIdentifier: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -427,10 +521,24 @@ private constructor(
             @JsonProperty("questions")
             @ExcludeMissing
             questions: JsonField<List<Question>> = JsonMissing.of(),
+            @JsonProperty("prompt_cache_key")
+            @ExcludeMissing
+            promptCacheKey: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("prompt_cache_options")
+            @ExcludeMissing
+            promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of(),
             @JsonProperty("safety_identifier")
             @ExcludeMissing
             safetyIdentifier: JsonField<String> = JsonMissing.of(),
-        ) : this(input, model, questions, safetyIdentifier, mutableMapOf())
+        ) : this(
+            input,
+            model,
+            questions,
+            promptCacheKey,
+            promptCacheOptions,
+            safetyIdentifier,
+            mutableMapOf(),
+        )
 
         /**
          * The text or images to evaluate for every question. Provide a text string or user messages
@@ -459,6 +567,31 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun questions(): List<Question> = questions.getRequired("questions")
+
+        /**
+         * Partition prompt cache reuse by caller-provided key.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun promptCacheKey(): Optional<String> = promptCacheKey.getOptional("prompt_cache_key")
+
+        /**
+         * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
+         * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
+         * content blocks with `prompt_cache_breakpoint`. Each request can write up to four
+         * breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the
+         * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
+         * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
+         * supported value. See the
+         * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
+         * current details.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun promptCacheOptions(): Optional<PromptCacheOptions> =
+            promptCacheOptions.getOptional("prompt_cache_options")
 
         /**
          * Opaque caller-provided end-user identifier, scoped by the verified org. Match Responses'
@@ -493,6 +626,26 @@ private constructor(
         fun _questions(): JsonField<List<Question>> = questions
 
         /**
+         * Returns the raw JSON value of [promptCacheKey].
+         *
+         * Unlike [promptCacheKey], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("prompt_cache_key")
+        @ExcludeMissing
+        fun _promptCacheKey(): JsonField<String> = promptCacheKey
+
+        /**
+         * Returns the raw JSON value of [promptCacheOptions].
+         *
+         * Unlike [promptCacheOptions], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("prompt_cache_options")
+        @ExcludeMissing
+        fun _promptCacheOptions(): JsonField<PromptCacheOptions> = promptCacheOptions
+
+        /**
          * Returns the raw JSON value of [safetyIdentifier].
          *
          * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
@@ -507,6 +660,32 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "input" to this.input,
+                "model" to this.model,
+                "questions" to this.questions,
+                "prompt_cache_key" to this.promptCacheKey,
+                "prompt_cache_options" to this.promptCacheOptions,
+                "safety_identifier" to this.safetyIdentifier,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -535,6 +714,8 @@ private constructor(
             private var input: JsonField<Input>? = null
             private var model: JsonField<String>? = null
             private var questions: JsonField<MutableList<Question>>? = null
+            private var promptCacheKey: JsonField<String> = JsonMissing.of()
+            private var promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of()
             private var safetyIdentifier: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -543,6 +724,8 @@ private constructor(
                 input = body.input
                 model = body.model
                 questions = body.questions.map { it.toMutableList() }
+                promptCacheKey = body.promptCacheKey
+                promptCacheOptions = body.promptCacheOptions
                 safetyIdentifier = body.safetyIdentifier
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -635,6 +818,57 @@ private constructor(
             /** Alias for calling [addQuestion] with `Question.ofScore(score)`. */
             fun addQuestion(score: Question.Score) = addQuestion(Question.ofScore(score))
 
+            /** Partition prompt cache reuse by caller-provided key. */
+            fun promptCacheKey(promptCacheKey: String?) =
+                promptCacheKey(JsonField.ofNullable(promptCacheKey))
+
+            /** Alias for calling [Builder.promptCacheKey] with `promptCacheKey.orElse(null)`. */
+            fun promptCacheKey(promptCacheKey: Optional<String>) =
+                promptCacheKey(promptCacheKey.getOrNull())
+
+            /**
+             * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptCacheKey] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun promptCacheKey(promptCacheKey: JsonField<String>) = apply {
+                this.promptCacheKey = promptCacheKey
+            }
+
+            /**
+             * Options for prompt caching. Supported for `gpt-5.6` and later models. By default,
+             * OpenAI automatically chooses one implicit cache breakpoint. You can add explicit
+             * breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write
+             * up to four breakpoints. For cache matching, OpenAI considers up to the latest 80
+             * breakpoints in the conversation, without a content-block lookback limit. Set `mode`
+             * to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which
+             * is currently the only supported value. See the
+             * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching)
+             * for current details.
+             */
+            fun promptCacheOptions(promptCacheOptions: PromptCacheOptions?) =
+                promptCacheOptions(JsonField.ofNullable(promptCacheOptions))
+
+            /**
+             * Alias for calling [Builder.promptCacheOptions] with
+             * `promptCacheOptions.orElse(null)`.
+             */
+            fun promptCacheOptions(promptCacheOptions: Optional<PromptCacheOptions>) =
+                promptCacheOptions(promptCacheOptions.getOrNull())
+
+            /**
+             * Sets [Builder.promptCacheOptions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptCacheOptions] with a well-typed
+             * [PromptCacheOptions] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun promptCacheOptions(promptCacheOptions: JsonField<PromptCacheOptions>) = apply {
+                this.promptCacheOptions = promptCacheOptions
+            }
+
             /**
              * Opaque caller-provided end-user identifier, scoped by the verified org. Match
              * Responses' limit; this is never the authenticated user identity.
@@ -697,6 +931,8 @@ private constructor(
                     checkRequired("input", input),
                     checkRequired("model", model),
                     checkRequired("questions", questions).map { it.toImmutable() },
+                    promptCacheKey,
+                    promptCacheOptions,
                     safetyIdentifier,
                     additionalProperties.toMutableMap(),
                 )
@@ -721,6 +957,8 @@ private constructor(
             input().validate()
             model()
             questions().forEach { it.validate() }
+            promptCacheKey()
+            promptCacheOptions().ifPresent { it.validate() }
             safetyIdentifier()
             validated = true
         }
@@ -744,6 +982,8 @@ private constructor(
             (input.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (model.asKnown().isPresent) 1 else 0) +
                 (questions.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (if (promptCacheKey.asKnown().isPresent) 1 else 0) +
+                (promptCacheOptions.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (safetyIdentifier.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
@@ -755,18 +995,28 @@ private constructor(
                 input == other.input &&
                 model == other.model &&
                 questions == other.questions &&
+                promptCacheKey == other.promptCacheKey &&
+                promptCacheOptions == other.promptCacheOptions &&
                 safetyIdentifier == other.safetyIdentifier &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(input, model, questions, safetyIdentifier, additionalProperties)
+            Objects.hash(
+                input,
+                model,
+                questions,
+                promptCacheKey,
+                promptCacheOptions,
+                safetyIdentifier,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{input=$input, model=$model, questions=$questions, safetyIdentifier=$safetyIdentifier, additionalProperties=$additionalProperties}"
+            "Body{input=$input, model=$model, questions=$questions, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, safetyIdentifier=$safetyIdentifier, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1305,6 +1555,31 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "instructions" to this.instructions,
+                    "type" to this.type,
+                    "name" to this.name,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -1580,6 +1855,32 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "choices" to this.choices,
+                    "instructions" to this.instructions,
+                    "type" to this.type,
+                    "name" to this.name,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -1885,6 +2186,32 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "instructions" to this.instructions,
+                    "levels" to this.levels,
+                    "type" to this.type,
+                    "name" to this.name,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -2135,6 +2462,30 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "label" to this.label,
+                        "description" to this.description,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -2319,6 +2670,521 @@ private constructor(
             override fun toString() =
                 "Score{instructions=$instructions, levels=$levels, type=$type, name=$name, additionalProperties=$additionalProperties}"
         }
+    }
+
+    /**
+     * Options for prompt caching. Supported for `gpt-5.6` and later models. By default, OpenAI
+     * automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to
+     * content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints.
+     * For cache matching, OpenAI considers up to the latest 80 breakpoints in the conversation,
+     * without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit
+     * breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the
+     * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
+     * current details.
+     */
+    class PromptCacheOptions
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val mode: JsonField<Mode>,
+        private val ttl: JsonField<Ttl>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
+            @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
+        ) : this(mode, ttl, mutableMapOf())
+
+        /**
+         * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults to
+         * `implicit`. With `implicit`, OpenAI creates one implicit breakpoint and writes up to the
+         * latest three explicit breakpoints in the request. With `explicit`, OpenAI does not create
+         * an implicit breakpoint and writes up to the latest four explicit breakpoints. If there
+         * are no explicit breakpoints, the request does not use prompt caching.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun mode(): Optional<Mode> = mode.getOptional("mode")
+
+        /**
+         * The minimum lifetime applied to every implicit and explicit cache breakpoint written by
+         * the request. Defaults to `30m`, which is currently the only supported value. The backend
+         * may retain cache entries for longer.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun ttl(): Optional<Ttl> = ttl.getOptional("ttl")
+
+        /**
+         * Returns the raw JSON value of [mode].
+         *
+         * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonField<Mode> = mode
+
+        /**
+         * Returns the raw JSON value of [ttl].
+         *
+         * Unlike [ttl], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("ttl") @ExcludeMissing fun _ttl(): JsonField<Ttl> = ttl
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "mode" to this.mode, "ttl" to this.ttl)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [PromptCacheOptions]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [PromptCacheOptions]. */
+        class Builder internal constructor() {
+
+            private var mode: JsonField<Mode> = JsonMissing.of()
+            private var ttl: JsonField<Ttl> = JsonField.of(Ttl._30M)
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
+                mode = promptCacheOptions.mode
+                ttl = promptCacheOptions.ttl
+                additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults
+             * to `implicit`. With `implicit`, OpenAI creates one implicit breakpoint and writes up
+             * to the latest three explicit breakpoints in the request. With `explicit`, OpenAI does
+             * not create an implicit breakpoint and writes up to the latest four explicit
+             * breakpoints. If there are no explicit breakpoints, the request does not use prompt
+             * caching.
+             */
+            fun mode(mode: Mode?) = mode(JsonField.ofNullable(mode))
+
+            /** Alias for calling [Builder.mode] with `mode.orElse(null)`. */
+            fun mode(mode: Optional<Mode>) = mode(mode.getOrNull())
+
+            /**
+             * Sets [Builder.mode] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.mode] with a well-typed [Mode] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun mode(mode: JsonField<Mode>) = apply { this.mode = mode }
+
+            /**
+             * The minimum lifetime applied to every implicit and explicit cache breakpoint written
+             * by the request. Defaults to `30m`, which is currently the only supported value. The
+             * backend may retain cache entries for longer.
+             */
+            fun ttl(ttl: Ttl) = ttl(JsonField.of(ttl))
+
+            /**
+             * Sets [Builder.ttl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ttl] with a well-typed [Ttl] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun ttl(ttl: JsonField<Ttl>) = apply { this.ttl = ttl }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [PromptCacheOptions].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): PromptCacheOptions =
+                PromptCacheOptions(mode, ttl, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): PromptCacheOptions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            mode().ifPresent { it.validate() }
+            ttl().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (mode.asKnown().getOrNull()?.validity() ?: 0) +
+                (ttl.asKnown().getOrNull()?.validity() ?: 0)
+
+        /**
+         * Controls whether OpenAI automatically creates an implicit cache breakpoint. Defaults to
+         * `implicit`. With `implicit`, OpenAI creates one implicit breakpoint and writes up to the
+         * latest three explicit breakpoints in the request. With `explicit`, OpenAI does not create
+         * an implicit breakpoint and writes up to the latest four explicit breakpoints. If there
+         * are no explicit breakpoints, the request does not use prompt caching.
+         */
+        class Mode @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val IMPLICIT = of("implicit")
+
+                @JvmField val EXPLICIT = of("explicit")
+
+                @JvmStatic fun of(value: String) = Mode(JsonField.of(value))
+            }
+
+            /** An enum containing [Mode]'s known values. */
+            enum class Known {
+                IMPLICIT,
+                EXPLICIT,
+            }
+
+            /**
+             * An enum containing [Mode]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Mode] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                IMPLICIT,
+                EXPLICIT,
+                /** An enum member indicating that [Mode] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    IMPLICIT -> Value.IMPLICIT
+                    EXPLICIT -> Value.EXPLICIT
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    IMPLICIT -> Known.IMPLICIT
+                    EXPLICIT -> Known.EXPLICIT
+                    else -> throw OpenAIInvalidDataException("Unknown Mode: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Mode = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Mode && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /**
+         * The minimum lifetime applied to every implicit and explicit cache breakpoint written by
+         * the request. Defaults to `30m`, which is currently the only supported value. The backend
+         * may retain cache entries for longer.
+         */
+        class Ttl @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val _30M = of("30m")
+
+                @JvmStatic fun of(value: String) = Ttl(JsonField.of(value))
+            }
+
+            /** An enum containing [Ttl]'s known values. */
+            enum class Known {
+                _30M
+            }
+
+            /**
+             * An enum containing [Ttl]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Ttl] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                _30M,
+                /** An enum member indicating that [Ttl] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    _30M -> Value._30M
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    _30M -> Known._30M
+                    else -> throw OpenAIInvalidDataException("Unknown Ttl: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Ttl = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Ttl && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PromptCacheOptions &&
+                mode == other.mode &&
+                ttl == other.ttl &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(mode, ttl, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "PromptCacheOptions{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

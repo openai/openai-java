@@ -11,14 +11,16 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /**
- * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to the model
- * again.
+ * Acknowledges a session.input_audio.unmute command, removing the independent input mute. An active
+ * audio fixture still pauses inference until playback finishes. Fixture playback does not emit this
+ * event.
  */
 class InputAudioUnmutedEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -88,6 +90,29 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "event_id" to this.eventId,
+            "type" to this.type,
+            "client_event_id" to this.clientEventId,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =

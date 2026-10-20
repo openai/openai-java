@@ -107,7 +107,8 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // delete /responses/{response_id}
-        withRawResponse().delete(params, requestOptions).thenAccept {}
+        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
+        withRawResponse().delete(params, requestOptions).thenApply { it.close() }.thenAccept {}
 
     override fun cancel(
         params: ResponseCancelParams,

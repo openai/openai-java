@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -18,8 +19,11 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Append instructions to the Live conversation while it is running, optionally associating them
- * with an existing client delegation.
+ * Append developer instructions to the Live conversation while it is running, optionally
+ * associating them with an existing client delegation. Rejected while an audio fixture is active.
+ * These instructions remain in conversation history through compaction and are included in future
+ * backend delegations. For external audio, describe content already delivered so the assistant does
+ * not repeat it.
  */
 class InstructionsAppendEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -110,6 +114,30 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "content" to this.content,
+            "delegation_id" to this.delegationId,
+            "type" to this.type,
+            "event_id" to this.eventId,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =

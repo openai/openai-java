@@ -23,6 +23,7 @@ import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -829,6 +830,34 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "model" to this.model,
+                "input" to this.input,
+                "instructions" to this.instructions,
+                "previous_response_id" to this.previousResponseId,
+                "prompt_cache_key" to this.promptCacheKey,
+                "prompt_cache_options" to this.promptCacheOptions,
+                "prompt_cache_retention" to this.promptCacheRetention,
+                "service_tier" to this.serviceTier,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1361,9 +1390,17 @@ private constructor(
             @JvmField
             val GPT_5_CHAT_LATEST = of("gpt-5-chat-latest")
 
-            @JvmField val GPT_4_1 = of("gpt-4.1")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1 = of("gpt-4.1")
 
-            @JvmField val GPT_4_1_MINI = of("gpt-4.1-mini")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1_MINI = of("gpt-4.1-mini")
 
             @Deprecated(
                 "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -1461,7 +1498,11 @@ private constructor(
             @JvmField
             val O1_MINI_2024_09_12 = of("o1-mini-2024-09-12")
 
-            @JvmField val GPT_4O = of("gpt-4o")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O = of("gpt-4o")
 
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -1565,7 +1606,11 @@ private constructor(
             @JvmField
             val CODEX_MINI_LATEST = of("codex-mini-latest")
 
-            @JvmField val GPT_4O_MINI = of("gpt-4o-mini")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_MINI = of("gpt-4o-mini")
 
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -1859,7 +1904,13 @@ private constructor(
                 "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             GPT_5_CHAT_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_MINI,
             @Deprecated(
                 "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -1925,6 +1976,9 @@ private constructor(
                 "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             O1_MINI_2024_09_12,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O,
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -1994,6 +2048,9 @@ private constructor(
                 "Announced shutdown date: 2026-02-12. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             CODEX_MINI_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI,
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -2220,7 +2277,13 @@ private constructor(
                 "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             GPT_5_CHAT_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_MINI,
             @Deprecated(
                 "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -2286,6 +2349,9 @@ private constructor(
                 "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             O1_MINI_2024_09_12,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O,
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -2355,6 +2421,9 @@ private constructor(
                 "Announced shutdown date: 2026-02-12. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             CODEX_MINI_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI,
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -3103,6 +3172,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "mode" to this.mode, "ttl" to this.ttl)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =

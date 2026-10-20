@@ -27,7 +27,8 @@ interface TurnService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurnService
 
-    fun items(): ItemService
+    fun items(): ItemService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Retrieves a turn's current status, timestamps, usage, and error. Returns 404 if the turn does
@@ -94,7 +95,10 @@ interface TurnService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurnService.WithRawResponse
 
-        fun items(): ItemService.WithRawResponse
+        fun items(): ItemService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `get /agents/sessions/{session_id}/turns/{turn_id}`, but

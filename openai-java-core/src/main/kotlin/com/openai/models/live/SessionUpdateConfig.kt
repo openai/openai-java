@@ -19,20 +19,22 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.checkKnown
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * Changes to an active Live session. Only delegation backend settings can be updated after startup.
- */
+/** Changes to an active Live session's delegation settings and transcript triggers. */
 class SessionUpdateConfig
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val delegation: JsonField<Delegation>,
+    private val triggers: JsonField<List<DecisionTrigger>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -40,8 +42,11 @@ private constructor(
     private constructor(
         @JsonProperty("delegation")
         @ExcludeMissing
-        delegation: JsonField<Delegation> = JsonMissing.of()
-    ) : this(delegation, mutableMapOf())
+        delegation: JsonField<Delegation> = JsonMissing.of(),
+        @JsonProperty("triggers")
+        @ExcludeMissing
+        triggers: JsonField<List<DecisionTrigger>> = JsonMissing.of(),
+    ) : this(delegation, triggers, mutableMapOf())
 
     /**
      * Delegation settings to update. The delegation type must match the current session; omitted
@@ -53,6 +58,16 @@ private constructor(
     fun delegation(): Optional<Delegation> = delegation.getOptional("delegation")
 
     /**
+     * At most one Decisions trigger per transcript event type. Triggers run independently of
+     * delegation. On update, omit triggers to keep the current configuration, send a list to
+     * replace it, or send an empty list to disable triggers.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun triggers(): Optional<List<DecisionTrigger>> = triggers.getOptional("triggers")
+
+    /**
      * Returns the raw JSON value of [delegation].
      *
      * Unlike [delegation], this method doesn't throw if the JSON field has an unexpected type.
@@ -61,11 +76,42 @@ private constructor(
     @ExcludeMissing
     fun _delegation(): JsonField<Delegation> = delegation
 
+    /**
+     * Returns the raw JSON value of [triggers].
+     *
+     * Unlike [triggers], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("triggers")
+    @ExcludeMissing
+    fun _triggers(): JsonField<List<DecisionTrigger>> = triggers
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "delegation" to this.delegation,
+            "triggers" to this.triggers,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -83,11 +129,13 @@ private constructor(
     class Builder internal constructor() {
 
         private var delegation: JsonField<Delegation> = JsonMissing.of()
+        private var triggers: JsonField<MutableList<DecisionTrigger>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(sessionUpdateConfig: SessionUpdateConfig) = apply {
             delegation = sessionUpdateConfig.delegation
+            triggers = sessionUpdateConfig.triggers.map { it.toMutableList() }
             additionalProperties = sessionUpdateConfig.additionalProperties.toMutableMap()
         }
 
@@ -116,6 +164,40 @@ private constructor(
         fun delegation(responses: Delegation.Responses) =
             delegation(Delegation.ofResponses(responses))
 
+        /** Alias for calling [delegation] with `Delegation.ofDecisions(decisions)`. */
+        fun delegation(decisions: Delegation.Decisions) =
+            delegation(Delegation.ofDecisions(decisions))
+
+        /**
+         * At most one Decisions trigger per transcript event type. Triggers run independently of
+         * delegation. On update, omit triggers to keep the current configuration, send a list to
+         * replace it, or send an empty list to disable triggers.
+         */
+        fun triggers(triggers: List<DecisionTrigger>) = triggers(JsonField.of(triggers))
+
+        /**
+         * Sets [Builder.triggers] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.triggers] with a well-typed `List<DecisionTrigger>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun triggers(triggers: JsonField<List<DecisionTrigger>>) = apply {
+            this.triggers = triggers.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [DecisionTrigger] to [triggers].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addTrigger(trigger: DecisionTrigger) = apply {
+            triggers =
+                (triggers?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("triggers", it).add(trigger)
+                }
+        }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -141,7 +223,11 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): SessionUpdateConfig =
-            SessionUpdateConfig(delegation, additionalProperties.toMutableMap())
+            SessionUpdateConfig(
+                delegation,
+                (triggers ?: JsonMissing.of()).map { it.toImmutable() },
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
@@ -160,6 +246,7 @@ private constructor(
         }
 
         delegation().ifPresent { it.validate() }
+        triggers().ifPresent { it.forEach { it.validate() } }
         validated = true
     }
 
@@ -176,7 +263,10 @@ private constructor(
      *
      * Used for best match union deserialization.
      */
-    @JvmSynthetic internal fun validity(): Int = (delegation.asKnown().getOrNull()?.validity() ?: 0)
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (delegation.asKnown().getOrNull()?.validity() ?: 0) +
+            (triggers.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
     /**
      * Delegation settings to update. The delegation type must match the current session; omitted
@@ -188,6 +278,7 @@ private constructor(
     private constructor(
         private val client: ClientDelegation? = null,
         private val responses: Responses? = null,
+        private val decisions: Decisions? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -203,9 +294,13 @@ private constructor(
          */
         fun responses(): Optional<Responses> = Optional.ofNullable(responses)
 
+        fun decisions(): Optional<Decisions> = Optional.ofNullable(decisions)
+
         fun isClient(): Boolean = client != null
 
         fun isResponses(): Boolean = responses != null
+
+        fun isDecisions(): Boolean = decisions != null
 
         /**
          * Delegate tasks to your application. The Live session emits delegation events that your
@@ -218,6 +313,8 @@ private constructor(
          * ownership.
          */
         fun asResponses(): Responses = responses.getOrThrow("responses")
+
+        fun asDecisions(): Decisions = decisions.getOrThrow("decisions")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -254,6 +351,7 @@ private constructor(
             when {
                 client != null -> visitor.visitClient(client)
                 responses != null -> visitor.visitResponses(responses)
+                decisions != null -> visitor.visitDecisions(decisions)
                 else -> visitor.unknown(_json)
             }
 
@@ -282,6 +380,10 @@ private constructor(
                     override fun visitResponses(responses: Responses) {
                         responses.validate()
                     }
+
+                    override fun visitDecisions(decisions: Decisions) {
+                        decisions.validate()
+                    }
                 }
             )
             validated = true
@@ -309,6 +411,8 @@ private constructor(
 
                     override fun visitResponses(responses: Responses) = responses.validity()
 
+                    override fun visitDecisions(decisions: Decisions) = decisions.validity()
+
                     override fun unknown(json: JsonValue?) = 0
                 }
             )
@@ -318,15 +422,19 @@ private constructor(
                 return true
             }
 
-            return other is Delegation && client == other.client && responses == other.responses
+            return other is Delegation &&
+                client == other.client &&
+                responses == other.responses &&
+                decisions == other.decisions
         }
 
-        override fun hashCode(): Int = Objects.hash(client, responses)
+        override fun hashCode(): Int = Objects.hash(client, responses, decisions)
 
         override fun toString(): String =
             when {
                 client != null -> "Delegation{client=$client}"
                 responses != null -> "Delegation{responses=$responses}"
+                decisions != null -> "Delegation{decisions=$decisions}"
                 _json != null -> "Delegation{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Delegation")
             }
@@ -344,6 +452,8 @@ private constructor(
              * ownership.
              */
             @JvmStatic fun ofResponses(responses: Responses) = Delegation(responses = responses)
+
+            @JvmStatic fun ofDecisions(decisions: Decisions) = Delegation(decisions = decisions)
         }
 
         /**
@@ -355,13 +465,15 @@ private constructor(
              * Delegate tasks to your application. The Live session emits delegation events that
              * your backend handles.
              */
-            fun visitClient(client: ClientDelegation): T
+            fun visitClient(client: ClientDelegation): T = unknown(JsonValue.from(client))
 
             /**
              * Update the Responses backend for an existing Live session without changing delegation
              * ownership.
              */
-            fun visitResponses(responses: Responses): T
+            fun visitResponses(responses: Responses): T = unknown(JsonValue.from(responses))
+
+            fun visitDecisions(decisions: Decisions): T = unknown(JsonValue.from(decisions))
 
             /**
              * Maps an unknown variant of [Delegation] to a value of type [T].
@@ -395,6 +507,11 @@ private constructor(
                             Delegation(responses = it, _json = json)
                         } ?: Delegation(_json = json)
                     }
+                    "decisions" -> {
+                        return tryDeserialize(node, jacksonTypeRef<Decisions>())?.let {
+                            Delegation(decisions = it, _json = json)
+                        } ?: Delegation(_json = json)
+                    }
                 }
 
                 return Delegation(_json = json)
@@ -411,6 +528,7 @@ private constructor(
                 when {
                     value.client != null -> generator.writeObject(value.client)
                     value.responses != null -> generator.writeObject(value.responses)
+                    value.decisions != null -> generator.writeObject(value.decisions)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Delegation")
                 }
@@ -474,6 +592,30 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "type" to this.type,
+                    "responses" to this.responses,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -629,6 +771,231 @@ private constructor(
             override fun toString() =
                 "Responses{type=$type, responses=$responses, additionalProperties=$additionalProperties}"
         }
+
+        class Decisions
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val type: JsonValue,
+            private val decisions: JsonField<DecisionsDelegationUpdateConfig>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("decisions")
+                @ExcludeMissing
+                decisions: JsonField<DecisionsDelegationUpdateConfig> = JsonMissing.of(),
+            ) : this(type, decisions, mutableMapOf())
+
+            /**
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("decisions")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun decisions(): Optional<DecisionsDelegationUpdateConfig> =
+                decisions.getOptional("decisions")
+
+            /**
+             * Returns the raw JSON value of [decisions].
+             *
+             * Unlike [decisions], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("decisions")
+            @ExcludeMissing
+            fun _decisions(): JsonField<DecisionsDelegationUpdateConfig> = decisions
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "type" to this.type,
+                    "decisions" to this.decisions,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Decisions]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Decisions]. */
+            class Builder internal constructor() {
+
+                private var type: JsonValue = JsonValue.from("decisions")
+                private var decisions: JsonField<DecisionsDelegationUpdateConfig> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(decisions: Decisions) = apply {
+                    type = decisions.type
+                    this.decisions = decisions.decisions
+                    additionalProperties = decisions.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("decisions")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun decisions(decisions: DecisionsDelegationUpdateConfig) =
+                    decisions(JsonField.of(decisions))
+
+                /**
+                 * Sets [Builder.decisions] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.decisions] with a well-typed
+                 * [DecisionsDelegationUpdateConfig] value instead. This method is primarily for
+                 * setting the field to an undocumented or not yet supported value.
+                 */
+                fun decisions(decisions: JsonField<DecisionsDelegationUpdateConfig>) = apply {
+                    this.decisions = decisions
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Decisions].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Decisions =
+                    Decisions(type, decisions, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Decisions = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                _type().let {
+                    if (it != JsonValue.from("decisions")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                decisions().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                type.let { if (it == JsonValue.from("decisions")) 1 else 0 } +
+                    (decisions.asKnown().getOrNull()?.validity() ?: 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Decisions &&
+                    type == other.type &&
+                    decisions == other.decisions &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(type, decisions, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Decisions{type=$type, decisions=$decisions, additionalProperties=$additionalProperties}"
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -638,13 +1005,14 @@ private constructor(
 
         return other is SessionUpdateConfig &&
             delegation == other.delegation &&
+            triggers == other.triggers &&
             additionalProperties == other.additionalProperties
     }
 
-    private val hashCode: Int by lazy { Objects.hash(delegation, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(delegation, triggers, additionalProperties) }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "SessionUpdateConfig{delegation=$delegation, additionalProperties=$additionalProperties}"
+        "SessionUpdateConfig{delegation=$delegation, triggers=$triggers, additionalProperties=$additionalProperties}"
 }
