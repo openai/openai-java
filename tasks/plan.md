@@ -259,8 +259,9 @@ The user clarified the delivery ceiling on 2026-10-19: **at most ten public Java
 SDK PRs and at most ten compiler Deltas; internal generation PRs are unlimited**.
 Six public SDK PRs have merged and ten compiler Deltas were opened. These are
 planning counts, not platform quotas. The compiler split created excessive review
-overhead. Consolidate those ten open reviews into the three existing reviews
-below; do not create replacement Deltas. Internal PRs still follow normal
+overhead. One compiler review (2565485) has since merged, leaving nine open.
+Consolidate the remaining open reviews into the three existing reviews below;
+do not create replacement Deltas. Internal PRs still follow normal
 ownership, compatibility and promotion requirements.
 
 The earlier micro-PR plan is superseded. Workstream IDs describe implementation
@@ -296,15 +297,16 @@ entire policy PR to contain only `.castiron-ratchet.json`. Slot 10 preserves tha
 option without exceeding the public cap. Do not change policy until trusted
 measurement proves zero, and do not use an additional PR outside the cap.
 
-### Compiler consolidation: ten open reviews to three existing reviews
+### Compiler consolidation: nine open reviews to three existing reviews
 
 The ten-review split is superseded. Implementation steps belong in commits inside
 coherent reviews. Prepare and verify these replacements before closing any source
-review; the count remains ten open until those closures actually occur.
+review. Delta 2565485 is merged; nine reviews remain open until the six
+superseded open reviews are actually closed.
 
 | Kept review | Consolidated scope | Reviews to supersede after verification |
 | --- | --- | --- |
-| Compiler Delta 2566856 | Shared policies, clients/telemetry, multipart/audio, Responses bridges and remaining services/auth/webhooks | 2565485, 2565512, 2568196, 2571652 |
+| Compiler Delta 2566856 | Shared policies, clients/telemetry, multipart/audio, Responses bridges and remaining services/auth/webhooks | 2565512, 2568196, 2571652; 2565485 already merged |
 | Compiler Delta 2572073 | Legacy accessors/raw properties/enums, embeddings/defaults, Visitor/diagnostics and remaining model/structured helpers | 2566858, 2568122, 2568148 |
 | Compiler Delta 2568349 | Generated test fidelity and handwritten regression ownership | None |
 
@@ -314,14 +316,14 @@ matrix. In particular, C1's human helper-contract review and security-focused
 auth, webhook and serialization reviews remain required. Superseding a review
 does not resolve its feedback. Verify the exact combined source, generation
 impact, old consumers and API surfaces before publishing the expanded heads.
-Close the seven superseded reviews with links to their verified replacements,
+Close the six superseded open reviews with links to their verified replacements,
 then deduplicate review requests and update the root SDK review post.
 
-Historical publication inventory (all currently open at consolidation start):
+Historical publication inventory (all open at consolidation start; 2565485 now merged):
 
 | Slot | Existing review or reserved bundle | Scope |
 | ---: | --- | --- |
-| 1 | Compiler Delta 2565485 | C1 client/telemetry compatibility; retain human helper-contract review |
+| 1 | Compiler Delta 2565485 | Merged C1 client/telemetry compiler change; generated SDK rollout and its compatibility gates remain outstanding |
 | 2 | Compiler Delta 2565512 | C2 multipart plus integrated C3 transcription/translation dispatch and lifecycle evidence |
 | 3 | Compiler Delta 2566856 | Shared typed helper/model/test ownership policies and compiler validation, including existing audio facts |
 | 4 | Compiler Delta 2566858 | Ready C5 expiry accessor, raw-property lookup and enum-predicate consumers; retain the published checkpoint's scope |
@@ -331,6 +333,19 @@ Historical publication inventory (all currently open at consolidation start):
 | 8 | Compiler Delta 2568148 | C7 individual Visitor defaults and C8 existing diagnostic contracts; remaining alias/documentation work stays in the model bundle |
 | 9 | Compiler Delta 2571652 | C10 agent/idempotency, C11 retained legacy/auth selection and C14 webhook entrypoints; address findings within this review |
 | 10 | Compiler Delta 2568349 | C12 fixture reuse, isolated pagination ownership, deterministic streaming/server fixtures and canonical model samples |
+
+Consolidation checkpoint, 2026-10-20: runtime fixes for binary multipart selectors
+and inherited/allOf properties are committed at `75f006fe69324`; six focused
+regressions and all four local suites passed (compiler 1,910, renderer 811 with
+eight existing ignored tests, OAS 96, IR 43). Combined canonical generation and
+compatibility verification remain in progress, so these fixes are not yet claimed
+published or resolved in review. Model Delta 2572073's published `78e36cc` failed
+Buildkite 8821598 on the same OAS Clippy lint on both architectures; its equivalent
+question-mark-expression repair and the pending-helper import-collision regression
+are committed in the existing model consolidation. Its exact combined verification
+and publication remain outstanding. Test-fidelity integration conflicts are now
+resolved and committed locally; full combined validation still remains. These are
+compiler preparation steps, not additional landed SDK debt reduction.
 
 Public SDK documentation identifies private compiler reviews by Delta number.
 Shared facts land before their consumers, with explicit integration drafts proving
