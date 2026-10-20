@@ -7,20 +7,22 @@ gates remain in effect. No developer-facing breaking changes are allowed.
 ## Delivery ceilings
 
 The clarified limits are ten public Java SDK PRs, ten compiler Deltas and
-unlimited internal generation PRs. Six public PRs and ten Deltas already exist;
-[the consolidated delivery plan](plan.md#execution-and-parallelism) reserves the
-remaining four public slots; no compiler slots remain. Workstream checkboxes are
-implementation and verification steps, not permission for unbounded micro-PRs.
+unlimited internal generation PRs. Six public PRs have merged and ten compiler
+Deltas were opened. The ten-review split created excessive overhead and is
+superseded by [consolidation into three existing reviews](plan.md#compiler-consolidation-ten-open-reviews-to-three-existing-reviews).
+Workstream checkboxes describe implementation and verification steps, not
+separate publications or platform quotas.
 
 - [x] Allocate the existing reviews and the remaining public/compiler capacity.
 - [x] Complete #1239 expiry regressions/plan through normal fresh exact-head gates.
-- [ ] Finish shared typed policies in existing Delta 2566856.
-- [ ] Finish multipart/audio integration in existing Delta 2565512.
-- [ ] Finish legacy model/accessor consumers in existing Delta 2566858.
-- [ ] Complete C1's existing Delta 2565485 human helper-contract review.
+- [ ] Consolidate shared policies and runtime/services in existing Delta 2566856.
+- [ ] Consolidate all model/structured-helper consumers in existing Delta 2572073.
+- [ ] Finish generated test fidelity in existing Delta 2568349.
+- [ ] Preserve C1's required human helper-contract review in the kept runtime review.
 - [x] Publish the two final compiler bundles within the ten-Delta cap.
-- [ ] Address service Delta 2571652 and model Delta 2572073 review findings in
-  their existing reviews; do not create additional compiler Deltas.
+- [ ] Carry forward and address every source-review finding in the kept reviews.
+- [ ] Verify combined replacements, then close seven superseded reviews with
+  replacement links and deduplicate their SDK review requests.
 - [ ] After compiler merge, use normal internal checkpoints and public promotion
   for consolidated SDK batches within the four reserved public slots.
 - [ ] Keep all code/test/inventory work in public slots 7–9; reserve slot 10 for

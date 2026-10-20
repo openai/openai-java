@@ -257,9 +257,11 @@ dispatch or count an adapter-only change as removal of the enum patch.
 
 The user clarified the delivery ceiling on 2026-10-19: **at most ten public Java
 SDK PRs and at most ten compiler Deltas; internal generation PRs are unlimited**.
-The six existing public SDK PRs and ten existing compiler Deltas count toward
-their respective limits. Track both counters before publishing. Internal PRs
-still follow normal ownership, compatibility and promotion requirements.
+Six public SDK PRs have merged and ten compiler Deltas were opened. These are
+planning counts, not platform quotas. The compiler split created excessive review
+overhead. Consolidate those ten open reviews into the three existing reviews
+below; do not create replacement Deltas. Internal PRs still follow normal
+ownership, compatibility and promotion requirements.
 
 The earlier micro-PR plan is superseded. Workstream IDs describe implementation
 and acceptance evidence; they do not each require a PR. Use ordinary commits for
@@ -294,7 +296,28 @@ entire policy PR to contain only `.castiron-ratchet.json`. Slot 10 preserves tha
 option without exceeding the public cap. Do not change policy until trusted
 measurement proves zero, and do not use an additional PR outside the cap.
 
-### Compiler allocation: ten opened, no remaining slots
+### Compiler consolidation: ten open reviews to three existing reviews
+
+The ten-review split is superseded. Implementation steps belong in commits inside
+coherent reviews. Prepare and verify these replacements before closing any source
+review; the count remains ten open until those closures actually occur.
+
+| Kept review | Consolidated scope | Reviews to supersede after verification |
+| --- | --- | --- |
+| Compiler Delta 2566856 | Shared policies, clients/telemetry, multipart/audio, Responses bridges and remaining services/auth/webhooks | 2565485, 2565512, 2568196, 2571652 |
+| Compiler Delta 2572073 | Legacy accessors/raw properties/enums, embeddings/defaults, Visitor/diagnostics and remaining model/structured helpers | 2566858, 2568122, 2568148 |
+| Compiler Delta 2568349 | Generated test fidelity and handwritten regression ownership | None |
+
+Keep the original source commits and evidence. Transfer every unresolved finding,
+test obligation and human review requirement into the kept review's replacement
+matrix. In particular, C1's human helper-contract review and security-focused
+auth, webhook and serialization reviews remain required. Superseding a review
+does not resolve its feedback. Verify the exact combined source, generation
+impact, old consumers and API surfaces before publishing the expanded heads.
+Close the seven superseded reviews with links to their verified replacements,
+then deduplicate review requests and update the root SDK review post.
+
+Historical publication inventory (all currently open at consolidation start):
 
 | Slot | Existing review or reserved bundle | Scope |
 | ---: | --- | --- |
@@ -314,9 +337,9 @@ Shared facts land before their consumers, with explicit integration drafts provi
 the combined behavior. Use separate worktrees for service, model, embedding,
 visitor/diagnostic and test-fixture work; coordinate shared view/import/config
 files. Review related fact and consumer commits together for contract coherence,
-then publish within the available bundle slots. Avoid cycles between foundation
-and consumer reviews. Internal checkpoints may be created through the standard
-workflow without consuming public or compiler slots.
+then publish within the three kept compiler reviews. Avoid cycles between
+foundation and consumer reviews. Internal checkpoints may be created through the
+standard workflow without additional public or compiler review publications.
 
 All compiler changes must merge to compiler mainline **before** SDK output that
 depends on them is promoted. After each ready compiler batch, run normal
