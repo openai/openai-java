@@ -250,81 +250,91 @@ dispatch or count an adapter-only change as removal of the enum patch.
    probes sequential; do not shrink fixtures, raise limits, or add rejection limits.
 6. Run the unchanged trusted custom-code checker. No budget increase, exclusion
    expansion, generated-manifest edits, metadata manipulation, or ownership changes
-   may be used to claim a reduction. Lowering the budget is a separate policy-only
-   PR after measured reductions land, retaining justified headroom.
+   may be used to claim a reduction. Keep the current budget unchanged in this transition. Any later decrease
+   requires a separately authorized policy-only project and justified headroom.
 
 ## Execution and parallelism
 
-Tasks and acceptance checklists live in [todo.md](todo.md). Start compiler C1 and
-C2 independently, alongside SDK-only assertion ownership/tooling cleanup. Their
-template edits are disjoint; coordinate shared view/import files and use isolated
-worktrees. C3 and C9 are separate service slices after shared method-view changes
-settle. C4, C5/C6 and C7/C8 are separate model slices with explicit contracts before
-parallel edits to shared object/union templates. C10/C11 require configuration and
-security review. C14 is an independent webhook slice. C12 can proceed alongside
-each corresponding feature slice.
+The user clarified the delivery ceiling on 2026-10-19: **at most ten public Java
+SDK PRs and at most ten compiler Deltas; internal generation PRs are unlimited**.
+The six existing public SDK PRs and four existing compiler Deltas count toward
+their respective limits. Track both counters before publishing. Internal PRs
+still follow normal ownership, compatibility and promotion requirements.
 
-### PR-sized delivery slices
+The earlier micro-PR plan is superseded. Workstream IDs describe implementation
+and acceptance evidence; they do not each require a PR. Use ordinary commits for
+bounded testable steps, integrate related changes, and request review on complete
+bundles. Additional test fixes, fact/consumer steps and inventory updates stay
+within their bundle. Do not create replacement PRs to evade either ceiling.
 
-The workstream checklist is an index, not permission to combine a whole area into
-one PR. Use these bounded slices, normally 1–5 handwritten source/template/test
-files per compiler PR. Generated output and metadata are reviewed as artifacts.
-Split further if adding compiler facts would exceed that scope. Each slice
-inherits its workstream's acceptance checks and the compatibility gates above.
+### Public SDK allocation: six opened, four remaining
 
-| Slice | Bounded deliverable | Dependency |
-| --- | --- | --- |
-| C1a | Default User-Agent template/profile plus both-client regression | None; published |
-| C2a | Multipart mapping templates/view/import plus focused renderer tests | None; draft published; runtime proof required |
-| C3a / C3b | Transcription dispatch, then translation dispatch, each blocking/async pair and focused media tests | C2 shared method-view integration |
-| C4a / C4b | Chat service structured overload pair; Responses service structured overload pair | Typed helper facts; C9 coordinates Responses interface |
-| C4c | Chat params Class-based format/tool helpers, retaining omitted prediction aliases | C4 helper contract |
-| C4d | Response params and text config Class/Consumer builders | C4 helper contract |
-| C4e | Function-call argument decoders and JSON tool-output builders, split into decoder/output pairs | C4 helper contract |
-| C5a | Api-key expiry legacy/optional accessor with compatibility fixture | Accessor facts |
-| C5b / C5c | Stable/beta/video error additional-property compatibility; nested Realtime error separately | Accessor/serialization facts |
-| C5d | Canonical stable/beta tool-search output list types, preserving nested Tool ABI | Alias/type-selection facts |
-| C5e / C5f | Inject-event canonical helper types; conversation/item/Live helper types | C5d contract |
-| C5g | Stable/beta response nullable builder defaults | Construction facts |
-| C5h / C5i | Vector-store accepted object tags; video open durations, separately | Accepted-value facts |
-| C6a | Embedding representation/decoder/accessor adapter and default encoding | Preserve list accessor contract first |
-| C7a | Per-variant visitor default policy and lowering regression | Preserve existing union-policy gates |
-| C7b / C7c | Credential visitor defaults; webhook agent/safety defaults | C7a merged |
-| C7d / C7e | Shipped web-search Find naming; four compaction visitor documentation patches | Naming facts / documentation template |
-| C8a / C8b | Credential diagnostic sensitivity facts and renderer support; apply to credential models with focused fixtures | Coordinate C7 union template |
-| C8c / C8d | Environment diagnostics; webhook secret diagnostics, separately | C8 sensitivity contract and maintainer review |
-| C9a / C9b | Responses WebSocket interface/implementation bridges; stream validation delegates, separately | Coordinate C4b; runtime remains handwritten |
-| C10a / C10b | Session public stream/tool-handler contracts; orchestration delegates | Existing handwritten orchestration; preserve binary contracts |
-| C10c / C10d | Environment retry-stable idempotency; Turn unsupported-service diagnostics, separately | Typed operation facts / diagnostics contract |
-| C11a / C11b | Legacy beta Realtime subservices; permission-operation credential selection, separately | Auth input facts and maintainer review for C11b |
-| C12a | Credential diagnostic assertion ownership | SDK-only; draft published |
-| C12b / C12c | Consolidated response model fixture; isolated Skill pagination test generation, separately | Preserve deliberate test/shard optimizations |
-| C12d | Deterministic SSE fixtures and agent session/event test pairs | Typed test response/streaming facts; separate each service pair |
-| C12e | Replace unsupported streaming mock tests by service pair | C12d fixture infrastructure; preserve assertions |
-| C12f / C12g | Webhook signed/missing-secret test generation; canonical model test samples | C14 / C5 contracts |
-| C13a | Restore generated lint annotation | SDK-only; published |
-| C14a / C14b | Webhook public verification signatures; implementation/helper delegates | Current verified parameter contract and maintainer review |
+| Slot | Existing review or reserved batch | Scope |
+| ---: | --- | --- |
+| 1 | [Java #1234](https://github.com/openai/openai-java/pull/1234) | Merged baseline inventory and transition plan |
+| 2 | [Java #1235](https://github.com/openai/openai-java/pull/1235) | Merged generated reporting-comment restoration |
+| 3 | [Java #1236](https://github.com/openai/openai-java/pull/1236) | Merged supplemental JVM comparator and regressions |
+| 4 | [Java #1237](https://github.com/openai/openai-java/pull/1237) | Merged credential assertion ownership cleanup |
+| 5 | [Java #1238](https://github.com/openai/openai-java/pull/1238) | Merged documentation checkpoint; post-merge workflows verified successful |
+| 6 | [Java #1239](https://github.com/openai/openai-java/pull/1239) | Handwritten expiry compatibility regressions and revised delivery plan; may proceed after fresh exact-head gates |
+| 7 | Reserved compatible runtime/model rollout | Batch ready client, multipart/audio and legacy-accessor/model cleanup after its compiler changes merge |
+| 8 | Reserved model/structured-output rollout | Batch compatible params/helpers, embeddings, visitors and diagnostics after their compiler changes merge |
+| 9 | Reserved service/helper rollout | Batch remaining Responses/agent/legacy/auth/webhook delegates and corresponding tests |
+| 10 | Reserved final test-fidelity and inventory rollout | Remaining generation fidelity, final trusted debt report and completion evidence |
 
-Every slice follows: compiler regression test, implementation, draft generation,
-current-SDK behavior and API comparison, compiler review/merge, regeneration with
-the merged compiler, SDK verification, SDK review/merge, inventory refresh.
-Compiler Rust/template changes **must land on the compiler's mainline before SDK
-output depending on them is promoted**. Draft output is allowed for verification;
-direct SDK patch merges cannot bypass this sequencing requirement.
+These are capacity reservations, not a requirement to open four more PRs. Combine
+ready batches where it reduces review cycles without delaying independent work.
+Normal Castiron promotion creates or updates public candidate PRs; use that
+supported workflow rather than manually attaching generated output to #1239.
+No generated rollout is public before its compiler prerequisites merge.
 
-The user has authorized implementation and PR submission without further routine
-confirmation. Continue independent work while a slice waits for review. Handle
-Conductor state updates by checking the exact head, addressing actionable review
-or CI failures, and updating this task record. Deduplicate existing PRs/review
-requests. Respect normal approval, CODEOWNERS and merge-queue gates; CI green is
-not approval or merge completion. Do not poll when an update says no polling is
-requested. Any budget-policy change remains a separate PR; agents cannot approve
-budget increases.
+### Compiler allocation: four opened, six remaining
 
-Success means zero differences in generated-owned files, unchanged consumer
-contracts, a working regeneration check, and SDK-owned runtime/helpers/tests at
-their intended boundary. Strict zero-budget policy activation is a later,
-separate policy PR after the verified report reaches zero.
+| Slot | Existing review or reserved bundle | Scope |
+| ---: | --- | --- |
+| 1 | Compiler Delta 2565485 | C1 client/telemetry compatibility; retain human helper-contract review |
+| 2 | Compiler Delta 2565512 | C2 multipart plus integrated C3 transcription/translation dispatch and lifecycle evidence |
+| 3 | Compiler Delta 2566856 | Shared typed helper/model/test ownership policies and compiler validation, including existing audio facts |
+| 4 | Compiler Delta 2566858 | C5 legacy accessor/model binding, aliases, storage/default/validation contracts and corresponding tests |
+| 5 | Reserved structured-output bundle | C4 public service overloads and parameter/builder helper contracts |
+| 6 | Reserved Responses bridge bundle | C9 WebSocket/stream validation delegates |
+| 7 | Reserved embedding bundle | C6 representation, decoder/accessor and default encoding contracts |
+| 8 | Reserved evolving union/diagnostic bundle | C7 visitor/default/alias contracts and C8 existing diagnostic redaction |
+| 9 | Reserved remaining service/helper bundle | C10 agent/idempotency, C11 retained legacy/auth selection and C14 webhook entrypoints |
+| 10 | Reserved generated-test fidelity bundle | C12 fixture reuse, isolated pagination ownership, deterministic streaming/server fixtures and canonical model samples |
+
+Public SDK documentation identifies private compiler reviews by Delta number.
+Shared facts land before their consumers, with explicit integration drafts proving
+the combined behavior. Use separate worktrees for service, model, embedding,
+visitor/diagnostic and test-fixture work; coordinate shared view/import/config
+files. Review related fact and consumer commits together for contract coherence,
+then publish within the available bundle slots. Avoid cycles between foundation
+and consumer reviews. Internal checkpoints may be created through the standard
+workflow without consuming public or compiler slots.
+
+All compiler changes must merge to compiler mainline **before** SDK output that
+depends on them is promoted. After each ready compiler batch, run normal
+checkpoint generation and promotion and review the complete SDK diff. Preserve
+old compiled Java/Kotlin consumers, whole-artifact API checks, source and behavior
+regressions, maintainer security review where applicable, normal CI and trusted
+ownership accounting on the exact integrated head. Do not carry unrelated API
+churn into this maintenance project.
+
+Neither PR limit relaxes compatibility, security, ownership, approval or merge
+queue gates. Preserve every public/protected and synthetic JVM contract,
+JSON/default/error behavior and resource lifecycle. Keep the current budget and
+exclusions unchanged. Budget-policy activation is outside the current rollout
+allocation; it must not consume an unreserved eleventh public SDK PR.
+
+Implementation and submission are authorized without routine confirmation.
+Handle Conductor events on the exact head, deduplicate requests and address
+feedback in place. Earlier approvals and CI do not authorize a changed candidate;
+run required checks and obtain current review before protected merge. Do not poll
+when an update says no polling is requested.
+
+Success remains zero mixed generated-owned files and zero custom patch lines on
+merged SDK main, repeatable generation and unchanged developer contracts. The
+verified baseline and appendix are retained unchanged.
 
 ## Reproduce the baseline
 

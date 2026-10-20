@@ -4,6 +4,24 @@ See [the measured plan and per-file inventory](plan.md). User authorization cove
 implementation and PR submission; normal review and compiler-before-promotion
 gates remain in effect. No developer-facing breaking changes are allowed.
 
+## Delivery ceilings
+
+The clarified limits are ten public Java SDK PRs, ten compiler Deltas and
+unlimited internal generation PRs. Six public PRs and four Deltas already exist;
+[the consolidated delivery plan](plan.md#execution-and-parallelism) reserves the
+remaining four public slots and six compiler slots. Workstream checkboxes are
+implementation and verification steps, not permission for unbounded micro-PRs.
+
+- [x] Allocate the existing reviews and the remaining public/compiler capacity.
+- [ ] Complete #1239 expiry regressions/plan through normal fresh exact-head gates.
+- [ ] Finish shared typed policies in existing Delta 2566856.
+- [ ] Finish multipart/audio integration in existing Delta 2565512.
+- [ ] Finish legacy model/accessor consumers in existing Delta 2566858.
+- [ ] Complete C1's existing Delta 2565485 human helper-contract review.
+- [ ] Publish complete remaining compiler bundles within the six reserved slots.
+- [ ] After compiler merge, use normal internal checkpoints and public promotion
+  for consolidated SDK batches within the four reserved public slots.
+
 ## Foundation
 
 - [x] Verify current public generated snapshot and measure every mixed file.
@@ -24,13 +42,13 @@ gates remain in effect. No developer-facing breaking changes are allowed.
   submit compiler Delta, merge, then regenerate SDK. Target: 2 files / 4 lines.
 - [ ] C2: Generate async multipart mapping from semantic facts. Preserve runtime
   ownership and old fixture profile. Enumerate newly affected endpoints and test
-  cancellation/cleanup/error boundaries before promotion. Submit separate compiler
-  Delta; SDK regeneration depends on compiler merge and runtime validation.
+  cancellation/cleanup/error boundaries before promotion. Keep implementation in existing Delta 2565512; SDK regeneration depends on
+  compiler merge and runtime validation.
 - [x] C13: Restore exact generated tooling comment; verify Python AST equivalence,
-  offline reporter/budget tests and unchanged gate behavior. Separate SDK PR.
+  offline reporter/budget tests and unchanged gate behavior. Already delivered in its existing SDK PR.
 - [x] C12: Move handwritten credential diagnostic assertions into the existing
   handwritten regression suite and restore generated smoke test. Preserve every
-  assertion; run both focused test classes. Separate SDK PR.
+  assertion; run both focused test classes. Already delivered in its existing SDK PR.
 
 ## Model and parameter slices
 
@@ -67,10 +85,10 @@ gates remain in effect. No developer-facing breaking changes are allowed.
   signature/unwrap suites and obtain security-focused review.
 - [ ] C12: Emit deterministic streaming/server fixtures and canonical model samples;
   retain response fixture consolidation and independent pagination WireMock suite.
-  Split into feature-sized PRs with matching model/service slices. No new disabled
+  Use feature-sized commits inside the allocated compiler bundles. No new disabled
   coverage, redundant giant fixtures or weaker assertions.
 
-## Per-slice landing checkpoint
+## Integrated landing checkpoint
 
 - [ ] Compiler implementation and focused tests reviewed; immutable fixtures pass.
 - [ ] Draft output reviewed against shipped SDK; public APIs/behavior preserved.
@@ -83,7 +101,7 @@ gates remain in effect. No developer-facing breaking changes are allowed.
 - [ ] All generated-owned files match verified generation, including tests/tooling.
 - [ ] Regeneration is repeatable; handwritten runtime and regression tests retained.
 - [ ] Zero mixed files and zero custom patch lines verified on merged SDK main.
-- [ ] Submit any budget decrease/strict policy activation as its own policy-only PR.
+- [ ] Keep the existing budget unchanged; do not add a budget-policy PR to this transition.
 
 ## PR/Delta ledger
 
@@ -163,7 +181,7 @@ in dependent slices; none of this work counts as landed SDK reduction.
 
 Record exact current heads when acting on CI or review events. Never record a
 proposed reduction as landed merely because its compiler change exists or CI is
-green. Compiler and SDK follow-up reviews will be added as they are published.
+green. Publish follow-up bundles only within the separately reserved public SDK and compiler limits.
 
 On 2026-10-19 Conductor verified this chat owns Java PRs 1234–1237 and registered
 routing. One combined root `#sdk-reviews` post is edited in place as heads and
@@ -171,3 +189,32 @@ review states change; the initial SDK review requests are complete, and the post
 records their distinct post-merge states plus the required C1 compiler review. Pending approval is a normal wait; rely on Conductor
 notifications rather than polling or duplicating review posts. No merge or queue
 enrollment is implied by green CI.
+
+## Consolidation checkpoint (2026-10-19)
+
+#1238 merged through the protected queue as
+`b79d85f90c13c9cdc6d536b29704dfc50e8f9df8` from head
+`0429eb4a5d288deb540d000ec16fa567b97d1598`. Conductor verified all post-merge
+push workflows succeeded, including [CI run 39327996521](https://github.com/openai/openai-java/actions/runs/39327996521)
+and examples smoke. Its separate pre-merge OkTest passed 236/236.
+
+#1239 was temporarily held as draft under the earlier combined ten-review
+interpretation. The user clarified ten public SDK PRs plus ten compiler Deltas,
+with internal generation PRs unlimited. #1239 can proceed as the test/plan PR;
+rollout batches use normal supported promotion. Its earlier head
+`73a90a7ffddb7a69f5396906cfe4072da1155a55` had successful CI; its separate
+OkTest failure belongs to superseded head `8ecd5c0`, not that newer head. New
+head changes still require fresh review and checks; no merge is implied here.
+
+The local audio draft passed a full-current-input comparison: 3,794 rendered
+paths, exactly four changed transcription/translation implementations; SDK JSON
+and other facts unchanged, transcription SSE byte-identical. Exact full-source
+output passed all 79 transcription and 98 translation tests, and eight public
+JVM surfaces match shipped classes. The translation tests now exercise generated
+translation implementations, superseding the earlier shipped-only control.
+
+C5a's full-source output changed only ApiKeyUpdateParams and its test; its exact
+candidate passed frozen Java/Kotlin consumers and seven handwritten JUnit tests.
+Additional-property, embedding, visitor/diagnostic and service helper work remains
+in progress. No generated SDK output has been promoted; final integration,
+whole-artifact acceptance and zero-debt verification are still required.
