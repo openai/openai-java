@@ -7,9 +7,9 @@ gates remain in effect. No developer-facing breaking changes are allowed.
 ## Delivery ceilings
 
 The clarified limits are ten public Java SDK PRs, ten compiler Deltas and
-unlimited internal generation PRs. Six public PRs and eight Deltas already exist;
+unlimited internal generation PRs. Six public PRs and ten Deltas already exist;
 [the consolidated delivery plan](plan.md#execution-and-parallelism) reserves the
-remaining four public slots and two compiler slots. Workstream checkboxes are
+remaining four public slots; no compiler slots remain. Workstream checkboxes are
 implementation and verification steps, not permission for unbounded micro-PRs.
 
 - [x] Allocate the existing reviews and the remaining public/compiler capacity.
@@ -18,7 +18,9 @@ implementation and verification steps, not permission for unbounded micro-PRs.
 - [ ] Finish multipart/audio integration in existing Delta 2565512.
 - [ ] Finish legacy model/accessor consumers in existing Delta 2566858.
 - [ ] Complete C1's existing Delta 2565485 human helper-contract review.
-- [ ] Publish complete remaining compiler bundles within the two reserved slots.
+- [x] Publish the two final compiler bundles within the ten-Delta cap.
+- [ ] Address service Delta 2571652 and model Delta 2572073 review findings in
+  their existing reviews; do not create additional compiler Deltas.
 - [ ] After compiler merge, use normal internal checkpoints and public promotion
   for consolidated SDK batches within the four reserved public slots.
 - [ ] Keep all code/test/inventory work in public slots 7–9; reserve slot 10 for
@@ -243,3 +245,19 @@ Conductor verified all post-merge CI, examples smoke and release workflows
 succeeded on that merge commit. No external polling is scheduled.
 This tests/documentation merge does not reduce the measured 97 mixed
 files or establish generated SDK rollout compatibility.
+
+## Final compiler review checkpoint (2026-10-20)
+
+Fresh exact-branch lookup verified the last two bundles already exist as ready
+reviews: service Delta 2571652 at `b5f6709f225cec412ff63a2c66f1a0b57c7ac73d`,
+and model Delta 2572073 at `7644bbe27d860f5b013fa874391ce37b8b9e8ef3`.
+The service branch passed standalone generation and selected JVM/runtime proof;
+its current code review identifies a missing AssertJ import in the offline
+webhook fixture. The model review identifies four issues: native/JSON pointer
+normalization, nested property-validation traversal, complete Kotlin keyword
+validation and helpers in the base models package. Repairs are assigned within
+the existing reviews, with regression tests and normal fresh-head gates.
+The model candidate also adds six unshipped prediction convenience methods;
+preserve the released surface through compiler-owned suppression before rollout.
+No further compiler reviews may be opened. Whole-SDK integration and compiler
+merge before dependent SDK promotion remain required.

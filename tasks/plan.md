@@ -257,7 +257,7 @@ dispatch or count an adapter-only change as removal of the enum patch.
 
 The user clarified the delivery ceiling on 2026-10-19: **at most ten public Java
 SDK PRs and at most ten compiler Deltas; internal generation PRs are unlimited**.
-The six existing public SDK PRs and eight existing compiler Deltas count toward
+The six existing public SDK PRs and ten existing compiler Deltas count toward
 their respective limits. Track both counters before publishing. Internal PRs
 still follow normal ownership, compatibility and promotion requirements.
 
@@ -294,7 +294,7 @@ entire policy PR to contain only `.castiron-ratchet.json`. Slot 10 preserves tha
 option without exceeding the public cap. Do not change policy until trusted
 measurement proves zero, and do not use an additional PR outside the cap.
 
-### Compiler allocation: eight opened, two remaining
+### Compiler allocation: ten opened, no remaining slots
 
 | Slot | Existing review or reserved bundle | Scope |
 | ---: | --- | --- |
@@ -302,11 +302,11 @@ measurement proves zero, and do not use an additional PR outside the cap.
 | 2 | Compiler Delta 2565512 | C2 multipart plus integrated C3 transcription/translation dispatch and lifecycle evidence |
 | 3 | Compiler Delta 2566856 | Shared typed helper/model/test ownership policies and compiler validation, including existing audio facts |
 | 4 | Compiler Delta 2566858 | Ready C5 expiry accessor, raw-property lookup and enum-predicate consumers; retain the published checkpoint's scope |
-| 5 | Reserved structured-output/model bundle | C4 public service/parameter helpers and remaining C5 alias, accepted-value and validation contracts |
+| 5 | Compiler Delta 2572073 | C4 public service/parameter helpers and remaining C5 alias, accepted-value and validation contracts; address findings within this review |
 | 6 | Compiler Delta 2568196 | C9 WebSocket/stream validation delegates; complete composed Chat/Responses/Agent API and frozen-runtime proof retained |
 | 7 | Compiler Delta 2568122 | C6 representation, decoder/accessor and builder-default contracts |
 | 8 | Compiler Delta 2568148 | C7 individual Visitor defaults and C8 existing diagnostic contracts; remaining alias/documentation work stays in the model bundle |
-| 9 | Reserved remaining service/helper bundle | C10 agent/idempotency, C11 retained legacy/auth selection and C14 webhook entrypoints |
+| 9 | Compiler Delta 2571652 | C10 agent/idempotency, C11 retained legacy/auth selection and C14 webhook entrypoints; address findings within this review |
 | 10 | Compiler Delta 2568349 | C12 fixture reuse, isolated pagination ownership, deterministic streaming/server fixtures and canonical model samples |
 
 Public SDK documentation identifies private compiler reviews by Delta number.
