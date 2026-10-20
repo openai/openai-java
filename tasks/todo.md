@@ -36,8 +36,8 @@ separate publications or platform quotas.
 | Retained review | Published head | Current disposition |
 | --- | --- | --- |
 | Runtime2566856 | `e18ede47bab138e08f27669b8436c5f808818fc2` | Conflict repair published;2,913 fresh units, lint, native generation,279-class API/610-case runtime/56-consumer checks pass; Conductor green-2256 verifies current-head CI READINESS_SATISFIED; Mark Stuart human approval remains requested generation2 |
-| Models2572073 | `e13f60138e25c9a46a6c60ed26a5eab4ba5ce40a` | Restack published; combined Rust/lint pass; fresh original model APIs preserved with171 upstream additions classified;356 cases/15 binary consumers/eight source suites pass; both composed native controls pass (3,795 paths each, 40 selected changes); B/C production bytes equal on all 2,140 paths; Mark Stuart human review re-requested generation2 |
-| Test fidelity2568349 | `20d7d9c547e77ef0e284ce709a07d2ee4a3f03c9` | Restack published;3,044 combined units, exact CI lint and both negative controls pass; genuine native render and2,140-production-file equality pass; assertion audit/pagination/streaming/missing-member checks pass; CI8840979 last observed queued; Dan Piet human review re-requested generation2 |
+| Models2572073 | `e13f60138e25c9a46a6c60ed26a5eab4ba5ce40a` | Restack published; combined Rust/lint pass; fresh original model APIs preserved with171 upstream additions classified;356 cases/15 binary consumers/eight source suites pass; both composed native controls pass (3,795 paths each, 40 selected changes); B/C production bytes equal on all 2,140 paths; Monorepo CI8840940 passed; five optional Chromatic checks are SKIPPED/displayed FAILED; complete required policy satisfied; Mark Stuart human review remains requested generation2 |
+| Test fidelity2568349 | `20d7d9c547e77ef0e284ce709a07d2ee4a3f03c9` | Restack published;3,044 combined units, exact CI lint and both negative controls pass; genuine native render and2,140-production-file equality pass; assertion audit/pagination/streaming/missing-member checks pass; Conductor green-2312 verifies current-head monorepo CI satisfied; Dan Piet human approval remains requested generation2 |
 
 Six source reviews are closed without merge:2565512/2568196/2571652 and
 2566858/2568122/2568148. Only three transition compiler reviews remain open.
@@ -52,6 +52,13 @@ Runtime's protected merge failed with seven conflicts (Mergebot2352858), repaire
 by integrating master38eed772 and restacking B/C. All three remain OPEN; prior
 old-head green CI/automated approvals do not clear these publications. Normal
 hooks passed; required human/security gates and zero breaking changes remain.
+
+Chromatic2309 disposition: five model-parent sources have required=false and
+SKIPPED provider-selection results, displayed FAILED because acceptSkipped=false.
+No visual tests executed; complete native required policy is satisfied. One normal
+retry was accepted, last observed queued; no repeated equivalent retries, policy
+changes, source removal or override. All three monorepo CIs pass, while actual
+human approvals/current-head automated completion still gate protected merging.
 
 ## Foundation
 

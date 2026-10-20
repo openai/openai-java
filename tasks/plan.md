@@ -366,6 +366,26 @@ from C only in the intended pagination/streaming test-ownership settings. Both c
 bytes, and the fresh assertion/method audit passes. This was a scratch-proof input correction, with no source,
 fixture, helper, dependency, generation-metadata or compatibility-policy edit.
 
+Hosted-check update, Conductor2309/2312: model CI8840940 passed at e13f6013,
+and test-fidelity monorepo CI is READINESS_SATISFIED at20d7d9c5. Combined with
+runtime green-2256, all three repaired heads have passing monorepo CI. This is
+not an all-checks-green or all-approvals-satisfied claim.
+
+On the model head, five optional Chromatic sources display FAILED: learning-block,
+granola, fedelm-desktop, fedelm-console and chatgpt. The exact policy15 snapshot
+is complete and its required policy is satisfied; each source is required=false.
+Each recorded attempt concluded SKIPPED, with no provider execution/detail URL:
+CI8840940 completed without selecting that job. Their lib/js/** include patterns
+match the inherited four-line Java expiry-accessor binding in API-reference config.
+Native dispatcher source confirms optional direct checks reconcile CI selection
+and record non-selection as SKIPPED; acceptSkipped=false makes the display failed.
+These are not executed visual-test failures. One normal retry of learning-block
+was accepted as attempt2 (780a4224d605f42dde56b76ff2a237818d7826c9673e9e52b4a3c5f8fb223cb8),
+last observed queued. No further equivalent retries were dispatched. The source,
+compatibility binding and check policy remain unchanged; no result was marked
+successful or overridden. Continue actual-human SDK/security/ownership reviews and
+current-head automated completion before normal protected merging.
+
 Native source approval b71026ec on model98ba664f applies to the superseded head
 and explicitly does not replace human review. The project TEMPEST_REVIEW requires
 human review for generated API/language-output changes. Actual-human compatibility,
