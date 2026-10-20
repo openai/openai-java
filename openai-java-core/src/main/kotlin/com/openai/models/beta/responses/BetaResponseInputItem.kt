@@ -25951,6 +25951,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonValue,
+        private val id: JsonField<String>,
         private val agent: JsonField<Agent>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -25958,8 +25959,9 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
             @JsonProperty("agent") @ExcludeMissing agent: JsonField<Agent> = JsonMissing.of(),
-        ) : this(type, agent, mutableMapOf())
+        ) : this(type, id, agent, mutableMapOf())
 
         /**
          * The type of the item. Always `compaction_trigger`.
@@ -25975,12 +25977,27 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
+         * The unique ID of this compaction trigger.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
          * The agent that produced this item.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun agent(): Optional<Agent> = agent.getOptional("agent")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
         /**
          * Returns the raw JSON value of [agent].
@@ -26003,7 +26020,12 @@ private constructor(
          * values are preserved.
          */
         fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(additionalProperties, "type" to this.type, "agent" to this.agent)
+            collectAllProperties(
+                additionalProperties,
+                "type" to this.type,
+                "id" to this.id,
+                "agent" to this.agent,
+            )
 
         /**
          * Returns the legacy additional-properties view.
@@ -26029,12 +26051,14 @@ private constructor(
         class Builder internal constructor() {
 
             private var type: JsonValue = JsonValue.from("compaction_trigger")
+            private var id: JsonField<String> = JsonMissing.of()
             private var agent: JsonField<Agent> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(compactionTrigger: CompactionTrigger) = apply {
                 type = compactionTrigger.type
+                id = compactionTrigger.id
                 agent = compactionTrigger.agent
                 additionalProperties = compactionTrigger.additionalProperties.toMutableMap()
             }
@@ -26052,6 +26076,21 @@ private constructor(
              * supported value.
              */
             fun type(type: JsonValue) = apply { this.type = type }
+
+            /** The unique ID of this compaction trigger. */
+            fun id(id: String?) = id(JsonField.ofNullable(id))
+
+            /** Alias for calling [Builder.id] with `id.orElse(null)`. */
+            fun id(id: Optional<String>) = id(id.getOrNull())
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
 
             /** The agent that produced this item. */
             fun agent(agent: Agent?) = agent(JsonField.ofNullable(agent))
@@ -26093,7 +26132,7 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): CompactionTrigger =
-                CompactionTrigger(type, agent, additionalProperties.toMutableMap())
+                CompactionTrigger(type, id, agent, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -26117,6 +26156,7 @@ private constructor(
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
+            id()
             agent().ifPresent { it.validate() }
             validated = true
         }
@@ -26138,6 +26178,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             type.let { if (it == JsonValue.from("compaction_trigger")) 1 else 0 } +
+                (if (id.asKnown().isPresent) 1 else 0) +
                 (agent.asKnown().getOrNull()?.validity() ?: 0)
 
         /** The agent that produced this item. */
@@ -26347,16 +26388,17 @@ private constructor(
 
             return other is CompactionTrigger &&
                 type == other.type &&
+                id == other.id &&
                 agent == other.agent &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(type, agent, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(type, id, agent, additionalProperties) }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "CompactionTrigger{type=$type, agent=$agent, additionalProperties=$additionalProperties}"
+            "CompactionTrigger{type=$type, id=$id, agent=$agent, additionalProperties=$additionalProperties}"
     }
 
     /** An internal identifier for an item to reference. */

@@ -3081,6 +3081,7 @@ internal class BetaResponseInputItemTest {
     fun ofCompactionTrigger() {
         val compactionTrigger =
             BetaResponseInputItem.CompactionTrigger.builder()
+                .id("msg_123")
                 .agent(
                     BetaResponseInputItem.CompactionTrigger.Agent.builder()
                         .agentName("agent_name")
@@ -3134,6 +3135,7 @@ internal class BetaResponseInputItemTest {
         val betaResponseInputItem =
             BetaResponseInputItem.ofCompactionTrigger(
                 BetaResponseInputItem.CompactionTrigger.builder()
+                    .id("msg_123")
                     .agent(
                         BetaResponseInputItem.CompactionTrigger.Agent.builder()
                             .agentName("agent_name")
