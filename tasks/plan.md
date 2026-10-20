@@ -326,6 +326,39 @@ commit/blob and overlap mappings. Model helper-import collision review-body
 feedback has a published fix/test reply; it had no inline thread to resolve.
 Keep SDK review requests deduplicated on the three retained reviews.
 
+### Conflict-repair publication — 2026-10-20
+
+Protected runtime merge Mergebot2352858 failed VirtualMerge6bf8e888 on seven
+conflicting files; it did not merge. The repair integrates pinned native master
+`38eed772c29447d970143c75a9ef770490733b39` into the same runtime review and
+restacks the same two dependent reviews. No new branch or Delta was created.
+The earlier green CI/automated approvals below are historical and do not clear
+these repaired publications.
+
+| Retained review | Repaired published head | Verification and remaining gates |
+| --- | --- | --- |
+| Runtime2566856 | `e18ede47bab138e08f27669b8436c5f808818fc2` | Fresh2,913 units, exact CI lint, genuine3,795-path renders with26 selected differences;36 production sources compiled;279 API/ancestor classes preserve exact compared APIs/generics, zero comparator findings;610 runtime cases, two generated webhook bodies and56 frozen consumer cases pass. CI8840065 was RUNNING at publication verification. Mark Stuart human review re-requested generation2. |
+| Models2572073 | `e13f60138e25c9a46a6c60ed26a5eab4ba5ce40a` | Seven restack conflicts resolved; retains upstream JsonProperties/_allProperties and existing model contracts. Combined-source Rust/lint passes; fresh model/native/JVM refresh is in progress. Old2,022-class/356-test evidence remains historical. Mark Stuart human review re-requested generation2. |
+| Test fidelity2568349 | `20d7d9c547e77ef0e284ce709a07d2ee4a3f03c9` | Three restack conflicts resolved. All3,044 combined units pass (OAS151/compiler1,953/IR43/renderer897; nine upstream/existing ignored), four-crate exact CI lint and both unsafe-suite negative controls pass. Genuine generation refresh is in progress. CI8840979 QUEUED when publication verified. Dan Piet human review re-requested generation2. |
+
+All normal source publication hooks passed with actual stack bases. Source-size
+limits remain unchanged: exact value-type/helper bodies were extracted to modules
+with public reexports preserved. Upstream additive Go/Ruby/configuration facts,
+Java response cleanup and JsonProperties generation were retained. Immutable
+fixtures, frozen consumer/test bytes and credential/helper contracts were not
+rewritten to make tests pass. Runtime's five extra private classfiles (754 vs749)
+are separated from its unchanged exported/ancestor class set. Its scratch runner
+path assertion was relocated and MockWebServer probes required loopback permission;
+those initial harness failures and final successful logs are retained.
+
+Native source approval b71026ec on model98ba664f applies to the superseded head
+and explicitly does not replace human review. The project TEMPEST_REVIEW requires
+human review for generated API/language-output changes. Actual-human compatibility,
+security and ownership reviews, fresh current-head CI/automated completion and
+protected merging remain mandatory. Native requests and the root #sdk-reviews
+post were refreshed in place. No merge or SDK promotion is claimed;97 mixed SDK
+files/2,025 custom patch lines remains the last measured landed checkpoint.
+
 Historical publication inventory (all open at consolidation start; 2565485 now merged):
 
 | Slot | Existing review or reserved bundle | Scope |

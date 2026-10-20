@@ -35,9 +35,9 @@ separate publications or platform quotas.
 
 | Retained review | Published head | Current disposition |
 | --- | --- | --- |
-| Runtime2566856 | `75f006fe69324b89ea538f08869646523505ade9` | CI8827390 SUCCESS; Mark Stuart human review REQUESTED |
-| Models2572073 | `98ba664f260b092f2a37a94882748ba8cb523cde` | Published;2,022-class API proof,356 original tests and15 source consumers pass; CI8829256 SUCCESS; Mark Stuart human review REQUESTED |
-| Test fidelity2568349 | `36fc5903a6f5cf0ee33f8ee6bbf3a4d648670541` | Published on model parent;2,991 units, genuine generation, production-byte preservation and exact ownership tests pass; CI8829350 SUCCESS; Dan Piet human review REQUESTED |
+| Runtime2566856 | `e18ede47bab138e08f27669b8436c5f808818fc2` | Conflict repair published;2,913 fresh units, lint, native generation,279-class API/610-case runtime/56-consumer checks pass; CI8840065 was running; Mark Stuart human review re-requested generation2 |
+| Models2572073 | `e13f60138e25c9a46a6c60ed26a5eab4ba5ce40a` | Restack published; combined Rust/lint pass, fresh native/model JVM refresh in progress; prior proof historical; Mark Stuart human review re-requested generation2 |
+| Test fidelity2568349 | `20d7d9c547e77ef0e284ce709a07d2ee4a3f03c9` | Restack published;3,044 combined units, exact CI lint and both negative controls pass; genuine rendering in progress; CI8840979 queued; Dan Piet human review re-requested generation2 |
 
 Six source reviews are closed without merge:2565512/2568196/2571652 and
 2566858/2568122/2568148. Only three transition compiler reviews remain open.
@@ -47,6 +47,11 @@ resolved after publication. Native SDK team requests and root #sdk-reviews are
 reused. No new Delta, SDK promotion, budget change or landed debt reduction.
 Separately assigned held2561775 has pending infrastructure retry8827484; its
 compatibility/release hold remains independent. No external polling.
+
+Runtime's protected merge failed with seven conflicts (Mergebot2352858), repaired
+by integrating master38eed772 and restacking B/C. All three remain OPEN; prior
+old-head green CI/automated approvals do not clear these publications. Normal
+hooks passed; required human/security gates and zero breaking changes remain.
 
 ## Foundation
 
