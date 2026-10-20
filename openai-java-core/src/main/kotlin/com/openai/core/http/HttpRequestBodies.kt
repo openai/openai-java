@@ -11,8 +11,10 @@ import com.openai.core.multipartValueToTree
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.io.ByteArrayInputStream
+import java.io.FilterInputStream
 import java.io.InputStream
 import java.io.OutputStream
+import java.io.SequenceInputStream
 import java.util.Collections
 import java.util.IdentityHashMap
 import java.util.UUID
@@ -27,6 +29,8 @@ internal inline fun <reified T> json(jsonMapper: JsonMapper, value: T): HttpRequ
         private val bytes: ByteArray by lazy { jsonMapper.writeValueAsBytes(value) }
 
         override fun writeTo(outputStream: OutputStream) = outputStream.write(bytes)
+
+        override fun content(): InputStream = bytes.inputStream()
 
         override fun contentType(): String = "application/json"
 
@@ -96,6 +100,8 @@ private fun buildMultipartBody(
                                         outputStream.write(byteArray)
                                     }
 
+                                    override fun content(): InputStream = byteArray.inputStream()
+
                                     override fun contentType(): String = contentType
 
                                     override fun contentLength(): Long = byteArray.size.toLong()
@@ -110,6 +116,13 @@ private fun buildMultipartBody(
                                     override fun writeTo(outputStream: OutputStream) {
                                         bytes.copyTo(outputStream)
                                     }
+
+                                    override fun content(): InputStream =
+                                        object : FilterInputStream(bytes) {
+                                            // SequenceInputStream closes parts at EOF. A later
+                                            // part may share this upload; the aggregate owns it.
+                                            override fun close() {}
+                                        }
 
                                     override fun contentType(): String = contentType
 
@@ -223,6 +236,39 @@ private constructor(
         outputStream.write(boundaryBytes)
         outputStream.write(DASHDASH)
         outputStream.write(CRLF)
+    }
+
+    // This must remain in sync with `writeTo`.
+    override fun content(): InputStream {
+        val streams = mutableListOf<InputStream>()
+
+        parts.forEach { part ->
+            streams.add(DASHDASH.inputStream())
+            streams.add(boundaryBytes.inputStream())
+            streams.add(CRLF.inputStream())
+            streams.add(CONTENT_DISPOSITION.inputStream())
+            streams.add(part.contentDisposition.toByteArray().inputStream())
+            streams.add(CRLF.inputStream())
+            streams.add(CONTENT_TYPE.inputStream())
+            streams.add(part.contentType.toByteArray().inputStream())
+            streams.add(CRLF.inputStream())
+            streams.add(CRLF.inputStream())
+            streams.add(part.body.content())
+            streams.add(CRLF.inputStream())
+        }
+
+        streams.add(DASHDASH.inputStream())
+        streams.add(boundaryBytes.inputStream())
+        streams.add(DASHDASH.inputStream())
+        streams.add(CRLF.inputStream())
+
+        return object : SequenceInputStream(Collections.enumeration(streams)) {
+            override fun close() {
+                // Release uploads through the same close-once tracking used by the body and
+                // cancellation, including every remaining upload if a close throws.
+                AutoCloseable { closeAll(parts) { it.body.close() } }.use { super.close() }
+            }
+        }
     }
 
     override fun contentType(): String = contentType
