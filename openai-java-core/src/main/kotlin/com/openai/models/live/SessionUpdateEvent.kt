@@ -11,7 +11,6 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
-import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -19,8 +18,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Update the delegation settings or transcript triggers of an active Live session. The server
- * acknowledges accepted changes with `session.updated`.
+ * Update the delegation settings of an active Live session. The server acknowledges accepted
+ * changes with `session.updated`.
  */
 class SessionUpdateEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -41,8 +40,9 @@ private constructor(
     ) : this(session, type, eventId, mutableMapOf())
 
     /**
-     * Sparse delegation and trigger updates. Omitted settings retain their values. The delegation
-     * type cannot change. Model, frontend instructions, audio, and startup input are immutable.
+     * Sparse delegation updates. Omitted settings retain their values. The delegation type cannot
+     * change, including resetting Responses delegation to null or client. Model, frontend
+     * instructions, audio, and startup input are immutable.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -92,29 +92,6 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
-    /**
-     * Returns an immutable snapshot of all present JSON properties, including declared and
-     * additional properties.
-     *
-     * Keys use their JSON names. Declared properties take precedence over additional properties
-     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-     * values are preserved.
-     */
-    fun _allProperties(): Map<String, JsonValue> =
-        collectAllProperties(
-            additionalProperties,
-            "session" to this.session,
-            "type" to this.type,
-            "event_id" to this.eventId,
-        )
-
-    /**
-     * Returns the legacy additional-properties view.
-     *
-     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
-     *   accessor retains its legacy additional-properties behavior.
-     */
-    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -152,9 +129,9 @@ private constructor(
         }
 
         /**
-         * Sparse delegation and trigger updates. Omitted settings retain their values. The
-         * delegation type cannot change. Model, frontend instructions, audio, and startup input are
-         * immutable.
+         * Sparse delegation updates. Omitted settings retain their values. The delegation type
+         * cannot change, including resetting Responses delegation to null or client. Model,
+         * frontend instructions, audio, and startup input are immutable.
          */
         fun session(session: SessionUpdateConfig) = session(JsonField.of(session))
 

@@ -35,8 +35,7 @@ interface EvalServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): EvalServiceAsync
 
     /** Manage and run evals in the OpenAI platform. */
-    fun runs(): RunServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun runs(): RunServiceAsync
 
     /**
      * Create the structure of an evaluation that can be used to test a model's performance. An
@@ -188,10 +187,7 @@ interface EvalServiceAsync {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): EvalServiceAsync.WithRawResponse
 
         /** Manage and run evals in the OpenAI platform. */
-        fun runs(): RunServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun runs(): RunServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /evals`, but is otherwise the same as

@@ -4,7 +4,6 @@ package com.openai.models.live
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
-import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -13,67 +12,17 @@ internal class SessionUpdateConfigTest {
     @Test
     fun create() {
         val sessionUpdateConfig =
-            SessionUpdateConfig.builder()
-                .delegation(ClientDelegation.builder().build())
-                .addTrigger(
-                    DecisionTrigger.builder()
-                        .decisions(
-                            DecisionTrigger.Decisions.builder()
-                                .addQuestion(
-                                    DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
-                                        .name("name")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                        .build()
-                )
-                .build()
+            SessionUpdateConfig.builder().delegation(ClientDelegation.builder().build()).build()
 
         assertThat(sessionUpdateConfig.delegation())
             .contains(SessionUpdateConfig.Delegation.ofClient(ClientDelegation.builder().build()))
-        assertThat(sessionUpdateConfig.triggers().getOrNull())
-            .containsExactly(
-                DecisionTrigger.builder()
-                    .decisions(
-                        DecisionTrigger.Decisions.builder()
-                            .addQuestion(
-                                DecisionTrigger.Decisions.Question.Predicate.builder()
-                                    .instructions("instructions")
-                                    .name("name")
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                    .build()
-            )
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val sessionUpdateConfig =
-            SessionUpdateConfig.builder()
-                .delegation(ClientDelegation.builder().build())
-                .addTrigger(
-                    DecisionTrigger.builder()
-                        .decisions(
-                            DecisionTrigger.Decisions.builder()
-                                .addQuestion(
-                                    DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
-                                        .name("name")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                        .build()
-                )
-                .build()
+            SessionUpdateConfig.builder().delegation(ClientDelegation.builder().build()).build()
 
         val roundtrippedSessionUpdateConfig =
             jsonMapper.readValue(

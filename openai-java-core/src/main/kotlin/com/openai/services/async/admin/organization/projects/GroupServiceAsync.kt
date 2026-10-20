@@ -30,8 +30,7 @@ interface GroupServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): GroupServiceAsync
 
-    fun roles(): RoleServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun roles(): RoleServiceAsync
 
     /** Grants a group access to a project. */
     fun create(projectId: String, params: GroupCreateParams): CompletableFuture<ProjectGroup> =
@@ -146,10 +145,7 @@ interface GroupServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): GroupServiceAsync.WithRawResponse
 
-        fun roles(): RoleServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun roles(): RoleServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /organization/projects/{project_id}/groups`, but is

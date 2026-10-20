@@ -25,7 +25,6 @@ internal class ImagesResponseTest {
                 )
                 .outputFormat(ImagesResponse.OutputFormat.PNG)
                 .quality(ImagesResponse.Quality.LOW)
-                .safetyIdentifier("safety_identifier")
                 .size(ImagesResponse.Size._1024X1024)
                 .usage(
                     ImagesResponse.Usage.builder()
@@ -60,7 +59,6 @@ internal class ImagesResponseTest {
             )
         assertThat(imagesResponse.outputFormat()).contains(ImagesResponse.OutputFormat.PNG)
         assertThat(imagesResponse.quality()).contains(ImagesResponse.Quality.LOW)
-        assertThat(imagesResponse.safetyIdentifier()).contains("safety_identifier")
         assertThat(imagesResponse.size()).contains(ImagesResponse.Size._1024X1024)
         assertThat(imagesResponse.usage())
             .contains(
@@ -100,7 +98,6 @@ internal class ImagesResponseTest {
                 )
                 .outputFormat(ImagesResponse.OutputFormat.PNG)
                 .quality(ImagesResponse.Quality.LOW)
-                .safetyIdentifier("safety_identifier")
                 .size(ImagesResponse.Size._1024X1024)
                 .usage(
                     ImagesResponse.Usage.builder()

@@ -12,7 +12,6 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.collectAllProperties
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -112,30 +111,6 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
-    /**
-     * Returns an immutable snapshot of all present JSON properties, including declared and
-     * additional properties.
-     *
-     * Keys use their JSON names. Declared properties take precedence over additional properties
-     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-     * values are preserved.
-     */
-    fun _allProperties(): Map<String, JsonValue> =
-        collectAllProperties(
-            additionalProperties,
-            "project" to this.project,
-            "entity" to this.entity,
-            "name" to this.name,
-            "tags" to this.tags,
-        )
-
-    /**
-     * Returns the legacy additional-properties view.
-     *
-     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
-     *   accessor retains its legacy additional-properties behavior.
-     */
-    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -242,10 +217,7 @@ private constructor(
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addTag(tag: String) = apply {
-            tags =
-                (tags?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("tags", it).add(tag)
-                }
+            tags = (tags ?: JsonField.of(mutableListOf())).also { checkKnown("tags", it).add(tag) }
         }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

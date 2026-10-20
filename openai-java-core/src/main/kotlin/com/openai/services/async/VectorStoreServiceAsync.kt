@@ -34,11 +34,9 @@ interface VectorStoreServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VectorStoreServiceAsync
 
-    fun files(): FileServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun files(): FileServiceAsync
 
-    fun fileBatches(): FileBatchServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun fileBatches(): FileBatchServiceAsync
 
     /** Create a vector store. */
     fun create(): CompletableFuture<VectorStore> = create(VectorStoreCreateParams.none())
@@ -221,15 +219,9 @@ interface VectorStoreServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): VectorStoreServiceAsync.WithRawResponse
 
-        fun files(): FileServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun files(): FileServiceAsync.WithRawResponse
 
-        fun fileBatches(): FileBatchServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun fileBatches(): FileBatchServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /vector_stores`, but is otherwise the same as

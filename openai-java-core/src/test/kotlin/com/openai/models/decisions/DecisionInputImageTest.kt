@@ -15,13 +15,10 @@ internal class DecisionInputImageTest {
             DecisionInputImage.builder()
                 .imageUrl("https://")
                 .detail(DecisionInputImage.Detail.LOW)
-                .promptCacheBreakpoint(DecisionPromptCacheBreakpoint.builder().build())
                 .build()
 
         assertThat(decisionInputImage.imageUrl()).isEqualTo("https://")
         assertThat(decisionInputImage.detail()).contains(DecisionInputImage.Detail.LOW)
-        assertThat(decisionInputImage.promptCacheBreakpoint())
-            .contains(DecisionPromptCacheBreakpoint.builder().build())
     }
 
     @Test
@@ -31,7 +28,6 @@ internal class DecisionInputImageTest {
             DecisionInputImage.builder()
                 .imageUrl("https://")
                 .detail(DecisionInputImage.Detail.LOW)
-                .promptCacheBreakpoint(DecisionPromptCacheBreakpoint.builder().build())
                 .build()
 
         val roundtrippedDecisionInputImage =

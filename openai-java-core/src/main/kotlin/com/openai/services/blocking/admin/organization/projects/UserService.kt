@@ -31,8 +31,7 @@ interface UserService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserService
 
-    fun roles(): RoleService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun roles(): RoleService
 
     /**
      * Adds a user to the project. Users must already be members of the organization to be added to
@@ -159,10 +158,7 @@ interface UserService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserService.WithRawResponse
 
-        fun roles(): RoleService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun roles(): RoleService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /organization/projects/{project_id}/users`, but is

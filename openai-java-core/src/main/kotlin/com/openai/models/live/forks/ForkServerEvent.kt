@@ -20,13 +20,9 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
-import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.live.CommentaryAppendedEvent
-import com.openai.models.live.DecisionEvent
-import com.openai.models.live.DecisionItemCreatedEvent
-import com.openai.models.live.DecisionItemDeletedEvent
 import com.openai.models.live.DelegationCreatedEvent
 import com.openai.models.live.ErrorEvent
 import com.openai.models.live.InfoEvent
@@ -73,9 +69,6 @@ private constructor(
     private val sessionInputTranscriptDelta: InputTranscriptDeltaEvent? = null,
     private val sessionOutputTranscriptDelta: OutputTranscriptDeltaEvent? = null,
     private val sessionDelegationCreated: DelegationCreatedEvent? = null,
-    private val decisionEvent: DecisionEvent? = null,
-    private val decisionItemCreated: DecisionItemCreatedEvent? = null,
-    private val decisionItemDeleted: DecisionItemDeletedEvent? = null,
     private val responseEvent: ResponseEvent? = null,
     private val sessionUsageUpdated: SessionUsageUpdatedEvent? = null,
     private val sessionClosed: SessionClosedEvent? = null,
@@ -102,16 +95,15 @@ private constructor(
     fun sessionUpdated(): Optional<SessionUpdatedEvent> = Optional.ofNullable(sessionUpdated)
 
     /**
-     * Acknowledges a session.input_audio.mute command. An independent input mute sends silence to
-     * the model and preserves sideband audio reflection. Fixture playback does not emit this event.
+     * Returned when a session.input_audio.mute command is accepted. Input audio is no longer sent
+     * to the model; sideband audio reflection continues.
      */
     fun sessionInputAudioMuted(): Optional<InputAudioMutedEvent> =
         Optional.ofNullable(sessionInputAudioMuted)
 
     /**
-     * Acknowledges a session.input_audio.unmute command, removing the independent input mute. An
-     * active audio fixture still pauses inference until playback finishes. Fixture playback does
-     * not emit this event.
+     * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to the
+     * model again.
      */
     fun sessionInputAudioUnmuted(): Optional<InputAudioUnmutedEvent> =
         Optional.ofNullable(sessionInputAudioUnmuted)
@@ -186,26 +178,12 @@ private constructor(
         Optional.ofNullable(sessionOutputTranscriptDelta)
 
     /**
-     * Returned when the Live model delegates work to your application, Responses, or Decisions.
+     * Returned when the Live model delegates work to your application or a Responses backend.
      * Contains delegation metadata and the position on the session timeline where the work was
      * delegated.
      */
     fun sessionDelegationCreated(): Optional<DelegationCreatedEvent> =
         Optional.ofNullable(sessionDelegationCreated)
-
-    /**
-     * A Decision API event for a Live delegation or transcript trigger. For a trigger,
-     * source_event_id identifies the transcript delta that caused this evaluation.
-     */
-    fun decisionEvent(): Optional<DecisionEvent> = Optional.ofNullable(decisionEvent)
-
-    /** An input item was appended for future decisions. */
-    fun decisionItemCreated(): Optional<DecisionItemCreatedEvent> =
-        Optional.ofNullable(decisionItemCreated)
-
-    /** An input item was removed from future decisions. */
-    fun decisionItemDeleted(): Optional<DecisionItemDeletedEvent> =
-        Optional.ofNullable(decisionItemDeleted)
 
     /**
      * A streaming Responses API event from a backend delegated to by the Live session. Use the
@@ -292,12 +270,6 @@ private constructor(
 
     fun isSessionDelegationCreated(): Boolean = sessionDelegationCreated != null
 
-    fun isDecisionEvent(): Boolean = decisionEvent != null
-
-    fun isDecisionItemCreated(): Boolean = decisionItemCreated != null
-
-    fun isDecisionItemDeleted(): Boolean = decisionItemDeleted != null
-
     fun isResponseEvent(): Boolean = responseEvent != null
 
     fun isSessionUsageUpdated(): Boolean = sessionUsageUpdated != null
@@ -331,16 +303,15 @@ private constructor(
     fun asSessionUpdated(): SessionUpdatedEvent = sessionUpdated.getOrThrow("sessionUpdated")
 
     /**
-     * Acknowledges a session.input_audio.mute command. An independent input mute sends silence to
-     * the model and preserves sideband audio reflection. Fixture playback does not emit this event.
+     * Returned when a session.input_audio.mute command is accepted. Input audio is no longer sent
+     * to the model; sideband audio reflection continues.
      */
     fun asSessionInputAudioMuted(): InputAudioMutedEvent =
         sessionInputAudioMuted.getOrThrow("sessionInputAudioMuted")
 
     /**
-     * Acknowledges a session.input_audio.unmute command, removing the independent input mute. An
-     * active audio fixture still pauses inference until playback finishes. Fixture playback does
-     * not emit this event.
+     * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to the
+     * model again.
      */
     fun asSessionInputAudioUnmuted(): InputAudioUnmutedEvent =
         sessionInputAudioUnmuted.getOrThrow("sessionInputAudioUnmuted")
@@ -415,26 +386,12 @@ private constructor(
         sessionOutputTranscriptDelta.getOrThrow("sessionOutputTranscriptDelta")
 
     /**
-     * Returned when the Live model delegates work to your application, Responses, or Decisions.
+     * Returned when the Live model delegates work to your application or a Responses backend.
      * Contains delegation metadata and the position on the session timeline where the work was
      * delegated.
      */
     fun asSessionDelegationCreated(): DelegationCreatedEvent =
         sessionDelegationCreated.getOrThrow("sessionDelegationCreated")
-
-    /**
-     * A Decision API event for a Live delegation or transcript trigger. For a trigger,
-     * source_event_id identifies the transcript delta that caused this evaluation.
-     */
-    fun asDecisionEvent(): DecisionEvent = decisionEvent.getOrThrow("decisionEvent")
-
-    /** An input item was appended for future decisions. */
-    fun asDecisionItemCreated(): DecisionItemCreatedEvent =
-        decisionItemCreated.getOrThrow("decisionItemCreated")
-
-    /** An input item was removed from future decisions. */
-    fun asDecisionItemDeleted(): DecisionItemDeletedEvent =
-        decisionItemDeleted.getOrThrow("decisionItemDeleted")
 
     /**
      * A streaming Responses API event from a backend delegated to by the Live session. Use the
@@ -552,9 +509,6 @@ private constructor(
                 visitor.visitSessionOutputTranscriptDelta(sessionOutputTranscriptDelta)
             sessionDelegationCreated != null ->
                 visitor.visitSessionDelegationCreated(sessionDelegationCreated)
-            decisionEvent != null -> visitor.visitDecisionEvent(decisionEvent)
-            decisionItemCreated != null -> visitor.visitDecisionItemCreated(decisionItemCreated)
-            decisionItemDeleted != null -> visitor.visitDecisionItemDeleted(decisionItemDeleted)
             responseEvent != null -> visitor.visitResponseEvent(responseEvent)
             sessionUsageUpdated != null -> visitor.visitSessionUsageUpdated(sessionUsageUpdated)
             sessionClosed != null -> visitor.visitSessionClosed(sessionClosed)
@@ -664,22 +618,6 @@ private constructor(
                     sessionDelegationCreated: DelegationCreatedEvent
                 ) {
                     sessionDelegationCreated.validate()
-                }
-
-                override fun visitDecisionEvent(decisionEvent: DecisionEvent) {
-                    decisionEvent.validate()
-                }
-
-                override fun visitDecisionItemCreated(
-                    decisionItemCreated: DecisionItemCreatedEvent
-                ) {
-                    decisionItemCreated.validate()
-                }
-
-                override fun visitDecisionItemDeleted(
-                    decisionItemDeleted: DecisionItemDeletedEvent
-                ) {
-                    decisionItemDeleted.validate()
                 }
 
                 override fun visitResponseEvent(responseEvent: ResponseEvent) {
@@ -801,17 +739,6 @@ private constructor(
                     sessionDelegationCreated: DelegationCreatedEvent
                 ) = sessionDelegationCreated.validity()
 
-                override fun visitDecisionEvent(decisionEvent: DecisionEvent) =
-                    decisionEvent.validity()
-
-                override fun visitDecisionItemCreated(
-                    decisionItemCreated: DecisionItemCreatedEvent
-                ) = decisionItemCreated.validity()
-
-                override fun visitDecisionItemDeleted(
-                    decisionItemDeleted: DecisionItemDeletedEvent
-                ) = decisionItemDeleted.validity()
-
                 override fun visitResponseEvent(responseEvent: ResponseEvent) =
                     responseEvent.validity()
 
@@ -866,9 +793,6 @@ private constructor(
             sessionInputTranscriptDelta == other.sessionInputTranscriptDelta &&
             sessionOutputTranscriptDelta == other.sessionOutputTranscriptDelta &&
             sessionDelegationCreated == other.sessionDelegationCreated &&
-            decisionEvent == other.decisionEvent &&
-            decisionItemCreated == other.decisionItemCreated &&
-            decisionItemDeleted == other.decisionItemDeleted &&
             responseEvent == other.responseEvent &&
             sessionUsageUpdated == other.sessionUsageUpdated &&
             sessionClosed == other.sessionClosed &&
@@ -897,9 +821,6 @@ private constructor(
             sessionInputTranscriptDelta,
             sessionOutputTranscriptDelta,
             sessionDelegationCreated,
-            decisionEvent,
-            decisionItemCreated,
-            decisionItemDeleted,
             responseEvent,
             sessionUsageUpdated,
             sessionClosed,
@@ -940,11 +861,6 @@ private constructor(
                 "ForkServerEvent{sessionOutputTranscriptDelta=$sessionOutputTranscriptDelta}"
             sessionDelegationCreated != null ->
                 "ForkServerEvent{sessionDelegationCreated=$sessionDelegationCreated}"
-            decisionEvent != null -> "ForkServerEvent{decisionEvent=$decisionEvent}"
-            decisionItemCreated != null ->
-                "ForkServerEvent{decisionItemCreated=$decisionItemCreated}"
-            decisionItemDeleted != null ->
-                "ForkServerEvent{decisionItemDeleted=$decisionItemDeleted}"
             responseEvent != null -> "ForkServerEvent{responseEvent=$responseEvent}"
             sessionUsageUpdated != null ->
                 "ForkServerEvent{sessionUsageUpdated=$sessionUsageUpdated}"
@@ -980,18 +896,16 @@ private constructor(
             ForkServerEvent(sessionUpdated = sessionUpdated)
 
         /**
-         * Acknowledges a session.input_audio.mute command. An independent input mute sends silence
-         * to the model and preserves sideband audio reflection. Fixture playback does not emit this
-         * event.
+         * Returned when a session.input_audio.mute command is accepted. Input audio is no longer
+         * sent to the model; sideband audio reflection continues.
          */
         @JvmStatic
         fun ofSessionInputAudioMuted(sessionInputAudioMuted: InputAudioMutedEvent) =
             ForkServerEvent(sessionInputAudioMuted = sessionInputAudioMuted)
 
         /**
-         * Acknowledges a session.input_audio.unmute command, removing the independent input mute.
-         * An active audio fixture still pauses inference until playback finishes. Fixture playback
-         * does not emit this event.
+         * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to
+         * the model again.
          */
         @JvmStatic
         fun ofSessionInputAudioUnmuted(sessionInputAudioUnmuted: InputAudioUnmutedEvent) =
@@ -1082,31 +996,13 @@ private constructor(
         ) = ForkServerEvent(sessionOutputTranscriptDelta = sessionOutputTranscriptDelta)
 
         /**
-         * Returned when the Live model delegates work to your application, Responses, or Decisions.
+         * Returned when the Live model delegates work to your application or a Responses backend.
          * Contains delegation metadata and the position on the session timeline where the work was
          * delegated.
          */
         @JvmStatic
         fun ofSessionDelegationCreated(sessionDelegationCreated: DelegationCreatedEvent) =
             ForkServerEvent(sessionDelegationCreated = sessionDelegationCreated)
-
-        /**
-         * A Decision API event for a Live delegation or transcript trigger. For a trigger,
-         * source_event_id identifies the transcript delta that caused this evaluation.
-         */
-        @JvmStatic
-        fun ofDecisionEvent(decisionEvent: DecisionEvent) =
-            ForkServerEvent(decisionEvent = decisionEvent)
-
-        /** An input item was appended for future decisions. */
-        @JvmStatic
-        fun ofDecisionItemCreated(decisionItemCreated: DecisionItemCreatedEvent) =
-            ForkServerEvent(decisionItemCreated = decisionItemCreated)
-
-        /** An input item was removed from future decisions. */
-        @JvmStatic
-        fun ofDecisionItemDeleted(decisionItemDeleted: DecisionItemDeletedEvent) =
-            ForkServerEvent(decisionItemDeleted = decisionItemDeleted)
 
         /**
          * A streaming Responses API event from a backend delegated to by the Live session. Use the
@@ -1202,17 +1098,15 @@ private constructor(
             unknown(JsonValue.from(sessionUpdated))
 
         /**
-         * Acknowledges a session.input_audio.mute command. An independent input mute sends silence
-         * to the model and preserves sideband audio reflection. Fixture playback does not emit this
-         * event.
+         * Returned when a session.input_audio.mute command is accepted. Input audio is no longer
+         * sent to the model; sideband audio reflection continues.
          */
         fun visitSessionInputAudioMuted(sessionInputAudioMuted: InputAudioMutedEvent): T =
             unknown(JsonValue.from(sessionInputAudioMuted))
 
         /**
-         * Acknowledges a session.input_audio.unmute command, removing the independent input mute.
-         * An active audio fixture still pauses inference until playback finishes. Fixture playback
-         * does not emit this event.
+         * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to
+         * the model again.
          */
         fun visitSessionInputAudioUnmuted(sessionInputAudioUnmuted: InputAudioUnmutedEvent): T =
             unknown(JsonValue.from(sessionInputAudioUnmuted))
@@ -1295,27 +1189,12 @@ private constructor(
         ): T = unknown(JsonValue.from(sessionOutputTranscriptDelta))
 
         /**
-         * Returned when the Live model delegates work to your application, Responses, or Decisions.
+         * Returned when the Live model delegates work to your application or a Responses backend.
          * Contains delegation metadata and the position on the session timeline where the work was
          * delegated.
          */
         fun visitSessionDelegationCreated(sessionDelegationCreated: DelegationCreatedEvent): T =
             unknown(JsonValue.from(sessionDelegationCreated))
-
-        /**
-         * A Decision API event for a Live delegation or transcript trigger. For a trigger,
-         * source_event_id identifies the transcript delta that caused this evaluation.
-         */
-        fun visitDecisionEvent(decisionEvent: DecisionEvent): T =
-            unknown(JsonValue.from(decisionEvent))
-
-        /** An input item was appended for future decisions. */
-        fun visitDecisionItemCreated(decisionItemCreated: DecisionItemCreatedEvent): T =
-            unknown(JsonValue.from(decisionItemCreated))
-
-        /** An input item was removed from future decisions. */
-        fun visitDecisionItemDeleted(decisionItemDeleted: DecisionItemDeletedEvent): T =
-            unknown(JsonValue.from(decisionItemDeleted))
 
         /**
          * A streaming Responses API event from a backend delegated to by the Live session. Use the
@@ -1477,21 +1356,6 @@ private constructor(
                         ForkServerEvent(sessionDelegationCreated = it, _json = json)
                     } ?: ForkServerEvent(_json = json)
                 }
-                "decision.event" -> {
-                    return tryDeserialize(node, jacksonTypeRef<DecisionEvent>())?.let {
-                        ForkServerEvent(decisionEvent = it, _json = json)
-                    } ?: ForkServerEvent(_json = json)
-                }
-                "decision.item.created" -> {
-                    return tryDeserialize(node, jacksonTypeRef<DecisionItemCreatedEvent>())?.let {
-                        ForkServerEvent(decisionItemCreated = it, _json = json)
-                    } ?: ForkServerEvent(_json = json)
-                }
-                "decision.item.deleted" -> {
-                    return tryDeserialize(node, jacksonTypeRef<DecisionItemDeletedEvent>())?.let {
-                        ForkServerEvent(decisionItemDeleted = it, _json = json)
-                    } ?: ForkServerEvent(_json = json)
-                }
                 "response.event" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseEvent>())?.let {
                         ForkServerEvent(responseEvent = it, _json = json)
@@ -1582,11 +1446,6 @@ private constructor(
                     generator.writeObject(value.sessionOutputTranscriptDelta)
                 value.sessionDelegationCreated != null ->
                     generator.writeObject(value.sessionDelegationCreated)
-                value.decisionEvent != null -> generator.writeObject(value.decisionEvent)
-                value.decisionItemCreated != null ->
-                    generator.writeObject(value.decisionItemCreated)
-                value.decisionItemDeleted != null ->
-                    generator.writeObject(value.decisionItemDeleted)
                 value.responseEvent != null -> generator.writeObject(value.responseEvent)
                 value.sessionUsageUpdated != null ->
                     generator.writeObject(value.sessionUsageUpdated)
@@ -1658,24 +1517,6 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(additionalProperties, "audio" to this.audio, "type" to this.type)
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1901,29 +1742,6 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "event" to this.event,
-                "event_id" to this.eventId,
-                "type" to this.type,
-            )
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -2190,30 +2008,6 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "event" to this.event,
-                "event_id" to this.eventId,
-                "type" to this.type,
-                "client_event_id" to this.clientEventId,
-            )
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -2482,29 +2276,6 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "event_id" to this.eventId,
-                "session_id" to this.sessionId,
-                "type" to this.type,
-            )
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -2754,29 +2525,6 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "event_id" to this.eventId,
-                "session_id" to this.sessionId,
-                "type" to this.type,
-            )
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -3038,30 +2786,6 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "error" to this.error,
-                "event_id" to this.eventId,
-                "session_id" to this.sessionId,
-                "type" to this.type,
-            )
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -3322,32 +3046,6 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
-            /**
-             * Returns an immutable snapshot of all present JSON properties, including declared and
-             * additional properties.
-             *
-             * Keys use their JSON names. Declared properties take precedence over additional
-             * properties with the same name. Missing properties are omitted, while explicit nulls
-             * and unrecognized values are preserved.
-             */
-            fun _allProperties(): Map<String, JsonValue> =
-                collectAllProperties(
-                    additionalProperties,
-                    "code" to this.code,
-                    "message" to this.message,
-                    "type" to this.type,
-                    "param" to this.param,
-                )
-
-            /**
-             * Returns the legacy additional-properties view.
-             *
-             * @deprecated Use [_allProperties] to access both declared and additional JSON
-             *   properties. This accessor retains its legacy additional-properties behavior.
-             */
-            @Deprecated(
-                "Use _allProperties() to access both declared and additional JSON properties."
-            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =

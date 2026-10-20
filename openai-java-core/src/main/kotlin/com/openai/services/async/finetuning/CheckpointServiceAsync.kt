@@ -21,8 +21,7 @@ interface CheckpointServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointServiceAsync
 
     /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-    fun permissions(): PermissionServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun permissions(): PermissionServiceAsync
 
     /**
      * A view of [CheckpointServiceAsync] that provides access to raw HTTP responses for each
@@ -40,9 +39,6 @@ interface CheckpointServiceAsync {
         ): CheckpointServiceAsync.WithRawResponse
 
         /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-        fun permissions(): PermissionServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun permissions(): PermissionServiceAsync.WithRawResponse
     }
 }

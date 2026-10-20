@@ -31,8 +31,7 @@ interface ContainerServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContainerServiceAsync
 
-    fun files(): FileServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun files(): FileServiceAsync
 
     /** Create Container */
     fun create(params: ContainerCreateParams): CompletableFuture<ContainerCreateResponse> =
@@ -144,10 +143,7 @@ interface ContainerServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): ContainerServiceAsync.WithRawResponse
 
-        fun files(): FileServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun files(): FileServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /containers`, but is otherwise the same as

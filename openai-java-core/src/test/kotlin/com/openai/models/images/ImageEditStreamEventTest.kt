@@ -81,7 +81,6 @@ internal class ImageEditStreamEventTest {
                         .totalTokens(0L)
                         .build()
                 )
-                .safetyIdentifier("safety_identifier")
                 .build()
 
         val imageEditStreamEvent = ImageEditStreamEvent.ofCompleted(completed)
@@ -115,7 +114,6 @@ internal class ImageEditStreamEventTest {
                             .totalTokens(0L)
                             .build()
                     )
-                    .safetyIdentifier("safety_identifier")
                     .build()
             )
 

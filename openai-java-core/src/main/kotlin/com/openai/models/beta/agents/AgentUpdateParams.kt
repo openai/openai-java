@@ -13,7 +13,6 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkKnown
-import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -769,35 +768,6 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "instructions" to this.instructions,
-                "metadata" to this.metadata,
-                "model" to this.model,
-                "multi_agent" to this.multiAgent,
-                "name" to this.name,
-                "reasoning" to this.reasoning,
-                "service_tier" to this.serviceTier,
-                "text" to this.text,
-                "tools" to this.tools,
-            )
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1187,23 +1157,6 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -1341,9 +1294,6 @@ private constructor(
             /** Uses the fast service tier. */
             @JvmField val FAST = of("fast")
 
-            /** Uses the ultrafast service tier. */
-            @JvmField val ULTRAFAST = of("ultrafast")
-
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -1359,8 +1309,6 @@ private constructor(
             PRIORITY,
             /** Uses the fast service tier. */
             FAST,
-            /** Uses the ultrafast service tier. */
-            ULTRAFAST,
         }
 
         /**
@@ -1383,8 +1331,6 @@ private constructor(
             PRIORITY,
             /** Uses the fast service tier. */
             FAST,
-            /** Uses the ultrafast service tier. */
-            ULTRAFAST,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -1405,7 +1351,6 @@ private constructor(
                 FLEX -> Value.FLEX
                 PRIORITY -> Value.PRIORITY
                 FAST -> Value.FAST
-                ULTRAFAST -> Value.ULTRAFAST
                 else -> Value._UNKNOWN
             }
 
@@ -1425,7 +1370,6 @@ private constructor(
                 FLEX -> Known.FLEX
                 PRIORITY -> Known.PRIORITY
                 FAST -> Known.FAST
-                ULTRAFAST -> Known.ULTRAFAST
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 

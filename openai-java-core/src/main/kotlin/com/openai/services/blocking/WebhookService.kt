@@ -44,8 +44,7 @@ interface WebhookService {
      */
     fun unwrap(body: String): UnwrapWebhookEvent
 
-    fun eventTypes(): EventTypeService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun eventTypes(): EventTypeService
 
     /** Creates a webhook endpoint for the authenticated project. */
     fun create(params: WebhookCreateParams): WebhookEndpointWithSecret =
@@ -239,10 +238,7 @@ interface WebhookService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): WebhookService.WithRawResponse
 
-        fun eventTypes(): EventTypeService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun eventTypes(): EventTypeService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /webhook_endpoints`, but is otherwise the same as

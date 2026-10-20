@@ -53,8 +53,7 @@ class EventServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /agents/sessions/{session_id}/events
-        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
-        withRawResponse().create(params, requestOptions).thenApply { it.close() }.thenAccept {}
+        withRawResponse().create(params, requestOptions).thenAccept {}
 
     override fun streamStreaming(
         params: EventStreamParams,

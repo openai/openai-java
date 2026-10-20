@@ -30,8 +30,7 @@ interface UserService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserService
 
-    fun roles(): RoleService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun roles(): RoleService
 
     /** Retrieves a user by their identifier. */
     fun retrieve(userId: String): OrganizationUser = retrieve(userId, UserRetrieveParams.none())
@@ -148,10 +147,7 @@ interface UserService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserService.WithRawResponse
 
-        fun roles(): RoleService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun roles(): RoleService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `get /organization/users/{user_id}`, but is otherwise the

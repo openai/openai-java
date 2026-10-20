@@ -11,19 +11,15 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
-import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 class DecisionInputText
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val text: JsonField<String>,
     private val type: JsonValue,
-    private val promptCacheBreakpoint: JsonField<DecisionPromptCacheBreakpoint>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -31,10 +27,7 @@ private constructor(
     private constructor(
         @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        @JsonProperty("prompt_cache_breakpoint")
-        @ExcludeMissing
-        promptCacheBreakpoint: JsonField<DecisionPromptCacheBreakpoint> = JsonMissing.of(),
-    ) : this(text, type, promptCacheBreakpoint, mutableMapOf())
+    ) : this(text, type, mutableMapOf())
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -54,60 +47,17 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the
-     * request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun promptCacheBreakpoint(): Optional<DecisionPromptCacheBreakpoint> =
-        promptCacheBreakpoint.getOptional("prompt_cache_breakpoint")
-
-    /**
      * Returns the raw JSON value of [text].
      *
      * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
-    /**
-     * Returns the raw JSON value of [promptCacheBreakpoint].
-     *
-     * Unlike [promptCacheBreakpoint], this method doesn't throw if the JSON field has an unexpected
-     * type.
-     */
-    @JsonProperty("prompt_cache_breakpoint")
-    @ExcludeMissing
-    fun _promptCacheBreakpoint(): JsonField<DecisionPromptCacheBreakpoint> = promptCacheBreakpoint
-
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
     }
 
-    /**
-     * Returns an immutable snapshot of all present JSON properties, including declared and
-     * additional properties.
-     *
-     * Keys use their JSON names. Declared properties take precedence over additional properties
-     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-     * values are preserved.
-     */
-    fun _allProperties(): Map<String, JsonValue> =
-        collectAllProperties(
-            additionalProperties,
-            "text" to this.text,
-            "type" to this.type,
-            "prompt_cache_breakpoint" to this.promptCacheBreakpoint,
-        )
-
-    /**
-     * Returns the legacy additional-properties view.
-     *
-     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
-     *   accessor retains its legacy additional-properties behavior.
-     */
-    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -133,15 +83,12 @@ private constructor(
 
         private var text: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("input_text")
-        private var promptCacheBreakpoint: JsonField<DecisionPromptCacheBreakpoint> =
-            JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(decisionInputText: DecisionInputText) = apply {
             text = decisionInputText.text
             type = decisionInputText.type
-            promptCacheBreakpoint = decisionInputText.promptCacheBreakpoint
             additionalProperties = decisionInputText.additionalProperties.toMutableMap()
         }
 
@@ -168,32 +115,6 @@ private constructor(
          * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
-
-        /**
-         * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the
-         * request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
-         */
-        fun promptCacheBreakpoint(promptCacheBreakpoint: DecisionPromptCacheBreakpoint?) =
-            promptCacheBreakpoint(JsonField.ofNullable(promptCacheBreakpoint))
-
-        /**
-         * Alias for calling [Builder.promptCacheBreakpoint] with
-         * `promptCacheBreakpoint.orElse(null)`.
-         */
-        fun promptCacheBreakpoint(promptCacheBreakpoint: Optional<DecisionPromptCacheBreakpoint>) =
-            promptCacheBreakpoint(promptCacheBreakpoint.getOrNull())
-
-        /**
-         * Sets [Builder.promptCacheBreakpoint] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.promptCacheBreakpoint] with a well-typed
-         * [DecisionPromptCacheBreakpoint] value instead. This method is primarily for setting the
-         * field to an undocumented or not yet supported value.
-         */
-        fun promptCacheBreakpoint(promptCacheBreakpoint: JsonField<DecisionPromptCacheBreakpoint>) =
-            apply {
-                this.promptCacheBreakpoint = promptCacheBreakpoint
-            }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -230,7 +151,6 @@ private constructor(
             DecisionInputText(
                 checkRequired("text", text),
                 type,
-                promptCacheBreakpoint,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -256,7 +176,6 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
-        promptCacheBreakpoint().ifPresent { it.validate() }
         validated = true
     }
 
@@ -276,8 +195,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (text.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("input_text")) 1 else 0 } +
-            (promptCacheBreakpoint.asKnown().getOrNull()?.validity() ?: 0)
+            type.let { if (it == JsonValue.from("input_text")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -287,16 +205,13 @@ private constructor(
         return other is DecisionInputText &&
             text == other.text &&
             type == other.type &&
-            promptCacheBreakpoint == other.promptCacheBreakpoint &&
             additionalProperties == other.additionalProperties
     }
 
-    private val hashCode: Int by lazy {
-        Objects.hash(text, type, promptCacheBreakpoint, additionalProperties)
-    }
+    private val hashCode: Int by lazy { Objects.hash(text, type, additionalProperties) }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "DecisionInputText{text=$text, type=$type, promptCacheBreakpoint=$promptCacheBreakpoint, additionalProperties=$additionalProperties}"
+        "DecisionInputText{text=$text, type=$type, additionalProperties=$additionalProperties}"
 }

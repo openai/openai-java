@@ -35,8 +35,7 @@ interface JobService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobService
 
     /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-    fun checkpoints(): CheckpointService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun checkpoints(): CheckpointService
 
     /**
      * Creates a fine-tuning job which begins the process of creating a new model from a given
@@ -245,10 +244,7 @@ interface JobService {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobService.WithRawResponse
 
         /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-        fun checkpoints(): CheckpointService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun checkpoints(): CheckpointService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /fine_tuning/jobs`, but is otherwise the same as

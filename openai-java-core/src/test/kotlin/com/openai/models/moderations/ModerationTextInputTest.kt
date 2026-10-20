@@ -11,17 +11,15 @@ internal class ModerationTextInputTest {
 
     @Test
     fun create() {
-        val moderationTextInput =
-            ModerationTextInput.builder().text("...text to classify goes here...").build()
+        val moderationTextInput = ModerationTextInput.builder().text("I want to kill them").build()
 
-        assertThat(moderationTextInput.text()).isEqualTo("...text to classify goes here...")
+        assertThat(moderationTextInput.text()).isEqualTo("I want to kill them")
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val moderationTextInput =
-            ModerationTextInput.builder().text("...text to classify goes here...").build()
+        val moderationTextInput = ModerationTextInput.builder().text("I want to kill them").build()
 
         val roundtrippedModerationTextInput =
             jsonMapper.readValue(

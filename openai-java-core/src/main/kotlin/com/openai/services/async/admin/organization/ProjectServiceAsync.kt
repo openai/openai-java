@@ -41,41 +41,29 @@ interface ProjectServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ProjectServiceAsync
 
-    fun users(): UserServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun users(): UserServiceAsync
 
-    fun serviceAccounts(): ServiceAccountServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun serviceAccounts(): ServiceAccountServiceAsync
 
-    fun apiKeys(): ApiKeyServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun apiKeys(): ApiKeyServiceAsync
 
-    fun rateLimits(): RateLimitServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun rateLimits(): RateLimitServiceAsync
 
-    fun modelPermissions(): ModelPermissionServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun modelPermissions(): ModelPermissionServiceAsync
 
-    fun hostedToolPermissions(): HostedToolPermissionServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun hostedToolPermissions(): HostedToolPermissionServiceAsync
 
-    fun groups(): GroupServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun groups(): GroupServiceAsync
 
-    fun roles(): RoleServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun roles(): RoleServiceAsync
 
-    fun dataRetention(): DataRetentionServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun dataRetention(): DataRetentionServiceAsync
 
-    fun spendLimit(): SpendLimitServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun spendLimit(): SpendLimitServiceAsync
 
-    fun spendAlerts(): SpendAlertServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun spendAlerts(): SpendAlertServiceAsync
 
-    fun certificates(): CertificateServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun certificates(): CertificateServiceAsync
 
     /**
      * Create a new project in the organization. Projects can be created and archived, but cannot be
@@ -218,65 +206,29 @@ interface ProjectServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): ProjectServiceAsync.WithRawResponse
 
-        fun users(): UserServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun users(): UserServiceAsync.WithRawResponse
 
-        fun serviceAccounts(): ServiceAccountServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun serviceAccounts(): ServiceAccountServiceAsync.WithRawResponse
 
-        fun apiKeys(): ApiKeyServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun apiKeys(): ApiKeyServiceAsync.WithRawResponse
 
-        fun rateLimits(): RateLimitServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun rateLimits(): RateLimitServiceAsync.WithRawResponse
 
-        fun modelPermissions(): ModelPermissionServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun modelPermissions(): ModelPermissionServiceAsync.WithRawResponse
 
-        fun hostedToolPermissions(): HostedToolPermissionServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun hostedToolPermissions(): HostedToolPermissionServiceAsync.WithRawResponse
 
-        fun groups(): GroupServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun groups(): GroupServiceAsync.WithRawResponse
 
-        fun roles(): RoleServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun roles(): RoleServiceAsync.WithRawResponse
 
-        fun dataRetention(): DataRetentionServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun dataRetention(): DataRetentionServiceAsync.WithRawResponse
 
-        fun spendLimit(): SpendLimitServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun spendLimit(): SpendLimitServiceAsync.WithRawResponse
 
-        fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse
 
-        fun certificates(): CertificateServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun certificates(): CertificateServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /organization/projects`, but is otherwise the same

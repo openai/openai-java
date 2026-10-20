@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.decisions.Decision
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -51,21 +50,6 @@ internal class ServerEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
-                        .addTrigger(
-                            DecisionTrigger.builder()
-                                .decisions(
-                                    DecisionTrigger.Decisions.builder()
-                                        .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                                .build()
-                        )
                         .build()
                 )
                 .clientEventId("evt_start_001")
@@ -87,9 +71,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -140,24 +121,6 @@ internal class ServerEventTest {
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
                             .store(true)
-                            .addTrigger(
-                                DecisionTrigger.builder()
-                                    .decisions(
-                                        DecisionTrigger.Decisions.builder()
-                                            .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
-                                                    .instructions("instructions")
-                                                    .name("name")
-                                                    .build()
-                                            )
-                                            .build()
-                                    )
-                                    .eventType(
-                                        DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
-                                    )
-                                    .build()
-                            )
                             .build()
                     )
                     .clientEventId("evt_start_001")
@@ -236,21 +199,6 @@ internal class ServerEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
-                        .addTrigger(
-                            DecisionTrigger.builder()
-                                .decisions(
-                                    DecisionTrigger.Decisions.builder()
-                                        .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                                .build()
-                        )
                         .build()
                 )
                 .clientEventId("evt_update_001")
@@ -272,9 +220,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -352,24 +297,6 @@ internal class ServerEventTest {
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
                             .store(true)
-                            .addTrigger(
-                                DecisionTrigger.builder()
-                                    .decisions(
-                                        DecisionTrigger.Decisions.builder()
-                                            .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
-                                                    .instructions("instructions")
-                                                    .name("name")
-                                                    .build()
-                                            )
-                                            .build()
-                                    )
-                                    .eventType(
-                                        DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
-                                    )
-                                    .build()
-                            )
                             .build()
                     )
                     .clientEventId("evt_update_001")
@@ -409,9 +336,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -468,9 +392,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -529,9 +450,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -590,9 +508,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -651,9 +566,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -714,9 +626,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -777,9 +686,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -835,9 +741,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -892,9 +795,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -955,9 +855,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).contains(sessionInputTranscriptDelta)
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -1021,9 +918,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionOutputTranscriptDelta())
             .contains(sessionOutputTranscriptDelta)
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -1091,9 +985,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).contains(sessionDelegationCreated)
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -1122,271 +1013,6 @@ internal class ServerEventTest {
                     .eventId("evt_delegation_001")
                     .offsetMs(3600L)
                     .clientEventId("client_event_id")
-                    .build()
-            )
-
-        val roundtrippedServerEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(serverEvent),
-                jacksonTypeRef<ServerEvent>(),
-            )
-
-        assertThat(roundtrippedServerEvent).isEqualTo(serverEvent)
-    }
-
-    @Test
-    fun ofDecisionEvent() {
-        val decisionEvent =
-            DecisionEvent.builder()
-                .delegationId("del_abc123")
-                .event(
-                    DecisionEvent.Event.builder()
-                        .decision(
-                            Decision.builder()
-                                .addAnswer(
-                                    Decision.Answer.Predicate.builder()
-                                        .name("damaged")
-                                        .probability(0.95)
-                                        .build()
-                                )
-                                .model("gpt-6-luna")
-                                .usage(
-                                    Decision.Usage.builder()
-                                        .inputTokens(42L)
-                                        .inputTokensDetails(
-                                            Decision.Usage.InputTokensDetails.builder()
-                                                .cacheWriteTokens(0L)
-                                                .cachedTokens(0L)
-                                                .build()
-                                        )
-                                        .outputTokens(0L)
-                                        .outputTokensDetails(
-                                            Decision.Usage.OutputTokensDetails.builder()
-                                                .reasoningTokens(0L)
-                                                .build()
-                                        )
-                                        .totalTokens(42L)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .eventId("evt_decision_1")
-                .sourceEventId(null)
-                .sourceEventType(null)
-                .triggerId(null)
-                .build()
-
-        val serverEvent = ServerEvent.ofDecisionEvent(decisionEvent)
-
-        assertThat(serverEvent.sessionStarted()).isEmpty
-        assertThat(serverEvent.sessionUpdated()).isEmpty
-        assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
-        assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
-        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
-        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
-        assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
-        assertThat(serverEvent.sessionThinkingAppended()).isEmpty
-        assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
-        assertThat(serverEvent.sessionInputAudioAppend()).isEmpty
-        assertThat(serverEvent.sessionOutputAudioDelta()).isEmpty
-        assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
-        assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
-        assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).contains(decisionEvent)
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
-        assertThat(serverEvent.responseEvent()).isEmpty
-        assertThat(serverEvent.sessionUsageUpdated()).isEmpty
-        assertThat(serverEvent.sessionClosed()).isEmpty
-        assertThat(serverEvent.errorEvent()).isEmpty
-        assertThat(serverEvent.infoEvent()).isEmpty
-        assertThat(serverEvent.transportDtmfReceived()).isEmpty
-        assertThat(serverEvent.transportDtmfSend()).isEmpty
-        assertThat(serverEvent.transportRinging()).isEmpty
-        assertThat(serverEvent.transportAnswered()).isEmpty
-        assertThat(serverEvent.transportFailed()).isEmpty
-    }
-
-    @Test
-    fun ofDecisionEventRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val serverEvent =
-            ServerEvent.ofDecisionEvent(
-                DecisionEvent.builder()
-                    .delegationId("del_abc123")
-                    .event(
-                        DecisionEvent.Event.builder()
-                            .decision(
-                                Decision.builder()
-                                    .addAnswer(
-                                        Decision.Answer.Predicate.builder()
-                                            .name("damaged")
-                                            .probability(0.95)
-                                            .build()
-                                    )
-                                    .model("gpt-6-luna")
-                                    .usage(
-                                        Decision.Usage.builder()
-                                            .inputTokens(42L)
-                                            .inputTokensDetails(
-                                                Decision.Usage.InputTokensDetails.builder()
-                                                    .cacheWriteTokens(0L)
-                                                    .cachedTokens(0L)
-                                                    .build()
-                                            )
-                                            .outputTokens(0L)
-                                            .outputTokensDetails(
-                                                Decision.Usage.OutputTokensDetails.builder()
-                                                    .reasoningTokens(0L)
-                                                    .build()
-                                            )
-                                            .totalTokens(42L)
-                                            .build()
-                                    )
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .eventId("evt_decision_1")
-                    .sourceEventId(null)
-                    .sourceEventType(null)
-                    .triggerId(null)
-                    .build()
-            )
-
-        val roundtrippedServerEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(serverEvent),
-                jacksonTypeRef<ServerEvent>(),
-            )
-
-        assertThat(roundtrippedServerEvent).isEqualTo(serverEvent)
-    }
-
-    @Test
-    fun ofDecisionItemCreated() {
-        val decisionItemCreated =
-            DecisionItemCreatedEvent.builder()
-                .eventId("evt_item_1")
-                .item(
-                    DecisionItemCreatedEvent.Item.builder()
-                        .id("msg_browser_1")
-                        .content("string")
-                        .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
-                        .build()
-                )
-                .clientEventId("browser_1")
-                .build()
-
-        val serverEvent = ServerEvent.ofDecisionItemCreated(decisionItemCreated)
-
-        assertThat(serverEvent.sessionStarted()).isEmpty
-        assertThat(serverEvent.sessionUpdated()).isEmpty
-        assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
-        assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
-        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
-        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
-        assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
-        assertThat(serverEvent.sessionThinkingAppended()).isEmpty
-        assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
-        assertThat(serverEvent.sessionInputAudioAppend()).isEmpty
-        assertThat(serverEvent.sessionOutputAudioDelta()).isEmpty
-        assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
-        assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
-        assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).contains(decisionItemCreated)
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
-        assertThat(serverEvent.responseEvent()).isEmpty
-        assertThat(serverEvent.sessionUsageUpdated()).isEmpty
-        assertThat(serverEvent.sessionClosed()).isEmpty
-        assertThat(serverEvent.errorEvent()).isEmpty
-        assertThat(serverEvent.infoEvent()).isEmpty
-        assertThat(serverEvent.transportDtmfReceived()).isEmpty
-        assertThat(serverEvent.transportDtmfSend()).isEmpty
-        assertThat(serverEvent.transportRinging()).isEmpty
-        assertThat(serverEvent.transportAnswered()).isEmpty
-        assertThat(serverEvent.transportFailed()).isEmpty
-    }
-
-    @Test
-    fun ofDecisionItemCreatedRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val serverEvent =
-            ServerEvent.ofDecisionItemCreated(
-                DecisionItemCreatedEvent.builder()
-                    .eventId("evt_item_1")
-                    .item(
-                        DecisionItemCreatedEvent.Item.builder()
-                            .id("msg_browser_1")
-                            .content("string")
-                            .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
-                            .build()
-                    )
-                    .clientEventId("browser_1")
-                    .build()
-            )
-
-        val roundtrippedServerEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(serverEvent),
-                jacksonTypeRef<ServerEvent>(),
-            )
-
-        assertThat(roundtrippedServerEvent).isEqualTo(serverEvent)
-    }
-
-    @Test
-    fun ofDecisionItemDeleted() {
-        val decisionItemDeleted =
-            DecisionItemDeletedEvent.builder()
-                .eventId("evt_item_deleted_1")
-                .itemId("msg_browser_1")
-                .clientEventId("remove_browser_1")
-                .build()
-
-        val serverEvent = ServerEvent.ofDecisionItemDeleted(decisionItemDeleted)
-
-        assertThat(serverEvent.sessionStarted()).isEmpty
-        assertThat(serverEvent.sessionUpdated()).isEmpty
-        assertThat(serverEvent.sessionInputAudioMuted()).isEmpty
-        assertThat(serverEvent.sessionInputAudioUnmuted()).isEmpty
-        assertThat(serverEvent.sessionOutputAudioFixturePlaying()).isEmpty
-        assertThat(serverEvent.sessionOutputAudioFixturePlayed()).isEmpty
-        assertThat(serverEvent.sessionInstructionsAppended()).isEmpty
-        assertThat(serverEvent.sessionThinkingAppended()).isEmpty
-        assertThat(serverEvent.sessionCommentaryAppended()).isEmpty
-        assertThat(serverEvent.sessionInputAudioAppend()).isEmpty
-        assertThat(serverEvent.sessionOutputAudioDelta()).isEmpty
-        assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
-        assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
-        assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).contains(decisionItemDeleted)
-        assertThat(serverEvent.responseEvent()).isEmpty
-        assertThat(serverEvent.sessionUsageUpdated()).isEmpty
-        assertThat(serverEvent.sessionClosed()).isEmpty
-        assertThat(serverEvent.errorEvent()).isEmpty
-        assertThat(serverEvent.infoEvent()).isEmpty
-        assertThat(serverEvent.transportDtmfReceived()).isEmpty
-        assertThat(serverEvent.transportDtmfSend()).isEmpty
-        assertThat(serverEvent.transportRinging()).isEmpty
-        assertThat(serverEvent.transportAnswered()).isEmpty
-        assertThat(serverEvent.transportFailed()).isEmpty
-    }
-
-    @Test
-    fun ofDecisionItemDeletedRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val serverEvent =
-            ServerEvent.ofDecisionItemDeleted(
-                DecisionItemDeletedEvent.builder()
-                    .eventId("evt_item_deleted_1")
-                    .itemId("msg_browser_1")
-                    .clientEventId("remove_browser_1")
                     .build()
             )
 
@@ -1438,9 +1064,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).contains(responseEvent)
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -1519,9 +1142,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).contains(sessionUsageUpdated)
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -1595,21 +1215,6 @@ internal class ServerEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
-                        .addTrigger(
-                            DecisionTrigger.builder()
-                                .decisions(
-                                    DecisionTrigger.Decisions.builder()
-                                        .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                                .build()
-                        )
                         .build()
                 )
                 .usage(SessionUsage.builder().seconds(45.8).build())
@@ -1632,9 +1237,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).contains(sessionClosed)
@@ -1686,24 +1288,6 @@ internal class ServerEventTest {
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
                             .store(true)
-                            .addTrigger(
-                                DecisionTrigger.builder()
-                                    .decisions(
-                                        DecisionTrigger.Decisions.builder()
-                                            .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
-                                                    .instructions("instructions")
-                                                    .name("name")
-                                                    .build()
-                                            )
-                                            .build()
-                                    )
-                                    .eventType(
-                                        DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
-                                    )
-                                    .build()
-                            )
                             .build()
                     )
                     .usage(SessionUsage.builder().seconds(45.8).build())
@@ -1753,9 +1337,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -1825,9 +1406,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -1885,9 +1463,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -1942,9 +1517,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -2002,9 +1574,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -2061,9 +1630,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty
@@ -2127,9 +1693,6 @@ internal class ServerEventTest {
         assertThat(serverEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(serverEvent.sessionDelegationCreated()).isEmpty
-        assertThat(serverEvent.decisionEvent()).isEmpty
-        assertThat(serverEvent.decisionItemCreated()).isEmpty
-        assertThat(serverEvent.decisionItemDeleted()).isEmpty
         assertThat(serverEvent.responseEvent()).isEmpty
         assertThat(serverEvent.sessionUsageUpdated()).isEmpty
         assertThat(serverEvent.sessionClosed()).isEmpty

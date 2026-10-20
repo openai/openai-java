@@ -6,17 +6,12 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.decisions.Decision
 import com.openai.models.live.AudioFormat
 import com.openai.models.live.BuiltInVoice
 import com.openai.models.live.ClientConfig
 import com.openai.models.live.ClientDelegation
 import com.openai.models.live.CommentaryAppendedEvent
 import com.openai.models.live.DataChannelConfig
-import com.openai.models.live.DecisionEvent
-import com.openai.models.live.DecisionItemCreatedEvent
-import com.openai.models.live.DecisionItemDeletedEvent
-import com.openai.models.live.DecisionTrigger
 import com.openai.models.live.DelegationCreatedEvent
 import com.openai.models.live.Error
 import com.openai.models.live.ErrorEvent
@@ -82,21 +77,6 @@ internal class ForkServerEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
-                        .addTrigger(
-                            DecisionTrigger.builder()
-                                .decisions(
-                                    DecisionTrigger.Decisions.builder()
-                                        .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                                .build()
-                        )
                         .build()
                 )
                 .clientEventId("evt_start_001")
@@ -118,9 +98,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -171,24 +148,6 @@ internal class ForkServerEventTest {
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
                             .store(true)
-                            .addTrigger(
-                                DecisionTrigger.builder()
-                                    .decisions(
-                                        DecisionTrigger.Decisions.builder()
-                                            .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
-                                                    .instructions("instructions")
-                                                    .name("name")
-                                                    .build()
-                                            )
-                                            .build()
-                                    )
-                                    .eventType(
-                                        DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
-                                    )
-                                    .build()
-                            )
                             .build()
                     )
                     .clientEventId("evt_start_001")
@@ -267,21 +226,6 @@ internal class ForkServerEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
-                        .addTrigger(
-                            DecisionTrigger.builder()
-                                .decisions(
-                                    DecisionTrigger.Decisions.builder()
-                                        .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                                .build()
-                        )
                         .build()
                 )
                 .clientEventId("evt_update_001")
@@ -303,9 +247,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -383,24 +324,6 @@ internal class ForkServerEventTest {
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
                             .store(true)
-                            .addTrigger(
-                                DecisionTrigger.builder()
-                                    .decisions(
-                                        DecisionTrigger.Decisions.builder()
-                                            .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
-                                                    .instructions("instructions")
-                                                    .name("name")
-                                                    .build()
-                                            )
-                                            .build()
-                                    )
-                                    .eventType(
-                                        DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
-                                    )
-                                    .build()
-                            )
                             .build()
                     )
                     .clientEventId("evt_update_001")
@@ -440,9 +363,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -499,9 +419,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -560,9 +477,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -621,9 +535,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -684,9 +595,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -747,9 +655,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -810,9 +715,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -868,9 +770,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -925,9 +824,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -990,9 +886,6 @@ internal class ForkServerEventTest {
             .contains(sessionInputTranscriptDelta)
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -1057,9 +950,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionOutputTranscriptDelta())
             .contains(sessionOutputTranscriptDelta)
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -1127,9 +1017,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).contains(sessionDelegationCreated)
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -1158,271 +1045,6 @@ internal class ForkServerEventTest {
                     .eventId("evt_delegation_001")
                     .offsetMs(3600L)
                     .clientEventId("client_event_id")
-                    .build()
-            )
-
-        val roundtrippedForkServerEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(forkServerEvent),
-                jacksonTypeRef<ForkServerEvent>(),
-            )
-
-        assertThat(roundtrippedForkServerEvent).isEqualTo(forkServerEvent)
-    }
-
-    @Test
-    fun ofDecisionEvent() {
-        val decisionEvent =
-            DecisionEvent.builder()
-                .delegationId("del_abc123")
-                .event(
-                    DecisionEvent.Event.builder()
-                        .decision(
-                            Decision.builder()
-                                .addAnswer(
-                                    Decision.Answer.Predicate.builder()
-                                        .name("damaged")
-                                        .probability(0.95)
-                                        .build()
-                                )
-                                .model("gpt-6-luna")
-                                .usage(
-                                    Decision.Usage.builder()
-                                        .inputTokens(42L)
-                                        .inputTokensDetails(
-                                            Decision.Usage.InputTokensDetails.builder()
-                                                .cacheWriteTokens(0L)
-                                                .cachedTokens(0L)
-                                                .build()
-                                        )
-                                        .outputTokens(0L)
-                                        .outputTokensDetails(
-                                            Decision.Usage.OutputTokensDetails.builder()
-                                                .reasoningTokens(0L)
-                                                .build()
-                                        )
-                                        .totalTokens(42L)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .eventId("evt_decision_1")
-                .sourceEventId(null)
-                .sourceEventType(null)
-                .triggerId(null)
-                .build()
-
-        val forkServerEvent = ForkServerEvent.ofDecisionEvent(decisionEvent)
-
-        assertThat(forkServerEvent.sessionStarted()).isEmpty
-        assertThat(forkServerEvent.sessionUpdated()).isEmpty
-        assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
-        assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
-        assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
-        assertThat(forkServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
-        assertThat(forkServerEvent.sessionInstructionsAppended()).isEmpty
-        assertThat(forkServerEvent.sessionThinkingAppended()).isEmpty
-        assertThat(forkServerEvent.sessionCommentaryAppended()).isEmpty
-        assertThat(forkServerEvent.sessionInputAudioAppend()).isEmpty
-        assertThat(forkServerEvent.sessionOutputAudioDelta()).isEmpty
-        assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
-        assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
-        assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).contains(decisionEvent)
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
-        assertThat(forkServerEvent.responseEvent()).isEmpty
-        assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
-        assertThat(forkServerEvent.sessionClosed()).isEmpty
-        assertThat(forkServerEvent.errorEvent()).isEmpty
-        assertThat(forkServerEvent.infoEvent()).isEmpty
-        assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
-        assertThat(forkServerEvent.transportDtmfSend()).isEmpty
-        assertThat(forkServerEvent.transportRinging()).isEmpty
-        assertThat(forkServerEvent.transportAnswered()).isEmpty
-        assertThat(forkServerEvent.transportFailed()).isEmpty
-    }
-
-    @Test
-    fun ofDecisionEventRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val forkServerEvent =
-            ForkServerEvent.ofDecisionEvent(
-                DecisionEvent.builder()
-                    .delegationId("del_abc123")
-                    .event(
-                        DecisionEvent.Event.builder()
-                            .decision(
-                                Decision.builder()
-                                    .addAnswer(
-                                        Decision.Answer.Predicate.builder()
-                                            .name("damaged")
-                                            .probability(0.95)
-                                            .build()
-                                    )
-                                    .model("gpt-6-luna")
-                                    .usage(
-                                        Decision.Usage.builder()
-                                            .inputTokens(42L)
-                                            .inputTokensDetails(
-                                                Decision.Usage.InputTokensDetails.builder()
-                                                    .cacheWriteTokens(0L)
-                                                    .cachedTokens(0L)
-                                                    .build()
-                                            )
-                                            .outputTokens(0L)
-                                            .outputTokensDetails(
-                                                Decision.Usage.OutputTokensDetails.builder()
-                                                    .reasoningTokens(0L)
-                                                    .build()
-                                            )
-                                            .totalTokens(42L)
-                                            .build()
-                                    )
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .eventId("evt_decision_1")
-                    .sourceEventId(null)
-                    .sourceEventType(null)
-                    .triggerId(null)
-                    .build()
-            )
-
-        val roundtrippedForkServerEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(forkServerEvent),
-                jacksonTypeRef<ForkServerEvent>(),
-            )
-
-        assertThat(roundtrippedForkServerEvent).isEqualTo(forkServerEvent)
-    }
-
-    @Test
-    fun ofDecisionItemCreated() {
-        val decisionItemCreated =
-            DecisionItemCreatedEvent.builder()
-                .eventId("evt_item_1")
-                .item(
-                    DecisionItemCreatedEvent.Item.builder()
-                        .id("msg_browser_1")
-                        .content("string")
-                        .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
-                        .build()
-                )
-                .clientEventId("browser_1")
-                .build()
-
-        val forkServerEvent = ForkServerEvent.ofDecisionItemCreated(decisionItemCreated)
-
-        assertThat(forkServerEvent.sessionStarted()).isEmpty
-        assertThat(forkServerEvent.sessionUpdated()).isEmpty
-        assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
-        assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
-        assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
-        assertThat(forkServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
-        assertThat(forkServerEvent.sessionInstructionsAppended()).isEmpty
-        assertThat(forkServerEvent.sessionThinkingAppended()).isEmpty
-        assertThat(forkServerEvent.sessionCommentaryAppended()).isEmpty
-        assertThat(forkServerEvent.sessionInputAudioAppend()).isEmpty
-        assertThat(forkServerEvent.sessionOutputAudioDelta()).isEmpty
-        assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
-        assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
-        assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).contains(decisionItemCreated)
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
-        assertThat(forkServerEvent.responseEvent()).isEmpty
-        assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
-        assertThat(forkServerEvent.sessionClosed()).isEmpty
-        assertThat(forkServerEvent.errorEvent()).isEmpty
-        assertThat(forkServerEvent.infoEvent()).isEmpty
-        assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
-        assertThat(forkServerEvent.transportDtmfSend()).isEmpty
-        assertThat(forkServerEvent.transportRinging()).isEmpty
-        assertThat(forkServerEvent.transportAnswered()).isEmpty
-        assertThat(forkServerEvent.transportFailed()).isEmpty
-    }
-
-    @Test
-    fun ofDecisionItemCreatedRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val forkServerEvent =
-            ForkServerEvent.ofDecisionItemCreated(
-                DecisionItemCreatedEvent.builder()
-                    .eventId("evt_item_1")
-                    .item(
-                        DecisionItemCreatedEvent.Item.builder()
-                            .id("msg_browser_1")
-                            .content("string")
-                            .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
-                            .build()
-                    )
-                    .clientEventId("browser_1")
-                    .build()
-            )
-
-        val roundtrippedForkServerEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(forkServerEvent),
-                jacksonTypeRef<ForkServerEvent>(),
-            )
-
-        assertThat(roundtrippedForkServerEvent).isEqualTo(forkServerEvent)
-    }
-
-    @Test
-    fun ofDecisionItemDeleted() {
-        val decisionItemDeleted =
-            DecisionItemDeletedEvent.builder()
-                .eventId("evt_item_deleted_1")
-                .itemId("msg_browser_1")
-                .clientEventId("remove_browser_1")
-                .build()
-
-        val forkServerEvent = ForkServerEvent.ofDecisionItemDeleted(decisionItemDeleted)
-
-        assertThat(forkServerEvent.sessionStarted()).isEmpty
-        assertThat(forkServerEvent.sessionUpdated()).isEmpty
-        assertThat(forkServerEvent.sessionInputAudioMuted()).isEmpty
-        assertThat(forkServerEvent.sessionInputAudioUnmuted()).isEmpty
-        assertThat(forkServerEvent.sessionOutputAudioFixturePlaying()).isEmpty
-        assertThat(forkServerEvent.sessionOutputAudioFixturePlayed()).isEmpty
-        assertThat(forkServerEvent.sessionInstructionsAppended()).isEmpty
-        assertThat(forkServerEvent.sessionThinkingAppended()).isEmpty
-        assertThat(forkServerEvent.sessionCommentaryAppended()).isEmpty
-        assertThat(forkServerEvent.sessionInputAudioAppend()).isEmpty
-        assertThat(forkServerEvent.sessionOutputAudioDelta()).isEmpty
-        assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
-        assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
-        assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).contains(decisionItemDeleted)
-        assertThat(forkServerEvent.responseEvent()).isEmpty
-        assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
-        assertThat(forkServerEvent.sessionClosed()).isEmpty
-        assertThat(forkServerEvent.errorEvent()).isEmpty
-        assertThat(forkServerEvent.infoEvent()).isEmpty
-        assertThat(forkServerEvent.transportDtmfReceived()).isEmpty
-        assertThat(forkServerEvent.transportDtmfSend()).isEmpty
-        assertThat(forkServerEvent.transportRinging()).isEmpty
-        assertThat(forkServerEvent.transportAnswered()).isEmpty
-        assertThat(forkServerEvent.transportFailed()).isEmpty
-    }
-
-    @Test
-    fun ofDecisionItemDeletedRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val forkServerEvent =
-            ForkServerEvent.ofDecisionItemDeleted(
-                DecisionItemDeletedEvent.builder()
-                    .eventId("evt_item_deleted_1")
-                    .itemId("msg_browser_1")
-                    .clientEventId("remove_browser_1")
                     .build()
             )
 
@@ -1474,9 +1096,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).contains(responseEvent)
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -1555,9 +1174,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).contains(sessionUsageUpdated)
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -1631,21 +1247,6 @@ internal class ForkServerEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
-                        .addTrigger(
-                            DecisionTrigger.builder()
-                                .decisions(
-                                    DecisionTrigger.Decisions.builder()
-                                        .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                                .build()
-                        )
                         .build()
                 )
                 .usage(SessionUsage.builder().seconds(45.8).build())
@@ -1668,9 +1269,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).contains(sessionClosed)
@@ -1722,24 +1320,6 @@ internal class ForkServerEventTest {
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
                             )
                             .store(true)
-                            .addTrigger(
-                                DecisionTrigger.builder()
-                                    .decisions(
-                                        DecisionTrigger.Decisions.builder()
-                                            .addQuestion(
-                                                DecisionTrigger.Decisions.Question.Predicate
-                                                    .builder()
-                                                    .instructions("instructions")
-                                                    .name("name")
-                                                    .build()
-                                            )
-                                            .build()
-                                    )
-                                    .eventType(
-                                        DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA
-                                    )
-                                    .build()
-                            )
                             .build()
                     )
                     .usage(SessionUsage.builder().seconds(45.8).build())
@@ -1789,9 +1369,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -1861,9 +1438,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -1921,9 +1495,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -1981,9 +1552,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -2041,9 +1609,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -2100,9 +1665,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty
@@ -2166,9 +1728,6 @@ internal class ForkServerEventTest {
         assertThat(forkServerEvent.sessionInputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionOutputTranscriptDelta()).isEmpty
         assertThat(forkServerEvent.sessionDelegationCreated()).isEmpty
-        assertThat(forkServerEvent.decisionEvent()).isEmpty
-        assertThat(forkServerEvent.decisionItemCreated()).isEmpty
-        assertThat(forkServerEvent.decisionItemDeleted()).isEmpty
         assertThat(forkServerEvent.responseEvent()).isEmpty
         assertThat(forkServerEvent.sessionUsageUpdated()).isEmpty
         assertThat(forkServerEvent.sessionClosed()).isEmpty

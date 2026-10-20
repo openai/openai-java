@@ -15,7 +15,6 @@ import com.openai.models.live.BuiltInVoice
 import com.openai.models.live.ClientConfig
 import com.openai.models.live.ClientDelegation
 import com.openai.models.live.DataChannelConfig
-import com.openai.models.live.DecisionTrigger
 import com.openai.models.live.FunctionTool
 import com.openai.models.live.InitialItem
 import com.openai.models.live.MediaSessionForkConfig
@@ -75,21 +74,6 @@ internal class SessionServiceTest {
                         )
                         .instructions("instructions")
                         .store(true)
-                        .addTrigger(
-                            DecisionTrigger.builder()
-                                .decisions(
-                                    DecisionTrigger.Decisions.builder()
-                                        .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                                .build()
-                        )
                         .build()
                 )
                 .build()

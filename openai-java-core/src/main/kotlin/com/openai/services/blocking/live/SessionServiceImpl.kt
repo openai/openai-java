@@ -42,7 +42,7 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
 
     override fun accept(params: SessionAcceptParams, requestOptions: RequestOptions) {
         // post /live/sessions/{session_id}/accept
-        withRawResponse().accept(params, requestOptions).close()
+        withRawResponse().accept(params, requestOptions)
     }
 
     override fun downloadRecording(
@@ -61,17 +61,17 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
 
     override fun hangup(params: SessionHangupParams, requestOptions: RequestOptions) {
         // post /live/sessions/{session_id}/hangup
-        withRawResponse().hangup(params, requestOptions).close()
+        withRawResponse().hangup(params, requestOptions)
     }
 
     override fun refer(params: SessionReferParams, requestOptions: RequestOptions) {
         // post /live/sessions/{session_id}/refer
-        withRawResponse().refer(params, requestOptions).close()
+        withRawResponse().refer(params, requestOptions)
     }
 
     override fun reject(params: SessionRejectParams, requestOptions: RequestOptions) {
         // post /live/sessions/{session_id}/reject
-        withRawResponse().reject(params, requestOptions).close()
+        withRawResponse().reject(params, requestOptions)
     }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :

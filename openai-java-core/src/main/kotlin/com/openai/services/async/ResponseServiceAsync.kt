@@ -38,12 +38,10 @@ interface ResponseServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseServiceAsync
 
     /** Create and manage model responses. */
-    fun inputItems(): InputItemServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun inputItems(): InputItemServiceAsync
 
     /** Create and manage model responses. */
-    fun inputTokens(): InputTokenServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun inputTokens(): InputTokenServiceAsync
 
     /**
      * Creates a model response. Provide [text](https://developers.openai.com/api/docs/guides/text)
@@ -273,16 +271,10 @@ interface ResponseServiceAsync {
         ): ResponseServiceAsync.WithRawResponse
 
         /** Create and manage model responses. */
-        fun inputItems(): InputItemServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun inputItems(): InputItemServiceAsync.WithRawResponse
 
         /** Create and manage model responses. */
-        fun inputTokens(): InputTokenServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun inputTokens(): InputTokenServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /responses`, but is otherwise the same as

@@ -21,8 +21,7 @@ interface AlphaService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AlphaService
 
     /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-    fun graders(): GraderService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun graders(): GraderService
 
     /** A view of [AlphaService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -35,9 +34,6 @@ interface AlphaService {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): AlphaService.WithRawResponse
 
         /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-        fun graders(): GraderService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun graders(): GraderService.WithRawResponse
     }
 }

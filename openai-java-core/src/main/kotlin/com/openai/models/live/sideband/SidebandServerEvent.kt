@@ -2,10 +2,6 @@
 
 package com.openai.models.live.sideband
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.JsonNode
@@ -15,18 +11,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
-import com.openai.core.ExcludeMissing
-import com.openai.core.JsonField
-import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.checkRequired
-import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.live.CommentaryAppendedEvent
-import com.openai.models.live.DecisionEvent
-import com.openai.models.live.DecisionItemCreatedEvent
-import com.openai.models.live.DecisionItemDeletedEvent
 import com.openai.models.live.DelegationCreatedEvent
 import com.openai.models.live.ErrorEvent
 import com.openai.models.live.InfoEvent
@@ -34,7 +22,6 @@ import com.openai.models.live.InputAudioMutedEvent
 import com.openai.models.live.InputAudioUnmutedEvent
 import com.openai.models.live.InputTranscriptDeltaEvent
 import com.openai.models.live.InstructionsAppendedEvent
-import com.openai.models.live.OutputAudioDeltaEvent
 import com.openai.models.live.OutputAudioFixturePlayedEvent
 import com.openai.models.live.OutputAudioFixturePlayingEvent
 import com.openai.models.live.OutputTranscriptDeltaEvent
@@ -44,14 +31,13 @@ import com.openai.models.live.SessionStartedEvent
 import com.openai.models.live.SessionUpdatedEvent
 import com.openai.models.live.SessionUsageUpdatedEvent
 import com.openai.models.live.ThinkingAppendedEvent
-import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Server events received by an attached Live sideband WebSocket, including reflected input and
- * output audio and transport notifications.
+ * Server events received by an attached Live sideband WebSocket. Audio deltas are delivered over
+ * the primary connection.
  */
 @JsonDeserialize(using = SidebandServerEvent.Deserializer::class)
 @JsonSerialize(using = SidebandServerEvent.Serializer::class)
@@ -69,21 +55,11 @@ private constructor(
     private val sessionInputTranscriptDelta: InputTranscriptDeltaEvent? = null,
     private val sessionOutputTranscriptDelta: OutputTranscriptDeltaEvent? = null,
     private val sessionDelegationCreated: DelegationCreatedEvent? = null,
-    private val decisionEvent: DecisionEvent? = null,
-    private val decisionItemCreated: DecisionItemCreatedEvent? = null,
-    private val decisionItemDeleted: DecisionItemDeletedEvent? = null,
     private val responseEvent: ResponseEvent? = null,
     private val sessionUsageUpdated: SessionUsageUpdatedEvent? = null,
     private val sessionClosed: SessionClosedEvent? = null,
     private val errorEvent: ErrorEvent? = null,
     private val infoEvent: InfoEvent? = null,
-    private val sessionInputAudioAppend: SessionInputAudioAppend? = null,
-    private val sessionOutputAudioDelta: OutputAudioDeltaEvent? = null,
-    private val transportDtmfReceived: TransportDtmfReceived? = null,
-    private val transportDtmfSend: TransportDtmfSend? = null,
-    private val transportRinging: TransportRinging? = null,
-    private val transportAnswered: TransportAnswered? = null,
-    private val transportFailed: TransportFailed? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -100,16 +76,15 @@ private constructor(
     fun sessionUpdated(): Optional<SessionUpdatedEvent> = Optional.ofNullable(sessionUpdated)
 
     /**
-     * Acknowledges a session.input_audio.mute command. An independent input mute sends silence to
-     * the model and preserves sideband audio reflection. Fixture playback does not emit this event.
+     * Returned when a session.input_audio.mute command is accepted. Input audio is no longer sent
+     * to the model; sideband audio reflection continues.
      */
     fun sessionInputAudioMuted(): Optional<InputAudioMutedEvent> =
         Optional.ofNullable(sessionInputAudioMuted)
 
     /**
-     * Acknowledges a session.input_audio.unmute command, removing the independent input mute. An
-     * active audio fixture still pauses inference until playback finishes. Fixture playback does
-     * not emit this event.
+     * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to the
+     * model again.
      */
     fun sessionInputAudioUnmuted(): Optional<InputAudioUnmutedEvent> =
         Optional.ofNullable(sessionInputAudioUnmuted)
@@ -169,26 +144,12 @@ private constructor(
         Optional.ofNullable(sessionOutputTranscriptDelta)
 
     /**
-     * Returned when the Live model delegates work to your application, Responses, or Decisions.
+     * Returned when the Live model delegates work to your application or a Responses backend.
      * Contains delegation metadata and the position on the session timeline where the work was
      * delegated.
      */
     fun sessionDelegationCreated(): Optional<DelegationCreatedEvent> =
         Optional.ofNullable(sessionDelegationCreated)
-
-    /**
-     * A Decision API event for a Live delegation or transcript trigger. For a trigger,
-     * source_event_id identifies the transcript delta that caused this evaluation.
-     */
-    fun decisionEvent(): Optional<DecisionEvent> = Optional.ofNullable(decisionEvent)
-
-    /** An input item was appended for future decisions. */
-    fun decisionItemCreated(): Optional<DecisionItemCreatedEvent> =
-        Optional.ofNullable(decisionItemCreated)
-
-    /** An input item was removed from future decisions. */
-    fun decisionItemDeleted(): Optional<DecisionItemDeletedEvent> =
-        Optional.ofNullable(decisionItemDeleted)
 
     /**
      * A streaming Responses API event from a backend delegated to by the Live session. Use the
@@ -222,46 +183,6 @@ private constructor(
      */
     fun infoEvent(): Optional<InfoEvent> = Optional.ofNullable(infoEvent)
 
-    /**
-     * Input audio received from the primary transport and reflected to a Live sideband connection
-     * before model-input muting.
-     */
-    fun sessionInputAudioAppend(): Optional<SessionInputAudioAppend> =
-        Optional.ofNullable(sessionInputAudioAppend)
-
-    /**
-     * An audio chunk generated by the Live model. Decode and play primary WebSocket chunks in
-     * delivery order using the configured session audio format. Sideband connections receive
-     * reflected output audio with timestamps.
-     */
-    fun sessionOutputAudioDelta(): Optional<OutputAudioDeltaEvent> =
-        Optional.ofNullable(sessionOutputAudioDelta)
-
-    /** A SIP DTMF keypress received from the caller. Delivered only to sideband observers. */
-    fun transportDtmfReceived(): Optional<TransportDtmfReceived> =
-        Optional.ofNullable(transportDtmfReceived)
-
-    /**
-     * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband observers;
-     * this is not a client command.
-     */
-    fun transportDtmfSend(): Optional<TransportDtmfSend> = Optional.ofNullable(transportDtmfSend)
-
-    /**
-     * The outbound SIP provider leg is ringing or providing early media. Delivered only to sideband
-     * observers.
-     */
-    fun transportRinging(): Optional<TransportRinging> = Optional.ofNullable(transportRinging)
-
-    /**
-     * The outbound SIP provider leg answered and media is established. Delivered only to sideband
-     * observers.
-     */
-    fun transportAnswered(): Optional<TransportAnswered> = Optional.ofNullable(transportAnswered)
-
-    /** An asynchronous outbound SIP setup failure. Delivered only to sideband observers. */
-    fun transportFailed(): Optional<TransportFailed> = Optional.ofNullable(transportFailed)
-
     fun isSessionStarted(): Boolean = sessionStarted != null
 
     fun isSessionUpdated(): Boolean = sessionUpdated != null
@@ -286,12 +207,6 @@ private constructor(
 
     fun isSessionDelegationCreated(): Boolean = sessionDelegationCreated != null
 
-    fun isDecisionEvent(): Boolean = decisionEvent != null
-
-    fun isDecisionItemCreated(): Boolean = decisionItemCreated != null
-
-    fun isDecisionItemDeleted(): Boolean = decisionItemDeleted != null
-
     fun isResponseEvent(): Boolean = responseEvent != null
 
     fun isSessionUsageUpdated(): Boolean = sessionUsageUpdated != null
@@ -301,20 +216,6 @@ private constructor(
     fun isErrorEvent(): Boolean = errorEvent != null
 
     fun isInfoEvent(): Boolean = infoEvent != null
-
-    fun isSessionInputAudioAppend(): Boolean = sessionInputAudioAppend != null
-
-    fun isSessionOutputAudioDelta(): Boolean = sessionOutputAudioDelta != null
-
-    fun isTransportDtmfReceived(): Boolean = transportDtmfReceived != null
-
-    fun isTransportDtmfSend(): Boolean = transportDtmfSend != null
-
-    fun isTransportRinging(): Boolean = transportRinging != null
-
-    fun isTransportAnswered(): Boolean = transportAnswered != null
-
-    fun isTransportFailed(): Boolean = transportFailed != null
 
     /**
      * Returned when a Live session has started. Contains the resolved session configuration,
@@ -329,16 +230,15 @@ private constructor(
     fun asSessionUpdated(): SessionUpdatedEvent = sessionUpdated.getOrThrow("sessionUpdated")
 
     /**
-     * Acknowledges a session.input_audio.mute command. An independent input mute sends silence to
-     * the model and preserves sideband audio reflection. Fixture playback does not emit this event.
+     * Returned when a session.input_audio.mute command is accepted. Input audio is no longer sent
+     * to the model; sideband audio reflection continues.
      */
     fun asSessionInputAudioMuted(): InputAudioMutedEvent =
         sessionInputAudioMuted.getOrThrow("sessionInputAudioMuted")
 
     /**
-     * Acknowledges a session.input_audio.unmute command, removing the independent input mute. An
-     * active audio fixture still pauses inference until playback finishes. Fixture playback does
-     * not emit this event.
+     * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to the
+     * model again.
      */
     fun asSessionInputAudioUnmuted(): InputAudioUnmutedEvent =
         sessionInputAudioUnmuted.getOrThrow("sessionInputAudioUnmuted")
@@ -398,26 +298,12 @@ private constructor(
         sessionOutputTranscriptDelta.getOrThrow("sessionOutputTranscriptDelta")
 
     /**
-     * Returned when the Live model delegates work to your application, Responses, or Decisions.
+     * Returned when the Live model delegates work to your application or a Responses backend.
      * Contains delegation metadata and the position on the session timeline where the work was
      * delegated.
      */
     fun asSessionDelegationCreated(): DelegationCreatedEvent =
         sessionDelegationCreated.getOrThrow("sessionDelegationCreated")
-
-    /**
-     * A Decision API event for a Live delegation or transcript trigger. For a trigger,
-     * source_event_id identifies the transcript delta that caused this evaluation.
-     */
-    fun asDecisionEvent(): DecisionEvent = decisionEvent.getOrThrow("decisionEvent")
-
-    /** An input item was appended for future decisions. */
-    fun asDecisionItemCreated(): DecisionItemCreatedEvent =
-        decisionItemCreated.getOrThrow("decisionItemCreated")
-
-    /** An input item was removed from future decisions. */
-    fun asDecisionItemDeleted(): DecisionItemDeletedEvent =
-        decisionItemDeleted.getOrThrow("decisionItemDeleted")
 
     /**
      * A streaming Responses API event from a backend delegated to by the Live session. Use the
@@ -450,46 +336,6 @@ private constructor(
      * frontend data channel.
      */
     fun asInfoEvent(): InfoEvent = infoEvent.getOrThrow("infoEvent")
-
-    /**
-     * Input audio received from the primary transport and reflected to a Live sideband connection
-     * before model-input muting.
-     */
-    fun asSessionInputAudioAppend(): SessionInputAudioAppend =
-        sessionInputAudioAppend.getOrThrow("sessionInputAudioAppend")
-
-    /**
-     * An audio chunk generated by the Live model. Decode and play primary WebSocket chunks in
-     * delivery order using the configured session audio format. Sideband connections receive
-     * reflected output audio with timestamps.
-     */
-    fun asSessionOutputAudioDelta(): OutputAudioDeltaEvent =
-        sessionOutputAudioDelta.getOrThrow("sessionOutputAudioDelta")
-
-    /** A SIP DTMF keypress received from the caller. Delivered only to sideband observers. */
-    fun asTransportDtmfReceived(): TransportDtmfReceived =
-        transportDtmfReceived.getOrThrow("transportDtmfReceived")
-
-    /**
-     * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband observers;
-     * this is not a client command.
-     */
-    fun asTransportDtmfSend(): TransportDtmfSend = transportDtmfSend.getOrThrow("transportDtmfSend")
-
-    /**
-     * The outbound SIP provider leg is ringing or providing early media. Delivered only to sideband
-     * observers.
-     */
-    fun asTransportRinging(): TransportRinging = transportRinging.getOrThrow("transportRinging")
-
-    /**
-     * The outbound SIP provider leg answered and media is established. Delivered only to sideband
-     * observers.
-     */
-    fun asTransportAnswered(): TransportAnswered = transportAnswered.getOrThrow("transportAnswered")
-
-    /** An asynchronous outbound SIP setup failure. Delivered only to sideband observers. */
-    fun asTransportFailed(): TransportFailed = transportFailed.getOrThrow("transportFailed")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -546,24 +392,11 @@ private constructor(
                 visitor.visitSessionOutputTranscriptDelta(sessionOutputTranscriptDelta)
             sessionDelegationCreated != null ->
                 visitor.visitSessionDelegationCreated(sessionDelegationCreated)
-            decisionEvent != null -> visitor.visitDecisionEvent(decisionEvent)
-            decisionItemCreated != null -> visitor.visitDecisionItemCreated(decisionItemCreated)
-            decisionItemDeleted != null -> visitor.visitDecisionItemDeleted(decisionItemDeleted)
             responseEvent != null -> visitor.visitResponseEvent(responseEvent)
             sessionUsageUpdated != null -> visitor.visitSessionUsageUpdated(sessionUsageUpdated)
             sessionClosed != null -> visitor.visitSessionClosed(sessionClosed)
             errorEvent != null -> visitor.visitErrorEvent(errorEvent)
             infoEvent != null -> visitor.visitInfoEvent(infoEvent)
-            sessionInputAudioAppend != null ->
-                visitor.visitSessionInputAudioAppend(sessionInputAudioAppend)
-            sessionOutputAudioDelta != null ->
-                visitor.visitSessionOutputAudioDelta(sessionOutputAudioDelta)
-            transportDtmfReceived != null ->
-                visitor.visitTransportDtmfReceived(transportDtmfReceived)
-            transportDtmfSend != null -> visitor.visitTransportDtmfSend(transportDtmfSend)
-            transportRinging != null -> visitor.visitTransportRinging(transportRinging)
-            transportAnswered != null -> visitor.visitTransportAnswered(transportAnswered)
-            transportFailed != null -> visitor.visitTransportFailed(transportFailed)
             else -> visitor.unknown(_json)
         }
 
@@ -652,22 +485,6 @@ private constructor(
                     sessionDelegationCreated.validate()
                 }
 
-                override fun visitDecisionEvent(decisionEvent: DecisionEvent) {
-                    decisionEvent.validate()
-                }
-
-                override fun visitDecisionItemCreated(
-                    decisionItemCreated: DecisionItemCreatedEvent
-                ) {
-                    decisionItemCreated.validate()
-                }
-
-                override fun visitDecisionItemDeleted(
-                    decisionItemDeleted: DecisionItemDeletedEvent
-                ) {
-                    decisionItemDeleted.validate()
-                }
-
                 override fun visitResponseEvent(responseEvent: ResponseEvent) {
                     responseEvent.validate()
                 }
@@ -688,40 +505,6 @@ private constructor(
 
                 override fun visitInfoEvent(infoEvent: InfoEvent) {
                     infoEvent.validate()
-                }
-
-                override fun visitSessionInputAudioAppend(
-                    sessionInputAudioAppend: SessionInputAudioAppend
-                ) {
-                    sessionInputAudioAppend.validate()
-                }
-
-                override fun visitSessionOutputAudioDelta(
-                    sessionOutputAudioDelta: OutputAudioDeltaEvent
-                ) {
-                    sessionOutputAudioDelta.validate()
-                }
-
-                override fun visitTransportDtmfReceived(
-                    transportDtmfReceived: TransportDtmfReceived
-                ) {
-                    transportDtmfReceived.validate()
-                }
-
-                override fun visitTransportDtmfSend(transportDtmfSend: TransportDtmfSend) {
-                    transportDtmfSend.validate()
-                }
-
-                override fun visitTransportRinging(transportRinging: TransportRinging) {
-                    transportRinging.validate()
-                }
-
-                override fun visitTransportAnswered(transportAnswered: TransportAnswered) {
-                    transportAnswered.validate()
-                }
-
-                override fun visitTransportFailed(transportFailed: TransportFailed) {
-                    transportFailed.validate()
                 }
             }
         )
@@ -791,17 +574,6 @@ private constructor(
                     sessionDelegationCreated: DelegationCreatedEvent
                 ) = sessionDelegationCreated.validity()
 
-                override fun visitDecisionEvent(decisionEvent: DecisionEvent) =
-                    decisionEvent.validity()
-
-                override fun visitDecisionItemCreated(
-                    decisionItemCreated: DecisionItemCreatedEvent
-                ) = decisionItemCreated.validity()
-
-                override fun visitDecisionItemDeleted(
-                    decisionItemDeleted: DecisionItemDeletedEvent
-                ) = decisionItemDeleted.validity()
-
                 override fun visitResponseEvent(responseEvent: ResponseEvent) =
                     responseEvent.validity()
 
@@ -815,30 +587,6 @@ private constructor(
                 override fun visitErrorEvent(errorEvent: ErrorEvent) = errorEvent.validity()
 
                 override fun visitInfoEvent(infoEvent: InfoEvent) = infoEvent.validity()
-
-                override fun visitSessionInputAudioAppend(
-                    sessionInputAudioAppend: SessionInputAudioAppend
-                ) = sessionInputAudioAppend.validity()
-
-                override fun visitSessionOutputAudioDelta(
-                    sessionOutputAudioDelta: OutputAudioDeltaEvent
-                ) = sessionOutputAudioDelta.validity()
-
-                override fun visitTransportDtmfReceived(
-                    transportDtmfReceived: TransportDtmfReceived
-                ) = transportDtmfReceived.validity()
-
-                override fun visitTransportDtmfSend(transportDtmfSend: TransportDtmfSend) =
-                    transportDtmfSend.validity()
-
-                override fun visitTransportRinging(transportRinging: TransportRinging) =
-                    transportRinging.validity()
-
-                override fun visitTransportAnswered(transportAnswered: TransportAnswered) =
-                    transportAnswered.validity()
-
-                override fun visitTransportFailed(transportFailed: TransportFailed) =
-                    transportFailed.validity()
 
                 override fun unknown(json: JsonValue?) = 0
             }
@@ -862,21 +610,11 @@ private constructor(
             sessionInputTranscriptDelta == other.sessionInputTranscriptDelta &&
             sessionOutputTranscriptDelta == other.sessionOutputTranscriptDelta &&
             sessionDelegationCreated == other.sessionDelegationCreated &&
-            decisionEvent == other.decisionEvent &&
-            decisionItemCreated == other.decisionItemCreated &&
-            decisionItemDeleted == other.decisionItemDeleted &&
             responseEvent == other.responseEvent &&
             sessionUsageUpdated == other.sessionUsageUpdated &&
             sessionClosed == other.sessionClosed &&
             errorEvent == other.errorEvent &&
-            infoEvent == other.infoEvent &&
-            sessionInputAudioAppend == other.sessionInputAudioAppend &&
-            sessionOutputAudioDelta == other.sessionOutputAudioDelta &&
-            transportDtmfReceived == other.transportDtmfReceived &&
-            transportDtmfSend == other.transportDtmfSend &&
-            transportRinging == other.transportRinging &&
-            transportAnswered == other.transportAnswered &&
-            transportFailed == other.transportFailed
+            infoEvent == other.infoEvent
     }
 
     override fun hashCode(): Int =
@@ -893,21 +631,11 @@ private constructor(
             sessionInputTranscriptDelta,
             sessionOutputTranscriptDelta,
             sessionDelegationCreated,
-            decisionEvent,
-            decisionItemCreated,
-            decisionItemDeleted,
             responseEvent,
             sessionUsageUpdated,
             sessionClosed,
             errorEvent,
             infoEvent,
-            sessionInputAudioAppend,
-            sessionOutputAudioDelta,
-            transportDtmfReceived,
-            transportDtmfSend,
-            transportRinging,
-            transportAnswered,
-            transportFailed,
         )
 
     override fun toString(): String =
@@ -934,27 +662,12 @@ private constructor(
                 "SidebandServerEvent{sessionOutputTranscriptDelta=$sessionOutputTranscriptDelta}"
             sessionDelegationCreated != null ->
                 "SidebandServerEvent{sessionDelegationCreated=$sessionDelegationCreated}"
-            decisionEvent != null -> "SidebandServerEvent{decisionEvent=$decisionEvent}"
-            decisionItemCreated != null ->
-                "SidebandServerEvent{decisionItemCreated=$decisionItemCreated}"
-            decisionItemDeleted != null ->
-                "SidebandServerEvent{decisionItemDeleted=$decisionItemDeleted}"
             responseEvent != null -> "SidebandServerEvent{responseEvent=$responseEvent}"
             sessionUsageUpdated != null ->
                 "SidebandServerEvent{sessionUsageUpdated=$sessionUsageUpdated}"
             sessionClosed != null -> "SidebandServerEvent{sessionClosed=$sessionClosed}"
             errorEvent != null -> "SidebandServerEvent{errorEvent=$errorEvent}"
             infoEvent != null -> "SidebandServerEvent{infoEvent=$infoEvent}"
-            sessionInputAudioAppend != null ->
-                "SidebandServerEvent{sessionInputAudioAppend=$sessionInputAudioAppend}"
-            sessionOutputAudioDelta != null ->
-                "SidebandServerEvent{sessionOutputAudioDelta=$sessionOutputAudioDelta}"
-            transportDtmfReceived != null ->
-                "SidebandServerEvent{transportDtmfReceived=$transportDtmfReceived}"
-            transportDtmfSend != null -> "SidebandServerEvent{transportDtmfSend=$transportDtmfSend}"
-            transportRinging != null -> "SidebandServerEvent{transportRinging=$transportRinging}"
-            transportAnswered != null -> "SidebandServerEvent{transportAnswered=$transportAnswered}"
-            transportFailed != null -> "SidebandServerEvent{transportFailed=$transportFailed}"
             _json != null -> "SidebandServerEvent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid SidebandServerEvent")
         }
@@ -978,18 +691,16 @@ private constructor(
             SidebandServerEvent(sessionUpdated = sessionUpdated)
 
         /**
-         * Acknowledges a session.input_audio.mute command. An independent input mute sends silence
-         * to the model and preserves sideband audio reflection. Fixture playback does not emit this
-         * event.
+         * Returned when a session.input_audio.mute command is accepted. Input audio is no longer
+         * sent to the model; sideband audio reflection continues.
          */
         @JvmStatic
         fun ofSessionInputAudioMuted(sessionInputAudioMuted: InputAudioMutedEvent) =
             SidebandServerEvent(sessionInputAudioMuted = sessionInputAudioMuted)
 
         /**
-         * Acknowledges a session.input_audio.unmute command, removing the independent input mute.
-         * An active audio fixture still pauses inference until playback finishes. Fixture playback
-         * does not emit this event.
+         * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to
+         * the model again.
          */
         @JvmStatic
         fun ofSessionInputAudioUnmuted(sessionInputAudioUnmuted: InputAudioUnmutedEvent) =
@@ -1063,31 +774,13 @@ private constructor(
         ) = SidebandServerEvent(sessionOutputTranscriptDelta = sessionOutputTranscriptDelta)
 
         /**
-         * Returned when the Live model delegates work to your application, Responses, or Decisions.
+         * Returned when the Live model delegates work to your application or a Responses backend.
          * Contains delegation metadata and the position on the session timeline where the work was
          * delegated.
          */
         @JvmStatic
         fun ofSessionDelegationCreated(sessionDelegationCreated: DelegationCreatedEvent) =
             SidebandServerEvent(sessionDelegationCreated = sessionDelegationCreated)
-
-        /**
-         * A Decision API event for a Live delegation or transcript trigger. For a trigger,
-         * source_event_id identifies the transcript delta that caused this evaluation.
-         */
-        @JvmStatic
-        fun ofDecisionEvent(decisionEvent: DecisionEvent) =
-            SidebandServerEvent(decisionEvent = decisionEvent)
-
-        /** An input item was appended for future decisions. */
-        @JvmStatic
-        fun ofDecisionItemCreated(decisionItemCreated: DecisionItemCreatedEvent) =
-            SidebandServerEvent(decisionItemCreated = decisionItemCreated)
-
-        /** An input item was removed from future decisions. */
-        @JvmStatic
-        fun ofDecisionItemDeleted(decisionItemDeleted: DecisionItemDeletedEvent) =
-            SidebandServerEvent(decisionItemDeleted = decisionItemDeleted)
 
         /**
          * A streaming Responses API event from a backend delegated to by the Live session. Use the
@@ -1127,57 +820,6 @@ private constructor(
          */
         @JvmStatic
         fun ofInfoEvent(infoEvent: InfoEvent) = SidebandServerEvent(infoEvent = infoEvent)
-
-        /**
-         * Input audio received from the primary transport and reflected to a Live sideband
-         * connection before model-input muting.
-         */
-        @JvmStatic
-        fun ofSessionInputAudioAppend(sessionInputAudioAppend: SessionInputAudioAppend) =
-            SidebandServerEvent(sessionInputAudioAppend = sessionInputAudioAppend)
-
-        /**
-         * An audio chunk generated by the Live model. Decode and play primary WebSocket chunks in
-         * delivery order using the configured session audio format. Sideband connections receive
-         * reflected output audio with timestamps.
-         */
-        @JvmStatic
-        fun ofSessionOutputAudioDelta(sessionOutputAudioDelta: OutputAudioDeltaEvent) =
-            SidebandServerEvent(sessionOutputAudioDelta = sessionOutputAudioDelta)
-
-        /** A SIP DTMF keypress received from the caller. Delivered only to sideband observers. */
-        @JvmStatic
-        fun ofTransportDtmfReceived(transportDtmfReceived: TransportDtmfReceived) =
-            SidebandServerEvent(transportDtmfReceived = transportDtmfReceived)
-
-        /**
-         * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband
-         * observers; this is not a client command.
-         */
-        @JvmStatic
-        fun ofTransportDtmfSend(transportDtmfSend: TransportDtmfSend) =
-            SidebandServerEvent(transportDtmfSend = transportDtmfSend)
-
-        /**
-         * The outbound SIP provider leg is ringing or providing early media. Delivered only to
-         * sideband observers.
-         */
-        @JvmStatic
-        fun ofTransportRinging(transportRinging: TransportRinging) =
-            SidebandServerEvent(transportRinging = transportRinging)
-
-        /**
-         * The outbound SIP provider leg answered and media is established. Delivered only to
-         * sideband observers.
-         */
-        @JvmStatic
-        fun ofTransportAnswered(transportAnswered: TransportAnswered) =
-            SidebandServerEvent(transportAnswered = transportAnswered)
-
-        /** An asynchronous outbound SIP setup failure. Delivered only to sideband observers. */
-        @JvmStatic
-        fun ofTransportFailed(transportFailed: TransportFailed) =
-            SidebandServerEvent(transportFailed = transportFailed)
     }
 
     /**
@@ -1201,17 +843,15 @@ private constructor(
             unknown(JsonValue.from(sessionUpdated))
 
         /**
-         * Acknowledges a session.input_audio.mute command. An independent input mute sends silence
-         * to the model and preserves sideband audio reflection. Fixture playback does not emit this
-         * event.
+         * Returned when a session.input_audio.mute command is accepted. Input audio is no longer
+         * sent to the model; sideband audio reflection continues.
          */
         fun visitSessionInputAudioMuted(sessionInputAudioMuted: InputAudioMutedEvent): T =
             unknown(JsonValue.from(sessionInputAudioMuted))
 
         /**
-         * Acknowledges a session.input_audio.unmute command, removing the independent input mute.
-         * An active audio fixture still pauses inference until playback finishes. Fixture playback
-         * does not emit this event.
+         * Returned when a session.input_audio.unmute command is accepted. Input audio is sent to
+         * the model again.
          */
         fun visitSessionInputAudioUnmuted(sessionInputAudioUnmuted: InputAudioUnmutedEvent): T =
             unknown(JsonValue.from(sessionInputAudioUnmuted))
@@ -1279,27 +919,12 @@ private constructor(
         ): T = unknown(JsonValue.from(sessionOutputTranscriptDelta))
 
         /**
-         * Returned when the Live model delegates work to your application, Responses, or Decisions.
+         * Returned when the Live model delegates work to your application or a Responses backend.
          * Contains delegation metadata and the position on the session timeline where the work was
          * delegated.
          */
         fun visitSessionDelegationCreated(sessionDelegationCreated: DelegationCreatedEvent): T =
             unknown(JsonValue.from(sessionDelegationCreated))
-
-        /**
-         * A Decision API event for a Live delegation or transcript trigger. For a trigger,
-         * source_event_id identifies the transcript delta that caused this evaluation.
-         */
-        fun visitDecisionEvent(decisionEvent: DecisionEvent): T =
-            unknown(JsonValue.from(decisionEvent))
-
-        /** An input item was appended for future decisions. */
-        fun visitDecisionItemCreated(decisionItemCreated: DecisionItemCreatedEvent): T =
-            unknown(JsonValue.from(decisionItemCreated))
-
-        /** An input item was removed from future decisions. */
-        fun visitDecisionItemDeleted(decisionItemDeleted: DecisionItemDeletedEvent): T =
-            unknown(JsonValue.from(decisionItemDeleted))
 
         /**
          * A streaming Responses API event from a backend delegated to by the Live session. Use the
@@ -1334,50 +959,6 @@ private constructor(
          * a frontend data channel.
          */
         fun visitInfoEvent(infoEvent: InfoEvent): T = unknown(JsonValue.from(infoEvent))
-
-        /**
-         * Input audio received from the primary transport and reflected to a Live sideband
-         * connection before model-input muting.
-         */
-        fun visitSessionInputAudioAppend(sessionInputAudioAppend: SessionInputAudioAppend): T =
-            unknown(JsonValue.from(sessionInputAudioAppend))
-
-        /**
-         * An audio chunk generated by the Live model. Decode and play primary WebSocket chunks in
-         * delivery order using the configured session audio format. Sideband connections receive
-         * reflected output audio with timestamps.
-         */
-        fun visitSessionOutputAudioDelta(sessionOutputAudioDelta: OutputAudioDeltaEvent): T =
-            unknown(JsonValue.from(sessionOutputAudioDelta))
-
-        /** A SIP DTMF keypress received from the caller. Delivered only to sideband observers. */
-        fun visitTransportDtmfReceived(transportDtmfReceived: TransportDtmfReceived): T =
-            unknown(JsonValue.from(transportDtmfReceived))
-
-        /**
-         * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband
-         * observers; this is not a client command.
-         */
-        fun visitTransportDtmfSend(transportDtmfSend: TransportDtmfSend): T =
-            unknown(JsonValue.from(transportDtmfSend))
-
-        /**
-         * The outbound SIP provider leg is ringing or providing early media. Delivered only to
-         * sideband observers.
-         */
-        fun visitTransportRinging(transportRinging: TransportRinging): T =
-            unknown(JsonValue.from(transportRinging))
-
-        /**
-         * The outbound SIP provider leg answered and media is established. Delivered only to
-         * sideband observers.
-         */
-        fun visitTransportAnswered(transportAnswered: TransportAnswered): T =
-            unknown(JsonValue.from(transportAnswered))
-
-        /** An asynchronous outbound SIP setup failure. Delivered only to sideband observers. */
-        fun visitTransportFailed(transportFailed: TransportFailed): T =
-            unknown(JsonValue.from(transportFailed))
 
         /**
          * Maps an unknown variant of [SidebandServerEvent] to a value of type [T].
@@ -1467,21 +1048,6 @@ private constructor(
                         SidebandServerEvent(sessionDelegationCreated = it, _json = json)
                     } ?: SidebandServerEvent(_json = json)
                 }
-                "decision.event" -> {
-                    return tryDeserialize(node, jacksonTypeRef<DecisionEvent>())?.let {
-                        SidebandServerEvent(decisionEvent = it, _json = json)
-                    } ?: SidebandServerEvent(_json = json)
-                }
-                "decision.item.created" -> {
-                    return tryDeserialize(node, jacksonTypeRef<DecisionItemCreatedEvent>())?.let {
-                        SidebandServerEvent(decisionItemCreated = it, _json = json)
-                    } ?: SidebandServerEvent(_json = json)
-                }
-                "decision.item.deleted" -> {
-                    return tryDeserialize(node, jacksonTypeRef<DecisionItemDeletedEvent>())?.let {
-                        SidebandServerEvent(decisionItemDeleted = it, _json = json)
-                    } ?: SidebandServerEvent(_json = json)
-                }
                 "response.event" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseEvent>())?.let {
                         SidebandServerEvent(responseEvent = it, _json = json)
@@ -1505,41 +1071,6 @@ private constructor(
                 "info" -> {
                     return tryDeserialize(node, jacksonTypeRef<InfoEvent>())?.let {
                         SidebandServerEvent(infoEvent = it, _json = json)
-                    } ?: SidebandServerEvent(_json = json)
-                }
-                "session.input_audio.append" -> {
-                    return tryDeserialize(node, jacksonTypeRef<SessionInputAudioAppend>())?.let {
-                        SidebandServerEvent(sessionInputAudioAppend = it, _json = json)
-                    } ?: SidebandServerEvent(_json = json)
-                }
-                "session.output_audio.delta" -> {
-                    return tryDeserialize(node, jacksonTypeRef<OutputAudioDeltaEvent>())?.let {
-                        SidebandServerEvent(sessionOutputAudioDelta = it, _json = json)
-                    } ?: SidebandServerEvent(_json = json)
-                }
-                "transport.dtmf.received" -> {
-                    return tryDeserialize(node, jacksonTypeRef<TransportDtmfReceived>())?.let {
-                        SidebandServerEvent(transportDtmfReceived = it, _json = json)
-                    } ?: SidebandServerEvent(_json = json)
-                }
-                "transport.dtmf.send" -> {
-                    return tryDeserialize(node, jacksonTypeRef<TransportDtmfSend>())?.let {
-                        SidebandServerEvent(transportDtmfSend = it, _json = json)
-                    } ?: SidebandServerEvent(_json = json)
-                }
-                "transport.ringing" -> {
-                    return tryDeserialize(node, jacksonTypeRef<TransportRinging>())?.let {
-                        SidebandServerEvent(transportRinging = it, _json = json)
-                    } ?: SidebandServerEvent(_json = json)
-                }
-                "transport.answered" -> {
-                    return tryDeserialize(node, jacksonTypeRef<TransportAnswered>())?.let {
-                        SidebandServerEvent(transportAnswered = it, _json = json)
-                    } ?: SidebandServerEvent(_json = json)
-                }
-                "transport.failed" -> {
-                    return tryDeserialize(node, jacksonTypeRef<TransportFailed>())?.let {
-                        SidebandServerEvent(transportFailed = it, _json = json)
                     } ?: SidebandServerEvent(_json = json)
                 }
             }
@@ -1578,2001 +1109,15 @@ private constructor(
                     generator.writeObject(value.sessionOutputTranscriptDelta)
                 value.sessionDelegationCreated != null ->
                     generator.writeObject(value.sessionDelegationCreated)
-                value.decisionEvent != null -> generator.writeObject(value.decisionEvent)
-                value.decisionItemCreated != null ->
-                    generator.writeObject(value.decisionItemCreated)
-                value.decisionItemDeleted != null ->
-                    generator.writeObject(value.decisionItemDeleted)
                 value.responseEvent != null -> generator.writeObject(value.responseEvent)
                 value.sessionUsageUpdated != null ->
                     generator.writeObject(value.sessionUsageUpdated)
                 value.sessionClosed != null -> generator.writeObject(value.sessionClosed)
                 value.errorEvent != null -> generator.writeObject(value.errorEvent)
                 value.infoEvent != null -> generator.writeObject(value.infoEvent)
-                value.sessionInputAudioAppend != null ->
-                    generator.writeObject(value.sessionInputAudioAppend)
-                value.sessionOutputAudioDelta != null ->
-                    generator.writeObject(value.sessionOutputAudioDelta)
-                value.transportDtmfReceived != null ->
-                    generator.writeObject(value.transportDtmfReceived)
-                value.transportDtmfSend != null -> generator.writeObject(value.transportDtmfSend)
-                value.transportRinging != null -> generator.writeObject(value.transportRinging)
-                value.transportAnswered != null -> generator.writeObject(value.transportAnswered)
-                value.transportFailed != null -> generator.writeObject(value.transportFailed)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid SidebandServerEvent")
             }
         }
-    }
-
-    /**
-     * Input audio received from the primary transport and reflected to a Live sideband connection
-     * before model-input muting.
-     */
-    class SessionInputAudioAppend
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val audio: JsonField<String>,
-        private val type: JsonValue,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("audio") @ExcludeMissing audio: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        ) : this(audio, type, mutableMapOf())
-
-        /**
-         * Base64-encoded raw mono PCM16LE at 24 kHz received from the primary transport, reflected
-         * to the sideband before model-input muting. This server event uses the same audio key as
-         * the client command, but is not an acknowledgment of it.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun audio(): String = audio.getRequired("audio")
-
-        /**
-         * The event type, always `session.input_audio.append`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("session.input_audio.append")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-        /**
-         * Returns the raw JSON value of [audio].
-         *
-         * Unlike [audio], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("audio") @ExcludeMissing fun _audio(): JsonField<String> = audio
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(additionalProperties, "audio" to this.audio, "type" to this.type)
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [SessionInputAudioAppend].
-             *
-             * The following fields are required:
-             * ```java
-             * .audio()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [SessionInputAudioAppend]. */
-        class Builder internal constructor() {
-
-            private var audio: JsonField<String>? = null
-            private var type: JsonValue = JsonValue.from("session.input_audio.append")
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(sessionInputAudioAppend: SessionInputAudioAppend) = apply {
-                audio = sessionInputAudioAppend.audio
-                type = sessionInputAudioAppend.type
-                additionalProperties = sessionInputAudioAppend.additionalProperties.toMutableMap()
-            }
-
-            /**
-             * Base64-encoded raw mono PCM16LE at 24 kHz received from the primary transport,
-             * reflected to the sideband before model-input muting. This server event uses the same
-             * audio key as the client command, but is not an acknowledgment of it.
-             */
-            fun audio(audio: String) = audio(JsonField.of(audio))
-
-            /**
-             * Sets [Builder.audio] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.audio] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun audio(audio: JsonField<String>) = apply { this.audio = audio }
-
-            /**
-             * Sets the field to an arbitrary JSON value.
-             *
-             * It is usually unnecessary to call this method because the field defaults to the
-             * following:
-             * ```java
-             * JsonValue.from("session.input_audio.append")
-             * ```
-             *
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun type(type: JsonValue) = apply { this.type = type }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [SessionInputAudioAppend].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .audio()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): SessionInputAudioAppend =
-                SessionInputAudioAppend(
-                    checkRequired("audio", audio),
-                    type,
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        private var validated: Boolean = false
-
-        /**
-         * Validates that the types of all values in this object match their expected types
-         * recursively.
-         *
-         * This method is _not_ forwards compatible with new types from the API for existing fields.
-         *
-         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-         *   expected type.
-         */
-        fun validate(): SessionInputAudioAppend = apply {
-            if (validated) {
-                return@apply
-            }
-
-            audio()
-            _type().let {
-                if (it != JsonValue.from("session.input_audio.append")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (if (audio.asKnown().isPresent) 1 else 0) +
-                type.let { if (it == JsonValue.from("session.input_audio.append")) 1 else 0 }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is SessionInputAudioAppend &&
-                audio == other.audio &&
-                type == other.type &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy { Objects.hash(audio, type, additionalProperties) }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "SessionInputAudioAppend{audio=$audio, type=$type, additionalProperties=$additionalProperties}"
-    }
-
-    /** A SIP DTMF keypress received from the caller. Delivered only to sideband observers. */
-    class TransportDtmfReceived
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val event: JsonField<String>,
-        private val eventId: JsonField<String>,
-        private val type: JsonValue,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("event") @ExcludeMissing event: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        ) : this(event, eventId, type, mutableMapOf())
-
-        /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun event(): String = event.getRequired("event")
-
-        /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun eventId(): String = eventId.getRequired("event_id")
-
-        /**
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("transport.dtmf.received")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-        /**
-         * Returns the raw JSON value of [event].
-         *
-         * Unlike [event], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<String> = event
-
-        /**
-         * Returns the raw JSON value of [eventId].
-         *
-         * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("event_id") @ExcludeMissing fun _eventId(): JsonField<String> = eventId
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "event" to this.event,
-                "event_id" to this.eventId,
-                "type" to this.type,
-            )
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [TransportDtmfReceived].
-             *
-             * The following fields are required:
-             * ```java
-             * .event()
-             * .eventId()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [TransportDtmfReceived]. */
-        class Builder internal constructor() {
-
-            private var event: JsonField<String>? = null
-            private var eventId: JsonField<String>? = null
-            private var type: JsonValue = JsonValue.from("transport.dtmf.received")
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(transportDtmfReceived: TransportDtmfReceived) = apply {
-                event = transportDtmfReceived.event
-                eventId = transportDtmfReceived.eventId
-                type = transportDtmfReceived.type
-                additionalProperties = transportDtmfReceived.additionalProperties.toMutableMap()
-            }
-
-            fun event(event: String) = event(JsonField.of(event))
-
-            /**
-             * Sets [Builder.event] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.event] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun event(event: JsonField<String>) = apply { this.event = event }
-
-            fun eventId(eventId: String) = eventId(JsonField.of(eventId))
-
-            /**
-             * Sets [Builder.eventId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.eventId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun eventId(eventId: JsonField<String>) = apply { this.eventId = eventId }
-
-            /**
-             * Sets the field to an arbitrary JSON value.
-             *
-             * It is usually unnecessary to call this method because the field defaults to the
-             * following:
-             * ```java
-             * JsonValue.from("transport.dtmf.received")
-             * ```
-             *
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun type(type: JsonValue) = apply { this.type = type }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [TransportDtmfReceived].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .event()
-             * .eventId()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): TransportDtmfReceived =
-                TransportDtmfReceived(
-                    checkRequired("event", event),
-                    checkRequired("eventId", eventId),
-                    type,
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        private var validated: Boolean = false
-
-        /**
-         * Validates that the types of all values in this object match their expected types
-         * recursively.
-         *
-         * This method is _not_ forwards compatible with new types from the API for existing fields.
-         *
-         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-         *   expected type.
-         */
-        fun validate(): TransportDtmfReceived = apply {
-            if (validated) {
-                return@apply
-            }
-
-            event()
-            eventId()
-            _type().let {
-                if (it != JsonValue.from("transport.dtmf.received")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (if (event.asKnown().isPresent) 1 else 0) +
-                (if (eventId.asKnown().isPresent) 1 else 0) +
-                type.let { if (it == JsonValue.from("transport.dtmf.received")) 1 else 0 }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is TransportDtmfReceived &&
-                event == other.event &&
-                eventId == other.eventId &&
-                type == other.type &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(event, eventId, type, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "TransportDtmfReceived{event=$event, eventId=$eventId, type=$type, additionalProperties=$additionalProperties}"
-    }
-
-    /**
-     * A SIP DTMF keypress successfully sent to the SIP trunk. Delivered only to sideband observers;
-     * this is not a client command.
-     */
-    class TransportDtmfSend
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val event: JsonField<String>,
-        private val eventId: JsonField<String>,
-        private val type: JsonValue,
-        private val clientEventId: JsonField<String>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("event") @ExcludeMissing event: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-            @JsonProperty("client_event_id")
-            @ExcludeMissing
-            clientEventId: JsonField<String> = JsonMissing.of(),
-        ) : this(event, eventId, type, clientEventId, mutableMapOf())
-
-        /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun event(): String = event.getRequired("event")
-
-        /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun eventId(): String = eventId.getRequired("event_id")
-
-        /**
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("transport.dtmf.send")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-        /**
-         * The event_id of the client command, when supplied.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun clientEventId(): Optional<String> = clientEventId.getOptional("client_event_id")
-
-        /**
-         * Returns the raw JSON value of [event].
-         *
-         * Unlike [event], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<String> = event
-
-        /**
-         * Returns the raw JSON value of [eventId].
-         *
-         * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("event_id") @ExcludeMissing fun _eventId(): JsonField<String> = eventId
-
-        /**
-         * Returns the raw JSON value of [clientEventId].
-         *
-         * Unlike [clientEventId], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("client_event_id")
-        @ExcludeMissing
-        fun _clientEventId(): JsonField<String> = clientEventId
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "event" to this.event,
-                "event_id" to this.eventId,
-                "type" to this.type,
-                "client_event_id" to this.clientEventId,
-            )
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [TransportDtmfSend].
-             *
-             * The following fields are required:
-             * ```java
-             * .event()
-             * .eventId()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [TransportDtmfSend]. */
-        class Builder internal constructor() {
-
-            private var event: JsonField<String>? = null
-            private var eventId: JsonField<String>? = null
-            private var type: JsonValue = JsonValue.from("transport.dtmf.send")
-            private var clientEventId: JsonField<String> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(transportDtmfSend: TransportDtmfSend) = apply {
-                event = transportDtmfSend.event
-                eventId = transportDtmfSend.eventId
-                type = transportDtmfSend.type
-                clientEventId = transportDtmfSend.clientEventId
-                additionalProperties = transportDtmfSend.additionalProperties.toMutableMap()
-            }
-
-            fun event(event: String) = event(JsonField.of(event))
-
-            /**
-             * Sets [Builder.event] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.event] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun event(event: JsonField<String>) = apply { this.event = event }
-
-            fun eventId(eventId: String) = eventId(JsonField.of(eventId))
-
-            /**
-             * Sets [Builder.eventId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.eventId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun eventId(eventId: JsonField<String>) = apply { this.eventId = eventId }
-
-            /**
-             * Sets the field to an arbitrary JSON value.
-             *
-             * It is usually unnecessary to call this method because the field defaults to the
-             * following:
-             * ```java
-             * JsonValue.from("transport.dtmf.send")
-             * ```
-             *
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun type(type: JsonValue) = apply { this.type = type }
-
-            /** The event_id of the client command, when supplied. */
-            fun clientEventId(clientEventId: String) = clientEventId(JsonField.of(clientEventId))
-
-            /**
-             * Sets [Builder.clientEventId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.clientEventId] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun clientEventId(clientEventId: JsonField<String>) = apply {
-                this.clientEventId = clientEventId
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [TransportDtmfSend].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .event()
-             * .eventId()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): TransportDtmfSend =
-                TransportDtmfSend(
-                    checkRequired("event", event),
-                    checkRequired("eventId", eventId),
-                    type,
-                    clientEventId,
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        private var validated: Boolean = false
-
-        /**
-         * Validates that the types of all values in this object match their expected types
-         * recursively.
-         *
-         * This method is _not_ forwards compatible with new types from the API for existing fields.
-         *
-         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-         *   expected type.
-         */
-        fun validate(): TransportDtmfSend = apply {
-            if (validated) {
-                return@apply
-            }
-
-            event()
-            eventId()
-            _type().let {
-                if (it != JsonValue.from("transport.dtmf.send")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            clientEventId()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (if (event.asKnown().isPresent) 1 else 0) +
-                (if (eventId.asKnown().isPresent) 1 else 0) +
-                type.let { if (it == JsonValue.from("transport.dtmf.send")) 1 else 0 } +
-                (if (clientEventId.asKnown().isPresent) 1 else 0)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is TransportDtmfSend &&
-                event == other.event &&
-                eventId == other.eventId &&
-                type == other.type &&
-                clientEventId == other.clientEventId &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(event, eventId, type, clientEventId, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "TransportDtmfSend{event=$event, eventId=$eventId, type=$type, clientEventId=$clientEventId, additionalProperties=$additionalProperties}"
-    }
-
-    /**
-     * The outbound SIP provider leg is ringing or providing early media. Delivered only to sideband
-     * observers.
-     */
-    class TransportRinging
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val eventId: JsonField<String>,
-        private val sessionId: JsonField<String>,
-        private val type: JsonValue,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("session_id")
-            @ExcludeMissing
-            sessionId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        ) : this(eventId, sessionId, type, mutableMapOf())
-
-        /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun eventId(): String = eventId.getRequired("event_id")
-
-        /**
-         * The canonical Live session ID.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun sessionId(): String = sessionId.getRequired("session_id")
-
-        /**
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("transport.ringing")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-        /**
-         * Returns the raw JSON value of [eventId].
-         *
-         * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("event_id") @ExcludeMissing fun _eventId(): JsonField<String> = eventId
-
-        /**
-         * Returns the raw JSON value of [sessionId].
-         *
-         * Unlike [sessionId], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("session_id") @ExcludeMissing fun _sessionId(): JsonField<String> = sessionId
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "event_id" to this.eventId,
-                "session_id" to this.sessionId,
-                "type" to this.type,
-            )
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [TransportRinging].
-             *
-             * The following fields are required:
-             * ```java
-             * .eventId()
-             * .sessionId()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [TransportRinging]. */
-        class Builder internal constructor() {
-
-            private var eventId: JsonField<String>? = null
-            private var sessionId: JsonField<String>? = null
-            private var type: JsonValue = JsonValue.from("transport.ringing")
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(transportRinging: TransportRinging) = apply {
-                eventId = transportRinging.eventId
-                sessionId = transportRinging.sessionId
-                type = transportRinging.type
-                additionalProperties = transportRinging.additionalProperties.toMutableMap()
-            }
-
-            fun eventId(eventId: String) = eventId(JsonField.of(eventId))
-
-            /**
-             * Sets [Builder.eventId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.eventId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun eventId(eventId: JsonField<String>) = apply { this.eventId = eventId }
-
-            /** The canonical Live session ID. */
-            fun sessionId(sessionId: String) = sessionId(JsonField.of(sessionId))
-
-            /**
-             * Sets [Builder.sessionId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.sessionId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun sessionId(sessionId: JsonField<String>) = apply { this.sessionId = sessionId }
-
-            /**
-             * Sets the field to an arbitrary JSON value.
-             *
-             * It is usually unnecessary to call this method because the field defaults to the
-             * following:
-             * ```java
-             * JsonValue.from("transport.ringing")
-             * ```
-             *
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun type(type: JsonValue) = apply { this.type = type }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [TransportRinging].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .eventId()
-             * .sessionId()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): TransportRinging =
-                TransportRinging(
-                    checkRequired("eventId", eventId),
-                    checkRequired("sessionId", sessionId),
-                    type,
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        private var validated: Boolean = false
-
-        /**
-         * Validates that the types of all values in this object match their expected types
-         * recursively.
-         *
-         * This method is _not_ forwards compatible with new types from the API for existing fields.
-         *
-         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-         *   expected type.
-         */
-        fun validate(): TransportRinging = apply {
-            if (validated) {
-                return@apply
-            }
-
-            eventId()
-            sessionId()
-            _type().let {
-                if (it != JsonValue.from("transport.ringing")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (if (eventId.asKnown().isPresent) 1 else 0) +
-                (if (sessionId.asKnown().isPresent) 1 else 0) +
-                type.let { if (it == JsonValue.from("transport.ringing")) 1 else 0 }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is TransportRinging &&
-                eventId == other.eventId &&
-                sessionId == other.sessionId &&
-                type == other.type &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(eventId, sessionId, type, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "TransportRinging{eventId=$eventId, sessionId=$sessionId, type=$type, additionalProperties=$additionalProperties}"
-    }
-
-    /**
-     * The outbound SIP provider leg answered and media is established. Delivered only to sideband
-     * observers.
-     */
-    class TransportAnswered
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val eventId: JsonField<String>,
-        private val sessionId: JsonField<String>,
-        private val type: JsonValue,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("session_id")
-            @ExcludeMissing
-            sessionId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        ) : this(eventId, sessionId, type, mutableMapOf())
-
-        /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun eventId(): String = eventId.getRequired("event_id")
-
-        /**
-         * The canonical Live session ID.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun sessionId(): String = sessionId.getRequired("session_id")
-
-        /**
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("transport.answered")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-        /**
-         * Returns the raw JSON value of [eventId].
-         *
-         * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("event_id") @ExcludeMissing fun _eventId(): JsonField<String> = eventId
-
-        /**
-         * Returns the raw JSON value of [sessionId].
-         *
-         * Unlike [sessionId], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("session_id") @ExcludeMissing fun _sessionId(): JsonField<String> = sessionId
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "event_id" to this.eventId,
-                "session_id" to this.sessionId,
-                "type" to this.type,
-            )
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [TransportAnswered].
-             *
-             * The following fields are required:
-             * ```java
-             * .eventId()
-             * .sessionId()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [TransportAnswered]. */
-        class Builder internal constructor() {
-
-            private var eventId: JsonField<String>? = null
-            private var sessionId: JsonField<String>? = null
-            private var type: JsonValue = JsonValue.from("transport.answered")
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(transportAnswered: TransportAnswered) = apply {
-                eventId = transportAnswered.eventId
-                sessionId = transportAnswered.sessionId
-                type = transportAnswered.type
-                additionalProperties = transportAnswered.additionalProperties.toMutableMap()
-            }
-
-            fun eventId(eventId: String) = eventId(JsonField.of(eventId))
-
-            /**
-             * Sets [Builder.eventId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.eventId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun eventId(eventId: JsonField<String>) = apply { this.eventId = eventId }
-
-            /** The canonical Live session ID. */
-            fun sessionId(sessionId: String) = sessionId(JsonField.of(sessionId))
-
-            /**
-             * Sets [Builder.sessionId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.sessionId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun sessionId(sessionId: JsonField<String>) = apply { this.sessionId = sessionId }
-
-            /**
-             * Sets the field to an arbitrary JSON value.
-             *
-             * It is usually unnecessary to call this method because the field defaults to the
-             * following:
-             * ```java
-             * JsonValue.from("transport.answered")
-             * ```
-             *
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun type(type: JsonValue) = apply { this.type = type }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [TransportAnswered].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .eventId()
-             * .sessionId()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): TransportAnswered =
-                TransportAnswered(
-                    checkRequired("eventId", eventId),
-                    checkRequired("sessionId", sessionId),
-                    type,
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        private var validated: Boolean = false
-
-        /**
-         * Validates that the types of all values in this object match their expected types
-         * recursively.
-         *
-         * This method is _not_ forwards compatible with new types from the API for existing fields.
-         *
-         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-         *   expected type.
-         */
-        fun validate(): TransportAnswered = apply {
-            if (validated) {
-                return@apply
-            }
-
-            eventId()
-            sessionId()
-            _type().let {
-                if (it != JsonValue.from("transport.answered")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (if (eventId.asKnown().isPresent) 1 else 0) +
-                (if (sessionId.asKnown().isPresent) 1 else 0) +
-                type.let { if (it == JsonValue.from("transport.answered")) 1 else 0 }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is TransportAnswered &&
-                eventId == other.eventId &&
-                sessionId == other.sessionId &&
-                type == other.type &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(eventId, sessionId, type, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "TransportAnswered{eventId=$eventId, sessionId=$sessionId, type=$type, additionalProperties=$additionalProperties}"
-    }
-
-    /** An asynchronous outbound SIP setup failure. Delivered only to sideband observers. */
-    class TransportFailed
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val error: JsonField<Error>,
-        private val eventId: JsonField<String>,
-        private val sessionId: JsonField<String>,
-        private val type: JsonValue,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("error") @ExcludeMissing error: JsonField<Error> = JsonMissing.of(),
-            @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("session_id")
-            @ExcludeMissing
-            sessionId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        ) : this(error, eventId, sessionId, type, mutableMapOf())
-
-        /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun error(): Error = error.getRequired("error")
-
-        /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun eventId(): String = eventId.getRequired("event_id")
-
-        /**
-         * The canonical Live session ID.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun sessionId(): String = sessionId.getRequired("session_id")
-
-        /**
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("transport.failed")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-        /**
-         * Returns the raw JSON value of [error].
-         *
-         * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<Error> = error
-
-        /**
-         * Returns the raw JSON value of [eventId].
-         *
-         * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("event_id") @ExcludeMissing fun _eventId(): JsonField<String> = eventId
-
-        /**
-         * Returns the raw JSON value of [sessionId].
-         *
-         * Unlike [sessionId], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("session_id") @ExcludeMissing fun _sessionId(): JsonField<String> = sessionId
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "error" to this.error,
-                "event_id" to this.eventId,
-                "session_id" to this.sessionId,
-                "type" to this.type,
-            )
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [TransportFailed].
-             *
-             * The following fields are required:
-             * ```java
-             * .error()
-             * .eventId()
-             * .sessionId()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [TransportFailed]. */
-        class Builder internal constructor() {
-
-            private var error: JsonField<Error>? = null
-            private var eventId: JsonField<String>? = null
-            private var sessionId: JsonField<String>? = null
-            private var type: JsonValue = JsonValue.from("transport.failed")
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(transportFailed: TransportFailed) = apply {
-                error = transportFailed.error
-                eventId = transportFailed.eventId
-                sessionId = transportFailed.sessionId
-                type = transportFailed.type
-                additionalProperties = transportFailed.additionalProperties.toMutableMap()
-            }
-
-            fun error(error: Error) = error(JsonField.of(error))
-
-            /**
-             * Sets [Builder.error] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.error] with a well-typed [Error] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun error(error: JsonField<Error>) = apply { this.error = error }
-
-            fun eventId(eventId: String) = eventId(JsonField.of(eventId))
-
-            /**
-             * Sets [Builder.eventId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.eventId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun eventId(eventId: JsonField<String>) = apply { this.eventId = eventId }
-
-            /** The canonical Live session ID. */
-            fun sessionId(sessionId: String) = sessionId(JsonField.of(sessionId))
-
-            /**
-             * Sets [Builder.sessionId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.sessionId] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun sessionId(sessionId: JsonField<String>) = apply { this.sessionId = sessionId }
-
-            /**
-             * Sets the field to an arbitrary JSON value.
-             *
-             * It is usually unnecessary to call this method because the field defaults to the
-             * following:
-             * ```java
-             * JsonValue.from("transport.failed")
-             * ```
-             *
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun type(type: JsonValue) = apply { this.type = type }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [TransportFailed].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .error()
-             * .eventId()
-             * .sessionId()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): TransportFailed =
-                TransportFailed(
-                    checkRequired("error", error),
-                    checkRequired("eventId", eventId),
-                    checkRequired("sessionId", sessionId),
-                    type,
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        private var validated: Boolean = false
-
-        /**
-         * Validates that the types of all values in this object match their expected types
-         * recursively.
-         *
-         * This method is _not_ forwards compatible with new types from the API for existing fields.
-         *
-         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-         *   expected type.
-         */
-        fun validate(): TransportFailed = apply {
-            if (validated) {
-                return@apply
-            }
-
-            error().validate()
-            eventId()
-            sessionId()
-            _type().let {
-                if (it != JsonValue.from("transport.failed")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (error.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (eventId.asKnown().isPresent) 1 else 0) +
-                (if (sessionId.asKnown().isPresent) 1 else 0) +
-                type.let { if (it == JsonValue.from("transport.failed")) 1 else 0 }
-
-        class Error
-        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-        private constructor(
-            private val code: JsonField<String>,
-            private val message: JsonField<String>,
-            private val type: JsonValue,
-            private val param: JsonField<String>,
-            private val additionalProperties: MutableMap<String, JsonValue>,
-        ) {
-
-            @JsonCreator
-            private constructor(
-                @JsonProperty("code") @ExcludeMissing code: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("message")
-                @ExcludeMissing
-                message: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-                @JsonProperty("param") @ExcludeMissing param: JsonField<String> = JsonMissing.of(),
-            ) : this(code, message, type, param, mutableMapOf())
-
-            /**
-             * The call setup failure code.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
-             */
-            fun code(): String = code.getRequired("code")
-
-            /**
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
-             */
-            fun message(): String = message.getRequired("message")
-
-            /**
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("call_error")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
-             */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-            /**
-             * The parameter related to the error, if any. Empty when no parameter applies.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
-             */
-            fun param(): Optional<String> = param.getOptional("param")
-
-            /**
-             * Returns the raw JSON value of [code].
-             *
-             * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
-
-            /**
-             * Returns the raw JSON value of [message].
-             *
-             * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
-
-            /**
-             * Returns the raw JSON value of [param].
-             *
-             * Unlike [param], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("param") @ExcludeMissing fun _param(): JsonField<String> = param
-
-            @JsonAnySetter
-            private fun putAdditionalProperty(key: String, value: JsonValue) {
-                additionalProperties.put(key, value)
-            }
-
-            /**
-             * Returns an immutable snapshot of all present JSON properties, including declared and
-             * additional properties.
-             *
-             * Keys use their JSON names. Declared properties take precedence over additional
-             * properties with the same name. Missing properties are omitted, while explicit nulls
-             * and unrecognized values are preserved.
-             */
-            fun _allProperties(): Map<String, JsonValue> =
-                collectAllProperties(
-                    additionalProperties,
-                    "code" to this.code,
-                    "message" to this.message,
-                    "type" to this.type,
-                    "param" to this.param,
-                )
-
-            /**
-             * Returns the legacy additional-properties view.
-             *
-             * @deprecated Use [_allProperties] to access both declared and additional JSON
-             *   properties. This accessor retains its legacy additional-properties behavior.
-             */
-            @Deprecated(
-                "Use _allProperties() to access both declared and additional JSON properties."
-            )
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                /**
-                 * Returns a mutable builder for constructing an instance of [Error].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .code()
-                 * .message()
-                 * ```
-                 */
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [Error]. */
-            class Builder internal constructor() {
-
-                private var code: JsonField<String>? = null
-                private var message: JsonField<String>? = null
-                private var type: JsonValue = JsonValue.from("call_error")
-                private var param: JsonField<String> = JsonMissing.of()
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(error: Error) = apply {
-                    code = error.code
-                    message = error.message
-                    type = error.type
-                    param = error.param
-                    additionalProperties = error.additionalProperties.toMutableMap()
-                }
-
-                /** The call setup failure code. */
-                fun code(code: String) = code(JsonField.of(code))
-
-                /**
-                 * Sets [Builder.code] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.code] with a well-typed [String] value instead.
-                 * This method is primarily for setting the field to an undocumented or not yet
-                 * supported value.
-                 */
-                fun code(code: JsonField<String>) = apply { this.code = code }
-
-                fun message(message: String) = message(JsonField.of(message))
-
-                /**
-                 * Sets [Builder.message] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.message] with a well-typed [String] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
-                 */
-                fun message(message: JsonField<String>) = apply { this.message = message }
-
-                /**
-                 * Sets the field to an arbitrary JSON value.
-                 *
-                 * It is usually unnecessary to call this method because the field defaults to the
-                 * following:
-                 * ```java
-                 * JsonValue.from("call_error")
-                 * ```
-                 *
-                 * This method is primarily for setting the field to an undocumented or not yet
-                 * supported value.
-                 */
-                fun type(type: JsonValue) = apply { this.type = type }
-
-                /** The parameter related to the error, if any. Empty when no parameter applies. */
-                fun param(param: String) = param(JsonField.of(param))
-
-                /**
-                 * Sets [Builder.param] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.param] with a well-typed [String] value instead.
-                 * This method is primarily for setting the field to an undocumented or not yet
-                 * supported value.
-                 */
-                fun param(param: JsonField<String>) = apply { this.param = param }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                /**
-                 * Returns an immutable instance of [Error].
-                 *
-                 * Further updates to this [Builder] will not mutate the returned instance.
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .code()
-                 * .message()
-                 * ```
-                 *
-                 * @throws IllegalStateException if any required field is unset.
-                 */
-                fun build(): Error =
-                    Error(
-                        checkRequired("code", code),
-                        checkRequired("message", message),
-                        type,
-                        param,
-                        additionalProperties.toMutableMap(),
-                    )
-            }
-
-            private var validated: Boolean = false
-
-            /**
-             * Validates that the types of all values in this object match their expected types
-             * recursively.
-             *
-             * This method is _not_ forwards compatible with new types from the API for existing
-             * fields.
-             *
-             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
-             *   expected type.
-             */
-            fun validate(): Error = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                code()
-                message()
-                _type().let {
-                    if (it != JsonValue.from("call_error")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                param()
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: OpenAIInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic
-            internal fun validity(): Int =
-                (if (code.asKnown().isPresent) 1 else 0) +
-                    (if (message.asKnown().isPresent) 1 else 0) +
-                    type.let { if (it == JsonValue.from("call_error")) 1 else 0 } +
-                    (if (param.asKnown().isPresent) 1 else 0)
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Error &&
-                    code == other.code &&
-                    message == other.message &&
-                    type == other.type &&
-                    param == other.param &&
-                    additionalProperties == other.additionalProperties
-            }
-
-            private val hashCode: Int by lazy {
-                Objects.hash(code, message, type, param, additionalProperties)
-            }
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "Error{code=$code, message=$message, type=$type, param=$param, additionalProperties=$additionalProperties}"
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is TransportFailed &&
-                error == other.error &&
-                eventId == other.eventId &&
-                sessionId == other.sessionId &&
-                type == other.type &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(error, eventId, sessionId, type, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "TransportFailed{error=$error, eventId=$eventId, sessionId=$sessionId, type=$type, additionalProperties=$additionalProperties}"
     }
 }

@@ -30,8 +30,7 @@ interface VersionServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VersionServiceAsync
 
-    fun content(): ContentServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun content(): ContentServiceAsync
 
     /** Create a new immutable skill version. */
     fun create(skillId: String): CompletableFuture<SkillVersion> =
@@ -160,10 +159,7 @@ interface VersionServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): VersionServiceAsync.WithRawResponse
 
-        fun content(): ContentServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun content(): ContentServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /skills/{skill_id}/versions`, but is otherwise the

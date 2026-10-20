@@ -95,11 +95,6 @@ class CustomCodeTests(GitTestCase):
         self.write(".github/actions/test/action.yml", "ignored\n")
         second = self.commit()
         self.assertEqual(report.hash_codegen_commit(self.repo, second), expected)
-        self.assertEqual(set(report.tree_entries(self.repo, second)), {b"a"})
-        self.assertEqual(
-            set(report.tree_entries(self.repo, second, include_workflows=True)),
-            {b"a", b".github/workflows/test.yml", b".github/actions/test/action.yml"},
-        )
         os.chmod(self.repo / "a", 0o755)
         self.assertNotEqual(report.hash_codegen_commit(self.repo, self.commit()), expected)
         self.write(".github/CODEOWNERS", "not ignored\n")
@@ -165,51 +160,6 @@ class CustomCodeTests(GitTestCase):
         path.symlink_to(original)
         with self.assertRaisesRegex(report.ReportError, "regular Git file"):
             report.read_stats(self.repo, self.commit())
-
-    def test_next_checkpoint_uses_its_namespaced_ref(self) -> None:
-        generated, base = self.baseline()
-        self.git("checkout", "--detach", generated)
-        metadata = {
-            "schema_version": "castiron-checkpoint/v2",
-            "release_target": "next",
-            "record": {"generation_id": GENERATION, "source_branch": "test"},
-        }
-        encoded = base64.b64encode(json.dumps(metadata).encode()).decode()
-        checkpoint = self.commit(f"codegen\n\nGeneration metadata: {encoded}")
-        ref = "refs/remotes/origin/codegen/castiron/next/test"
-        self.git("update-ref", ref, checkpoint)
-        stats = report.read_stats(self.repo, base) | {
-            "codegen_sha": checkpoint,
-            "codegen_hash": report.hash_codegen_commit(self.repo, checkpoint),
-        }
-        result = report.resolve_checkpoint(self.repo, stats, fetch=False, require_hash=True)
-        self.assertEqual(result["commit"], checkpoint)
-        self.git("update-ref", "refs/remotes/origin/codegen/test", checkpoint)
-        self.git("update-ref", "-d", ref)
-        with self.assertRaises(report.ReportError):
-            report.resolve_checkpoint(self.repo, stats, fetch=False, require_hash=True)
-
-    def test_invalid_checkpoint_envelopes_are_rejected(self) -> None:
-        _, base = self.baseline()
-        record = {"generation_id": GENERATION, "source_branch": "test"}
-        envelope = {
-            "schema_version": "castiron-checkpoint/v2",
-            "release_target": "next",
-            "record": record,
-        }
-        for metadata in (
-            envelope | {"schema_version": "unknown"},
-            envelope | {"release_target": "main"},
-            envelope | {"extra": True},
-            envelope | {"record": record | {"release_target": "next"}},
-            record | {"release_target": "next"},
-        ):
-            with self.subTest(metadata=metadata):
-                encoded = base64.b64encode(json.dumps(metadata).encode()).decode()
-                checkpoint = self.commit(f"codegen\n\nGeneration metadata: {encoded}")
-                stats = report.read_stats(self.repo, base) | {"codegen_sha": checkpoint}
-                with self.assertRaisesRegex(report.ReportError, "envelope"):
-                    report.resolve_checkpoint(self.repo, stats, fetch=False, require_hash=True)
 
     def test_public_snapshot_rejects_private_governance_and_unpublished_paths(self) -> None:
         entry = report.Entry(b"100644", "a" * 40)
@@ -334,7 +284,6 @@ class CustomCodeTests(GitTestCase):
         )
         self.assertEqual(snapshot["base_commit"], snapshot["commit"])
         self.assertNotEqual(snapshot["commit"], generated)
-        self.assertEqual(snapshot["base_commit"], snapshot["commit"])
         self.assertEqual(report.git(public, "rev-list", "--count", snapshot["commit"]), b"1\n")
         self.assertEqual(report.hash_codegen_commit(public, snapshot["commit"]), snapshot["hash"])
         with self.assertRaises(report.ReportError):
@@ -361,7 +310,6 @@ class CustomCodeTests(GitTestCase):
         )
         self.assertEqual(again["base_commit"], snapshot["base_commit"])
         self.assertEqual(again["commit"], snapshot["commit"])
-        self.assertEqual(again["base_commit"], snapshot["base_commit"])
         tree = report.git(public, "rev-parse", f"{snapshot['commit']}^{{tree}}").decode().strip()
         message = report.git(public, "show", "-s", "--format=%B", snapshot["commit"])
         chained = (

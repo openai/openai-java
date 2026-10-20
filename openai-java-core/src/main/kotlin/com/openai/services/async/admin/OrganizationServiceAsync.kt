@@ -33,44 +33,31 @@ interface OrganizationServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationServiceAsync
 
     /** List user actions and configuration changes within this organization. */
-    fun auditLogs(): AuditLogServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun auditLogs(): AuditLogServiceAsync
 
-    fun adminApiKeys(): AdminApiKeyServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun adminApiKeys(): AdminApiKeyServiceAsync
 
-    fun usage(): UsageServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun usage(): UsageServiceAsync
 
-    fun invites(): InviteServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun invites(): InviteServiceAsync
 
-    fun users(): UserServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun users(): UserServiceAsync
 
-    fun groups(): GroupServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun groups(): GroupServiceAsync
 
-    fun roles(): RoleServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun roles(): RoleServiceAsync
 
-    fun dataRetention(): DataRetentionServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun dataRetention(): DataRetentionServiceAsync
 
-    fun externalStorage(): ExternalStorageServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun externalStorage(): ExternalStorageServiceAsync
 
-    fun spendLimit(): SpendLimitServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun spendLimit(): SpendLimitServiceAsync
 
-    fun spendAlerts(): SpendAlertServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun spendAlerts(): SpendAlertServiceAsync
 
-    fun certificates(): CertificateServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun certificates(): CertificateServiceAsync
 
-    fun projects(): ProjectServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun projects(): ProjectServiceAsync
 
     /**
      * A view of [OrganizationServiceAsync] that provides access to raw HTTP responses for each
@@ -88,69 +75,30 @@ interface OrganizationServiceAsync {
         ): OrganizationServiceAsync.WithRawResponse
 
         /** List user actions and configuration changes within this organization. */
-        fun auditLogs(): AuditLogServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun auditLogs(): AuditLogServiceAsync.WithRawResponse
 
-        fun adminApiKeys(): AdminApiKeyServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun adminApiKeys(): AdminApiKeyServiceAsync.WithRawResponse
 
-        fun usage(): UsageServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun usage(): UsageServiceAsync.WithRawResponse
 
-        fun invites(): InviteServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun invites(): InviteServiceAsync.WithRawResponse
 
-        fun users(): UserServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun users(): UserServiceAsync.WithRawResponse
 
-        fun groups(): GroupServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun groups(): GroupServiceAsync.WithRawResponse
 
-        fun roles(): RoleServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun roles(): RoleServiceAsync.WithRawResponse
 
-        fun dataRetention(): DataRetentionServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun dataRetention(): DataRetentionServiceAsync.WithRawResponse
 
-        fun externalStorage(): ExternalStorageServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun externalStorage(): ExternalStorageServiceAsync.WithRawResponse
 
-        fun spendLimit(): SpendLimitServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun spendLimit(): SpendLimitServiceAsync.WithRawResponse
 
-        fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse
 
-        fun certificates(): CertificateServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun certificates(): CertificateServiceAsync.WithRawResponse
 
-        fun projects(): ProjectServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun projects(): ProjectServiceAsync.WithRawResponse
     }
 }

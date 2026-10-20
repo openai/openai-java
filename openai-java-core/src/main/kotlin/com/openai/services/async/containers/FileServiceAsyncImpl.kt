@@ -75,8 +75,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // delete /containers/{container_id}/files/{file_id}
-        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
-        withRawResponse().delete(params, requestOptions).thenApply { it.close() }.thenAccept {}
+        withRawResponse().delete(params, requestOptions).thenAccept {}
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         FileServiceAsync.WithRawResponse {

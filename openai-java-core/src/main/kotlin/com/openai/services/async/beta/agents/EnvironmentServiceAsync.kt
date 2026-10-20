@@ -29,11 +29,9 @@ interface EnvironmentServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): EnvironmentServiceAsync
 
-    fun files(): FileServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun files(): FileServiceAsync
 
-    fun templates(): TemplateServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun templates(): TemplateServiceAsync
 
     /**
      * Creates an OpenAI-hosted environment before creating a session. Requires access to the
@@ -122,15 +120,9 @@ interface EnvironmentServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): EnvironmentServiceAsync.WithRawResponse
 
-        fun files(): FileServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun files(): FileServiceAsync.WithRawResponse
 
-        fun templates(): TemplateServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun templates(): TemplateServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /agents/environments`, but is otherwise the same as

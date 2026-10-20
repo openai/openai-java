@@ -16,11 +16,7 @@ internal class DecisionInputPartTest {
 
     @Test
     fun ofInputText() {
-        val inputText =
-            DecisionInputText.builder()
-                .text("text")
-                .promptCacheBreakpoint(DecisionPromptCacheBreakpoint.builder().build())
-                .build()
+        val inputText = DecisionInputText.builder().text("text").build()
 
         val decisionInputPart = DecisionInputPart.ofInputText(inputText)
 
@@ -32,12 +28,7 @@ internal class DecisionInputPartTest {
     fun ofInputTextRoundtrip() {
         val jsonMapper = jsonMapper()
         val decisionInputPart =
-            DecisionInputPart.ofInputText(
-                DecisionInputText.builder()
-                    .text("text")
-                    .promptCacheBreakpoint(DecisionPromptCacheBreakpoint.builder().build())
-                    .build()
-            )
+            DecisionInputPart.ofInputText(DecisionInputText.builder().text("text").build())
 
         val roundtrippedDecisionInputPart =
             jsonMapper.readValue(
@@ -54,7 +45,6 @@ internal class DecisionInputPartTest {
             DecisionInputImage.builder()
                 .imageUrl("https://")
                 .detail(DecisionInputImage.Detail.LOW)
-                .promptCacheBreakpoint(DecisionPromptCacheBreakpoint.builder().build())
                 .build()
 
         val decisionInputPart = DecisionInputPart.ofInputImage(inputImage)
@@ -71,7 +61,6 @@ internal class DecisionInputPartTest {
                 DecisionInputImage.builder()
                     .imageUrl("https://")
                     .detail(DecisionInputImage.Detail.LOW)
-                    .promptCacheBreakpoint(DecisionPromptCacheBreakpoint.builder().build())
                     .build()
             )
 

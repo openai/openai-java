@@ -33,14 +33,11 @@ interface AgentServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AgentServiceAsync
 
-    fun environments(): EnvironmentServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun environments(): EnvironmentServiceAsync
 
-    fun vaults(): VaultServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun vaults(): VaultServiceAsync
 
-    fun sessions(): SessionServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun sessions(): SessionServiceAsync
 
     /**
      * Creates a reusable agent without storing credentials. See
@@ -193,20 +190,11 @@ interface AgentServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): AgentServiceAsync.WithRawResponse
 
-        fun environments(): EnvironmentServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun environments(): EnvironmentServiceAsync.WithRawResponse
 
-        fun vaults(): VaultServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun vaults(): VaultServiceAsync.WithRawResponse
 
-        fun sessions(): SessionServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun sessions(): SessionServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /agents`, but is otherwise the same as

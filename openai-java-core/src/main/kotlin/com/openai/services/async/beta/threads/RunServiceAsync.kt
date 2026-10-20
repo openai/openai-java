@@ -39,8 +39,7 @@ interface RunServiceAsync {
 
     /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-    fun steps(): StepServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun steps(): StepServiceAsync
 
     /** Create a run. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -292,10 +291,7 @@ interface RunServiceAsync {
 
         /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-        fun steps(): StepServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun steps(): StepServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /threads/{thread_id}/runs`, but is otherwise the

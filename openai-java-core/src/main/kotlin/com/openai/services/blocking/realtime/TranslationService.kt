@@ -20,8 +20,7 @@ interface TranslationService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranslationService
 
-    fun clientSecrets(): ClientSecretService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun clientSecrets(): ClientSecretService
 
     /**
      * A view of [TranslationService] that provides access to raw HTTP responses for each method.
@@ -37,9 +36,6 @@ interface TranslationService {
             modifier: Consumer<ClientOptions.Builder>
         ): TranslationService.WithRawResponse
 
-        fun clientSecrets(): ClientSecretService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun clientSecrets(): ClientSecretService.WithRawResponse
     }
 }

@@ -27,14 +27,11 @@ interface LiveServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): LiveServiceAsync
 
-    fun sideband(): SidebandServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun sideband(): SidebandServiceAsync
 
-    fun forks(): ForkServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun forks(): ForkServiceAsync
 
-    fun sessions(): SessionServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun sessions(): SessionServiceAsync
 
     /**
      * Create a Live WebRTC session. Start with the
@@ -59,20 +56,11 @@ interface LiveServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): LiveServiceAsync.WithRawResponse
 
-        fun sideband(): SidebandServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun sideband(): SidebandServiceAsync.WithRawResponse
 
-        fun forks(): ForkServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun forks(): ForkServiceAsync.WithRawResponse
 
-        fun sessions(): SessionServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun sessions(): SessionServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /live/sessions`, but is otherwise the same as

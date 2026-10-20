@@ -34,11 +34,9 @@ interface VectorStoreService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VectorStoreService
 
-    fun files(): FileService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun files(): FileService
 
-    fun fileBatches(): FileBatchService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun fileBatches(): FileBatchService
 
     /** Create a vector store. */
     fun create(): VectorStore = create(VectorStoreCreateParams.none())
@@ -204,15 +202,9 @@ interface VectorStoreService {
             modifier: Consumer<ClientOptions.Builder>
         ): VectorStoreService.WithRawResponse
 
-        fun files(): FileService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun files(): FileService.WithRawResponse
 
-        fun fileBatches(): FileBatchService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun fileBatches(): FileBatchService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /vector_stores`, but is otherwise the same as

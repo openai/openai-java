@@ -12,7 +12,6 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
-import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -20,9 +19,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Returned when the Live model delegates work to your application, Responses, or Decisions.
- * Contains delegation metadata and the position on the session timeline where the work was
- * delegated.
+ * Returned when the Live model delegates work to your application or a Responses backend. Contains
+ * delegation metadata and the position on the session timeline where the work was delegated.
  */
 class DelegationCreatedEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -132,31 +130,6 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
-    /**
-     * Returns an immutable snapshot of all present JSON properties, including declared and
-     * additional properties.
-     *
-     * Keys use their JSON names. Declared properties take precedence over additional properties
-     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-     * values are preserved.
-     */
-    fun _allProperties(): Map<String, JsonValue> =
-        collectAllProperties(
-            additionalProperties,
-            "delegation" to this.delegation,
-            "event_id" to this.eventId,
-            "offset_ms" to this.offsetMs,
-            "type" to this.type,
-            "client_event_id" to this.clientEventId,
-        )
-
-    /**
-     * Returns the legacy additional-properties view.
-     *
-     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
-     *   accessor retains its legacy additional-properties behavior.
-     */
-    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -385,7 +358,7 @@ private constructor(
 
         /**
          * The unique ID of the delegation. Use this as delegation_id when replying to client-owned
-         * work or correlating backend events.
+         * work or correlating Responses events.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -393,7 +366,8 @@ private constructor(
         fun id(): String = id.getRequired("id")
 
         /**
-         * Where the Live model delegated the work: `client`, `responses`, or `decisions`.
+         * Where the Live model delegated the work: `client` for your application, or `responses`
+         * for the configured Responses backend.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -450,30 +424,6 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
-        /**
-         * Returns an immutable snapshot of all present JSON properties, including declared and
-         * additional properties.
-         *
-         * Keys use their JSON names. Declared properties take precedence over additional properties
-         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
-         * values are preserved.
-         */
-        fun _allProperties(): Map<String, JsonValue> =
-            collectAllProperties(
-                additionalProperties,
-                "id" to this.id,
-                "target" to this.target,
-                "type" to this.type,
-                "response_id" to this.responseId,
-            )
-
-        /**
-         * Returns the legacy additional-properties view.
-         *
-         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
-         *   This accessor retains its legacy additional-properties behavior.
-         */
-        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -515,7 +465,7 @@ private constructor(
 
             /**
              * The unique ID of the delegation. Use this as delegation_id when replying to
-             * client-owned work or correlating backend events.
+             * client-owned work or correlating Responses events.
              */
             fun id(id: String) = id(JsonField.of(id))
 
@@ -528,7 +478,10 @@ private constructor(
              */
             fun id(id: JsonField<String>) = apply { this.id = id }
 
-            /** Where the Live model delegated the work: `client`, `responses`, or `decisions`. */
+            /**
+             * Where the Live model delegated the work: `client` for your application, or
+             * `responses` for the configured Responses backend.
+             */
             fun target(target: Target) = target(JsonField.of(target))
 
             /**
@@ -668,7 +621,10 @@ private constructor(
                 type.let { if (it == JsonValue.from("delegation")) 1 else 0 } +
                 (if (responseId.asKnown().isPresent) 1 else 0)
 
-        /** Where the Live model delegated the work: `client`, `responses`, or `decisions`. */
+        /**
+         * Where the Live model delegated the work: `client` for your application, or `responses`
+         * for the configured Responses backend.
+         */
         class Target @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
@@ -687,8 +643,6 @@ private constructor(
 
                 @JvmField val RESPONSES = of("responses")
 
-                @JvmField val DECISIONS = of("decisions")
-
                 @JvmStatic fun of(value: String) = Target(JsonField.of(value))
             }
 
@@ -696,7 +650,6 @@ private constructor(
             enum class Known {
                 CLIENT,
                 RESPONSES,
-                DECISIONS,
             }
 
             /**
@@ -711,7 +664,6 @@ private constructor(
             enum class Value {
                 CLIENT,
                 RESPONSES,
-                DECISIONS,
                 /**
                  * An enum member indicating that [Target] was instantiated with an unknown value.
                  */
@@ -729,7 +681,6 @@ private constructor(
                 when (this) {
                     CLIENT -> Value.CLIENT
                     RESPONSES -> Value.RESPONSES
-                    DECISIONS -> Value.DECISIONS
                     else -> Value._UNKNOWN
                 }
 
@@ -746,7 +697,6 @@ private constructor(
                 when (this) {
                     CLIENT -> Known.CLIENT
                     RESPONSES -> Known.RESPONSES
-                    DECISIONS -> Known.DECISIONS
                     else -> throw OpenAIInvalidDataException("Unknown Target: $value")
                 }
 

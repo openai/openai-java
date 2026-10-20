@@ -32,7 +32,6 @@ internal class ImageGenCompletedEventTest {
                         .totalTokens(0L)
                         .build()
                 )
-                .safetyIdentifier("safety_identifier")
                 .build()
 
         assertThat(imageGenCompletedEvent.b64Json()).isEqualTo("b64_json")
@@ -57,7 +56,6 @@ internal class ImageGenCompletedEventTest {
                     .totalTokens(0L)
                     .build()
             )
-        assertThat(imageGenCompletedEvent.safetyIdentifier()).contains("safety_identifier")
     }
 
     @Test
@@ -84,7 +82,6 @@ internal class ImageGenCompletedEventTest {
                         .totalTokens(0L)
                         .build()
                 )
-                .safetyIdentifier("safety_identifier")
                 .build()
 
         val roundtrippedImageGenCompletedEvent =

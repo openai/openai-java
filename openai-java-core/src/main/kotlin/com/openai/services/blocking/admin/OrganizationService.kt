@@ -33,44 +33,31 @@ interface OrganizationService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationService
 
     /** List user actions and configuration changes within this organization. */
-    fun auditLogs(): AuditLogService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun auditLogs(): AuditLogService
 
-    fun adminApiKeys(): AdminApiKeyService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun adminApiKeys(): AdminApiKeyService
 
-    fun usage(): UsageService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun usage(): UsageService
 
-    fun invites(): InviteService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun invites(): InviteService
 
-    fun users(): UserService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun users(): UserService
 
-    fun groups(): GroupService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun groups(): GroupService
 
-    fun roles(): RoleService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun roles(): RoleService
 
-    fun dataRetention(): DataRetentionService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun dataRetention(): DataRetentionService
 
-    fun externalStorage(): ExternalStorageService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun externalStorage(): ExternalStorageService
 
-    fun spendLimit(): SpendLimitService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun spendLimit(): SpendLimitService
 
-    fun spendAlerts(): SpendAlertService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun spendAlerts(): SpendAlertService
 
-    fun certificates(): CertificateService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun certificates(): CertificateService
 
-    fun projects(): ProjectService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun projects(): ProjectService
 
     /**
      * A view of [OrganizationService] that provides access to raw HTTP responses for each method.
@@ -87,69 +74,30 @@ interface OrganizationService {
         ): OrganizationService.WithRawResponse
 
         /** List user actions and configuration changes within this organization. */
-        fun auditLogs(): AuditLogService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun auditLogs(): AuditLogService.WithRawResponse
 
-        fun adminApiKeys(): AdminApiKeyService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun adminApiKeys(): AdminApiKeyService.WithRawResponse
 
-        fun usage(): UsageService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun usage(): UsageService.WithRawResponse
 
-        fun invites(): InviteService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun invites(): InviteService.WithRawResponse
 
-        fun users(): UserService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun users(): UserService.WithRawResponse
 
-        fun groups(): GroupService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun groups(): GroupService.WithRawResponse
 
-        fun roles(): RoleService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun roles(): RoleService.WithRawResponse
 
-        fun dataRetention(): DataRetentionService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun dataRetention(): DataRetentionService.WithRawResponse
 
-        fun externalStorage(): ExternalStorageService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun externalStorage(): ExternalStorageService.WithRawResponse
 
-        fun spendLimit(): SpendLimitService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun spendLimit(): SpendLimitService.WithRawResponse
 
-        fun spendAlerts(): SpendAlertService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun spendAlerts(): SpendAlertService.WithRawResponse
 
-        fun certificates(): CertificateService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun certificates(): CertificateService.WithRawResponse
 
-        fun projects(): ProjectService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun projects(): ProjectService.WithRawResponse
     }
 }

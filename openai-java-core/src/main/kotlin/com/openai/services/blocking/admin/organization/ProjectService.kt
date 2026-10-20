@@ -41,41 +41,29 @@ interface ProjectService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ProjectService
 
-    fun users(): UserService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun users(): UserService
 
-    fun serviceAccounts(): ServiceAccountService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun serviceAccounts(): ServiceAccountService
 
-    fun apiKeys(): ApiKeyService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun apiKeys(): ApiKeyService
 
-    fun rateLimits(): RateLimitService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun rateLimits(): RateLimitService
 
-    fun modelPermissions(): ModelPermissionService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun modelPermissions(): ModelPermissionService
 
-    fun hostedToolPermissions(): HostedToolPermissionService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun hostedToolPermissions(): HostedToolPermissionService
 
-    fun groups(): GroupService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun groups(): GroupService
 
-    fun roles(): RoleService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun roles(): RoleService
 
-    fun dataRetention(): DataRetentionService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun dataRetention(): DataRetentionService
 
-    fun spendLimit(): SpendLimitService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun spendLimit(): SpendLimitService
 
-    fun spendAlerts(): SpendAlertService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun spendAlerts(): SpendAlertService
 
-    fun certificates(): CertificateService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun certificates(): CertificateService
 
     /**
      * Create a new project in the organization. Projects can be created and archived, but cannot be
@@ -203,65 +191,29 @@ interface ProjectService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ProjectService.WithRawResponse
 
-        fun users(): UserService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun users(): UserService.WithRawResponse
 
-        fun serviceAccounts(): ServiceAccountService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun serviceAccounts(): ServiceAccountService.WithRawResponse
 
-        fun apiKeys(): ApiKeyService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun apiKeys(): ApiKeyService.WithRawResponse
 
-        fun rateLimits(): RateLimitService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun rateLimits(): RateLimitService.WithRawResponse
 
-        fun modelPermissions(): ModelPermissionService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun modelPermissions(): ModelPermissionService.WithRawResponse
 
-        fun hostedToolPermissions(): HostedToolPermissionService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun hostedToolPermissions(): HostedToolPermissionService.WithRawResponse
 
-        fun groups(): GroupService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun groups(): GroupService.WithRawResponse
 
-        fun roles(): RoleService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun roles(): RoleService.WithRawResponse
 
-        fun dataRetention(): DataRetentionService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun dataRetention(): DataRetentionService.WithRawResponse
 
-        fun spendLimit(): SpendLimitService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun spendLimit(): SpendLimitService.WithRawResponse
 
-        fun spendAlerts(): SpendAlertService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun spendAlerts(): SpendAlertService.WithRawResponse
 
-        fun certificates(): CertificateService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun certificates(): CertificateService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /organization/projects`, but is otherwise the same

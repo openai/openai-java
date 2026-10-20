@@ -62,22 +62,6 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseServiceAsync =
         ResponseServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun connectWebSocket(
-        options: com.openai.core.http.WebSocketOptions,
-        requestOptions: com.openai.core.RequestOptions,
-    ): CompletableFuture<
-        com.openai.core.http.WebSocketConnection<
-            com.openai.models.beta.responses.BetaResponsesClientEvent,
-            com.openai.models.beta.responses.BetaResponsesServerEvent,
-        >
-    > =
-        com.openai.core.http.WebSocketConnections.connectAsync(
-            com.openai.models.beta.responses.ResponseWebSocketBinding.create(),
-            clientOptions,
-            options,
-            requestOptions,
-        )
-
     /** Create and manage model responses. */
     override fun inputItems(): InputItemServiceAsync = inputItems
 
@@ -123,8 +107,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // delete /responses/{response_id}?beta=true
-        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
-        withRawResponse().delete(params, requestOptions).thenApply { it.close() }.thenAccept {}
+        withRawResponse().delete(params, requestOptions).thenAccept {}
 
     override fun cancel(
         params: ResponseCancelParams,

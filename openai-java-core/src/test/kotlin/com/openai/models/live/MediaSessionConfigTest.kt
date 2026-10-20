@@ -50,21 +50,6 @@ internal class MediaSessionConfigTest {
                 )
                 .instructions("instructions")
                 .store(true)
-                .addTrigger(
-                    DecisionTrigger.builder()
-                        .decisions(
-                            DecisionTrigger.Decisions.builder()
-                                .addQuestion(
-                                    DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
-                                        .name("name")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                        .build()
-                )
                 .build()
 
         assertThat(mediaSessionConfig.model()).isEqualTo(MediaSessionConfig.Model.GPT_LIVE_1)
@@ -107,22 +92,6 @@ internal class MediaSessionConfigTest {
             )
         assertThat(mediaSessionConfig.instructions()).contains("instructions")
         assertThat(mediaSessionConfig.store()).contains(true)
-        assertThat(mediaSessionConfig.triggers().getOrNull())
-            .containsExactly(
-                DecisionTrigger.builder()
-                    .decisions(
-                        DecisionTrigger.Decisions.builder()
-                            .addQuestion(
-                                DecisionTrigger.Decisions.Question.Predicate.builder()
-                                    .instructions("instructions")
-                                    .name("name")
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                    .build()
-            )
     }
 
     @Test
@@ -166,21 +135,6 @@ internal class MediaSessionConfigTest {
                 )
                 .instructions("instructions")
                 .store(true)
-                .addTrigger(
-                    DecisionTrigger.builder()
-                        .decisions(
-                            DecisionTrigger.Decisions.builder()
-                                .addQuestion(
-                                    DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
-                                        .name("name")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                        .build()
-                )
                 .build()
 
         val roundtrippedMediaSessionConfig =

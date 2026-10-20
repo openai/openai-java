@@ -24,20 +24,16 @@ interface AudioServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AudioServiceAsync
 
     /** Turn audio into text or text into audio. */
-    fun transcriptions(): TranscriptionServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun transcriptions(): TranscriptionServiceAsync
 
     /** Turn audio into text or text into audio. */
-    fun translations(): TranslationServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun translations(): TranslationServiceAsync
 
     /** Turn audio into text or text into audio. */
-    fun speech(): SpeechServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun speech(): SpeechServiceAsync
 
     /** Turn audio into text or text into audio. */
-    fun voices(): VoiceServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun voices(): VoiceServiceAsync
 
     /** A view of [AudioServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -52,27 +48,15 @@ interface AudioServiceAsync {
         ): AudioServiceAsync.WithRawResponse
 
         /** Turn audio into text or text into audio. */
-        fun transcriptions(): TranscriptionServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun transcriptions(): TranscriptionServiceAsync.WithRawResponse
 
         /** Turn audio into text or text into audio. */
-        fun translations(): TranslationServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun translations(): TranslationServiceAsync.WithRawResponse
 
         /** Turn audio into text or text into audio. */
-        fun speech(): SpeechServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun speech(): SpeechServiceAsync.WithRawResponse
 
         /** Turn audio into text or text into audio. */
-        fun voices(): VoiceServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun voices(): VoiceServiceAsync.WithRawResponse
     }
 }

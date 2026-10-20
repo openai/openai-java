@@ -51,21 +51,6 @@ internal class SessionResourceTest {
                 )
                 .instructions("instructions")
                 .store(true)
-                .addTrigger(
-                    DecisionTrigger.builder()
-                        .decisions(
-                            DecisionTrigger.Decisions.builder()
-                                .addQuestion(
-                                    DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
-                                        .name("name")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                        .build()
-                )
                 .build()
 
         assertThat(sessionResource.id()).isEqualTo("id")
@@ -111,22 +96,6 @@ internal class SessionResourceTest {
             )
         assertThat(sessionResource.instructions()).contains("instructions")
         assertThat(sessionResource.store()).contains(true)
-        assertThat(sessionResource.triggers().getOrNull())
-            .containsExactly(
-                DecisionTrigger.builder()
-                    .decisions(
-                        DecisionTrigger.Decisions.builder()
-                            .addQuestion(
-                                DecisionTrigger.Decisions.Question.Predicate.builder()
-                                    .instructions("instructions")
-                                    .name("name")
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                    .build()
-            )
     }
 
     @Test
@@ -171,21 +140,6 @@ internal class SessionResourceTest {
                 )
                 .instructions("instructions")
                 .store(true)
-                .addTrigger(
-                    DecisionTrigger.builder()
-                        .decisions(
-                            DecisionTrigger.Decisions.builder()
-                                .addQuestion(
-                                    DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
-                                        .name("name")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                        .build()
-                )
                 .build()
 
         val roundtrippedSessionResource =

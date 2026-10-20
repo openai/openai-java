@@ -23,18 +23,14 @@ interface FineTuningService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): FineTuningService
 
-    fun methods(): MethodService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun methods(): MethodService
 
     /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-    fun jobs(): JobService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun jobs(): JobService
 
-    fun checkpoints(): CheckpointService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun checkpoints(): CheckpointService
 
-    fun alpha(): AlphaService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun alpha(): AlphaService
 
     /** A view of [FineTuningService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -48,25 +44,13 @@ interface FineTuningService {
             modifier: Consumer<ClientOptions.Builder>
         ): FineTuningService.WithRawResponse
 
-        fun methods(): MethodService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun methods(): MethodService.WithRawResponse
 
         /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-        fun jobs(): JobService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun jobs(): JobService.WithRawResponse
 
-        fun checkpoints(): CheckpointService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun checkpoints(): CheckpointService.WithRawResponse
 
-        fun alpha(): AlphaService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun alpha(): AlphaService.WithRawResponse
     }
 }

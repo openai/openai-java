@@ -20,8 +20,7 @@ interface GraderServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): GraderServiceAsync
 
-    fun graderModels(): GraderModelServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun graderModels(): GraderModelServiceAsync
 
     /**
      * A view of [GraderServiceAsync] that provides access to raw HTTP responses for each method.
@@ -37,9 +36,6 @@ interface GraderServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): GraderServiceAsync.WithRawResponse
 
-        fun graderModels(): GraderModelServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun graderModels(): GraderModelServiceAsync.WithRawResponse
     }
 }

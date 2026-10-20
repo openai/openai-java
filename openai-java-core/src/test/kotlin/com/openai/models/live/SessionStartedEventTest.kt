@@ -45,21 +45,6 @@ internal class SessionStartedEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
-                        .addTrigger(
-                            DecisionTrigger.builder()
-                                .decisions(
-                                    DecisionTrigger.Decisions.builder()
-                                        .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                                .build()
-                        )
                         .build()
                 )
                 .clientEventId("evt_start_001")
@@ -98,21 +83,6 @@ internal class SessionStartedEventTest {
                         "Help the caller plan a restaurant reservation. Confirm details before booking."
                     )
                     .store(true)
-                    .addTrigger(
-                        DecisionTrigger.builder()
-                            .decisions(
-                                DecisionTrigger.Decisions.builder()
-                                    .addQuestion(
-                                        DecisionTrigger.Decisions.Question.Predicate.builder()
-                                            .instructions("instructions")
-                                            .name("name")
-                                            .build()
-                                    )
-                                    .build()
-                            )
-                            .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                            .build()
-                    )
                     .build()
             )
         assertThat(sessionStartedEvent.clientEventId()).contains("evt_start_001")
@@ -155,21 +125,6 @@ internal class SessionStartedEventTest {
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
                         )
                         .store(true)
-                        .addTrigger(
-                            DecisionTrigger.builder()
-                                .decisions(
-                                    DecisionTrigger.Decisions.builder()
-                                        .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                                .build()
-                        )
                         .build()
                 )
                 .clientEventId("evt_start_001")

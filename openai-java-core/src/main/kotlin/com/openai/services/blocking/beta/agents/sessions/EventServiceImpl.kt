@@ -47,7 +47,7 @@ class EventServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     override fun create(params: EventCreateParams, requestOptions: RequestOptions) {
         // post /agents/sessions/{session_id}/events
-        withRawResponse().create(params, requestOptions).close()
+        withRawResponse().create(params, requestOptions)
     }
 
     override fun streamStreaming(

@@ -46,8 +46,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /live/sessions/{session_id}/accept
-        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
-        withRawResponse().accept(params, requestOptions).thenApply { it.close() }.thenAccept {}
+        withRawResponse().accept(params, requestOptions).thenAccept {}
 
     override fun downloadRecording(
         params: SessionDownloadRecordingParams,
@@ -68,24 +67,21 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /live/sessions/{session_id}/hangup
-        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
-        withRawResponse().hangup(params, requestOptions).thenApply { it.close() }.thenAccept {}
+        withRawResponse().hangup(params, requestOptions).thenAccept {}
 
     override fun refer(
         params: SessionReferParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /live/sessions/{session_id}/refer
-        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
-        withRawResponse().refer(params, requestOptions).thenApply { it.close() }.thenAccept {}
+        withRawResponse().refer(params, requestOptions).thenAccept {}
 
     override fun reject(
         params: SessionRejectParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /live/sessions/{session_id}/reject
-        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
-        withRawResponse().reject(params, requestOptions).thenApply { it.close() }.thenAccept {}
+        withRawResponse().reject(params, requestOptions).thenAccept {}
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         SessionServiceAsync.WithRawResponse {

@@ -30,8 +30,7 @@ interface UserServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserServiceAsync
 
-    fun roles(): RoleServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun roles(): RoleServiceAsync
 
     /** Retrieves a user by their identifier. */
     fun retrieve(userId: String): CompletableFuture<OrganizationUser> =
@@ -164,10 +163,7 @@ interface UserServiceAsync {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserServiceAsync.WithRawResponse
 
-        fun roles(): RoleServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun roles(): RoleServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `get /organization/users/{user_id}`, but is otherwise the

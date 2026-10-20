@@ -30,8 +30,7 @@ interface GroupService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): GroupService
 
-    fun roles(): RoleService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun roles(): RoleService
 
     /** Grants a group access to a project. */
     fun create(projectId: String, params: GroupCreateParams): ProjectGroup =
@@ -132,10 +131,7 @@ interface GroupService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): GroupService.WithRawResponse
 
-        fun roles(): RoleService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun roles(): RoleService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /organization/projects/{project_id}/groups`, but is

@@ -24,24 +24,19 @@ interface BetaService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService
 
-    fun agents(): AgentService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun agents(): AgentService
 
     /** Create and manage model responses. */
-    fun responses(): ResponseService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun responses(): ResponseService
 
-    fun chatkit(): ChatKitService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun chatkit(): ChatKitService
 
     /** Build Assistants that can call models and use tools. */
-    fun assistants(): AssistantService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun assistants(): AssistantService
 
     /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-    fun threads(): ThreadService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun threads(): ThreadService
 
     /** A view of [BetaService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -53,33 +48,18 @@ interface BetaService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService.WithRawResponse
 
-        fun agents(): AgentService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun agents(): AgentService.WithRawResponse
 
         /** Create and manage model responses. */
-        fun responses(): ResponseService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun responses(): ResponseService.WithRawResponse
 
-        fun chatkit(): ChatKitService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun chatkit(): ChatKitService.WithRawResponse
 
         /** Build Assistants that can call models and use tools. */
-        fun assistants(): AssistantService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun assistants(): AssistantService.WithRawResponse
 
         /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-        fun threads(): ThreadService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun threads(): ThreadService.WithRawResponse
     }
 }

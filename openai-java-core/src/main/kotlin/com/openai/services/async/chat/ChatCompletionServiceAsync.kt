@@ -37,8 +37,7 @@ interface ChatCompletionServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatCompletionServiceAsync
 
     /** Given a list of messages comprising a conversation, the model will return a response. */
-    fun messages(): MessageServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun messages(): MessageServiceAsync
 
     /**
      * **Starting a new project?** We recommend trying
@@ -244,10 +243,7 @@ interface ChatCompletionServiceAsync {
         ): ChatCompletionServiceAsync.WithRawResponse
 
         /** Given a list of messages comprising a conversation, the model will return a response. */
-        fun messages(): MessageServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun messages(): MessageServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /chat/completions`, but is otherwise the same as

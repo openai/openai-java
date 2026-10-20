@@ -22,14 +22,11 @@ interface RealtimeServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): RealtimeServiceAsync
 
-    fun clientSecrets(): ClientSecretServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun clientSecrets(): ClientSecretServiceAsync
 
-    fun calls(): CallServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun calls(): CallServiceAsync
 
-    fun translations(): TranslationServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun translations(): TranslationServiceAsync
 
     /**
      * A view of [RealtimeServiceAsync] that provides access to raw HTTP responses for each method.
@@ -45,19 +42,10 @@ interface RealtimeServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): RealtimeServiceAsync.WithRawResponse
 
-        fun clientSecrets(): ClientSecretServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun clientSecrets(): ClientSecretServiceAsync.WithRawResponse
 
-        fun calls(): CallServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun calls(): CallServiceAsync.WithRawResponse
 
-        fun translations(): TranslationServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun translations(): TranslationServiceAsync.WithRawResponse
     }
 }

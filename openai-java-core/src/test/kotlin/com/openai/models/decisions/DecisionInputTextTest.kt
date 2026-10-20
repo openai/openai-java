@@ -11,25 +11,15 @@ internal class DecisionInputTextTest {
 
     @Test
     fun create() {
-        val decisionInputText =
-            DecisionInputText.builder()
-                .text("text")
-                .promptCacheBreakpoint(DecisionPromptCacheBreakpoint.builder().build())
-                .build()
+        val decisionInputText = DecisionInputText.builder().text("text").build()
 
         assertThat(decisionInputText.text()).isEqualTo("text")
-        assertThat(decisionInputText.promptCacheBreakpoint())
-            .contains(DecisionPromptCacheBreakpoint.builder().build())
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val decisionInputText =
-            DecisionInputText.builder()
-                .text("text")
-                .promptCacheBreakpoint(DecisionPromptCacheBreakpoint.builder().build())
-                .build()
+        val decisionInputText = DecisionInputText.builder().text("text").build()
 
         val roundtrippedDecisionInputText =
             jsonMapper.readValue(

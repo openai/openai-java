@@ -35,8 +35,7 @@ interface RunService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService
 
     /** Manage and run evals in the OpenAI platform. */
-    fun outputItems(): OutputItemService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+    fun outputItems(): OutputItemService
 
     /**
      * Kicks off a new run for a given evaluation, specifying the data source, and what model
@@ -161,10 +160,7 @@ interface RunService {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService.WithRawResponse
 
         /** Manage and run evals in the OpenAI platform. */
-        fun outputItems(): OutputItemService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
+        fun outputItems(): OutputItemService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /evals/{eval_id}/runs`, but is otherwise the same
