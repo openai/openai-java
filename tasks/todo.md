@@ -35,9 +35,9 @@ separate publications or platform quotas.
 
 | Retained review | Published head | Current disposition |
 | --- | --- | --- |
-| Runtime2566856 | `75f006fe69324b89ea538f08869646523505ade9` | CI8827390 SUCCESS; actual-human security/helper review remains required |
-| Models2572073 | `98ba664f260b092f2a37a94882748ba8cb523cde` | Published;2,022-class API proof,356 original tests and15 source consumers pass; hosted gates/human review pending |
-| Test fidelity2568349 | `36fc5903a6f5cf0ee33f8ee6bbf3a4d648670541` | Published on model parent;2,991 units, genuine generation, production-byte preservation and exact ownership tests pass; hosted gates/human review pending |
+| Runtime2566856 | `75f006fe69324b89ea538f08869646523505ade9` | CI8827390 SUCCESS; Mark Stuart human review REQUESTED |
+| Models2572073 | `98ba664f260b092f2a37a94882748ba8cb523cde` | Published;2,022-class API proof,356 original tests and15 source consumers pass; CI8829256 SUCCESS; Mark Stuart human review REQUESTED |
+| Test fidelity2568349 | `36fc5903a6f5cf0ee33f8ee6bbf3a4d648670541` | Published on model parent;2,991 units, genuine generation, production-byte preservation and exact ownership tests pass; CI8829350 SUCCESS; Dan Piet human review REQUESTED |
 
 Six source reviews are closed without merge:2565512/2568196/2571652 and
 2566858/2568122/2568148. Only three transition compiler reviews remain open.

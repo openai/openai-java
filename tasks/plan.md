@@ -391,6 +391,20 @@ runtime. No full-SDK compilation or general Kotlin-metadata equality is claimed.
 The two source publications ran all normal push hooks using their actual stack
 bases. The initial stale GitHub-master hook reference and a formatting-only failure
 were repaired; no hook, required CI or human gate was skipped.
+Merge-readiness update, 2026-10-20: all three published heads have SUCCESS
+monorepo CI: runtime75f006 / Buildkite8827390, models98ba664 / Buildkite8829256,
+and test-fidelity36fc590 / Buildkite8829350. Full native review bodies, inline
+threads and conversation surfaces were read again: runtime/model threads are
+resolved and test-fidelity has none. Current-head security review is clean on
+runtime/models; the test-fidelity security review was still running. Code-review
+summaries on runtime/models still name older heads, so current-head completion is
+not inferred. No actual-human approval of the expanded heads is established.
+Direct native human review requests are now REQUESTED immediately: Mark Stuart
+for runtime/model and Dan Piet for test fidelity. Existing SDK team requests and
+the root SDK review post are retained. Request acceptance does not establish
+notification delivery or completed review. Protected merging follows the required
+current-head gates; no merge, override or SDK promotion is claimed.
+
 Separately assigned pre-existing Delta 2561775 remains at `b7db5ca57cf3` under its
 existing typed-map compatibility/release hold. Buildkite 8755059's only failed job
 ran out of worker disk during API-reference dependency installation. A new native
