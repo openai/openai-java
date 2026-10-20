@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.videos
 
@@ -28,6 +28,7 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 
 /** Create a new video generation job from a prompt and optional reference assets. */
+@Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
 class VideoCreateParams
 private constructor(
     private val body: Body,
@@ -759,7 +760,18 @@ private constructor(
         private val stream: InputStream? = null,
         private val imageInputReferenceParam: ImageInputReferenceParam? = null,
         private val _json: JsonValue? = null,
-    ) {
+    ) : com.openai.core.http.MultipartInputStreamProvider {
+
+        @JvmSynthetic
+        override fun collectMultipartInputStreams(
+            consumer: (java.io.InputStream) -> kotlin.Unit
+        ): kotlin.Unit {
+            when {
+                this.stream != null -> consumer(this.stream)
+                this.imageInputReferenceParam != null -> {}
+                else -> {}
+            }
+        }
 
         /** Optional reference asset upload or reference object that guides generation. */
         fun stream(): Optional<InputStream> = Optional.ofNullable(stream)
@@ -923,7 +935,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown InputReference: $json")
+                throw OpenAIInvalidDataException("Unknown InputReference")
             }
         }
 

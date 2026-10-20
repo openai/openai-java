@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -195,7 +196,7 @@ private constructor(
 
     /**
      * Reference to a prompt template and its variables.
-     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+     * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -334,6 +335,38 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "audio" to this.audio,
+            "conversation" to this.conversation,
+            "input" to this.input,
+            "instructions" to this.instructions,
+            "max_output_tokens" to this.maxOutputTokens,
+            "metadata" to this.metadata,
+            "output_modalities" to this.outputModalities,
+            "parallel_tool_calls" to this.parallelToolCalls,
+            "prompt" to this.prompt,
+            "reasoning" to this.reasoning,
+            "tool_choice" to this.toolChoice,
+            "tools" to this.tools,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -452,7 +485,7 @@ private constructor(
          */
         fun addInput(input: ConversationItem) = apply {
             this.input =
-                (this.input ?: JsonField.of(mutableListOf())).also {
+                (this.input?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("input", it).add(input)
                 }
         }
@@ -657,9 +690,8 @@ private constructor(
          */
         fun addOutputModality(outputModality: OutputModality) = apply {
             outputModalities =
-                (outputModalities ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("outputModalities", it).add(outputModality)
-                }
+                (outputModalities?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("outputModalities", it).add(outputModality) }
         }
 
         /**
@@ -682,7 +714,7 @@ private constructor(
 
         /**
          * Reference to a prompt template and its variables.
-         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
          */
         fun prompt(prompt: ResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
 
@@ -757,7 +789,9 @@ private constructor(
          */
         fun addTool(tool: Tool) = apply {
             tools =
-                (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
+                (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("tools", it).add(tool)
+                }
         }
 
         /** Alias for calling [addTool] with `Tool.ofRealtimeFunction(realtimeFunction)`. */
@@ -1183,7 +1217,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown MaxOutputTokens: $json")
+                throw OpenAIInvalidDataException("Unknown MaxOutputTokens")
             }
         }
 
@@ -1249,6 +1283,23 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -1278,6 +1329,11 @@ private constructor(
 
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
+            }
+
+            /** Adds a string-valued property. */
+            fun putProperty(key: String, value: String) = apply {
+                putAdditionalProperty(key, JsonValue.from(value))
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1727,7 +1783,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ToolChoice: $json")
+                throw OpenAIInvalidDataException("Unknown ToolChoice")
             }
         }
 
@@ -1784,7 +1840,7 @@ private constructor(
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
-     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      */
     @JsonDeserialize(using = Tool.Deserializer::class)
     @JsonSerialize(using = Tool.Serializer::class)
@@ -1801,7 +1857,7 @@ private constructor(
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
-         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
         fun realtimeResponseCreateMcp(): Optional<RealtimeResponseCreateMcpTool> =
             Optional.ofNullable(realtimeResponseCreateMcp)
@@ -1816,7 +1872,7 @@ private constructor(
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
          * servers.
-         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          */
         fun asRealtimeResponseCreateMcp(): RealtimeResponseCreateMcpTool =
             realtimeResponseCreateMcp.getOrThrow("realtimeResponseCreateMcp")
@@ -1951,7 +2007,7 @@ private constructor(
             /**
              * Give the model access to additional tools via remote Model Context Protocol (MCP)
              * servers.
-             * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+             * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
              */
             @JvmStatic
             fun ofRealtimeResponseCreateMcp(
@@ -1967,7 +2023,7 @@ private constructor(
             /**
              * Give the model access to additional tools via remote Model Context Protocol (MCP)
              * servers.
-             * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+             * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
              */
             fun visitRealtimeResponseCreateMcp(
                 realtimeResponseCreateMcp: RealtimeResponseCreateMcpTool
@@ -1983,7 +2039,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Tool: $json")
+                throw OpenAIInvalidDataException("Unknown Tool")
             }
         }
 

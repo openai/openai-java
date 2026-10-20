@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.vectorstores.filebatches
 
@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -90,8 +91,8 @@ private constructor(
 
     /**
      * The ID of the
-     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
-     * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+     * [vector store](https://developers.openai.com/api/reference/resources/vector_stores) that the
+     * [File](https://developers.openai.com/api/reference/resources/files) is attached to.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -142,6 +143,32 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "id" to this.id,
+            "created_at" to this.createdAt,
+            "file_counts" to this.fileCounts,
+            "object" to this.object_,
+            "status" to this.status,
+            "vector_store_id" to this.vectorStoreId,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -251,8 +278,8 @@ private constructor(
 
         /**
          * The ID of the
-         * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that
-         * the [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+         * [vector store](https://developers.openai.com/api/reference/resources/vector_stores) that
+         * the [File](https://developers.openai.com/api/reference/resources/files) is attached to.
          */
         fun vectorStoreId(vectorStoreId: String) = vectorStoreId(JsonField.of(vectorStoreId))
 
@@ -333,7 +360,7 @@ private constructor(
         createdAt()
         fileCounts().validate()
         _object_().let {
-            if (it != JsonValue.from("vector_store.files_batch")) {
+            if (!isKnownObject()) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
             }
         }
@@ -360,9 +387,15 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (fileCounts.asKnown().getOrNull()?.validity() ?: 0) +
-            object_.let { if (it == JsonValue.from("vector_store.files_batch")) 1 else 0 } +
+            (if (isKnownObject()) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (if (vectorStoreId.asKnown().isPresent) 1 else 0)
+
+    // Temporary compatibility until the next major corrects the generated singleton.
+    // Preserve the legacy builder default and the raw value used for serialization.
+    private fun isKnownObject(): Boolean =
+        object_ == JsonValue.from("vector_store.files_batch") ||
+            object_ == JsonValue.from("vector_store.file_batch")
 
     class FileCounts
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -470,6 +503,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "cancelled" to this.cancelled,
+                "completed" to this.completed,
+                "failed" to this.failed,
+                "in_progress" to this.inProgress,
+                "total" to this.total,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =

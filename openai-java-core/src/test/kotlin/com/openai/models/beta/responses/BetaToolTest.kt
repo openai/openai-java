@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -26,6 +26,7 @@ internal class BetaToolTest {
                 )
                 .strict(true)
                 .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .outputSchema(
@@ -69,6 +70,7 @@ internal class BetaToolTest {
                     )
                     .strict(true)
                     .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
+                    .async(true)
                     .deferLoading(true)
                     .description("description")
                     .outputSchema(
@@ -267,6 +269,7 @@ internal class BetaToolTest {
         val webSearch =
             BetaWebSearchTool.builder()
                 .type(BetaWebSearchTool.Type.WEB_SEARCH)
+                .externalWebAccess(true)
                 .filters(BetaWebSearchTool.Filters.builder().addAllowedDomain("string").build())
                 .searchContextSize(BetaWebSearchTool.SearchContextSize.LOW)
                 .userLocation(
@@ -307,6 +310,7 @@ internal class BetaToolTest {
             BetaTool.ofWebSearch(
                 BetaWebSearchTool.builder()
                     .type(BetaWebSearchTool.Type.WEB_SEARCH)
+                    .externalWebAccess(true)
                     .filters(BetaWebSearchTool.Filters.builder().addAllowedDomain("string").build())
                     .searchContextSize(BetaWebSearchTool.SearchContextSize.LOW)
                     .userLocation(
@@ -673,6 +677,7 @@ internal class BetaToolTest {
             BetaCustomTool.builder()
                 .name("name")
                 .addAllowedCaller(BetaCustomTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .formatText()
@@ -706,6 +711,7 @@ internal class BetaToolTest {
                 BetaCustomTool.builder()
                     .name("name")
                     .addAllowedCaller(BetaCustomTool.AllowedCaller.DIRECT)
+                    .async(true)
                     .deferLoading(true)
                     .description("description")
                     .formatText()
@@ -725,12 +731,13 @@ internal class BetaToolTest {
     fun ofNamespace() {
         val namespace =
             BetaNamespaceTool.builder()
-                .description("x")
+                .description("description")
                 .name("x")
                 .addTool(
                     BetaNamespaceTool.Tool.Function.builder()
                         .name("name")
                         .addAllowedCaller(BetaNamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -770,12 +777,13 @@ internal class BetaToolTest {
         val betaTool =
             BetaTool.ofNamespace(
                 BetaNamespaceTool.builder()
-                    .description("x")
+                    .description("description")
                     .name("x")
                     .addTool(
                         BetaNamespaceTool.Tool.Function.builder()
                             .name("name")
                             .addAllowedCaller(BetaNamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(

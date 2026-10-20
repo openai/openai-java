@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.serviceaccounts.apikeys
 
@@ -11,9 +11,12 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 class ApiKeyCreateResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -23,6 +26,7 @@ private constructor(
     private val name: JsonField<String>,
     private val object_: JsonValue,
     private val value: JsonField<String>,
+    private val expiresAt: JsonField<Long>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -33,7 +37,8 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("value") @ExcludeMissing value: JsonField<String> = JsonMissing.of(),
-    ) : this(id, createdAt, name, object_, value, mutableMapOf())
+        @JsonProperty("expires_at") @ExcludeMissing expiresAt: JsonField<Long> = JsonMissing.of(),
+    ) : this(id, createdAt, name, object_, value, expiresAt, mutableMapOf())
 
     /**
      * The identifier of the API key.
@@ -81,6 +86,14 @@ private constructor(
     fun value(): String = value.getRequired("value")
 
     /**
+     * The Unix timestamp (in seconds) when the API key expires, or null if it does not expire.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -108,11 +121,44 @@ private constructor(
      */
     @JsonProperty("value") @ExcludeMissing fun _value(): JsonField<String> = value
 
+    /**
+     * Returns the raw JSON value of [expiresAt].
+     *
+     * Unlike [expiresAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "id" to this.id,
+            "created_at" to this.createdAt,
+            "name" to this.name,
+            "object" to this.object_,
+            "value" to this.value,
+            "expires_at" to this.expiresAt,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -145,6 +191,7 @@ private constructor(
         private var object_: JsonValue =
             JsonValue.from("organization.project.service_account.api_key")
         private var value: JsonField<String>? = null
+        private var expiresAt: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -154,6 +201,7 @@ private constructor(
             name = apiKeyCreateResponse.name
             object_ = apiKeyCreateResponse.object_
             value = apiKeyCreateResponse.value
+            expiresAt = apiKeyCreateResponse.expiresAt
             additionalProperties = apiKeyCreateResponse.additionalProperties.toMutableMap()
         }
 
@@ -215,6 +263,29 @@ private constructor(
          */
         fun value(value: JsonField<String>) = apply { this.value = value }
 
+        /**
+         * The Unix timestamp (in seconds) when the API key expires, or null if it does not expire.
+         */
+        fun expiresAt(expiresAt: Long?) = expiresAt(JsonField.ofNullable(expiresAt))
+
+        /**
+         * Alias for [Builder.expiresAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun expiresAt(expiresAt: Long) = expiresAt(expiresAt as Long?)
+
+        /** Alias for calling [Builder.expiresAt] with `expiresAt.orElse(null)`. */
+        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.getOrNull())
+
+        /**
+         * Sets [Builder.expiresAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -256,6 +327,7 @@ private constructor(
                 checkRequired("name", name),
                 object_,
                 checkRequired("value", value),
+                expiresAt,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -284,6 +356,7 @@ private constructor(
             }
         }
         value()
+        expiresAt()
         validated = true
     }
 
@@ -308,7 +381,8 @@ private constructor(
             object_.let {
                 if (it == JsonValue.from("organization.project.service_account.api_key")) 1 else 0
             } +
-            (if (value.asKnown().isPresent) 1 else 0)
+            (if (value.asKnown().isPresent) 1 else 0) +
+            (if (expiresAt.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -321,15 +395,16 @@ private constructor(
             name == other.name &&
             object_ == other.object_ &&
             value == other.value &&
+            expiresAt == other.expiresAt &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, createdAt, name, object_, value, additionalProperties)
+        Objects.hash(id, createdAt, name, object_, value, expiresAt, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ApiKeyCreateResponse{id=$id, createdAt=$createdAt, name=$name, object_=$object_, value=$value, additionalProperties=$additionalProperties}"
+        "ApiKeyCreateResponse{id=$id, createdAt=$createdAt, name=$name, object_=$object_, value=$value, expiresAt=$expiresAt, additionalProperties=$additionalProperties}"
 }

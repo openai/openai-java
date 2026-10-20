@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.vectorstores.files
 
@@ -15,7 +15,8 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * Delete a vector store file. This will remove the file from the vector store but the file itself
  * will not be deleted. To delete the file, use the
- * [delete file](https://platform.openai.com/docs/api-reference/files/delete) endpoint.
+ * [delete file](https://developers.openai.com/api/reference/resources/files/methods/delete)
+ * endpoint.
  */
 class FileDeleteParams
 private constructor(

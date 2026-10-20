@@ -1,7 +1,7 @@
 package com.openai.core.http
 
-import com.openai.core.closeWhenPhantomReachable
 import com.openai.core.http.AsyncStreamResponse.Handler
+import com.openai.core.registerPhantomCleanup
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
@@ -21,8 +21,10 @@ internal class PhantomReachableClosingAsyncStreamResponse<T>(
      */
     private val reachabilityTracker = Object()
 
+    private val cleanup: AutoCloseable
+
     init {
-        closeWhenPhantomReachable(reachabilityTracker, asyncStreamResponse::close)
+        cleanup = registerPhantomCleanup(reachabilityTracker, asyncStreamResponse::close)
     }
 
     override fun subscribe(handler: Handler<T>): AsyncStreamResponse<T> = apply {
@@ -37,7 +39,7 @@ internal class PhantomReachableClosingAsyncStreamResponse<T>(
     override fun onCompleteFuture(): CompletableFuture<Void?> =
         asyncStreamResponse.onCompleteFuture()
 
-    override fun close() = asyncStreamResponse.close()
+    override fun close() = cleanup.close()
 }
 
 /**

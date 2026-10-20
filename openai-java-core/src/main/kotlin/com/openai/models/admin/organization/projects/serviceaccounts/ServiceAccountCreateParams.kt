@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.serviceaccounts
 
@@ -12,6 +12,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -51,6 +52,17 @@ private constructor(
     fun createServiceAccountOnly(): Optional<Boolean> = body.createServiceAccountOnly()
 
     /**
+     * Number of seconds until the initial API key expires. If omitted or null, the key does not
+     * expire unless the effective organization or project policy requires an expiration. When a
+     * policy sets a maximum lifetime, this value must be provided and must not exceed that limit. A
+     * non-null value cannot be used when `create_service_account_only` is true.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun expiresInSeconds(): Optional<Long> = body.expiresInSeconds()
+
+    /**
      * Returns the raw JSON value of [name].
      *
      * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
@@ -64,6 +76,14 @@ private constructor(
      * unexpected type.
      */
     fun _createServiceAccountOnly(): JsonField<Boolean> = body._createServiceAccountOnly()
+
+    /**
+     * Returns the raw JSON value of [expiresInSeconds].
+     *
+     * Unlike [expiresInSeconds], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _expiresInSeconds(): JsonField<Long> = body._expiresInSeconds()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -116,6 +136,7 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [name]
          * - [createServiceAccountOnly]
+         * - [expiresInSeconds]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -159,6 +180,38 @@ private constructor(
          */
         fun createServiceAccountOnly(createServiceAccountOnly: JsonField<Boolean>) = apply {
             body.createServiceAccountOnly(createServiceAccountOnly)
+        }
+
+        /**
+         * Number of seconds until the initial API key expires. If omitted or null, the key does not
+         * expire unless the effective organization or project policy requires an expiration. When a
+         * policy sets a maximum lifetime, this value must be provided and must not exceed that
+         * limit. A non-null value cannot be used when `create_service_account_only` is true.
+         */
+        fun expiresInSeconds(expiresInSeconds: Long?) = apply {
+            body.expiresInSeconds(expiresInSeconds)
+        }
+
+        /**
+         * Alias for [Builder.expiresInSeconds].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun expiresInSeconds(expiresInSeconds: Long) = expiresInSeconds(expiresInSeconds as Long?)
+
+        /** Alias for calling [Builder.expiresInSeconds] with `expiresInSeconds.orElse(null)`. */
+        fun expiresInSeconds(expiresInSeconds: Optional<Long>) =
+            expiresInSeconds(expiresInSeconds.getOrNull())
+
+        /**
+         * Sets [Builder.expiresInSeconds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresInSeconds] with a well-typed [Long] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun expiresInSeconds(expiresInSeconds: JsonField<Long>) = apply {
+            body.expiresInSeconds(expiresInSeconds)
         }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
@@ -316,6 +369,7 @@ private constructor(
     private constructor(
         private val name: JsonField<String>,
         private val createServiceAccountOnly: JsonField<Boolean>,
+        private val expiresInSeconds: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -325,7 +379,10 @@ private constructor(
             @JsonProperty("create_service_account_only")
             @ExcludeMissing
             createServiceAccountOnly: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(name, createServiceAccountOnly, mutableMapOf())
+            @JsonProperty("expires_in_seconds")
+            @ExcludeMissing
+            expiresInSeconds: JsonField<Long> = JsonMissing.of(),
+        ) : this(name, createServiceAccountOnly, expiresInSeconds, mutableMapOf())
 
         /**
          * The name of the service account being created.
@@ -345,6 +402,17 @@ private constructor(
             createServiceAccountOnly.getOptional("create_service_account_only")
 
         /**
+         * Number of seconds until the initial API key expires. If omitted or null, the key does not
+         * expire unless the effective organization or project policy requires an expiration. When a
+         * policy sets a maximum lifetime, this value must be provided and must not exceed that
+         * limit. A non-null value cannot be used when `create_service_account_only` is true.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun expiresInSeconds(): Optional<Long> = expiresInSeconds.getOptional("expires_in_seconds")
+
+        /**
          * Returns the raw JSON value of [name].
          *
          * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
@@ -361,11 +429,44 @@ private constructor(
         @ExcludeMissing
         fun _createServiceAccountOnly(): JsonField<Boolean> = createServiceAccountOnly
 
+        /**
+         * Returns the raw JSON value of [expiresInSeconds].
+         *
+         * Unlike [expiresInSeconds], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("expires_in_seconds")
+        @ExcludeMissing
+        fun _expiresInSeconds(): JsonField<Long> = expiresInSeconds
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "name" to this.name,
+                "create_service_account_only" to this.createServiceAccountOnly,
+                "expires_in_seconds" to this.expiresInSeconds,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -391,12 +492,14 @@ private constructor(
 
             private var name: JsonField<String>? = null
             private var createServiceAccountOnly: JsonField<Boolean> = JsonMissing.of()
+            private var expiresInSeconds: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 name = body.name
                 createServiceAccountOnly = body.createServiceAccountOnly
+                expiresInSeconds = body.expiresInSeconds
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -442,6 +545,41 @@ private constructor(
                 this.createServiceAccountOnly = createServiceAccountOnly
             }
 
+            /**
+             * Number of seconds until the initial API key expires. If omitted or null, the key does
+             * not expire unless the effective organization or project policy requires an
+             * expiration. When a policy sets a maximum lifetime, this value must be provided and
+             * must not exceed that limit. A non-null value cannot be used when
+             * `create_service_account_only` is true.
+             */
+            fun expiresInSeconds(expiresInSeconds: Long?) =
+                expiresInSeconds(JsonField.ofNullable(expiresInSeconds))
+
+            /**
+             * Alias for [Builder.expiresInSeconds].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun expiresInSeconds(expiresInSeconds: Long) =
+                expiresInSeconds(expiresInSeconds as Long?)
+
+            /**
+             * Alias for calling [Builder.expiresInSeconds] with `expiresInSeconds.orElse(null)`.
+             */
+            fun expiresInSeconds(expiresInSeconds: Optional<Long>) =
+                expiresInSeconds(expiresInSeconds.getOrNull())
+
+            /**
+             * Sets [Builder.expiresInSeconds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.expiresInSeconds] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun expiresInSeconds(expiresInSeconds: JsonField<Long>) = apply {
+                this.expiresInSeconds = expiresInSeconds
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -477,6 +615,7 @@ private constructor(
                 Body(
                     checkRequired("name", name),
                     createServiceAccountOnly,
+                    expiresInSeconds,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -499,6 +638,7 @@ private constructor(
 
             name()
             createServiceAccountOnly()
+            expiresInSeconds()
             validated = true
         }
 
@@ -519,7 +659,8 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (name.asKnown().isPresent) 1 else 0) +
-                (if (createServiceAccountOnly.asKnown().isPresent) 1 else 0)
+                (if (createServiceAccountOnly.asKnown().isPresent) 1 else 0) +
+                (if (expiresInSeconds.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -529,17 +670,18 @@ private constructor(
             return other is Body &&
                 name == other.name &&
                 createServiceAccountOnly == other.createServiceAccountOnly &&
+                expiresInSeconds == other.expiresInSeconds &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(name, createServiceAccountOnly, additionalProperties)
+            Objects.hash(name, createServiceAccountOnly, expiresInSeconds, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{name=$name, createServiceAccountOnly=$createServiceAccountOnly, additionalProperties=$additionalProperties}"
+            "Body{name=$name, createServiceAccountOnly=$createServiceAccountOnly, expiresInSeconds=$expiresInSeconds, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

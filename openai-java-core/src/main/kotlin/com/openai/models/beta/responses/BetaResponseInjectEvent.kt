@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -12,6 +12,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -93,6 +94,29 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "input" to this.input,
+            "response_id" to this.responseId,
+            "type" to this.type,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -214,6 +238,40 @@ private constructor(
             addInput(BetaResponseInputItem.ofFunctionCallOutput(functionCallOutput))
 
         /**
+         * Alias for calling [addInput] with the following:
+         * ```java
+         * BetaResponseInputItem.FunctionCallOutput.builder()
+         *     .output(output)
+         *     .build()
+         * ```
+         */
+        fun addFunctionCallOutputInput(output: BetaResponseInputItem.FunctionCallOutput.Output) =
+            addInput(BetaResponseInputItem.FunctionCallOutput.builder().output(output).build())
+
+        /**
+         * Alias for calling [addFunctionCallOutputInput] with
+         * `BetaResponseInputItem.FunctionCallOutput.Output.ofString(string)`.
+         */
+        fun addFunctionCallOutputInput(string: String) =
+            addFunctionCallOutputInput(
+                BetaResponseInputItem.FunctionCallOutput.Output.ofString(string)
+            )
+
+        /**
+         * Alias for calling [addFunctionCallOutputInput] with
+         * `BetaResponseInputItem.FunctionCallOutput.Output.ofBetaResponseFunctionCallOutputItemList(betaResponseFunctionCallOutputItemList)`.
+         */
+        fun addFunctionCallOutputInputOfBetaResponseFunctionCallOutputItemList(
+            betaResponseFunctionCallOutputItemList: List<BetaResponseFunctionCallOutputItem>
+        ) =
+            addFunctionCallOutputInput(
+                BetaResponseInputItem.FunctionCallOutput.Output
+                    .ofBetaResponseFunctionCallOutputItemList(
+                        betaResponseFunctionCallOutputItemList
+                    )
+            )
+
+        /**
          * Alias for calling [addInput] with `BetaResponseInputItem.ofAgentMessage(agentMessage)`.
          */
         fun addInput(agentMessage: BetaResponseInputItem.AgentMessage) =
@@ -286,6 +344,13 @@ private constructor(
          */
         fun addAdditionalToolsInput(tools: List<BetaTool>) =
             addInput(BetaResponseInputItem.AdditionalTools.builder().tools(tools).build())
+
+        /**
+         * Alias for calling [addInput] with
+         * `BetaResponseInputItem.ofConfigurationUpdate(configurationUpdate)`.
+         */
+        fun addInput(configurationUpdate: BetaResponseConfigurationUpdateItemParam) =
+            addInput(BetaResponseInputItem.ofConfigurationUpdate(configurationUpdate))
 
         /** Alias for calling [addInput] with `BetaResponseInputItem.ofReasoning(reasoning)`. */
         fun addInput(reasoning: BetaResponseReasoningItem) =

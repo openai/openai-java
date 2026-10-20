@@ -63,6 +63,7 @@ internal class StructuredResponseOutputMessageTest {
                 // `_content()` is a special case and has its own test function.
                 DelegationReadTestCase("_phase", JsonField.of(MESSAGE_PHASE)),
                 DelegationReadTestCase("_status", JSON_FIELD),
+                DelegationReadTestCase("_allProperties", MAP),
                 DelegationReadTestCase("_additionalProperties", MAP),
             )
 

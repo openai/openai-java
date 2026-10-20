@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.webhooks
 
@@ -24,6 +24,7 @@ internal class LiveCallIncomingWebhookEventTest {
                                 .value("value")
                                 .build()
                         )
+                        .sipMediaSecurity(LiveCallIncomingWebhookEvent.Data.SipMediaSecurity.RTP)
                         .build()
                 )
                 .object_(LiveCallIncomingWebhookEvent.Object.EVENT)
@@ -41,6 +42,7 @@ internal class LiveCallIncomingWebhookEventTest {
                             .value("value")
                             .build()
                     )
+                    .sipMediaSecurity(LiveCallIncomingWebhookEvent.Data.SipMediaSecurity.RTP)
                     .build()
             )
         assertThat(liveCallIncomingWebhookEvent.object_())
@@ -63,6 +65,7 @@ internal class LiveCallIncomingWebhookEventTest {
                                 .value("value")
                                 .build()
                         )
+                        .sipMediaSecurity(LiveCallIncomingWebhookEvent.Data.SipMediaSecurity.RTP)
                         .build()
                 )
                 .object_(LiveCallIncomingWebhookEvent.Object.EVENT)

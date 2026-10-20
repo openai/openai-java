@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.batches
 
@@ -13,6 +13,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -53,13 +54,13 @@ private constructor(
     /**
      * The ID of an uploaded file that contains requests for the new batch.
      *
-     * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
-     * upload a file.
+     * See [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
+     * for how to upload a file.
      *
      * Your input file must be formatted as a
-     * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and must be
-     * uploaded with the purpose `batch`. The file can contain up to 50,000 requests, and can be up
-     * to 200 MB in size.
+     * [JSONL file](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file),
+     * and must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
+     * and can be up to 200 MB in size.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -217,13 +218,14 @@ private constructor(
         /**
          * The ID of an uploaded file that contains requests for the new batch.
          *
-         * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
-         * upload a file.
+         * See
+         * [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
+         * for how to upload a file.
          *
          * Your input file must be formatted as a
-         * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
-         * must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
-         * and can be up to 200 MB in size.
+         * [JSONL file](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file),
+         * and must be uploaded with the purpose `batch`. The file can contain up to 50,000
+         * requests, and can be up to 200 MB in size.
          */
         fun inputFileId(inputFileId: String) = apply { body.inputFileId(inputFileId) }
 
@@ -482,13 +484,14 @@ private constructor(
         /**
          * The ID of an uploaded file that contains requests for the new batch.
          *
-         * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
-         * upload a file.
+         * See
+         * [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
+         * for how to upload a file.
          *
          * Your input file must be formatted as a
-         * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
-         * must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
-         * and can be up to 200 MB in size.
+         * [JSONL file](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file),
+         * and must be uploaded with the purpose `batch`. The file can contain up to 50,000
+         * requests, and can be up to 200 MB in size.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -565,6 +568,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "completion_window" to this.completionWindow,
+                "endpoint" to this.endpoint,
+                "input_file_id" to this.inputFileId,
+                "metadata" to this.metadata,
+                "output_expires_after" to this.outputExpiresAfter,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -646,12 +674,13 @@ private constructor(
             /**
              * The ID of an uploaded file that contains requests for the new batch.
              *
-             * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for
-             * how to upload a file.
+             * See
+             * [upload file](https://developers.openai.com/api/reference/resources/files/methods/create)
+             * for how to upload a file.
              *
              * Your input file must be formatted as a
-             * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
-             * must be uploaded with the purpose `batch`. The file can contain up to 50,000
+             * [JSONL file](https://developers.openai.com/api/docs/guides/batch#1-prepare-your-batch-file),
+             * and must be uploaded with the purpose `batch`. The file can contain up to 50,000
              * requests, and can be up to 200 MB in size.
              */
             fun inputFileId(inputFileId: String) = inputFileId(JsonField.of(inputFileId))
@@ -1155,6 +1184,23 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -1184,6 +1230,11 @@ private constructor(
 
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
+            }
+
+            /** Adds a string-valued property. */
+            fun putProperty(key: String, value: String) = apply {
+                putAdditionalProperty(key, JsonValue.from(value))
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1307,6 +1358,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "anchor" to this.anchor,
+                "seconds" to this.seconds,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =

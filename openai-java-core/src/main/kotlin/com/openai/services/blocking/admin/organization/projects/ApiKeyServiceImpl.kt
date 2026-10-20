@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization.projects
 
@@ -23,6 +23,7 @@ import com.openai.models.admin.organization.projects.apikeys.ApiKeyListPage
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyListPageResponse
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyListParams
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyRetrieveParams
+import com.openai.models.admin.organization.projects.apikeys.ApiKeyUpdateParams
 import com.openai.models.admin.organization.projects.apikeys.ProjectApiKey
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -45,6 +46,10 @@ class ApiKeyServiceImpl internal constructor(private val clientOptions: ClientOp
     ): ProjectApiKey =
         // get /organization/projects/{project_id}/api_keys/{api_key_id}
         withRawResponse().retrieve(params, requestOptions).parse()
+
+    override fun update(params: ApiKeyUpdateParams, requestOptions: RequestOptions): ProjectApiKey =
+        // post /organization/projects/{project_id}/api_keys/{api_key_id}
+        withRawResponse().update(params, requestOptions).parse()
 
     override fun list(params: ApiKeyListParams, requestOptions: RequestOptions): ApiKeyListPage =
         // get /organization/projects/{project_id}/api_keys
@@ -102,6 +107,47 @@ class ApiKeyServiceImpl internal constructor(private val clientOptions: ClientOp
             return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val updateHandler: Handler<ProjectApiKey> =
+            jsonHandler<ProjectApiKey>(clientOptions.jsonMapper)
+
+        override fun update(
+            params: ApiKeyUpdateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ProjectApiKey> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("apiKeyId", params.apiKeyId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments(
+                        "organization",
+                        "projects",
+                        params._pathParam(0),
+                        "api_keys",
+                        params._pathParam(1),
+                    )
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { updateHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

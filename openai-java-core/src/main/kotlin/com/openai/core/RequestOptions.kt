@@ -2,7 +2,12 @@ package com.openai.core
 
 import java.time.Duration
 
-class RequestOptions private constructor(val responseValidation: Boolean?, val timeout: Timeout?) {
+class RequestOptions
+private constructor(
+    val responseValidation: Boolean?,
+    val timeout: Timeout?,
+    @get:JvmSynthetic internal val disableTelemetry: Boolean?,
+) {
 
     companion object {
 
@@ -15,6 +20,7 @@ class RequestOptions private constructor(val responseValidation: Boolean?, val t
             builder()
                 .responseValidation(clientOptions.responseValidation)
                 .timeout(clientOptions.timeout)
+                .disableTelemetry(clientOptions.disableTelemetry)
                 .build()
 
         @JvmStatic fun builder() = Builder()
@@ -23,6 +29,7 @@ class RequestOptions private constructor(val responseValidation: Boolean?, val t
     fun applyDefaults(options: RequestOptions): RequestOptions =
         RequestOptions(
             responseValidation = responseValidation ?: options.responseValidation,
+            disableTelemetry = disableTelemetry ?: options.disableTelemetry,
             timeout =
                 if (options.timeout != null && timeout != null) timeout.assign(options.timeout)
                 else timeout ?: options.timeout,
@@ -32,6 +39,12 @@ class RequestOptions private constructor(val responseValidation: Boolean?, val t
 
         private var responseValidation: Boolean? = null
         private var timeout: Timeout? = null
+        private var disableTelemetry: Boolean? = null
+
+        @JvmSynthetic
+        internal fun disableTelemetry(disableTelemetry: Boolean) = apply {
+            this.disableTelemetry = disableTelemetry
+        }
 
         /**
          * Whether to call `validate` on the response before returning it.
@@ -50,6 +63,6 @@ class RequestOptions private constructor(val responseValidation: Boolean?, val t
 
         fun timeout(timeout: Duration) = timeout(Timeout.builder().request(timeout).build())
 
-        fun build(): RequestOptions = RequestOptions(responseValidation, timeout)
+        fun build(): RequestOptions = RequestOptions(responseValidation, timeout, disableTelemetry)
     }
 }

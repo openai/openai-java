@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.beta
 
@@ -38,6 +38,7 @@ import com.openai.services.blocking.beta.responses.InputTokenServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+/** Create and manage model responses. */
 class ResponseServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ResponseService {
 
@@ -54,8 +55,24 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService =
         ResponseServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun connectWebSocket(
+        options: com.openai.core.http.WebSocketOptions,
+        requestOptions: com.openai.core.RequestOptions,
+    ): com.openai.core.http.WebSocketConnection<
+        com.openai.models.beta.responses.BetaResponsesClientEvent,
+        com.openai.models.beta.responses.BetaResponsesServerEvent,
+    > =
+        com.openai.core.http.WebSocketConnections.connect(
+            com.openai.models.beta.responses.ResponseWebSocketBinding.create(),
+            clientOptions,
+            options,
+            requestOptions,
+        )
+
+    /** Create and manage model responses. */
     override fun inputItems(): InputItemService = inputItems
 
+    /** Create and manage model responses. */
     override fun inputTokens(): InputTokenService = inputTokens
 
     override fun create(
@@ -88,7 +105,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
 
     override fun delete(params: ResponseDeleteParams, requestOptions: RequestOptions) {
         // delete /responses/{response_id}?beta=true
-        withRawResponse().delete(params, requestOptions)
+        withRawResponse().delete(params, requestOptions).close()
     }
 
     override fun cancel(
@@ -126,8 +143,10 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        /** Create and manage model responses. */
         override fun inputItems(): InputItemService.WithRawResponse = inputItems
 
+        /** Create and manage model responses. */
         override fun inputTokens(): InputTokenService.WithRawResponse = inputTokens
 
         private val createHandler: Handler<BetaResponse> =

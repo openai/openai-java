@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -13,6 +13,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -22,7 +23,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * This tool searches the web for relevant results to use in a response. Learn more about the
- * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+ * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
  */
 class WebSearchPreviewTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -75,7 +76,9 @@ private constructor(
         searchContextSize.getOptional("search_context_size")
 
     /**
-     * The user's location.
+     * The approximate location of the user. If omitted or null, defaults to the United States. To
+     * avoid this fallback, pass `{"type": "approximate"}` without location fields. To localize
+     * results, provide the relevant location fields.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -123,6 +126,30 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "type" to this.type,
+            "search_content_types" to this.searchContentTypes,
+            "search_context_size" to this.searchContextSize,
+            "user_location" to this.userLocation,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -196,9 +223,8 @@ private constructor(
          */
         fun addSearchContentType(searchContentType: SearchContentType) = apply {
             searchContentTypes =
-                (searchContentTypes ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("searchContentTypes", it).add(searchContentType)
-                }
+                (searchContentTypes?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("searchContentTypes", it).add(searchContentType) }
         }
 
         /**
@@ -219,7 +245,11 @@ private constructor(
             this.searchContextSize = searchContextSize
         }
 
-        /** The user's location. */
+        /**
+         * The approximate location of the user. If omitted or null, defaults to the United States.
+         * To avoid this fallback, pass `{"type": "approximate"}` without location fields. To
+         * localize results, provide the relevant location fields.
+         */
         fun userLocation(userLocation: UserLocation?) =
             userLocation(JsonField.ofNullable(userLocation))
 
@@ -745,7 +775,11 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The user's location. */
+    /**
+     * The approximate location of the user. If omitted or null, defaults to the United States. To
+     * avoid this fallback, pass `{"type": "approximate"}` without location fields. To localize
+     * results, provide the relevant location fields.
+     */
     class UserLocation
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -846,6 +880,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "type" to this.type,
+                "city" to this.city,
+                "country" to this.country,
+                "region" to this.region,
+                "timezone" to this.timezone,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =

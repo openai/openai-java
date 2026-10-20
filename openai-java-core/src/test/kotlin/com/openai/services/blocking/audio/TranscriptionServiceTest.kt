@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.audio
 
@@ -77,10 +77,13 @@ internal class TranscriptionServiceTest {
                     .build()
             )
 
+        var received = 0
         transcriptionStreamResponse.use {
-            transcriptionStreamResponse.stream().forEach { transcription ->
-                transcription.validate()
+            transcriptionStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
             }
         }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 }

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
@@ -34,9 +34,11 @@ interface VectorStoreService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VectorStoreService
 
-    fun files(): FileService
+    fun files(): FileService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun fileBatches(): FileBatchService
+    fun fileBatches(): FileBatchService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create a vector store. */
     fun create(): VectorStore = create(VectorStoreCreateParams.none())
@@ -202,9 +204,15 @@ interface VectorStoreService {
             modifier: Consumer<ClientOptions.Builder>
         ): VectorStoreService.WithRawResponse
 
-        fun files(): FileService.WithRawResponse
+        fun files(): FileService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun fileBatches(): FileBatchService.WithRawResponse
+        fun fileBatches(): FileBatchService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /vector_stores`, but is otherwise the same as

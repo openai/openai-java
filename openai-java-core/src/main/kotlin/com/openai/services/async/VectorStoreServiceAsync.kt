@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async
 
@@ -34,9 +34,11 @@ interface VectorStoreServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VectorStoreServiceAsync
 
-    fun files(): FileServiceAsync
+    fun files(): FileServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun fileBatches(): FileBatchServiceAsync
+    fun fileBatches(): FileBatchServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create a vector store. */
     fun create(): CompletableFuture<VectorStore> = create(VectorStoreCreateParams.none())
@@ -219,9 +221,15 @@ interface VectorStoreServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): VectorStoreServiceAsync.WithRawResponse
 
-        fun files(): FileServiceAsync.WithRawResponse
+        fun files(): FileServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun fileBatches(): FileBatchServiceAsync.WithRawResponse
+        fun fileBatches(): FileBatchServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /vector_stores`, but is otherwise the same as

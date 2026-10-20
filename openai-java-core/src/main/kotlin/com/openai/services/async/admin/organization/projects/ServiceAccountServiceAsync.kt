@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.admin.organization.projects
 
@@ -32,7 +32,8 @@ interface ServiceAccountServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ServiceAccountServiceAsync
 
-    fun apiKeys(): ApiKeyServiceAsync
+    fun apiKeys(): ApiKeyServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Creates a new service account in the project. By default, this also returns an unredacted API
@@ -195,7 +196,10 @@ interface ServiceAccountServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): ServiceAccountServiceAsync.WithRawResponse
 
-        fun apiKeys(): ApiKeyServiceAsync.WithRawResponse
+        fun apiKeys(): ApiKeyServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -21,6 +21,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -95,6 +96,29 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "content" to this.content,
+            "role" to this.role,
+            "name" to this.name,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -280,8 +304,8 @@ private constructor(
 
         /**
          * An array of content parts with a defined type. Supported options differ based on the
-         * [model](https://platform.openai.com/docs/models) being used to generate the response. Can
-         * contain text, image, or audio inputs.
+         * [model](https://developers.openai.com/api/docs/models) being used to generate the
+         * response. Can contain text, image, or audio inputs.
          */
         fun arrayOfContentParts(): Optional<List<ChatCompletionContentPart>> =
             Optional.ofNullable(arrayOfContentParts)
@@ -295,8 +319,8 @@ private constructor(
 
         /**
          * An array of content parts with a defined type. Supported options differ based on the
-         * [model](https://platform.openai.com/docs/models) being used to generate the response. Can
-         * contain text, image, or audio inputs.
+         * [model](https://developers.openai.com/api/docs/models) being used to generate the
+         * response. Can contain text, image, or audio inputs.
          */
         fun asArrayOfContentParts(): List<ChatCompletionContentPart> =
             arrayOfContentParts.getOrThrow("arrayOfContentParts")
@@ -424,8 +448,8 @@ private constructor(
 
             /**
              * An array of content parts with a defined type. Supported options differ based on the
-             * [model](https://platform.openai.com/docs/models) being used to generate the response.
-             * Can contain text, image, or audio inputs.
+             * [model](https://developers.openai.com/api/docs/models) being used to generate the
+             * response. Can contain text, image, or audio inputs.
              */
             @JvmStatic
             fun ofArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPart>) =
@@ -442,8 +466,8 @@ private constructor(
 
             /**
              * An array of content parts with a defined type. Supported options differ based on the
-             * [model](https://platform.openai.com/docs/models) being used to generate the response.
-             * Can contain text, image, or audio inputs.
+             * [model](https://developers.openai.com/api/docs/models) being used to generate the
+             * response. Can contain text, image, or audio inputs.
              */
             fun visitArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPart>): T
 
@@ -458,7 +482,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Content: $json")
+                throw OpenAIInvalidDataException("Unknown Content")
             }
         }
 

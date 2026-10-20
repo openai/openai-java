@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.uploads
 
@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.files.FileObject
 import java.util.Collections
@@ -114,7 +115,7 @@ private constructor(
 
     /**
      * The intended purpose of the file.
-     * [Please refer here](https://platform.openai.com/docs/api-reference/files/object#files/object-purpose)
+     * [Please refer here](https://developers.openai.com/api/reference/resources/files#%28resource%29%20files%20%3E%20%28model%29%20file_object%20%3E%20%28schema%29%20%3E%20%28property%29%20purpose)
      * for acceptable values.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -199,6 +200,35 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "id" to this.id,
+            "bytes" to this.bytes,
+            "created_at" to this.createdAt,
+            "expires_at" to this.expiresAt,
+            "filename" to this.filename,
+            "object" to this.object_,
+            "purpose" to this.purpose,
+            "status" to this.status,
+            "file" to this.file,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -324,7 +354,7 @@ private constructor(
 
         /**
          * The intended purpose of the file.
-         * [Please refer here](https://platform.openai.com/docs/api-reference/files/object#files/object-purpose)
+         * [Please refer here](https://developers.openai.com/api/reference/resources/files#%28resource%29%20files%20%3E%20%28model%29%20file_object%20%3E%20%28schema%29%20%3E%20%28property%29%20purpose)
          * for acceptable values.
          */
         fun purpose(purpose: String) = purpose(JsonField.of(purpose))

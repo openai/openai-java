@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.skills
 
@@ -30,7 +30,8 @@ interface VersionService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): VersionService
 
-    fun content(): ContentService
+    fun content(): ContentService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create a new immutable skill version. */
     fun create(skillId: String): SkillVersion = create(skillId, VersionCreateParams.none())
@@ -142,7 +143,10 @@ interface VersionService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): VersionService.WithRawResponse
 
-        fun content(): ContentService.WithRawResponse
+        fun content(): ContentService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /skills/{skill_id}/versions`, but is otherwise the

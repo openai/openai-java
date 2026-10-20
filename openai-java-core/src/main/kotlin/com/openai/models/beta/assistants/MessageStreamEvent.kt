@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.assistants
 
@@ -20,6 +20,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.beta.threads.messages.Message
@@ -30,8 +31,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
- * created.
+ * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is created.
  */
 @JsonDeserialize(using = MessageStreamEvent.Deserializer::class)
 @JsonSerialize(using = MessageStreamEvent.Serializer::class)
@@ -46,34 +46,34 @@ private constructor(
 ) {
 
     /**
-     * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
+     * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
      * created.
      */
     fun threadMessageCreated(): Optional<ThreadMessageCreated> =
         Optional.ofNullable(threadMessageCreated)
 
     /**
-     * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) moves
-     * to an `in_progress` state.
+     * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) moves to
+     * an `in_progress` state.
      */
     fun threadMessageInProgress(): Optional<ThreadMessageInProgress> =
         Optional.ofNullable(threadMessageInProgress)
 
     /**
-     * Occurs when parts of a
-     * [Message](https://platform.openai.com/docs/api-reference/messages/object) are being streamed.
+     * Occurs when parts of a [Message](https://developers.openai.com/api/docs/assistants/migration)
+     * are being streamed.
      */
     fun threadMessageDelta(): Optional<ThreadMessageDelta> = Optional.ofNullable(threadMessageDelta)
 
     /**
-     * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
+     * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
      * completed.
      */
     fun threadMessageCompleted(): Optional<ThreadMessageCompleted> =
         Optional.ofNullable(threadMessageCompleted)
 
     /**
-     * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) ends
+     * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) ends
      * before it is completed.
      */
     fun threadMessageIncomplete(): Optional<ThreadMessageIncomplete> =
@@ -90,35 +90,35 @@ private constructor(
     fun isThreadMessageIncomplete(): Boolean = threadMessageIncomplete != null
 
     /**
-     * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
+     * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
      * created.
      */
     fun asThreadMessageCreated(): ThreadMessageCreated =
         threadMessageCreated.getOrThrow("threadMessageCreated")
 
     /**
-     * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) moves
-     * to an `in_progress` state.
+     * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) moves to
+     * an `in_progress` state.
      */
     fun asThreadMessageInProgress(): ThreadMessageInProgress =
         threadMessageInProgress.getOrThrow("threadMessageInProgress")
 
     /**
-     * Occurs when parts of a
-     * [Message](https://platform.openai.com/docs/api-reference/messages/object) are being streamed.
+     * Occurs when parts of a [Message](https://developers.openai.com/api/docs/assistants/migration)
+     * are being streamed.
      */
     fun asThreadMessageDelta(): ThreadMessageDelta =
         threadMessageDelta.getOrThrow("threadMessageDelta")
 
     /**
-     * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
+     * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
      * completed.
      */
     fun asThreadMessageCompleted(): ThreadMessageCompleted =
         threadMessageCompleted.getOrThrow("threadMessageCompleted")
 
     /**
-     * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) ends
+     * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) ends
      * before it is completed.
      */
     fun asThreadMessageIncomplete(): ThreadMessageIncomplete =
@@ -295,15 +295,15 @@ private constructor(
     companion object {
 
         /**
-         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
-         * is created.
+         * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
+         * created.
          */
         @JvmStatic
         fun ofThreadMessageCreated(threadMessageCreated: ThreadMessageCreated) =
             MessageStreamEvent(threadMessageCreated = threadMessageCreated)
 
         /**
-         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
+         * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration)
          * moves to an `in_progress` state.
          */
         @JvmStatic
@@ -312,7 +312,7 @@ private constructor(
 
         /**
          * Occurs when parts of a
-         * [Message](https://platform.openai.com/docs/api-reference/messages/object) are being
+         * [Message](https://developers.openai.com/api/docs/assistants/migration) are being
          * streamed.
          */
         @JvmStatic
@@ -320,16 +320,16 @@ private constructor(
             MessageStreamEvent(threadMessageDelta = threadMessageDelta)
 
         /**
-         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
-         * is completed.
+         * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
+         * completed.
          */
         @JvmStatic
         fun ofThreadMessageCompleted(threadMessageCompleted: ThreadMessageCompleted) =
             MessageStreamEvent(threadMessageCompleted = threadMessageCompleted)
 
         /**
-         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
-         * ends before it is completed.
+         * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) ends
+         * before it is completed.
          */
         @JvmStatic
         fun ofThreadMessageIncomplete(threadMessageIncomplete: ThreadMessageIncomplete) =
@@ -343,33 +343,33 @@ private constructor(
     interface Visitor<out T> {
 
         /**
-         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
-         * is created.
+         * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
+         * created.
          */
         fun visitThreadMessageCreated(threadMessageCreated: ThreadMessageCreated): T
 
         /**
-         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
+         * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration)
          * moves to an `in_progress` state.
          */
         fun visitThreadMessageInProgress(threadMessageInProgress: ThreadMessageInProgress): T
 
         /**
          * Occurs when parts of a
-         * [Message](https://platform.openai.com/docs/api-reference/messages/object) are being
+         * [Message](https://developers.openai.com/api/docs/assistants/migration) are being
          * streamed.
          */
         fun visitThreadMessageDelta(threadMessageDelta: ThreadMessageDelta): T
 
         /**
-         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
-         * is completed.
+         * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
+         * completed.
          */
         fun visitThreadMessageCompleted(threadMessageCompleted: ThreadMessageCompleted): T
 
         /**
-         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
-         * ends before it is completed.
+         * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) ends
+         * before it is completed.
          */
         fun visitThreadMessageIncomplete(threadMessageIncomplete: ThreadMessageIncomplete): T
 
@@ -384,7 +384,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown MessageStreamEvent: $json")
+            throw OpenAIInvalidDataException("Unknown MessageStreamEvent")
         }
     }
 
@@ -450,7 +450,7 @@ private constructor(
     }
 
     /**
-     * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
+     * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
      * created.
      */
     class ThreadMessageCreated
@@ -469,7 +469,7 @@ private constructor(
 
         /**
          * Represents a message within a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * [thread](https://developers.openai.com/api/docs/assistants/migration).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -499,6 +499,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "data" to this.data, "event" to this.event)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -535,7 +553,7 @@ private constructor(
 
             /**
              * Represents a message within a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * [thread](https://developers.openai.com/api/docs/assistants/migration).
              */
             fun data(data: Message) = data(JsonField.of(data))
 
@@ -665,8 +683,8 @@ private constructor(
     }
 
     /**
-     * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) moves
-     * to an `in_progress` state.
+     * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) moves to
+     * an `in_progress` state.
      */
     class ThreadMessageInProgress
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -684,7 +702,7 @@ private constructor(
 
         /**
          * Represents a message within a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * [thread](https://developers.openai.com/api/docs/assistants/migration).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -714,6 +732,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "data" to this.data, "event" to this.event)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -750,7 +786,7 @@ private constructor(
 
             /**
              * Represents a message within a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * [thread](https://developers.openai.com/api/docs/assistants/migration).
              */
             fun data(data: Message) = data(JsonField.of(data))
 
@@ -880,8 +916,8 @@ private constructor(
     }
 
     /**
-     * Occurs when parts of a
-     * [Message](https://platform.openai.com/docs/api-reference/messages/object) are being streamed.
+     * Occurs when parts of a [Message](https://developers.openai.com/api/docs/assistants/migration)
+     * are being streamed.
      */
     class ThreadMessageDelta
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -930,6 +966,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "data" to this.data, "event" to this.event)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1093,7 +1147,7 @@ private constructor(
     }
 
     /**
-     * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
+     * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) is
      * completed.
      */
     class ThreadMessageCompleted
@@ -1112,7 +1166,7 @@ private constructor(
 
         /**
          * Represents a message within a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * [thread](https://developers.openai.com/api/docs/assistants/migration).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -1142,6 +1196,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "data" to this.data, "event" to this.event)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1178,7 +1250,7 @@ private constructor(
 
             /**
              * Represents a message within a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * [thread](https://developers.openai.com/api/docs/assistants/migration).
              */
             fun data(data: Message) = data(JsonField.of(data))
 
@@ -1308,7 +1380,7 @@ private constructor(
     }
 
     /**
-     * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) ends
+     * Occurs when a [message](https://developers.openai.com/api/docs/assistants/migration) ends
      * before it is completed.
      */
     class ThreadMessageIncomplete
@@ -1327,7 +1399,7 @@ private constructor(
 
         /**
          * Represents a message within a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * [thread](https://developers.openai.com/api/docs/assistants/migration).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -1357,6 +1429,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "data" to this.data, "event" to this.event)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1393,7 +1483,7 @@ private constructor(
 
             /**
              * Represents a message within a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * [thread](https://developers.openai.com/api/docs/assistants/migration).
              */
             fun data(data: Message) = data(JsonField.of(data))
 

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -79,8 +79,9 @@ private constructor(
         Optional.ofNullable(sessionOutputTranscriptDelta)
 
     /**
-     * Returned when translated output audio is available. Output audio deltas are 200 ms frames of
-     * PCM16 audio.
+     * Returned when translated output audio is available. The `delta` contains a PCM16 audio chunk
+     * whose length can vary. Clients should decode and queue the complete delta instead of assuming
+     * a fixed byte or sample count.
      */
     fun sessionOutputAudioDelta(): Optional<RealtimeTranslationOutputAudioDeltaEvent> =
         Optional.ofNullable(sessionOutputAudioDelta)
@@ -145,8 +146,9 @@ private constructor(
         sessionOutputTranscriptDelta.getOrThrow("sessionOutputTranscriptDelta")
 
     /**
-     * Returned when translated output audio is available. Output audio deltas are 200 ms frames of
-     * PCM16 audio.
+     * Returned when translated output audio is available. The `delta` contains a PCM16 audio chunk
+     * whose length can vary. Clients should decode and queue the complete delta instead of assuming
+     * a fixed byte or sample count.
      */
     fun asSessionOutputAudioDelta(): RealtimeTranslationOutputAudioDeltaEvent =
         sessionOutputAudioDelta.getOrThrow("sessionOutputAudioDelta")
@@ -411,8 +413,9 @@ private constructor(
             )
 
         /**
-         * Returned when translated output audio is available. Output audio deltas are 200 ms frames
-         * of PCM16 audio.
+         * Returned when translated output audio is available. The `delta` contains a PCM16 audio
+         * chunk whose length can vary. Clients should decode and queue the complete delta instead
+         * of assuming a fixed byte or sample count.
          */
         @JvmStatic
         fun ofSessionOutputAudioDelta(
@@ -431,23 +434,26 @@ private constructor(
          * errors are recoverable and the session will stay open, we recommend to implementors to
          * monitor and log error messages by default.
          */
-        fun visitError(error: RealtimeErrorEvent): T
+        fun visitError(error: RealtimeErrorEvent): T = unknown(JsonValue.from(error))
 
         /**
          * Returned when a translation session is created. Emitted automatically when a new
          * connection is established as the first server event. This event contains the default
          * translation session configuration.
          */
-        fun visitSessionCreated(sessionCreated: RealtimeTranslationSessionCreatedEvent): T
+        fun visitSessionCreated(sessionCreated: RealtimeTranslationSessionCreatedEvent): T =
+            unknown(JsonValue.from(sessionCreated))
 
         /**
          * Returned when a translation session is updated with a `session.update` event, unless
          * there is an error.
          */
-        fun visitSessionUpdated(sessionUpdated: RealtimeTranslationSessionUpdatedEvent): T
+        fun visitSessionUpdated(sessionUpdated: RealtimeTranslationSessionUpdatedEvent): T =
+            unknown(JsonValue.from(sessionUpdated))
 
         /** Returned when a realtime translation session is closed. */
-        fun visitSessionClosed(sessionClosed: RealtimeTranslationSessionClosedEvent): T
+        fun visitSessionClosed(sessionClosed: RealtimeTranslationSessionClosedEvent): T =
+            unknown(JsonValue.from(sessionClosed))
 
         /**
          * Returned when optional source-language transcript text is available. This event is
@@ -458,7 +464,7 @@ private constructor(
          */
         fun visitSessionInputTranscriptDelta(
             sessionInputTranscriptDelta: RealtimeTranslationInputTranscriptDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(sessionInputTranscriptDelta))
 
         /**
          * Returned when translated transcript text is available.
@@ -468,15 +474,16 @@ private constructor(
          */
         fun visitSessionOutputTranscriptDelta(
             sessionOutputTranscriptDelta: RealtimeTranslationOutputTranscriptDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(sessionOutputTranscriptDelta))
 
         /**
-         * Returned when translated output audio is available. Output audio deltas are 200 ms frames
-         * of PCM16 audio.
+         * Returned when translated output audio is available. The `delta` contains a PCM16 audio
+         * chunk whose length can vary. Clients should decode and queue the complete delta instead
+         * of assuming a fixed byte or sample count.
          */
         fun visitSessionOutputAudioDelta(
             sessionOutputAudioDelta: RealtimeTranslationOutputAudioDeltaEvent
-        ): T
+        ): T = unknown(JsonValue.from(sessionOutputAudioDelta))
 
         /**
          * Maps an unknown variant of [RealtimeTranslationServerEvent] to a value of type [T].
@@ -486,10 +493,13 @@ private constructor(
          * on an older version than the API, then the API may respond with new variants that the SDK
          * is unaware of.
          *
+         * Recognized variants also reach this method when their visit method is not overridden.
+         * This allows existing visitors to handle variants added by newer SDK versions.
+         *
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown RealtimeTranslationServerEvent: $json")
+            throw OpenAIInvalidDataException("Unknown RealtimeTranslationServerEvent")
         }
     }
 

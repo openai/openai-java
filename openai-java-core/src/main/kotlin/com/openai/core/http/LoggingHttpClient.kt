@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core.http
 
 import com.openai.core.LogLevel
@@ -111,16 +109,14 @@ private constructor(
 
         logHeaders(request.headers)
 
-        if (request.body == null) {
+        val requestBody = request.body
+        if (requestBody == null) {
             System.err.println("--> END ${request.method}")
             System.err.println()
             return request
         }
 
-        return request
-            .toBuilder()
-            .body(LoggingHttpRequestBody(request.method, request.body))
-            .build()
+        return request.toBuilder().body(LoggingHttpRequestBody(request.method, requestBody)).build()
     }
 
     private fun logResponse(response: HttpResponse, took: Duration): HttpResponse {
@@ -273,7 +269,9 @@ private constructor(
 private class LoggingHttpRequestBody(
     private val method: HttpMethod,
     private val body: HttpRequestBody,
-) : HttpRequestBody {
+) : HttpRequestBody, MultipartTransportGuard {
+
+    override fun <T> beforeTransport(action: () -> T): T = body.beforeMultipartTransport(action)
 
     private val charset by lazy { parseCharset(body.contentType()) }
 
@@ -286,6 +284,8 @@ private class LoggingHttpRequestBody(
         System.err.println()
     }
 
+    override fun content(): InputStream = LoggingRequestInputStream(method, body.content(), charset)
+
     override fun contentType(): String? = body.contentType()
 
     override fun contentLength(): Long = body.contentLength()
@@ -293,6 +293,62 @@ private class LoggingHttpRequestBody(
     override fun repeatable(): Boolean = body.repeatable()
 
     override fun close() = body.close()
+}
+
+private class LoggingRequestInputStream(
+    private val method: HttpMethod,
+    private val inputStream: InputStream,
+    charset: Charset?,
+) : InputStream() {
+
+    private var isDone = false
+    private var isClosed = false
+    private val buffer = LoggingBuffer(charset)
+
+    override fun read(): Int {
+        if (isDone) return -1
+        val byte = inputStream.read()
+        if (byte == -1) {
+            markDone()
+            return -1
+        }
+        buffer.write(byte)
+        return byte
+    }
+
+    override fun read(bytes: ByteArray, offset: Int, length: Int): Int {
+        if (offset < 0 || length < 0 || offset > bytes.size - length) {
+            throw IndexOutOfBoundsException()
+        }
+        if (length == 0) return 0
+        if (isDone) return -1
+        val count = inputStream.read(bytes, offset, length)
+        if (count == -1) {
+            markDone()
+            return -1
+        }
+        for (index in offset until offset + count) {
+            buffer.write(bytes[index].toInt() and 0xFF)
+        }
+        return count
+    }
+
+    override fun close() {
+        if (isClosed) return
+        isClosed = true
+        inputStream.use { if (!isDone) markDone(closedEarly = true) }
+    }
+
+    private fun markDone(closedEarly: Boolean = false) {
+        if (isDone) return
+        isDone = true
+        buffer.flush()
+        val suffix = if (closedEarly) ", closed early" else ""
+        System.err.println(
+            "--> END " + method + " (" + buffer.writeCount() + "-byte body" + suffix + ")"
+        )
+        System.err.println()
+    }
 }
 
 /**
@@ -367,7 +423,7 @@ private class LoggingHttpResponse(private val response: HttpResponse) : HttpResp
  * a streaming manner with minimal buffering.
  */
 private class LoggingInputStream(private val inputStream: InputStream, charset: Charset?) :
-    InputStream() {
+    InputStream(), StreamCompletionListener {
 
     private var isDone = false
     private val buffer = LoggingBuffer(charset)
@@ -413,7 +469,12 @@ private class LoggingInputStream(private val inputStream: InputStream, charset: 
         inputStream.close()
     }
 
+    override fun onComplete() = markDone()
+
     private fun markDone(closedEarly: Boolean = false) {
+        if (isDone) {
+            return
+        }
         isDone = true
         buffer.flush()
         val suffix = if (closedEarly) ", closed early" else ""

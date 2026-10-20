@@ -74,7 +74,9 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
                 this@toAsync.whenComplete { _, error ->
                     // If an error occurs from the original future, then we should resolve the
                     // `onCompleteFuture` even if `subscribe` has not been called.
-                    error?.let(onCompleteFuture::completeExceptionally)
+                    if (state.get() != State.CLOSED) {
+                        error?.let(onCompleteFuture::completeExceptionally)
+                    }
                 }
             }
 
@@ -89,6 +91,19 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
                 check(state.compareAndSet(State.NEW, State.SUBSCRIBED)) {
                     if (state.get() == State.SUBSCRIBED) "Cannot subscribe more than once"
                     else "Cannot subscribe after the response is closed"
+                }
+
+                val guardedExecutor = Executor { task ->
+                    try {
+                        executor.execute(task)
+                    } catch (error: Throwable) {
+                        // Preserve a source failure even if its init callback has not run yet.
+                        this@toAsync.whenComplete { _, futureError ->
+                            if (onCompleteFuture.completeExceptionally(futureError ?: error))
+                                close()
+                        }
+                        throw error
+                    }
                 }
 
                 this@toAsync.whenCompleteAsync(
@@ -129,7 +144,7 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
                             }
                         }
                     },
-                    executor,
+                    guardedExecutor,
                 )
             }
 
@@ -141,6 +156,7 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
                     return
                 }
 
+                (this@toAsync as? MultipartUploadCancellation)?.cancelUpload()
                 this@toAsync.whenComplete { streamResponse, error -> streamResponse?.close() }
                 // When the stream is closed, we should always consider it closed. If it closed due
                 // to an error, then we will have already completed the future earlier, and this
@@ -154,4 +170,8 @@ private enum class State {
     NEW,
     SUBSCRIBED,
     CLOSED,
+}
+
+internal interface MultipartUploadCancellation {
+    fun cancelUpload()
 }

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.usage
 
@@ -24,6 +24,7 @@ private constructor(
     private val endTime: Long?,
     private val groupBy: List<GroupBy>?,
     private val limit: Long?,
+    private val lineItems: List<String>?,
     private val page: String?,
     private val projectIds: List<String>?,
     private val additionalHeaders: Headers,
@@ -43,8 +44,12 @@ private constructor(
     fun endTime(): Optional<Long> = Optional.ofNullable(endTime)
 
     /**
-     * Group the costs by the specified fields. Support fields include `project_id`, `line_item`,
-     * `api_key_id` and any combination of them.
+     * Group the costs by the specified fields. Supported fields include `project_id`, `user_id`,
+     * `line_item`, `api_key_id`, and `api_source`. Support for combining `user_id` with
+     * `project_id` grouping or the `project_ids` filter depends on the organization and requested
+     * time range. Unsupported combinations return HTTP 400. When grouped by `api_source`, results
+     * use `agents_api` for attributed Agents API activity and `unlabeled` for all other activity.
+     * Without source grouping, `api_source` is null.
      */
     fun groupBy(): Optional<List<GroupBy>> = Optional.ofNullable(groupBy)
 
@@ -53,6 +58,12 @@ private constructor(
      * default is 7.
      */
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
+
+    /**
+     * Return only costs for these exact line item names. Each value must match the complete
+     * `line_item` value, for example `gpt-6-astra, input_tokens`.
+     */
+    fun lineItems(): Optional<List<String>> = Optional.ofNullable(lineItems)
 
     /**
      * A cursor for use in pagination. Corresponding to the `next_page` field from the previous
@@ -93,6 +104,7 @@ private constructor(
         private var endTime: Long? = null
         private var groupBy: MutableList<GroupBy>? = null
         private var limit: Long? = null
+        private var lineItems: MutableList<String>? = null
         private var page: String? = null
         private var projectIds: MutableList<String>? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
@@ -106,6 +118,7 @@ private constructor(
             endTime = usageCostsParams.endTime
             groupBy = usageCostsParams.groupBy?.toMutableList()
             limit = usageCostsParams.limit
+            lineItems = usageCostsParams.lineItems?.toMutableList()
             page = usageCostsParams.page
             projectIds = usageCostsParams.projectIds?.toMutableList()
             additionalHeaders = usageCostsParams.additionalHeaders.toBuilder()
@@ -154,8 +167,12 @@ private constructor(
         fun endTime(endTime: Optional<Long>) = endTime(endTime.getOrNull())
 
         /**
-         * Group the costs by the specified fields. Support fields include `project_id`,
-         * `line_item`, `api_key_id` and any combination of them.
+         * Group the costs by the specified fields. Supported fields include `project_id`,
+         * `user_id`, `line_item`, `api_key_id`, and `api_source`. Support for combining `user_id`
+         * with `project_id` grouping or the `project_ids` filter depends on the organization and
+         * requested time range. Unsupported combinations return HTTP 400. When grouped by
+         * `api_source`, results use `agents_api` for attributed Agents API activity and `unlabeled`
+         * for all other activity. Without source grouping, `api_source` is null.
          */
         fun groupBy(groupBy: List<GroupBy>?) = apply { this.groupBy = groupBy?.toMutableList() }
 
@@ -186,6 +203,26 @@ private constructor(
 
         /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
+
+        /**
+         * Return only costs for these exact line item names. Each value must match the complete
+         * `line_item` value, for example `gpt-6-astra, input_tokens`.
+         */
+        fun lineItems(lineItems: List<String>?) = apply {
+            this.lineItems = lineItems?.toMutableList()
+        }
+
+        /** Alias for calling [Builder.lineItems] with `lineItems.orElse(null)`. */
+        fun lineItems(lineItems: Optional<List<String>>) = lineItems(lineItems.getOrNull())
+
+        /**
+         * Adds a single [String] to [lineItems].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addLineItem(lineItem: String) = apply {
+            lineItems = (lineItems ?: mutableListOf()).apply { add(lineItem) }
+        }
 
         /**
          * A cursor for use in pagination. Corresponding to the `next_page` field from the previous
@@ -331,6 +368,7 @@ private constructor(
                 endTime,
                 groupBy?.toImmutable(),
                 limit,
+                lineItems?.toImmutable(),
                 page,
                 projectIds?.toImmutable(),
                 additionalHeaders.build(),
@@ -349,6 +387,7 @@ private constructor(
                 endTime?.let { put("end_time", it.toString()) }
                 groupBy?.forEach { put("group_by[]", it.toString()) }
                 limit?.let { put("limit", it.toString()) }
+                lineItems?.forEach { put("line_items[]", it) }
                 page?.let { put("page", it) }
                 projectIds?.forEach { put("project_ids[]", it) }
                 putAll(additionalQueryParams)
@@ -503,9 +542,13 @@ private constructor(
 
             @JvmField val PROJECT_ID = of("project_id")
 
+            @JvmField val USER_ID = of("user_id")
+
             @JvmField val LINE_ITEM = of("line_item")
 
             @JvmField val API_KEY_ID = of("api_key_id")
+
+            @JvmField val API_SOURCE = of("api_source")
 
             @JvmStatic fun of(value: String) = GroupBy(JsonField.of(value))
         }
@@ -513,8 +556,10 @@ private constructor(
         /** An enum containing [GroupBy]'s known values. */
         enum class Known {
             PROJECT_ID,
+            USER_ID,
             LINE_ITEM,
             API_KEY_ID,
+            API_SOURCE,
         }
 
         /**
@@ -528,8 +573,10 @@ private constructor(
          */
         enum class Value {
             PROJECT_ID,
+            USER_ID,
             LINE_ITEM,
             API_KEY_ID,
+            API_SOURCE,
             /** An enum member indicating that [GroupBy] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -544,8 +591,10 @@ private constructor(
         fun value(): Value =
             when (this) {
                 PROJECT_ID -> Value.PROJECT_ID
+                USER_ID -> Value.USER_ID
                 LINE_ITEM -> Value.LINE_ITEM
                 API_KEY_ID -> Value.API_KEY_ID
+                API_SOURCE -> Value.API_SOURCE
                 else -> Value._UNKNOWN
             }
 
@@ -561,8 +610,10 @@ private constructor(
         fun known(): Known =
             when (this) {
                 PROJECT_ID -> Known.PROJECT_ID
+                USER_ID -> Known.USER_ID
                 LINE_ITEM -> Known.LINE_ITEM
                 API_KEY_ID -> Known.API_KEY_ID
+                API_SOURCE -> Known.API_SOURCE
                 else -> throw OpenAIInvalidDataException("Unknown GroupBy: $value")
             }
 
@@ -639,6 +690,7 @@ private constructor(
             endTime == other.endTime &&
             groupBy == other.groupBy &&
             limit == other.limit &&
+            lineItems == other.lineItems &&
             page == other.page &&
             projectIds == other.projectIds &&
             additionalHeaders == other.additionalHeaders &&
@@ -653,6 +705,7 @@ private constructor(
             endTime,
             groupBy,
             limit,
+            lineItems,
             page,
             projectIds,
             additionalHeaders,
@@ -660,5 +713,5 @@ private constructor(
         )
 
     override fun toString() =
-        "UsageCostsParams{startTime=$startTime, apiKeyIds=$apiKeyIds, bucketWidth=$bucketWidth, endTime=$endTime, groupBy=$groupBy, limit=$limit, page=$page, projectIds=$projectIds, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "UsageCostsParams{startTime=$startTime, apiKeyIds=$apiKeyIds, bucketWidth=$bucketWidth, endTime=$endTime, groupBy=$groupBy, limit=$limit, lineItems=$lineItems, page=$page, projectIds=$projectIds, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

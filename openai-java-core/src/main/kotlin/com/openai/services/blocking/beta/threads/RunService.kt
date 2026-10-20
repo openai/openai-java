@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.beta.threads
 
@@ -37,7 +37,8 @@ interface RunService {
 
     /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-    fun steps(): StepService
+    fun steps(): StepService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create a run. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -273,7 +274,10 @@ interface RunService {
 
         /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-        fun steps(): StepService.WithRawResponse
+        fun steps(): StepService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /threads/{thread_id}/runs`, but is otherwise the

@@ -56,6 +56,8 @@ internal class StructuredResponseTest {
         private fun delegationTestCases() =
             listOf(
                 DelegationReadTestCase("id", STRING),
+                DelegationReadTestCase("accessPrograms", OPTIONAL),
+                DelegationReadTestCase("_accessPrograms", JSON_FIELD),
                 DelegationReadTestCase("createdAt", DOUBLE),
                 DelegationReadTestCase("error", OPTIONAL),
                 DelegationReadTestCase("incompleteDetails", OPTIONAL),
@@ -75,6 +77,7 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("maxOutputTokens", OPTIONAL),
                 DelegationReadTestCase("previousResponseId", OPTIONAL),
                 DelegationReadTestCase("prompt", OPTIONAL),
+                DelegationReadTestCase("promptCacheDiagnostics", OPTIONAL),
                 DelegationReadTestCase("promptCacheKey", OPTIONAL),
                 DelegationReadTestCase("promptCacheOptions", OPTIONAL),
                 DelegationReadTestCase("promptCacheRetention", OPTIONAL),
@@ -105,6 +108,7 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("_maxOutputTokens", JSON_FIELD),
                 DelegationReadTestCase("_previousResponseId", JSON_FIELD),
                 DelegationReadTestCase("_prompt", JSON_FIELD),
+                DelegationReadTestCase("_promptCacheDiagnostics", JSON_FIELD),
                 DelegationReadTestCase("_promptCacheKey", JSON_FIELD),
                 DelegationReadTestCase("_promptCacheOptions", JSON_FIELD),
                 DelegationReadTestCase("_promptCacheRetention", JSON_FIELD),
@@ -122,6 +126,7 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("_completedAt", JSON_FIELD),
                 DelegationReadTestCase("conversation", OPTIONAL),
                 DelegationReadTestCase("_conversation", JSON_FIELD),
+                DelegationReadTestCase("_allProperties", MAP),
                 DelegationReadTestCase("_additionalProperties", MAP),
                 // `validate()` and `isValid()` (which calls `validate()`) are tested separately,
                 // as they require special handling.

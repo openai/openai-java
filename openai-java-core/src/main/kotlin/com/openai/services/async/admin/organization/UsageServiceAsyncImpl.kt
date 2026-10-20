@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.admin.organization
 
@@ -25,6 +25,8 @@ import com.openai.models.admin.organization.usage.UsageCompletionsParams
 import com.openai.models.admin.organization.usage.UsageCompletionsResponse
 import com.openai.models.admin.organization.usage.UsageCostsParams
 import com.openai.models.admin.organization.usage.UsageCostsResponse
+import com.openai.models.admin.organization.usage.UsageDecisionsParams
+import com.openai.models.admin.organization.usage.UsageDecisionsResponse
 import com.openai.models.admin.organization.usage.UsageEmbeddingsParams
 import com.openai.models.admin.organization.usage.UsageEmbeddingsResponse
 import com.openai.models.admin.organization.usage.UsageFileSearchCallsParams
@@ -86,6 +88,13 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
     ): CompletableFuture<UsageCostsResponse> =
         // get /organization/costs
         withRawResponse().costs(params, requestOptions).thenApply { it.parse() }
+
+    override fun decisions(
+        params: UsageDecisionsParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<UsageDecisionsResponse> =
+        // get /organization/usage/decisions
+        withRawResponse().decisions(params, requestOptions).thenApply { it.parse() }
 
     override fun embeddings(
         params: UsageEmbeddingsParams,
@@ -303,6 +312,40 @@ class UsageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     errorHandler.handle(response).parseable {
                         response
                             .use { costsHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val decisionsHandler: Handler<UsageDecisionsResponse> =
+            jsonHandler<UsageDecisionsResponse>(clientOptions.jsonMapper)
+
+        override fun decisions(
+            params: UsageDecisionsParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<UsageDecisionsResponse>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("organization", "usage", "decisions")
+                    .build()
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().adminApiKeyAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    errorHandler.handle(response).parseable {
+                        response
+                            .use { decisionsHandler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

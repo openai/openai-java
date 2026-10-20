@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -15,11 +15,19 @@ internal class ChatCompletionChunkTest {
     fun create() {
         val chatCompletionChunk =
             ChatCompletionChunk.builder()
-                .id("id")
+                .id("chatcmpl-123")
                 .addChoice(
                     ChatCompletionChunk.Choice.builder()
                         .delta(
                             ChatCompletionChunk.Choice.Delta.builder()
+                                .audio(
+                                    ChatCompletionChunk.Choice.Delta.Audio.builder()
+                                        .id("id")
+                                        .data("data")
+                                        .expiresAt(0L)
+                                        .transcript("transcript")
+                                        .build()
+                                )
                                 .content("content")
                                 .functionCall(
                                     ChatCompletionChunk.Choice.Delta.FunctionCall.builder()
@@ -47,8 +55,8 @@ internal class ChatCompletionChunkTest {
                                 )
                                 .build()
                         )
-                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                         .index(0L)
+                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                         .logprobs(
                             ChatCompletionChunk.Choice.Logprobs.builder()
                                 .addContent(
@@ -83,8 +91,8 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
-                .created(0L)
-                .model("model")
+                .created(1694268190L)
+                .model("gpt-6-astra")
                 .moderation(
                     ChatCompletionChunk.Moderation.builder()
                         .input(
@@ -167,8 +175,9 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
+                .obfuscation("")
                 .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
-                .systemFingerprint("system_fingerprint")
+                .systemFingerprint("fp_44709d6fcb")
                 .usage(
                     CompletionUsage.builder()
                         .completionTokens(0L)
@@ -180,6 +189,7 @@ internal class ChatCompletionChunkTest {
                                 .audioTokens(0L)
                                 .reasoningTokens(0L)
                                 .rejectedPredictionTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .promptTokensDetails(
@@ -187,18 +197,28 @@ internal class ChatCompletionChunkTest {
                                 .audioTokens(0L)
                                 .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
+                                .imageTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .build()
                 )
                 .build()
 
-        assertThat(chatCompletionChunk.id()).isEqualTo("id")
+        assertThat(chatCompletionChunk.id()).isEqualTo("chatcmpl-123")
         assertThat(chatCompletionChunk.choices())
             .containsExactly(
                 ChatCompletionChunk.Choice.builder()
                     .delta(
                         ChatCompletionChunk.Choice.Delta.builder()
+                            .audio(
+                                ChatCompletionChunk.Choice.Delta.Audio.builder()
+                                    .id("id")
+                                    .data("data")
+                                    .expiresAt(0L)
+                                    .transcript("transcript")
+                                    .build()
+                            )
                             .content("content")
                             .functionCall(
                                 ChatCompletionChunk.Choice.Delta.FunctionCall.builder()
@@ -223,8 +243,8 @@ internal class ChatCompletionChunkTest {
                             )
                             .build()
                     )
-                    .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                     .index(0L)
+                    .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                     .logprobs(
                         ChatCompletionChunk.Choice.Logprobs.builder()
                             .addContent(
@@ -259,8 +279,8 @@ internal class ChatCompletionChunkTest {
                     )
                     .build()
             )
-        assertThat(chatCompletionChunk.created()).isEqualTo(0L)
-        assertThat(chatCompletionChunk.model()).isEqualTo("model")
+        assertThat(chatCompletionChunk.created()).isEqualTo(1694268190L)
+        assertThat(chatCompletionChunk.model()).isEqualTo("gpt-6-astra")
         assertThat(chatCompletionChunk.moderation())
             .contains(
                 ChatCompletionChunk.Moderation.builder()
@@ -344,8 +364,9 @@ internal class ChatCompletionChunkTest {
                     )
                     .build()
             )
+        assertThat(chatCompletionChunk.obfuscation()).contains("")
         assertThat(chatCompletionChunk.serviceTier()).contains(ChatCompletionChunk.ServiceTier.AUTO)
-        assertThat(chatCompletionChunk.systemFingerprint()).contains("system_fingerprint")
+        assertThat(chatCompletionChunk.systemFingerprint()).contains("fp_44709d6fcb")
         assertThat(chatCompletionChunk.usage())
             .contains(
                 CompletionUsage.builder()
@@ -358,6 +379,7 @@ internal class ChatCompletionChunkTest {
                             .audioTokens(0L)
                             .reasoningTokens(0L)
                             .rejectedPredictionTokens(0L)
+                            .textTokens(0L)
                             .build()
                     )
                     .promptTokensDetails(
@@ -365,6 +387,8 @@ internal class ChatCompletionChunkTest {
                             .audioTokens(0L)
                             .cacheWriteTokens(0L)
                             .cachedTokens(0L)
+                            .imageTokens(0L)
+                            .textTokens(0L)
                             .build()
                     )
                     .build()
@@ -376,11 +400,19 @@ internal class ChatCompletionChunkTest {
         val jsonMapper = jsonMapper()
         val chatCompletionChunk =
             ChatCompletionChunk.builder()
-                .id("id")
+                .id("chatcmpl-123")
                 .addChoice(
                     ChatCompletionChunk.Choice.builder()
                         .delta(
                             ChatCompletionChunk.Choice.Delta.builder()
+                                .audio(
+                                    ChatCompletionChunk.Choice.Delta.Audio.builder()
+                                        .id("id")
+                                        .data("data")
+                                        .expiresAt(0L)
+                                        .transcript("transcript")
+                                        .build()
+                                )
                                 .content("content")
                                 .functionCall(
                                     ChatCompletionChunk.Choice.Delta.FunctionCall.builder()
@@ -408,8 +440,8 @@ internal class ChatCompletionChunkTest {
                                 )
                                 .build()
                         )
-                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                         .index(0L)
+                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                         .logprobs(
                             ChatCompletionChunk.Choice.Logprobs.builder()
                                 .addContent(
@@ -444,8 +476,8 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
-                .created(0L)
-                .model("model")
+                .created(1694268190L)
+                .model("gpt-6-astra")
                 .moderation(
                     ChatCompletionChunk.Moderation.builder()
                         .input(
@@ -528,8 +560,9 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
+                .obfuscation("")
                 .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
-                .systemFingerprint("system_fingerprint")
+                .systemFingerprint("fp_44709d6fcb")
                 .usage(
                     CompletionUsage.builder()
                         .completionTokens(0L)
@@ -541,6 +574,7 @@ internal class ChatCompletionChunkTest {
                                 .audioTokens(0L)
                                 .reasoningTokens(0L)
                                 .rejectedPredictionTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .promptTokensDetails(
@@ -548,6 +582,8 @@ internal class ChatCompletionChunkTest {
                                 .audioTokens(0L)
                                 .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
+                                .imageTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .build()

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.admin.organization
 
@@ -33,9 +33,11 @@ interface GroupServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): GroupServiceAsync
 
-    fun users(): UserServiceAsync
+    fun users(): UserServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun roles(): RoleServiceAsync
+    fun roles(): RoleServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Creates a new group in the organization. */
     fun create(params: GroupCreateParams): CompletableFuture<Group> =
@@ -166,9 +168,15 @@ interface GroupServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): GroupServiceAsync.WithRawResponse
 
-        fun users(): UserServiceAsync.WithRawResponse
+        fun users(): UserServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun roles(): RoleServiceAsync.WithRawResponse
+        fun roles(): RoleServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /organization/groups`, but is otherwise the same as

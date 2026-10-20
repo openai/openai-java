@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.vectorstores
 
@@ -13,6 +13,7 @@ import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -56,8 +57,8 @@ private constructor(
     fun expiresAfter(): Optional<ExpiresAfter> = body.expiresAfter()
 
     /**
-     * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the vector
-     * store should use. Useful for tools like `file_search` that can access files.
+     * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that the
+     * vector store should use. Useful for tools like `file_search` that can access files.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -246,8 +247,8 @@ private constructor(
         }
 
         /**
-         * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-         * vector store should use. Useful for tools like `file_search` that can access files.
+         * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that
+         * the vector store should use. Useful for tools like `file_search` that can access files.
          */
         fun fileIds(fileIds: List<String>) = apply { body.fileIds(fileIds) }
 
@@ -503,8 +504,8 @@ private constructor(
         fun expiresAfter(): Optional<ExpiresAfter> = expiresAfter.getOptional("expires_after")
 
         /**
-         * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-         * vector store should use. Useful for tools like `file_search` that can access files.
+         * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs that
+         * the vector store should use. Useful for tools like `file_search` that can access files.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -587,6 +588,32 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "chunking_strategy" to this.chunkingStrategy,
+                "description" to this.description,
+                "expires_after" to this.expiresAfter,
+                "file_ids" to this.fileIds,
+                "metadata" to this.metadata,
+                "name" to this.name,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -698,8 +725,9 @@ private constructor(
             }
 
             /**
-             * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-             * vector store should use. Useful for tools like `file_search` that can access files.
+             * A list of [File](https://developers.openai.com/api/reference/resources/files) IDs
+             * that the vector store should use. Useful for tools like `file_search` that can access
+             * files.
              */
             fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 
@@ -721,7 +749,7 @@ private constructor(
              */
             fun addFileId(fileId: String) = apply {
                 fileIds =
-                    (fileIds ?: JsonField.of(mutableListOf())).also {
+                    (fileIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("fileIds", it).add(fileId)
                     }
             }
@@ -926,6 +954,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "anchor" to this.anchor, "days" to this.days)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1103,6 +1149,23 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -1132,6 +1195,11 @@ private constructor(
 
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
+            }
+
+            /** Adds a string-valued property. */
+            fun putProperty(key: String, value: String) = apply {
+                putAdditionalProperty(key, JsonValue.from(value))
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

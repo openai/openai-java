@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.moderations
 
@@ -10,8 +10,8 @@ internal class ModerationCreateParamsTest {
     @Test
     fun create() {
         ModerationCreateParams.builder()
-            .input("I want to kill them.")
-            .model(ModerationModel.OMNI_MODERATION_LATEST)
+            .input("...text to classify goes here...")
+            .model(ModerationModel.OMNI_MODERATION_2024_09_26)
             .build()
     }
 
@@ -19,24 +19,25 @@ internal class ModerationCreateParamsTest {
     fun body() {
         val params =
             ModerationCreateParams.builder()
-                .input("I want to kill them.")
-                .model(ModerationModel.OMNI_MODERATION_LATEST)
+                .input("...text to classify goes here...")
+                .model(ModerationModel.OMNI_MODERATION_2024_09_26)
                 .build()
 
         val body = params._body()
 
         assertThat(body.input())
-            .isEqualTo(ModerationCreateParams.Input.ofString("I want to kill them."))
-        assertThat(body.model()).contains(ModerationModel.OMNI_MODERATION_LATEST)
+            .isEqualTo(ModerationCreateParams.Input.ofString("...text to classify goes here..."))
+        assertThat(body.model()).contains(ModerationModel.OMNI_MODERATION_2024_09_26)
     }
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = ModerationCreateParams.builder().input("I want to kill them.").build()
+        val params =
+            ModerationCreateParams.builder().input("...text to classify goes here...").build()
 
         val body = params._body()
 
         assertThat(body.input())
-            .isEqualTo(ModerationCreateParams.Input.ofString("I want to kill them."))
+            .isEqualTo(ModerationCreateParams.Input.ofString("...text to classify goes here..."))
     }
 }

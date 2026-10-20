@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.skills.versions
 
@@ -34,7 +34,7 @@ private constructor(
 
     override fun items(): List<SkillVersion> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = hasMore().orElse(true) && items().isNotEmpty()
 
     fun nextPageParams(): VersionListParams =
         params.toBuilder().after(items().last()._id().getOptional("id")).build()

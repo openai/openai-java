@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
@@ -31,7 +31,8 @@ interface ContainerService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContainerService
 
-    fun files(): FileService
+    fun files(): FileService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create Container */
     fun create(params: ContainerCreateParams): ContainerCreateResponse =
@@ -129,7 +130,10 @@ interface ContainerService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContainerService.WithRawResponse
 
-        fun files(): FileService.WithRawResponse
+        fun files(): FileService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /containers`, but is otherwise the same as

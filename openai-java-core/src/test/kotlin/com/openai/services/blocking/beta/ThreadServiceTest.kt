@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.beta
 
@@ -182,7 +182,7 @@ internal class ThreadServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_6_SOL)
+                    .model(ChatModel.GPT_4_1)
                     .parallelToolCalls(true)
                     .responseFormatAuto()
                     .temperature(1.0)
@@ -303,7 +303,7 @@ internal class ThreadServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_6_SOL)
+                    .model(ChatModel.GPT_4_1)
                     .parallelToolCalls(true)
                     .responseFormatAuto()
                     .temperature(1.0)
@@ -398,6 +398,13 @@ internal class ThreadServiceTest {
                     .build()
             )
 
-        runStreamResponse.use { runStreamResponse.stream().forEach { run -> run.validate() } }
+        var received = 0
+        runStreamResponse.use {
+            runStreamResponse.stream().forEach { event ->
+                event.validate()
+                received++
+            }
+        }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 }

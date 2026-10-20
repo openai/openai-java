@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
+import com.openai.core.collectAllProperties
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -98,7 +99,7 @@ private constructor(
     /**
      * An optional text to guide the model's style or continue a previous audio segment. For
      * `whisper-1`, the
-     * [prompt is a list of keywords](https://platform.openai.com/docs/guides/speech-to-text#prompting).
+     * [prompt is a list of keywords](https://developers.openai.com/api/docs/guides/speech-to-text#prompting).
      * For `gpt-4o-transcribe` models (excluding `gpt-4o-transcribe-diarize`), the prompt is a free
      * text string, for example "expect words related to technology". Prompt is not supported with
      * `gpt-realtime-whisper` in GA Realtime sessions.
@@ -155,6 +156,32 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "delay" to this.delay,
+            "keywords" to this.keywords,
+            "language" to this.language,
+            "languages" to this.languages,
+            "model" to this.model,
+            "prompt" to this.prompt,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -229,7 +256,7 @@ private constructor(
          */
         fun addKeyword(keyword: String) = apply {
             keywords =
-                (keywords ?: JsonField.of(mutableListOf())).also {
+                (keywords?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("keywords", it).add(keyword)
                 }
         }
@@ -274,7 +301,7 @@ private constructor(
          */
         fun addLanguage(language: String) = apply {
             languages =
-                (languages ?: JsonField.of(mutableListOf())).also {
+                (languages?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("languages", it).add(language)
                 }
         }
@@ -306,7 +333,7 @@ private constructor(
         /**
          * An optional text to guide the model's style or continue a previous audio segment. For
          * `whisper-1`, the
-         * [prompt is a list of keywords](https://platform.openai.com/docs/guides/speech-to-text#prompting).
+         * [prompt is a list of keywords](https://developers.openai.com/api/docs/guides/speech-to-text#prompting).
          * For `gpt-4o-transcribe` models (excluding `gpt-4o-transcribe-diarize`), the prompt is a
          * free text string, for example "expect words related to technology". Prompt is not
          * supported with `gpt-realtime-whisper` in GA Realtime sessions.

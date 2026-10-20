@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.vectorstores.files
 
@@ -12,6 +12,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -27,8 +28,8 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Create a vector store file by attaching a
- * [File](https://platform.openai.com/docs/api-reference/files) to a
- * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object).
+ * [File](https://developers.openai.com/api/reference/resources/files) to a
+ * [vector store](https://developers.openai.com/api/reference/resources/vector_stores).
  */
 class FileCreateParams
 private constructor(
@@ -41,10 +42,10 @@ private constructor(
     fun vectorStoreId(): Optional<String> = Optional.ofNullable(vectorStoreId)
 
     /**
-     * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-     * should use. Useful for tools like `file_search` that can access files. For multi-file
+     * A [File](https://developers.openai.com/api/reference/resources/files) ID that the vector
+     * store should use. Useful for tools like `file_search` that can access files. For multi-file
      * ingestion, we recommend
-     * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+     * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
      * to minimize per-vector-store write requests.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -151,10 +152,10 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-         * should use. Useful for tools like `file_search` that can access files. For multi-file
-         * ingestion, we recommend
-         * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+         * A [File](https://developers.openai.com/api/reference/resources/files) ID that the vector
+         * store should use. Useful for tools like `file_search` that can access files. For
+         * multi-file ingestion, we recommend
+         * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
          * to minimize per-vector-store write requests.
          */
         fun fileId(fileId: String) = apply { body.fileId(fileId) }
@@ -402,10 +403,10 @@ private constructor(
         ) : this(fileId, attributes, chunkingStrategy, mutableMapOf())
 
         /**
-         * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-         * should use. Useful for tools like `file_search` that can access files. For multi-file
-         * ingestion, we recommend
-         * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+         * A [File](https://developers.openai.com/api/reference/resources/files) ID that the vector
+         * store should use. Useful for tools like `file_search` that can access files. For
+         * multi-file ingestion, we recommend
+         * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
          * to minimize per-vector-store write requests.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -466,6 +467,29 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "file_id" to this.fileId,
+                "attributes" to this.attributes,
+                "chunking_strategy" to this.chunkingStrategy,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -503,10 +527,10 @@ private constructor(
             }
 
             /**
-             * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector
-             * store should use. Useful for tools like `file_search` that can access files. For
-             * multi-file ingestion, we recommend
-             * [`file_batches`](https://platform.openai.com/docs/api-reference/vector-stores-file-batches/createBatch)
+             * A [File](https://developers.openai.com/api/reference/resources/files) ID that the
+             * vector store should use. Useful for tools like `file_search` that can access files.
+             * For multi-file ingestion, we recommend
+             * [`file_batches`](https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create)
              * to minimize per-vector-store write requests.
              */
             fun fileId(fileId: String) = fileId(JsonField.of(fileId))
@@ -704,6 +728,23 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties

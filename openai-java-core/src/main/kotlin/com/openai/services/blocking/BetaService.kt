@@ -1,8 +1,9 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
+import com.openai.services.blocking.beta.AgentService
 import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.ChatKitService
 import com.openai.services.blocking.beta.RealtimeService
@@ -29,16 +30,24 @@ interface BetaService {
     )
     fun realtime(): RealtimeService
 
-    fun responses(): ResponseService
+    fun agents(): AgentService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun chatkit(): ChatKitService
+    /** Create and manage model responses. */
+    fun responses(): ResponseService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
+    fun chatkit(): ChatKitService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Build Assistants that can call models and use tools. */
-    fun assistants(): AssistantService
+    fun assistants(): AssistantService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Build Assistants that can call models and use tools. */
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-    fun threads(): ThreadService
+    fun threads(): ThreadService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** A view of [BetaService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -55,15 +64,33 @@ interface BetaService {
         )
         fun realtime(): RealtimeService.WithRawResponse
 
-        fun responses(): ResponseService.WithRawResponse
+        fun agents(): AgentService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun chatkit(): ChatKitService.WithRawResponse
+        /** Create and manage model responses. */
+        fun responses(): ResponseService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
+        fun chatkit(): ChatKitService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /** Build Assistants that can call models and use tools. */
-        fun assistants(): AssistantService.WithRawResponse
+        fun assistants(): AssistantService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /** Build Assistants that can call models and use tools. */
         @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-        fun threads(): ThreadService.WithRawResponse
+        fun threads(): ThreadService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
     }
 }

@@ -1,10 +1,11 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.services.async.realtime.CallServiceAsync
 import com.openai.services.async.realtime.ClientSecretServiceAsync
+import com.openai.services.async.realtime.TranslationServiceAsync
 import java.util.function.Consumer
 
 interface RealtimeServiceAsync {
@@ -21,9 +22,14 @@ interface RealtimeServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): RealtimeServiceAsync
 
-    fun clientSecrets(): ClientSecretServiceAsync
+    fun clientSecrets(): ClientSecretServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
-    fun calls(): CallServiceAsync
+    fun calls(): CallServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
+    fun translations(): TranslationServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * A view of [RealtimeServiceAsync] that provides access to raw HTTP responses for each method.
@@ -39,8 +45,19 @@ interface RealtimeServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): RealtimeServiceAsync.WithRawResponse
 
-        fun clientSecrets(): ClientSecretServiceAsync.WithRawResponse
+        fun clientSecrets(): ClientSecretServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
-        fun calls(): CallServiceAsync.WithRawResponse
+        fun calls(): CallServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
+        fun translations(): TranslationServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
     }
 }

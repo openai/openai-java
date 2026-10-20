@@ -22,6 +22,12 @@ class StructuredResponse<T : Any>(
     /** @see Response.id */
     fun id(): String = rawResponse.id()
 
+    /** @see Response.accessPrograms */
+    fun accessPrograms(): Optional<Response.AccessPrograms> = rawResponse.accessPrograms()
+
+    /** @see Response._accessPrograms */
+    fun _accessPrograms(): JsonField<Response.AccessPrograms> = rawResponse._accessPrograms()
+
     /** @see Response.createdAt */
     fun createdAt(): Double = rawResponse.createdAt()
 
@@ -84,6 +90,10 @@ class StructuredResponse<T : Any>(
 
     /** @see Response.prompt */
     fun prompt(): Optional<ResponsePrompt> = rawResponse.prompt()
+
+    /** @see Response.promptCacheDiagnostics */
+    fun promptCacheDiagnostics(): Optional<Response.PromptCacheDiagnostics> =
+        rawResponse.promptCacheDiagnostics()
 
     /** @see Response.promptCacheKey */
     fun promptCacheKey(): Optional<String> = rawResponse.promptCacheKey()
@@ -187,6 +197,10 @@ class StructuredResponse<T : Any>(
     /** @see Response._prompt */
     fun _prompt(): JsonField<ResponsePrompt> = rawResponse._prompt()
 
+    /** @see Response._promptCacheDiagnostics */
+    fun _promptCacheDiagnostics(): JsonField<Response.PromptCacheDiagnostics> =
+        rawResponse._promptCacheDiagnostics()
+
     /** @see Response._promptCacheKey */
     fun _promptCacheKey(): JsonField<String> = rawResponse._promptCacheKey()
 
@@ -231,7 +245,11 @@ class StructuredResponse<T : Any>(
     /** @see Response._conversation() */
     fun _conversation(): JsonField<Response.Conversation> = rawResponse._conversation()
 
+    /** @see Response._allProperties */
+    fun _allProperties(): Map<String, JsonValue> = rawResponse._allProperties()
+
     /** @see Response._additionalProperties */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     fun _additionalProperties(): Map<String, JsonValue> = rawResponse._additionalProperties()
 
     /** @see Response.validate */

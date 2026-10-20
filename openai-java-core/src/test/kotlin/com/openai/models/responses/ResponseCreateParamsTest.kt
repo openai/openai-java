@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -17,6 +17,11 @@ internal class ResponseCreateParamsTest {
     @Test
     fun create() {
         ResponseCreateParams.builder()
+            .accessPrograms(
+                ResponseCreateParams.AccessPrograms.builder()
+                    .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                    .build()
+            )
             .background(true)
             .addContextManagement(
                 ResponseCreateParams.ContextManagement.builder()
@@ -35,7 +40,7 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-            .model(ChatModel.GPT_5_1)
+            .model(ChatModel.GPT_6_ASTRA)
             .moderation(
                 ResponseCreateParams.Moderation.builder()
                     .model("model")
@@ -71,7 +76,9 @@ internal class ResponseCreateParamsTest {
             .promptCacheKey("prompt-cache-key-1234")
             .promptCacheOptions(
                 ResponseCreateParams.PromptCacheOptions.builder()
+                    .comparisonResponseId("resp_123")
                     .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                    .prewarm(true)
                     .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                     .build()
             )
@@ -109,6 +116,7 @@ internal class ResponseCreateParamsTest {
                     )
                     .strict(true)
                     .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                    .async(true)
                     .deferLoading(true)
                     .description("description")
                     .outputSchema(
@@ -129,6 +137,11 @@ internal class ResponseCreateParamsTest {
     fun body() {
         val params =
             ResponseCreateParams.builder()
+                .accessPrograms(
+                    ResponseCreateParams.AccessPrograms.builder()
+                        .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                        .build()
+                )
                 .background(true)
                 .addContextManagement(
                     ResponseCreateParams.ContextManagement.builder()
@@ -147,7 +160,7 @@ internal class ResponseCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_5_1)
+                .model(ChatModel.GPT_6_ASTRA)
                 .moderation(
                     ResponseCreateParams.Moderation.builder()
                         .model("model")
@@ -187,7 +200,9 @@ internal class ResponseCreateParamsTest {
                 .promptCacheKey("prompt-cache-key-1234")
                 .promptCacheOptions(
                     ResponseCreateParams.PromptCacheOptions.builder()
+                        .comparisonResponseId("resp_123")
                         .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                        .prewarm(true)
                         .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                         .build()
                 )
@@ -225,6 +240,7 @@ internal class ResponseCreateParamsTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -242,6 +258,12 @@ internal class ResponseCreateParamsTest {
 
         val body = params._body()
 
+        assertThat(body.accessPrograms())
+            .contains(
+                ResponseCreateParams.AccessPrograms.builder()
+                    .cyber(ResponseCreateParams.AccessPrograms.Cyber.STANDARD)
+                    .build()
+            )
         assertThat(body.background()).contains(true)
         assertThat(body.contextManagement().getOrNull())
             .containsExactly(
@@ -263,7 +285,7 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(body.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_5_1))
+        assertThat(body.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_6_ASTRA))
         assertThat(body.moderation())
             .contains(
                 ResponseCreateParams.Moderation.builder()
@@ -302,7 +324,9 @@ internal class ResponseCreateParamsTest {
         assertThat(body.promptCacheOptions())
             .contains(
                 ResponseCreateParams.PromptCacheOptions.builder()
+                    .comparisonResponseId("resp_123")
                     .mode(ResponseCreateParams.PromptCacheOptions.Mode.IMPLICIT)
+                    .prewarm(true)
                     .ttl(ResponseCreateParams.PromptCacheOptions.Ttl._30M)
                     .build()
             )
@@ -345,6 +369,7 @@ internal class ResponseCreateParamsTest {
                         )
                         .strict(true)
                         .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(

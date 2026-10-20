@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -15,7 +15,6 @@ internal class BetaResponseFunctionCallArgumentsDoneEventTest {
             BetaResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
-                .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .agent(
@@ -27,7 +26,6 @@ internal class BetaResponseFunctionCallArgumentsDoneEventTest {
 
         assertThat(betaResponseFunctionCallArgumentsDoneEvent.arguments()).isEqualTo("arguments")
         assertThat(betaResponseFunctionCallArgumentsDoneEvent.itemId()).isEqualTo("item_id")
-        assertThat(betaResponseFunctionCallArgumentsDoneEvent.name()).isEqualTo("name")
         assertThat(betaResponseFunctionCallArgumentsDoneEvent.outputIndex()).isEqualTo(0L)
         assertThat(betaResponseFunctionCallArgumentsDoneEvent.sequenceNumber()).isEqualTo(0L)
         assertThat(betaResponseFunctionCallArgumentsDoneEvent.agent())
@@ -45,7 +43,6 @@ internal class BetaResponseFunctionCallArgumentsDoneEventTest {
             BetaResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
                 .itemId("item_id")
-                .name("name")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .agent(

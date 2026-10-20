@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
@@ -17,6 +15,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -192,6 +192,85 @@ internal class ClientOptionsTest {
                 .build()
 
         assertThat(clientOptions.headers.values("User-Agent")).containsExactly("My User Agent")
+    }
+
+    @Test
+    fun toBuilder_preservesGeneratedHeaderRemovals() {
+        val original =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .apiKey("test-key")
+                .disableTelemetry(false)
+                .build()
+        val removed = original.toBuilder().removeHeaders("x-StAiNlEsS-lAnG").build()
+        assertThat(removed.headers.values("X-Stainless-Lang")).isEmpty()
+        assertThat(removed.toBuilder().build().headers.values("X-Stainless-Lang")).isEmpty()
+        assertThat(
+                removed
+                    .toBuilder()
+                    .disableTelemetry(true)
+                    .build()
+                    .toBuilder()
+                    .disableTelemetry(false)
+                    .build()
+                    .headers
+                    .values("X-Stainless-Lang")
+            )
+            .isEmpty()
+        assertThat(original.headers.values("X-Stainless-Lang")).containsExactly("java")
+        assertThat(removed.headers.values("X-Stainless-Runtime")).containsExactly("JRE")
+        assertThat(
+                removed
+                    .toBuilder()
+                    .putHeader("X-Stainless-Lang", "custom")
+                    .build()
+                    .headers
+                    .values("X-Stainless-Lang")
+            )
+            .containsExactly("custom")
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun toBuilder_preservesEmptyGeneratedHeaderReplacements(useMap: Boolean) {
+        val original =
+            ClientOptions.builder()
+                .httpClient(httpClient)
+                .apiKey("test-key")
+                .disableTelemetry(false)
+                .build()
+        val builder = original.toBuilder()
+        if (useMap) {
+            builder.replaceAllHeaders(mapOf("x-StAiNlEsS-lAnG" to emptyList()))
+        } else {
+            builder.replaceHeaders("x-StAiNlEsS-lAnG", emptyList())
+        }
+        val replaced = builder.build()
+        assertThat(replaced.headers.values("X-Stainless-Lang")).isEmpty()
+        assertThat(replaced.toBuilder().build().headers.values("X-Stainless-Lang")).isEmpty()
+        assertThat(
+                replaced
+                    .toBuilder()
+                    .disableTelemetry(true)
+                    .build()
+                    .toBuilder()
+                    .disableTelemetry(false)
+                    .build()
+                    .headers
+                    .values("X-Stainless-Lang")
+            )
+            .isEmpty()
+        assertThat(original.headers.values("X-Stainless-Lang")).containsExactly("java")
+        assertThat(replaced.headers.values("X-Stainless-Runtime")).containsExactly("JRE")
+        assertThat(
+                replaced
+                    .toBuilder()
+                    .replaceHeaders("X-Stainless-Lang", "custom")
+                    .build()
+                    .headers
+                    .values("X-Stainless-Lang")
+            )
+            .containsExactly("custom")
     }
 
     @Test

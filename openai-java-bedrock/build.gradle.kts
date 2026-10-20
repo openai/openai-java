@@ -36,6 +36,7 @@ dependencies {
     runtimeOnly("software.amazon.awssdk:url-connection-client")
 
     testImplementation(kotlin("test"))
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // Keep WireMock's transitive Jackson runtime aligned on a secure release.
     testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
     testImplementation("org.assertj:assertj-core:3.27.7")

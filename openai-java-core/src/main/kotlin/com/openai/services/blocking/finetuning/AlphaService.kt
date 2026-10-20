@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.finetuning
 
@@ -21,7 +21,8 @@ interface AlphaService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): AlphaService
 
     /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-    fun graders(): GraderService
+    fun graders(): GraderService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** A view of [AlphaService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -34,6 +35,9 @@ interface AlphaService {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): AlphaService.WithRawResponse
 
         /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-        fun graders(): GraderService.WithRawResponse
+        fun graders(): GraderService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
     }
 }

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models
 
@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -59,7 +60,7 @@ private constructor(
 
     /**
      * The parameters the functions accepts, described as a JSON Schema object. See the
-     * [guide](https://platform.openai.com/docs/guides/function-calling) for examples, and the
+     * [guide](https://developers.openai.com/api/docs/guides/function-calling) for examples, and the
      * [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for documentation
      * about the format.
      *
@@ -74,7 +75,7 @@ private constructor(
      * Whether to enable strict schema adherence when generating the function call. If set to true,
      * the model will follow the exact schema defined in the `parameters` field. Only a subset of
      * JSON Schema is supported when `strict` is `true`. Learn more about Structured Outputs in the
-     * [function calling guide](https://platform.openai.com/docs/guides/function-calling).
+     * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -116,6 +117,30 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "name" to this.name,
+            "description" to this.description,
+            "parameters" to this.parameters,
+            "strict" to this.strict,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -185,8 +210,8 @@ private constructor(
 
         /**
          * The parameters the functions accepts, described as a JSON Schema object. See the
-         * [guide](https://platform.openai.com/docs/guides/function-calling) for examples, and the
-         * [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for
+         * [guide](https://developers.openai.com/api/docs/guides/function-calling) for examples, and
+         * the [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for
          * documentation about the format.
          *
          * Omitting `parameters` defines a function with an empty parameter list.
@@ -209,7 +234,7 @@ private constructor(
          * true, the model will follow the exact schema defined in the `parameters` field. Only a
          * subset of JSON Schema is supported when `strict` is `true`. Learn more about Structured
          * Outputs in the
-         * [function calling guide](https://platform.openai.com/docs/guides/function-calling).
+         * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling).
          */
         fun strict(strict: Boolean?) = strict(JsonField.ofNullable(strict))
 

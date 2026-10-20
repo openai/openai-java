@@ -1,73 +1,244 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
+import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
+import com.github.tomakehurst.wiremock.client.WireMock.findAll
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.okJson
+import com.github.tomakehurst.wiremock.client.WireMock.reset
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
+import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
-import com.openai.client.OpenAIClient
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.http.Headers
-import com.openai.errors.InvalidWebhookSignatureException
+import com.openai.models.webhooks.WebhookCreateParams
+import com.openai.models.webhooks.WebhookRotateSecretParams
+import com.openai.models.webhooks.WebhookTestParams
+import com.openai.models.webhooks.WebhookUpdateParams
 import com.openai.models.webhooks.WebhookVerificationParams
-import java.time.Clock
-import java.time.Duration
-import java.time.Instant
-import java.time.ZoneOffset
 import kotlin.test.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.parallel.ResourceLock
 
 @ExtendWith(TestServerExtension::class)
+@WireMockTest
+@ResourceLock("https://github.com/wiremock/wiremock/issues/169")
 internal class WebhookServiceTest {
 
-    // Standardized test data (matches TypeScript implementation)
     private val testPayload =
         """{"id": "evt_685c059ae3a481909bdc86819b066fb6", "object": "event", "created_at": 1750861210, "type": "response.completed", "data": {"id": "resp_123"}}"""
-    private val testSecret = "whsec_RdvaYFYUXuIFuEbvZHwMfYFhUf7aMYjYcmM24+Aj40c="
 
-    // Use a fixed timestamp for consistent testing (matches the created_at in payload)
-    private val fixedTimestamp = "1750861210"
-    private val webhookId = "wh_685c059ae39c8190af8c71ed1022a24d"
+    @Test
+    fun create() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val webhookService = client.webhooks()
 
-    // Pre-computed valid signatures for consistent testing
-    private val validSignatureForSecret = "v1,gUAg4R2hWouRZqRQG4uJypNS8YK885G838+EHb4nKBY="
+        val webhookEndpointWithSecret =
+            webhookService.create(
+                WebhookCreateParams.builder()
+                    .addEventType(WebhookCreateParams.EventType.BATCH_COMPLETED)
+                    .name("x")
+                    .url("https://")
+                    .build()
+            )
 
-    // Fixed clock for deterministic testing
-    private val fixedClock =
-        Clock.fixed(Instant.ofEpochSecond(fixedTimestamp.toLong()), ZoneOffset.UTC)
-
-    private fun createClientWithFixedClock(): OpenAIClient {
-        return OpenAIOkHttpClient.builder()
-            .baseUrl(TestServerExtension.BASE_URL)
-            .apiKey("My API Key")
-            .clock(fixedClock)
-            .build()
+        webhookEndpointWithSecret.validate()
     }
 
     @Test
-    fun unwrapWithValidSignatureAndSecret() {
-        val client = createClientWithFixedClock()
+    fun retrieve() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
         val webhookService = client.webhooks()
 
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", validSignatureForSecret)
-                .put("webhook-timestamp", fixedTimestamp)
-                .put("webhook-id", webhookId)
+        val webhookEndpoint = webhookService.retrieve("whe_123")
+
+        webhookEndpoint.validate()
+    }
+
+    @Test
+    fun update() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
                 .build()
+        val webhookService = client.webhooks()
 
-        val event =
-            webhookService
-                .unwrap(
-                    WebhookVerificationParams.builder()
-                        .payload(testPayload)
-                        .headers(headers)
-                        .secret(testSecret)
-                        .build()
+        val webhookEndpoint =
+            webhookService.update(
+                WebhookUpdateParams.builder()
+                    .webhookEndpointId("whe_123")
+                    .addEventType(WebhookUpdateParams.EventType.BATCH_COMPLETED)
+                    .name("x")
+                    .url("https://")
+                    .build()
+            )
+
+        webhookEndpoint.validate()
+    }
+
+    @Test
+    fun listStopsOnExplicitFalse(wmRuntimeInfo: WireMockRuntimeInfo) {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(wmRuntimeInfo.httpBaseUrl)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        try {
+            // A terminal page can still contain items and a cursor
+            stubFor(
+                get(anyUrl())
+                    .willReturn(okJson("{\"data\":[{\"id\":\"item_1\"}],\"has_more\":false}"))
+            )
+            val page = client.webhooks().list()
+            assertThat(page.items()).hasSize(1)
+            assertThat(page.hasNextPage()).isFalse()
+
+            assertThat(page.autoPager().toList()).hasSize(1)
+
+            assertThat(findAll(getRequestedFor(anyUrl()))).hasSize(1)
+        } finally {
+            client.close()
+        }
+    }
+
+    @Test
+    fun listContinuesUntilExplicitFalse(wmRuntimeInfo: WireMockRuntimeInfo) {
+        // Both explicit true and a missing flag preserve normal cursor traversal.
+        for (firstResponse in
+            listOf(
+                "{\"data\":[{\"id\":\"item_1\"}],\"has_more\":true}",
+                "{\"data\":[{\"id\":\"item_1\"}]}",
+            )) {
+            reset()
+            val client =
+                OpenAIOkHttpClient.builder()
+                    .baseUrl(wmRuntimeInfo.httpBaseUrl)
+                    .apiKey("My API Key")
+                    .adminApiKey("My Admin API Key")
+                    .build()
+            try {
+                stubFor(
+                    get(anyUrl())
+                        .inScenario("pagination")
+                        .whenScenarioStateIs("Started")
+                        .willReturn(okJson(firstResponse))
+                        .willSetStateTo("terminal")
                 )
-                .validate()
+                stubFor(
+                    get(anyUrl())
+                        .inScenario("pagination")
+                        .whenScenarioStateIs("terminal")
+                        .willReturn(okJson("{\"data\":[{\"id\":\"item_1\"}],\"has_more\":false}"))
+                        .willSetStateTo("unexpected")
+                )
+                // Bound a regression to one extra request instead of an infinite loop.
+                stubFor(
+                    get(anyUrl())
+                        .inScenario("pagination")
+                        .whenScenarioStateIs("unexpected")
+                        .willReturn(okJson("{}"))
+                )
+                val page = client.webhooks().list()
+                assertThat(page.hasNextPage()).isTrue()
 
-        assertTrue(event.isResponseCompleted())
+                assertThat(page.autoPager().toList()).hasSize(2)
+
+                assertThat(findAll(getRequestedFor(anyUrl()))).hasSize(2)
+            } finally {
+                client.close()
+            }
+        }
+    }
+
+    @Test
+    fun list() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val webhookService = client.webhooks()
+
+        val page = webhookService.list()
+
+        page.response().validate()
+    }
+
+    @Test
+    fun delete() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val webhookService = client.webhooks()
+
+        val deletedWebhookEndpoint = webhookService.delete("whe_123")
+
+        deletedWebhookEndpoint.validate()
+    }
+
+    @Test
+    fun rotateSecret() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val webhookService = client.webhooks()
+
+        val webhookEndpointWithSecret =
+            webhookService.rotateSecret(
+                WebhookRotateSecretParams.builder()
+                    .webhookEndpointId("whe_123")
+                    .keepOldSecretActiveFor24Hours(true)
+                    .build()
+            )
+
+        webhookEndpointWithSecret.validate()
+    }
+
+    @Test
+    fun test() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val webhookService = client.webhooks()
+
+        val webhookEndpointTestResult =
+            webhookService.test(
+                WebhookTestParams.builder()
+                    .webhookEndpointId("whe_123")
+                    .eventType(WebhookTestParams.EventType.BATCH_COMPLETED)
+                    .build()
+            )
+
+        webhookEndpointTestResult.validate()
     }
 
     @Test
@@ -91,187 +262,5 @@ internal class WebhookServiceTest {
             }
 
         assertTrue(exception.message!!.contains("The webhook secret must either be set"))
-    }
-
-    @Test
-    fun verifySignatureWithInvalidSecret() {
-        val client =
-            OpenAIOkHttpClient.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .build()
-        val webhookService = client.webhooks()
-
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", "v1,invalid_signature")
-                .put("webhook-timestamp", fixedTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        assertThrows<InvalidWebhookSignatureException> {
-            webhookService.verifySignature(
-                WebhookVerificationParams.builder()
-                    .payload(testPayload)
-                    .headers(headers)
-                    .secret("invalid_secret")
-                    .build()
-            )
-        }
-    }
-
-    @Test
-    fun verifySignatureWithOldTimestamp() {
-        val client =
-            OpenAIOkHttpClient.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .build()
-        val webhookService = client.webhooks()
-
-        // Use a timestamp that's older than 5 minutes (300 seconds)
-        val oldTimestamp = (1643723400 - 400).toString()
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", "v1,signature")
-                .put("webhook-timestamp", oldTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        assertThrows<InvalidWebhookSignatureException> {
-            webhookService.verifySignature(
-                WebhookVerificationParams.builder()
-                    .payload(testPayload)
-                    .headers(headers)
-                    .secret(testSecret)
-                    .build()
-            )
-        }
-    }
-
-    @Test
-    fun verifySignatureWithInvalidTimestampFormat() {
-        val client = createClientWithFixedClock()
-        val webhookService = client.webhooks()
-
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", "v1,invalid_signature")
-                .put("webhook-timestamp", "not_a_number")
-                .put("webhook-id", webhookId)
-                .build()
-
-        assertThrows<InvalidWebhookSignatureException> {
-            webhookService.verifySignature(
-                WebhookVerificationParams.builder()
-                    .payload(testPayload)
-                    .headers(headers)
-                    .secret(testSecret)
-                    .build()
-            )
-        }
-    }
-
-    @Test
-    fun verifySignatureWithValidSignature() {
-        val client = createClientWithFixedClock()
-        val webhookService = client.webhooks()
-
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", validSignatureForSecret)
-                .put("webhook-timestamp", fixedTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        // Should not throw any exception when using correct signature
-        webhookService.verifySignature(
-            WebhookVerificationParams.builder()
-                .payload(testPayload)
-                .headers(headers)
-                .secret(testSecret)
-                .build()
-        )
-    }
-
-    @Test
-    fun verifySignatureWithCustomTolerance() {
-        val client = createClientWithFixedClock()
-        val webhookService = client.webhooks()
-
-        // Use a timestamp that's very old (should fail with default tolerance)
-        val oldTimestamp = (1750861210 - 400).toString() // 400 seconds before our payload timestamp
-
-        val headers =
-            Headers.builder()
-                .put(
-                    "webhook-signature",
-                    validSignatureForSecret,
-                ) // This won't match old timestamp but we're testing time validation
-                .put("webhook-timestamp", oldTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        // Should fail due to old timestamp
-        assertThrows<InvalidWebhookSignatureException> {
-            webhookService.verifySignature(
-                WebhookVerificationParams.builder()
-                    .payload(testPayload)
-                    .headers(headers)
-                    .secret(testSecret)
-                    .tolerance(Duration.ofMinutes(5))
-                    .build()
-            )
-        }
-    }
-
-    @Test
-    fun verifySignatureWithMultipleSignatures() {
-        val client = createClientWithFixedClock()
-        val webhookService = client.webhooks()
-
-        // Create a signature header with multiple signatures: one valid, one invalid
-        val multipleSignatures = "v1,invalid_signature $validSignatureForSecret"
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", multipleSignatures)
-                .put("webhook-timestamp", fixedTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        // Should not throw any exception when at least one signature is correct
-        webhookService.verifySignature(
-            WebhookVerificationParams.builder()
-                .payload(testPayload)
-                .headers(headers)
-                .secret(testSecret)
-                .build()
-        )
-    }
-
-    @Test
-    fun verifySignatureWithAllInvalidMultipleSignatures() {
-        val client = createClientWithFixedClock()
-        val webhookService = client.webhooks()
-
-        // Create a signature header with multiple invalid signatures
-        val multipleInvalidSignatures = "v1,invalid_signature1 v1,invalid_signature2"
-        val headers =
-            Headers.builder()
-                .put("webhook-signature", multipleInvalidSignatures)
-                .put("webhook-timestamp", fixedTimestamp)
-                .put("webhook-id", webhookId)
-                .build()
-
-        // Should throw exception when all signatures are invalid
-        assertThrows<InvalidWebhookSignatureException> {
-            webhookService.verifySignature(
-                WebhookVerificationParams.builder()
-                    .payload(testPayload)
-                    .headers(headers)
-                    .secret(testSecret)
-                    .build()
-            )
-        }
     }
 }

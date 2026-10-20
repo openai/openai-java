@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -13,6 +13,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.CustomToolInputFormat
@@ -23,7 +24,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * A custom tool that processes input using a specified format. Learn more about
- * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+ * [custom tools](https://developers.openai.com/api/docs/guides/function-calling#custom-tools)
  */
 class CustomTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -31,6 +32,7 @@ private constructor(
     private val name: JsonField<String>,
     private val type: JsonValue,
     private val allowedCallers: JsonField<List<AllowedCaller>>,
+    private val async: JsonField<Boolean>,
     private val deferLoading: JsonField<Boolean>,
     private val description: JsonField<String>,
     private val format: JsonField<CustomToolInputFormat>,
@@ -44,6 +46,7 @@ private constructor(
         @JsonProperty("allowed_callers")
         @ExcludeMissing
         allowedCallers: JsonField<List<AllowedCaller>> = JsonMissing.of(),
+        @JsonProperty("async") @ExcludeMissing async: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("defer_loading")
         @ExcludeMissing
         deferLoading: JsonField<Boolean> = JsonMissing.of(),
@@ -53,7 +56,7 @@ private constructor(
         @JsonProperty("format")
         @ExcludeMissing
         format: JsonField<CustomToolInputFormat> = JsonMissing.of(),
-    ) : this(name, type, allowedCallers, deferLoading, description, format, mutableMapOf())
+    ) : this(name, type, allowedCallers, async, deferLoading, description, format, mutableMapOf())
 
     /**
      * The name of the custom tool, used to identify it in tool calls.
@@ -84,6 +87,15 @@ private constructor(
      */
     fun allowedCallers(): Optional<List<AllowedCaller>> =
         allowedCallers.getOptional("allowed_callers")
+
+    /**
+     * Whether the tool response can be returned asynchronously versus immediately returned on next
+     * response creation.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun async(): Optional<Boolean> = async.getOptional("async")
 
     /**
      * Whether this tool should be deferred and discovered via tool search.
@@ -126,6 +138,13 @@ private constructor(
     fun _allowedCallers(): JsonField<List<AllowedCaller>> = allowedCallers
 
     /**
+     * Returns the raw JSON value of [async].
+     *
+     * Unlike [async], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("async") @ExcludeMissing fun _async(): JsonField<Boolean> = async
+
+    /**
      * Returns the raw JSON value of [deferLoading].
      *
      * Unlike [deferLoading], this method doesn't throw if the JSON field has an unexpected type.
@@ -153,6 +172,33 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "name" to this.name,
+            "type" to this.type,
+            "allowed_callers" to this.allowedCallers,
+            "async" to this.async,
+            "defer_loading" to this.deferLoading,
+            "description" to this.description,
+            "format" to this.format,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -179,6 +225,7 @@ private constructor(
         private var name: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("custom")
         private var allowedCallers: JsonField<MutableList<AllowedCaller>>? = null
+        private var async: JsonField<Boolean> = JsonMissing.of()
         private var deferLoading: JsonField<Boolean> = JsonMissing.of()
         private var description: JsonField<String> = JsonMissing.of()
         private var format: JsonField<CustomToolInputFormat> = JsonMissing.of()
@@ -189,6 +236,7 @@ private constructor(
             name = customTool.name
             type = customTool.type
             allowedCallers = customTool.allowedCallers.map { it.toMutableList() }
+            async = customTool.async
             deferLoading = customTool.deferLoading
             description = customTool.description
             format = customTool.format
@@ -246,10 +294,23 @@ private constructor(
          */
         fun addAllowedCaller(allowedCaller: AllowedCaller) = apply {
             allowedCallers =
-                (allowedCallers ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("allowedCallers", it).add(allowedCaller)
-                }
+                (allowedCallers?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("allowedCallers", it).add(allowedCaller) }
         }
+
+        /**
+         * Whether the tool response can be returned asynchronously versus immediately returned on
+         * next response creation.
+         */
+        fun async(async: Boolean) = async(JsonField.of(async))
+
+        /**
+         * Sets [Builder.async] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.async] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun async(async: JsonField<Boolean>) = apply { this.async = async }
 
         /** Whether this tool should be deferred and discovered via tool search. */
         fun deferLoading(deferLoading: Boolean) = deferLoading(JsonField.of(deferLoading))
@@ -332,6 +393,7 @@ private constructor(
                 checkRequired("name", name),
                 type,
                 (allowedCallers ?: JsonMissing.of()).map { it.toImmutable() },
+                async,
                 deferLoading,
                 description,
                 format,
@@ -361,6 +423,7 @@ private constructor(
             }
         }
         allowedCallers().ifPresent { it.forEach { it.validate() } }
+        async()
         deferLoading()
         description()
         format().ifPresent { it.validate() }
@@ -385,6 +448,7 @@ private constructor(
         (if (name.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("custom")) 1 else 0 } +
             (allowedCallers.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (if (async.asKnown().isPresent) 1 else 0) +
             (if (deferLoading.asKnown().isPresent) 1 else 0) +
             (if (description.asKnown().isPresent) 1 else 0) +
             (format.asKnown().getOrNull()?.validity() ?: 0)
@@ -536,6 +600,7 @@ private constructor(
             name == other.name &&
             type == other.type &&
             allowedCallers == other.allowedCallers &&
+            async == other.async &&
             deferLoading == other.deferLoading &&
             description == other.description &&
             format == other.format &&
@@ -547,6 +612,7 @@ private constructor(
             name,
             type,
             allowedCallers,
+            async,
             deferLoading,
             description,
             format,
@@ -557,5 +623,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CustomTool{name=$name, type=$type, allowedCallers=$allowedCallers, deferLoading=$deferLoading, description=$description, format=$format, additionalProperties=$additionalProperties}"
+        "CustomTool{name=$name, type=$type, allowedCallers=$allowedCallers, async=$async, deferLoading=$deferLoading, description=$description, format=$format, additionalProperties=$additionalProperties}"
 }

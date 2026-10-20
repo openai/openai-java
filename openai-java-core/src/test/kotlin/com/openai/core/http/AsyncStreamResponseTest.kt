@@ -2,7 +2,10 @@ package com.openai.core.http
 
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executor
+import java.util.concurrent.RejectedExecutionException
+import java.util.concurrent.TimeUnit
 import java.util.stream.Stream
 import kotlin.streams.asStream
 import org.assertj.core.api.Assertions.assertThat
@@ -255,6 +258,74 @@ internal class AsyncStreamResponseTest {
         asyncStreamResponse.close()
 
         verify(streamResponse, times(1)).close()
+    }
+
+    @Test
+    fun subscribe_whenExecutorRejects_completesAndCloses() {
+        val future = CompletableFuture.completedFuture(streamResponse)
+        val asyncStreamResponse = future.toAsync(executor)
+        val rejected = RejectedExecutionException("executor rejected")
+        val rejectingExecutor = Executor { throw rejected }
+
+        asyncStreamResponse.subscribe(handler, rejectingExecutor)
+
+        val completionError = catchThrowable {
+            asyncStreamResponse.onCompleteFuture().get(100, TimeUnit.MILLISECONDS)
+        }
+        assertThat(completionError).isInstanceOf(ExecutionException::class.java).hasCause(rejected)
+        verify(streamResponse, times(1)).close()
+        verify(handler, never()).onNext(any())
+        verify(handler, never()).onComplete(any())
+    }
+
+    @Test
+    fun subscribe_whenPendingFutureExecutorRejects_completesAndCloses() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+        val rejected = RejectedExecutionException("executor rejected")
+
+        asyncStreamResponse.subscribe(handler, Executor { throw rejected })
+        future.complete(streamResponse)
+
+        val completionError = catchThrowable {
+            asyncStreamResponse.onCompleteFuture().get(100, TimeUnit.MILLISECONDS)
+        }
+        assertThat(completionError).isInstanceOf(ExecutionException::class.java).hasCause(rejected)
+        verify(streamResponse, times(1)).close()
+        verify(handler, never()).onNext(any())
+        verify(handler, never()).onComplete(any())
+    }
+
+    @Test
+    fun subscribe_whenFailedFutureExecutorRejects_preservesSourceError() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        future.completeExceptionally(ERROR)
+        val asyncStreamResponse = future.toAsync(executor)
+
+        asyncStreamResponse.subscribe(handler, Executor { throw RejectedExecutionException() })
+
+        val completionError = catchThrowable {
+            asyncStreamResponse.onCompleteFuture().get(100, TimeUnit.MILLISECONDS)
+        }
+        assertThat(completionError).isInstanceOf(ExecutionException::class.java).hasCause(ERROR)
+        verify(handler, never()).onNext(any())
+        verify(handler, never()).onComplete(any())
+    }
+
+    @Test
+    fun subscribe_whenPendingFutureFailsAndExecutorRejects_preservesSourceError() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+        asyncStreamResponse.subscribe(handler, Executor { throw RejectedExecutionException() })
+
+        future.completeExceptionally(ERROR)
+
+        val completionError = catchThrowable {
+            asyncStreamResponse.onCompleteFuture().get(100, TimeUnit.MILLISECONDS)
+        }
+        assertThat(completionError).isInstanceOf(ExecutionException::class.java).hasCause(ERROR)
+        verify(handler, never()).onNext(any())
+        verify(handler, never()).onComplete(any())
     }
 
     @Test

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -20,6 +20,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -36,6 +37,7 @@ private constructor(
     private val name: JsonField<String>,
     private val type: JsonValue,
     private val id: JsonField<String>,
+    private val async: JsonField<Boolean>,
     private val caller: JsonField<Caller>,
     private val namespace: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -48,9 +50,10 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("async") @ExcludeMissing async: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("caller") @ExcludeMissing caller: JsonField<Caller> = JsonMissing.of(),
         @JsonProperty("namespace") @ExcludeMissing namespace: JsonField<String> = JsonMissing.of(),
-    ) : this(callId, input, name, type, id, caller, namespace, mutableMapOf())
+    ) : this(callId, input, name, type, id, async, caller, namespace, mutableMapOf())
 
     /**
      * An identifier used to map this custom tool call to a tool call output.
@@ -98,6 +101,14 @@ private constructor(
     fun id(): Optional<String> = id.getOptional("id")
 
     /**
+     * Whether the custom tool call runs asynchronously.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun async(): Optional<Boolean> = async.getOptional("async")
+
+    /**
      * The execution context that produced this tool call.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -142,6 +153,13 @@ private constructor(
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
+     * Returns the raw JSON value of [async].
+     *
+     * Unlike [async], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("async") @ExcludeMissing fun _async(): JsonField<Boolean> = async
+
+    /**
      * Returns the raw JSON value of [caller].
      *
      * Unlike [caller], this method doesn't throw if the JSON field has an unexpected type.
@@ -160,6 +178,34 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "call_id" to this.callId,
+            "input" to this.input,
+            "name" to this.name,
+            "type" to this.type,
+            "id" to this.id,
+            "async" to this.async,
+            "caller" to this.caller,
+            "namespace" to this.namespace,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -190,6 +236,7 @@ private constructor(
         private var name: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("custom_tool_call")
         private var id: JsonField<String> = JsonMissing.of()
+        private var async: JsonField<Boolean> = JsonMissing.of()
         private var caller: JsonField<Caller> = JsonMissing.of()
         private var namespace: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -201,6 +248,7 @@ private constructor(
             name = responseCustomToolCall.name
             type = responseCustomToolCall.type
             id = responseCustomToolCall.id
+            async = responseCustomToolCall.async
             caller = responseCustomToolCall.caller
             namespace = responseCustomToolCall.namespace
             additionalProperties = responseCustomToolCall.additionalProperties.toMutableMap()
@@ -263,6 +311,17 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /** Whether the custom tool call runs asynchronously. */
+        fun async(async: Boolean) = async(JsonField.of(async))
+
+        /**
+         * Sets [Builder.async] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.async] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun async(async: JsonField<Boolean>) = apply { this.async = async }
 
         /** The execution context that produced this tool call. */
         fun caller(caller: Caller?) = caller(JsonField.ofNullable(caller))
@@ -347,6 +406,7 @@ private constructor(
                 checkRequired("name", name),
                 type,
                 id,
+                async,
                 caller,
                 namespace,
                 additionalProperties.toMutableMap(),
@@ -377,6 +437,7 @@ private constructor(
             }
         }
         id()
+        async()
         caller().ifPresent { it.validate() }
         namespace()
         validated = true
@@ -402,6 +463,7 @@ private constructor(
             (if (name.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("custom_tool_call")) 1 else 0 } +
             (if (id.asKnown().isPresent) 1 else 0) +
+            (if (async.asKnown().isPresent) 1 else 0) +
             (caller.asKnown().getOrNull()?.validity() ?: 0) +
             (if (namespace.asKnown().isPresent) 1 else 0)
 
@@ -571,7 +633,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Caller: $json")
+                throw OpenAIInvalidDataException("Unknown Caller")
             }
         }
 
@@ -663,6 +725,30 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "caller_id" to this.callerId,
+                    "type" to this.type,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -841,17 +927,18 @@ private constructor(
             name == other.name &&
             type == other.type &&
             id == other.id &&
+            async == other.async &&
             caller == other.caller &&
             namespace == other.namespace &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(callId, input, name, type, id, caller, namespace, additionalProperties)
+        Objects.hash(callId, input, name, type, id, async, caller, namespace, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseCustomToolCall{callId=$callId, input=$input, name=$name, type=$type, id=$id, caller=$caller, namespace=$namespace, additionalProperties=$additionalProperties}"
+        "ResponseCustomToolCall{callId=$callId, input=$input, name=$name, type=$type, id=$id, async=$async, caller=$caller, namespace=$namespace, additionalProperties=$additionalProperties}"
 }

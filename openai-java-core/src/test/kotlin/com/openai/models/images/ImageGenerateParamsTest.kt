@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.images
 
@@ -12,7 +12,7 @@ internal class ImageGenerateParamsTest {
         ImageGenerateParams.builder()
             .prompt("A cute baby sea otter")
             .background(ImageGenerateParams.Background.TRANSPARENT)
-            .model(ImageModel.GPT_IMAGE_2)
+            .model(ImageModel.GPT_IMAGE_2_5_FLARE)
             .moderation(ImageGenerateParams.Moderation.LOW)
             .n(1L)
             .outputCompression(100L)
@@ -20,7 +20,8 @@ internal class ImageGenerateParamsTest {
             .partialImages(1L)
             .quality(ImageGenerateParams.Quality.MEDIUM)
             .responseFormat(ImageGenerateParams.ResponseFormat.URL)
-            .size(ImageGenerateParams.Size.AUTO)
+            .safetyIdentifier("user-1234")
+            .size(ImageGenerateParams.Size._1024X1024)
             .style(ImageGenerateParams.Style.VIVID)
             .user("user-1234")
             .build()
@@ -32,7 +33,7 @@ internal class ImageGenerateParamsTest {
             ImageGenerateParams.builder()
                 .prompt("A cute baby sea otter")
                 .background(ImageGenerateParams.Background.TRANSPARENT)
-                .model(ImageModel.GPT_IMAGE_2)
+                .model(ImageModel.GPT_IMAGE_2_5_FLARE)
                 .moderation(ImageGenerateParams.Moderation.LOW)
                 .n(1L)
                 .outputCompression(100L)
@@ -40,7 +41,8 @@ internal class ImageGenerateParamsTest {
                 .partialImages(1L)
                 .quality(ImageGenerateParams.Quality.MEDIUM)
                 .responseFormat(ImageGenerateParams.ResponseFormat.URL)
-                .size(ImageGenerateParams.Size.AUTO)
+                .safetyIdentifier("user-1234")
+                .size(ImageGenerateParams.Size._1024X1024)
                 .style(ImageGenerateParams.Style.VIVID)
                 .user("user-1234")
                 .build()
@@ -49,7 +51,7 @@ internal class ImageGenerateParamsTest {
 
         assertThat(body.prompt()).isEqualTo("A cute baby sea otter")
         assertThat(body.background()).contains(ImageGenerateParams.Background.TRANSPARENT)
-        assertThat(body.model()).contains(ImageModel.GPT_IMAGE_2)
+        assertThat(body.model()).contains(ImageModel.GPT_IMAGE_2_5_FLARE)
         assertThat(body.moderation()).contains(ImageGenerateParams.Moderation.LOW)
         assertThat(body.n()).contains(1L)
         assertThat(body.outputCompression()).contains(100L)
@@ -57,7 +59,8 @@ internal class ImageGenerateParamsTest {
         assertThat(body.partialImages()).contains(1L)
         assertThat(body.quality()).contains(ImageGenerateParams.Quality.MEDIUM)
         assertThat(body.responseFormat()).contains(ImageGenerateParams.ResponseFormat.URL)
-        assertThat(body.size()).contains(ImageGenerateParams.Size.AUTO)
+        assertThat(body.safetyIdentifier()).contains("user-1234")
+        assertThat(body.size()).contains(ImageGenerateParams.Size._1024X1024)
         assertThat(body.style()).contains(ImageGenerateParams.Style.VIVID)
         assertThat(body.user()).contains("user-1234")
     }

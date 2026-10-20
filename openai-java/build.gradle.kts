@@ -1,29 +1,30 @@
+import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
+
 plugins {
     id("openai.kotlin")
     id("openai.publish")
 }
 
-dependencies {
-    api(project(":openai-java-client-okhttp"))
+// Resolve Bedrock and its AWS types only for documentation. They must not become
+// dependencies of the umbrella SDK.
+val sdkJavadocClasspath by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
 }
 
-// Redefine `dokkaJavadoc` to:
-// - Depend on the root project's task for merging the docs of all the projects
-// - Forward that task's output to this task's output
-tasks.named("dokkaJavadoc").configure {
-    actions.clear()
+dependencies {
+    api(project(":openai-java-client-okhttp"))
+    sdkJavadocClasspath(project(":openai-java-bedrock"))
+}
 
-    val dokkaJavadocCollector = rootProject.tasks["dokkaJavadocCollector"]
-    dependsOn(dokkaJavadocCollector)
-
-    val outputDirectory = project.layout.buildDirectory.dir("dokka/javadoc")
-    doLast {
-        copy {
-            from(dokkaJavadocCollector.outputs.files)
-            into(outputDirectory)
-            duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        }
+// Generate a single Javadoc index with all published APIs. The old root collector
+// resolved subproject configurations while its task executed, which Gradle 9 rejects.
+tasks.withType<AbstractDokkaLeafTask>().configureEach {
+    dokkaSourceSets.named("main") {
+        listOf("openai-java-core", "openai-java-client-okhttp", "openai-java-bedrock")
+            .forEach { artifact ->
+                sourceRoots.from(rootProject.layout.projectDirectory.dir("$artifact/src/main/kotlin"))
+            }
+        classpath.from(sdkJavadocClasspath)
     }
-
-    outputs.dir(outputDirectory)
 }

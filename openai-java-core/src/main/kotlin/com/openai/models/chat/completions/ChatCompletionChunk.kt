@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -33,7 +34,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Represents a streamed chunk of a chat completion response returned by the model, based on the
- * provided input. [Learn more](https://platform.openai.com/docs/guides/streaming-responses).
+ * provided input. [Learn more](https://developers.openai.com/api/docs/guides/streaming-responses).
  */
 class ChatCompletionChunk
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -44,6 +45,7 @@ private constructor(
     private val model: JsonField<String>,
     private val object_: JsonValue,
     private val moderation: JsonField<Moderation>,
+    private val obfuscation: JsonField<String>,
     private val serviceTier: JsonField<ServiceTier>,
     private val systemFingerprint: JsonField<String>,
     private val usage: JsonField<CompletionUsage>,
@@ -62,6 +64,9 @@ private constructor(
         @JsonProperty("moderation")
         @ExcludeMissing
         moderation: JsonField<Moderation> = JsonMissing.of(),
+        @JsonProperty("obfuscation")
+        @ExcludeMissing
+        obfuscation: JsonField<String> = JsonMissing.of(),
         @JsonProperty("service_tier")
         @ExcludeMissing
         serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
@@ -76,6 +81,7 @@ private constructor(
         model,
         object_,
         moderation,
+        obfuscation,
         serviceTier,
         systemFingerprint,
         usage,
@@ -140,17 +146,27 @@ private constructor(
     fun moderation(): Optional<Moderation> = moderation.getOptional("moderation")
 
     /**
+     * An obfuscation string added to normalize the size of streamed chunks as a mitigation to
+     * certain side-channel attacks. The field is included by default and omitted when
+     * `stream_options.include_obfuscation` is `false`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun obfuscation(): Optional<String> = obfuscation.getOptional("obfuscation")
+
+    /**
      * Specifies the processing type used for serving the request.
      * - If set to 'auto', then the request will be processed with the service tier configured in
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
      *   request will be processed with the Flex Processing service tier.
-     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
-     *   The response will show `service_tier=priority` regardless of if you specify
-     *   `service_tier=fast` or `priority` in your request.
+     * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the
+     *   request level, include the `service_tier=fast` or `service_tier=priority` parameter for
+     *   Responses or Chat Completions. The response will show `service_tier=priority` regardless of
+     *   if you specify `service_tier=fast` or `priority` in your request.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -224,6 +240,13 @@ private constructor(
     fun _moderation(): JsonField<Moderation> = moderation
 
     /**
+     * Returns the raw JSON value of [obfuscation].
+     *
+     * Unlike [obfuscation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("obfuscation") @ExcludeMissing fun _obfuscation(): JsonField<String> = obfuscation
+
+    /**
      * Returns the raw JSON value of [serviceTier].
      *
      * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
@@ -255,6 +278,36 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "id" to this.id,
+            "choices" to this.choices,
+            "created" to this.created,
+            "model" to this.model,
+            "object" to this.object_,
+            "moderation" to this.moderation,
+            "obfuscation" to this.obfuscation,
+            "service_tier" to this.serviceTier,
+            "system_fingerprint" to this.systemFingerprint,
+            "usage" to this.usage,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -287,6 +340,7 @@ private constructor(
         private var model: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("chat.completion.chunk")
         private var moderation: JsonField<Moderation> = JsonMissing.of()
+        private var obfuscation: JsonField<String> = JsonMissing.of()
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var systemFingerprint: JsonField<String> = JsonMissing.of()
         private var usage: JsonField<CompletionUsage> = JsonMissing.of()
@@ -300,6 +354,7 @@ private constructor(
             model = chatCompletionChunk.model
             object_ = chatCompletionChunk.object_
             moderation = chatCompletionChunk.moderation
+            obfuscation = chatCompletionChunk.obfuscation
             serviceTier = chatCompletionChunk.serviceTier
             systemFingerprint = chatCompletionChunk.systemFingerprint
             usage = chatCompletionChunk.usage
@@ -405,17 +460,33 @@ private constructor(
         fun moderation(moderation: JsonField<Moderation>) = apply { this.moderation = moderation }
 
         /**
+         * An obfuscation string added to normalize the size of streamed chunks as a mitigation to
+         * certain side-channel attacks. The field is included by default and omitted when
+         * `stream_options.include_obfuscation` is `false`.
+         */
+        fun obfuscation(obfuscation: String) = obfuscation(JsonField.of(obfuscation))
+
+        /**
+         * Sets [Builder.obfuscation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.obfuscation] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun obfuscation(obfuscation: JsonField<String>) = apply { this.obfuscation = obfuscation }
+
+        /**
          * Specifies the processing type used for serving the request.
          * - If set to 'auto', then the request will be processed with the service tier configured
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
-         *   request will be processed with the Flex Processing service tier.
-         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         *   Completions. The response will show `service_tier=priority` regardless of if you
-         *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then
+         *   the request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at
+         *   the request level, include the `service_tier=fast` or `service_tier=priority` parameter
+         *   for Responses or Chat Completions. The response will show `service_tier=priority`
+         *   regardless of if you specify `service_tier=fast` or `priority` in your request.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -523,6 +594,7 @@ private constructor(
                 checkRequired("model", model),
                 object_,
                 moderation,
+                obfuscation,
                 serviceTier,
                 systemFingerprint,
                 usage,
@@ -555,6 +627,7 @@ private constructor(
             }
         }
         moderation().ifPresent { it.validate() }
+        obfuscation()
         serviceTier().ifPresent { it.validate() }
         systemFingerprint()
         usage().ifPresent { it.validate() }
@@ -582,6 +655,7 @@ private constructor(
             (if (model.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("chat.completion.chunk")) 1 else 0 } +
             (moderation.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (obfuscation.asKnown().isPresent) 1 else 0) +
             (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
             (if (systemFingerprint.asKnown().isPresent) 1 else 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0)
@@ -590,8 +664,8 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val delta: JsonField<Delta>,
-        private val finishReason: JsonField<FinishReason>,
         private val index: JsonField<Long>,
+        private val finishReason: JsonField<FinishReason>,
         private val logprobs: JsonField<Logprobs>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -599,34 +673,24 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("delta") @ExcludeMissing delta: JsonField<Delta> = JsonMissing.of(),
+            @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("finish_reason")
             @ExcludeMissing
             finishReason: JsonField<FinishReason> = JsonMissing.of(),
-            @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("logprobs")
             @ExcludeMissing
             logprobs: JsonField<Logprobs> = JsonMissing.of(),
-        ) : this(delta, finishReason, index, logprobs, mutableMapOf())
+        ) : this(delta, index, finishReason, logprobs, mutableMapOf())
 
         /**
-         * A chat completion delta generated by streamed model responses.
+         * A chat completion delta generated by streamed model responses. Streamed audio can arrive
+         * in partial updates with an ID, base64 data, or transcript text. The final audio update
+         * contains only its expiry timestamp.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun delta(): Delta = delta.getRequired("delta")
-
-        /**
-         * The reason the model stopped generating tokens. This will be `stop` if the model hit a
-         * natural stop point or a provided stop sequence, `length` if the maximum number of tokens
-         * specified in the request was reached, `content_filter` if content was omitted due to a
-         * flag from our content filters, `tool_calls` if the model called a tool, or
-         * `function_call` (deprecated) if the model called a function.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun finishReason(): Optional<FinishReason> = finishReason.getOptional("finish_reason")
 
         /**
          * The index of the choice in the list of choices.
@@ -635,6 +699,19 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun index(): Long = index.getRequired("index")
+
+        /**
+         * The reason the model stopped generating tokens. This will be `stop` if the model hit a
+         * natural stop point or a provided stop sequence, `length` if the maximum number of tokens
+         * specified in the request was reached, `content_filter` if content was omitted due to a
+         * flag from our content filters, `tool_calls` if the model called a tool, or
+         * `function_call` (deprecated) if the model called a function. Omitted from the final audio
+         * update containing only `delta.audio.expires_at`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun finishReason(): Optional<FinishReason> = finishReason.getOptional("finish_reason")
 
         /**
          * Log probability information for the choice.
@@ -652,6 +729,13 @@ private constructor(
         @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonField<Delta> = delta
 
         /**
+         * Returns the raw JSON value of [index].
+         *
+         * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
+
+        /**
          * Returns the raw JSON value of [finishReason].
          *
          * Unlike [finishReason], this method doesn't throw if the JSON field has an unexpected
@@ -660,13 +744,6 @@ private constructor(
         @JsonProperty("finish_reason")
         @ExcludeMissing
         fun _finishReason(): JsonField<FinishReason> = finishReason
-
-        /**
-         * Returns the raw JSON value of [index].
-         *
-         * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
         /**
          * Returns the raw JSON value of [logprobs].
@@ -680,6 +757,30 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "delta" to this.delta,
+                "index" to this.index,
+                "finish_reason" to this.finishReason,
+                "logprobs" to this.logprobs,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -695,7 +796,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .delta()
-             * .finishReason()
              * .index()
              * ```
              */
@@ -706,21 +806,25 @@ private constructor(
         class Builder internal constructor() {
 
             private var delta: JsonField<Delta>? = null
-            private var finishReason: JsonField<FinishReason>? = null
             private var index: JsonField<Long>? = null
+            private var finishReason: JsonField<FinishReason> = JsonMissing.of()
             private var logprobs: JsonField<Logprobs> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(choice: Choice) = apply {
                 delta = choice.delta
-                finishReason = choice.finishReason
                 index = choice.index
+                finishReason = choice.finishReason
                 logprobs = choice.logprobs
                 additionalProperties = choice.additionalProperties.toMutableMap()
             }
 
-            /** A chat completion delta generated by streamed model responses. */
+            /**
+             * A chat completion delta generated by streamed model responses. Streamed audio can
+             * arrive in partial updates with an ID, base64 data, or transcript text. The final
+             * audio update contains only its expiry timestamp.
+             */
             fun delta(delta: Delta) = delta(JsonField.of(delta))
 
             /**
@@ -732,12 +836,25 @@ private constructor(
              */
             fun delta(delta: JsonField<Delta>) = apply { this.delta = delta }
 
+            /** The index of the choice in the list of choices. */
+            fun index(index: Long) = index(JsonField.of(index))
+
+            /**
+             * Sets [Builder.index] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.index] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun index(index: JsonField<Long>) = apply { this.index = index }
+
             /**
              * The reason the model stopped generating tokens. This will be `stop` if the model hit
              * a natural stop point or a provided stop sequence, `length` if the maximum number of
              * tokens specified in the request was reached, `content_filter` if content was omitted
              * due to a flag from our content filters, `tool_calls` if the model called a tool, or
-             * `function_call` (deprecated) if the model called a function.
+             * `function_call` (deprecated) if the model called a function. Omitted from the final
+             * audio update containing only `delta.audio.expires_at`.
              */
             fun finishReason(finishReason: FinishReason?) =
                 finishReason(JsonField.ofNullable(finishReason))
@@ -756,18 +873,6 @@ private constructor(
             fun finishReason(finishReason: JsonField<FinishReason>) = apply {
                 this.finishReason = finishReason
             }
-
-            /** The index of the choice in the list of choices. */
-            fun index(index: Long) = index(JsonField.of(index))
-
-            /**
-             * Sets [Builder.index] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.index] with a well-typed [Long] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun index(index: JsonField<Long>) = apply { this.index = index }
 
             /** Log probability information for the choice. */
             fun logprobs(logprobs: Logprobs?) = logprobs(JsonField.ofNullable(logprobs))
@@ -811,7 +916,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .delta()
-             * .finishReason()
              * .index()
              * ```
              *
@@ -820,8 +924,8 @@ private constructor(
             fun build(): Choice =
                 Choice(
                     checkRequired("delta", delta),
-                    checkRequired("finishReason", finishReason),
                     checkRequired("index", index),
+                    finishReason,
                     logprobs,
                     additionalProperties.toMutableMap(),
                 )
@@ -844,8 +948,8 @@ private constructor(
             }
 
             delta().validate()
-            finishReason().ifPresent { it.validate() }
             index()
+            finishReason().ifPresent { it.validate() }
             logprobs().ifPresent { it.validate() }
             validated = true
         }
@@ -867,14 +971,19 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (delta.asKnown().getOrNull()?.validity() ?: 0) +
-                (finishReason.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (index.asKnown().isPresent) 1 else 0) +
+                (finishReason.asKnown().getOrNull()?.validity() ?: 0) +
                 (logprobs.asKnown().getOrNull()?.validity() ?: 0)
 
-        /** A chat completion delta generated by streamed model responses. */
+        /**
+         * A chat completion delta generated by streamed model responses. Streamed audio can arrive
+         * in partial updates with an ID, base64 data, or transcript text. The final audio update
+         * contains only its expiry timestamp.
+         */
         class Delta
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
+            private val audio: JsonField<Audio>,
             private val content: JsonField<String>,
             private val functionCall: JsonField<FunctionCall>,
             private val refusal: JsonField<String>,
@@ -885,6 +994,7 @@ private constructor(
 
             @JsonCreator
             private constructor(
+                @JsonProperty("audio") @ExcludeMissing audio: JsonField<Audio> = JsonMissing.of(),
                 @JsonProperty("content")
                 @ExcludeMissing
                 content: JsonField<String> = JsonMissing.of(),
@@ -898,7 +1008,16 @@ private constructor(
                 @JsonProperty("tool_calls")
                 @ExcludeMissing
                 toolCalls: JsonField<List<ToolCall>> = JsonMissing.of(),
-            ) : this(content, functionCall, refusal, role, toolCalls, mutableMapOf())
+            ) : this(audio, content, functionCall, refusal, role, toolCalls, mutableMapOf())
+
+            /**
+             * A partial audio response. Audio chunks may carry an ID, base64 data, or transcript
+             * text; the final audio update contains only its expiry timestamp.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun audio(): Optional<Audio> = audio.getOptional("audio")
 
             /**
              * The contents of the chunk message.
@@ -939,6 +1058,13 @@ private constructor(
              *   the server responded with an unexpected value).
              */
             fun toolCalls(): Optional<List<ToolCall>> = toolCalls.getOptional("tool_calls")
+
+            /**
+             * Returns the raw JSON value of [audio].
+             *
+             * Unlike [audio], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("audio") @ExcludeMissing fun _audio(): JsonField<Audio> = audio
 
             /**
              * Returns the raw JSON value of [content].
@@ -987,6 +1113,34 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "audio" to this.audio,
+                    "content" to this.content,
+                    "function_call" to this.functionCall,
+                    "refusal" to this.refusal,
+                    "role" to this.role,
+                    "tool_calls" to this.toolCalls,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -1003,6 +1157,7 @@ private constructor(
             /** A builder for [Delta]. */
             class Builder internal constructor() {
 
+                private var audio: JsonField<Audio> = JsonMissing.of()
                 private var content: JsonField<String> = JsonMissing.of()
                 private var functionCall: JsonField<FunctionCall> = JsonMissing.of()
                 private var refusal: JsonField<String> = JsonMissing.of()
@@ -1012,6 +1167,7 @@ private constructor(
 
                 @JvmSynthetic
                 internal fun from(delta: Delta) = apply {
+                    audio = delta.audio
                     content = delta.content
                     functionCall = delta.functionCall
                     refusal = delta.refusal
@@ -1019,6 +1175,21 @@ private constructor(
                     toolCalls = delta.toolCalls.map { it.toMutableList() }
                     additionalProperties = delta.additionalProperties.toMutableMap()
                 }
+
+                /**
+                 * A partial audio response. Audio chunks may carry an ID, base64 data, or
+                 * transcript text; the final audio update contains only its expiry timestamp.
+                 */
+                fun audio(audio: Audio) = audio(JsonField.of(audio))
+
+                /**
+                 * Sets [Builder.audio] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.audio] with a well-typed [Audio] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun audio(audio: JsonField<Audio>) = apply { this.audio = audio }
 
                 /** The contents of the chunk message. */
                 fun content(content: String?) = content(JsonField.ofNullable(content))
@@ -1102,9 +1273,8 @@ private constructor(
                  */
                 fun addToolCall(toolCall: ToolCall) = apply {
                     toolCalls =
-                        (toolCalls ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("toolCalls", it).add(toolCall)
-                        }
+                        (toolCalls?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("toolCalls", it).add(toolCall) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1136,6 +1306,7 @@ private constructor(
                  */
                 fun build(): Delta =
                     Delta(
+                        audio,
                         content,
                         functionCall,
                         refusal,
@@ -1162,6 +1333,7 @@ private constructor(
                     return@apply
                 }
 
+                audio().ifPresent { it.validate() }
                 content()
                 functionCall().ifPresent { it.validate() }
                 refusal()
@@ -1186,11 +1358,326 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                (if (content.asKnown().isPresent) 1 else 0) +
+                (audio.asKnown().getOrNull()?.validity() ?: 0) +
+                    (if (content.asKnown().isPresent) 1 else 0) +
                     (functionCall.asKnown().getOrNull()?.validity() ?: 0) +
                     (if (refusal.asKnown().isPresent) 1 else 0) +
                     (role.asKnown().getOrNull()?.validity() ?: 0) +
                     (toolCalls.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+
+            /**
+             * A partial audio response. Audio chunks may carry an ID, base64 data, or transcript
+             * text; the final audio update contains only its expiry timestamp.
+             */
+            class Audio
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val id: JsonField<String>,
+                private val data: JsonField<String>,
+                private val expiresAt: JsonField<Long>,
+                private val transcript: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("data")
+                    @ExcludeMissing
+                    data: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("expires_at")
+                    @ExcludeMissing
+                    expiresAt: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("transcript")
+                    @ExcludeMissing
+                    transcript: JsonField<String> = JsonMissing.of(),
+                ) : this(id, data, expiresAt, transcript, mutableMapOf())
+
+                /**
+                 * Unique identifier for this audio response.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun id(): Optional<String> = id.getOptional("id")
+
+                /**
+                 * Base64 encoded audio bytes generated by the model, in the format specified in the
+                 * request.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun data(): Optional<String> = data.getOptional("data")
+
+                /**
+                 * The Unix timestamp (in seconds) for when this audio response will no longer be
+                 * accessible on the server for use in multi-turn conversations.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
+
+                /**
+                 * Transcript text from this audio chunk.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun transcript(): Optional<String> = transcript.getOptional("transcript")
+
+                /**
+                 * Returns the raw JSON value of [id].
+                 *
+                 * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+                 */
+                @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+                /**
+                 * Returns the raw JSON value of [data].
+                 *
+                 * Unlike [data], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<String> = data
+
+                /**
+                 * Returns the raw JSON value of [expiresAt].
+                 *
+                 * Unlike [expiresAt], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("expires_at")
+                @ExcludeMissing
+                fun _expiresAt(): JsonField<Long> = expiresAt
+
+                /**
+                 * Returns the raw JSON value of [transcript].
+                 *
+                 * Unlike [transcript], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("transcript")
+                @ExcludeMissing
+                fun _transcript(): JsonField<String> = transcript
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "id" to this.id,
+                        "data" to this.data,
+                        "expires_at" to this.expiresAt,
+                        "transcript" to this.transcript,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /** Returns a mutable builder for constructing an instance of [Audio]. */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Audio]. */
+                class Builder internal constructor() {
+
+                    private var id: JsonField<String> = JsonMissing.of()
+                    private var data: JsonField<String> = JsonMissing.of()
+                    private var expiresAt: JsonField<Long> = JsonMissing.of()
+                    private var transcript: JsonField<String> = JsonMissing.of()
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(audio: Audio) = apply {
+                        id = audio.id
+                        data = audio.data
+                        expiresAt = audio.expiresAt
+                        transcript = audio.transcript
+                        additionalProperties = audio.additionalProperties.toMutableMap()
+                    }
+
+                    /** Unique identifier for this audio response. */
+                    fun id(id: String) = id(JsonField.of(id))
+
+                    /**
+                     * Sets [Builder.id] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.id] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun id(id: JsonField<String>) = apply { this.id = id }
+
+                    /**
+                     * Base64 encoded audio bytes generated by the model, in the format specified in
+                     * the request.
+                     */
+                    fun data(data: String) = data(JsonField.of(data))
+
+                    /**
+                     * Sets [Builder.data] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.data] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun data(data: JsonField<String>) = apply { this.data = data }
+
+                    /**
+                     * The Unix timestamp (in seconds) for when this audio response will no longer
+                     * be accessible on the server for use in multi-turn conversations.
+                     */
+                    fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
+
+                    /**
+                     * Sets [Builder.expiresAt] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.expiresAt] with a well-typed [Long] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
+
+                    /** Transcript text from this audio chunk. */
+                    fun transcript(transcript: String) = transcript(JsonField.of(transcript))
+
+                    /**
+                     * Sets [Builder.transcript] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.transcript] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun transcript(transcript: JsonField<String>) = apply {
+                        this.transcript = transcript
+                    }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Audio].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
+                    fun build(): Audio =
+                        Audio(id, data, expiresAt, transcript, additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Audio = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    id()
+                    data()
+                    expiresAt()
+                    transcript()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (id.asKnown().isPresent) 1 else 0) +
+                        (if (data.asKnown().isPresent) 1 else 0) +
+                        (if (expiresAt.asKnown().isPresent) 1 else 0) +
+                        (if (transcript.asKnown().isPresent) 1 else 0)
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Audio &&
+                        id == other.id &&
+                        data == other.data &&
+                        expiresAt == other.expiresAt &&
+                        transcript == other.transcript &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(id, data, expiresAt, transcript, additionalProperties)
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Audio{id=$id, data=$data, expiresAt=$expiresAt, transcript=$transcript, additionalProperties=$additionalProperties}"
+            }
 
             /**
              * Deprecated and replaced by `tool_calls`. The name and arguments of a function that
@@ -1255,6 +1742,30 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "arguments" to this.arguments,
+                        "name" to this.name,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -1654,6 +2165,32 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "index" to this.index,
+                        "id" to this.id,
+                        "function" to this.function,
+                        "type" to this.type,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -1680,7 +2217,7 @@ private constructor(
                     private var index: JsonField<Long>? = null
                     private var id: JsonField<String> = JsonMissing.of()
                     private var function: JsonField<Function> = JsonMissing.of()
-                    private var type: JsonField<Type> = JsonMissing.of()
+                    private var type: JsonField<Type> = JsonField.of(Type.FUNCTION)
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -1887,6 +2424,31 @@ private constructor(
                         additionalProperties.put(key, value)
                     }
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(
+                            additionalProperties,
+                            "arguments" to this.arguments,
+                            "name" to this.name,
+                        )
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> =
@@ -2206,6 +2768,7 @@ private constructor(
                 }
 
                 return other is Delta &&
+                    audio == other.audio &&
                     content == other.content &&
                     functionCall == other.functionCall &&
                     refusal == other.refusal &&
@@ -2215,13 +2778,21 @@ private constructor(
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(content, functionCall, refusal, role, toolCalls, additionalProperties)
+                Objects.hash(
+                    audio,
+                    content,
+                    functionCall,
+                    refusal,
+                    role,
+                    toolCalls,
+                    additionalProperties,
+                )
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Delta{content=$content, functionCall=$functionCall, refusal=$refusal, role=$role, toolCalls=$toolCalls, additionalProperties=$additionalProperties}"
+                "Delta{audio=$audio, content=$content, functionCall=$functionCall, refusal=$refusal, role=$role, toolCalls=$toolCalls, additionalProperties=$additionalProperties}"
         }
 
         /**
@@ -2229,7 +2800,8 @@ private constructor(
          * natural stop point or a provided stop sequence, `length` if the maximum number of tokens
          * specified in the request was reached, `content_filter` if content was omitted due to a
          * flag from our content filters, `tool_calls` if the model called a tool, or
-         * `function_call` (deprecated) if the model called a function.
+         * `function_call` (deprecated) if the model called a function. Omitted from the final audio
+         * update containing only `delta.audio.expires_at`.
          */
         class FinishReason @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
@@ -2450,6 +3022,30 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "content" to this.content,
+                    "refusal" to this.refusal,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -2659,20 +3255,20 @@ private constructor(
 
             return other is Choice &&
                 delta == other.delta &&
-                finishReason == other.finishReason &&
                 index == other.index &&
+                finishReason == other.finishReason &&
                 logprobs == other.logprobs &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(delta, finishReason, index, logprobs, additionalProperties)
+            Objects.hash(delta, index, finishReason, logprobs, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Choice{delta=$delta, finishReason=$finishReason, index=$index, logprobs=$logprobs, additionalProperties=$additionalProperties}"
+            "Choice{delta=$delta, index=$index, finishReason=$finishReason, logprobs=$logprobs, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -2728,6 +3324,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "input" to this.input,
+                "output" to this.output,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -3059,7 +3677,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Input: $json")
+                    throw OpenAIInvalidDataException("Unknown Input")
                 }
             }
 
@@ -3178,6 +3796,31 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "model" to this.model,
+                        "results" to this.results,
+                        "type" to this.type,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -3517,6 +4160,35 @@ private constructor(
                         additionalProperties.put(key, value)
                     }
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(
+                            additionalProperties,
+                            "categories" to this.categories,
+                            "category_applied_input_types" to this.categoryAppliedInputTypes,
+                            "category_scores" to this.categoryScores,
+                            "flagged" to this.flagged,
+                            "model" to this.model,
+                            "type" to this.type,
+                        )
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> =
@@ -3773,6 +4445,27 @@ private constructor(
                         private val additionalProperties: Map<String, JsonValue>
                     ) {
 
+                        /**
+                         * Returns an immutable snapshot of all present JSON properties, including
+                         * declared and additional properties.
+                         *
+                         * Keys use their JSON names. Declared properties take precedence over
+                         * additional properties with the same name. Missing properties are omitted,
+                         * while explicit nulls and unrecognized values are preserved.
+                         */
+                        fun _allProperties(): Map<String, JsonValue> =
+                            collectAllProperties(additionalProperties)
+
+                        /**
+                         * Returns the legacy additional-properties view.
+                         *
+                         * @deprecated Use [_allProperties] to access both declared and additional
+                         *   JSON properties. This accessor retains its legacy additional-properties
+                         *   behavior.
+                         */
+                        @Deprecated(
+                            "Use _allProperties() to access both declared and additional JSON properties."
+                        )
                         @JsonAnyGetter
                         @ExcludeMissing
                         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -3896,6 +4589,27 @@ private constructor(
                         private val additionalProperties: Map<String, JsonValue>
                     ) {
 
+                        /**
+                         * Returns an immutable snapshot of all present JSON properties, including
+                         * declared and additional properties.
+                         *
+                         * Keys use their JSON names. Declared properties take precedence over
+                         * additional properties with the same name. Missing properties are omitted,
+                         * while explicit nulls and unrecognized values are preserved.
+                         */
+                        fun _allProperties(): Map<String, JsonValue> =
+                            collectAllProperties(additionalProperties)
+
+                        /**
+                         * Returns the legacy additional-properties view.
+                         *
+                         * @deprecated Use [_allProperties] to access both declared and additional
+                         *   JSON properties. This accessor retains its legacy additional-properties
+                         *   behavior.
+                         */
+                        @Deprecated(
+                            "Use _allProperties() to access both declared and additional JSON properties."
+                        )
                         @JsonAnyGetter
                         @ExcludeMissing
                         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -4022,6 +4736,27 @@ private constructor(
                         private val additionalProperties: Map<String, JsonValue>
                     ) {
 
+                        /**
+                         * Returns an immutable snapshot of all present JSON properties, including
+                         * declared and additional properties.
+                         *
+                         * Keys use their JSON names. Declared properties take precedence over
+                         * additional properties with the same name. Missing properties are omitted,
+                         * while explicit nulls and unrecognized values are preserved.
+                         */
+                        fun _allProperties(): Map<String, JsonValue> =
+                            collectAllProperties(additionalProperties)
+
+                        /**
+                         * Returns the legacy additional-properties view.
+                         *
+                         * @deprecated Use [_allProperties] to access both declared and additional
+                         *   JSON properties. This accessor retains its legacy additional-properties
+                         *   behavior.
+                         */
+                        @Deprecated(
+                            "Use _allProperties() to access both declared and additional JSON properties."
+                        )
                         @JsonAnyGetter
                         @ExcludeMissing
                         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -4266,6 +5001,31 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "code" to this.code,
+                        "message" to this.message,
+                        "type" to this.type,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -4633,7 +5393,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Output: $json")
+                    throw OpenAIInvalidDataException("Unknown Output")
                 }
             }
 
@@ -4752,6 +5512,31 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "model" to this.model,
+                        "results" to this.results,
+                        "type" to this.type,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -5091,6 +5876,35 @@ private constructor(
                         additionalProperties.put(key, value)
                     }
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(
+                            additionalProperties,
+                            "categories" to this.categories,
+                            "category_applied_input_types" to this.categoryAppliedInputTypes,
+                            "category_scores" to this.categoryScores,
+                            "flagged" to this.flagged,
+                            "model" to this.model,
+                            "type" to this.type,
+                        )
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> =
@@ -5347,6 +6161,27 @@ private constructor(
                         private val additionalProperties: Map<String, JsonValue>
                     ) {
 
+                        /**
+                         * Returns an immutable snapshot of all present JSON properties, including
+                         * declared and additional properties.
+                         *
+                         * Keys use their JSON names. Declared properties take precedence over
+                         * additional properties with the same name. Missing properties are omitted,
+                         * while explicit nulls and unrecognized values are preserved.
+                         */
+                        fun _allProperties(): Map<String, JsonValue> =
+                            collectAllProperties(additionalProperties)
+
+                        /**
+                         * Returns the legacy additional-properties view.
+                         *
+                         * @deprecated Use [_allProperties] to access both declared and additional
+                         *   JSON properties. This accessor retains its legacy additional-properties
+                         *   behavior.
+                         */
+                        @Deprecated(
+                            "Use _allProperties() to access both declared and additional JSON properties."
+                        )
                         @JsonAnyGetter
                         @ExcludeMissing
                         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -5470,6 +6305,27 @@ private constructor(
                         private val additionalProperties: Map<String, JsonValue>
                     ) {
 
+                        /**
+                         * Returns an immutable snapshot of all present JSON properties, including
+                         * declared and additional properties.
+                         *
+                         * Keys use their JSON names. Declared properties take precedence over
+                         * additional properties with the same name. Missing properties are omitted,
+                         * while explicit nulls and unrecognized values are preserved.
+                         */
+                        fun _allProperties(): Map<String, JsonValue> =
+                            collectAllProperties(additionalProperties)
+
+                        /**
+                         * Returns the legacy additional-properties view.
+                         *
+                         * @deprecated Use [_allProperties] to access both declared and additional
+                         *   JSON properties. This accessor retains its legacy additional-properties
+                         *   behavior.
+                         */
+                        @Deprecated(
+                            "Use _allProperties() to access both declared and additional JSON properties."
+                        )
                         @JsonAnyGetter
                         @ExcludeMissing
                         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -5596,6 +6452,27 @@ private constructor(
                         private val additionalProperties: Map<String, JsonValue>
                     ) {
 
+                        /**
+                         * Returns an immutable snapshot of all present JSON properties, including
+                         * declared and additional properties.
+                         *
+                         * Keys use their JSON names. Declared properties take precedence over
+                         * additional properties with the same name. Missing properties are omitted,
+                         * while explicit nulls and unrecognized values are preserved.
+                         */
+                        fun _allProperties(): Map<String, JsonValue> =
+                            collectAllProperties(additionalProperties)
+
+                        /**
+                         * Returns the legacy additional-properties view.
+                         *
+                         * @deprecated Use [_allProperties] to access both declared and additional
+                         *   JSON properties. This accessor retains its legacy additional-properties
+                         *   behavior.
+                         */
+                        @Deprecated(
+                            "Use _allProperties() to access both declared and additional JSON properties."
+                        )
                         @JsonAnyGetter
                         @ExcludeMissing
                         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -5840,6 +6717,31 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "code" to this.code,
+                        "message" to this.message,
+                        "type" to this.type,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -6054,12 +6956,12 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
      *   request will be processed with the Flex Processing service tier.
-     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
-     *   The response will show `service_tier=priority` regardless of if you specify
-     *   `service_tier=fast` or `priority` in your request.
+     * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the
+     *   request level, include the `service_tier=fast` or `service_tier=priority` parameter for
+     *   Responses or Chat Completions. The response will show `service_tier=priority` regardless of
+     *   if you specify `service_tier=fast` or `priority` in your request.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -6239,6 +7141,7 @@ private constructor(
             model == other.model &&
             object_ == other.object_ &&
             moderation == other.moderation &&
+            obfuscation == other.obfuscation &&
             serviceTier == other.serviceTier &&
             systemFingerprint == other.systemFingerprint &&
             usage == other.usage &&
@@ -6253,6 +7156,7 @@ private constructor(
             model,
             object_,
             moderation,
+            obfuscation,
             serviceTier,
             systemFingerprint,
             usage,
@@ -6263,5 +7167,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionChunk{id=$id, choices=$choices, created=$created, model=$model, object_=$object_, moderation=$moderation, serviceTier=$serviceTier, systemFingerprint=$systemFingerprint, usage=$usage, additionalProperties=$additionalProperties}"
+        "ChatCompletionChunk{id=$id, choices=$choices, created=$created, model=$model, object_=$object_, moderation=$moderation, obfuscation=$obfuscation, serviceTier=$serviceTier, systemFingerprint=$systemFingerprint, usage=$usage, additionalProperties=$additionalProperties}"
 }
