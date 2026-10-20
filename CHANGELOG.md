@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.87.1](https://github.com/openai/openai-java/compare/v4.87.0...v4.87.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* **auth:** recover after synchronous refresh startup failure ([#1246](https://github.com/openai/openai-java/issues/1246)) ([efe5b95](https://github.com/openai/openai-java/commit/efe5b95b0bece00ef33f17139c0b397bb28946d6))
+
+
+### Chores
+
+* **api:** clarify project API key update requirements ([#1244](https://github.com/openai/openai-java/issues/1244)) ([1e54d93](https://github.com/openai/openai-java/commit/1e54d93d6d1c68bbd8529b0327aa06bdea0abdb9))
+
 ## [4.87.0](https://github.com/openai/openai-java/compare/v4.86.0...v4.87.0) (2026-10-20)
 
 
