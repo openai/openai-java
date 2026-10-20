@@ -13,7 +13,7 @@ remaining four public slots and two compiler slots. Workstream checkboxes are
 implementation and verification steps, not permission for unbounded micro-PRs.
 
 - [x] Allocate the existing reviews and the remaining public/compiler capacity.
-- [ ] Complete #1239 expiry regressions/plan through normal fresh exact-head gates.
+- [x] Complete #1239 expiry regressions/plan through normal fresh exact-head gates.
 - [ ] Finish shared typed policies in existing Delta 2566856.
 - [ ] Finish multipart/audio integration in existing Delta 2565512.
 - [ ] Finish legacy model/accessor consumers in existing Delta 2566858.
@@ -237,6 +237,8 @@ Conductor reports #1239 at `f7afebe45964a048033860f62a66d04ae9c0f6e4` has
 successful CI, clean automated reviews and required approval. Its separate
 exact-head OkTest run 39330403137 passed all 236 tests. After fresh head, full
 feedback and gate verification, normal protected queue enrollment succeeded.
-Conductor independently verified position 1, `AWAITING_CHECKS`, at the same
-head. The PR remains open; queue enrollment is not a completed merge.
-No duplicate enrollment or external polling is scheduled.
+Conductor then verified completed merge `19971184f9686ba3ccbebead8f9bf1e7e1d377c3`
+from that exact head. All six opened public transition PRs are now merged.
+Post-merge checks for #1239 are not yet verified here. No external polling is
+scheduled. This tests/documentation merge does not reduce the measured 97 mixed
+files or establish generated SDK rollout compatibility.
