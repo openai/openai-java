@@ -276,7 +276,7 @@ within their bundle. Do not create replacement PRs to evade either ceiling.
 | 3 | [Java #1236](https://github.com/openai/openai-java/pull/1236) | Merged supplemental JVM comparator and regressions |
 | 4 | [Java #1237](https://github.com/openai/openai-java/pull/1237) | Merged credential assertion ownership cleanup |
 | 5 | [Java #1238](https://github.com/openai/openai-java/pull/1238) | Merged documentation checkpoint; post-merge workflows verified successful |
-| 6 | [Java #1239](https://github.com/openai/openai-java/pull/1239) | Merged as `19971184f9686ba3ccbebead8f9bf1e7e1d377c3`; handwritten expiry compatibility regressions and revised delivery plan; post-merge checks not yet verified |
+| 6 | [Java #1239](https://github.com/openai/openai-java/pull/1239) | Merged as `19971184f9686ba3ccbebead8f9bf1e7e1d377c3`; handwritten expiry compatibility regressions and revised delivery plan; Conductor verified post-merge CI, examples smoke and release workflows successful |
 | 7 | Reserved compatible runtime/model rollout | Batch ready client, multipart/audio and legacy-accessor/model cleanup after its compiler changes merge |
 | 8 | Reserved model/structured-output rollout | Batch compatible params/helpers, embeddings, visitors, diagnostics and model fixture reuse after their compiler changes merge |
 | 9 | Reserved service/helper and test-fidelity rollout | Batch Responses/agent/legacy/auth/webhook delegates, extracted handwritten streaming/pagination regressions, generated service fixtures and final inventory |

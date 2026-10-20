@@ -239,6 +239,7 @@ exact-head OkTest run 39330403137 passed all 236 tests. After fresh head, full
 feedback and gate verification, normal protected queue enrollment succeeded.
 Conductor then verified completed merge `19971184f9686ba3ccbebead8f9bf1e7e1d377c3`
 from that exact head. All six opened public transition PRs are now merged.
-Post-merge checks for #1239 are not yet verified here. No external polling is
-scheduled. This tests/documentation merge does not reduce the measured 97 mixed
+Conductor verified all post-merge CI, examples smoke and release workflows
+succeeded on that merge commit. No external polling is scheduled.
+This tests/documentation merge does not reduce the measured 97 mixed
 files or establish generated SDK rollout compatibility.
