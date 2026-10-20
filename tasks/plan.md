@@ -259,7 +259,8 @@ The user clarified the delivery ceiling on 2026-10-19: **at most ten public Java
 SDK PRs and at most ten compiler Deltas; internal generation PRs are unlimited**.
 Six public SDK PRs have merged and ten compiler Deltas were opened. These are
 planning counts, not platform quotas. The compiler split created excessive review
-overhead. One compiler review (2565485) has since merged, leaving nine open.
+overhead. One compiler review (2565485) has merged, and three superseded
+reviews (2565512, 2568196, 2571652) are now closed without merge. Six remain open.
 Consolidate the remaining open reviews into the three existing reviews below;
 do not create replacement Deltas. Internal PRs still follow normal
 ownership, compatibility and promotion requirements.
@@ -297,16 +298,17 @@ entire policy PR to contain only `.castiron-ratchet.json`. Slot 10 preserves tha
 option without exceeding the public cap. Do not change policy until trusted
 measurement proves zero, and do not use an additional PR outside the cap.
 
-### Compiler consolidation: nine open reviews to three existing reviews
+### Compiler consolidation: six open reviews to three existing reviews
 
 The ten-review split is superseded. Implementation steps belong in commits inside
 coherent reviews. Prepare and verify these replacements before closing any source
-review. Delta 2565485 is merged; nine reviews remain open until the six
-superseded open reviews are actually closed.
+review. Delta 2565485 is merged. Runtime consolidation 2566856 is published;
+its three superseded source reviews are closed with replacement links. Six
+reviews remain open, including the three model source reviews still to retire.
 
 | Kept review | Consolidated scope | Reviews to supersede after verification |
 | --- | --- | --- |
-| Compiler Delta 2566856 | Shared policies, clients/telemetry, multipart/audio, Responses bridges and remaining services/auth/webhooks | 2565512, 2568196, 2571652; 2565485 already merged |
+| Compiler Delta 2566856 | Shared policies, clients/telemetry, multipart/audio, Responses bridges and remaining services/auth/webhooks | 2565512, 2568196, 2571652 CLOSED as superseded; 2565485 already merged |
 | Compiler Delta 2572073 | Legacy accessors/raw properties/enums, embeddings/defaults, Visitor/diagnostics and remaining model/structured helpers | 2566858, 2568122, 2568148 |
 | Compiler Delta 2568349 | Generated test fidelity and handwritten regression ownership | None |
 
@@ -316,7 +318,7 @@ matrix. In particular, C1's human helper-contract review and security-focused
 auth, webhook and serialization reviews remain required. Superseding a review
 does not resolve its feedback. Verify the exact combined source, generation
 impact, old consumers and API surfaces before publishing the expanded heads.
-Close the six superseded open reviews with links to their verified replacements,
+Close the three remaining superseded model reviews with links to their verified replacements,
 then deduplicate review requests and update the root SDK review post.
 
 Historical publication inventory (all open at consolidation start; 2565485 now merged):
@@ -335,17 +337,36 @@ Historical publication inventory (all open at consolidation start; 2565485 now m
 | 10 | Compiler Delta 2568349 | C12 fixture reuse, isolated pagination ownership, deterministic streaming/server fixtures and canonical model samples |
 
 Consolidation checkpoint, 2026-10-20: runtime fixes for binary multipart selectors
-and inherited/allOf properties are committed at `75f006fe69324`; six focused
-regressions and all four local suites passed (compiler 1,910, renderer 811 with
-eight existing ignored tests, OAS 96, IR 43). Combined canonical generation and
-compatibility verification remain in progress, so these fixes are not yet claimed
-published or resolved in review. Model Delta 2572073's published `78e36cc` failed
-Buildkite 8821598 on the same OAS Clippy lint on both architectures; its equivalent
-question-mark-expression repair and the pending-helper import-collision regression
-are committed in the existing model consolidation. Its exact combined verification
-and publication remain outstanding. Test-fidelity integration conflicts are now
-resolved and committed locally; full combined validation still remains. These are
-compiler preparation steps, not additional landed SDK debt reduction.
+and inherited/allOf properties are published in Delta 2566856 at
+`75f006fe69324b89ea538f08869646523505ade9`. Both P2 threads have explanatory
+fix/test replies and verified resolved states. The three source reviews closed
+without merge; their exact commits remain in the replacement's ancestry.
+Validation passed: 2,860 local units, full canonical 3,794-file render with 26
+selected-policy differences, coherent compilation of 36 production sources,
+749 classfiles / 279 API surfaces with zero incompatibilities, 610 runtime cases,
+two generated offline test bodies and 56 frozen Java/Kotlin cases. Five prior
+outputs differ only by blank lines; prior SOCKS flakiness remains qualified.
+Current-head hosted CI and human SDK/security review are still gates; the root
+SDK review request was updated in place, with the existing native team request
+retained rather than duplicated.
+
+Model Delta 2572073's published `78e36cc` failed Buildkite 8821598 on the same
+OAS Clippy lint on both architectures. Its equivalent expression repair and the
+cross-adapter import-collision regressions are committed in the existing model
+consolidation, now composed with runtime source at `9b2b50d48a856`. Composed local
+suites pass (renderer 884 with eight existing ignored, OAS 122, compiler 1,925,
+IR 43), but genuine canonical preflight exposed a nullable-object diagnostic
+schema gap. The existing writer is repairing it before publication; no successful
+combined canonical model result is claimed yet. Test-fidelity source is composed
+locally with both bundles; its exact combined checks remain pending.
+
+Separately assigned pre-existing Delta 2561775 remains at `b7db5ca57cf3` under its
+existing typed-map compatibility/release hold. Buildkite 8755059's only failed job
+ran out of worker disk during API-reference dependency installation. A new native
+CI attempt was accepted and dispatched to Buildkite 8827484; its result is still
+pending. No source change, new review, merge or SDK promotion was made for that
+infrastructure failure. None of these compiler preparations counts as additional
+landed SDK customization reduction.
 
 Public SDK documentation identifies private compiler reviews by Delta number.
 Shared facts land before their consumers, with explicit integration drafts proving
