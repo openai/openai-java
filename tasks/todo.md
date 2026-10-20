@@ -235,5 +235,8 @@ promoted here.
 
 Conductor reports #1239 at `f7afebe45964a048033860f62a66d04ae9c0f6e4` has
 successful CI, clean automated reviews and required approval. Its separate
-exact-head OkTest run 39330403137 is still running, so merge remains held.
-No external polling is scheduled.
+exact-head OkTest run 39330403137 passed all 236 tests. After fresh head, full
+feedback and gate verification, normal protected queue enrollment succeeded.
+Conductor independently verified position 1, `AWAITING_CHECKS`, at the same
+head. The PR remains open; queue enrollment is not a completed merge.
+No duplicate enrollment or external polling is scheduled.
