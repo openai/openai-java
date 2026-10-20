@@ -386,6 +386,25 @@ compatibility binding and check policy remain unchanged; no result was marked
 successful or overridden. Continue actual-human SDK/security/ownership reviews and
 current-head automated completion before normal protected merging.
 
+Merge-request follow-through: fresh complete review/conversation/thread reads
+confirm all three revisions remain OPEN with no unresolved inline threads and no
+actual-human approving review on the repaired heads. Mark Stuart's existing runtime/
+model requests and Dan Piet's test request were re-requested in place, generation3,
+and the existing root SDK review post now tags their verified Slack identities.
+No additional reviewer, Delta, task or writer was created.
+
+Correction to the CI snapshot above: the supported Chromatic retry refreshed the
+owning monorepo CI group. Model current attempt2 is Buildkite8842934, RUNNING on
+unchanged e13f6013; the earlier8840940 success is historical and cannot clear the
+current protected CI gate. No further equivalent retries were dispatched. The exact
+three-head stack readiness against master returned UNAVAILABLE: model CI pending,
+and some model/test authority and Tempest rules unavailable. Runtime configured
+rules were satisfied, but author ownership does not replace the explicit actual-human
+Castiron compatibility/security review. Normal stack merging was not submitted
+while these independent gates remain. Continue on Conductor approval/CI events;
+no external polling or override. The source heads and all compatibility proofs
+remain unchanged.
+
 Native source approval b71026ec on model98ba664f applies to the superseded head
 and explicitly does not replace human review. The project TEMPEST_REVIEW requires
 human review for generated API/language-output changes. Actual-human compatibility,
