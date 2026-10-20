@@ -337,9 +337,9 @@ these repaired publications.
 
 | Retained review | Repaired published head | Verification and remaining gates |
 | --- | --- | --- |
-| Runtime2566856 | `e18ede47bab138e08f27669b8436c5f808818fc2` | Fresh2,913 units, exact CI lint, genuine3,795-path renders with26 selected differences;36 production sources compiled;279 API/ancestor classes preserve exact compared APIs/generics, zero comparator findings;610 runtime cases, two generated webhook bodies and56 frozen consumer cases pass. CI8840065 was RUNNING at publication verification. Mark Stuart human review re-requested generation2. |
-| Models2572073 | `e13f60138e25c9a46a6c60ed26a5eab4ba5ce40a` | Seven restack conflicts resolved; retains upstream JsonProperties/_allProperties and existing model contracts. Combined-source Rust/lint passes; fresh model/native/JVM refresh is in progress. Old2,022-class/356-test evidence remains historical. Mark Stuart human review re-requested generation2. |
-| Test fidelity2568349 | `20d7d9c547e77ef0e284ce709a07d2ee4a3f03c9` | Three restack conflicts resolved. All3,044 combined units pass (OAS151/compiler1,953/IR43/renderer897; nine upstream/existing ignored), four-crate exact CI lint and both unsafe-suite negative controls pass. Genuine generation refresh is in progress. CI8840979 QUEUED when publication verified. Dan Piet human review re-requested generation2. |
+| Runtime2566856 | `e18ede47bab138e08f27669b8436c5f808818fc2` | Fresh2,913 units, exact CI lint, genuine3,795-path renders with26 selected differences;36 production sources compiled;279 API/ancestor classes preserve exact compared APIs/generics, zero comparator findings;610 runtime cases, two generated webhook bodies and56 frozen consumer cases pass. Conductor green-2256 verified current-head monorepo CI READINESS_SATISFIED. Mark Stuart human review re-requested generation2; approval remains required. |
+| Models2572073 | `e13f60138e25c9a46a6c60ed26a5eab4ba5ce40a` | Seven restack conflicts resolved; retains upstream JsonProperties/_allProperties and existing model contracts. Combined-source Rust/lint passes. Fresh33-model compilation,15 frozen entry points, eight unchanged-source suites and356/356 original baseline/candidate tests pass; all2,012 original classes preserve15,136 methods/2,321 fields. Only171 upstream _allProperties methods are added; strict-equality failure and additive classification are retained. Both exact-source B native controls pass: 3,795 paths each, exactly 40 selected changes, 37 classified SDK JSON differences and 14 selected fact groups. HTTP declarations and transformed OpenAPI are unchanged. All 1,490 source hashes are reverified; B/C production bytes match on all 2,140 paths. Old strict2,022-class proof remains historical. Mark Stuart human review re-requested generation2. |
+| Test fidelity2568349 | `20d7d9c547e77ef0e284ce709a07d2ee4a3f03c9` | Three restack conflicts resolved. All3,044 combined units pass (OAS151/compiler1,953/IR43/renderer897; nine upstream/existing ignored), four-crate exact CI lint and both unsafe-suite negative controls pass. Genuine3,947-to3,942 control/active renders pass; fresh comparison proves all2,140 production paths/bytes equal B. All1,802 generated test paths/bytes equal prior C; fresh audit preserves5,827 assertions in964 model tests and146 service suites. Five exact smokes and missing-member controls compile as intended; pagination2/2 and original/extracted streaming4/4 each pass. CI8840979 was QUEUED when publication verified. Dan Piet human review re-requested generation2. |
 
 All normal source publication hooks passed with actual stack bases. Source-size
 limits remain unchanged: exact value-type/helper bodies were extracted to modules
@@ -350,6 +350,21 @@ rewritten to make tests pass. Runtime's five extra private classfiles (754 vs749
 are separated from its unchanged exported/ancestor class set. Its scratch runner
 path assertion was relocated and MockWebServer probes required loopback permission;
 those initial harness failures and final successful logs are retained.
+
+Fresh model generation totals143,678 physical lines across33 selected files; this
+is generated source size, not custom debt removed. All3,273 original test class
+hashes and the diagnostic/wire/raw/error fingerprint remain unchanged. The fresh
+strict API-equality report is intentionally retained as a failure for the171
+already-merged upstream additive methods; no baseline or checker was edited to
+hide them. Compatibility disposition verifies zero removed/changed original
+members. These are selected-contract checks on JDK21/JVM8 targets, with existing
+Kotlin-metadata/annotation/full-SDK limitations and human review gates intact.
+
+The first new B native comparison accidentally selected older partial runtime
+inputs. It was stopped and preserved as invalid evidence; composed inputs differ
+from C only in the intended pagination/streaming test-ownership settings. Both corrected native controls pass. The active renders have identical production
+bytes, and the fresh assertion/method audit passes. This was a scratch-proof input correction, with no source,
+fixture, helper, dependency, generation-metadata or compatibility-policy edit.
 
 Native source approval b71026ec on model98ba664f applies to the superseded head
 and explicitly does not replace human review. The project TEMPEST_REVIEW requires
