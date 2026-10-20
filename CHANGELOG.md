@@ -1,5 +1,34 @@
 # Changelog
 
+## [4.87.0](https://github.com/openai/openai-java/compare/v4.86.0...v4.87.0) (2026-10-20)
+
+
+### Features
+
+* **api:** add 30-minute cache-write usage counts ([#1233](https://github.com/openai/openai-java/issues/1233)) ([2f3608a](https://github.com/openai/openai-java/commit/2f3608a0282fd21e7e17644fdb2a25434c0caf27))
+* **api:** add compaction trigger IDs ([#1243](https://github.com/openai/openai-java/issues/1243)) ([623d448](https://github.com/openai/openai-java/commit/623d44830879212d06e0f93d709dbcef43fec540))
+* **api:** add complete JSON property access ([#1241](https://github.com/openai/openai-java/issues/1241)) ([98eacfb](https://github.com/openai/openai-java/commit/98eacfbff0ea959f36b0fdcdef39879972ed48c0))
+* **core:** add HTTP adapter headers and body accessors ([#1245](https://github.com/openai/openai-java/issues/1245)) ([04f464e](https://github.com/openai/openai-java/commit/04f464e58affd7066af228f72f276b2152c3d982))
+
+
+### Bug Fixes
+
+* **api:** accept canonical file batch discriminator ([#1224](https://github.com/openai/openai-java/issues/1224)) ([f886d7a](https://github.com/openai/openai-java/commit/f886d7a12fee9c3cedce9084dd692b9933a8f7ab))
+* **api:** accept compaction trigger payload fields ([#1226](https://github.com/openai/openai-java/issues/1226)) ([caa95e1](https://github.com/openai/openai-java/commit/caa95e12459e3cca6e85403dd3727f5eacd9a9d5))
+* **api:** close responses from void-returning calls ([#1242](https://github.com/openai/openai-java/issues/1242)) ([fc5b772](https://github.com/openai/openai-java/commit/fc5b772a597b32b4ef563820f72ea813a4a55b71))
+* complete WebSocket receives before closing failed transport ([#1240](https://github.com/openai/openai-java/issues/1240)) ([973fd4e](https://github.com/openai/openai-java/commit/973fd4e176ead42d46254b75213e8157ae496fb7))
+
+
+### Chores
+
+* restore generated budget-checker explanation ([#1235](https://github.com/openai/openai-java/issues/1235)) ([479972a](https://github.com/openai/openai-java/commit/479972a1ee2a7cd181f67f478c95aad9d1d1e261))
+
+
+### Documentation
+
+* checkpoint generated-code transition after initial merges ([#1238](https://github.com/openai/openai-java/issues/1238)) ([b79d85f](https://github.com/openai/openai-java/commit/b79d85f90c13c9cdc6d536b29704dfc50e8f9df8))
+* inventory Java custom patches and plan generated-code transition ([#1234](https://github.com/openai/openai-java/issues/1234)) ([1499ace](https://github.com/openai/openai-java/commit/1499ace53dda09c46af2feb693a876c7b6eed890))
+
 ## [4.86.0](https://github.com/openai/openai-java/compare/v4.85.0...v4.86.0) (2026-10-19)
 
 
