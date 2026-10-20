@@ -55,6 +55,7 @@ internal class StructuredChatCompletionMessageTest {
                 DelegationReadTestCase("_audio", JSON_FIELD),
                 DelegationReadTestCase("_functionCall", JSON_FIELD),
                 DelegationReadTestCase("_toolCalls", JSON_FIELD),
+                DelegationReadTestCase("_allProperties", mapOf("key" to JSON_VALUE)),
                 DelegationReadTestCase("_additionalProperties", mapOf("key" to JSON_VALUE)),
                 DelegationReadTestCase("validate", MESSAGE),
                 // For this boolean function, call with both possible values to ensure that any

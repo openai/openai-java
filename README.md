@@ -1942,7 +1942,7 @@ ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .build();
 ```
 
-These properties can be accessed on the nested built object later using the `_additionalProperties()` method.
+To read raw JSON properties from a nested JSON-backed object, call `_allProperties()`. It returns both declared and additional properties.
 
 To set a documented parameter or property to an undocumented or not yet supported _value_, pass a [`JsonValue`](openai-java-core/src/main/kotlin/com/openai/core/Values.kt) object to its setter:
 
@@ -2013,14 +2013,14 @@ ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
 
 ### Response properties
 
-To access undocumented response properties, call the `_additionalProperties()` method:
+To access raw response properties, including undocumented properties, call the `_allProperties()` method:
 
 ```java
 import com.openai.core.JsonValue;
 import java.util.Map;
 
-Map<String, JsonValue> additionalProperties = client.chat().completions().create(params)._additionalProperties();
-JsonValue secretPropertyValue = additionalProperties.get("secretProperty");
+Map<String, JsonValue> allProperties = client.chat().completions().create(params)._allProperties();
+JsonValue secretPropertyValue = allProperties.get("secretProperty");
 
 String result = secretPropertyValue.accept(new JsonValue.Visitor<>() {
     @Override

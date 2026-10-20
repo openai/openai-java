@@ -70344,7 +70344,12 @@ components:
           description: The aggregated number of cached input tokens used across text, audio, and image inputs. For customers subscribed to Scale Tier, this includes Scale Tier tokens.
         input_cache_write_tokens:
           type: integer
-          description: The aggregated number of input tokens written to the cache with a 30-minute retention period.
+          description: The aggregated number of input tokens written to the cache across 30-minute and 12-hour retention periods.
+        input_cache_write_30m_tokens:
+          anyOf:
+          - type: integer
+            description: The aggregated number of input tokens written to the cache with a 30-minute retention period. May be absent or null for older responses.
+          - type: 'null'
         input_cache_write_12h_tokens:
           type: integer
           description: The aggregated number of input tokens written to the cache with a 12-hour retention period.
@@ -70414,11 +70419,6 @@ components:
           - type: string
             description: When `group_by=service_tier`, this field provides the service tier of the grouped usage result.
           - type: 'null'
-        input_cache_write_30m_tokens:
-          anyOf:
-          - type: integer
-            description: The aggregated number of input tokens written to the cache with a 30-minute retention period. May be absent or null for older responses.
-          - type: 'null'
       required:
       - object
       - input_tokens
@@ -70431,7 +70431,8 @@ components:
               "object": "organization.usage.completions.result",
               "input_tokens": 5000,
               "input_cached_tokens": 1800,
-              "input_cache_write_tokens": 150,
+              "input_cache_write_tokens": 200,
+              "input_cache_write_30m_tokens": 150,
               "input_cache_write_12h_tokens": 50,
               "input_uncached_tokens": 3000,
               "output_tokens": 1000,
@@ -77224,6 +77225,7 @@ components:
       title: Compaction trigger
       description: Compacts the current context. Must be the final input item.
       x-openai-java-raw-discriminator-variant: true
+      x-stainless-go-constant-constructor: true
     ItemReferenceParam:
       properties:
         type:
@@ -79480,6 +79482,11 @@ components:
         input_cache_write_tokens:
           anyOf:
           - type: integer
+            description: The aggregated number of input tokens written to the cache across 30-minute and 12-hour retention periods.
+          - type: 'null'
+        input_cache_write_30m_tokens:
+          anyOf:
+          - type: integer
             description: The aggregated number of input tokens written to the cache with a 30-minute retention period.
           - type: 'null'
         input_cache_write_12h_tokens:
@@ -79572,11 +79579,6 @@ components:
           anyOf:
           - type: string
             description: When `group_by=service_tier`, this field provides the service tier of the grouped usage result.
-          - type: 'null'
-        input_cache_write_30m_tokens:
-          anyOf:
-          - type: integer
-            description: The aggregated number of input tokens written to the cache with a 30-minute retention period.
           - type: 'null'
       type: object
       required:
