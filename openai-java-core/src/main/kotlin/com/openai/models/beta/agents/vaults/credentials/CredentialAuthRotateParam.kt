@@ -216,14 +216,19 @@ private constructor(
         fun ofEnvironmentVariable(environmentVariable: EnvironmentVariable) =
             CredentialAuthRotateParam(environmentVariable = environmentVariable)
 
-        // Only diagnostic rendering uses this copy; raw JSON and custom visitors stay unchanged.
+        // Only diagnostics use this copy; raw JSON and custom visitors stay unchanged.
         private fun redactSecretValue(json: JsonValue?): JsonValue? =
             json
                 ?.asObject()
                 ?.getOrNull()
                 ?.takeIf { "secret_value" in it }
-                ?.let { JsonValue.from(it + ("secret_value" to JsonValue.from("[REDACTED]"))) }
-                ?: json
+                ?.let { source ->
+                    JsonValue.from(
+                        source.mapValues { (key, value) ->
+                            if (key == "secret_value") JsonValue.from("[REDACTED]") else value
+                        }
+                    )
+                } ?: json
     }
 
     /**

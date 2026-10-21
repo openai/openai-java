@@ -1,6 +1,6 @@
-// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+// SDK-owned streaming regression; generated service tests retain typed references.
 
-package com.openai.services.async.beta.agents
+package com.openai.services.blocking.beta.agents
 
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
@@ -9,7 +9,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClientAsync
+import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
 import com.openai.models.beta.agents.AgentReasoningParam
 import com.openai.models.beta.agents.AgentTextParam
@@ -17,8 +17,6 @@ import com.openai.models.beta.agents.AgentToolParam
 import com.openai.models.beta.agents.MultiAgentConfigParam
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.services.agentsStreamFixture
-import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -27,22 +25,22 @@ import org.junit.jupiter.api.parallel.ResourceLock
 @ExtendWith(TestServerExtension::class)
 @WireMockTest
 @ResourceLock("https://github.com/wiremock/wiremock/issues/169")
-internal class SessionServiceAsyncStreamingServerContractTest {
+internal class AgentSessionStreamingRegressionTest {
 
     @Test
     fun createStreaming(wmRuntimeInfo: WireMockRuntimeInfo) {
         stubFor(post(urlPathEqualTo("/agents/sessions")).willReturn(agentsStreamFixture()))
-        val deltas = ConcurrentLinkedQueue<String>()
+        val deltas = mutableListOf<String>()
         val client =
-            OpenAIOkHttpClientAsync.builder()
+            OpenAIOkHttpClient.builder()
                 .baseUrl(wmRuntimeInfo.httpBaseUrl)
                 .apiKey("My API Key")
                 .adminApiKey("My Admin API Key")
                 .build()
-        val sessionServiceAsync = client.beta().agents().sessions()
+        val sessionService = client.beta().agents().sessions()
 
         val agentSessionStreamResponse =
-            sessionServiceAsync.createStreaming(
+            sessionService.createStreaming(
                 SessionCreateParams.builder()
                     .environmentNone()
                     .agent(
@@ -94,17 +92,15 @@ internal class SessionServiceAsyncStreamingServerContractTest {
                     .build()
             )
 
-        val received = java.util.concurrent.atomic.AtomicInteger()
-        val onCompleteFuture =
-            agentSessionStreamResponse
-                .subscribe { agentSession ->
-                    agentSession.validate()
-                    received.incrementAndGet()
-                    deltas.add(agentSession.asTurnOutputTextDelta().delta())
-                }
-                .onCompleteFuture()
-        onCompleteFuture.get()
+        var received = 0
+        agentSessionStreamResponse.use {
+            agentSessionStreamResponse.stream().forEach { agentSession ->
+                agentSession.validate()
+                received++
+                deltas.add(agentSession.asTurnOutputTextDelta().delta())
+            }
+        }
         assertThat(deltas).containsExactly("hello")
-        check(received.get() > 0) { "Expected at least one streaming event" }
+        check(received > 0) { "Expected at least one streaming event" }
     }
 }

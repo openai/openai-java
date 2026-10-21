@@ -350,7 +350,6 @@ private constructor(
          *   This accessor retains its legacy additional-properties behavior.
          */
         @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
-        // Retain the legacy message lookup until _additionalProperties is removed.
         fun _additionalProperties(): Map<String, JsonValue> =
             legacyAdditionalProperties(additionalProperties, mapOf("message" to message))
 

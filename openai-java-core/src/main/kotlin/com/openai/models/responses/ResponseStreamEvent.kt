@@ -1994,8 +1994,6 @@ private constructor(
         /**
          * Emitted when new summary content is sampled for a compaction trigger. Contains no summary
          * content.
-         *
-         * Defaults to [unknown] so existing visitors can handle newly added progress events.
          */
         fun visitCompactionCompacting(compactionCompacting: ResponseCompactionCompactingEvent): T =
             unknown(JsonValue.from(compactionCompacting))

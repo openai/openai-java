@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+// SDK-owned streaming regression; generated service tests retain typed references.
 
 package com.openai.services.blocking.beta.agents.sessions
 
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.parallel.ResourceLock
 @ExtendWith(TestServerExtension::class)
 @WireMockTest
 @ResourceLock("https://github.com/wiremock/wiremock/issues/169")
-internal class EventServiceStreamingServerContractTest {
+internal class AgentSessionEventStreamingRegressionTest {
 
     @Test
     fun streamStreaming(wmRuntimeInfo: WireMockRuntimeInfo) {

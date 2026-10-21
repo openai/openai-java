@@ -50,4 +50,13 @@ internal class EventServiceAsyncTest {
 
         val response = future.get()
     }
+
+    // Streaming assertions and lifecycle remain in SDK-owned suite
+    // com.openai.services.async.beta.agents.sessions.AgentSessionEventStreamingRegressionTest.
+    // The callable reference is checked at compile time and never invoked here.
+    private fun streamStreamingContractCases() =
+        listOf(
+            com.openai.services.async.beta.agents.sessions
+                .AgentSessionEventStreamingRegressionTest::streamStreaming
+        )
 }

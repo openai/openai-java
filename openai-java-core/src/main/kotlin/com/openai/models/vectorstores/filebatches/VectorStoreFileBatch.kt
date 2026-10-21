@@ -360,7 +360,10 @@ private constructor(
         createdAt()
         fileCounts().validate()
         _object_().let {
-            if (!isKnownObject()) {
+            if (
+                !(object_ == JsonValue.from("vector_store.files_batch") ||
+                    object_ == JsonValue.from("vector_store.file_batch"))
+            ) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
             }
         }
@@ -387,15 +390,14 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (fileCounts.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (isKnownObject()) 1 else 0) +
+            (if (
+                object_ == JsonValue.from("vector_store.files_batch") ||
+                    object_ == JsonValue.from("vector_store.file_batch")
+            )
+                1
+            else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (if (vectorStoreId.asKnown().isPresent) 1 else 0)
-
-    // Temporary compatibility until the next major corrects the generated singleton.
-    // Preserve the legacy builder default and the raw value used for serialization.
-    private fun isKnownObject(): Boolean =
-        object_ == JsonValue.from("vector_store.files_batch") ||
-            object_ == JsonValue.from("vector_store.file_batch")
 
     class FileCounts
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
