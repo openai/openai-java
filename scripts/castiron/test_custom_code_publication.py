@@ -57,7 +57,12 @@ class WorkflowTests(unittest.TestCase):
     def test_trusted_failure_publisher_updates_one_current_comment(self) -> None:
         head = "a" * 40
         run = {**source_run(head), "id": 20}
-        current = {"state": "open", "head": {"sha": head}}
+        current = {
+            "number": 3,
+            "state": "open",
+            "head": {"sha": head},
+            "base": {"ref": "main", "repo": {"full_name": "openai/example"}},
+        }
         previous = {
             "id": 42,
             "user": {"type": "Bot", "login": "github-actions[bot]"},
@@ -97,6 +102,50 @@ class WorkflowTests(unittest.TestCase):
                     if expected:
                         self.assertIn("Report unavailable", writes[0]["body"])
                         self.assertIn("castiron:run:v1:20:1", writes[0]["body"])
+
+    @unittest.skipUnless(shutil.which("node"), "GitHub Actions JavaScript runtime")
+    def test_failure_comments_require_one_supported_target(self) -> None:
+        head = "a" * 40
+
+        def pull(number: int, branch: str = "main", repo: str = "openai/example") -> dict[str, Any]:
+            return {
+                "number": number,
+                "state": "open",
+                "head": {"sha": head},
+                "base": {"ref": branch, "repo": {"full_name": repo}},
+            }
+
+        cases: list[tuple[str, list[dict[str, Any]], list[int]]] = [
+            ("retargeted", [pull(3, "release")], []),
+            ("other repository", [pull(3, repo="other/example")], []),
+            ("ambiguous main", [pull(3), pull(4)], []),
+            ("ambiguous next", [pull(3, "next"), pull(4, "next")], []),
+            ("prefer main", [pull(3, "next"), pull(4)], [4]),
+            ("one next", [pull(3, "next")], [3]),
+            ("ignore unsupported", [pull(3, "release"), pull(4)], [4]),
+        ]
+        for name, pulls, expected in cases:
+            for fallback in (False, True):
+                with self.subTest(name=name, fallback=fallback):
+                    run = {
+                        **source_run(head),
+                        "id": 20,
+                        "pull_requests": [] if fallback else pulls,
+                    }
+                    writes = run_publisher(
+                        "Publish a trusted failure status",
+                        {
+                            "context": {
+                                "payload": {"workflow_run": run},
+                                "runId": 20,
+                                "repo": {"owner": "openai", "repo": "example"},
+                                "serverUrl": "https://github.com",
+                            },
+                            "pulls_by_number": {str(pr["number"]): pr for pr in pulls},
+                            "fallback_pulls": pulls,
+                        },
+                    )
+                    self.assertEqual([write["issue_number"] for write in writes], expected)
 
     def test_workflow_reports_all_branches_without_write_credentials(self) -> None:
         workflows = Path(__file__).resolve().parents[2] / ".github/workflows"
@@ -418,7 +467,7 @@ class StatusPublisherTests(unittest.TestCase):
             ]
         return run_publisher("Publish exact-head statuses after checking freshness", payload)
 
-    def test_live_human_review_predicate_matches_selector(self):
+    def test_live_human_review_predicate_matches_selector(self) -> None:
         head = "b" * 40
         approved = {
             "id": 10,
@@ -457,7 +506,7 @@ class StatusPublisherTests(unittest.TestCase):
                 )
                 self.assertEqual([w["state"] for w in writes], [expected, expected])
 
-    def test_queue_policy_approval_dismissal_after_selection_fails(self):
+    def test_queue_policy_approval_dismissal_after_selection_fails(self) -> None:
         candidate = "e" * 40
         pull: dict[str, Any] = {
             "number": 7,
@@ -506,7 +555,7 @@ class StatusPublisherTests(unittest.TestCase):
         )
         self.assertEqual([w["state"] for w in writes], ["failure", "failure"])
 
-    def test_queue_policy_constituent_changes_fail_closed(self):
+    def test_queue_policy_constituent_changes_fail_closed(self) -> None:
         candidate = "e" * 40
         pull: dict[str, Any] = {
             "number": 7,
@@ -538,7 +587,7 @@ class StatusPublisherTests(unittest.TestCase):
                 )
                 self.assertEqual([w["state"] for w in writes], ["failure", "failure"])
 
-    def test_missing_policy_review_contract_fails_closed(self):
+    def test_missing_policy_review_contract_fails_closed(self) -> None:
         self.assertEqual(
             [w["state"] for w in self.publish(branch="next", missing_review_contract=True)],
             ["failure", "failure"],
