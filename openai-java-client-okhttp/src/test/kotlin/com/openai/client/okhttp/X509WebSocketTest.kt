@@ -260,10 +260,11 @@ internal class X509WebSocketTest {
                 assertThatThrownBy { client.responses().connect() }
                     .isInstanceOf(WebSocketHandshakeException::class.java)
                 client.responses().connect().use {
+                    // Reject the stale handshake as soon as the refreshed bearer has connected.
+                    release.countDown()
                     it.send(command())
                     it.finalResponse()
                 }
-                release.countDown()
                 assertThatThrownBy { stale.get(5, TimeUnit.SECONDS) }
                     .hasCauseInstanceOf(WebSocketHandshakeException::class.java)
                 client.responses().connect().use {

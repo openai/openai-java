@@ -12,6 +12,18 @@ import java.util.concurrent.CompletableFuture
 internal class PhantomReachableClosingHttpRequestAuthenticator(
     private val authenticator: HttpRequestAuthenticator
 ) : HttpRequestAuthenticator {
+    companion object {
+        @JvmSynthetic
+        internal fun wrap(authenticator: HttpRequestAuthenticator): HttpRequestAuthenticator {
+            val wrapper = PhantomReachableClosingHttpRequestAuthenticator(authenticator)
+            return if (authenticator is TimeoutAwareHttpRequestAuthenticator) {
+                object : TimeoutAwareHttpRequestAuthenticator by authenticator {
+                    override fun close() = wrapper.close()
+                }
+            } else wrapper
+        }
+    }
+
     private val cleanup: AutoCloseable
 
     init {
