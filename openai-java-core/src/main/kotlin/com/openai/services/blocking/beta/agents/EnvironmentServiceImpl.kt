@@ -28,6 +28,7 @@ import com.openai.services.blocking.beta.agents.environments.FileService
 import com.openai.services.blocking.beta.agents.environments.FileServiceImpl
 import com.openai.services.blocking.beta.agents.environments.TemplateService
 import com.openai.services.blocking.beta.agents.environments.TemplateServiceImpl
+import java.util.UUID
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -122,6 +123,15 @@ class EnvironmentServiceImpl internal constructor(private val clientOptions: Cli
                         params,
                         SecurityOptions.builder().bearerAuth(true).build(),
                     )
+                    .let { request ->
+                        // Keep one key across retries, while honoring caller-supplied headers.
+                        if (request.headers.values("Idempotency-Key").isNotEmpty()) request
+                        else
+                            request
+                                .toBuilder()
+                                .putHeader("Idempotency-Key", UUID.randomUUID().toString())
+                                .build()
+                    }
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {

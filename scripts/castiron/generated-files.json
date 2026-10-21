@@ -3,11 +3,11 @@
   "files": {
     ".github/workflows/castiron-custom-code-comment.yml": {
       "mode": "100644",
-      "sha256": "c51faae4a106b873852075c369847719f3f99e59fa3e1cf32ce02f8f9d697afc"
+      "sha256": "87fda8ee677c655a5e8138491e71358f3631700ba87bb1f420aa0736c889381a"
     },
     ".github/workflows/castiron-custom-code.yml": {
       "mode": "100644",
-      "sha256": "ba6d4c8bcd35481bd88245f60a566b223dc5272fc1bcc1e6834e4a8db9c52baf"
+      "sha256": "402da2fd16cc575eef7f4bf6bb1cff25272ee350452cb776f17c1589c036a3a1"
     },
     "openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt": {
       "mode": "100644",
@@ -7183,7 +7183,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/beta/agents/EnvironmentServiceAsyncImpl.kt": {
       "mode": "100644",
-      "sha256": "07b74215914f4eba72a665a0f92809393b78f428a2e77f98d95715d14ac47b7e"
+      "sha256": "c8b4277a8b0924ef3e014d707ee177e1f0b7efb99ea94cd103c4bf4b7dc9dd7d"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/beta/agents/SessionServiceAsync.kt": {
       "mode": "100644",
@@ -8183,7 +8183,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/beta/agents/EnvironmentServiceImpl.kt": {
       "mode": "100644",
-      "sha256": "08bd9c51afd588386e38d9b194c3630c9cf0ce77daa302c17d5db3a0742b097e"
+      "sha256": "46673f91919de8dfc33a55ed528c24354778f698b763e37f8826671084570af8"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/beta/agents/SessionService.kt": {
       "mode": "100644",
@@ -15887,7 +15887,7 @@
     },
     "scripts/castiron/CUSTOM_CODE.md": {
       "mode": "100644",
-      "sha256": "c83e57879ee995c2871ff41a775758301d634199a00886e339a41212db711f39"
+      "sha256": "6578db0d17cf297ea01b862f772a716bef56a81192498f423463505950707701"
     },
     "scripts/castiron/README.md": {
       "mode": "100644",
@@ -15895,7 +15895,11 @@
     },
     "scripts/castiron/custom_code_budget.py": {
       "mode": "100644",
-      "sha256": "2beaac2eb0a963e717bf2bba93f52d6aea28fa7c4961591d4c2c4749945dbb7c"
+      "sha256": "447adc841dfdca7ad75956d277778b6f79d77efa17e8b5f08a4a79664060da77"
+    },
+    "scripts/castiron/custom_code_policy.py": {
+      "mode": "100644",
+      "sha256": "4b9c374b838bb544e1325823f195bca0f99989745ad09add43ad3b702016e492"
     },
     "scripts/castiron/custom_code_report.py": {
       "mode": "100644",
@@ -15907,7 +15911,7 @@
     },
     "scripts/castiron/fixtures/github_publisher.cjs": {
       "mode": "100644",
-      "sha256": "114a35f8ed075f20d7fbcfab6dbbf16383866497a9d6e8290cf0928bba753468"
+      "sha256": "3c39971b4371f2dd547f0dfa692e2980f1e7a14844799fe1834f7d8d1ab0a60b"
     },
     "scripts/castiron/ruff.toml": {
       "mode": "100644",
@@ -15915,19 +15919,23 @@
     },
     "scripts/castiron/test_custom_code_budget.py": {
       "mode": "100644",
-      "sha256": "f355e1cb0ed88aa5a344cd6c68388802f5ed814d638b500e271b008cf07e0106"
+      "sha256": "71527f2e594989bb3f7f94a723322714bf9bd2669aa861719f29f462b925a4b6"
     },
     "scripts/castiron/test_custom_code_github.py": {
       "mode": "100644",
-      "sha256": "f3df0d260edd990532b32f15ed9cb4071834634bbb08a87d0077481e09128f98"
+      "sha256": "203acb9491117d6fb7e3c7fd3379055aa42d7e4884be4dcbef364c9f13ea4c7c"
+    },
+    "scripts/castiron/test_custom_code_policy.py": {
+      "mode": "100644",
+      "sha256": "14cc036ca21d6cdc271cce93027e7b90636d780d9550bf119f70a2316fab782d"
     },
     "scripts/castiron/test_custom_code_publication.py": {
       "mode": "100644",
-      "sha256": "1d93757664a6ffd26f21df2a4c07ac635393f5da1ab0283df75bad66faa2ef2e"
+      "sha256": "8c55aaf375ca85cdf6921598205f3a67dee008f471404015c48bbcf4c8104dfc"
     },
     "scripts/castiron/test_custom_code_report.py": {
       "mode": "100644",
-      "sha256": "4429459798fd4cd57f6bbc6c0a9bbe88d76304cba07d2d2d4bfc22b5d403bdda"
+      "sha256": "f8f6b883c545963b4f82d8b078734298294607a9371e70e01fb0c3a37304be61"
     }
   }
 }

@@ -28,6 +28,7 @@ import com.openai.services.async.beta.agents.environments.FileServiceAsync
 import com.openai.services.async.beta.agents.environments.FileServiceAsyncImpl
 import com.openai.services.async.beta.agents.environments.TemplateServiceAsync
 import com.openai.services.async.beta.agents.environments.TemplateServiceAsyncImpl
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -123,6 +124,15 @@ class EnvironmentServiceAsyncImpl internal constructor(private val clientOptions
                         params,
                         SecurityOptions.builder().bearerAuth(true).build(),
                     )
+                    .thenApply { request ->
+                        // Keep one key across retries, while honoring caller-supplied headers.
+                        if (request.headers.values("Idempotency-Key").isNotEmpty()) request
+                        else
+                            request
+                                .toBuilder()
+                                .putHeader("Idempotency-Key", UUID.randomUUID().toString())
+                                .build()
+                    }
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
