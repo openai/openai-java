@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseInputTextContentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseInputTextContent =
             BetaResponseInputTextContent.builder()
                 .text("text")
@@ -22,18 +22,8 @@ internal class BetaResponseInputTextContentTest {
         assertThat(betaResponseInputTextContent.text()).isEqualTo("text")
         assertThat(betaResponseInputTextContent.promptCacheBreakpoint())
             .contains(BetaResponseInputTextContent.PromptCacheBreakpoint.builder().build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseInputTextContent =
-            BetaResponseInputTextContent.builder()
-                .text("text")
-                .promptCacheBreakpoint(
-                    BetaResponseInputTextContent.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedBetaResponseInputTextContent =
             jsonMapper.readValue(

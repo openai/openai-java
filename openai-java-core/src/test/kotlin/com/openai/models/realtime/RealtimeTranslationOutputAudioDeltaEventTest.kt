@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeTranslationOutputAudioDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeTranslationOutputAudioDeltaEvent =
             RealtimeTranslationOutputAudioDeltaEvent.builder()
                 .delta("delta")
@@ -28,20 +28,8 @@ internal class RealtimeTranslationOutputAudioDeltaEventTest {
         assertThat(realtimeTranslationOutputAudioDeltaEvent.format())
             .contains(RealtimeTranslationOutputAudioDeltaEvent.Format.PCM16)
         assertThat(realtimeTranslationOutputAudioDeltaEvent.sampleRate()).contains(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeTranslationOutputAudioDeltaEvent =
-            RealtimeTranslationOutputAudioDeltaEvent.builder()
-                .delta("delta")
-                .eventId("event_id")
-                .channels(0L)
-                .elapsedMs(0L)
-                .format(RealtimeTranslationOutputAudioDeltaEvent.Format.PCM16)
-                .sampleRate(0L)
-                .build()
 
         val roundtrippedRealtimeTranslationOutputAudioDeltaEvent =
             jsonMapper.readValue(

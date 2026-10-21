@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionMessageCustomToolCallTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionMessageCustomToolCall =
             ChatCompletionMessageCustomToolCall.builder()
                 .id("id")
@@ -30,21 +30,8 @@ internal class ChatCompletionMessageCustomToolCallTest {
                     .name("name")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionMessageCustomToolCall =
-            ChatCompletionMessageCustomToolCall.builder()
-                .id("id")
-                .custom(
-                    ChatCompletionMessageCustomToolCall.Custom.builder()
-                        .input("input")
-                        .name("name")
-                        .build()
-                )
-                .build()
 
         val roundtrippedChatCompletionMessageCustomToolCall =
             jsonMapper.readValue(

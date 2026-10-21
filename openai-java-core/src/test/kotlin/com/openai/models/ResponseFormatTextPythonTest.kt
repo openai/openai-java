@@ -10,14 +10,10 @@ import org.junit.jupiter.api.Test
 internal class ResponseFormatTextPythonTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseFormatTextPython = ResponseFormatTextPython.builder().build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseFormatTextPython = ResponseFormatTextPython.builder().build()
 
         val roundtrippedResponseFormatTextPython =
             jsonMapper.readValue(

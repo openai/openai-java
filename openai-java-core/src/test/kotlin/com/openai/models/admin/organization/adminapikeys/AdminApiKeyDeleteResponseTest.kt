@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class AdminApiKeyDeleteResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val adminApiKeyDeleteResponse =
             AdminApiKeyDeleteResponse.builder().id("key_abc").deleted(true).build()
 
         assertThat(adminApiKeyDeleteResponse.id()).isEqualTo("key_abc")
         assertThat(adminApiKeyDeleteResponse.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val adminApiKeyDeleteResponse =
-            AdminApiKeyDeleteResponse.builder().id("key_abc").deleted(true).build()
 
         val roundtrippedAdminApiKeyDeleteResponse =
             jsonMapper.readValue(

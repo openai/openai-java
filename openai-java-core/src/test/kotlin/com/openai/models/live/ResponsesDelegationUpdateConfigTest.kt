@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class ResponsesDelegationUpdateConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responsesDelegationUpdateConfig =
             ResponsesDelegationUpdateConfig.builder()
                 .instructions("instructions")
@@ -86,43 +86,8 @@ internal class ResponsesDelegationUpdateConfigTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responsesDelegationUpdateConfig =
-            ResponsesDelegationUpdateConfig.builder()
-                .instructions("instructions")
-                .maxOutputTokens(16L)
-                .model("model")
-                .parallelToolCalls(true)
-                .reasoning(
-                    ResponsesDelegationUpdateConfig.Reasoning.builder()
-                        .effort(ResponsesDelegationUpdateConfig.Reasoning.Effort.NONE)
-                        .summary(ResponsesDelegationUpdateConfig.Reasoning.Summary.CONCISE)
-                        .build()
-                )
-                .serviceTier(ResponsesDelegationUpdateConfig.ServiceTier.AUTO)
-                .text(
-                    ResponsesDelegationUpdateConfig.Text.builder()
-                        .verbosity(ResponsesDelegationUpdateConfig.Text.Verbosity.LOW)
-                        .build()
-                )
-                .toolChoice(ResponsesDelegationUpdateConfig.ToolChoice.LiveToolChoiceEnum.AUTO)
-                .addTool(
-                    FunctionTool.builder()
-                        .name("name")
-                        .description("description")
-                        .parameters(
-                            FunctionTool.Parameters.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .strict(true)
-                        .build()
-                )
-                .build()
 
         val roundtrippedResponsesDelegationUpdateConfig =
             jsonMapper.readValue(

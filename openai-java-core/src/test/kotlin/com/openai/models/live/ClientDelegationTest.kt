@@ -10,14 +10,10 @@ import org.junit.jupiter.api.Test
 internal class ClientDelegationTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val clientDelegation = ClientDelegation.builder().build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val clientDelegation = ClientDelegation.builder().build()
 
         val roundtrippedClientDelegation =
             jsonMapper.readValue(

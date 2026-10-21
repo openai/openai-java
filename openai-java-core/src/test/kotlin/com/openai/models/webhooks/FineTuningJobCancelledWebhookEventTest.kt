@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class FineTuningJobCancelledWebhookEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fineTuningJobCancelledWebhookEvent =
             FineTuningJobCancelledWebhookEvent.builder()
                 .id("id")
@@ -25,18 +25,8 @@ internal class FineTuningJobCancelledWebhookEventTest {
             .isEqualTo(FineTuningJobCancelledWebhookEvent.Data.builder().id("id").build())
         assertThat(fineTuningJobCancelledWebhookEvent.object_())
             .contains(FineTuningJobCancelledWebhookEvent.Object.EVENT)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fineTuningJobCancelledWebhookEvent =
-            FineTuningJobCancelledWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(FineTuningJobCancelledWebhookEvent.Data.builder().id("id").build())
-                .object_(FineTuningJobCancelledWebhookEvent.Object.EVENT)
-                .build()
 
         val roundtrippedFineTuningJobCancelledWebhookEvent =
             jsonMapper.readValue(

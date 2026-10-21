@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class AgentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agent =
             Agent.builder()
                 .id("id")
@@ -89,48 +89,8 @@ internal class AgentTest {
                 )
             )
         assertThat(agent.updatedAt()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agent =
-            Agent.builder()
-                .id("id")
-                .createdAt(0L)
-                .instructions("instructions")
-                .metadata(
-                    Agent.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .model("model")
-                .multiAgent(
-                    MultiAgentConfig.builder().enabled(true).maxConcurrentSubagents(1L).build()
-                )
-                .name("name")
-                .reasoning(
-                    AgentReasoning.builder()
-                        .effort(AgentReasoning.Effort.NONE)
-                        .summary(AgentReasoning.Summary.CONCISE)
-                        .build()
-                )
-                .serviceTier(Agent.ServiceTier.AUTO)
-                .text(AgentText.builder().formatText().verbosity(AgentText.Verbosity.LOW).build())
-                .addTool(
-                    PersistedAgentTool.Function.builder()
-                        .deferLoading(true)
-                        .description("description")
-                        .name("name")
-                        .parameters(
-                            PersistedAgentTool.Function.Parameters.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .build()
-                )
-                .updatedAt(0L)
-                .build()
 
         val roundtrippedAgent =
             jsonMapper.readValue(jsonMapper.writeValueAsString(agent), jacksonTypeRef<Agent>())

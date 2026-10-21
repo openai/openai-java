@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeAudioConfigInputTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeAudioConfigInput =
             RealtimeAudioConfigInput.builder()
                 .format(
@@ -85,45 +85,8 @@ internal class RealtimeAudioConfigInputTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeAudioConfigInput =
-            RealtimeAudioConfigInput.builder()
-                .format(
-                    RealtimeAudioFormats.AudioPcm.builder()
-                        .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
-                        .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
-                        .build()
-                )
-                .noiseReduction(
-                    RealtimeAudioConfigInput.NoiseReduction.builder()
-                        .type(NoiseReductionType.NEAR_FIELD)
-                        .build()
-                )
-                .transcription(
-                    AudioTranscription.builder()
-                        .delay(AudioTranscription.Delay.MINIMAL)
-                        .addKeyword("string")
-                        .language("language")
-                        .addLanguage("string")
-                        .model(AudioTranscription.Model.WHISPER_1)
-                        .prompt("prompt")
-                        .build()
-                )
-                .turnDetection(
-                    RealtimeAudioInputTurnDetection.ServerVad.builder()
-                        .createResponse(true)
-                        .idleTimeoutMs(5000L)
-                        .interruptResponse(true)
-                        .prefixPaddingMs(0L)
-                        .silenceDurationMs(0L)
-                        .threshold(0.0)
-                        .build()
-                )
-                .build()
 
         val roundtrippedRealtimeAudioConfigInput =
             jsonMapper.readValue(

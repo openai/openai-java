@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class InstructionsAppendedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val instructionsAppendedEvent =
             InstructionsAppendedEvent.builder()
                 .endMs(1400L)
@@ -23,18 +23,8 @@ internal class InstructionsAppendedEventTest {
         assertThat(instructionsAppendedEvent.eventId()).isEqualTo("evt_instructions_002")
         assertThat(instructionsAppendedEvent.startMs()).isEqualTo(1200L)
         assertThat(instructionsAppendedEvent.clientEventId()).contains("evt_instructions_001")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val instructionsAppendedEvent =
-            InstructionsAppendedEvent.builder()
-                .endMs(1400L)
-                .eventId("evt_instructions_002")
-                .startMs(1200L)
-                .clientEventId("evt_instructions_001")
-                .build()
 
         val roundtrippedInstructionsAppendedEvent =
             jsonMapper.readValue(

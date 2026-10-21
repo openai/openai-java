@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class AssistantToolChoiceFunctionTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val assistantToolChoiceFunction = AssistantToolChoiceFunction.builder().name("name").build()
 
         assertThat(assistantToolChoiceFunction.name()).isEqualTo("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val assistantToolChoiceFunction = AssistantToolChoiceFunction.builder().name("name").build()
 
         val roundtrippedAssistantToolChoiceFunction =
             jsonMapper.readValue(

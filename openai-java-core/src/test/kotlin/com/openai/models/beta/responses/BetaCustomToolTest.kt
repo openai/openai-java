@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaCustomToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaCustomTool =
             BetaCustomTool.builder()
                 .name("name")
@@ -29,20 +29,8 @@ internal class BetaCustomToolTest {
         assertThat(betaCustomTool.deferLoading()).contains(true)
         assertThat(betaCustomTool.description()).contains("description")
         assertThat(betaCustomTool.format()).contains(BetaCustomTool.Format.ofText())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaCustomTool =
-            BetaCustomTool.builder()
-                .name("name")
-                .addAllowedCaller(BetaCustomTool.AllowedCaller.DIRECT)
-                .async(true)
-                .deferLoading(true)
-                .description("description")
-                .formatText()
-                .build()
 
         val roundtrippedBetaCustomTool =
             jsonMapper.readValue(

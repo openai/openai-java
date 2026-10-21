@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SessionArtifactTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionArtifact =
             SessionArtifact.builder()
                 .id("id")
@@ -29,21 +29,8 @@ internal class SessionArtifactTest {
         assertThat(sessionArtifact.sessionId()).isEqualTo("session_id")
         assertThat(sessionArtifact.sizeBytes()).isEqualTo(0L)
         assertThat(sessionArtifact.turnId()).isEqualTo("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionArtifact =
-            SessionArtifact.builder()
-                .id("id")
-                .createdAt(0L)
-                .environmentId("environment_id")
-                .path("path")
-                .sessionId("session_id")
-                .sizeBytes(0L)
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedSessionArtifact =
             jsonMapper.readValue(

@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class TextContentBlockParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val textContentBlockParam = TextContentBlockParam.builder().text("text").build()
 
         assertThat(textContentBlockParam.text()).isEqualTo("text")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val textContentBlockParam = TextContentBlockParam.builder().text("text").build()
 
         val roundtrippedTextContentBlockParam =
             jsonMapper.readValue(

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class FineTuningJobEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fineTuningJobEvent =
             FineTuningJobEvent.builder()
                 .id("id")
@@ -28,20 +28,8 @@ internal class FineTuningJobEventTest {
         assertThat(fineTuningJobEvent.message()).isEqualTo("message")
         assertThat(fineTuningJobEvent._data()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(fineTuningJobEvent.type()).contains(FineTuningJobEvent.Type.MESSAGE)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fineTuningJobEvent =
-            FineTuningJobEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .level(FineTuningJobEvent.Level.INFO)
-                .message("message")
-                .data(JsonValue.from(mapOf<String, Any>()))
-                .type(FineTuningJobEvent.Type.MESSAGE)
-                .build()
 
         val roundtrippedFineTuningJobEvent =
             jsonMapper.readValue(

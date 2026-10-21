@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseAudioTranscriptDoneEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseAudioTranscriptDoneEvent =
             ResponseAudioTranscriptDoneEvent.builder()
                 .contentIndex(0L)
@@ -27,20 +27,8 @@ internal class ResponseAudioTranscriptDoneEventTest {
         assertThat(responseAudioTranscriptDoneEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseAudioTranscriptDoneEvent.responseId()).isEqualTo("response_id")
         assertThat(responseAudioTranscriptDoneEvent.transcript()).isEqualTo("transcript")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseAudioTranscriptDoneEvent =
-            ResponseAudioTranscriptDoneEvent.builder()
-                .contentIndex(0L)
-                .eventId("event_id")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .responseId("response_id")
-                .transcript("transcript")
-                .build()
 
         val roundtrippedResponseAudioTranscriptDoneEvent =
             jsonMapper.readValue(

@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test
 internal class CreateEvalCompletionsRunDataSourceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val createEvalCompletionsRunDataSource =
             CreateEvalCompletionsRunDataSource.builder()
                 .fileContentSource(
@@ -151,73 +151,8 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                     .topP(0.0)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val createEvalCompletionsRunDataSource =
-            CreateEvalCompletionsRunDataSource.builder()
-                .fileContentSource(
-                    listOf(
-                        CreateEvalCompletionsRunDataSource.Source.FileContent.Content.builder()
-                            .item(
-                                CreateEvalCompletionsRunDataSource.Source.FileContent.Content.Item
-                                    .builder()
-                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                    .build()
-                            )
-                            .sample(
-                                CreateEvalCompletionsRunDataSource.Source.FileContent.Content.Sample
-                                    .builder()
-                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                    .build()
-                            )
-                            .build()
-                    )
-                )
-                .type(CreateEvalCompletionsRunDataSource.Type.COMPLETIONS)
-                .templateInputMessages(
-                    listOf(
-                        CreateEvalCompletionsRunDataSource.InputMessages.Template.InnerTemplate
-                            .ofEasyInputMessage(
-                                EasyInputMessage.builder()
-                                    .content("string")
-                                    .role(EasyInputMessage.Role.USER)
-                                    .phase(EasyInputMessage.Phase.COMMENTARY)
-                                    .type(EasyInputMessage.Type.MESSAGE)
-                                    .build()
-                            )
-                    )
-                )
-                .model("model")
-                .samplingParams(
-                    CreateEvalCompletionsRunDataSource.SamplingParams.builder()
-                        .maxCompletionTokens(0L)
-                        .reasoningEffort(ReasoningEffort.NONE)
-                        .responseFormat(ResponseFormatText.builder().build())
-                        .seed(0L)
-                        .temperature(0.0)
-                        .addTool(
-                            ChatCompletionFunctionTool.builder()
-                                .function(
-                                    FunctionDefinition.builder()
-                                        .name("name")
-                                        .description("description")
-                                        .parameters(
-                                            FunctionParameters.builder()
-                                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                                .build()
-                                        )
-                                        .strict(true)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .topP(0.0)
-                        .build()
-                )
-                .build()
 
         val roundtrippedCreateEvalCompletionsRunDataSource =
             jsonMapper.readValue(

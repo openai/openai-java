@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class EvalCustomDataSourceConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val evalCustomDataSourceConfig =
             EvalCustomDataSourceConfig.builder()
                 .schema(
@@ -31,21 +31,8 @@ internal class EvalCustomDataSourceConfigTest {
                     .putAdditionalProperty("required", JsonValue.from(listOf("item")))
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val evalCustomDataSourceConfig =
-            EvalCustomDataSourceConfig.builder()
-                .schema(
-                    EvalCustomDataSourceConfig.Schema.builder()
-                        .putAdditionalProperty("type", JsonValue.from("object"))
-                        .putAdditionalProperty("properties", JsonValue.from("bar"))
-                        .putAdditionalProperty("required", JsonValue.from(listOf("item")))
-                        .build()
-                )
-                .build()
 
         val roundtrippedEvalCustomDataSourceConfig =
             jsonMapper.readValue(

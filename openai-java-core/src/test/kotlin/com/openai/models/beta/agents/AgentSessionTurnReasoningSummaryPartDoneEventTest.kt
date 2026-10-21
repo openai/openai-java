@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionTurnReasoningSummaryPartDoneEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionTurnReasoningSummaryPartDoneEvent =
             AgentSessionTurnReasoningSummaryPartDoneEvent.builder()
                 .eventId("event_id")
@@ -34,22 +34,8 @@ internal class AgentSessionTurnReasoningSummaryPartDoneEventTest {
             .contains(AgentSessionTurnReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
         assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.summaryIndex()).isEqualTo(0L)
         assertThat(agentSessionTurnReasoningSummaryPartDoneEvent.turnId()).contains("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionTurnReasoningSummaryPartDoneEvent =
-            AgentSessionTurnReasoningSummaryPartDoneEvent.builder()
-                .eventId("event_id")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .part(SummaryText.builder().text("text").build())
-                .sessionId("session_id")
-                .status(AgentSessionTurnReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
-                .summaryIndex(0L)
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentSessionTurnReasoningSummaryPartDoneEvent =
             jsonMapper.readValue(

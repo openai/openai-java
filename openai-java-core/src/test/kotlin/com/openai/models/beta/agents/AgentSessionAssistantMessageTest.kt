@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionAssistantMessageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionAssistantMessage =
             AgentSessionAssistantMessage.builder()
                 .id("id")
@@ -28,19 +28,8 @@ internal class AgentSessionAssistantMessageTest {
         assertThat(agentSessionAssistantMessage.status())
             .isEqualTo(AgentOutputItemStatus.IN_PROGRESS)
         assertThat(agentSessionAssistantMessage.turnId()).isEqualTo("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionAssistantMessage =
-            AgentSessionAssistantMessage.builder()
-                .id("id")
-                .addContent(OutputText.builder().text("text").build())
-                .phase(AgentSessionAssistantMessage.Phase.COMMENTARY)
-                .status(AgentOutputItemStatus.IN_PROGRESS)
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentSessionAssistantMessage =
             jsonMapper.readValue(

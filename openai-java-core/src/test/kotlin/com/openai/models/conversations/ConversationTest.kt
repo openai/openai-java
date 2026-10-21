@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ConversationTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val conversation =
             Conversation.builder()
                 .id("id")
@@ -22,17 +22,8 @@ internal class ConversationTest {
         assertThat(conversation.id()).isEqualTo("id")
         assertThat(conversation.createdAt()).isEqualTo(0L)
         assertThat(conversation._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val conversation =
-            Conversation.builder()
-                .id("id")
-                .createdAt(0L)
-                .metadata(JsonValue.from(mapOf<String, Any>()))
-                .build()
 
         val roundtrippedConversation =
             jsonMapper.readValue(

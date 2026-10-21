@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionAssistantMessageParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionAssistantMessageParam =
             ChatCompletionAssistantMessageParam.builder()
                 .audio(ChatCompletionAssistantMessageParam.Audio.builder().id("id").build())
@@ -64,35 +64,8 @@ internal class ChatCompletionAssistantMessageParamTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionAssistantMessageParam =
-            ChatCompletionAssistantMessageParam.builder()
-                .audio(ChatCompletionAssistantMessageParam.Audio.builder().id("id").build())
-                .content("string")
-                .functionCall(
-                    ChatCompletionAssistantMessageParam.FunctionCall.builder()
-                        .arguments("arguments")
-                        .name("name")
-                        .build()
-                )
-                .name("name")
-                .refusal("refusal")
-                .addToolCall(
-                    ChatCompletionMessageFunctionToolCall.builder()
-                        .id("id")
-                        .function(
-                            ChatCompletionMessageFunctionToolCall.Function.builder()
-                                .arguments("arguments")
-                                .name("name")
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedChatCompletionAssistantMessageParam =
             jsonMapper.readValue(

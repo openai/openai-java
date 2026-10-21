@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class OrganizationSpendLimitDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val organizationSpendLimitDeleted =
             OrganizationSpendLimitDeleted.builder().deleted(true).build()
 
         assertThat(organizationSpendLimitDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val organizationSpendLimitDeleted =
-            OrganizationSpendLimitDeleted.builder().deleted(true).build()
 
         val roundtrippedOrganizationSpendLimitDeleted =
             jsonMapper.readValue(

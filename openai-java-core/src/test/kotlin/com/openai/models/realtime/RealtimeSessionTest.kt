@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeSessionTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeSession =
             RealtimeSession.builder()
                 .id("id")
@@ -148,73 +148,8 @@ internal class RealtimeSessionTest {
                 )
             )
         assertThat(realtimeSession.voice()).contains(RealtimeSession.Voice.ASH)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeSession =
-            RealtimeSession.builder()
-                .id("id")
-                .expiresAt(0L)
-                .addInclude(RealtimeSession.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS)
-                .inputAudioFormat(RealtimeSession.InputAudioFormat.PCM16)
-                .inputAudioNoiseReduction(
-                    RealtimeSession.InputAudioNoiseReduction.builder()
-                        .type(NoiseReductionType.NEAR_FIELD)
-                        .build()
-                )
-                .inputAudioTranscription(
-                    AudioTranscription.builder()
-                        .delay(AudioTranscription.Delay.MINIMAL)
-                        .addKeyword("string")
-                        .language("language")
-                        .addLanguage("string")
-                        .model(AudioTranscription.Model.WHISPER_1)
-                        .prompt("prompt")
-                        .build()
-                )
-                .instructions("instructions")
-                .maxResponseOutputTokensInf()
-                .addModality(RealtimeSession.Modality.TEXT)
-                .model(RealtimeSession.Model.GPT_REALTIME)
-                .object_(RealtimeSession.Object.REALTIME_SESSION)
-                .outputAudioFormat(RealtimeSession.OutputAudioFormat.PCM16)
-                .prompt(
-                    ResponsePrompt.builder()
-                        .id("id")
-                        .variables(
-                            ResponsePrompt.Variables.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .version("version")
-                        .build()
-                )
-                .speed(0.25)
-                .temperature(0.0)
-                .toolChoice("tool_choice")
-                .addTool(
-                    RealtimeFunctionTool.builder()
-                        .description("description")
-                        .name("name")
-                        .parameters(JsonValue.from(mapOf<String, Any>()))
-                        .type(RealtimeFunctionTool.Type.FUNCTION)
-                        .build()
-                )
-                .tracingAuto()
-                .turnDetection(
-                    RealtimeSession.TurnDetection.ServerVad.builder()
-                        .createResponse(true)
-                        .idleTimeoutMs(5000L)
-                        .interruptResponse(true)
-                        .prefixPaddingMs(0L)
-                        .silenceDurationMs(0L)
-                        .threshold(0.0)
-                        .build()
-                )
-                .voice(RealtimeSession.Voice.ASH)
-                .build()
 
         val roundtrippedRealtimeSession =
             jsonMapper.readValue(

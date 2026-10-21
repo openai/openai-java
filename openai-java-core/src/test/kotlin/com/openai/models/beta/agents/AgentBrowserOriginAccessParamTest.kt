@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentBrowserOriginAccessParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentBrowserOriginAccessParam =
             AgentBrowserOriginAccessParam.builder()
                 .decision(AgentBrowserOriginAccessParam.Decision.APPROVE)
@@ -18,15 +18,8 @@ internal class AgentBrowserOriginAccessParamTest {
 
         assertThat(agentBrowserOriginAccessParam.decision())
             .isEqualTo(AgentBrowserOriginAccessParam.Decision.APPROVE)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentBrowserOriginAccessParam =
-            AgentBrowserOriginAccessParam.builder()
-                .decision(AgentBrowserOriginAccessParam.Decision.APPROVE)
-                .build()
 
         val roundtrippedAgentBrowserOriginAccessParam =
             jsonMapper.readValue(

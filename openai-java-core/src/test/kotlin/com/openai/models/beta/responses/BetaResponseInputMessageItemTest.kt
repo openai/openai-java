@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseInputMessageItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseInputMessageItem =
             BetaResponseInputMessageItem.builder()
                 .id("id")
@@ -45,26 +45,8 @@ internal class BetaResponseInputMessageItemTest {
             .contains(BetaResponseInputMessageItem.Agent.builder().agentName("agent_name").build())
         assertThat(betaResponseInputMessageItem.status())
             .contains(BetaResponseInputMessageItem.Status.IN_PROGRESS)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseInputMessageItem =
-            BetaResponseInputMessageItem.builder()
-                .id("id")
-                .addContent(
-                    BetaResponseInputText.builder()
-                        .text("text")
-                        .promptCacheBreakpoint(
-                            BetaResponseInputText.PromptCacheBreakpoint.builder().build()
-                        )
-                        .build()
-                )
-                .role(BetaResponseInputMessageItem.Role.USER)
-                .agent(BetaResponseInputMessageItem.Agent.builder().agentName("agent_name").build())
-                .status(BetaResponseInputMessageItem.Status.IN_PROGRESS)
-                .build()
 
         val roundtrippedBetaResponseInputMessageItem =
             jsonMapper.readValue(

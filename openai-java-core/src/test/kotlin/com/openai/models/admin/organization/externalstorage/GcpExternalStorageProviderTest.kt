@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class GcpExternalStorageProviderTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val gcpExternalStorageProvider =
             GcpExternalStorageProvider.builder()
                 .audience("audience")
@@ -30,20 +30,8 @@ internal class GcpExternalStorageProviderTest {
             .isEqualTo("workload_identity_project_number")
         assertThat(gcpExternalStorageProvider.workloadIdentityProviderId())
             .isEqualTo("workload_identity_provider_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val gcpExternalStorageProvider =
-            GcpExternalStorageProvider.builder()
-                .audience("audience")
-                .bucket("bucket")
-                .region("region")
-                .workloadIdentityPoolId("workload_identity_pool_id")
-                .workloadIdentityProjectNumber("workload_identity_project_number")
-                .workloadIdentityProviderId("workload_identity_provider_id")
-                .build()
 
         val roundtrippedGcpExternalStorageProvider =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class UserListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val userListPageResponse =
             UserListPageResponse.builder()
                 .addData(
@@ -26,19 +26,8 @@ internal class UserListPageResponseTest {
             )
         assertThat(userListPageResponse.hasMore()).isEqualTo(true)
         assertThat(userListPageResponse.next()).contains("next")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val userListPageResponse =
-            UserListPageResponse.builder()
-                .addData(
-                    OrganizationGroupUser.builder().id("id").email("email").name("name").build()
-                )
-                .hasMore(true)
-                .next("next")
-                .build()
 
         val roundtrippedUserListPageResponse =
             jsonMapper.readValue(

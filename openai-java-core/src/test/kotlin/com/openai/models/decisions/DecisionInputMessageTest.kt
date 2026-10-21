@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class DecisionInputMessageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val decisionInputMessage =
             DecisionInputMessage.builder()
                 .content("string")
@@ -20,16 +20,8 @@ internal class DecisionInputMessageTest {
         assertThat(decisionInputMessage.content())
             .isEqualTo(DecisionInputMessage.Content.ofString("string"))
         assertThat(decisionInputMessage.type()).contains(DecisionInputMessage.Type.MESSAGE)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val decisionInputMessage =
-            DecisionInputMessage.builder()
-                .content("string")
-                .type(DecisionInputMessage.Type.MESSAGE)
-                .build()
 
         val roundtrippedDecisionInputMessage =
             jsonMapper.readValue(

@@ -10,20 +10,15 @@ import org.junit.jupiter.api.Test
 internal class OrganizationGroupUserTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val organizationGroupUser =
             OrganizationGroupUser.builder().id("id").email("email").name("name").build()
 
         assertThat(organizationGroupUser.id()).isEqualTo("id")
         assertThat(organizationGroupUser.email()).contains("email")
         assertThat(organizationGroupUser.name()).isEqualTo("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val organizationGroupUser =
-            OrganizationGroupUser.builder().id("id").email("email").name("name").build()
 
         val roundtrippedOrganizationGroupUser =
             jsonMapper.readValue(

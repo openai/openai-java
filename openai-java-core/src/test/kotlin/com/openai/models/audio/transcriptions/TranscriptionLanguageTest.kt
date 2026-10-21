@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class TranscriptionLanguageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val transcriptionLanguage = TranscriptionLanguage.builder().code("code").build()
 
         assertThat(transcriptionLanguage.code()).isEqualTo("code")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val transcriptionLanguage = TranscriptionLanguage.builder().code("code").build()
 
         val roundtrippedTranscriptionLanguage =
             jsonMapper.readValue(

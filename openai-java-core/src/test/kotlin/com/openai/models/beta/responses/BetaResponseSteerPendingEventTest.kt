@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseSteerPendingEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseSteerPendingEvent =
             BetaResponseSteerPendingEvent.builder()
                 .reason(BetaResponseSteerPendingReason.WAITING_FOR_REQUIRED_INPUT)
@@ -50,29 +50,8 @@ internal class BetaResponseSteerPendingEventTest {
                     .build()
             )
         assertThat(betaResponseSteerPendingEvent.streamId()).contains("stream_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseSteerPendingEvent =
-            BetaResponseSteerPendingEvent.builder()
-                .reason(BetaResponseSteerPendingReason.WAITING_FOR_REQUIRED_INPUT)
-                .addRequiredInput(
-                    BetaResponseSteerRequiredInput.FunctionCallOutput.builder()
-                        .callId("call_id")
-                        .name("name")
-                        .build()
-                )
-                .sequenceNumber(0L)
-                .steer(
-                    BetaResponseSteerPendingEvent.Steer.builder()
-                        .id("id")
-                        .previousResponseId("previous_response_id")
-                        .build()
-                )
-                .streamId("stream_id")
-                .build()
 
         val roundtrippedBetaResponseSteerPendingEvent =
             jsonMapper.readValue(

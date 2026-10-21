@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class CertificateActivateResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val certificateActivateResponse =
             CertificateActivateResponse.builder()
                 .id("id")
@@ -36,24 +36,8 @@ internal class CertificateActivateResponseTest {
             )
         assertThat(certificateActivateResponse.createdAt()).isEqualTo(0L)
         assertThat(certificateActivateResponse.name()).contains("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val certificateActivateResponse =
-            CertificateActivateResponse.builder()
-                .id("id")
-                .active(true)
-                .certificateDetails(
-                    CertificateActivateResponse.CertificateDetails.builder()
-                        .expiresAt(0L)
-                        .validAt(0L)
-                        .build()
-                )
-                .createdAt(0L)
-                .name("name")
-                .build()
 
         val roundtrippedCertificateActivateResponse =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ApiKeyListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val apiKeyListPageResponse =
             ApiKeyListPageResponse.builder()
                 .addData(
@@ -88,50 +88,8 @@ internal class ApiKeyListPageResponseTest {
         assertThat(apiKeyListPageResponse.hasMore()).isEqualTo(true)
         assertThat(apiKeyListPageResponse.firstId()).contains("first_id")
         assertThat(apiKeyListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val apiKeyListPageResponse =
-            ApiKeyListPageResponse.builder()
-                .addData(
-                    ProjectApiKey.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .lastUsedAt(0L)
-                        .name("name")
-                        .owner(
-                            ProjectApiKey.Owner.builder()
-                                .serviceAccount(
-                                    ProjectApiKey.Owner.ServiceAccount.builder()
-                                        .id("id")
-                                        .createdAt(0L)
-                                        .name("name")
-                                        .role("role")
-                                        .build()
-                                )
-                                .type(ProjectApiKey.Owner.Type.USER)
-                                .user(
-                                    ProjectApiKey.Owner.User.builder()
-                                        .id("id")
-                                        .createdAt(0L)
-                                        .email("email")
-                                        .name("name")
-                                        .role("role")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .ownerProjectAccess(ProjectApiKey.OwnerProjectAccess.ACTIVE)
-                        .redactedValue("redacted_value")
-                        .expiresAt(0L)
-                        .build()
-                )
-                .hasMore(true)
-                .firstId("first_id")
-                .lastId("last_id")
-                .build()
 
         val roundtrippedApiKeyListPageResponse =
             jsonMapper.readValue(

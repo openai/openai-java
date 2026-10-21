@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ProjectServiceAccountTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectServiceAccount =
             ProjectServiceAccount.builder()
                 .id("id")
@@ -23,18 +23,8 @@ internal class ProjectServiceAccountTest {
         assertThat(projectServiceAccount.createdAt()).isEqualTo(0L)
         assertThat(projectServiceAccount.name()).isEqualTo("name")
         assertThat(projectServiceAccount.role()).isEqualTo(ProjectServiceAccount.Role.OWNER)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectServiceAccount =
-            ProjectServiceAccount.builder()
-                .id("id")
-                .createdAt(0L)
-                .name("name")
-                .role(ProjectServiceAccount.Role.OWNER)
-                .build()
 
         val roundtrippedProjectServiceAccount =
             jsonMapper.readValue(

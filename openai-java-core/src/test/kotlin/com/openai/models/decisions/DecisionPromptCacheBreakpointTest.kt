@@ -10,14 +10,10 @@ import org.junit.jupiter.api.Test
 internal class DecisionPromptCacheBreakpointTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val decisionPromptCacheBreakpoint = DecisionPromptCacheBreakpoint.builder().build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val decisionPromptCacheBreakpoint = DecisionPromptCacheBreakpoint.builder().build()
 
         val roundtrippedDecisionPromptCacheBreakpoint =
             jsonMapper.readValue(

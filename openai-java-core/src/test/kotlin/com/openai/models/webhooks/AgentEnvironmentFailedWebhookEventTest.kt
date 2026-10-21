@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentEnvironmentFailedWebhookEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentEnvironmentFailedWebhookEvent =
             AgentEnvironmentFailedWebhookEvent.builder()
                 .id("id")
@@ -22,17 +22,8 @@ internal class AgentEnvironmentFailedWebhookEventTest {
         assertThat(agentEnvironmentFailedWebhookEvent.createdAt()).isEqualTo(0L)
         assertThat(agentEnvironmentFailedWebhookEvent.data())
             .isEqualTo(AgentEnvironmentFailedWebhookEvent.Data.builder().id("id").build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentEnvironmentFailedWebhookEvent =
-            AgentEnvironmentFailedWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(AgentEnvironmentFailedWebhookEvent.Data.builder().id("id").build())
-                .build()
 
         val roundtrippedAgentEnvironmentFailedWebhookEvent =
             jsonMapper.readValue(

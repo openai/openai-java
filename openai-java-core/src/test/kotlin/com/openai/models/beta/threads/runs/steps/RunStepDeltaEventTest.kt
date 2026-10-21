@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RunStepDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val runStepDeltaEvent =
             RunStepDeltaEvent.builder()
                 .id("id")
@@ -44,28 +44,8 @@ internal class RunStepDeltaEventTest {
                     )
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val runStepDeltaEvent =
-            RunStepDeltaEvent.builder()
-                .id("id")
-                .delta(
-                    RunStepDelta.builder()
-                        .stepDetails(
-                            RunStepDeltaMessageDelta.builder()
-                                .messageCreation(
-                                    RunStepDeltaMessageDelta.MessageCreation.builder()
-                                        .messageId("message_id")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedRunStepDeltaEvent =
             jsonMapper.readValue(

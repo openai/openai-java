@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class FunctionToolCallTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val functionToolCall =
             FunctionToolCall.builder()
                 .id("id")
@@ -32,22 +32,8 @@ internal class FunctionToolCallTest {
                     .output("output")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val functionToolCall =
-            FunctionToolCall.builder()
-                .id("id")
-                .function(
-                    FunctionToolCall.Function.builder()
-                        .arguments("arguments")
-                        .name("name")
-                        .output("output")
-                        .build()
-                )
-                .build()
 
         val roundtrippedFunctionToolCall =
             jsonMapper.readValue(

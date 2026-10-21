@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class HostedPluginParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val hostedPluginParam =
             HostedPluginParam.builder()
                 .description("description")
@@ -22,17 +22,8 @@ internal class HostedPluginParamTest {
         assertThat(hostedPluginParam.name()).isEqualTo("x")
         assertThat(hostedPluginParam.source())
             .isEqualTo(InlineCapabilitySourceParam.builder().data("x").build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val hostedPluginParam =
-            HostedPluginParam.builder()
-                .description("description")
-                .name("x")
-                .source(InlineCapabilitySourceParam.builder().data("x").build())
-                .build()
 
         val roundtrippedHostedPluginParam =
             jsonMapper.readValue(

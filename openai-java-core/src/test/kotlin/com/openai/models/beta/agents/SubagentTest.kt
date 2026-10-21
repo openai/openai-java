@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class SubagentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val subagent =
             Subagent.builder()
                 .id("id")
@@ -35,23 +35,8 @@ internal class SubagentTest {
         assertThat(subagent.parentAgentId()).isEqualTo("parent_agent_id")
         assertThat(subagent.sessionId()).isEqualTo("session_id")
         assertThat(subagent.status()).isEqualTo(Subagent.Status.ACTIVE)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val subagent =
-            Subagent.builder()
-                .id("id")
-                .closedAt(0L)
-                .addOutputTextInstruction("text")
-                .name("name")
-                .object_(Subagent.Object.AGENT_SESSION_SUBAGENT)
-                .openedAt(0L)
-                .parentAgentId("parent_agent_id")
-                .sessionId("session_id")
-                .status(Subagent.Status.ACTIVE)
-                .build()
 
         val roundtrippedSubagent =
             jsonMapper.readValue(

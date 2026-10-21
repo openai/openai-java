@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SafetyAlertCreatedWebhookEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val safetyAlertCreatedWebhookEvent =
             SafetyAlertCreatedWebhookEvent.builder()
                 .id("id")
@@ -30,21 +30,8 @@ internal class SafetyAlertCreatedWebhookEventTest {
                     .id("alert_ecc2efdd09bd231a9ad9bd2aada37aa7")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val safetyAlertCreatedWebhookEvent =
-            SafetyAlertCreatedWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(
-                    SafetyAlertCreatedWebhookEvent.Data.builder()
-                        .id("alert_ecc2efdd09bd231a9ad9bd2aada37aa7")
-                        .build()
-                )
-                .build()
 
         val roundtrippedSafetyAlertCreatedWebhookEvent =
             jsonMapper.readValue(

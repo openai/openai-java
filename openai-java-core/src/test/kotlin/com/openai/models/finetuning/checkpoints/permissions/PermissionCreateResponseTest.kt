@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class PermissionCreateResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val permissionCreateResponse =
             PermissionCreateResponse.builder()
                 .id("id")
@@ -21,17 +21,8 @@ internal class PermissionCreateResponseTest {
         assertThat(permissionCreateResponse.id()).isEqualTo("id")
         assertThat(permissionCreateResponse.createdAt()).isEqualTo(0L)
         assertThat(permissionCreateResponse.projectId()).isEqualTo("project_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val permissionCreateResponse =
-            PermissionCreateResponse.builder()
-                .id("id")
-                .createdAt(0L)
-                .projectId("project_id")
-                .build()
 
         val roundtrippedPermissionCreateResponse =
             jsonMapper.readValue(

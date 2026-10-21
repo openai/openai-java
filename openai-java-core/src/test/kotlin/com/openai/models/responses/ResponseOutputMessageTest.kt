@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseOutputMessageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseOutputMessage =
             ResponseOutputMessage.builder()
                 .id("id")
@@ -77,43 +77,8 @@ internal class ResponseOutputMessageTest {
         assertThat(responseOutputMessage.status())
             .isEqualTo(ResponseOutputMessage.Status.IN_PROGRESS)
         assertThat(responseOutputMessage.phase()).contains(ResponseOutputMessage.Phase.COMMENTARY)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseOutputMessage =
-            ResponseOutputMessage.builder()
-                .id("id")
-                .addContent(
-                    ResponseOutputText.builder()
-                        .addAnnotation(
-                            ResponseOutputText.Annotation.FileCitation.builder()
-                                .fileId("file_id")
-                                .filename("filename")
-                                .index(0L)
-                                .build()
-                        )
-                        .text("text")
-                        .addLogprob(
-                            ResponseOutputText.Logprob.builder()
-                                .token("token")
-                                .addByte(0L)
-                                .logprob(0.0)
-                                .addTopLogprob(
-                                    ResponseOutputText.Logprob.TopLogprob.builder()
-                                        .token("token")
-                                        .addByte(0L)
-                                        .logprob(0.0)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .status(ResponseOutputMessage.Status.IN_PROGRESS)
-                .phase(ResponseOutputMessage.Phase.COMMENTARY)
-                .build()
 
         val roundtrippedResponseOutputMessage =
             jsonMapper.readValue(

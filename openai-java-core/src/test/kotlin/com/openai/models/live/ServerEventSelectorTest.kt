@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class ServerEventSelectorTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val serverEventSelector =
             ServerEventSelector.builder().type("session.started").responseEvent("x").build()
 
         assertThat(serverEventSelector.type()).isEqualTo("session.started")
         assertThat(serverEventSelector.responseEvent()).contains("x")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val serverEventSelector =
-            ServerEventSelector.builder().type("session.started").responseEvent("x").build()
 
         val roundtrippedServerEventSelector =
             jsonMapper.readValue(

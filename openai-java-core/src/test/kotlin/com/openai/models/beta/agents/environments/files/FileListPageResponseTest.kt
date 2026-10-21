@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class FileListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fileListPageResponse =
             FileListPageResponse.builder()
                 .addData(
@@ -36,24 +36,8 @@ internal class FileListPageResponseTest {
         assertThat(fileListPageResponse.hasMore()).isEqualTo(true)
         assertThat(fileListPageResponse.next()).contains("next")
         assertThat(fileListPageResponse.object_()).isEqualTo(FileListPageResponse.Object.PAGE)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fileListPageResponse =
-            FileListPageResponse.builder()
-                .addData(
-                    EnvironmentFile.builder()
-                        .environmentId("environment_id")
-                        .path("path")
-                        .sizeBytes(0L)
-                        .build()
-                )
-                .hasMore(true)
-                .next("next")
-                .object_(FileListPageResponse.Object.PAGE)
-                .build()
 
         val roundtrippedFileListPageResponse =
             jsonMapper.readValue(

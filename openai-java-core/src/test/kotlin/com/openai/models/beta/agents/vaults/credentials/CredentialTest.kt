@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class CredentialTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val credential =
             Credential.builder()
                 .id("id")
@@ -70,39 +70,8 @@ internal class CredentialTest {
         assertThat(credential.name()).isEqualTo("name")
         assertThat(credential.updatedAt()).isEqualTo(0L)
         assertThat(credential.vaultId()).isEqualTo("vault_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val credential =
-            Credential.builder()
-                .id("id")
-                .auth(
-                    CredentialAuth.McpOAuth.builder()
-                        .expiresAt("expires_at")
-                        .mcpServerUrl("mcp_server_url")
-                        .refresh(
-                            CredentialAuth.McpOAuth.Refresh.builder()
-                                .clientId("client_id")
-                                .resource("resource")
-                                .scope("scope")
-                                .tokenEndpoint("token_endpoint")
-                                .tokenEndpointAuthNone()
-                                .build()
-                        )
-                        .build()
-                )
-                .createdAt(0L)
-                .metadata(
-                    Credential.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .name("name")
-                .updatedAt(0L)
-                .vaultId("vault_id")
-                .build()
 
         val roundtrippedCredential =
             jsonMapper.readValue(

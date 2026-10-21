@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class WebhookEventTypeListTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val webhookEventTypeList = WebhookEventTypeList.builder().addData("string").build()
 
         assertThat(webhookEventTypeList.data()).containsExactly("string")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val webhookEventTypeList = WebhookEventTypeList.builder().addData("string").build()
 
         val roundtrippedWebhookEventTypeList =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionEnvironmentExpiredEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionEnvironmentExpiredEvent =
             AgentSessionEnvironmentExpiredEvent.builder()
                 .environment(
@@ -50,31 +50,8 @@ internal class AgentSessionEnvironmentExpiredEventTest {
         assertThat(agentSessionEnvironmentExpiredEvent.eventId()).isEqualTo("event_id")
         assertThat(agentSessionEnvironmentExpiredEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentSessionEnvironmentExpiredEvent.turnId()).contains("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionEnvironmentExpiredEvent =
-            AgentSessionEnvironmentExpiredEvent.builder()
-                .environment(
-                    AgentSessionEnvironmentState.builder()
-                        .id("id")
-                        .error(
-                            AgentSessionEnvironmentState.Error.builder()
-                                .code("code")
-                                .message("message")
-                                .type("type")
-                                .build()
-                        )
-                        .status(AgentSessionEnvironmentState.Status.PENDING)
-                        .type("type")
-                        .build()
-                )
-                .eventId("event_id")
-                .sessionId("session_id")
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentSessionEnvironmentExpiredEvent =
             jsonMapper.readValue(

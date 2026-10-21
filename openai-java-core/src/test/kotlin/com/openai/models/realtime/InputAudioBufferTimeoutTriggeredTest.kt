@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class InputAudioBufferTimeoutTriggeredTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val inputAudioBufferTimeoutTriggered =
             InputAudioBufferTimeoutTriggered.builder()
                 .audioEndMs(0L)
@@ -23,18 +23,8 @@ internal class InputAudioBufferTimeoutTriggeredTest {
         assertThat(inputAudioBufferTimeoutTriggered.audioStartMs()).isEqualTo(0L)
         assertThat(inputAudioBufferTimeoutTriggered.eventId()).isEqualTo("event_id")
         assertThat(inputAudioBufferTimeoutTriggered.itemId()).isEqualTo("item_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val inputAudioBufferTimeoutTriggered =
-            InputAudioBufferTimeoutTriggered.builder()
-                .audioEndMs(0L)
-                .audioStartMs(0L)
-                .eventId("event_id")
-                .itemId("item_id")
-                .build()
 
         val roundtrippedInputAudioBufferTimeoutTriggered =
             jsonMapper.readValue(

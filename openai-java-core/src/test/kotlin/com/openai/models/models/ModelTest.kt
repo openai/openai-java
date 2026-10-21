@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ModelTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val model =
             Model.builder()
                 .id("id")
@@ -24,18 +24,8 @@ internal class ModelTest {
         assertThat(model.created()).isEqualTo(0L)
         assertThat(model.ownedBy()).isEqualTo("owned_by")
         assertThat(model.shutdownDate()).contains(LocalDate.parse("2019-12-27"))
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val model =
-            Model.builder()
-                .id("id")
-                .created(0L)
-                .ownedBy("owned_by")
-                .shutdownDate(LocalDate.parse("2019-12-27"))
-                .build()
 
         val roundtrippedModel =
             jsonMapper.readValue(jsonMapper.writeValueAsString(model), jacksonTypeRef<Model>())

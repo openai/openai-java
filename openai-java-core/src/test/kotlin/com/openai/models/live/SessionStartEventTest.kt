@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SessionStartEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionStartEvent =
             SessionStartEvent.builder()
                 .session(
@@ -134,73 +134,8 @@ internal class SessionStartEventTest {
                     .build()
             )
         assertThat(sessionStartEvent.eventId()).contains("evt_start_001")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionStartEvent =
-            SessionStartEvent.builder()
-                .session(
-                    SessionConfig.builder()
-                        .model(SessionConfig.Model.GPT_LIVE_1)
-                        .audio(
-                            SessionConfig.Audio.builder()
-                                .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
-                                .output(
-                                    SessionConfig.Audio.Output.builder()
-                                        .voice(BuiltInVoice.MARIN)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .client(
-                            ClientConfig.builder()
-                                .dataChannel(
-                                    DataChannelConfig.builder()
-                                        .allowedClientEventsOfStrings(listOf("string"))
-                                        .allowedServerEventsAll()
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .delegation(ClientDelegation.builder().build())
-                        .addInput(
-                            InitialItem.Developer.builder()
-                                .addContent(
-                                    InitialItem.Developer.Content.builder()
-                                        .text("text")
-                                        .type(InitialItem.Developer.Content.Type.INPUT_TEXT)
-                                        .build()
-                                )
-                                .id("id")
-                                .status(InitialItem.Developer.Status.INCOMPLETE)
-                                .type(InitialItem.Developer.Type.MESSAGE)
-                                .build()
-                        )
-                        .instructions(
-                            "Help the caller plan a restaurant reservation. Confirm details before booking."
-                        )
-                        .store(true)
-                        .addTrigger(
-                            DecisionTrigger.builder()
-                                .decisions(
-                                    DecisionTrigger.Decisions.builder()
-                                        .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                                .build()
-                        )
-                        .build()
-                )
-                .eventId("evt_start_001")
-                .build()
 
         val roundtrippedSessionStartEvent =
             jsonMapper.readValue(

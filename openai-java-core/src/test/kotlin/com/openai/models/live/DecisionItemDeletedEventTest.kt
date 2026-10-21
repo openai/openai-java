@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class DecisionItemDeletedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val decisionItemDeletedEvent =
             DecisionItemDeletedEvent.builder()
                 .eventId("evt_item_deleted_1")
@@ -21,17 +21,8 @@ internal class DecisionItemDeletedEventTest {
         assertThat(decisionItemDeletedEvent.eventId()).isEqualTo("evt_item_deleted_1")
         assertThat(decisionItemDeletedEvent.itemId()).isEqualTo("msg_browser_1")
         assertThat(decisionItemDeletedEvent.clientEventId()).contains("remove_browser_1")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val decisionItemDeletedEvent =
-            DecisionItemDeletedEvent.builder()
-                .eventId("evt_item_deleted_1")
-                .itemId("msg_browser_1")
-                .clientEventId("remove_browser_1")
-                .build()
 
         val roundtrippedDecisionItemDeletedEvent =
             jsonMapper.readValue(

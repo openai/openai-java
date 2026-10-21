@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionEnvironmentStateTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionEnvironmentState =
             AgentSessionEnvironmentState.builder()
                 .id("id")
@@ -37,24 +37,8 @@ internal class AgentSessionEnvironmentStateTest {
         assertThat(agentSessionEnvironmentState.status())
             .isEqualTo(AgentSessionEnvironmentState.Status.PENDING)
         assertThat(agentSessionEnvironmentState.type()).isEqualTo("type")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionEnvironmentState =
-            AgentSessionEnvironmentState.builder()
-                .id("id")
-                .error(
-                    AgentSessionEnvironmentState.Error.builder()
-                        .code("code")
-                        .message("message")
-                        .type("type")
-                        .build()
-                )
-                .status(AgentSessionEnvironmentState.Status.PENDING)
-                .type("type")
-                .build()
 
         val roundtrippedAgentSessionEnvironmentState =
             jsonMapper.readValue(

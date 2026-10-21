@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseRefusalDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseRefusalDeltaEvent =
             BetaResponseRefusalDeltaEvent.builder()
                 .contentIndex(0L)
@@ -30,22 +30,8 @@ internal class BetaResponseRefusalDeltaEventTest {
         assertThat(betaResponseRefusalDeltaEvent.sequenceNumber()).isEqualTo(0L)
         assertThat(betaResponseRefusalDeltaEvent.agent())
             .contains(BetaResponseRefusalDeltaEvent.Agent.builder().agentName("agent_name").build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseRefusalDeltaEvent =
-            BetaResponseRefusalDeltaEvent.builder()
-                .contentIndex(0L)
-                .delta("delta")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .agent(
-                    BetaResponseRefusalDeltaEvent.Agent.builder().agentName("agent_name").build()
-                )
-                .build()
 
         val roundtrippedBetaResponseRefusalDeltaEvent =
             jsonMapper.readValue(

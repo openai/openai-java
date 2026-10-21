@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class VectorStoreSearchPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val vectorStoreSearchPageResponse =
             VectorStoreSearchPageResponse.builder()
                 .addData(
@@ -59,35 +59,8 @@ internal class VectorStoreSearchPageResponseTest {
         assertThat(vectorStoreSearchPageResponse.hasMore()).isEqualTo(true)
         assertThat(vectorStoreSearchPageResponse.nextPage()).contains("next_page")
         assertThat(vectorStoreSearchPageResponse.searchQuery()).containsExactly("string")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val vectorStoreSearchPageResponse =
-            VectorStoreSearchPageResponse.builder()
-                .addData(
-                    VectorStoreSearchResponse.builder()
-                        .attributes(
-                            VectorStoreSearchResponse.Attributes.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .addContent(
-                            VectorStoreSearchResponse.Content.builder()
-                                .text("text")
-                                .type(VectorStoreSearchResponse.Content.Type.TEXT)
-                                .build()
-                        )
-                        .fileId("file_id")
-                        .filename("filename")
-                        .score(0.0)
-                        .build()
-                )
-                .hasMore(true)
-                .nextPage("next_page")
-                .addSearchQuery("string")
-                .build()
 
         val roundtrippedVectorStoreSearchPageResponse =
             jsonMapper.readValue(

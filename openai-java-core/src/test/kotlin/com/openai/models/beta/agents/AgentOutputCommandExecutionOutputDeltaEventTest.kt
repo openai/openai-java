@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentOutputCommandExecutionOutputDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentOutputCommandExecutionOutputDeltaEvent =
             AgentOutputCommandExecutionOutputDeltaEvent.builder()
                 .delta("delta")
@@ -27,20 +27,8 @@ internal class AgentOutputCommandExecutionOutputDeltaEventTest {
         assertThat(agentOutputCommandExecutionOutputDeltaEvent.outputIndex()).isEqualTo(0L)
         assertThat(agentOutputCommandExecutionOutputDeltaEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentOutputCommandExecutionOutputDeltaEvent.turnId()).contains("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentOutputCommandExecutionOutputDeltaEvent =
-            AgentOutputCommandExecutionOutputDeltaEvent.builder()
-                .delta("delta")
-                .eventId("event_id")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sessionId("session_id")
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentOutputCommandExecutionOutputDeltaEvent =
             jsonMapper.readValue(

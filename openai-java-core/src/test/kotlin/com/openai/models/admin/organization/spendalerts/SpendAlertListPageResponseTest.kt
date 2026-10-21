@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SpendAlertListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val spendAlertListPageResponse =
             SpendAlertListPageResponse.builder()
                 .addData(
@@ -50,31 +50,8 @@ internal class SpendAlertListPageResponseTest {
         assertThat(spendAlertListPageResponse.firstId()).contains("first_id")
         assertThat(spendAlertListPageResponse.hasMore()).isEqualTo(true)
         assertThat(spendAlertListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val spendAlertListPageResponse =
-            SpendAlertListPageResponse.builder()
-                .addData(
-                    OrganizationSpendAlert.builder()
-                        .id("id")
-                        .currency(OrganizationSpendAlert.Currency.USD)
-                        .interval(OrganizationSpendAlert.Interval.MONTH)
-                        .notificationChannel(
-                            OrganizationSpendAlert.NotificationChannel.builder()
-                                .addRecipient("string")
-                                .subjectPrefix("subject_prefix")
-                                .build()
-                        )
-                        .thresholdAmount(0L)
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedSpendAlertListPageResponse =
             jsonMapper.readValue(

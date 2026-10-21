@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ToolChoiceMcpTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val toolChoiceMcp = ToolChoiceMcp.builder().serverLabel("server_label").name("name").build()
 
         assertThat(toolChoiceMcp.serverLabel()).isEqualTo("server_label")
         assertThat(toolChoiceMcp.name()).contains("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val toolChoiceMcp = ToolChoiceMcp.builder().serverLabel("server_label").name("name").build()
 
         val roundtrippedToolChoiceMcp =
             jsonMapper.readValue(

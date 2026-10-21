@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ImageUrlDeltaBlockTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val imageUrlDeltaBlock =
             ImageUrlDeltaBlock.builder()
                 .index(0L)
@@ -30,21 +30,8 @@ internal class ImageUrlDeltaBlockTest {
                     .url("https://example.com")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val imageUrlDeltaBlock =
-            ImageUrlDeltaBlock.builder()
-                .index(0L)
-                .imageUrl(
-                    ImageUrlDelta.builder()
-                        .detail(ImageUrlDelta.Detail.AUTO)
-                        .url("https://example.com")
-                        .build()
-                )
-                .build()
 
         val roundtrippedImageUrlDeltaBlock =
             jsonMapper.readValue(

@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ProjectModelPermissionsDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectModelPermissionsDeleted =
             ProjectModelPermissionsDeleted.builder().deleted(true).build()
 
         assertThat(projectModelPermissionsDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectModelPermissionsDeleted =
-            ProjectModelPermissionsDeleted.builder().deleted(true).build()
 
         val roundtrippedProjectModelPermissionsDeleted =
             jsonMapper.readValue(

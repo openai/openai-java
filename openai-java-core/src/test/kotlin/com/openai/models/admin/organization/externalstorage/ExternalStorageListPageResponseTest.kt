@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ExternalStorageListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val externalStorageListPageResponse =
             ExternalStorageListPageResponse.builder()
                 .addData(
@@ -58,35 +58,8 @@ internal class ExternalStorageListPageResponseTest {
         assertThat(externalStorageListPageResponse.firstId()).contains("first_id")
         assertThat(externalStorageListPageResponse.hasMore()).isEqualTo(true)
         assertThat(externalStorageListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val externalStorageListPageResponse =
-            ExternalStorageListPageResponse.builder()
-                .addData(
-                    ExternalStorageConfiguration.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .geography("geography")
-                        .projectId("project_id")
-                        .provider(
-                            AwsExternalStorageProvider.builder()
-                                .accountId("account_id")
-                                .bucket("bucket")
-                                .externalId("external_id")
-                                .region("region")
-                                .roleArn("role_arn")
-                                .build()
-                        )
-                        .status(ExternalStorageConfiguration.Status.PENDING)
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedExternalStorageListPageResponse =
             jsonMapper.readValue(

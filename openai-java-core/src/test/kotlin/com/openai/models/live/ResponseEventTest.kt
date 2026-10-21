@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseEvent =
             ResponseEvent.builder()
                 .event(
@@ -51,31 +51,8 @@ internal class ResponseEventTest {
         assertThat(responseEvent.eventId()).isEqualTo("evt_response_002")
         assertThat(responseEvent.clientEventId()).contains("client_event_id")
         assertThat(responseEvent.delegationId()).contains("del_responses123")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseEvent =
-            ResponseEvent.builder()
-                .event(
-                    ResponseEvent.Event.builder()
-                        .putAdditionalProperty("type", JsonValue.from("response.output_text.delta"))
-                        .putAdditionalProperty("item_id", JsonValue.from("msg_abc123"))
-                        .putAdditionalProperty("output_index", JsonValue.from(0))
-                        .putAdditionalProperty("content_index", JsonValue.from(0))
-                        .putAdditionalProperty(
-                            "delta",
-                            JsonValue.from("An outdoor table is available at 7 PM."),
-                        )
-                        .putAdditionalProperty("sequence_number", JsonValue.from(3))
-                        .putAdditionalProperty("logprobs", JsonValue.from(listOf<Any?>()))
-                        .build()
-                )
-                .eventId("evt_response_002")
-                .clientEventId("client_event_id")
-                .delegationId("del_responses123")
-                .build()
 
         val roundtrippedResponseEvent =
             jsonMapper.readValue(

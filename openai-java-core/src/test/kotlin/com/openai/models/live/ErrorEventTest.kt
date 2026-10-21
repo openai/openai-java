@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ErrorEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val errorEvent =
             ErrorEvent.builder()
                 .error(
@@ -38,25 +38,8 @@ internal class ErrorEventTest {
             )
         assertThat(errorEvent.eventId()).isEqualTo("evt_error_001")
         assertThat(errorEvent.clientEventId()).contains("client_event_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val errorEvent =
-            ErrorEvent.builder()
-                .error(
-                    Error.builder()
-                        .code("unknown_parameter")
-                        .message("Unknown parameter: 'session.voice'.")
-                        .type("invalid_request_error")
-                        .clientEventId("evt_invalid_001")
-                        .param("session.voice")
-                        .build()
-                )
-                .eventId("evt_error_001")
-                .clientEventId("client_event_id")
-                .build()
 
         val roundtrippedErrorEvent =
             jsonMapper.readValue(

@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class DeletedSkillTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val deletedSkill = DeletedSkill.builder().id("id").deleted(true).build()
 
         assertThat(deletedSkill.id()).isEqualTo("id")
         assertThat(deletedSkill.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val deletedSkill = DeletedSkill.builder().id("id").deleted(true).build()
 
         val roundtrippedDeletedSkill =
             jsonMapper.readValue(

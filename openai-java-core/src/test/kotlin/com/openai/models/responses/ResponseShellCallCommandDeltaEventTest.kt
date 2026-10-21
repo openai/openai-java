@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseShellCallCommandDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseShellCallCommandDeltaEvent =
             ResponseShellCallCommandDeltaEvent.builder()
                 .commandIndex(0L)
@@ -25,19 +25,8 @@ internal class ResponseShellCallCommandDeltaEventTest {
         assertThat(responseShellCallCommandDeltaEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseShellCallCommandDeltaEvent.sequenceNumber()).isEqualTo(0L)
         assertThat(responseShellCallCommandDeltaEvent.obfuscation()).contains("obfuscation")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseShellCallCommandDeltaEvent =
-            ResponseShellCallCommandDeltaEvent.builder()
-                .commandIndex(0L)
-                .delta("delta")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .obfuscation("obfuscation")
-                .build()
 
         val roundtrippedResponseShellCallCommandDeltaEvent =
             jsonMapper.readValue(

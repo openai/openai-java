@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseCodeInterpreterToolCallTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseCodeInterpreterToolCall =
             ResponseCodeInterpreterToolCall.builder()
                 .id("id")
@@ -32,19 +32,8 @@ internal class ResponseCodeInterpreterToolCallTest {
             )
         assertThat(responseCodeInterpreterToolCall.status())
             .isEqualTo(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseCodeInterpreterToolCall =
-            ResponseCodeInterpreterToolCall.builder()
-                .id("id")
-                .code("code")
-                .containerId("container_id")
-                .addLogsOutput("logs")
-                .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                .build()
 
         val roundtrippedResponseCodeInterpreterToolCall =
             jsonMapper.readValue(

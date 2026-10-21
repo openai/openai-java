@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class TranslationTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val translation = Translation.builder().text("text").build()
 
         assertThat(translation.text()).isEqualTo("text")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val translation = Translation.builder().text("text").build()
 
         val roundtrippedTranslation =
             jsonMapper.readValue(
