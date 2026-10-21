@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.89.0](https://github.com/openai/openai-java/compare/v4.88.0...v4.89.0) (2026-10-21)
+
+
+### Features
+
+* add Vertex AI support for the Responses API ([#1256](https://github.com/openai/openai-java/issues/1256)) ([dc3546f](https://github.com/openai/openai-java/commit/dc3546faa12de4aded643c90666f8ca379e75e5b))
+
+
+### Chores
+
+* **api:** preserve environment creation idempotency ([#1260](https://github.com/openai/openai-java/issues/1260)) ([da2a49c](https://github.com/openai/openai-java/commit/da2a49cd4edd9629012581946b9162dc7b2068a6))
+* **api:** preserve Java compatibility helpers ([#1257](https://github.com/openai/openai-java/issues/1257)) ([954cee7](https://github.com/openai/openai-java/commit/954cee79ff30d407ab02430c1a32f4e72a0a2efd))
+* **api:** preserve Java model compatibility ([#1259](https://github.com/openai/openai-java/issues/1259)) ([da98b6b](https://github.com/openai/openai-java/commit/da98b6bc444df53f8d817dbd8c0b007f6e97075f))
+
 ## [4.88.0](https://github.com/openai/openai-java/compare/v4.87.1...v4.88.0) (2026-10-21)
 
 
