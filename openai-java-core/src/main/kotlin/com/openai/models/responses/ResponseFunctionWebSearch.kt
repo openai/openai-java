@@ -1488,11 +1488,11 @@ private constructor(
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(findInPage: Find) = apply {
-                    pattern = findInPage.pattern
-                    type = findInPage.type
-                    url = findInPage.url
-                    additionalProperties = findInPage.additionalProperties.toMutableMap()
+                internal fun from(find: Find) = apply {
+                    pattern = find.pattern
+                    type = find.type
+                    url = find.url
+                    additionalProperties = find.additionalProperties.toMutableMap()
                 }
 
                 /** The pattern or text to search for within the page. */

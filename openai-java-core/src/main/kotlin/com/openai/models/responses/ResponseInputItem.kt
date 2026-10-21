@@ -26,7 +26,6 @@ import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
-import com.openai.core.toJsonString
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -3439,14 +3438,6 @@ private constructor(
             fun output(string: String) = output(Output.ofString(string))
 
             /**
-             * Sets the output to text representing the JSON serialized form of a given object. This
-             * is useful when passing data that is the result of a function call.
-             *
-             * @see output
-             */
-            fun outputAsJson(functionResult: Any) = apply { output(toJsonString(functionResult)) }
-
-            /**
              * Alias for calling [output] with
              * `Output.ofResponseFunctionCallOutputItemList(responseFunctionCallOutputItemList)`.
              */
@@ -3601,6 +3592,11 @@ private constructor(
 
             fun removeAllAdditionalProperties(keys: Set<String>) = apply {
                 keys.forEach(::removeAdditionalProperty)
+            }
+
+            /** Sets the output to the JSON serialized form of a function result. */
+            fun outputAsJson(functionResult: Any) = apply {
+                output(com.openai.core.toJsonString(functionResult))
             }
 
             /**

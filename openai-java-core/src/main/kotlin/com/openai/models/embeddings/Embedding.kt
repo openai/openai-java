@@ -166,7 +166,8 @@ private constructor(
         }
 
         /**
-         * The embedding vector. The length of vector depends on the model as listed in the
+         * The embedding vector, which is a list of floats. The length of vector depends on the
+         * model as listed in the
          * [embedding guide](https://developers.openai.com/api/docs/guides/embeddings).
          */
         fun embedding(embedding: EmbeddingValue) = embedding(JsonField.of(embedding))
@@ -178,10 +179,7 @@ private constructor(
          */
         fun embedding(floats: List<Float>) = embedding(EmbeddingValue.ofFloats(floats))
 
-        /**
-         * The embedding vector, which is a base64 string. The length of vector depends on the model
-         * as listed in the [embedding guide](https://platform.openai.com/docs/guides/embeddings).
-         */
+        /** Sets [embedding] to its base64 representation. */
         fun embedding(base64: String) = embedding(EmbeddingValue.ofBase64(base64))
 
         /**

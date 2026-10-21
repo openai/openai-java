@@ -97,6 +97,7 @@ GENERATED_GITHUB_PATHS = frozenset(
 )
 
 
+
 # Audited inventory of the authenticated pre-inventory checker format. These
 # historical snapshots bind the checker bytes and manifest through their codegen
 # hash. Never infer their inventory from the running compiler or candidate tree.
@@ -167,10 +168,7 @@ def generated_manifest(repo: Path, generated: str) -> dict[bytes, dict[str, str]
         raise ValueError("checkpoint is missing its generated GitHub inventory")
     github_paths = checkpoint_github_inventory(blobs[inventory_entry.oid])
     value = json.loads(blobs[entry.oid], object_pairs_hook=unique_keys)
-    if not isinstance(value, dict) or set(cast(dict[str, Any], value)) != {
-        "schema_version",
-        "files",
-    }:
+    if not isinstance(value, dict) or set(cast(dict[str, Any], value)) != {"schema_version", "files"}:
         raise ValueError("invalid generated ownership manifest")
     value = cast(dict[str, Any], value)
     if (
@@ -198,10 +196,7 @@ def generated_manifest(repo: Path, generated: str) -> dict[bytes, dict[str, str]
         # Public checkpoints may omit the private workflow/action blobs.
         if not report.included(path) and path not in github_paths:
             raise ValueError(f"generated manifest claims SDK-owned GitHub path: {name}")
-        if not isinstance(identity, dict) or set(cast(dict[str, Any], identity)) != {
-            "mode",
-            "sha256",
-        }:
+        if not isinstance(identity, dict) or set(cast(dict[str, Any], identity)) != {"mode", "sha256"}:
             raise ValueError(f"invalid generated identity: {name}")
         identity = cast(dict[str, Any], identity)
         if (
@@ -223,7 +218,8 @@ def generated_manifest(repo: Path, generated: str) -> dict[bytes, dict[str, str]
     # Public snapshots retain generated identities without the private blobs.
     snapshot_paths = set(entries) - {manifest_path}
     if any(
-        report.included(path) or path in github_paths for path in snapshot_paths - files.keys()
+        report.included(path) or path in github_paths
+        for path in snapshot_paths - files.keys()
     ) or any(report.included(path) for path in files.keys() - snapshot_paths):
         raise ValueError("generated manifest does not cover the verified snapshot exactly")
     for path, identity in files.items():
@@ -417,7 +413,11 @@ def evaluate(
         description = f"+{added} / -{removed} = {total} custom lines; limit {checked_limit}."
         # Main's strict policy applies even if the candidate tries to remove it.
         # A proposed activation must itself satisfy the stricter contract.
-        if strict_policy(repo, policy) or strict_policy(repo, base) or strict_policy(repo, head):
+        if (
+            strict_policy(repo, policy)
+            or strict_policy(repo, base)
+            or strict_policy(repo, head)
+        ):
             violations = verify_generated(
                 repo, measured["after"]["commit"], head, previous=measured["before"]["commit"]
             )

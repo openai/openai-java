@@ -83,6 +83,15 @@ internal class SessionServiceTest {
         agentSession.validate()
     }
 
+    // Streaming assertions and lifecycle remain in SDK-owned suite
+    // com.openai.services.blocking.beta.agents.AgentSessionStreamingRegressionTest.
+    // The callable reference is checked at compile time and never invoked here.
+    private fun createStreamingContractCases() =
+        listOf(
+            com.openai.services.blocking.beta.agents.AgentSessionStreamingRegressionTest::
+                createStreaming
+        )
+
     @Test
     fun retrieve() {
         val client =
