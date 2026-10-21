@@ -128,6 +128,8 @@ object CoreCompilationShards {
             "com/openai/core/http/HttpClient.kt",
             "com/openai/core/http/LoggingHttpClient.kt",
             "com/openai/core/http/PhantomReachableClosingHttpClient.kt",
+            "com/openai/core/http/PhantomReachableClosingHttpRequestAuthenticator.kt",
+            "com/openai/core/http/TimeoutAwareHttpRequestAuthenticator.kt",
             "com/openai/core/http/RetryingHttpClient.kt",
             "com/openai/core/http/WorkloadIdentityHttpClient.kt",
         )
