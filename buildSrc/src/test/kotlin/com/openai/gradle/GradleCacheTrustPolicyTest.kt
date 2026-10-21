@@ -1256,6 +1256,7 @@ class GradleCacheTrustPolicyTest {
                 "openai-java-core",
                 "openai-java-client-okhttp",
                 "openai-java-bedrock",
+                "openai-java-vertex",
             ),
             parsedWorkflow.environment.getValue("MAVEN_ARTIFACTS").split(" "),
             "Every published Maven artifact must receive a provenance attestation.",
