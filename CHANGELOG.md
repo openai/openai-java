@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.88.0](https://github.com/openai/openai-java/compare/v4.87.1...v4.88.0) (2026-10-21)
+
+
+### Features
+
+* **api:** add custom voice consent management ([#1252](https://github.com/openai/openai-java/issues/1252)) ([bdce13f](https://github.com/openai/openai-java/commit/bdce13f5e0c273758472335592f06ddee9c6807b))
+
+
+### Chores
+
+* **api:** maintain voice consent compatibility ([#1254](https://github.com/openai/openai-java/issues/1254)) ([fc17079](https://github.com/openai/openai-java/commit/fc1707968412255545338722b4862c36d11e2444))
+* **api:** preserve Java runtime and model contracts ([#1255](https://github.com/openai/openai-java/issues/1255)) ([5e993ab](https://github.com/openai/openai-java/commit/5e993ab6dcf913f10a0efdbabd554752a8ea6960))
+
 ## [4.87.1](https://github.com/openai/openai-java/compare/v4.87.0...v4.87.1) (2026-10-20)
 
 
