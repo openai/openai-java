@@ -7649,6 +7649,8 @@ paths:
               "last_id": "cp_enQCFmOTGj3syEpYVhBRLTSy",
               "has_more": false
             }
+      security:
+      - AdminApiKeyAuth: []
     post:
       operationId: createFineTuningCheckpointPermission
       tags:
@@ -7721,6 +7723,8 @@ paths:
               "last_id": "cp_zc4Q7MP6XxulcVzj4MZdwsAB",
               "has_more": false
             }
+      security:
+      - AdminApiKeyAuth: []
   /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}:
     delete:
       operationId: deleteFineTuningCheckpointPermission
@@ -7786,6 +7790,8 @@ paths:
               "id": "cp_zc4Q7MP6XxulcVzj4MZdwsAB",
               "deleted": true
             }
+      security:
+      - AdminApiKeyAuth: []
   /fine_tuning/jobs:
     post:
       operationId: createFineTuningJob
