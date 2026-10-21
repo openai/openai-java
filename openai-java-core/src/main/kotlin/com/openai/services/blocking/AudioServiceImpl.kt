@@ -9,6 +9,8 @@ import com.openai.services.blocking.audio.TranscriptionService
 import com.openai.services.blocking.audio.TranscriptionServiceImpl
 import com.openai.services.blocking.audio.TranslationService
 import com.openai.services.blocking.audio.TranslationServiceImpl
+import com.openai.services.blocking.audio.VoiceConsentService
+import com.openai.services.blocking.audio.VoiceConsentServiceImpl
 import com.openai.services.blocking.audio.VoiceService
 import com.openai.services.blocking.audio.VoiceServiceImpl
 import java.util.function.Consumer
@@ -30,6 +32,10 @@ class AudioServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     private val voices: VoiceService by lazy { VoiceServiceImpl(clientOptions) }
 
+    private val voiceConsents: VoiceConsentService by lazy {
+        VoiceConsentServiceImpl(clientOptions)
+    }
+
     override fun withRawResponse(): AudioService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AudioService =
@@ -46,6 +52,9 @@ class AudioServiceImpl internal constructor(private val clientOptions: ClientOpt
 
     /** Turn audio into text or text into audio. */
     override fun voices(): VoiceService = voices
+
+    /** Turn audio into text or text into audio. */
+    override fun voiceConsents(): VoiceConsentService = voiceConsents
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         AudioService.WithRawResponse {
@@ -66,6 +75,10 @@ class AudioServiceImpl internal constructor(private val clientOptions: ClientOpt
             VoiceServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val voiceConsents: VoiceConsentService.WithRawResponse by lazy {
+            VoiceConsentServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): AudioService.WithRawResponse =
@@ -84,5 +97,8 @@ class AudioServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         /** Turn audio into text or text into audio. */
         override fun voices(): VoiceService.WithRawResponse = voices
+
+        /** Turn audio into text or text into audio. */
+        override fun voiceConsents(): VoiceConsentService.WithRawResponse = voiceConsents
     }
 }

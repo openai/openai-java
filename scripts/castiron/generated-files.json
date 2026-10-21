@@ -7,7 +7,7 @@
     },
     ".github/workflows/castiron-custom-code.yml": {
       "mode": "100644",
-      "sha256": "867db0c0cb67312a7682236b2ff04f2ccf611ad9e307a2ee650b3a997191f289"
+      "sha256": "7e6d3951a3abc7b8f249a77b3b11da8467554d8e1771b70016253eb5768136aa"
     },
     "openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt": {
       "mode": "100644",
@@ -19,11 +19,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt": {
       "mode": "100644",
-      "sha256": "9e37434f051a4a95418ede723d152f828839e5362427b1dcc6a519676353e4ff"
+      "sha256": "d9dc0367205cc0848363a1e69497b5ad6bb9a913e825b567914c2cb7c620e079"
     },
     "openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt": {
       "mode": "100644",
-      "sha256": "1a878a3f109612120c26a54c9e70b202fdbb9d9c134e64fbffc0e12a56379b31"
+      "sha256": "611836f59b17479ef40920bdd4e9bf4c2752a57bf14084414b8c0f61d5559fc2"
     },
     "openai-java-core/src/main/kotlin/com/openai/core/DataResidency.kt": {
       "mode": "100644",
@@ -1368,6 +1368,46 @@
     "openai-java-core/src/main/kotlin/com/openai/models/audio/translations/TranslationVerbose.kt": {
       "mode": "100644",
       "sha256": "82be10a7ff539f30c147cee8c24baef1e9029e6c11c1b4bc593d3cc2a15dc36e"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/audio/voiceconsents/VoiceConsent.kt": {
+      "mode": "100644",
+      "sha256": "5acba22e57af48ae37a379f5ce40d00bb7c1baf14c999db60725a50d54fdc0d0"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentCreateParams.kt": {
+      "mode": "100644",
+      "sha256": "f620f92105917666952d4eae17a8e29d54a37d9ba6dfcddf8b956378503d37cf"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentDeleteParams.kt": {
+      "mode": "100644",
+      "sha256": "2e02a4d8be555535c98a3c0b9c6421a47ec4a10ad5a93e652a7a2250ce6805b1"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentDeleted.kt": {
+      "mode": "100644",
+      "sha256": "328eacca0b886a2bce71e0162e722e503fe33d7a223b7ae932f90c7b50b5c6f7"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentListPage.kt": {
+      "mode": "100644",
+      "sha256": "90c2e8aecd10217ac3ec8ad9f9db33f5719c0edbf5d0d3f187d95e8032561606"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentListPageAsync.kt": {
+      "mode": "100644",
+      "sha256": "e5d31b0eae54200f3d3137a4df6037b27bfd556f847f027ed2d972f8b04ed681"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentListPageResponse.kt": {
+      "mode": "100644",
+      "sha256": "3e0dc9876f949625d4ec0a57b688fdf68f0f3823d278c8e7440c754d81abf697"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentListParams.kt": {
+      "mode": "100644",
+      "sha256": "2e84d31467f7d3ad609aeb2d361543bb314e3540c915319d5a0a0bb056ad38c2"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentRetrieveParams.kt": {
+      "mode": "100644",
+      "sha256": "ab8835355b4ef0ce8492256356cb3def973c85dd1da624561f45b3f08acb0b68"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentUpdateParams.kt": {
+      "mode": "100644",
+      "sha256": "556f737e2bf529a4e9e90cdb58c833fb9d98b73e6ba5a4c9112668efcef82035"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/audio/voices/Voice.kt": {
       "mode": "100644",
@@ -6595,11 +6635,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/AudioServiceAsync.kt": {
       "mode": "100644",
-      "sha256": "482f34b5c6b8e955e31fa46fee0aff9c6204694b36df6c010e442f258960894c"
+      "sha256": "202d4bebb63d8b49854833ac72a298f0fe48c2ffe92c105a8cf681f5a7172113"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/AudioServiceAsyncImpl.kt": {
       "mode": "100644",
-      "sha256": "236506b20d1c6fd788533909dcc37ce62cd39aeb5c563286cd5429a8a33c778d"
+      "sha256": "24502b50cfdc4c3229b8ac55bb4ff8d3c44e6d09484dbc0e1cf72f13fa2a7072"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/BatchServiceAsync.kt": {
       "mode": "100644",
@@ -7080,6 +7120,14 @@
     "openai-java-core/src/main/kotlin/com/openai/services/async/audio/TranslationServiceAsyncImpl.kt": {
       "mode": "100644",
       "sha256": "b91980fa498f650ba210192082ba4df5cbcfc04c302cdb95df8782dfe62bf91f"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/async/audio/VoiceConsentServiceAsync.kt": {
+      "mode": "100644",
+      "sha256": "d6791958bb989b539638ed2d909cc92fb97e4bd8957b0ce7e09a2058af5112d0"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/async/audio/VoiceConsentServiceAsyncImpl.kt": {
+      "mode": "100644",
+      "sha256": "f97529c0ec79642fd2c61427b6bb6709034389614c8e555ad97a1a23a3b06de5"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/audio/VoiceServiceAsync.kt": {
       "mode": "100644",
@@ -7587,11 +7635,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/AudioService.kt": {
       "mode": "100644",
-      "sha256": "a47c8f1a32a83dd88adccc2d891d9bbada4dbad91c7ee2b1ccdfbc5cdc277bef"
+      "sha256": "f62289c318ab036577e71823276697cda47fd98e482c578eb18bae3a6fb1f1f4"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/AudioServiceImpl.kt": {
       "mode": "100644",
-      "sha256": "035ab6b8230241a5a60ffe231a9ef5731085329e4c156a06eea6f79cc6b59784"
+      "sha256": "b8d47d96b29d8e0d90767402a7d0a037fd74159ddd90383cce1b7a7b387ce5ed"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/BatchService.kt": {
       "mode": "100644",
@@ -8072,6 +8120,14 @@
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/audio/TranslationServiceImpl.kt": {
       "mode": "100644",
       "sha256": "1b912a9d5fd2c04e03944c21cfd588f376be9939b5d6140514cb0200a378532a"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/blocking/audio/VoiceConsentService.kt": {
+      "mode": "100644",
+      "sha256": "8ac26e1946ffc53dafc330676bfcbcef4db5eab6a5558ce2ca3188e204750b82"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/blocking/audio/VoiceConsentServiceImpl.kt": {
+      "mode": "100644",
+      "sha256": "af2d697a52f5331c7163d426dcaf1943283d92a1b524b229872fa503ff7cee2f"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/audio/VoiceService.kt": {
       "mode": "100644",
@@ -9656,6 +9712,38 @@
     "openai-java-core/src/test/kotlin/com/openai/models/audio/translations/TranslationVerboseTest.kt": {
       "mode": "100644",
       "sha256": "06b76074997e165ae5b094f06f11a11e4a374b8808b661b0c1972ebb8272710c"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentCreateParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "2bf44b1b8e7bb1b19c3f9a0206bfc6501ea57ee8e1ecf9f51804adc1f493cc0a"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentDeleteParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "b1dc3aecf474da8d4e3743451fb30c132aa7203b59439c4126a49b77c630d81c"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentDeletedTest.kt": {
+      "mode": "100644",
+      "sha256": "dcf39975667e9cf3c2d79c0b61022a7901982d37dc35c2f6c26b335119d45b6b"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentListPageResponseTest.kt": {
+      "mode": "100644",
+      "sha256": "ef3e2d8b144f1da09ede1a6f2cb2a00c120ec3b95c430cbed8816fff95afb534"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentListParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "92cd4fcb2f9938130471befab0b1a0c25605269abb4bc415074d65588af141ef"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentRetrieveParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "05c48d56c69f1032413e8968b2caf31242abed015075779b3f88ce5bea2da625"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentTest.kt": {
+      "mode": "100644",
+      "sha256": "952ce5d4843cbdf5f265dcb6f8b2aacf981fc4b1bf58fc2bc56855c847f26edb"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentUpdateParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "310a9486f6a0b53d28bd16698f500d455e005d8735c732ab33cdb88d18f5e2e1"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/audio/voices/VoiceTest.kt": {
       "mode": "100644",
@@ -14553,6 +14641,10 @@
       "mode": "100644",
       "sha256": "d6813bfc0148f377ce7a8df0ba8116180789dad45c6148f144c2104eca414bc1"
     },
+    "openai-java-core/src/test/kotlin/com/openai/services/async/audio/VoiceConsentServiceAsyncTest.kt": {
+      "mode": "100644",
+      "sha256": "97b8954f0aa81b4a7a250de4712057b6c7383a7a33600692b2e5613ce230ceca"
+    },
     "openai-java-core/src/test/kotlin/com/openai/services/async/beta/AgentServiceAsyncTest.kt": {
       "mode": "100644",
       "sha256": "1a76bc1377834856f2918b6a90b344af9f1cb65d1bcbfe487ae1811d9c5ba7cc"
@@ -14977,6 +15069,10 @@
       "mode": "100644",
       "sha256": "a50fcd953489c080ace66d3debd1feaa6cc1ec4e5ce489f877085473e92e7ad4"
     },
+    "openai-java-core/src/test/kotlin/com/openai/services/blocking/audio/VoiceConsentServiceTest.kt": {
+      "mode": "100644",
+      "sha256": "1dbfb0a6370f6782946e4a5bc7a54a29c7e2b31700e59f95292250a1025b79e5"
+    },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/beta/AgentServiceTest.kt": {
       "mode": "100644",
       "sha256": "b6d7556933abfa3ddcf88aa083ac4afcfd18fff7ceeb7728f3943ec8406d6c29"
@@ -15199,11 +15295,11 @@
     },
     "scripts/castiron/custom_code_budget.py": {
       "mode": "100644",
-      "sha256": "31b47b2c85fc7ef483c18a94f0725e4f6bae50164c427330af6d081d5d3f31f2"
+      "sha256": "2beaac2eb0a963e717bf2bba93f52d6aea28fa7c4961591d4c2c4749945dbb7c"
     },
     "scripts/castiron/custom_code_report.py": {
       "mode": "100644",
-      "sha256": "4dc056b460d688cbe3035bd9649820f77e489424d0c9c48bd3f19ed4dfb7e9b4"
+      "sha256": "1867be6dc5ab291e1fd1a73a1da820c38031fd74fdf3dcadd033690d4e308a50"
     },
     "scripts/castiron/custom_code_test_support.py": {
       "mode": "100644",
@@ -15211,7 +15307,7 @@
     },
     "scripts/castiron/fixtures/github_publisher.cjs": {
       "mode": "100644",
-      "sha256": "4f5475e905818875e37d686bf03553b55219ac05e30957628d4aaa834fced202"
+      "sha256": "114a35f8ed075f20d7fbcfab6dbbf16383866497a9d6e8290cf0928bba753468"
     },
     "scripts/castiron/ruff.toml": {
       "mode": "100644",
@@ -15219,11 +15315,11 @@
     },
     "scripts/castiron/test_custom_code_budget.py": {
       "mode": "100644",
-      "sha256": "cf4938bca739d01f1db2a421ec97e4fe8b41b8bc2d2c634a01247e36cb464649"
+      "sha256": "f355e1cb0ed88aa5a344cd6c68388802f5ed814d638b500e271b008cf07e0106"
     },
     "scripts/castiron/test_custom_code_github.py": {
       "mode": "100644",
-      "sha256": "338d54bf6b53a44b555dc7baa778c76af499b06959caf0339142f1b4293edd92"
+      "sha256": "f3df0d260edd990532b32f15ed9cb4071834634bbb08a87d0077481e09128f98"
     },
     "scripts/castiron/test_custom_code_publication.py": {
       "mode": "100644",
@@ -15231,7 +15327,7 @@
     },
     "scripts/castiron/test_custom_code_report.py": {
       "mode": "100644",
-      "sha256": "8cb4add28b7e6acb4f8b3844073d33e7a95d8a554c4caf47bd1e09da86a3bd04"
+      "sha256": "626252bd944c419835a1130fcc02680d9d23b774f2131446375eda7f4546f9bb"
     }
   }
 }
