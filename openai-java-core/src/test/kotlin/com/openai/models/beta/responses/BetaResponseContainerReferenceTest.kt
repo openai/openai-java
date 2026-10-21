@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseContainerReferenceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseContainerReference =
             BetaResponseContainerReference.builder().containerId("container_id").build()
 
         assertThat(betaResponseContainerReference.containerId()).isEqualTo("container_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseContainerReference =
-            BetaResponseContainerReference.builder().containerId("container_id").build()
 
         val roundtrippedBetaResponseContainerReference =
             jsonMapper.readValue(

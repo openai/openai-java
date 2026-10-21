@@ -490,6 +490,7 @@ internal class ResponseTest {
         assertThat(response.user()).contains("user-1234")
 
         val jsonMapper = jsonMapper()
+
         val roundtrippedResponse =
             jsonMapper.readValue(
                 jsonMapper.writeValueAsString(response),

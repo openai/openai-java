@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class GroupTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val group =
             Group.builder()
                 .id("id")
@@ -25,19 +25,8 @@ internal class GroupTest {
         assertThat(group.groupType()).isEqualTo(Group.GroupType.GROUP)
         assertThat(group.isScimManaged()).isEqualTo(true)
         assertThat(group.name()).isEqualTo("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val group =
-            Group.builder()
-                .id("id")
-                .createdAt(0L)
-                .groupType(Group.GroupType.GROUP)
-                .isScimManaged(true)
-                .name("name")
-                .build()
 
         val roundtrippedGroup =
             jsonMapper.readValue(jsonMapper.writeValueAsString(group), jacksonTypeRef<Group>())

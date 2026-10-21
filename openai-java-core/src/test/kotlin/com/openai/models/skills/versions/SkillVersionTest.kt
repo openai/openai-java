@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SkillVersionTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val skillVersion =
             SkillVersion.builder()
                 .id("id")
@@ -27,20 +27,8 @@ internal class SkillVersionTest {
         assertThat(skillVersion.name()).isEqualTo("name")
         assertThat(skillVersion.skillId()).isEqualTo("skill_id")
         assertThat(skillVersion.version()).isEqualTo("version")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val skillVersion =
-            SkillVersion.builder()
-                .id("id")
-                .createdAt(0L)
-                .description("description")
-                .name("name")
-                .skillId("skill_id")
-                .version("version")
-                .build()
 
         val roundtrippedSkillVersion =
             jsonMapper.readValue(

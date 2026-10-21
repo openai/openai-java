@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class MultiAgentConfigParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val multiAgentConfigParam =
             MultiAgentConfigParam.builder().enabled(true).maxConcurrentSubagents(1L).build()
 
         assertThat(multiAgentConfigParam.enabled()).isEqualTo(true)
         assertThat(multiAgentConfigParam.maxConcurrentSubagents()).contains(1L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val multiAgentConfigParam =
-            MultiAgentConfigParam.builder().enabled(true).maxConcurrentSubagents(1L).build()
 
         val roundtrippedMultiAgentConfigParam =
             jsonMapper.readValue(

@@ -10,20 +10,15 @@ import org.junit.jupiter.api.Test
 internal class ContainerNetworkPolicyDomainSecretTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val containerNetworkPolicyDomainSecret =
             ContainerNetworkPolicyDomainSecret.builder().domain("x").name("x").value("x").build()
 
         assertThat(containerNetworkPolicyDomainSecret.domain()).isEqualTo("x")
         assertThat(containerNetworkPolicyDomainSecret.name()).isEqualTo("x")
         assertThat(containerNetworkPolicyDomainSecret.value()).isEqualTo("x")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val containerNetworkPolicyDomainSecret =
-            ContainerNetworkPolicyDomainSecret.builder().domain("x").name("x").value("x").build()
 
         val roundtrippedContainerNetworkPolicyDomainSecret =
             jsonMapper.readValue(

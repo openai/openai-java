@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseSteerFailedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseSteerFailedEvent =
             BetaResponseSteerFailedEvent.builder()
                 .error(
@@ -47,29 +47,8 @@ internal class BetaResponseSteerFailedEventTest {
                     .build()
             )
         assertThat(betaResponseSteerFailedEvent.streamId()).contains("stream_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseSteerFailedEvent =
-            BetaResponseSteerFailedEvent.builder()
-                .error(
-                    BetaResponseSteerFailedEvent.Error.builder()
-                        .code(BetaResponseSteerErrorCode.RESPONSE_NOT_FOUND)
-                        .message("message")
-                        .build()
-                )
-                .sequenceNumber(0L)
-                .steer(
-                    BetaResponseSteerFailedEvent.Steer.builder()
-                        .input("string")
-                        .previousResponseId("previous_response_id")
-                        .id("id")
-                        .build()
-                )
-                .streamId("stream_id")
-                .build()
 
         val roundtrippedBetaResponseSteerFailedEvent =
             jsonMapper.readValue(

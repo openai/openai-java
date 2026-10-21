@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class SessionCloseEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionCloseEvent = SessionCloseEvent.builder().eventId("evt_close_001").build()
 
         assertThat(sessionCloseEvent.eventId()).contains("evt_close_001")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionCloseEvent = SessionCloseEvent.builder().eventId("evt_close_001").build()
 
         val roundtrippedSessionCloseEvent =
             jsonMapper.readValue(

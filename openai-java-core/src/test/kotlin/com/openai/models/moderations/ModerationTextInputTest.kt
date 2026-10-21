@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ModerationTextInputTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val moderationTextInput =
             ModerationTextInput.builder().text("...text to classify goes here...").build()
 
         assertThat(moderationTextInput.text()).isEqualTo("...text to classify goes here...")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val moderationTextInput =
-            ModerationTextInput.builder().text("...text to classify goes here...").build()
 
         val roundtrippedModerationTextInput =
             jsonMapper.readValue(

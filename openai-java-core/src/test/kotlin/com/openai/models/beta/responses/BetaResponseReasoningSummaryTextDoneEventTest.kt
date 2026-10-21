@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseReasoningSummaryTextDoneEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseReasoningSummaryTextDoneEvent =
             BetaResponseReasoningSummaryTextDoneEvent.builder()
                 .itemId("item_id")
@@ -36,24 +36,8 @@ internal class BetaResponseReasoningSummaryTextDoneEventTest {
                     .agentName("agent_name")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseReasoningSummaryTextDoneEvent =
-            BetaResponseReasoningSummaryTextDoneEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .summaryIndex(0L)
-                .text("text")
-                .agent(
-                    BetaResponseReasoningSummaryTextDoneEvent.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseReasoningSummaryTextDoneEvent =
             jsonMapper.readValue(

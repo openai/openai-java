@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class OciExternalStorageProviderTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val ociExternalStorageProvider =
             OciExternalStorageProvider.builder()
                 .bucket("bucket")
@@ -21,17 +21,8 @@ internal class OciExternalStorageProviderTest {
         assertThat(ociExternalStorageProvider.bucket()).isEqualTo("bucket")
         assertThat(ociExternalStorageProvider.region()).isEqualTo("region")
         assertThat(ociExternalStorageProvider.tenancyOcid()).isEqualTo("tenancy_ocid")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val ociExternalStorageProvider =
-            OciExternalStorageProvider.builder()
-                .bucket("bucket")
-                .region("region")
-                .tenancyOcid("tenancy_ocid")
-                .build()
 
         val roundtrippedOciExternalStorageProvider =
             jsonMapper.readValue(

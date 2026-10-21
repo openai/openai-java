@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class VoiceConsentListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val voiceConsentListPageResponse =
             VoiceConsentListPageResponse.builder()
                 .addData(
@@ -38,25 +38,8 @@ internal class VoiceConsentListPageResponseTest {
         assertThat(voiceConsentListPageResponse.hasMore()).isEqualTo(true)
         assertThat(voiceConsentListPageResponse.firstId()).contains("first_id")
         assertThat(voiceConsentListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val voiceConsentListPageResponse =
-            VoiceConsentListPageResponse.builder()
-                .addData(
-                    VoiceConsent.builder()
-                        .id("cons_1234")
-                        .createdAt(0L)
-                        .language("language")
-                        .name("name")
-                        .build()
-                )
-                .hasMore(true)
-                .firstId("first_id")
-                .lastId("last_id")
-                .build()
 
         val roundtrippedVoiceConsentListPageResponse =
             jsonMapper.readValue(

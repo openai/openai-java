@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class UsageAudioSpeechesResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val usageAudioSpeechesResponse =
             UsageAudioSpeechesResponse.builder()
                 .addData(
@@ -101,57 +101,8 @@ internal class UsageAudioSpeechesResponseTest {
             )
         assertThat(usageAudioSpeechesResponse.hasMore()).isEqualTo(true)
         assertThat(usageAudioSpeechesResponse.nextPage()).contains("next_page")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val usageAudioSpeechesResponse =
-            UsageAudioSpeechesResponse.builder()
-                .addData(
-                    UsageAudioSpeechesResponse.Data.builder()
-                        .endTime(0L)
-                        .addResult(
-                            UsageAudioSpeechesResponse.Data.Result
-                                .OrganizationUsageCompletionsResult
-                                .builder()
-                                .inputTokens(0L)
-                                .numModelRequests(0L)
-                                .outputTokens(0L)
-                                .apiKeyId("api_key_id")
-                                .apiSource(
-                                    UsageAudioSpeechesResponse.Data.Result
-                                        .OrganizationUsageCompletionsResult
-                                        .ApiSource
-                                        .AGENTS_API
-                                )
-                                .batch(true)
-                                .inputAudioTokens(0L)
-                                .inputCacheWrite12hTokens(0L)
-                                .inputCacheWrite30mTokens(0L)
-                                .inputCacheWriteTokens(0L)
-                                .inputCachedAudioTokens(0L)
-                                .inputCachedImageTokens(0L)
-                                .inputCachedTextTokens(0L)
-                                .inputCachedTokens(0L)
-                                .inputImageTokens(0L)
-                                .inputTextTokens(0L)
-                                .inputUncachedTokens(0L)
-                                .model("model")
-                                .outputAudioTokens(0L)
-                                .outputImageTokens(0L)
-                                .outputTextTokens(0L)
-                                .projectId("project_id")
-                                .serviceTier("service_tier")
-                                .userId("user_id")
-                                .build()
-                        )
-                        .startTime(0L)
-                        .build()
-                )
-                .hasMore(true)
-                .nextPage("next_page")
-                .build()
 
         val roundtrippedUsageAudioSpeechesResponse =
             jsonMapper.readValue(

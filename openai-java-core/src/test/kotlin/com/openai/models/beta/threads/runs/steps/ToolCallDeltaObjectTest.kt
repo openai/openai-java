@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ToolCallDeltaObjectTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val toolCallDeltaObject =
             ToolCallDeltaObject.builder()
                 .addToolCall(
@@ -47,28 +47,8 @@ internal class ToolCallDeltaObjectTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val toolCallDeltaObject =
-            ToolCallDeltaObject.builder()
-                .addToolCall(
-                    CodeInterpreterToolCallDelta.builder()
-                        .index(0L)
-                        .id("id")
-                        .codeInterpreter(
-                            CodeInterpreterToolCallDelta.CodeInterpreter.builder()
-                                .input("input")
-                                .addOutput(
-                                    CodeInterpreterLogs.builder().index(0L).logs("logs").build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedToolCallDeltaObject =
             jsonMapper.readValue(

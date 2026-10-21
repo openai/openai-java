@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseImageGenCallPartialImageEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseImageGenCallPartialImageEvent =
             ResponseImageGenCallPartialImageEvent.builder()
                 .itemId("item_id")
@@ -34,23 +34,8 @@ internal class ResponseImageGenCallPartialImageEventTest {
         assertThat(responseImageGenCallPartialImageEvent.outputFormat()).contains("output_format")
         assertThat(responseImageGenCallPartialImageEvent.quality()).contains("quality")
         assertThat(responseImageGenCallPartialImageEvent.size()).contains("size")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseImageGenCallPartialImageEvent =
-            ResponseImageGenCallPartialImageEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .partialImageB64("partial_image_b64")
-                .partialImageIndex(0L)
-                .sequenceNumber(0L)
-                .background("background")
-                .outputFormat("output_format")
-                .quality("quality")
-                .size("size")
-                .build()
 
         val roundtrippedResponseImageGenCallPartialImageEvent =
             jsonMapper.readValue(

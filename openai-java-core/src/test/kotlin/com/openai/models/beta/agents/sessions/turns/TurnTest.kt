@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class TurnTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val turn =
             Turn.builder()
                 .id("id")
@@ -75,42 +75,8 @@ internal class TurnTest {
                     .totalTokens(0L)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val turn =
-            Turn.builder()
-                .id("id")
-                .agentId("agent_id")
-                .completedAt(0L)
-                .createdAt(0L)
-                .error(
-                    SessionTurnError.builder()
-                        .code(SessionTurnError.Code.CONTEXT_LENGTH_EXCEEDED)
-                        .message("message")
-                        .build()
-                )
-                .object_(Turn.Object.AGENT_SESSION_TURN)
-                .sessionId("session_id")
-                .startedAt(0L)
-                .status(Turn.Status.QUEUED)
-                .subagentId("subagent_id")
-                .usage(
-                    TokenUsage.builder()
-                        .inputTokens(0L)
-                        .inputTokensDetails(
-                            TokenUsage.InputTokensDetails.builder().cachedTokens(0L).build()
-                        )
-                        .outputTokens(0L)
-                        .outputTokensDetails(
-                            TokenUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
-                        )
-                        .totalTokens(0L)
-                        .build()
-                )
-                .build()
 
         val roundtrippedTurn =
             jsonMapper.readValue(jsonMapper.writeValueAsString(turn), jacksonTypeRef<Turn>())

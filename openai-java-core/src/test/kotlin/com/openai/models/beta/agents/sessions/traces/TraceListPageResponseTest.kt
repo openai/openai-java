@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class TraceListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val traceListPageResponse =
             TraceListPageResponse.builder()
                 .addData(
@@ -47,29 +47,8 @@ internal class TraceListPageResponseTest {
         assertThat(traceListPageResponse.firstId()).contains("first_id")
         assertThat(traceListPageResponse.hasMore()).isEqualTo(true)
         assertThat(traceListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val traceListPageResponse =
-            TraceListPageResponse.builder()
-                .addData(
-                    SessionTrace.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .otlp(
-                            SessionTrace.Otlp.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .sessionId("session_id")
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedTraceListPageResponse =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseFunctionCallArgumentsDoneEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseFunctionCallArgumentsDoneEvent =
             ResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
@@ -23,18 +23,8 @@ internal class ResponseFunctionCallArgumentsDoneEventTest {
         assertThat(responseFunctionCallArgumentsDoneEvent.itemId()).isEqualTo("item_id")
         assertThat(responseFunctionCallArgumentsDoneEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseFunctionCallArgumentsDoneEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseFunctionCallArgumentsDoneEvent =
-            ResponseFunctionCallArgumentsDoneEvent.builder()
-                .arguments("arguments")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseFunctionCallArgumentsDoneEvent =
             jsonMapper.readValue(

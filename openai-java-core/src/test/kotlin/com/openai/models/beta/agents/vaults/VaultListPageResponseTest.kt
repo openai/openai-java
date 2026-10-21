@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class VaultListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val vaultListPageResponse =
             VaultListPageResponse.builder()
                 .addData(
@@ -47,29 +47,8 @@ internal class VaultListPageResponseTest {
         assertThat(vaultListPageResponse.firstId()).contains("first_id")
         assertThat(vaultListPageResponse.hasMore()).isEqualTo(true)
         assertThat(vaultListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val vaultListPageResponse =
-            VaultListPageResponse.builder()
-                .addData(
-                    Vault.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .metadata(
-                            Vault.Metadata.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .name("name")
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedVaultListPageResponse =
             jsonMapper.readValue(

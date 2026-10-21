@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseTextConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseTextConfig =
             BetaResponseTextConfig.builder()
                 .formatText()
@@ -20,16 +20,8 @@ internal class BetaResponseTextConfigTest {
         assertThat(betaResponseTextConfig.format()).contains(BetaResponseFormatTextConfig.ofText())
         assertThat(betaResponseTextConfig.verbosity())
             .contains(BetaResponseTextConfig.Verbosity.LOW)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseTextConfig =
-            BetaResponseTextConfig.builder()
-                .formatText()
-                .verbosity(BetaResponseTextConfig.Verbosity.LOW)
-                .build()
 
         val roundtrippedBetaResponseTextConfig =
             jsonMapper.readValue(

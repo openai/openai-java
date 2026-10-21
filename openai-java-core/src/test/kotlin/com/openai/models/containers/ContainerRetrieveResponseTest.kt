@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ContainerRetrieveResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val containerRetrieveResponse =
             ContainerRetrieveResponse.builder()
                 .id("id")
@@ -56,33 +56,8 @@ internal class ContainerRetrieveResponseTest {
                     .addAllowedDomain("string")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val containerRetrieveResponse =
-            ContainerRetrieveResponse.builder()
-                .id("id")
-                .createdAt(0L)
-                .name("name")
-                .object_("object")
-                .status("status")
-                .expiresAfter(
-                    ContainerRetrieveResponse.ExpiresAfter.builder()
-                        .anchor(ContainerRetrieveResponse.ExpiresAfter.Anchor.LAST_ACTIVE_AT)
-                        .minutes(0L)
-                        .build()
-                )
-                .lastActiveAt(0L)
-                .memoryLimit(ContainerRetrieveResponse.MemoryLimit._1G)
-                .networkPolicy(
-                    ContainerRetrieveResponse.NetworkPolicy.builder()
-                        .type(ContainerRetrieveResponse.NetworkPolicy.Type.ALLOWLIST)
-                        .addAllowedDomain("string")
-                        .build()
-                )
-                .build()
 
         val roundtrippedContainerRetrieveResponse =
             jsonMapper.readValue(

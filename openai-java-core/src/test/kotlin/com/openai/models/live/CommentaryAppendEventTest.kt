@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class CommentaryAppendEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val commentaryAppendEvent =
             CommentaryAppendEvent.builder()
                 .content("There is an outdoor table for two at 7 PM. Ask whether to reserve it.")
@@ -22,17 +22,8 @@ internal class CommentaryAppendEventTest {
             .isEqualTo("There is an outdoor table for two at 7 PM. Ask whether to reserve it.")
         assertThat(commentaryAppendEvent.delegationId()).contains("del_abc123")
         assertThat(commentaryAppendEvent.eventId()).contains("evt_commentary_001")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val commentaryAppendEvent =
-            CommentaryAppendEvent.builder()
-                .content("There is an outdoor table for two at 7 PM. Ask whether to reserve it.")
-                .delegationId("del_abc123")
-                .eventId("evt_commentary_001")
-                .build()
 
         val roundtrippedCommentaryAppendEvent =
             jsonMapper.readValue(

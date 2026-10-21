@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class TranscriptionDiarizedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val transcriptionDiarized =
             TranscriptionDiarized.builder()
                 .duration(0.0)
@@ -67,38 +67,8 @@ internal class TranscriptionDiarizedTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val transcriptionDiarized =
-            TranscriptionDiarized.builder()
-                .duration(0.0)
-                .addSegment(
-                    TranscriptionDiarizedSegment.builder()
-                        .id("id")
-                        .end(0.0)
-                        .speaker("speaker")
-                        .start(0.0)
-                        .text("text")
-                        .build()
-                )
-                .text("text")
-                .usage(
-                    TranscriptionDiarized.Usage.Tokens.builder()
-                        .inputTokens(0L)
-                        .outputTokens(0L)
-                        .totalTokens(0L)
-                        .inputTokenDetails(
-                            TranscriptionDiarized.Usage.Tokens.InputTokenDetails.builder()
-                                .audioTokens(0L)
-                                .textTokens(0L)
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedTranscriptionDiarized =
             jsonMapper.readValue(

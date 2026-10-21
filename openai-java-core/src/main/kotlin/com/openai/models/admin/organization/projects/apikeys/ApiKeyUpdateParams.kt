@@ -60,13 +60,12 @@ private constructor(
      * organization and project expiry policies. Expired keys cannot be updated. Retrying resets the
      * expiry relative to the new request. Omit to keep the current expiration.
      *
-     * For scope-only updates, use [expiresInSecondsOptional] to inspect the omitted expiry.
-     *
-     * @throws OpenAIInvalidDataException if the field is missing, null, or has an unexpected type.
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun expiresInSeconds(): Long = body.expiresInSeconds()
 
-    /** Returns the requested expiry, or empty when only scopes are being updated. */
+    /** Returns the requested value, or empty if the field is omitted or null. */
     fun expiresInSecondsOptional(): Optional<Long> = body.expiresInSecondsOptional()
 
     /**
@@ -372,14 +371,12 @@ private constructor(
          * organization and project expiry policies. Expired keys cannot be updated. Retrying resets
          * the expiry relative to the new request. Omit to keep the current expiration.
          *
-         * For scope-only updates, use [expiresInSecondsOptional] to inspect the omitted expiry.
-         *
-         * @throws OpenAIInvalidDataException if the field is missing, null, or has an unexpected
-         *   type.
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun expiresInSeconds(): Long = expiresInSeconds.getRequired("expires_in_seconds")
 
-        /** Returns the requested expiry, or empty when only scopes are being updated. */
+        /** Returns the requested value, or empty if the field is omitted or null. */
         fun expiresInSecondsOptional(): Optional<Long> =
             expiresInSeconds.getOptional("expires_in_seconds")
 

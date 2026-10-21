@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseComputerToolCallTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseComputerToolCall =
             ResponseComputerToolCall.builder()
                 .id("id")
@@ -79,41 +79,8 @@ internal class ResponseComputerToolCallTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseComputerToolCall =
-            ResponseComputerToolCall.builder()
-                .id("id")
-                .callId("call_id")
-                .addPendingSafetyCheck(
-                    ResponseComputerToolCall.PendingSafetyCheck.builder()
-                        .id("id")
-                        .code("code")
-                        .message("message")
-                        .build()
-                )
-                .status(ResponseComputerToolCall.Status.IN_PROGRESS)
-                .type(ResponseComputerToolCall.Type.COMPUTER_CALL)
-                .action(
-                    ResponseComputerToolCall.Action.Click.builder()
-                        .button(ResponseComputerToolCall.Action.Click.Button.LEFT)
-                        .x(0L)
-                        .y(0L)
-                        .addKey("string")
-                        .build()
-                )
-                .addAction(
-                    ComputerAction.Click.builder()
-                        .button(ComputerAction.Click.Button.LEFT)
-                        .x(0L)
-                        .y(0L)
-                        .addKey("string")
-                        .build()
-                )
-                .build()
 
         val roundtrippedResponseComputerToolCall =
             jsonMapper.readValue(

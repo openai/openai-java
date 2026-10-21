@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionTurnOutputTextDoneEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionTurnOutputTextDoneEvent =
             AgentSessionTurnOutputTextDoneEvent.builder()
                 .contentIndex(0L)
@@ -29,21 +29,8 @@ internal class AgentSessionTurnOutputTextDoneEventTest {
         assertThat(agentSessionTurnOutputTextDoneEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentSessionTurnOutputTextDoneEvent.text()).isEqualTo("text")
         assertThat(agentSessionTurnOutputTextDoneEvent.turnId()).contains("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionTurnOutputTextDoneEvent =
-            AgentSessionTurnOutputTextDoneEvent.builder()
-                .contentIndex(0L)
-                .eventId("event_id")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sessionId("session_id")
-                .text("text")
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentSessionTurnOutputTextDoneEvent =
             jsonMapper.readValue(

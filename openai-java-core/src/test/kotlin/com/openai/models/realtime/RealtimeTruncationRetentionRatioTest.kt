@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeTruncationRetentionRatioTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeTruncationRetentionRatio =
             RealtimeTruncationRetentionRatio.builder()
                 .retentionRatio(0.0)
@@ -26,20 +26,8 @@ internal class RealtimeTruncationRetentionRatioTest {
             .contains(
                 RealtimeTruncationRetentionRatio.TokenLimits.builder().postInstructions(0L).build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeTruncationRetentionRatio =
-            RealtimeTruncationRetentionRatio.builder()
-                .retentionRatio(0.0)
-                .tokenLimits(
-                    RealtimeTruncationRetentionRatio.TokenLimits.builder()
-                        .postInstructions(0L)
-                        .build()
-                )
-                .build()
 
         val roundtrippedRealtimeTruncationRetentionRatio =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeMcpApprovalRequestTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeMcpApprovalRequest =
             RealtimeMcpApprovalRequest.builder()
                 .id("id")
@@ -23,18 +23,8 @@ internal class RealtimeMcpApprovalRequestTest {
         assertThat(realtimeMcpApprovalRequest.arguments()).isEqualTo("arguments")
         assertThat(realtimeMcpApprovalRequest.name()).isEqualTo("name")
         assertThat(realtimeMcpApprovalRequest.serverLabel()).isEqualTo("server_label")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeMcpApprovalRequest =
-            RealtimeMcpApprovalRequest.builder()
-                .id("id")
-                .arguments("arguments")
-                .name("name")
-                .serverLabel("server_label")
-                .build()
 
         val roundtrippedRealtimeMcpApprovalRequest =
             jsonMapper.readValue(

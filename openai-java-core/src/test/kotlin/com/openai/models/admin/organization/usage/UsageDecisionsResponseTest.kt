@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class UsageDecisionsResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val usageDecisionsResponse =
             UsageDecisionsResponse.builder()
                 .addData(
@@ -88,50 +88,8 @@ internal class UsageDecisionsResponseTest {
             )
         assertThat(usageDecisionsResponse.hasMore()).isEqualTo(true)
         assertThat(usageDecisionsResponse.nextPage()).contains("next_page")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val usageDecisionsResponse =
-            UsageDecisionsResponse.builder()
-                .addData(
-                    UsageDecisionsResponse.Data.builder()
-                        .endTime(0L)
-                        .addResult(
-                            UsageDecisionsResponse.Data.Result.builder()
-                                .inputTokens(0L)
-                                .numModelRequests(0L)
-                                .outputTokens(0L)
-                                .apiKeyId("api_key_id")
-                                .apiSource(UsageDecisionsResponse.Data.Result.ApiSource.AGENTS_API)
-                                .batch(true)
-                                .inputAudioTokens(0L)
-                                .inputCacheWrite12hTokens(0L)
-                                .inputCacheWrite30mTokens(0L)
-                                .inputCacheWriteTokens(0L)
-                                .inputCachedAudioTokens(0L)
-                                .inputCachedImageTokens(0L)
-                                .inputCachedTextTokens(0L)
-                                .inputCachedTokens(0L)
-                                .inputImageTokens(0L)
-                                .inputTextTokens(0L)
-                                .inputUncachedTokens(0L)
-                                .model("model")
-                                .outputAudioTokens(0L)
-                                .outputImageTokens(0L)
-                                .outputTextTokens(0L)
-                                .projectId("project_id")
-                                .serviceTier("service_tier")
-                                .userId("user_id")
-                                .build()
-                        )
-                        .startTime(0L)
-                        .build()
-                )
-                .hasMore(true)
-                .nextPage("next_page")
-                .build()
 
         val roundtrippedUsageDecisionsResponse =
             jsonMapper.readValue(

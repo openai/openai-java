@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class UserCreateResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val userCreateResponse =
             UserCreateResponse.builder().groupId("group_id").userId("user_id").build()
 
         assertThat(userCreateResponse.groupId()).isEqualTo("group_id")
         assertThat(userCreateResponse.userId()).isEqualTo("user_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val userCreateResponse =
-            UserCreateResponse.builder().groupId("group_id").userId("user_id").build()
 
         val roundtrippedUserCreateResponse =
             jsonMapper.readValue(

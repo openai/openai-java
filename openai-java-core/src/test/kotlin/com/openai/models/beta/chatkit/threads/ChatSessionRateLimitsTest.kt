@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ChatSessionRateLimitsTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatSessionRateLimits =
             ChatSessionRateLimits.builder().maxRequestsPer1Minute(0L).build()
 
         assertThat(chatSessionRateLimits.maxRequestsPer1Minute()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatSessionRateLimits =
-            ChatSessionRateLimits.builder().maxRequestsPer1Minute(0L).build()
 
         val roundtrippedChatSessionRateLimits =
             jsonMapper.readValue(

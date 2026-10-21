@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseInputImageContentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseInputImageContent =
             ResponseInputImageContent.builder()
                 .detail(ResponseInputImageContent.Detail.LOW)
@@ -27,20 +27,8 @@ internal class ResponseInputImageContentTest {
         assertThat(responseInputImageContent.imageUrl()).contains("https://example.com")
         assertThat(responseInputImageContent.promptCacheBreakpoint())
             .contains(ResponseInputImageContent.PromptCacheBreakpoint.builder().build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseInputImageContent =
-            ResponseInputImageContent.builder()
-                .detail(ResponseInputImageContent.Detail.LOW)
-                .fileId("file-123")
-                .imageUrl("https://example.com")
-                .promptCacheBreakpoint(
-                    ResponseInputImageContent.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedResponseInputImageContent =
             jsonMapper.readValue(

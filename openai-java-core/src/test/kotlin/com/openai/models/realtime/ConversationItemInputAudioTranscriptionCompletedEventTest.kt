@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class ConversationItemInputAudioTranscriptionCompletedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val conversationItemInputAudioTranscriptionCompletedEvent =
             ConversationItemInputAudioTranscriptionCompletedEvent.builder()
                 .contentIndex(0L)
@@ -79,40 +79,8 @@ internal class ConversationItemInputAudioTranscriptionCompletedEventTest {
             .containsExactly(
                 LogProbProperties.builder().token("token").addByte(0L).logprob(0.0).build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val conversationItemInputAudioTranscriptionCompletedEvent =
-            ConversationItemInputAudioTranscriptionCompletedEvent.builder()
-                .contentIndex(0L)
-                .eventId("event_id")
-                .itemId("item_id")
-                .transcript("transcript")
-                .usage(
-                    ConversationItemInputAudioTranscriptionCompletedEvent.Usage
-                        .TranscriptTextUsageTokens
-                        .builder()
-                        .inputTokens(0L)
-                        .outputTokens(0L)
-                        .totalTokens(0L)
-                        .inputTokenDetails(
-                            ConversationItemInputAudioTranscriptionCompletedEvent.Usage
-                                .TranscriptTextUsageTokens
-                                .InputTokenDetails
-                                .builder()
-                                .audioTokens(0L)
-                                .textTokens(0L)
-                                .build()
-                        )
-                        .build()
-                )
-                .addLanguage(TranscriptionLanguage.builder().code("code").build())
-                .addLogprob(
-                    LogProbProperties.builder().token("token").addByte(0L).logprob(0.0).build()
-                )
-                .build()
 
         val roundtrippedConversationItemInputAudioTranscriptionCompletedEvent =
             jsonMapper.readValue(

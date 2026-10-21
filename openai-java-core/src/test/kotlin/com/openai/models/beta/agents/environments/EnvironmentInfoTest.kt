@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 internal class EnvironmentInfoTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val environmentInfo =
             EnvironmentInfo.builder()
                 .id("id")
@@ -67,34 +67,8 @@ internal class EnvironmentInfoTest {
             )
         assertThat(environmentInfo.status()).isEqualTo(EnvironmentInfo.Status.PENDING)
         assertThat(environmentInfo.type()).isEqualTo(EnvironmentInfo.Type.OPENAI_HOSTED)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val environmentInfo =
-            EnvironmentInfo.builder()
-                .id("id")
-                .addFile(
-                    HostedEnvironmentFileId.builder()
-                        .id("id")
-                        .fileId("file_id")
-                        .path("path")
-                        .sizeBytes(0L)
-                        .build()
-                )
-                .addPlugin(HostedPlugin.builder().description("description").name("name").build())
-                .addSkill(
-                    HostedSkillReference.builder()
-                        .description("description")
-                        .name("name")
-                        .skillId("skill_id")
-                        .version("version")
-                        .build()
-                )
-                .status(EnvironmentInfo.Status.PENDING)
-                .type(EnvironmentInfo.Type.OPENAI_HOSTED)
-                .build()
 
         val roundtrippedEnvironmentInfo =
             jsonMapper.readValue(

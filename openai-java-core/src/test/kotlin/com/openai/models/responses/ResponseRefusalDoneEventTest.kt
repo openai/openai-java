@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseRefusalDoneEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseRefusalDoneEvent =
             ResponseRefusalDoneEvent.builder()
                 .contentIndex(0L)
@@ -25,19 +25,8 @@ internal class ResponseRefusalDoneEventTest {
         assertThat(responseRefusalDoneEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseRefusalDoneEvent.refusal()).isEqualTo("refusal")
         assertThat(responseRefusalDoneEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseRefusalDoneEvent =
-            ResponseRefusalDoneEvent.builder()
-                .contentIndex(0L)
-                .itemId("item_id")
-                .outputIndex(0L)
-                .refusal("refusal")
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseRefusalDoneEvent =
             jsonMapper.readValue(

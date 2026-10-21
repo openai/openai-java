@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class SessionResourceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionResource =
             SessionResource.builder()
                 .id("id")
@@ -127,66 +127,8 @@ internal class SessionResourceTest {
                     .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionResource =
-            SessionResource.builder()
-                .id("id")
-                .expiresAt(0L)
-                .model(SessionResource.Model.GPT_LIVE_1)
-                .audio(
-                    SessionResource.Audio.builder()
-                        .audioPcmFormat(AudioFormat.AudioPcm.Rate._16000)
-                        .output(
-                            SessionResource.Audio.Output.builder().voice(BuiltInVoice.ALLOY).build()
-                        )
-                        .build()
-                )
-                .client(
-                    ClientConfig.builder()
-                        .dataChannel(
-                            DataChannelConfig.builder()
-                                .allowedClientEventsOfStrings(listOf("string"))
-                                .allowedServerEventsAll()
-                                .build()
-                        )
-                        .build()
-                )
-                .delegation(ClientDelegation.builder().build())
-                .addInput(
-                    InitialItem.Developer.builder()
-                        .addContent(
-                            InitialItem.Developer.Content.builder()
-                                .text("text")
-                                .type(InitialItem.Developer.Content.Type.INPUT_TEXT)
-                                .build()
-                        )
-                        .id("id")
-                        .status(InitialItem.Developer.Status.INCOMPLETE)
-                        .type(InitialItem.Developer.Type.MESSAGE)
-                        .build()
-                )
-                .instructions("instructions")
-                .store(true)
-                .addTrigger(
-                    DecisionTrigger.builder()
-                        .decisions(
-                            DecisionTrigger.Decisions.builder()
-                                .addQuestion(
-                                    DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
-                                        .name("name")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                        .build()
-                )
-                .build()
 
         val roundtrippedSessionResource =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ClientConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val clientConfig =
             ClientConfig.builder()
                 .dataChannel(
@@ -28,20 +28,8 @@ internal class ClientConfigTest {
                     .allowedServerEventsAll()
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val clientConfig =
-            ClientConfig.builder()
-                .dataChannel(
-                    DataChannelConfig.builder()
-                        .allowedClientEventsOfStrings(listOf("string"))
-                        .allowedServerEventsAll()
-                        .build()
-                )
-                .build()
 
         val roundtrippedClientConfig =
             jsonMapper.readValue(

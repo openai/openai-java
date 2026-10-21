@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseSteerAcceptedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseSteerAcceptedEvent =
             BetaResponseSteerAcceptedEvent.builder()
                 .sequenceNumber(0L)
@@ -32,22 +32,8 @@ internal class BetaResponseSteerAcceptedEventTest {
                     .build()
             )
         assertThat(betaResponseSteerAcceptedEvent.streamId()).contains("stream_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseSteerAcceptedEvent =
-            BetaResponseSteerAcceptedEvent.builder()
-                .sequenceNumber(0L)
-                .steer(
-                    BetaResponseSteerAcceptedEvent.Steer.builder()
-                        .id("id")
-                        .previousResponseId("previous_response_id")
-                        .build()
-                )
-                .streamId("stream_id")
-                .build()
 
         val roundtrippedBetaResponseSteerAcceptedEvent =
             jsonMapper.readValue(

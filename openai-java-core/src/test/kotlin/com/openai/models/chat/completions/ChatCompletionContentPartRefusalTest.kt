@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionContentPartRefusalTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionContentPartRefusal =
             ChatCompletionContentPartRefusal.builder().refusal("refusal").build()
 
         assertThat(chatCompletionContentPartRefusal.refusal()).isEqualTo("refusal")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionContentPartRefusal =
-            ChatCompletionContentPartRefusal.builder().refusal("refusal").build()
 
         val roundtrippedChatCompletionContentPartRefusal =
             jsonMapper.readValue(

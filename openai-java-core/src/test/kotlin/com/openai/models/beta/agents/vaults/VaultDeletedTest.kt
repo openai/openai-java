@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class VaultDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val vaultDeleted = VaultDeleted.builder().id("id").deleted(true).build()
 
         assertThat(vaultDeleted.id()).isEqualTo("id")
         assertThat(vaultDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val vaultDeleted = VaultDeleted.builder().id("id").deleted(true).build()
 
         val roundtrippedVaultDeleted =
             jsonMapper.readValue(

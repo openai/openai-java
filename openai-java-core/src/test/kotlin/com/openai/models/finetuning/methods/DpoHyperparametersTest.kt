@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class DpoHyperparametersTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val dpoHyperparameters =
             DpoHyperparameters.builder()
                 .batchSizeAuto()
@@ -24,18 +24,8 @@ internal class DpoHyperparametersTest {
         assertThat(dpoHyperparameters.learningRateMultiplier())
             .contains(DpoHyperparameters.LearningRateMultiplier.ofAuto())
         assertThat(dpoHyperparameters.nEpochs()).contains(DpoHyperparameters.NEpochs.ofAuto())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val dpoHyperparameters =
-            DpoHyperparameters.builder()
-                .batchSizeAuto()
-                .betaAuto()
-                .learningRateMultiplierAuto()
-                .nEpochsAuto()
-                .build()
 
         val roundtrippedDpoHyperparameters =
             jsonMapper.readValue(

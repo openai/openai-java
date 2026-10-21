@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionDeleted = AgentSessionDeleted.builder().id("id").deleted(true).build()
 
         assertThat(agentSessionDeleted.id()).isEqualTo("id")
         assertThat(agentSessionDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionDeleted = AgentSessionDeleted.builder().id("id").deleted(true).build()
 
         val roundtrippedAgentSessionDeleted =
             jsonMapper.readValue(

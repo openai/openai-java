@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class SessionTraceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionTrace =
             SessionTrace.builder()
                 .id("id")
@@ -33,22 +33,8 @@ internal class SessionTraceTest {
                     .build()
             )
         assertThat(sessionTrace.sessionId()).isEqualTo("session_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionTrace =
-            SessionTrace.builder()
-                .id("id")
-                .createdAt(0L)
-                .otlp(
-                    SessionTrace.Otlp.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .sessionId("session_id")
-                .build()
 
         val roundtrippedSessionTrace =
             jsonMapper.readValue(

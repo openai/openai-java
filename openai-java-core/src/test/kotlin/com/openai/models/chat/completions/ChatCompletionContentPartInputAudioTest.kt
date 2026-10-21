@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionContentPartInputAudioTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionContentPartInputAudio =
             ChatCompletionContentPartInputAudio.builder()
                 .inputAudio(
@@ -33,23 +33,8 @@ internal class ChatCompletionContentPartInputAudioTest {
             )
         assertThat(chatCompletionContentPartInputAudio.promptCacheBreakpoint())
             .contains(ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionContentPartInputAudio =
-            ChatCompletionContentPartInputAudio.builder()
-                .inputAudio(
-                    ChatCompletionContentPartInputAudio.InputAudio.builder()
-                        .data("data")
-                        .format(ChatCompletionContentPartInputAudio.InputAudio.Format.WAV)
-                        .build()
-                )
-                .promptCacheBreakpoint(
-                    ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedChatCompletionContentPartInputAudio =
             jsonMapper.readValue(

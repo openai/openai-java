@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class ResponseAudioTranscriptDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseAudioTranscriptDeltaEvent =
             ResponseAudioTranscriptDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
 
         assertThat(responseAudioTranscriptDeltaEvent.delta()).isEqualTo("delta")
         assertThat(responseAudioTranscriptDeltaEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseAudioTranscriptDeltaEvent =
-            ResponseAudioTranscriptDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
 
         val roundtrippedResponseAudioTranscriptDeltaEvent =
             jsonMapper.readValue(

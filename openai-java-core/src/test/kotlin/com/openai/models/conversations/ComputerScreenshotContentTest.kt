@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ComputerScreenshotContentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val computerScreenshotContent =
             ComputerScreenshotContent.builder()
                 .detail(ComputerScreenshotContent.Detail.LOW)
@@ -27,20 +27,8 @@ internal class ComputerScreenshotContentTest {
         assertThat(computerScreenshotContent.imageUrl()).contains("https://example.com")
         assertThat(computerScreenshotContent.promptCacheBreakpoint())
             .contains(ComputerScreenshotContent.PromptCacheBreakpoint.builder().build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val computerScreenshotContent =
-            ComputerScreenshotContent.builder()
-                .detail(ComputerScreenshotContent.Detail.LOW)
-                .fileId("file_id")
-                .imageUrl("https://example.com")
-                .promptCacheBreakpoint(
-                    ComputerScreenshotContent.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedComputerScreenshotContent =
             jsonMapper.readValue(

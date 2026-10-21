@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class GraderValidateResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val graderValidateResponse =
             GraderValidateResponse.builder()
                 .grader(
@@ -35,22 +35,8 @@ internal class GraderValidateResponseTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val graderValidateResponse =
-            GraderValidateResponse.builder()
-                .grader(
-                    StringCheckGrader.builder()
-                        .input("input")
-                        .name("name")
-                        .operation(StringCheckGrader.Operation.EQ)
-                        .reference("reference")
-                        .build()
-                )
-                .build()
 
         val roundtrippedGraderValidateResponse =
             jsonMapper.readValue(

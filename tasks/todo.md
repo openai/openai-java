@@ -1,5 +1,36 @@
 # Java generated/custom transition tasks
 
+## Consolidated rollout checkpoint — October 20, 2026 (Pacific)
+
+This checkpoint supersedes the older allocation and pending-review notes below;
+the original measured per-file inventory remains unchanged.
+
+- Exactly three consolidated compiler Deltas have merged through the protected
+  workflow: [runtime 2566856](https://flow.apps.openai.org/deltas/openai/openai/2566856)
+  at `b47ee185f4f4542e4b4de59a3b9b6e0a5d2f6407`,
+  [models 2572073](https://flow.apps.openai.org/deltas/openai/openai/2572073)
+  at `161a71895b4db9cb7dd3006f641067c4442c4d46`, and
+  [tests 2568349](https://flow.apps.openai.org/deltas/openai/openai/2568349)
+  at `9175682406f04e386092337d2469d9967be61c0a`.
+  No additional compiler Deltas are allocated. Held Delta 2561775 remains excluded.
+- Public Ratchet PRs #1234–1239 have merged: six slots consumed, at most four
+  remaining. Unrelated voice-consent PRs #1252/#1254 are included in the fresh
+  baseline and preserved by this rollout.
+- Historical merged debt was 97 mixed files / 2,025 patch lines. Fresh baseline
+  `fc1707968412255545338722b4862c36d11e2444` measures 98 mixed files / 2,107
+  patch lines under the unchanged 3,000-line migration budget. Compiler landing
+  alone is not SDK debt reduction; candidate and landed measurements follow.
+- Java-only regeneration uses the merged compiler and the exact released spec,
+  with only the legacy required expiry-accessor configuration hint added.
+  Generation checkpoint: `726b13e99fafa64be97968d142cde0af124fe49f`.
+- Integration retains released webhook missing-secret assertions and relocates
+  the four deterministic agent streaming tests without changing their bodies.
+  Static integration/security review found no actionable findings. SDK build,
+  source/binary/runtime validation and protected promotion remain pending.
+- The earlier model proof preserves all original members and records exactly
+  171 additive upstream `_allProperties` methods; it is not strict equality.
+
+
 See [the measured plan and per-file inventory](plan.md). User authorization covers
 implementation and PR submission; normal review and compiler-before-promotion
 gates remain in effect. No developer-facing breaking changes are allowed.

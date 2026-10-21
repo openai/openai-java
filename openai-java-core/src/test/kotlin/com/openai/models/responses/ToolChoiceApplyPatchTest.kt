@@ -10,14 +10,10 @@ import org.junit.jupiter.api.Test
 internal class ToolChoiceApplyPatchTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val toolChoiceApplyPatch = ToolChoiceApplyPatch.builder().build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val toolChoiceApplyPatch = ToolChoiceApplyPatch.builder().build()
 
         val roundtrippedToolChoiceApplyPatch =
             jsonMapper.readValue(

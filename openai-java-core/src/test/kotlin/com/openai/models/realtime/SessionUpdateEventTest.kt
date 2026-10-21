@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 internal class SessionUpdateEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionUpdateEvent =
             SessionUpdateEvent.builder()
                 .session(
@@ -205,106 +205,8 @@ internal class SessionUpdateEventTest {
                 )
             )
         assertThat(sessionUpdateEvent.eventId()).contains("event_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionUpdateEvent =
-            SessionUpdateEvent.builder()
-                .session(
-                    RealtimeSessionCreateRequest.builder()
-                        .audio(
-                            RealtimeAudioConfig.builder()
-                                .input(
-                                    RealtimeAudioConfigInput.builder()
-                                        .format(
-                                            RealtimeAudioFormats.AudioPcm.builder()
-                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
-                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
-                                                .build()
-                                        )
-                                        .noiseReduction(
-                                            RealtimeAudioConfigInput.NoiseReduction.builder()
-                                                .type(NoiseReductionType.NEAR_FIELD)
-                                                .build()
-                                        )
-                                        .transcription(
-                                            AudioTranscription.builder()
-                                                .delay(AudioTranscription.Delay.MINIMAL)
-                                                .addKeyword("string")
-                                                .language("language")
-                                                .addLanguage("string")
-                                                .model(AudioTranscription.Model.WHISPER_1)
-                                                .prompt("prompt")
-                                                .build()
-                                        )
-                                        .turnDetection(
-                                            RealtimeAudioInputTurnDetection.ServerVad.builder()
-                                                .createResponse(true)
-                                                .idleTimeoutMs(5000L)
-                                                .interruptResponse(true)
-                                                .prefixPaddingMs(0L)
-                                                .silenceDurationMs(0L)
-                                                .threshold(0.0)
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .output(
-                                    RealtimeAudioConfigOutput.builder()
-                                        .format(
-                                            RealtimeAudioFormats.AudioPcm.builder()
-                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
-                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
-                                                .build()
-                                        )
-                                        .speed(0.25)
-                                        .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .addInclude(
-                            RealtimeSessionCreateRequest.Include
-                                .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
-                        )
-                        .instructions("instructions")
-                        .maxOutputTokensInf()
-                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
-                        .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
-                        .parallelToolCalls(true)
-                        .prompt(
-                            ResponsePrompt.builder()
-                                .id("id")
-                                .variables(
-                                    ResponsePrompt.Variables.builder()
-                                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                                        .build()
-                                )
-                                .version("version")
-                                .build()
-                        )
-                        .reasoning(
-                            RealtimeReasoning.builder()
-                                .effort(RealtimeReasoningEffort.MINIMAL)
-                                .build()
-                        )
-                        .toolChoice(ToolChoiceOptions.NONE)
-                        .addTool(
-                            RealtimeFunctionTool.builder()
-                                .description("description")
-                                .name("name")
-                                .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(RealtimeFunctionTool.Type.FUNCTION)
-                                .build()
-                        )
-                        .tracingAuto()
-                        .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
-                        .build()
-                )
-                .eventId("event_id")
-                .build()
 
         val roundtrippedSessionUpdateEvent =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseContentPartDoneEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseContentPartDoneEvent =
             ResponseContentPartDoneEvent.builder()
                 .contentIndex(0L)
@@ -78,44 +78,8 @@ internal class ResponseContentPartDoneEventTest {
                 )
             )
         assertThat(responseContentPartDoneEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseContentPartDoneEvent =
-            ResponseContentPartDoneEvent.builder()
-                .contentIndex(0L)
-                .itemId("item_id")
-                .outputIndex(0L)
-                .part(
-                    ResponseOutputText.builder()
-                        .addAnnotation(
-                            ResponseOutputText.Annotation.FileCitation.builder()
-                                .fileId("file_id")
-                                .filename("filename")
-                                .index(0L)
-                                .build()
-                        )
-                        .text("text")
-                        .addLogprob(
-                            ResponseOutputText.Logprob.builder()
-                                .token("token")
-                                .addByte(0L)
-                                .logprob(0.0)
-                                .addTopLogprob(
-                                    ResponseOutputText.Logprob.TopLogprob.builder()
-                                        .token("token")
-                                        .addByte(0L)
-                                        .logprob(0.0)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseContentPartDoneEvent =
             jsonMapper.readValue(

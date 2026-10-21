@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaFunctionShellToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaFunctionShellTool =
             BetaFunctionShellTool.builder()
                 .addAllowedCaller(BetaFunctionShellTool.AllowedCaller.DIRECT)
@@ -42,25 +42,8 @@ internal class BetaFunctionShellToolTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaFunctionShellTool =
-            BetaFunctionShellTool.builder()
-                .addAllowedCaller(BetaFunctionShellTool.AllowedCaller.DIRECT)
-                .environment(
-                    BetaContainerAuto.builder()
-                        .addFileId("file-123")
-                        .memoryLimit(BetaContainerAuto.MemoryLimit._1G)
-                        .networkPolicy(BetaContainerNetworkPolicyDisabled.builder().build())
-                        .addSkill(
-                            BetaSkillReference.builder().skillId("x").version("version").build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaFunctionShellTool =
             jsonMapper.readValue(

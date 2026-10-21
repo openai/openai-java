@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 internal class EnvironmentListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val environmentListPageResponse =
             EnvironmentListPageResponse.builder()
                 .addData(
@@ -77,43 +77,8 @@ internal class EnvironmentListPageResponseTest {
         assertThat(environmentListPageResponse.firstId()).contains("first_id")
         assertThat(environmentListPageResponse.hasMore()).isEqualTo(true)
         assertThat(environmentListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val environmentListPageResponse =
-            EnvironmentListPageResponse.builder()
-                .addData(
-                    EnvironmentInfo.builder()
-                        .id("id")
-                        .addFile(
-                            HostedEnvironmentFileId.builder()
-                                .id("id")
-                                .fileId("file_id")
-                                .path("path")
-                                .sizeBytes(0L)
-                                .build()
-                        )
-                        .addPlugin(
-                            HostedPlugin.builder().description("description").name("name").build()
-                        )
-                        .addSkill(
-                            HostedSkillReference.builder()
-                                .description("description")
-                                .name("name")
-                                .skillId("skill_id")
-                                .version("version")
-                                .build()
-                        )
-                        .status(EnvironmentInfo.Status.PENDING)
-                        .type(EnvironmentInfo.Type.OPENAI_HOSTED)
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedEnvironmentListPageResponse =
             jsonMapper.readValue(

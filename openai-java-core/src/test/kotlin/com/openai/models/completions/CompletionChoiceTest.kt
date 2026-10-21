@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class CompletionChoiceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val completionChoice =
             CompletionChoice.builder()
                 .finishReason(CompletionChoice.FinishReason.STOP)
@@ -47,29 +47,8 @@ internal class CompletionChoiceTest {
                     .build()
             )
         assertThat(completionChoice.text()).isEqualTo("text")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val completionChoice =
-            CompletionChoice.builder()
-                .finishReason(CompletionChoice.FinishReason.STOP)
-                .index(0L)
-                .logprobs(
-                    CompletionChoice.Logprobs.builder()
-                        .addTextOffset(0L)
-                        .addTokenLogprob(0.0)
-                        .addToken("string")
-                        .addTopLogprob(
-                            CompletionChoice.Logprobs.TopLogprob.builder()
-                                .putAdditionalProperty("foo", JsonValue.from(0))
-                                .build()
-                        )
-                        .build()
-                )
-                .text("text")
-                .build()
 
         val roundtrippedCompletionChoice =
             jsonMapper.readValue(

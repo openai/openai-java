@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ExternalStorageDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val externalStorageDeleted = ExternalStorageDeleted.builder().id("id").deleted(true).build()
 
         assertThat(externalStorageDeleted.id()).isEqualTo("id")
         assertThat(externalStorageDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val externalStorageDeleted = ExternalStorageDeleted.builder().id("id").deleted(true).build()
 
         val roundtrippedExternalStorageDeleted =
             jsonMapper.readValue(

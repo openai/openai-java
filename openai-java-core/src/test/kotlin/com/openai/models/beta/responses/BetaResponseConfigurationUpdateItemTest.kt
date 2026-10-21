@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseConfigurationUpdateItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseConfigurationUpdateItem =
             BetaResponseConfigurationUpdateItem.builder()
                 .id("cnfu_123")
@@ -37,25 +37,8 @@ internal class BetaResponseConfigurationUpdateItemTest {
                     .effort(BetaResponseConfigurationUpdateItem.Reasoning.Effort.NONE)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseConfigurationUpdateItem =
-            BetaResponseConfigurationUpdateItem.builder()
-                .id("cnfu_123")
-                .agent(
-                    BetaResponseConfigurationUpdateItem.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .reasoning(
-                    BetaResponseConfigurationUpdateItem.Reasoning.builder()
-                        .effort(BetaResponseConfigurationUpdateItem.Reasoning.Effort.NONE)
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseConfigurationUpdateItem =
             jsonMapper.readValue(

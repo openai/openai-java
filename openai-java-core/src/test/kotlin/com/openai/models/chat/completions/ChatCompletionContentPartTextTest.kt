@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionContentPartTextTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionContentPartText =
             ChatCompletionContentPartText.builder()
                 .text("text")
@@ -22,18 +22,8 @@ internal class ChatCompletionContentPartTextTest {
         assertThat(chatCompletionContentPartText.text()).isEqualTo("text")
         assertThat(chatCompletionContentPartText.promptCacheBreakpoint())
             .contains(ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionContentPartText =
-            ChatCompletionContentPartText.builder()
-                .text("text")
-                .promptCacheBreakpoint(
-                    ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedChatCompletionContentPartText =
             jsonMapper.readValue(

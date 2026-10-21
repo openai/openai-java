@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class AgentMcpCallItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentMcpCallItem =
             AgentMcpCallItem.builder()
                 .id("id")
@@ -32,22 +32,8 @@ internal class AgentMcpCallItemTest {
         assertThat(agentMcpCallItem.serverLabel()).isEqualTo("server_label")
         assertThat(agentMcpCallItem.status()).isEqualTo(AgentFunctionCallStatus.IN_PROGRESS)
         assertThat(agentMcpCallItem.turnId()).isEqualTo("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentMcpCallItem =
-            AgentMcpCallItem.builder()
-                .id("id")
-                .arguments(JsonValue.from(mapOf<String, Any>()))
-                .error(JsonValue.from(mapOf<String, Any>()))
-                .name("name")
-                .output(JsonValue.from(mapOf<String, Any>()))
-                .serverLabel("server_label")
-                .status(AgentFunctionCallStatus.IN_PROGRESS)
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentMcpCallItem =
             jsonMapper.readValue(

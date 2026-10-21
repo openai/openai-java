@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ContainerNetworkPolicyAllowlistTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val containerNetworkPolicyAllowlist =
             ContainerNetworkPolicyAllowlist.builder()
                 .addAllowedDomain("string")
@@ -33,22 +33,8 @@ internal class ContainerNetworkPolicyAllowlistTest {
                     .value("x")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val containerNetworkPolicyAllowlist =
-            ContainerNetworkPolicyAllowlist.builder()
-                .addAllowedDomain("string")
-                .addDomainSecret(
-                    ContainerNetworkPolicyDomainSecret.builder()
-                        .domain("x")
-                        .name("x")
-                        .value("x")
-                        .build()
-                )
-                .build()
 
         val roundtrippedContainerNetworkPolicyAllowlist =
             jsonMapper.readValue(

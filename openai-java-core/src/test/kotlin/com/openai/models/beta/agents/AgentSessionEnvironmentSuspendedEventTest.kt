@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionEnvironmentSuspendedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionEnvironmentSuspendedEvent =
             AgentSessionEnvironmentSuspendedEvent.builder()
                 .environment(
@@ -50,31 +50,8 @@ internal class AgentSessionEnvironmentSuspendedEventTest {
         assertThat(agentSessionEnvironmentSuspendedEvent.eventId()).isEqualTo("event_id")
         assertThat(agentSessionEnvironmentSuspendedEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentSessionEnvironmentSuspendedEvent.turnId()).contains("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionEnvironmentSuspendedEvent =
-            AgentSessionEnvironmentSuspendedEvent.builder()
-                .environment(
-                    AgentSessionEnvironmentState.builder()
-                        .id("id")
-                        .error(
-                            AgentSessionEnvironmentState.Error.builder()
-                                .code("code")
-                                .message("message")
-                                .type("type")
-                                .build()
-                        )
-                        .status(AgentSessionEnvironmentState.Status.PENDING)
-                        .type("type")
-                        .build()
-                )
-                .eventId("event_id")
-                .sessionId("session_id")
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentSessionEnvironmentSuspendedEvent =
             jsonMapper.readValue(

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ConversationItemInputAudioTranscriptionDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val conversationItemInputAudioTranscriptionDeltaEvent =
             ConversationItemInputAudioTranscriptionDeltaEvent.builder()
                 .eventId("event_id")
@@ -32,21 +32,8 @@ internal class ConversationItemInputAudioTranscriptionDeltaEventTest {
             .containsExactly(
                 LogProbProperties.builder().token("token").addByte(0L).logprob(0.0).build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val conversationItemInputAudioTranscriptionDeltaEvent =
-            ConversationItemInputAudioTranscriptionDeltaEvent.builder()
-                .eventId("event_id")
-                .itemId("item_id")
-                .contentIndex(0L)
-                .delta("delta")
-                .addLogprob(
-                    LogProbProperties.builder().token("token").addByte(0L).logprob(0.0).build()
-                )
-                .build()
 
         val roundtrippedConversationItemInputAudioTranscriptionDeltaEvent =
             jsonMapper.readValue(

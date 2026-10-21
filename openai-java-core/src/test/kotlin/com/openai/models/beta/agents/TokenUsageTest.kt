@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class TokenUsageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val tokenUsage =
             TokenUsage.builder()
                 .inputTokens(0L)
@@ -31,23 +31,8 @@ internal class TokenUsageTest {
         assertThat(tokenUsage.outputTokensDetails())
             .isEqualTo(TokenUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
         assertThat(tokenUsage.totalTokens()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val tokenUsage =
-            TokenUsage.builder()
-                .inputTokens(0L)
-                .inputTokensDetails(
-                    TokenUsage.InputTokensDetails.builder().cachedTokens(0L).build()
-                )
-                .outputTokens(0L)
-                .outputTokensDetails(
-                    TokenUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
-                )
-                .totalTokens(0L)
-                .build()
 
         val roundtrippedTokenUsage =
             jsonMapper.readValue(

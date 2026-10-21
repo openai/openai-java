@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeErrorEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeErrorEvent =
             RealtimeErrorEvent.builder()
                 .error(
@@ -36,24 +36,8 @@ internal class RealtimeErrorEventTest {
                     .build()
             )
         assertThat(realtimeErrorEvent.eventId()).isEqualTo("event_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeErrorEvent =
-            RealtimeErrorEvent.builder()
-                .error(
-                    RealtimeError.builder()
-                        .message("message")
-                        .type("type")
-                        .code("code")
-                        .eventId("event_id")
-                        .param("param")
-                        .build()
-                )
-                .eventId("event_id")
-                .build()
 
         val roundtrippedRealtimeErrorEvent =
             jsonMapper.readValue(

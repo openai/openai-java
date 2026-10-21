@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class ToolChoiceCustomTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val toolChoiceCustom = ToolChoiceCustom.builder().name("name").build()
 
         assertThat(toolChoiceCustom.name()).isEqualTo("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val toolChoiceCustom = ToolChoiceCustom.builder().name("name").build()
 
         val roundtrippedToolChoiceCustom =
             jsonMapper.readValue(

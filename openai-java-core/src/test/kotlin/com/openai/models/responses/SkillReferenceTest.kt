@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class SkillReferenceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val skillReference = SkillReference.builder().skillId("x").version("version").build()
 
         assertThat(skillReference.skillId()).isEqualTo("x")
         assertThat(skillReference.version()).contains("version")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val skillReference = SkillReference.builder().skillId("x").version("version").build()
 
         val roundtrippedSkillReference =
             jsonMapper.readValue(

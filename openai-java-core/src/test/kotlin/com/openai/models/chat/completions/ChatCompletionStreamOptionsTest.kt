@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionStreamOptionsTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionStreamOptions =
             ChatCompletionStreamOptions.builder()
                 .includeObfuscation(true)
@@ -19,16 +19,8 @@ internal class ChatCompletionStreamOptionsTest {
 
         assertThat(chatCompletionStreamOptions.includeObfuscation()).contains(true)
         assertThat(chatCompletionStreamOptions.includeUsage()).contains(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionStreamOptions =
-            ChatCompletionStreamOptions.builder()
-                .includeObfuscation(true)
-                .includeUsage(true)
-                .build()
 
         val roundtrippedChatCompletionStreamOptions =
             jsonMapper.readValue(

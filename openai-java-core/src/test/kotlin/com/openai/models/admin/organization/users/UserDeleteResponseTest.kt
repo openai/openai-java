@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class UserDeleteResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val userDeleteResponse = UserDeleteResponse.builder().id("id").deleted(true).build()
 
         assertThat(userDeleteResponse.id()).isEqualTo("id")
         assertThat(userDeleteResponse.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val userDeleteResponse = UserDeleteResponse.builder().id("id").deleted(true).build()
 
         val roundtrippedUserDeleteResponse =
             jsonMapper.readValue(

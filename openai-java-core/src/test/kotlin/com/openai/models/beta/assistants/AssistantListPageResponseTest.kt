@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class AssistantListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val assistantListPageResponse =
             AssistantListPageResponse.builder()
                 .addData(
@@ -91,51 +91,8 @@ internal class AssistantListPageResponseTest {
         assertThat(assistantListPageResponse.hasMore()).isEqualTo(false)
         assertThat(assistantListPageResponse.lastId()).isEqualTo("asst_abc456")
         assertThat(assistantListPageResponse.object_()).isEqualTo("list")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val assistantListPageResponse =
-            AssistantListPageResponse.builder()
-                .addData(
-                    Assistant.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .description("description")
-                        .instructions("instructions")
-                        .metadata(
-                            Assistant.Metadata.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .model("model")
-                        .name("name")
-                        .addTool(CodeInterpreterTool.builder().build())
-                        .responseFormatAuto()
-                        .temperature(1.0)
-                        .toolResources(
-                            Assistant.ToolResources.builder()
-                                .codeInterpreter(
-                                    Assistant.ToolResources.CodeInterpreter.builder()
-                                        .addFileId("string")
-                                        .build()
-                                )
-                                .fileSearch(
-                                    Assistant.ToolResources.FileSearch.builder()
-                                        .addVectorStoreId("string")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .topP(1.0)
-                        .build()
-                )
-                .firstId("asst_abc123")
-                .hasMore(false)
-                .lastId("asst_abc456")
-                .object_("list")
-                .build()
 
         val roundtrippedAssistantListPageResponse =
             jsonMapper.readValue(

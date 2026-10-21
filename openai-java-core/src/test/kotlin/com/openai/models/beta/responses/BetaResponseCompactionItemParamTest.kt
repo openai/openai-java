@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseCompactionItemParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseCompactionItemParam =
             BetaResponseCompactionItemParam.builder()
                 .encryptedContent("encrypted_content")
@@ -27,19 +27,8 @@ internal class BetaResponseCompactionItemParamTest {
             .contains(
                 BetaResponseCompactionItemParam.Agent.builder().agentName("agent_name").build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseCompactionItemParam =
-            BetaResponseCompactionItemParam.builder()
-                .encryptedContent("encrypted_content")
-                .id("cmp_123")
-                .agent(
-                    BetaResponseCompactionItemParam.Agent.builder().agentName("agent_name").build()
-                )
-                .build()
 
         val roundtrippedBetaResponseCompactionItemParam =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class MultiGraderTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val multiGrader =
             MultiGrader.builder()
                 .calculateOutput("calculate_output")
@@ -38,24 +38,8 @@ internal class MultiGraderTest {
                 )
             )
         assertThat(multiGrader.name()).isEqualTo("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val multiGrader =
-            MultiGrader.builder()
-                .calculateOutput("calculate_output")
-                .graders(
-                    StringCheckGrader.builder()
-                        .input("input")
-                        .name("name")
-                        .operation(StringCheckGrader.Operation.EQ)
-                        .reference("reference")
-                        .build()
-                )
-                .name("name")
-                .build()
 
         val roundtrippedMultiGrader =
             jsonMapper.readValue(

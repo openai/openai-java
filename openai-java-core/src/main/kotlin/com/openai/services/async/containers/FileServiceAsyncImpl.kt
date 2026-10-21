@@ -16,6 +16,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
+import com.openai.core.http.mapMultipartResponse
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
@@ -54,7 +55,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
         requestOptions: RequestOptions,
     ): CompletableFuture<FileCreateResponse> =
         // post /containers/{container_id}/files
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).mapMultipartResponse { it.parse() }
 
     override fun retrieve(
         params: FileRetrieveParams,
@@ -122,7 +123,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .mapMultipartResponse(request) { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }

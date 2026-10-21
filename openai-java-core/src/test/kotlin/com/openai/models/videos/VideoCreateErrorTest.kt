@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class VideoCreateErrorTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val videoCreateError =
             VideoCreateError.builder()
                 .code("code")
@@ -59,36 +59,8 @@ internal class VideoCreateErrorTest {
             )
         assertThat(videoCreateError.param()).contains("param")
         assertThat(videoCreateError.type()).contains("type")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val videoCreateError =
-            VideoCreateError.builder()
-                .code("code")
-                .message("message")
-                .headers(
-                    VideoCreateError.Headers.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .misalignment(
-                    VideoCreateError.Misalignment.builder()
-                        .detailedExplanation("detailed_explanation")
-                        .errorType(
-                            VideoCreateError.Misalignment.ErrorType
-                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
-                        )
-                        .reviewTarget("review_target")
-                        .steer(
-                            VideoCreateError.Misalignment.Steer.builder().message("message").build()
-                        )
-                        .build()
-                )
-                .param("param")
-                .type("type")
-                .build()
 
         val roundtrippedVideoCreateError =
             jsonMapper.readValue(

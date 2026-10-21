@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AzureExternalStorageProviderTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val azureExternalStorageProvider =
             AzureExternalStorageProvider.builder()
                 .accountName("account_name")
@@ -27,20 +27,8 @@ internal class AzureExternalStorageProviderTest {
         assertThat(azureExternalStorageProvider.resourceGroup()).isEqualTo("resource_group")
         assertThat(azureExternalStorageProvider.subscriptionId()).isEqualTo("subscription_id")
         assertThat(azureExternalStorageProvider.tenantId()).isEqualTo("tenant_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val azureExternalStorageProvider =
-            AzureExternalStorageProvider.builder()
-                .accountName("account_name")
-                .container("container")
-                .region("region")
-                .resourceGroup("resource_group")
-                .subscriptionId("subscription_id")
-                .tenantId("tenant_id")
-                .build()
 
         val roundtrippedAzureExternalStorageProvider =
             jsonMapper.readValue(

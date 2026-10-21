@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseSteerEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseSteerEvent =
             BetaResponseSteerEvent.builder()
                 .input("string")
@@ -20,16 +20,8 @@ internal class BetaResponseSteerEventTest {
         assertThat(betaResponseSteerEvent.input())
             .isEqualTo(BetaResponseSteerInput.ofText("string"))
         assertThat(betaResponseSteerEvent.previousResponseId()).isEqualTo("previous_response_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseSteerEvent =
-            BetaResponseSteerEvent.builder()
-                .input("string")
-                .previousResponseId("previous_response_id")
-                .build()
 
         val roundtrippedBetaResponseSteerEvent =
             jsonMapper.readValue(

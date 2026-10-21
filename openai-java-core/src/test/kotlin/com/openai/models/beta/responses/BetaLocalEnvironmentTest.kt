@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaLocalEnvironmentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaLocalEnvironment =
             BetaLocalEnvironment.builder()
                 .addSkill(
@@ -31,21 +31,8 @@ internal class BetaLocalEnvironmentTest {
                     .path("path")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaLocalEnvironment =
-            BetaLocalEnvironment.builder()
-                .addSkill(
-                    BetaLocalSkill.builder()
-                        .description("description")
-                        .name("name")
-                        .path("path")
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaLocalEnvironment =
             jsonMapper.readValue(

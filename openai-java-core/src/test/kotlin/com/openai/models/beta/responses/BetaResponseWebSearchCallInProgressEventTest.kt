@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseWebSearchCallInProgressEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseWebSearchCallInProgressEvent =
             BetaResponseWebSearchCallInProgressEvent.builder()
                 .itemId("item_id")
@@ -32,22 +32,8 @@ internal class BetaResponseWebSearchCallInProgressEventTest {
                     .agentName("agent_name")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseWebSearchCallInProgressEvent =
-            BetaResponseWebSearchCallInProgressEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .agent(
-                    BetaResponseWebSearchCallInProgressEvent.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseWebSearchCallInProgressEvent =
             jsonMapper.readValue(

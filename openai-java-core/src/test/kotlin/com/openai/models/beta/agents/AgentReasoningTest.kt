@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentReasoningTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentReasoning =
             AgentReasoning.builder()
                 .effort(AgentReasoning.Effort.NONE)
@@ -19,16 +19,8 @@ internal class AgentReasoningTest {
 
         assertThat(agentReasoning.effort()).contains(AgentReasoning.Effort.NONE)
         assertThat(agentReasoning.summary()).contains(AgentReasoning.Summary.CONCISE)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentReasoning =
-            AgentReasoning.builder()
-                .effort(AgentReasoning.Effort.NONE)
-                .summary(AgentReasoning.Summary.CONCISE)
-                .build()
 
         val roundtrippedAgentReasoning =
             jsonMapper.readValue(

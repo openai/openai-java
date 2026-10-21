@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class SessionUsageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionUsage = SessionUsage.builder().seconds(0.0).build()
 
         assertThat(sessionUsage.seconds()).isEqualTo(0.0)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionUsage = SessionUsage.builder().seconds(0.0).build()
 
         val roundtrippedSessionUsage =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RateLimitListRateLimitsPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val rateLimitListRateLimitsPageResponse =
             RateLimitListRateLimitsPageResponse.builder()
                 .addData(
@@ -46,29 +46,8 @@ internal class RateLimitListRateLimitsPageResponseTest {
         assertThat(rateLimitListRateLimitsPageResponse.hasMore()).isEqualTo(true)
         assertThat(rateLimitListRateLimitsPageResponse.firstId()).contains("first_id")
         assertThat(rateLimitListRateLimitsPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val rateLimitListRateLimitsPageResponse =
-            RateLimitListRateLimitsPageResponse.builder()
-                .addData(
-                    ProjectRateLimit.builder()
-                        .id("id")
-                        .maxRequestsPer1Minute(0L)
-                        .maxTokensPer1Minute(0L)
-                        .model("model")
-                        .batch1DayMaxInputTokens(0L)
-                        .maxAudioMegabytesPer1Minute(0L)
-                        .maxImagesPer1Minute(0L)
-                        .maxRequestsPer1Day(0L)
-                        .build()
-                )
-                .hasMore(true)
-                .firstId("first_id")
-                .lastId("last_id")
-                .build()
 
         val roundtrippedRateLimitListRateLimitsPageResponse =
             jsonMapper.readValue(

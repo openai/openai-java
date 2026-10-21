@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ComparisonFilterTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val comparisonFilter =
             ComparisonFilter.builder()
                 .key("key")
@@ -21,17 +21,8 @@ internal class ComparisonFilterTest {
         assertThat(comparisonFilter.key()).isEqualTo("key")
         assertThat(comparisonFilter.type()).isEqualTo(ComparisonFilter.Type.EQ)
         assertThat(comparisonFilter.value()).isEqualTo(ComparisonFilter.Value.ofString("string"))
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val comparisonFilter =
-            ComparisonFilter.builder()
-                .key("key")
-                .type(ComparisonFilter.Type.EQ)
-                .value("string")
-                .build()
 
         val roundtrippedComparisonFilter =
             jsonMapper.readValue(

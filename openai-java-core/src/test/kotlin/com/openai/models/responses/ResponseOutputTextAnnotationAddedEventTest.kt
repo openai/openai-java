@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseOutputTextAnnotationAddedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseOutputTextAnnotationAddedEvent =
             ResponseOutputTextAnnotationAddedEvent.builder()
                 .annotation(
@@ -42,26 +42,8 @@ internal class ResponseOutputTextAnnotationAddedEventTest {
         assertThat(responseOutputTextAnnotationAddedEvent.itemId()).isEqualTo("item_id")
         assertThat(responseOutputTextAnnotationAddedEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseOutputTextAnnotationAddedEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseOutputTextAnnotationAddedEvent =
-            ResponseOutputTextAnnotationAddedEvent.builder()
-                .annotation(
-                    ResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
-                        .fileId("file_id")
-                        .filename("filename")
-                        .index(0L)
-                        .build()
-                )
-                .annotationIndex(0L)
-                .contentIndex(0L)
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseOutputTextAnnotationAddedEvent =
             jsonMapper.readValue(

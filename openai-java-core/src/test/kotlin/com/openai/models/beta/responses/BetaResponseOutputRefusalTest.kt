@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseOutputRefusalTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseOutputRefusal =
             BetaResponseOutputRefusal.builder().refusal("refusal").build()
 
         assertThat(betaResponseOutputRefusal.refusal()).isEqualTo("refusal")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseOutputRefusal =
-            BetaResponseOutputRefusal.builder().refusal("refusal").build()
 
         val roundtrippedBetaResponseOutputRefusal =
             jsonMapper.readValue(

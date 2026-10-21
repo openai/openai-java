@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentBrowserAuthenticationSubmitParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentBrowserAuthenticationSubmitParam =
             AgentBrowserAuthenticationSubmitParam.builder()
                 .addField(
@@ -31,21 +31,8 @@ internal class AgentBrowserAuthenticationSubmitParamTest {
             )
         assertThat(agentBrowserAuthenticationSubmitParam.selectedOption())
             .contains("selected_option")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentBrowserAuthenticationSubmitParam =
-            AgentBrowserAuthenticationSubmitParam.builder()
-                .addField(
-                    AgentBrowserAuthenticationSubmitParam.Field.builder()
-                        .fieldId("field_id")
-                        .value("value")
-                        .build()
-                )
-                .selectedOption("selected_option")
-                .build()
 
         val roundtrippedAgentBrowserAuthenticationSubmitParam =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class InlineSkillTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val inlineSkill =
             InlineSkill.builder()
                 .description("description")
@@ -21,17 +21,8 @@ internal class InlineSkillTest {
         assertThat(inlineSkill.description()).isEqualTo("description")
         assertThat(inlineSkill.name()).isEqualTo("name")
         assertThat(inlineSkill.source()).isEqualTo(InlineSkillSource.builder().data("x").build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val inlineSkill =
-            InlineSkill.builder()
-                .description("description")
-                .name("name")
-                .source(InlineSkillSource.builder().data("x").build())
-                .build()
 
         val roundtrippedInlineSkill =
             jsonMapper.readValue(

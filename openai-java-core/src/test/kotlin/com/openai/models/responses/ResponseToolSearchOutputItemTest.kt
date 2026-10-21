@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseToolSearchOutputItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseToolSearchOutputItem =
             ResponseToolSearchOutputItem.builder()
                 .id("id")
@@ -71,39 +71,8 @@ internal class ResponseToolSearchOutputItemTest {
                 )
             )
         assertThat(responseToolSearchOutputItem.createdBy()).contains("created_by")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseToolSearchOutputItem =
-            ResponseToolSearchOutputItem.builder()
-                .id("id")
-                .callId("call_id")
-                .execution(ResponseToolSearchOutputItem.Execution.SERVER)
-                .status(ResponseToolSearchOutputItem.Status.IN_PROGRESS)
-                .addTool(
-                    FunctionTool.builder()
-                        .name("name")
-                        .parameters(
-                            FunctionTool.Parameters.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .strict(true)
-                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
-                        .async(true)
-                        .deferLoading(true)
-                        .description("description")
-                        .outputSchema(
-                            FunctionTool.OutputSchema.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .build()
-                )
-                .createdBy("created_by")
-                .build()
 
         val roundtrippedResponseToolSearchOutputItem =
             jsonMapper.readValue(

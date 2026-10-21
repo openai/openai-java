@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class DecisionItemCreatedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val decisionItemCreatedEvent =
             DecisionItemCreatedEvent.builder()
                 .eventId("evt_item_1")
@@ -34,23 +34,8 @@ internal class DecisionItemCreatedEventTest {
                     .build()
             )
         assertThat(decisionItemCreatedEvent.clientEventId()).contains("browser_1")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val decisionItemCreatedEvent =
-            DecisionItemCreatedEvent.builder()
-                .eventId("evt_item_1")
-                .item(
-                    DecisionItemCreatedEvent.Item.builder()
-                        .id("msg_browser_1")
-                        .content("string")
-                        .type(DecisionItemCreatedEvent.Item.Type.MESSAGE)
-                        .build()
-                )
-                .clientEventId("browser_1")
-                .build()
 
         val roundtrippedDecisionItemCreatedEvent =
             jsonMapper.readValue(

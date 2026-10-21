@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ReasoningTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val reasoning =
             Reasoning.builder()
                 .context(Reasoning.Context.AUTO)
@@ -25,19 +25,8 @@ internal class ReasoningTest {
         assertThat(reasoning.generateSummary()).contains(Reasoning.GenerateSummary.AUTO)
         assertThat(reasoning.mode()).contains(Reasoning.Mode.STANDARD)
         assertThat(reasoning.summary()).contains(Reasoning.Summary.AUTO)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val reasoning =
-            Reasoning.builder()
-                .context(Reasoning.Context.AUTO)
-                .effort(ReasoningEffort.NONE)
-                .generateSummary(Reasoning.GenerateSummary.AUTO)
-                .mode(Reasoning.Mode.STANDARD)
-                .summary(Reasoning.Summary.AUTO)
-                .build()
 
         val roundtrippedReasoning =
             jsonMapper.readValue(
