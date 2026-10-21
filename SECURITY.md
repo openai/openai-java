@@ -10,8 +10,8 @@ Do not report security vulnerabilities through public GitHub issues, pull reques
 
 This policy covers source code in this repository and the official `com.openai`
 Maven artifacts `openai-java`, `openai-java-core`,
-`openai-java-client-okhttp`, and `openai-java-bedrock`. Supported releases are
-described in the [Java version support policy](docs/version-support-policy.md).
+`openai-java-client-okhttp`, `openai-java-bedrock`, and `openai-java-vertex`.
+Supported releases are described in the [Java version support policy](docs/version-support-policy.md).
 
 ## What to include
 

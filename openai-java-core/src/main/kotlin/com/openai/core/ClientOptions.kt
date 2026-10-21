@@ -17,6 +17,7 @@ import com.openai.core.http.PhantomReachableClosingHttpClient
 import com.openai.core.http.PhantomReachableClosingHttpRequestAuthenticator
 import com.openai.core.http.QueryParams
 import com.openai.core.http.RetryingHttpClient
+import com.openai.core.http.TimedAuthentication
 import com.openai.core.http.WorkloadIdentityHttpClient
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.Credential
@@ -212,9 +213,12 @@ private constructor(
             >()
         trackWebSocketLifetime(result)
         if (result.isCancelled) return result
+        val effectiveOptions = options.applyDefaults(RequestOptions.from(this))
+        val timed = TimedAuthentication.start(httpRequestAuthenticator, effectiveOptions)
         val authenticated =
             try {
                 when {
+                    timed != null -> timed.authenticateAsync(request)
                     httpRequestAuthenticator != null ->
                         httpRequestAuthenticator.authenticateAsync(request)
                     credential is WorkloadIdentityCredential &&
@@ -250,7 +254,7 @@ private constructor(
                     val pending =
                         transport.connectWebSocket(
                             prepared,
-                            options.applyDefaults(RequestOptions.from(this)),
+                            timed?.remainingOptions() ?: effectiveOptions,
                             maxMessageBytes,
                             listener,
                         )
@@ -403,7 +407,7 @@ private constructor(
         fun httpRequestAuthenticator(httpRequestAuthenticator: HttpRequestAuthenticator?) = apply {
             this.httpRequestAuthenticator =
                 if (httpRequestAuthenticator == null) null
-                else PhantomReachableClosingHttpRequestAuthenticator(httpRequestAuthenticator)
+                else PhantomReachableClosingHttpRequestAuthenticator.wrap(httpRequestAuthenticator)
         }
 
         /**

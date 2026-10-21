@@ -13,8 +13,10 @@ service. Applications use the transport-neutral core directly or through the
 OkHttp transport to construct authenticated requests, send them to an
 application-selected API endpoint, and parse ordinary JSON, streaming SSE, and
 webhook responses. The optional Bedrock artifact selects and signs AWS/Bedrock
-requests. API-side authentication, authorization, tenant isolation, quotas, and
-webhook delivery are services outside this repository.
+requests. The optional Vertex artifact authenticates Responses requests with Google
+credentials and sends them to the configured endpoint. API-side authentication,
+authorization, tenant isolation, quotas, and webhook delivery are services outside this
+repository.
 
 | Component | Purpose and important flow | Evidence |
 | --- | --- | --- |
@@ -22,6 +24,7 @@ webhook delivery are services outside this repository.
 | openai-java-client-okhttp | Default HTTP transport, caller-configurable proxy, redirects, timeouts, TLS, and hostname verification. | CONTRIBUTING.md:73-75; openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt:54-65; openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OkHttpClient.kt:180-242 |
 | openai-java | Umbrella artifact exposing core and OkHttp APIs without its own logic. | CONTRIBUTING.md:76-78; openai-java/build.gradle.kts:1-8 |
 | openai-java-bedrock | Optional Bedrock endpoint selection and bearer or AWS SigV4 authentication. | CONTRIBUTING.md:79-80; openai-java-bedrock/src/main/kotlin/com/openai/bedrock/BedrockAuth.kt:64-215 |
+| openai-java-vertex | Optional Vertex endpoint selection and Google bearer authentication. | openai-java-vertex/README.md; openai-java-vertex/src/main/kotlin/com/openai/client/okhttp/VertexOpenAIOkHttpClient.kt |
 | Build and release workflows | Unprivileged PR validation and separately gated main-only release/publish jobs. | .github/workflows/ci.yml:3-24; .github/workflows/create-releases.yml:3-25 |
 
 Most SDK sources are generated, but generated and hand-written tracked files are
@@ -32,8 +35,8 @@ openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt:1-5)
 ### Maven artifact provenance
 
 Official Maven Central releases include GitHub artifact attestations for the
-openai-java, openai-java-core, openai-java-client-okhttp, and openai-java-bedrock
-binary JARs. Each attestation binds an artifact's digest to the trusted release
+openai-java, openai-java-core, openai-java-client-okhttp, openai-java-bedrock, and
+openai-java-vertex binary JARs. Each attestation binds an artifact's digest to the trusted release
 workflow, source repository, and commit using short-lived GitHub OpenID Connect
 credentials.
 
@@ -51,6 +54,7 @@ not exposed to the attestation action.
 | Generic workload identity | Subject token and exchanged access token | Caller-selected provider; Kubernetes provider defaults its token path | Fixed exchange URL https://auth.openai.com/oauth/token; Kubernetes default /var/run/secrets/kubernetes.io/serviceaccount/token | Auth endpoint, then configured API host | Provider selection and auth wrapper | openai-java-core/src/main/kotlin/com/openai/auth/WorkloadIdentityAuth.kt:24-34; openai-java-core/src/main/kotlin/com/openai/auth/K8sServiceAccountTokenProvider.kt:14-60; openai-java-core/src/main/kotlin/com/openai/core/http/WorkloadIdentityHttpClient.kt:13-54 |
 | X.509 workload identity | Caller-held private-key capability | Caller supplies a fixed-alias key manager | Approved issuer and mTLS API HTTPS hosts | mtls.auth.openai.com and approved mTLS API hosts | HTTPS/443 allowlist, fixed alias, direct connection, redirects disabled | openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/X509Transport.kt:17-28; openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/X509Transport.kt:110-145; openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/X509WorkloadIdentityAuthenticator.kt:61-75 |
 | Bedrock client | Bearer credential or AWS signing capability | Explicit options, environment, profile/provider, or AWS default chain | Explicit base URL or derived regional /openai/v1 endpoint | Configured or derived Bedrock host | Auth-mode exclusivity and canonical endpoint checks | openai-java-bedrock/src/main/kotlin/com/openai/bedrock/BedrockAuth.kt:64-215; openai-java-bedrock/src/main/kotlin/com/openai/bedrock/BedrockAuth.kt:303-318 |
+| Vertex client | Google bearer credential and optional quota project | Application Default Credentials, caller-supplied Google credentials, or an application token provider | Derived Vertex HTTPS root or caller-configured HTTP(S) root | Configured origin receives credentials and request data | Same-origin checks, conflicting-auth rejection, and disabled redirects; the caller must protect a custom endpoint in transit | openai-java-vertex/README.md; openai-java-vertex/src/main/kotlin/com/openai/vertex/VertexAuthenticator.kt |
 | PR and merge-queue CI | Cross-run Gradle cache and same-run build output | Cache is read-only outside default branch; build job uploads exact-run artifact | GitHub-scoped cache plus artifact ID/digest-bound handoff | Jobs in the same unprivileged run | GitHub cache scope; immutable artifact and digest mismatch rejection | .github/workflows/ci.yml:8-20; .github/workflows/ci.yml:92-124; .github/workflows/ci.yml:152-166 |
 | Maven Central publish | Release source, private Gradle home, publishing secrets, and attestation authority | Verified source SHA/tag; publish environment injects secrets only in publish job | runner.temp/trusted-release-gradle-run_id-run_attempt, created fresh with mode 700; cross-run cache disabled | Publish job, Maven Central, and GitHub attestation service | Main/release gating, protected environment, source verification, isolated cache | .github/workflows/create-releases.yml:241-290; .github/workflows/create-releases.yml:324-424; .github/workflows/create-releases.yml:426-469 |
 
@@ -58,7 +62,7 @@ not exposed to the attestation action.
 
 ### Protected assets and security objectives
 
-- API and admin keys, webhook secrets, AWS credentials and signatures,
+- API and admin keys, webhook secrets, AWS credentials and signatures, Google bearer tokens,
   workload-identity subject/access tokens, X.509 private-key capabilities,
   customer request/response bodies, and destination integrity must not reach an
   unauthorized network destination or uncontrolled diagnostic sink.

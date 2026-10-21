@@ -7,6 +7,9 @@ public final class OkHttpRuntimeProbe {
     private OkHttpRuntimeProbe() {}
 
     public static void main(String[] args) {
+        if (OkHttpRuntimeProbe.class.getResource("/com/google/auth/oauth2/GoogleCredentials.class") != null) {
+            throw new IllegalStateException("Google authentication must remain in the optional Vertex artifact");
+        }
         OpenAIClient client =
                 OpenAIOkHttpClient.builder().apiKey("runtime-probe").build();
         try {
