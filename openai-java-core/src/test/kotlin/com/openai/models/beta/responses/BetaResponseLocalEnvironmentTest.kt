@@ -10,14 +10,10 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseLocalEnvironmentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseLocalEnvironment = BetaResponseLocalEnvironment.builder().build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseLocalEnvironment = BetaResponseLocalEnvironment.builder().build()
 
         val roundtrippedBetaResponseLocalEnvironment =
             jsonMapper.readValue(

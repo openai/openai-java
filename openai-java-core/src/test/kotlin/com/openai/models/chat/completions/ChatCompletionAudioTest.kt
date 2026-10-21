@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionAudioTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionAudio =
             ChatCompletionAudio.builder()
                 .id("id")
@@ -23,18 +23,8 @@ internal class ChatCompletionAudioTest {
         assertThat(chatCompletionAudio.data()).isEqualTo("data")
         assertThat(chatCompletionAudio.expiresAt()).isEqualTo(0L)
         assertThat(chatCompletionAudio.transcript()).isEqualTo("transcript")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionAudio =
-            ChatCompletionAudio.builder()
-                .id("id")
-                .data("data")
-                .expiresAt(0L)
-                .transcript("transcript")
-                .build()
 
         val roundtrippedChatCompletionAudio =
             jsonMapper.readValue(

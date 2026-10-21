@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseOutputAudioTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseOutputAudio =
             BetaResponseOutputAudio.builder().data("data").transcript("transcript").build()
 
         assertThat(betaResponseOutputAudio.data()).isEqualTo("data")
         assertThat(betaResponseOutputAudio.transcript()).isEqualTo("transcript")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseOutputAudio =
-            BetaResponseOutputAudio.builder().data("data").transcript("transcript").build()
 
         val roundtrippedBetaResponseOutputAudio =
             jsonMapper.readValue(

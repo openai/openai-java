@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseFormatTextJsonSchemaConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseFormatTextJsonSchemaConfig =
             ResponseFormatTextJsonSchemaConfig.builder()
                 .name("name")
@@ -33,22 +33,8 @@ internal class ResponseFormatTextJsonSchemaConfigTest {
             )
         assertThat(responseFormatTextJsonSchemaConfig.description()).contains("description")
         assertThat(responseFormatTextJsonSchemaConfig.strict()).contains(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseFormatTextJsonSchemaConfig =
-            ResponseFormatTextJsonSchemaConfig.builder()
-                .name("name")
-                .schema(
-                    ResponseFormatTextJsonSchemaConfig.Schema.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .description("description")
-                .strict(true)
-                .build()
 
         val roundtrippedResponseFormatTextJsonSchemaConfig =
             jsonMapper.readValue(

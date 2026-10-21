@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseContentPartAddedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseContentPartAddedEvent =
             BetaResponseContentPartAddedEvent.builder()
                 .contentIndex(0L)
@@ -87,49 +87,8 @@ internal class BetaResponseContentPartAddedEventTest {
             .contains(
                 BetaResponseContentPartAddedEvent.Agent.builder().agentName("agent_name").build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseContentPartAddedEvent =
-            BetaResponseContentPartAddedEvent.builder()
-                .contentIndex(0L)
-                .itemId("item_id")
-                .outputIndex(0L)
-                .part(
-                    BetaResponseOutputText.builder()
-                        .addAnnotation(
-                            BetaResponseOutputText.Annotation.FileCitation.builder()
-                                .fileId("file_id")
-                                .filename("filename")
-                                .index(0L)
-                                .build()
-                        )
-                        .text("text")
-                        .addLogprob(
-                            BetaResponseOutputText.Logprob.builder()
-                                .token("token")
-                                .addByte(0L)
-                                .logprob(0.0)
-                                .addTopLogprob(
-                                    BetaResponseOutputText.Logprob.TopLogprob.builder()
-                                        .token("token")
-                                        .addByte(0L)
-                                        .logprob(0.0)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .sequenceNumber(0L)
-                .agent(
-                    BetaResponseContentPartAddedEvent.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseContentPartAddedEvent =
             jsonMapper.readValue(

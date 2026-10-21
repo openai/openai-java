@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseCustomToolCallItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseCustomToolCallItem =
             ResponseCustomToolCallItem.builder()
                 .callId("call_id")
@@ -35,23 +35,8 @@ internal class ResponseCustomToolCallItemTest {
         assertThat(responseCustomToolCallItem.status())
             .isEqualTo(ResponseCustomToolCallItem.Status.IN_PROGRESS)
         assertThat(responseCustomToolCallItem.createdBy()).contains("created_by")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseCustomToolCallItem =
-            ResponseCustomToolCallItem.builder()
-                .callId("call_id")
-                .input("input")
-                .name("name")
-                .id("id")
-                .async(true)
-                .callerDirect()
-                .namespace("namespace")
-                .status(ResponseCustomToolCallItem.Status.IN_PROGRESS)
-                .createdBy("created_by")
-                .build()
 
         val roundtrippedResponseCustomToolCallItem =
             jsonMapper.readValue(

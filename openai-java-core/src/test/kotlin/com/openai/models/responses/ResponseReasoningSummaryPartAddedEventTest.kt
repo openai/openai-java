@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseReasoningSummaryPartAddedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseReasoningSummaryPartAddedEvent =
             ResponseReasoningSummaryPartAddedEvent.builder()
                 .itemId("item_id")
@@ -26,19 +26,8 @@ internal class ResponseReasoningSummaryPartAddedEventTest {
             .isEqualTo(ResponseReasoningSummaryPartAddedEvent.Part.builder().text("text").build())
         assertThat(responseReasoningSummaryPartAddedEvent.sequenceNumber()).isEqualTo(0L)
         assertThat(responseReasoningSummaryPartAddedEvent.summaryIndex()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseReasoningSummaryPartAddedEvent =
-            ResponseReasoningSummaryPartAddedEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .part(ResponseReasoningSummaryPartAddedEvent.Part.builder().text("text").build())
-                .sequenceNumber(0L)
-                .summaryIndex(0L)
-                .build()
 
         val roundtrippedResponseReasoningSummaryPartAddedEvent =
             jsonMapper.readValue(

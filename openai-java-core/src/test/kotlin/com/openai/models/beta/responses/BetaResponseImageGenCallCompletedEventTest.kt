@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseImageGenCallCompletedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseImageGenCallCompletedEvent =
             BetaResponseImageGenCallCompletedEvent.builder()
                 .itemId("item_id")
@@ -32,22 +32,8 @@ internal class BetaResponseImageGenCallCompletedEventTest {
                     .agentName("agent_name")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseImageGenCallCompletedEvent =
-            BetaResponseImageGenCallCompletedEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .agent(
-                    BetaResponseImageGenCallCompletedEvent.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseImageGenCallCompletedEvent =
             jsonMapper.readValue(

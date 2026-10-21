@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class VoiceConsentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val voiceConsent =
             VoiceConsent.builder()
                 .id("cons_1234")
@@ -23,18 +23,8 @@ internal class VoiceConsentTest {
         assertThat(voiceConsent.createdAt()).isEqualTo(0L)
         assertThat(voiceConsent.language()).isEqualTo("language")
         assertThat(voiceConsent.name()).isEqualTo("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val voiceConsent =
-            VoiceConsent.builder()
-                .id("cons_1234")
-                .createdAt(0L)
-                .language("language")
-                .name("name")
-                .build()
 
         val roundtrippedVoiceConsent =
             jsonMapper.readValue(

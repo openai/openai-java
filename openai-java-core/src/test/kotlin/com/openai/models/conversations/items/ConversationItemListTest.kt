@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class ConversationItemListTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val conversationItemList =
             ConversationItemList.builder()
                 .addData(
@@ -58,33 +58,8 @@ internal class ConversationItemListTest {
         assertThat(conversationItemList.firstId()).isEqualTo("first_id")
         assertThat(conversationItemList.hasMore()).isEqualTo(true)
         assertThat(conversationItemList.lastId()).isEqualTo("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val conversationItemList =
-            ConversationItemList.builder()
-                .addData(
-                    Message.builder()
-                        .id("id")
-                        .addContent(
-                            ResponseInputText.builder()
-                                .text("text")
-                                .promptCacheBreakpoint(
-                                    ResponseInputText.PromptCacheBreakpoint.builder().build()
-                                )
-                                .build()
-                        )
-                        .role(Message.Role.UNKNOWN)
-                        .status(Message.Status.IN_PROGRESS)
-                        .phase(Message.Phase.COMMENTARY)
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedConversationItemList =
             jsonMapper.readValue(

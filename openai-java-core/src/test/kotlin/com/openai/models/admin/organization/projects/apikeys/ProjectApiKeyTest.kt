@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ProjectApiKeyTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectApiKey =
             ProjectApiKey.builder()
                 .id("id")
@@ -75,43 +75,8 @@ internal class ProjectApiKeyTest {
             .isEqualTo(ProjectApiKey.OwnerProjectAccess.ACTIVE)
         assertThat(projectApiKey.redactedValue()).isEqualTo("redacted_value")
         assertThat(projectApiKey.expiresAt()).contains(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectApiKey =
-            ProjectApiKey.builder()
-                .id("id")
-                .createdAt(0L)
-                .lastUsedAt(0L)
-                .name("name")
-                .owner(
-                    ProjectApiKey.Owner.builder()
-                        .serviceAccount(
-                            ProjectApiKey.Owner.ServiceAccount.builder()
-                                .id("id")
-                                .createdAt(0L)
-                                .name("name")
-                                .role("role")
-                                .build()
-                        )
-                        .type(ProjectApiKey.Owner.Type.USER)
-                        .user(
-                            ProjectApiKey.Owner.User.builder()
-                                .id("id")
-                                .createdAt(0L)
-                                .email("email")
-                                .name("name")
-                                .role("role")
-                                .build()
-                        )
-                        .build()
-                )
-                .ownerProjectAccess(ProjectApiKey.OwnerProjectAccess.ACTIVE)
-                .redactedValue("redacted_value")
-                .expiresAt(0L)
-                .build()
 
         val roundtrippedProjectApiKey =
             jsonMapper.readValue(

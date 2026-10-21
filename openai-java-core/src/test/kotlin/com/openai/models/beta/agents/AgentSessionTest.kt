@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSession =
             AgentSession.builder()
                 .id("id")
@@ -217,114 +217,8 @@ internal class AgentSessionTest {
         assertThat(agentSession.vaultIds()).containsExactly("string")
         assertThat(agentSession.spendControl())
             .contains(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSession =
-            AgentSession.builder()
-                .id("id")
-                .agent(
-                    AgentSession.Agent.builder()
-                        .id("id")
-                        .instructions("instructions")
-                        .model("model")
-                        .multiAgent(
-                            MultiAgentConfig.builder()
-                                .enabled(true)
-                                .maxConcurrentSubagents(1L)
-                                .build()
-                        )
-                        .name("name")
-                        .reasoning(
-                            AgentReasoning.builder()
-                                .effort(AgentReasoning.Effort.NONE)
-                                .summary(AgentReasoning.Summary.CONCISE)
-                                .build()
-                        )
-                        .serviceTier(AgentSession.Agent.ServiceTier.AUTO)
-                        .text(
-                            AgentText.builder()
-                                .formatText()
-                                .verbosity(AgentText.Verbosity.LOW)
-                                .build()
-                        )
-                        .addTool(
-                            AgentTool.Function.builder()
-                                .deferLoading(true)
-                                .description("description")
-                                .name("name")
-                                .parameters(
-                                    AgentTool.Function.Parameters.builder()
-                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .createdAt(0L)
-                .environmentNone()
-                .error("error")
-                .lastActiveAt(0L)
-                .metadata(
-                    AgentSession.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .addRequiredAction(
-                    AgentSession.RequiredAction.ComputerUseApprovalRequest.builder()
-                        .request(
-                            AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                .BrowserAuthentication
-                                .builder()
-                                .credentialOrigin("credential_origin")
-                                .addField(
-                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                        .BrowserAuthentication
-                                        .Field
-                                        .builder()
-                                        .id("id")
-                                        .label("label")
-                                        .required(true)
-                                        .type("type")
-                                        .build()
-                                )
-                                .addOption(
-                                    AgentSession.RequiredAction.ComputerUseApprovalRequest.Request
-                                        .BrowserAuthentication
-                                        .Option
-                                        .builder()
-                                        .id("id")
-                                        .addFieldId("string")
-                                        .label("label")
-                                        .build()
-                                )
-                                .reason("reason")
-                                .build()
-                        )
-                        .requestId("request_id")
-                        .turnId("turn_id")
-                        .build()
-                )
-                .status(AgentSession.Status.IDLE)
-                .usage(
-                    TokenUsage.builder()
-                        .inputTokens(0L)
-                        .inputTokensDetails(
-                            TokenUsage.InputTokensDetails.builder().cachedTokens(0L).build()
-                        )
-                        .outputTokens(0L)
-                        .outputTokensDetails(
-                            TokenUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
-                        )
-                        .totalTokens(0L)
-                        .build()
-                )
-                .addVaultId("string")
-                .spendControl(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
-                .build()
 
         val roundtrippedAgentSession =
             jsonMapper.readValue(

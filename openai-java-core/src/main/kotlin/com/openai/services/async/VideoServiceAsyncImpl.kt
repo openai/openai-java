@@ -15,6 +15,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
+import com.openai.core.http.mapMultipartResponse
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
@@ -57,7 +58,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
         // post /videos
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).mapMultipartResponse { it.parse() }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun retrieve(
@@ -89,7 +90,9 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<VideoCreateCharacterResponse> =
         // post /videos/characters
-        withRawResponse().createCharacter(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().createCharacter(params, requestOptions).mapMultipartResponse {
+            it.parse()
+        }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun downloadContent(
@@ -105,7 +108,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
         // post /videos/edits
-        withRawResponse().edit(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().edit(params, requestOptions).mapMultipartResponse { it.parse() }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun extend(
@@ -113,7 +116,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
         // post /videos/extensions
-        withRawResponse().extend(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().extend(params, requestOptions).mapMultipartResponse { it.parse() }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     override fun getCharacter(
@@ -129,7 +132,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
         // post /videos/{video_id}/remix
-        withRawResponse().remix(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().remix(params, requestOptions).mapMultipartResponse { it.parse() }
 
     @Deprecated("The Sora API is scheduled to permanently shut down on September 24, 2026.")
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -167,7 +170,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .mapMultipartResponse(request) { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
@@ -322,7 +325,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .mapMultipartResponse(request) { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createCharacterHandler.handle(it) }
@@ -383,7 +386,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .mapMultipartResponse(request) { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { editHandler.handle(it) }
@@ -418,7 +421,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .mapMultipartResponse(request) { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { extendHandler.handle(it) }
@@ -494,7 +497,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .mapMultipartResponse(request) { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { remixHandler.handle(it) }

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionContentPartImageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionContentPartImage =
             ChatCompletionContentPartImage.builder()
                 .imageUrl(
@@ -33,23 +33,8 @@ internal class ChatCompletionContentPartImageTest {
             )
         assertThat(chatCompletionContentPartImage.promptCacheBreakpoint())
             .contains(ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionContentPartImage =
-            ChatCompletionContentPartImage.builder()
-                .imageUrl(
-                    ChatCompletionContentPartImage.ImageUrl.builder()
-                        .url("https://example.com")
-                        .detail(ChatCompletionContentPartImage.ImageUrl.Detail.AUTO)
-                        .build()
-                )
-                .promptCacheBreakpoint(
-                    ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedChatCompletionContentPartImage =
             jsonMapper.readValue(

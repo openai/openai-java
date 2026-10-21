@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SessionErrorTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionError =
             SessionError.builder()
                 .code("code")
@@ -23,18 +23,8 @@ internal class SessionErrorTest {
         assertThat(sessionError.message()).isEqualTo("message")
         assertThat(sessionError.param()).contains("param")
         assertThat(sessionError.type()).isEqualTo("type")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionError =
-            SessionError.builder()
-                .code("code")
-                .message("message")
-                .param("param")
-                .type("type")
-                .build()
 
         val roundtrippedSessionError =
             jsonMapper.readValue(

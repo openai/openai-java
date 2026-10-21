@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class InputAudioBufferSpeechStoppedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val inputAudioBufferSpeechStoppedEvent =
             InputAudioBufferSpeechStoppedEvent.builder()
                 .audioEndMs(0L)
@@ -21,17 +21,8 @@ internal class InputAudioBufferSpeechStoppedEventTest {
         assertThat(inputAudioBufferSpeechStoppedEvent.audioEndMs()).isEqualTo(0L)
         assertThat(inputAudioBufferSpeechStoppedEvent.eventId()).isEqualTo("event_id")
         assertThat(inputAudioBufferSpeechStoppedEvent.itemId()).isEqualTo("item_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val inputAudioBufferSpeechStoppedEvent =
-            InputAudioBufferSpeechStoppedEvent.builder()
-                .audioEndMs(0L)
-                .eventId("event_id")
-                .itemId("item_id")
-                .build()
 
         val roundtrippedInputAudioBufferSpeechStoppedEvent =
             jsonMapper.readValue(

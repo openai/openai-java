@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SafetyAlertTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val safetyAlert =
             SafetyAlert.builder()
                 .id("id")
@@ -34,23 +34,8 @@ internal class SafetyAlertTest {
         assertThat(safetyAlert.requestPaused()).isEqualTo(true)
         assertThat(safetyAlert.responseId()).isEqualTo("response_id")
         assertThat(safetyAlert.detailedExplanation()).contains("detailed_explanation")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val safetyAlert =
-            SafetyAlert.builder()
-                .id("id")
-                .createdAt(0L)
-                .errorType(SafetyAlert.ErrorType.POTENTIALLY_UNINTENDED_DATA_TRANSFER)
-                .model("model")
-                .reason("reason")
-                .requestId("request_id")
-                .requestPaused(true)
-                .responseId("response_id")
-                .detailedExplanation("detailed_explanation")
-                .build()
 
         val roundtrippedSafetyAlert =
             jsonMapper.readValue(

@@ -10,20 +10,15 @@ import org.junit.jupiter.api.Test
 internal class DecisionChoiceOptionTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val decisionChoiceOption =
             DecisionChoiceOption.builder().value("string").description("description").build()
 
         assertThat(decisionChoiceOption.value())
             .isEqualTo(DecisionChoiceOption.Value.ofString("string"))
         assertThat(decisionChoiceOption.description()).contains("description")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val decisionChoiceOption =
-            DecisionChoiceOption.builder().value("string").description("description").build()
 
         val roundtrippedDecisionChoiceOption =
             jsonMapper.readValue(

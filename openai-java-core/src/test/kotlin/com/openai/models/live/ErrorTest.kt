@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ErrorTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val error =
             Error.builder()
                 .code("code")
@@ -25,19 +25,8 @@ internal class ErrorTest {
         assertThat(error.type()).isEqualTo("type")
         assertThat(error.clientEventId()).contains("client_event_id")
         assertThat(error.param()).contains("param")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val error =
-            Error.builder()
-                .code("code")
-                .message("message")
-                .type("type")
-                .clientEventId("client_event_id")
-                .param("param")
-                .build()
 
         val roundtrippedError =
             jsonMapper.readValue(jsonMapper.writeValueAsString(error), jacksonTypeRef<Error>())

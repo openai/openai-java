@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ContentProvenanceCheckTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val contentProvenanceCheck =
             ContentProvenanceCheck.builder()
                 .createdAt(0L)
@@ -41,25 +41,8 @@ internal class ContentProvenanceCheckTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val contentProvenanceCheck =
-            ContentProvenanceCheck.builder()
-                .createdAt(0L)
-                .object_(ContentProvenanceCheck.Object.CONTENT_PROVENANCE_CHECK)
-                .addResult(
-                    ContentProvenanceCheck.Result.C2pa.builder()
-                        .generatedAt("generated_at")
-                        .issuer("issuer")
-                        .model("model")
-                        .outcome(ContentProvenanceCheck.Result.C2pa.Outcome.DETECTED)
-                        .validationState(ContentProvenanceCheck.Result.C2pa.ValidationState.TRUSTED)
-                        .build()
-                )
-                .build()
 
         val roundtrippedContentProvenanceCheck =
             jsonMapper.readValue(

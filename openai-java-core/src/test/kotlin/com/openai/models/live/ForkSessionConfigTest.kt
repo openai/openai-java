@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ForkSessionConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val forkSessionConfig =
             ForkSessionConfig.builder()
                 .audio(
@@ -139,77 +139,8 @@ internal class ForkSessionConfigTest {
                     .build()
             )
         assertThat(forkSessionConfig.store()).contains(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val forkSessionConfig =
-            ForkSessionConfig.builder()
-                .audio(
-                    ForkSessionConfig.Audio.builder()
-                        .audioPcmFormat(AudioFormat.AudioPcm.Rate._16000)
-                        .build()
-                )
-                .client(
-                    ClientConfig.builder()
-                        .dataChannel(
-                            DataChannelConfig.builder()
-                                .allowedClientEventsOfStrings(listOf("string"))
-                                .allowedServerEventsAll()
-                                .build()
-                        )
-                        .build()
-                )
-                .delegation(
-                    ForkSessionConfig.Delegation.builder()
-                        .responses(
-                            ResponsesDelegationUpdateConfig.builder()
-                                .instructions("instructions")
-                                .maxOutputTokens(16L)
-                                .model("model")
-                                .parallelToolCalls(true)
-                                .reasoning(
-                                    ResponsesDelegationUpdateConfig.Reasoning.builder()
-                                        .effort(
-                                            ResponsesDelegationUpdateConfig.Reasoning.Effort.NONE
-                                        )
-                                        .summary(
-                                            ResponsesDelegationUpdateConfig.Reasoning.Summary
-                                                .CONCISE
-                                        )
-                                        .build()
-                                )
-                                .serviceTier(ResponsesDelegationUpdateConfig.ServiceTier.AUTO)
-                                .text(
-                                    ResponsesDelegationUpdateConfig.Text.builder()
-                                        .verbosity(
-                                            ResponsesDelegationUpdateConfig.Text.Verbosity.LOW
-                                        )
-                                        .build()
-                                )
-                                .toolChoice(
-                                    ResponsesDelegationUpdateConfig.ToolChoice.LiveToolChoiceEnum
-                                        .AUTO
-                                )
-                                .addTool(
-                                    FunctionTool.builder()
-                                        .name("name")
-                                        .description("description")
-                                        .parameters(
-                                            FunctionTool.Parameters.builder()
-                                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                                .build()
-                                        )
-                                        .strict(true)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .store(true)
-                .build()
 
         val roundtrippedForkSessionConfig =
             jsonMapper.readValue(

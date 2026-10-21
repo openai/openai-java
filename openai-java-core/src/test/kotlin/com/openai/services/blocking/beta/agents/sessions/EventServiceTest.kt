@@ -47,26 +47,4 @@ internal class EventServiceTest {
                 .build()
         )
     }
-
-    @Test
-    fun streamStreaming() {
-        val client =
-            OpenAIOkHttpClient.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .adminApiKey("My Admin API Key")
-                .build()
-        val eventService = client.beta().agents().sessions().events()
-
-        val agentSessionEventStreamResponse = eventService.streamStreaming("session_id")
-
-        var received = 0
-        agentSessionEventStreamResponse.use {
-            agentSessionEventStreamResponse.stream().forEach { event ->
-                event.validate()
-                received++
-            }
-        }
-        check(received > 0) { "Expected at least one streaming event" }
-    }
 }

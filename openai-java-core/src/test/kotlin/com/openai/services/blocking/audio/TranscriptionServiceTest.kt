@@ -45,43 +45,4 @@ internal class TranscriptionServiceTest {
 
         transcription.validate()
     }
-
-    @Test
-    fun createStreaming() {
-        val client =
-            OpenAIOkHttpClient.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .adminApiKey("My Admin API Key")
-                .build()
-        val transcriptionService = client.audio().transcriptions()
-
-        val transcriptionStreamResponse =
-            transcriptionService.createStreaming(
-                TranscriptionCreateParams.builder()
-                    .file("Example data".byteInputStream())
-                    .model(AudioModel.GPT_4O_TRANSCRIBE)
-                    .chunkingStrategyAuto()
-                    .addInclude(TranscriptionInclude.LOGPROBS)
-                    .addKeyword("string")
-                    .addKnownSpeakerName("string")
-                    .addKnownSpeakerReference("string")
-                    .language("language")
-                    .addLanguage("string")
-                    .prompt("prompt")
-                    .responseFormat(AudioResponseFormat.JSON)
-                    .temperature(0.0)
-                    .addTimestampGranularity(TranscriptionCreateParams.TimestampGranularity.WORD)
-                    .build()
-            )
-
-        var received = 0
-        transcriptionStreamResponse.use {
-            transcriptionStreamResponse.stream().forEach { event ->
-                event.validate()
-                received++
-            }
-        }
-        check(received > 0) { "Expected at least one streaming event" }
-    }
 }

@@ -21,6 +21,7 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
 import com.openai.core.http.json
 import com.openai.core.http.map
+import com.openai.core.http.mapMultipartResponse
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
@@ -53,14 +54,16 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> =
         // post /images/variations
-        withRawResponse().createVariation(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().createVariation(params, requestOptions).mapMultipartResponse {
+            it.parse()
+        }
 
     override fun edit(
         params: ImageEditParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> =
         // post /images/edits
-        withRawResponse().edit(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().edit(params, requestOptions).mapMultipartResponse { it.parse() }
 
     override fun editStreaming(
         params: ImageEditParams,
@@ -69,7 +72,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         // post /images/edits
         withRawResponse()
             .editStreaming(params, requestOptions)
-            .thenApply { it.parse() }
+            .mapMultipartResponse { it.parse() }
             .toAsync(clientOptions.streamHandlerExecutor)
 
     override fun generate(
@@ -125,7 +128,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .mapMultipartResponse(request) { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createVariationHandler.handle(it) }
@@ -160,7 +163,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .mapMultipartResponse(request) { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { editHandler.handle(it) }
@@ -201,7 +204,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .mapMultipartResponse(request) { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .let { editStreamingHandler.handle(it) }

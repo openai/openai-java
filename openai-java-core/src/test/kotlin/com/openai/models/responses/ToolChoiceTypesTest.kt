@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ToolChoiceTypesTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val toolChoiceTypes =
             ToolChoiceTypes.builder().type(ToolChoiceTypes.Type.FILE_SEARCH).build()
 
         assertThat(toolChoiceTypes.type()).isEqualTo(ToolChoiceTypes.Type.FILE_SEARCH)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val toolChoiceTypes =
-            ToolChoiceTypes.builder().type(ToolChoiceTypes.Type.FILE_SEARCH).build()
 
         val roundtrippedToolChoiceTypes =
             jsonMapper.readValue(

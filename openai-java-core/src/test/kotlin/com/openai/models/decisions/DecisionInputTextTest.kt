@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class DecisionInputTextTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val decisionInputText =
             DecisionInputText.builder()
                 .text("text")
@@ -20,16 +20,8 @@ internal class DecisionInputTextTest {
         assertThat(decisionInputText.text()).isEqualTo("text")
         assertThat(decisionInputText.promptCacheBreakpoint())
             .contains(DecisionPromptCacheBreakpoint.builder().build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val decisionInputText =
-            DecisionInputText.builder()
-                .text("text")
-                .promptCacheBreakpoint(DecisionPromptCacheBreakpoint.builder().build())
-                .build()
 
         val roundtrippedDecisionInputText =
             jsonMapper.readValue(

@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class HostedPluginTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val hostedPlugin = HostedPlugin.builder().description("description").name("name").build()
 
         assertThat(hostedPlugin.description()).isEqualTo("description")
         assertThat(hostedPlugin.name()).isEqualTo("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val hostedPlugin = HostedPlugin.builder().description("description").name("name").build()
 
         val roundtrippedHostedPlugin =
             jsonMapper.readValue(

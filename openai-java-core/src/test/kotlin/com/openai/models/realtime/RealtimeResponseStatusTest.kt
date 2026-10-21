@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeResponseStatusTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeResponseStatus =
             RealtimeResponseStatus.builder()
                 .error(
@@ -35,23 +35,8 @@ internal class RealtimeResponseStatusTest {
         assertThat(realtimeResponseStatus.reason())
             .contains(RealtimeResponseStatus.Reason.TURN_DETECTED)
         assertThat(realtimeResponseStatus.type()).contains(RealtimeResponseStatus.Type.COMPLETED)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeResponseStatus =
-            RealtimeResponseStatus.builder()
-                .error(
-                    RealtimeResponseStatus.Error.builder()
-                        .code("code")
-                        .message("message")
-                        .type("type")
-                        .build()
-                )
-                .reason(RealtimeResponseStatus.Reason.TURN_DETECTED)
-                .type(RealtimeResponseStatus.Type.COMPLETED)
-                .build()
 
         val roundtrippedRealtimeResponseStatus =
             jsonMapper.readValue(

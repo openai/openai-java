@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionEnvironmentDisconnectedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionEnvironmentDisconnectedEvent =
             AgentSessionEnvironmentDisconnectedEvent.builder()
                 .environment(
@@ -50,31 +50,8 @@ internal class AgentSessionEnvironmentDisconnectedEventTest {
         assertThat(agentSessionEnvironmentDisconnectedEvent.eventId()).isEqualTo("event_id")
         assertThat(agentSessionEnvironmentDisconnectedEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentSessionEnvironmentDisconnectedEvent.turnId()).contains("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionEnvironmentDisconnectedEvent =
-            AgentSessionEnvironmentDisconnectedEvent.builder()
-                .environment(
-                    AgentSessionEnvironmentState.builder()
-                        .id("id")
-                        .error(
-                            AgentSessionEnvironmentState.Error.builder()
-                                .code("code")
-                                .message("message")
-                                .type("type")
-                                .build()
-                        )
-                        .status(AgentSessionEnvironmentState.Status.PENDING)
-                        .type("type")
-                        .build()
-                )
-                .eventId("event_id")
-                .sessionId("session_id")
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentSessionEnvironmentDisconnectedEvent =
             jsonMapper.readValue(

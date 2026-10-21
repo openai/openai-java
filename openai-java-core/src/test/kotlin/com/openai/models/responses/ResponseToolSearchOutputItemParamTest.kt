@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseToolSearchOutputItemParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseToolSearchOutputItemParam =
             ResponseToolSearchOutputItemParam.builder()
                 .addTool(
@@ -69,38 +69,8 @@ internal class ResponseToolSearchOutputItemParamTest {
             .contains(ResponseToolSearchOutputItemParam.Execution.SERVER)
         assertThat(responseToolSearchOutputItemParam.status())
             .contains(ResponseToolSearchOutputItemParam.Status.IN_PROGRESS)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseToolSearchOutputItemParam =
-            ResponseToolSearchOutputItemParam.builder()
-                .addTool(
-                    FunctionTool.builder()
-                        .name("name")
-                        .parameters(
-                            FunctionTool.Parameters.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .strict(true)
-                        .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
-                        .async(true)
-                        .deferLoading(true)
-                        .description("description")
-                        .outputSchema(
-                            FunctionTool.OutputSchema.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .build()
-                )
-                .id("tso_123")
-                .callId("x")
-                .execution(ResponseToolSearchOutputItemParam.Execution.SERVER)
-                .status(ResponseToolSearchOutputItemParam.Status.IN_PROGRESS)
-                .build()
 
         val roundtrippedResponseToolSearchOutputItemParam =
             jsonMapper.readValue(

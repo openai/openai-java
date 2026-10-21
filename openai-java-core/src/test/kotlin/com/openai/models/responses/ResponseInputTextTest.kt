@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseInputTextTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseInputText =
             ResponseInputText.builder()
                 .text("text")
@@ -20,16 +20,8 @@ internal class ResponseInputTextTest {
         assertThat(responseInputText.text()).isEqualTo("text")
         assertThat(responseInputText.promptCacheBreakpoint())
             .contains(ResponseInputText.PromptCacheBreakpoint.builder().build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseInputText =
-            ResponseInputText.builder()
-                .text("text")
-                .promptCacheBreakpoint(ResponseInputText.PromptCacheBreakpoint.builder().build())
-                .build()
 
         val roundtrippedResponseInputText =
             jsonMapper.readValue(

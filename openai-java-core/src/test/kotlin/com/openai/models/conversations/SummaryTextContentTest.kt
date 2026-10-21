@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class SummaryTextContentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val summaryTextContent = SummaryTextContent.builder().text("text").build()
 
         assertThat(summaryTextContent.text()).isEqualTo("text")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val summaryTextContent = SummaryTextContent.builder().text("text").build()
 
         val roundtrippedSummaryTextContent =
             jsonMapper.readValue(

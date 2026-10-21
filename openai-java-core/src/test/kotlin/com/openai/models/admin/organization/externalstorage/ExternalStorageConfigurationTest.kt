@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ExternalStorageConfigurationTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val externalStorageConfiguration =
             ExternalStorageConfiguration.builder()
                 .id("id")
@@ -47,28 +47,8 @@ internal class ExternalStorageConfigurationTest {
             )
         assertThat(externalStorageConfiguration.status())
             .isEqualTo(ExternalStorageConfiguration.Status.PENDING)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val externalStorageConfiguration =
-            ExternalStorageConfiguration.builder()
-                .id("id")
-                .createdAt(0L)
-                .geography("geography")
-                .projectId("project_id")
-                .provider(
-                    AwsExternalStorageProvider.builder()
-                        .accountId("account_id")
-                        .bucket("bucket")
-                        .externalId("external_id")
-                        .region("region")
-                        .roleArn("role_arn")
-                        .build()
-                )
-                .status(ExternalStorageConfiguration.Status.PENDING)
-                .build()
 
         val roundtrippedExternalStorageConfiguration =
             jsonMapper.readValue(

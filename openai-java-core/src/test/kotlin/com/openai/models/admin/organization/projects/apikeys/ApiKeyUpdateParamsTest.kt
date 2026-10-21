@@ -41,7 +41,7 @@ internal class ApiKeyUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.expiresInSeconds()).contains(1L)
+        assertThat(body.expiresInSecondsOptional()).contains(1L)
         assertThat(body.scopes().getOrNull()).containsExactly("api.all.read")
     }
 

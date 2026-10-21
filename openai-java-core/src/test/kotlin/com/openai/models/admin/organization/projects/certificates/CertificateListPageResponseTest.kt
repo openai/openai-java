@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class CertificateListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val certificateListPageResponse =
             CertificateListPageResponse.builder()
                 .addData(
@@ -50,31 +50,8 @@ internal class CertificateListPageResponseTest {
         assertThat(certificateListPageResponse.firstId()).contains("cert_abc")
         assertThat(certificateListPageResponse.hasMore()).isEqualTo(true)
         assertThat(certificateListPageResponse.lastId()).contains("cert_abc")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val certificateListPageResponse =
-            CertificateListPageResponse.builder()
-                .addData(
-                    CertificateListResponse.builder()
-                        .id("id")
-                        .active(true)
-                        .certificateDetails(
-                            CertificateListResponse.CertificateDetails.builder()
-                                .expiresAt(0L)
-                                .validAt(0L)
-                                .build()
-                        )
-                        .createdAt(0L)
-                        .name("name")
-                        .build()
-                )
-                .firstId("cert_abc")
-                .hasMore(true)
-                .lastId("cert_abc")
-                .build()
 
         val roundtrippedCertificateListPageResponse =
             jsonMapper.readValue(

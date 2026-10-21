@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class ImageFileDeltaTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val imageFileDelta =
             ImageFileDelta.builder().detail(ImageFileDelta.Detail.AUTO).fileId("file_id").build()
 
         assertThat(imageFileDelta.detail()).contains(ImageFileDelta.Detail.AUTO)
         assertThat(imageFileDelta.fileId()).contains("file_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val imageFileDelta =
-            ImageFileDelta.builder().detail(ImageFileDelta.Detail.AUTO).fileId("file_id").build()
 
         val roundtrippedImageFileDelta =
             jsonMapper.readValue(

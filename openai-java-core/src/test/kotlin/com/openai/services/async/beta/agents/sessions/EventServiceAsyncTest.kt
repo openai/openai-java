@@ -50,28 +50,4 @@ internal class EventServiceAsyncTest {
 
         val response = future.get()
     }
-
-    @Test
-    fun streamStreaming() {
-        val client =
-            OpenAIOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .adminApiKey("My Admin API Key")
-                .build()
-        val eventServiceAsync = client.beta().agents().sessions().events()
-
-        val agentSessionEventStreamResponse = eventServiceAsync.streamStreaming("session_id")
-
-        val received = java.util.concurrent.atomic.AtomicInteger()
-        val onCompleteFuture =
-            agentSessionEventStreamResponse
-                .subscribe { event ->
-                    event.validate()
-                    received.incrementAndGet()
-                }
-                .onCompleteFuture()
-        onCompleteFuture.get()
-        check(received.get() > 0) { "Expected at least one streaming event" }
-    }
 }

@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ResponseFormatTextGrammarTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseFormatTextGrammar =
             ResponseFormatTextGrammar.builder().grammar("grammar").build()
 
         assertThat(responseFormatTextGrammar.grammar()).isEqualTo("grammar")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseFormatTextGrammar =
-            ResponseFormatTextGrammar.builder().grammar("grammar").build()
 
         val roundtrippedResponseFormatTextGrammar =
             jsonMapper.readValue(

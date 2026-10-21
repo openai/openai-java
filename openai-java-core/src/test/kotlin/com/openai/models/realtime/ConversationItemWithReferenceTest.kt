@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ConversationItemWithReferenceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val conversationItemWithReference =
             ConversationItemWithReference.builder()
                 .id("id")
@@ -57,32 +57,8 @@ internal class ConversationItemWithReferenceTest {
             .contains(ConversationItemWithReference.Status.COMPLETED)
         assertThat(conversationItemWithReference.type())
             .contains(ConversationItemWithReference.Type.MESSAGE)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val conversationItemWithReference =
-            ConversationItemWithReference.builder()
-                .id("id")
-                .arguments("arguments")
-                .callId("call_id")
-                .addContent(
-                    ConversationItemWithReference.Content.builder()
-                        .id("id")
-                        .audio("audio")
-                        .text("text")
-                        .transcript("transcript")
-                        .type(ConversationItemWithReference.Content.Type.INPUT_TEXT)
-                        .build()
-                )
-                .name("name")
-                .object_(ConversationItemWithReference.Object.REALTIME_ITEM)
-                .output("output")
-                .role(ConversationItemWithReference.Role.USER)
-                .status(ConversationItemWithReference.Status.COMPLETED)
-                .type(ConversationItemWithReference.Type.MESSAGE)
-                .build()
 
         val roundtrippedConversationItemWithReference =
             jsonMapper.readValue(

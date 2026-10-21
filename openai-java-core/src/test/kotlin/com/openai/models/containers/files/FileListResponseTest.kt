@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class FileListResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fileListResponse =
             FileListResponse.builder()
                 .id("id")
@@ -27,20 +27,8 @@ internal class FileListResponseTest {
         assertThat(fileListResponse.createdAt()).isEqualTo(0L)
         assertThat(fileListResponse.path()).isEqualTo("path")
         assertThat(fileListResponse.source()).isEqualTo("source")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fileListResponse =
-            FileListResponse.builder()
-                .id("id")
-                .bytes(0L)
-                .containerId("container_id")
-                .createdAt(0L)
-                .path("path")
-                .source("source")
-                .build()
 
         val roundtrippedFileListResponse =
             jsonMapper.readValue(

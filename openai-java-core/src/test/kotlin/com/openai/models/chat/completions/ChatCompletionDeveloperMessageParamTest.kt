@@ -10,20 +10,15 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionDeveloperMessageParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionDeveloperMessageParam =
             ChatCompletionDeveloperMessageParam.builder().content("string").name("name").build()
 
         assertThat(chatCompletionDeveloperMessageParam.content())
             .isEqualTo(ChatCompletionDeveloperMessageParam.Content.ofText("string"))
         assertThat(chatCompletionDeveloperMessageParam.name()).contains("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionDeveloperMessageParam =
-            ChatCompletionDeveloperMessageParam.builder().content("string").name("name").build()
 
         val roundtrippedChatCompletionDeveloperMessageParam =
             jsonMapper.readValue(

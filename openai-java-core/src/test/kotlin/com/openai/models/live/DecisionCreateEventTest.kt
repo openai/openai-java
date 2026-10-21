@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class DecisionCreateEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val decisionCreateEvent = DecisionCreateEvent.builder().eventId("decision_1").build()
 
         assertThat(decisionCreateEvent.eventId()).isEqualTo("decision_1")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val decisionCreateEvent = DecisionCreateEvent.builder().eventId("decision_1").build()
 
         val roundtrippedDecisionCreateEvent =
             jsonMapper.readValue(

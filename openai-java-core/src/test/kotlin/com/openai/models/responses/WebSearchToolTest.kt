@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class WebSearchToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val webSearchTool =
             WebSearchTool.builder()
                 .type(WebSearchTool.Type.WEB_SEARCH)
@@ -43,27 +43,8 @@ internal class WebSearchToolTest {
                     .type(WebSearchTool.UserLocation.Type.APPROXIMATE)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val webSearchTool =
-            WebSearchTool.builder()
-                .type(WebSearchTool.Type.WEB_SEARCH)
-                .externalWebAccess(true)
-                .filters(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
-                .searchContextSize(WebSearchTool.SearchContextSize.LOW)
-                .userLocation(
-                    WebSearchTool.UserLocation.builder()
-                        .city("city")
-                        .country("country")
-                        .region("region")
-                        .timezone("timezone")
-                        .type(WebSearchTool.UserLocation.Type.APPROXIMATE)
-                        .build()
-                )
-                .build()
 
         val roundtrippedWebSearchTool =
             jsonMapper.readValue(

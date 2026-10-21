@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ContainerAutoTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val containerAuto =
             ContainerAuto.builder()
                 .addFileId("file-123")
@@ -34,18 +34,8 @@ internal class ContainerAutoTest {
                     SkillReference.builder().skillId("x").version("version").build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val containerAuto =
-            ContainerAuto.builder()
-                .addFileId("file-123")
-                .memoryLimit(ContainerAuto.MemoryLimit._1G)
-                .networkPolicy(ContainerNetworkPolicyDisabled.builder().build())
-                .addSkill(SkillReference.builder().skillId("x").version("version").build())
-                .build()
 
         val roundtrippedContainerAuto =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseCompactionCompactingEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseCompactionCompactingEvent =
             BetaResponseCompactionCompactingEvent.builder()
                 .itemId("item_id")
@@ -32,22 +32,8 @@ internal class BetaResponseCompactionCompactingEventTest {
                     .agentName("agent_name")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseCompactionCompactingEvent =
-            BetaResponseCompactionCompactingEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .agent(
-                    BetaResponseCompactionCompactingEvent.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseCompactionCompactingEvent =
             jsonMapper.readValue(

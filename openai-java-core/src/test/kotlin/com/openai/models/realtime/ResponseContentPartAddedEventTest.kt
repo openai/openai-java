@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseContentPartAddedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseContentPartAddedEvent =
             ResponseContentPartAddedEvent.builder()
                 .contentIndex(0L)
@@ -42,27 +42,8 @@ internal class ResponseContentPartAddedEventTest {
                     .build()
             )
         assertThat(responseContentPartAddedEvent.responseId()).isEqualTo("response_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseContentPartAddedEvent =
-            ResponseContentPartAddedEvent.builder()
-                .contentIndex(0L)
-                .eventId("event_id")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .part(
-                    ResponseContentPartAddedEvent.Part.builder()
-                        .audio("audio")
-                        .text("text")
-                        .transcript("transcript")
-                        .type(ResponseContentPartAddedEvent.Part.Type.TEXT)
-                        .build()
-                )
-                .responseId("response_id")
-                .build()
 
         val roundtrippedResponseContentPartAddedEvent =
             jsonMapper.readValue(

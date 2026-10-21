@@ -15,6 +15,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.encodeMultipartFields
 import com.openai.core.http.json
+import com.openai.core.http.mapMultipartResponse
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
@@ -122,7 +123,7 @@ class CallServiceAsyncImpl internal constructor(private val clientOptions: Clien
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response -> errorHandler.handle(response) }
+                .mapMultipartResponse(request) { response -> errorHandler.handle(response) }
         }
 
         private val acceptHandler: Handler<Void?> = emptyHandler()

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ConversationItemInputAudioTranscriptionFailedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val conversationItemInputAudioTranscriptionFailedEvent =
             ConversationItemInputAudioTranscriptionFailedEvent.builder()
                 .contentIndex(0L)
@@ -39,25 +39,8 @@ internal class ConversationItemInputAudioTranscriptionFailedEventTest {
         assertThat(conversationItemInputAudioTranscriptionFailedEvent.eventId())
             .isEqualTo("event_id")
         assertThat(conversationItemInputAudioTranscriptionFailedEvent.itemId()).isEqualTo("item_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val conversationItemInputAudioTranscriptionFailedEvent =
-            ConversationItemInputAudioTranscriptionFailedEvent.builder()
-                .contentIndex(0L)
-                .error(
-                    ConversationItemInputAudioTranscriptionFailedEvent.Error.builder()
-                        .code("code")
-                        .message("message")
-                        .param("param")
-                        .type("type")
-                        .build()
-                )
-                .eventId("event_id")
-                .itemId("item_id")
-                .build()
 
         val roundtrippedConversationItemInputAudioTranscriptionFailedEvent =
             jsonMapper.readValue(

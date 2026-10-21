@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class DeletedWebhookEndpointTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val deletedWebhookEndpoint = DeletedWebhookEndpoint.builder().id("id").deleted(true).build()
 
         assertThat(deletedWebhookEndpoint.id()).isEqualTo("id")
         assertThat(deletedWebhookEndpoint.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val deletedWebhookEndpoint = DeletedWebhookEndpoint.builder().id("id").deleted(true).build()
 
         val roundtrippedDeletedWebhookEndpoint =
             jsonMapper.readValue(

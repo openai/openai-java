@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseCompactionCompactingEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseCompactionCompactingEvent =
             ResponseCompactionCompactingEvent.builder()
                 .itemId("item_id")
@@ -21,17 +21,8 @@ internal class ResponseCompactionCompactingEventTest {
         assertThat(responseCompactionCompactingEvent.itemId()).isEqualTo("item_id")
         assertThat(responseCompactionCompactingEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseCompactionCompactingEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseCompactionCompactingEvent =
-            ResponseCompactionCompactingEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseCompactionCompactingEvent =
             jsonMapper.readValue(

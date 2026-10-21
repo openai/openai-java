@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseToolSearchOutputItemParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseToolSearchOutputItemParam =
             BetaResponseToolSearchOutputItemParam.builder()
                 .addTool(
@@ -80,43 +80,8 @@ internal class BetaResponseToolSearchOutputItemParamTest {
             .contains(BetaResponseToolSearchOutputItemParam.Execution.SERVER)
         assertThat(betaResponseToolSearchOutputItemParam.status())
             .contains(BetaResponseToolSearchOutputItemParam.Status.IN_PROGRESS)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseToolSearchOutputItemParam =
-            BetaResponseToolSearchOutputItemParam.builder()
-                .addTool(
-                    BetaFunctionTool.builder()
-                        .name("name")
-                        .parameters(
-                            BetaFunctionTool.Parameters.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .strict(true)
-                        .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
-                        .async(true)
-                        .deferLoading(true)
-                        .description("description")
-                        .outputSchema(
-                            BetaFunctionTool.OutputSchema.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .build()
-                )
-                .id("tso_123")
-                .agent(
-                    BetaResponseToolSearchOutputItemParam.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .callId("x")
-                .execution(BetaResponseToolSearchOutputItemParam.Execution.SERVER)
-                .status(BetaResponseToolSearchOutputItemParam.Status.IN_PROGRESS)
-                .build()
 
         val roundtrippedBetaResponseToolSearchOutputItemParam =
             jsonMapper.readValue(

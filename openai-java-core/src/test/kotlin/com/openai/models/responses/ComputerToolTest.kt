@@ -10,14 +10,10 @@ import org.junit.jupiter.api.Test
 internal class ComputerToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val computerTool = ComputerTool.builder().build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val computerTool = ComputerTool.builder().build()
 
         val roundtrippedComputerTool =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SessionForkResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionForkResponse =
             SessionForkResponse.builder()
                 .session(SessionForkResponse.Session.builder().id("id").build())
@@ -21,16 +21,8 @@ internal class SessionForkResponseTest {
             .isEqualTo(SessionForkResponse.Session.builder().id("id").build())
         assertThat(sessionForkResponse.transport())
             .isEqualTo(SessionForkResponse.Transport.builder().sdp("x").build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionForkResponse =
-            SessionForkResponse.builder()
-                .session(SessionForkResponse.Session.builder().id("id").build())
-                .transport(SessionForkResponse.Transport.builder().sdp("x").build())
-                .build()
 
         val roundtrippedSessionForkResponse =
             jsonMapper.readValue(

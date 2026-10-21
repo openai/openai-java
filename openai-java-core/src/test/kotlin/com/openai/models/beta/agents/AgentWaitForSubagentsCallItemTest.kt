@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentWaitForSubagentsCallItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentWaitForSubagentsCallItem =
             AgentWaitForSubagentsCallItem.builder()
                 .id("id")
@@ -26,19 +26,8 @@ internal class AgentWaitForSubagentsCallItemTest {
         assertThat(agentWaitForSubagentsCallItem.status())
             .isEqualTo(AgentFunctionCallStatus.IN_PROGRESS)
         assertThat(agentWaitForSubagentsCallItem.turnId()).isEqualTo("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentWaitForSubagentsCallItem =
-            AgentWaitForSubagentsCallItem.builder()
-                .id("id")
-                .addRecipientAgentId("string")
-                .senderAgentId("sender_agent_id")
-                .status(AgentFunctionCallStatus.IN_PROGRESS)
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentWaitForSubagentsCallItem =
             jsonMapper.readValue(

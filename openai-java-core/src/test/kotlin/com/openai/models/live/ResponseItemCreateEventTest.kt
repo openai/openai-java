@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseItemCreateEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseItemCreateEvent =
             ResponseItemCreateEvent.builder()
                 .item(
@@ -38,23 +38,8 @@ internal class ResponseItemCreateEventTest {
                 )
             )
         assertThat(responseItemCreateEvent.eventId()).contains("evt_item_001")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseItemCreateEvent =
-            ResponseItemCreateEvent.builder()
-                .item(
-                    EasyInputMessage.builder()
-                        .content("string")
-                        .role(EasyInputMessage.Role.USER)
-                        .phase(EasyInputMessage.Phase.COMMENTARY)
-                        .type(EasyInputMessage.Type.MESSAGE)
-                        .build()
-                )
-                .eventId("evt_item_001")
-                .build()
 
         val roundtrippedResponseItemCreateEvent =
             jsonMapper.readValue(

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class MessageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val message =
             Message.builder()
                 .id("id")
@@ -43,26 +43,8 @@ internal class MessageTest {
         assertThat(message.role()).isEqualTo(Message.Role.UNKNOWN)
         assertThat(message.status()).isEqualTo(Message.Status.IN_PROGRESS)
         assertThat(message.phase()).contains(Message.Phase.COMMENTARY)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val message =
-            Message.builder()
-                .id("id")
-                .addContent(
-                    ResponseInputText.builder()
-                        .text("text")
-                        .promptCacheBreakpoint(
-                            ResponseInputText.PromptCacheBreakpoint.builder().build()
-                        )
-                        .build()
-                )
-                .role(Message.Role.UNKNOWN)
-                .status(Message.Status.IN_PROGRESS)
-                .phase(Message.Phase.COMMENTARY)
-                .build()
 
         val roundtrippedMessage =
             jsonMapper.readValue(jsonMapper.writeValueAsString(message), jacksonTypeRef<Message>())

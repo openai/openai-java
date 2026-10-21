@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class FileSearchToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fileSearchTool =
             FileSearchTool.builder()
                 .fileSearch(
@@ -38,25 +38,8 @@ internal class FileSearchToolTest {
                     )
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fileSearchTool =
-            FileSearchTool.builder()
-                .fileSearch(
-                    FileSearchTool.FileSearch.builder()
-                        .maxNumResults(1L)
-                        .rankingOptions(
-                            FileSearchTool.FileSearch.RankingOptions.builder()
-                                .scoreThreshold(0.0)
-                                .ranker(FileSearchTool.FileSearch.RankingOptions.Ranker.AUTO)
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedFileSearchTool =
             jsonMapper.readValue(

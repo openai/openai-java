@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseShellCallCommandAddedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseShellCallCommandAddedEvent =
             ResponseShellCallCommandAddedEvent.builder()
                 .command("command")
@@ -23,18 +23,8 @@ internal class ResponseShellCallCommandAddedEventTest {
         assertThat(responseShellCallCommandAddedEvent.commandIndex()).isEqualTo(0L)
         assertThat(responseShellCallCommandAddedEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseShellCallCommandAddedEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseShellCallCommandAddedEvent =
-            ResponseShellCallCommandAddedEvent.builder()
-                .command("command")
-                .commandIndex(0L)
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseShellCallCommandAddedEvent =
             jsonMapper.readValue(

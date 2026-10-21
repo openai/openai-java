@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseMcpCallInProgressEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseMcpCallInProgressEvent =
             ResponseMcpCallInProgressEvent.builder()
                 .itemId("item_id")
@@ -21,17 +21,8 @@ internal class ResponseMcpCallInProgressEventTest {
         assertThat(responseMcpCallInProgressEvent.itemId()).isEqualTo("item_id")
         assertThat(responseMcpCallInProgressEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseMcpCallInProgressEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseMcpCallInProgressEvent =
-            ResponseMcpCallInProgressEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseMcpCallInProgressEvent =
             jsonMapper.readValue(

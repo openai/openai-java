@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class EvalRetrieveResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val evalRetrieveResponse =
             EvalRetrieveResponse.builder()
                 .id("id")
@@ -84,42 +84,8 @@ internal class EvalRetrieveResponseTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val evalRetrieveResponse =
-            EvalRetrieveResponse.builder()
-                .id("id")
-                .createdAt(0L)
-                .customDataSourceConfig(
-                    EvalCustomDataSourceConfig.Schema.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .metadata(
-                    EvalRetrieveResponse.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .name("Chatbot effectiveness Evaluation")
-                .addTestingCriterion(
-                    LabelModelGrader.builder()
-                        .addInput(
-                            LabelModelGrader.Input.builder()
-                                .content("string")
-                                .role(LabelModelGrader.Input.Role.USER)
-                                .type(LabelModelGrader.Input.Type.MESSAGE)
-                                .build()
-                        )
-                        .addLabel("string")
-                        .model("model")
-                        .name("name")
-                        .addPassingLabel("string")
-                        .build()
-                )
-                .build()
 
         val roundtrippedEvalRetrieveResponse =
             jsonMapper.readValue(

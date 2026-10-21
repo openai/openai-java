@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class StaticFileChunkingStrategyObjectTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val staticFileChunkingStrategyObject =
             StaticFileChunkingStrategyObject.builder()
                 .static_(
@@ -28,20 +28,8 @@ internal class StaticFileChunkingStrategyObjectTest {
                     .maxChunkSizeTokens(100L)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val staticFileChunkingStrategyObject =
-            StaticFileChunkingStrategyObject.builder()
-                .static_(
-                    StaticFileChunkingStrategy.builder()
-                        .chunkOverlapTokens(0L)
-                        .maxChunkSizeTokens(100L)
-                        .build()
-                )
-                .build()
 
         val roundtrippedStaticFileChunkingStrategyObject =
             jsonMapper.readValue(

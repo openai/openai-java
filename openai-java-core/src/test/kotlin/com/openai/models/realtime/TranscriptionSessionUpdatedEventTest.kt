@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class TranscriptionSessionUpdatedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val transcriptionSessionUpdatedEvent =
             TranscriptionSessionUpdatedEvent.builder()
                 .eventId("event_id")
@@ -78,45 +78,8 @@ internal class TranscriptionSessionUpdatedEventTest {
                     )
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val transcriptionSessionUpdatedEvent =
-            TranscriptionSessionUpdatedEvent.builder()
-                .eventId("event_id")
-                .session(
-                    TranscriptionSessionUpdatedEvent.Session.builder()
-                        .clientSecret(
-                            TranscriptionSessionUpdatedEvent.Session.ClientSecret.builder()
-                                .expiresAt(0L)
-                                .value("value")
-                                .build()
-                        )
-                        .inputAudioFormat("input_audio_format")
-                        .inputAudioTranscription(
-                            AudioTranscription.builder()
-                                .delay(AudioTranscription.Delay.MINIMAL)
-                                .addKeyword("string")
-                                .language("language")
-                                .addLanguage("string")
-                                .model(AudioTranscription.Model.WHISPER_1)
-                                .prompt("prompt")
-                                .build()
-                        )
-                        .addModality(TranscriptionSessionUpdatedEvent.Session.Modality.TEXT)
-                        .turnDetection(
-                            TranscriptionSessionUpdatedEvent.Session.TurnDetection.builder()
-                                .prefixPaddingMs(0L)
-                                .silenceDurationMs(0L)
-                                .threshold(0.0)
-                                .type("type")
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedTranscriptionSessionUpdatedEvent =
             jsonMapper.readValue(

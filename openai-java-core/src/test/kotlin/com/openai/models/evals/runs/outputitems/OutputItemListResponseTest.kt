@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class OutputItemListResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val outputItemListResponse =
             OutputItemListResponse.builder()
                 .id("id")
@@ -130,69 +130,8 @@ internal class OutputItemListResponseTest {
                     .build()
             )
         assertThat(outputItemListResponse.status()).isEqualTo("status")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val outputItemListResponse =
-            OutputItemListResponse.builder()
-                .id("id")
-                .createdAt(0L)
-                .datasourceItem(
-                    OutputItemListResponse.DatasourceItem.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .datasourceItemId(0L)
-                .evalId("eval_id")
-                .addResult(
-                    OutputItemListResponse.Result.builder()
-                        .name("name")
-                        .passed(true)
-                        .score(0.0)
-                        .sample(
-                            OutputItemListResponse.Result.Sample.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .type("type")
-                        .build()
-                )
-                .runId("run_id")
-                .sample(
-                    OutputItemListResponse.Sample.builder()
-                        .error(EvalApiError.builder().code("code").message("message").build())
-                        .finishReason("finish_reason")
-                        .addInput(
-                            OutputItemListResponse.Sample.Input.builder()
-                                .content("content")
-                                .role("role")
-                                .build()
-                        )
-                        .maxCompletionTokens(0L)
-                        .model("model")
-                        .addOutput(
-                            OutputItemListResponse.Sample.Output.builder()
-                                .content("content")
-                                .role("role")
-                                .build()
-                        )
-                        .seed(0L)
-                        .temperature(0.0)
-                        .topP(0.0)
-                        .usage(
-                            OutputItemListResponse.Sample.Usage.builder()
-                                .cachedTokens(0L)
-                                .completionTokens(0L)
-                                .promptTokens(0L)
-                                .totalTokens(0L)
-                                .build()
-                        )
-                        .build()
-                )
-                .status("status")
-                .build()
 
         val roundtrippedOutputItemListResponse =
             jsonMapper.readValue(

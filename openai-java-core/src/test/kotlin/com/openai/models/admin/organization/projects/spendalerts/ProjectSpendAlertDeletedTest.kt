@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class ProjectSpendAlertDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectSpendAlertDeleted =
             ProjectSpendAlertDeleted.builder().id("id").deleted(true).build()
 
         assertThat(projectSpendAlertDeleted.id()).isEqualTo("id")
         assertThat(projectSpendAlertDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectSpendAlertDeleted =
-            ProjectSpendAlertDeleted.builder().id("id").deleted(true).build()
 
         val roundtrippedProjectSpendAlertDeleted =
             jsonMapper.readValue(

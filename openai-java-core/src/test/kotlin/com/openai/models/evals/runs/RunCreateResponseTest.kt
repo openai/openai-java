@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class RunCreateResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val runCreateResponse =
             RunCreateResponse.builder()
                 .id("id")
@@ -141,70 +141,8 @@ internal class RunCreateResponseTest {
                     .build()
             )
         assertThat(runCreateResponse.status()).isEqualTo("status")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val runCreateResponse =
-            RunCreateResponse.builder()
-                .id("id")
-                .createdAt(0L)
-                .fileContentJsonlDataSource(
-                    listOf(
-                        CreateEvalJsonlRunDataSource.Source.FileContent.Content.builder()
-                            .item(
-                                CreateEvalJsonlRunDataSource.Source.FileContent.Content.Item
-                                    .builder()
-                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                    .build()
-                            )
-                            .sample(
-                                CreateEvalJsonlRunDataSource.Source.FileContent.Content.Sample
-                                    .builder()
-                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                    .build()
-                            )
-                            .build()
-                    )
-                )
-                .error(EvalApiError.builder().code("code").message("message").build())
-                .evalId("eval_id")
-                .metadata(
-                    RunCreateResponse.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .model("model")
-                .name("name")
-                .addPerModelUsage(
-                    RunCreateResponse.PerModelUsage.builder()
-                        .cachedTokens(0L)
-                        .completionTokens(0L)
-                        .invocationCount(0L)
-                        .modelName("model_name")
-                        .promptTokens(0L)
-                        .totalTokens(0L)
-                        .build()
-                )
-                .addPerTestingCriteriaResult(
-                    RunCreateResponse.PerTestingCriteriaResult.builder()
-                        .failed(0L)
-                        .passed(0L)
-                        .testingCriteria("testing_criteria")
-                        .build()
-                )
-                .reportUrl("https://example.com")
-                .resultCounts(
-                    RunCreateResponse.ResultCounts.builder()
-                        .errored(0L)
-                        .failed(0L)
-                        .passed(0L)
-                        .total(0L)
-                        .build()
-                )
-                .status("status")
-                .build()
 
         val roundtrippedRunCreateResponse =
             jsonMapper.readValue(

@@ -60,10 +60,13 @@ private constructor(
      * organization and project expiry policies. Expired keys cannot be updated. Retrying resets the
      * expiry relative to the new request. Omit to keep the current expiration.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun expiresInSeconds(): Optional<Long> = body.expiresInSeconds()
+    fun expiresInSeconds(): Long = body.expiresInSeconds()
+
+    /** Returns the requested value, or empty if the field is omitted or null. */
+    fun expiresInSecondsOptional(): Optional<Long> = body.expiresInSecondsOptional()
 
     /**
      * Replace the API key scope restrictions. Omit to leave scopes unchanged. An empty array
@@ -368,10 +371,14 @@ private constructor(
          * organization and project expiry policies. Expired keys cannot be updated. Retrying resets
          * the expiry relative to the new request. Omit to keep the current expiration.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun expiresInSeconds(): Optional<Long> = expiresInSeconds.getOptional("expires_in_seconds")
+        fun expiresInSeconds(): Long = expiresInSeconds.getRequired("expires_in_seconds")
+
+        /** Returns the requested value, or empty if the field is omitted or null. */
+        fun expiresInSecondsOptional(): Optional<Long> =
+            expiresInSeconds.getOptional("expires_in_seconds")
 
         /**
          * Replace the API key scope restrictions. Omit to leave scopes unchanged. An empty array
@@ -553,7 +560,7 @@ private constructor(
                 return@apply
             }
 
-            expiresInSeconds()
+            expiresInSecondsOptional()
             scopes()
             validated = true
         }

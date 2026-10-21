@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 internal class MessageListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val messageListPageResponse =
             MessageListPageResponse.builder()
                 .addData(
@@ -133,70 +133,8 @@ internal class MessageListPageResponseTest {
         assertThat(messageListPageResponse.firstId()).isEqualTo("first_id")
         assertThat(messageListPageResponse.hasMore()).isEqualTo(true)
         assertThat(messageListPageResponse.lastId()).isEqualTo("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val messageListPageResponse =
-            MessageListPageResponse.builder()
-                .addData(
-                    ChatCompletionStoreMessage.builder()
-                        .content("content")
-                        .refusal("refusal")
-                        .addAnnotation(
-                            ChatCompletionMessage.Annotation.builder()
-                                .urlCitation(
-                                    ChatCompletionMessage.Annotation.UrlCitation.builder()
-                                        .endIndex(0L)
-                                        .startIndex(0L)
-                                        .title("title")
-                                        .url("https://example.com")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .audio(
-                            ChatCompletionAudio.builder()
-                                .id("id")
-                                .data("data")
-                                .expiresAt(0L)
-                                .transcript("transcript")
-                                .build()
-                        )
-                        .functionCall(
-                            ChatCompletionMessage.FunctionCall.builder()
-                                .arguments("arguments")
-                                .name("name")
-                                .build()
-                        )
-                        .addToolCall(
-                            ChatCompletionMessageFunctionToolCall.builder()
-                                .id("id")
-                                .function(
-                                    ChatCompletionMessageFunctionToolCall.Function.builder()
-                                        .arguments("arguments")
-                                        .name("name")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .id("id")
-                        .addContentPart(
-                            ChatCompletionContentPartText.builder()
-                                .text("text")
-                                .promptCacheBreakpoint(
-                                    ChatCompletionContentPartText.PromptCacheBreakpoint.builder()
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedMessageListPageResponse =
             jsonMapper.readValue(

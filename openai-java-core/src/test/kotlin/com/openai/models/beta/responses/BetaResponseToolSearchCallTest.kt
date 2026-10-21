@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseToolSearchCallTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseToolSearchCall =
             BetaResponseToolSearchCall.builder()
                 .id("id")
@@ -34,21 +34,8 @@ internal class BetaResponseToolSearchCallTest {
         assertThat(betaResponseToolSearchCall.agent())
             .contains(BetaResponseToolSearchCall.Agent.builder().agentName("agent_name").build())
         assertThat(betaResponseToolSearchCall.createdBy()).contains("created_by")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseToolSearchCall =
-            BetaResponseToolSearchCall.builder()
-                .id("id")
-                .arguments(JsonValue.from(mapOf<String, Any>()))
-                .callId("call_id")
-                .execution(BetaResponseToolSearchCall.Execution.SERVER)
-                .status(BetaResponseToolSearchCall.Status.IN_PROGRESS)
-                .agent(BetaResponseToolSearchCall.Agent.builder().agentName("agent_name").build())
-                .createdBy("created_by")
-                .build()
 
         val roundtrippedBetaResponseToolSearchCall =
             jsonMapper.readValue(

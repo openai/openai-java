@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ProjectDataRetentionTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectDataRetention =
             ProjectDataRetention.builder()
                 .type(ProjectDataRetention.Type.ORGANIZATION_DEFAULT)
@@ -18,15 +18,8 @@ internal class ProjectDataRetentionTest {
 
         assertThat(projectDataRetention.type())
             .isEqualTo(ProjectDataRetention.Type.ORGANIZATION_DEFAULT)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectDataRetention =
-            ProjectDataRetention.builder()
-                .type(ProjectDataRetention.Type.ORGANIZATION_DEFAULT)
-                .build()
 
         val roundtrippedProjectDataRetention =
             jsonMapper.readValue(

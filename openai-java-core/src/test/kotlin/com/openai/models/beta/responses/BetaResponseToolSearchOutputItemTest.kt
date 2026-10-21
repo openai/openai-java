@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseToolSearchOutputItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseToolSearchOutputItem =
             BetaResponseToolSearchOutputItem.builder()
                 .id("id")
@@ -78,42 +78,8 @@ internal class BetaResponseToolSearchOutputItemTest {
                 BetaResponseToolSearchOutputItem.Agent.builder().agentName("agent_name").build()
             )
         assertThat(betaResponseToolSearchOutputItem.createdBy()).contains("created_by")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseToolSearchOutputItem =
-            BetaResponseToolSearchOutputItem.builder()
-                .id("id")
-                .callId("call_id")
-                .execution(BetaResponseToolSearchOutputItem.Execution.SERVER)
-                .status(BetaResponseToolSearchOutputItem.Status.IN_PROGRESS)
-                .addTool(
-                    BetaFunctionTool.builder()
-                        .name("name")
-                        .parameters(
-                            BetaFunctionTool.Parameters.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .strict(true)
-                        .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
-                        .async(true)
-                        .deferLoading(true)
-                        .description("description")
-                        .outputSchema(
-                            BetaFunctionTool.OutputSchema.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .build()
-                )
-                .agent(
-                    BetaResponseToolSearchOutputItem.Agent.builder().agentName("agent_name").build()
-                )
-                .createdBy("created_by")
-                .build()
 
         val roundtrippedBetaResponseToolSearchOutputItem =
             jsonMapper.readValue(

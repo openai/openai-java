@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ApiKeyCreateResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val apiKeyCreateResponse =
             ApiKeyCreateResponse.builder()
                 .id("id")
@@ -25,19 +25,8 @@ internal class ApiKeyCreateResponseTest {
         assertThat(apiKeyCreateResponse.name()).isEqualTo("name")
         assertThat(apiKeyCreateResponse.value()).isEqualTo("value")
         assertThat(apiKeyCreateResponse.expiresAt()).contains(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val apiKeyCreateResponse =
-            ApiKeyCreateResponse.builder()
-                .id("id")
-                .createdAt(0L)
-                .name("name")
-                .value("value")
-                .expiresAt(0L)
-                .build()
 
         val roundtrippedApiKeyCreateResponse =
             jsonMapper.readValue(

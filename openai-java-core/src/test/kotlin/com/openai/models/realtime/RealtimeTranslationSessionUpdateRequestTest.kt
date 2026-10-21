@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeTranslationSessionUpdateRequestTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeTranslationSessionUpdateRequest =
             RealtimeTranslationSessionUpdateRequest.builder()
                 .audio(
@@ -68,41 +68,8 @@ internal class RealtimeTranslationSessionUpdateRequestTest {
                     )
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeTranslationSessionUpdateRequest =
-            RealtimeTranslationSessionUpdateRequest.builder()
-                .audio(
-                    RealtimeTranslationSessionUpdateRequest.Audio.builder()
-                        .input(
-                            RealtimeTranslationSessionUpdateRequest.Audio.Input.builder()
-                                .noiseReduction(
-                                    RealtimeTranslationSessionUpdateRequest.Audio.Input
-                                        .NoiseReduction
-                                        .builder()
-                                        .type(NoiseReductionType.NEAR_FIELD)
-                                        .build()
-                                )
-                                .transcription(
-                                    RealtimeTranslationSessionUpdateRequest.Audio.Input
-                                        .Transcription
-                                        .builder()
-                                        .model("model")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .output(
-                            RealtimeTranslationSessionUpdateRequest.Audio.Output.builder()
-                                .language("language")
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedRealtimeTranslationSessionUpdateRequest =
             jsonMapper.readValue(

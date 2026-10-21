@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class SubagentListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val subagentListPageResponse =
             SubagentListPageResponse.builder()
                 .addData(
@@ -49,30 +49,8 @@ internal class SubagentListPageResponseTest {
         assertThat(subagentListPageResponse.firstId()).contains("first_id")
         assertThat(subagentListPageResponse.hasMore()).isEqualTo(true)
         assertThat(subagentListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val subagentListPageResponse =
-            SubagentListPageResponse.builder()
-                .addData(
-                    Subagent.builder()
-                        .id("id")
-                        .closedAt(0L)
-                        .addOutputTextInstruction("text")
-                        .name("name")
-                        .object_(Subagent.Object.AGENT_SESSION_SUBAGENT)
-                        .openedAt(0L)
-                        .parentAgentId("parent_agent_id")
-                        .sessionId("session_id")
-                        .status(Subagent.Status.ACTIVE)
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedSubagentListPageResponse =
             jsonMapper.readValue(

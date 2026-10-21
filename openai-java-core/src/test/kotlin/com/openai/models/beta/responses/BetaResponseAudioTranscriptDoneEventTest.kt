@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseAudioTranscriptDoneEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseAudioTranscriptDoneEvent =
             BetaResponseAudioTranscriptDoneEvent.builder()
                 .sequenceNumber(0L)
@@ -26,20 +26,8 @@ internal class BetaResponseAudioTranscriptDoneEventTest {
             .contains(
                 BetaResponseAudioTranscriptDoneEvent.Agent.builder().agentName("agent_name").build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseAudioTranscriptDoneEvent =
-            BetaResponseAudioTranscriptDoneEvent.builder()
-                .sequenceNumber(0L)
-                .agent(
-                    BetaResponseAudioTranscriptDoneEvent.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseAudioTranscriptDoneEvent =
             jsonMapper.readValue(
