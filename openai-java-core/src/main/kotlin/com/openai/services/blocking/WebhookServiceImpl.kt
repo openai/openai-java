@@ -33,8 +33,11 @@ import com.openai.models.webhooks.WebhookRetrieveParams
 import com.openai.models.webhooks.WebhookRotateSecretParams
 import com.openai.models.webhooks.WebhookTestParams
 import com.openai.models.webhooks.WebhookUpdateParams
+import com.openai.models.webhooks.WebhookVerificationParams
 import com.openai.services.blocking.webhooks.EventTypeService
 import com.openai.services.blocking.webhooks.EventTypeServiceImpl
+import com.openai.services.verifyWebhookSignature
+import java.nio.charset.StandardCharsets
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -52,12 +55,32 @@ class WebhookServiceImpl internal constructor(private val clientOptions: ClientO
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): WebhookService =
         WebhookServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun unwrap(body: String): UnwrapWebhookEvent =
-        try {
-            clientOptions.jsonMapper.readValue(body, jacksonTypeRef<UnwrapWebhookEvent>())
+    /**
+     * Validates that the given payload was sent by OpenAI and parses the payload.
+     *
+     * @param params Verification parameters including payload, headers, secret and tolerance
+     * @return The parsed webhook event
+     * @throws IllegalArgumentException if the signature is invalid or headers are missing
+     */
+    override fun unwrap(params: WebhookVerificationParams): UnwrapWebhookEvent {
+        verifySignature(params)
+
+        val bodyString = String(params.payload, StandardCharsets.UTF_8)
+        return try {
+            clientOptions.jsonMapper.readValue(bodyString, jacksonTypeRef<UnwrapWebhookEvent>())
         } catch (e: Exception) {
             throw OpenAIInvalidDataException("Error parsing body", e)
         }
+    }
+
+    /**
+     * Validates whether or not the webhook payload was sent by OpenAI.
+     *
+     * @param params Verification parameters including payload, headers, secret and tolerance
+     * @throws IllegalArgumentException if the signature is invalid
+     */
+    override fun verifySignature(params: WebhookVerificationParams) =
+        verifyWebhookSignature(clientOptions, params)
 
     override fun eventTypes(): EventTypeService = eventTypes
 

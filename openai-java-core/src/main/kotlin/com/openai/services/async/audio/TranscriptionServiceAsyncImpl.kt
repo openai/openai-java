@@ -2,13 +2,13 @@
 
 package com.openai.services.async.audio
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.openai.core.ClientOptions
 import com.openai.core.MultipartField
 import com.openai.core.RequestOptions
 import com.openai.core.SecurityOptions
 import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
-import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
 import com.openai.core.handlers.sseHandler
 import com.openai.core.http.AsyncStreamResponse
@@ -27,6 +27,7 @@ import com.openai.core.prepareAsync
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
 import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
+import com.openai.services.TranscriptionResponseHandler
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -73,19 +74,23 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        private val createHandler: Handler<TranscriptionCreateResponse> =
-            jsonHandler<TranscriptionCreateResponse>(clientOptions.jsonMapper)
+        private val createHandler = TranscriptionResponseHandler(clientOptions.jsonMapper)
 
         override fun create(
             params: TranscriptionCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>> {
+            val body = params._body()
+            val responseFormat =
+                clientOptions.jsonMapper
+                    .valueToTree<JsonNode>(body["response_format"]?.value)
+                    .textValue()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("audio", "transcriptions")
-                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .body(multipartFormData(clientOptions.jsonMapper, body))
                     .build()
                     .prepareAsync(
                         clientOptions,
@@ -98,7 +103,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                 .mapMultipartResponse(request) { response ->
                     errorHandler.handle(response).parseable {
                         response
-                            .use { createHandler.handle(it) }
+                            .use { createHandler.handle(it, responseFormat) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()

@@ -10,6 +10,8 @@ import com.openai.core.http.StreamResponse
 import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionDeleted
 import com.openai.models.beta.agents.AgentSessionEvent
+import com.openai.models.beta.agents.AgentSessionStreamParams
+import com.openai.models.beta.agents.AgentToolHandlers
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.SessionDeleteParams
 import com.openai.models.beta.agents.sessions.SessionListPage
@@ -25,6 +27,21 @@ import com.openai.services.blocking.beta.agents.sessions.TurnService
 import java.util.function.Consumer
 
 interface SessionService {
+
+    /**
+     * Subscribes before submitting input to an idle session and streams one turn through idle or
+     * failure. Requires a single input writer. Closing never cancels the backend turn.
+     */
+    @MustBeClosed
+    fun stream(params: AgentSessionStreamParams): StreamResponse<AgentSessionEvent> =
+        stream(params, RequestOptions.none())
+
+    /** @see stream */
+    @MustBeClosed
+    fun stream(
+        params: AgentSessionStreamParams,
+        requestOptions: RequestOptions,
+    ): StreamResponse<AgentSessionEvent>
 
     /**
      * Returns a view of this service that provides access to raw HTTP responses for each method.
@@ -84,6 +101,24 @@ interface SessionService {
         params: SessionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<AgentSessionEvent>
+
+    /** Creates and handles the initial turn using local function callbacks. */
+    @MustBeClosed
+    fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+    ): StreamResponse<AgentSessionEvent> = createStreaming(params, handlers, RequestOptions.none())
+
+    /** @see createStreaming */
+    @MustBeClosed
+    fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+        requestOptions: RequestOptions,
+    ): StreamResponse<AgentSessionEvent> =
+        throw UnsupportedOperationException(
+            "This service does not implement creation tool handlers"
+        )
 
     /**
      * Retrieves the current state of a managed agent session. See

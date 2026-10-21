@@ -28,7 +28,9 @@ interface TurnServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): TurnServiceAsync
 
     fun items(): ItemServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+        throw UnsupportedOperationException(
+            "This TurnServiceAsync implementation does not support turn items."
+        )
 
     /**
      * Retrieves a turn's current status, timestamps, usage, and error. Returns 404 if the turn does
@@ -105,7 +107,7 @@ interface TurnServiceAsync {
 
         fun items(): ItemServiceAsync.WithRawResponse =
             throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
+                "This TurnServiceAsync implementation does not support turn items."
             )
 
         /**

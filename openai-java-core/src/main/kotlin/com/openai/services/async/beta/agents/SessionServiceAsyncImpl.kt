@@ -28,6 +28,8 @@ import com.openai.core.prepareAsync
 import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionDeleted
 import com.openai.models.beta.agents.AgentSessionEvent
+import com.openai.models.beta.agents.AgentSessionStreamParams
+import com.openai.models.beta.agents.AgentToolHandlers
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.SessionDeleteParams
 import com.openai.models.beta.agents.sessions.SessionListPageAsync
@@ -47,6 +49,8 @@ import com.openai.services.async.beta.agents.sessions.TraceServiceAsync
 import com.openai.services.async.beta.agents.sessions.TraceServiceAsyncImpl
 import com.openai.services.async.beta.agents.sessions.TurnServiceAsync
 import com.openai.services.async.beta.agents.sessions.TurnServiceAsyncImpl
+import com.openai.services.beta.agents.AgentSessionStreamAsync
+import com.openai.services.beta.agents.AgentTurnResults
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -74,6 +78,22 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
     private val traces: TraceServiceAsync by lazy { TraceServiceAsyncImpl(clientOptions) }
 
     private val turns: TurnServiceAsync by lazy { TurnServiceAsyncImpl(clientOptions) }
+
+    override fun stream(
+        params: AgentSessionStreamParams,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<AgentSessionEvent> =
+        AgentTurnResults.collecting(
+            AgentSessionStreamAsync(
+                this,
+                params,
+                requestOptions,
+                clientOptions.streamHandlerExecutor,
+                clientOptions.sleeper,
+            ),
+            params.handlers.keys,
+            params.sessionId,
+        )
 
     override fun withRawResponse(): SessionServiceAsync.WithRawResponse = withRawResponse
 
@@ -106,8 +126,27 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
         // post /agents/sessions
         withRawResponse()
             .createStreaming(params, requestOptions)
-            .thenApply { it.parse() }
+            .thenApply { AgentTurnResults.uncollected(it.parse()) }
             .toAsync(clientOptions.streamHandlerExecutor)
+            .let { AgentTurnResults.collecting(it) }
+
+    override fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<AgentSessionEvent> =
+        AgentTurnResults.collecting(
+            AgentSessionStreamAsync(
+                this,
+                null,
+                requestOptions,
+                clientOptions.streamHandlerExecutor,
+                clientOptions.sleeper,
+                params,
+                handlers,
+            ),
+            handlers.handlers.keys,
+        )
 
     override fun retrieve(
         params: SessionRetrieveParams,
@@ -266,6 +305,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
                                     streamResponse
                                 }
                             }
+                            .let { AgentTurnResults.collecting(it) }
                     }
                 }
         }

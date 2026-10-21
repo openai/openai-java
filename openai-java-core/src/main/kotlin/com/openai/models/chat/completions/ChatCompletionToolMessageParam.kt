@@ -179,6 +179,15 @@ private constructor(
             content(Content.ofArrayOfContentParts(arrayOfContentParts))
 
         /**
+         * Sets the content to text representing the JSON serialized form of a given object. This is
+         * useful when passing data that is the result of a function call.
+         *
+         * @see content
+         */
+        fun contentAsJson(functionResult: Any) =
+            content(com.openai.core.toJsonString(functionResult))
+
+        /**
          * Sets the field to an arbitrary JSON value.
          *
          * It is usually unnecessary to call this method because the field defaults to the

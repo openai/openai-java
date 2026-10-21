@@ -26,6 +26,8 @@ import com.openai.core.prepare
 import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionDeleted
 import com.openai.models.beta.agents.AgentSessionEvent
+import com.openai.models.beta.agents.AgentSessionStreamParams
+import com.openai.models.beta.agents.AgentToolHandlers
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.SessionDeleteParams
 import com.openai.models.beta.agents.sessions.SessionListPage
@@ -33,6 +35,8 @@ import com.openai.models.beta.agents.sessions.SessionListPageResponse
 import com.openai.models.beta.agents.sessions.SessionListParams
 import com.openai.models.beta.agents.sessions.SessionRetrieveParams
 import com.openai.models.beta.agents.sessions.SessionUpdateParams
+import com.openai.services.beta.agents.AgentSessionStream
+import com.openai.services.beta.agents.AgentTurnResults
 import com.openai.services.blocking.beta.agents.sessions.ArtifactService
 import com.openai.services.blocking.beta.agents.sessions.ArtifactServiceImpl
 import com.openai.services.blocking.beta.agents.sessions.EventService
@@ -72,6 +76,16 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
 
     private val turns: TurnService by lazy { TurnServiceImpl(clientOptions) }
 
+    override fun stream(
+        params: AgentSessionStreamParams,
+        requestOptions: RequestOptions,
+    ): StreamResponse<AgentSessionEvent> =
+        AgentTurnResults.collecting(
+            AgentSessionStream(this, params, requestOptions, clientOptions.sleeper),
+            params.handlers.keys,
+            params.sessionId,
+        )
+
     override fun withRawResponse(): SessionService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): SessionService =
@@ -99,6 +113,16 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
     ): StreamResponse<AgentSessionEvent> =
         // post /agents/sessions
         withRawResponse().createStreaming(params, requestOptions).parse()
+
+    override fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+        requestOptions: RequestOptions,
+    ): StreamResponse<AgentSessionEvent> =
+        AgentTurnResults.collecting(
+            AgentSessionStream(this, null, requestOptions, clientOptions.sleeper, params, handlers),
+            handlers.handlers.keys,
+        )
 
     override fun retrieve(
         params: SessionRetrieveParams,
@@ -246,6 +270,7 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
                             streamResponse
                         }
                     }
+                    .let { AgentTurnResults.collecting(it) }
             }
         }
 

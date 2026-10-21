@@ -20,6 +20,7 @@ import com.openai.models.webhooks.WebhookRetrieveParams
 import com.openai.models.webhooks.WebhookRotateSecretParams
 import com.openai.models.webhooks.WebhookTestParams
 import com.openai.models.webhooks.WebhookUpdateParams
+import com.openai.models.webhooks.WebhookVerificationParams
 import com.openai.services.blocking.webhooks.EventTypeService
 import java.util.function.Consumer
 
@@ -40,9 +41,19 @@ interface WebhookService {
     /**
      * Validates that the given payload was sent by OpenAI and parses the payload.
      *
+     * @param params Verification parameters including payload, headers, secret and tolerance
      * @throws OpenAIInvalidDataException if the body could not be parsed.
      */
-    fun unwrap(body: String): UnwrapWebhookEvent
+    fun unwrap(params: WebhookVerificationParams): UnwrapWebhookEvent
+
+    /**
+     * Validates whether or not the webhook payload was sent by OpenAI.
+     *
+     * @param params Verification parameters including payload, headers, secret and tolerance
+     * @throws InvalidWebhookSignatureException if the signature is invalid or timestamp is too
+     *   old/new
+     */
+    fun verifySignature(params: WebhookVerificationParams)
 
     fun eventTypes(): EventTypeService =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")

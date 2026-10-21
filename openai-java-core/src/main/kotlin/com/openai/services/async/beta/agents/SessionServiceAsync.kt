@@ -11,6 +11,8 @@ import com.openai.core.http.StreamResponse
 import com.openai.models.beta.agents.AgentSession
 import com.openai.models.beta.agents.AgentSessionDeleted
 import com.openai.models.beta.agents.AgentSessionEvent
+import com.openai.models.beta.agents.AgentSessionStreamParams
+import com.openai.models.beta.agents.AgentToolHandlers
 import com.openai.models.beta.agents.sessions.SessionCreateParams
 import com.openai.models.beta.agents.sessions.SessionDeleteParams
 import com.openai.models.beta.agents.sessions.SessionListPageAsync
@@ -27,6 +29,19 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 interface SessionServiceAsync {
+
+    /**
+     * Subscribes before submitting input to an idle session and streams one turn through idle or
+     * failure. Requires a single input writer. Closing never cancels the backend turn.
+     */
+    fun stream(params: AgentSessionStreamParams): AsyncStreamResponse<AgentSessionEvent> =
+        stream(params, RequestOptions.none())
+
+    /** @see stream */
+    fun stream(
+        params: AgentSessionStreamParams,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<AgentSessionEvent>
 
     /**
      * Returns a view of this service that provides access to raw HTTP responses for each method.
@@ -85,6 +100,23 @@ interface SessionServiceAsync {
         params: SessionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AsyncStreamResponse<AgentSessionEvent>
+
+    /** Creates and handles the initial turn using local function callbacks. */
+    fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+    ): AsyncStreamResponse<AgentSessionEvent> =
+        createStreaming(params, handlers, RequestOptions.none())
+
+    /** @see createStreaming */
+    fun createStreaming(
+        params: SessionCreateParams,
+        handlers: AgentToolHandlers,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<AgentSessionEvent> =
+        throw UnsupportedOperationException(
+            "This service does not implement creation tool handlers"
+        )
 
     /**
      * Retrieves the current state of a managed agent session. See

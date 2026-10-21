@@ -31,6 +31,7 @@ import com.openai.models.webhooks.WebhookRetrieveParams
 import com.openai.models.webhooks.WebhookRotateSecretParams
 import com.openai.models.webhooks.WebhookTestParams
 import com.openai.models.webhooks.WebhookUpdateParams
+import com.openai.models.webhooks.WebhookVerificationParams
 import com.openai.services.async.webhooks.EventTypeServiceAsync
 import com.openai.services.async.webhooks.EventTypeServiceAsyncImpl
 import com.openai.services.blocking.WebhookServiceImpl
@@ -54,8 +55,11 @@ class WebhookServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): WebhookServiceAsync =
         WebhookServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun unwrap(body: String): UnwrapWebhookEvent =
-        WebhookServiceImpl(clientOptions).unwrap(body)
+    override fun unwrap(params: WebhookVerificationParams): UnwrapWebhookEvent =
+        WebhookServiceImpl(clientOptions).unwrap(params)
+
+    override fun verifySignature(params: WebhookVerificationParams) =
+        WebhookServiceImpl(clientOptions).verifySignature(params)
 
     override fun eventTypes(): EventTypeServiceAsync = eventTypes
 

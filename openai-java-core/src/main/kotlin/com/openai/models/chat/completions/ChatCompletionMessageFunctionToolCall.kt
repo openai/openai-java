@@ -297,6 +297,16 @@ private constructor(
         fun arguments(): String = arguments.getRequired("arguments")
 
         /**
+         * Parses the JSON arguments with the same class used to define the function parameters.
+         *
+         * @throws OpenAIInvalidDataException if the arguments are missing, null, or cannot be
+         *   parsed.
+         * @see arguments
+         */
+        fun <T> arguments(functionParametersType: java.lang.Class<T>): T =
+            com.openai.core.responseTypeFromJson(arguments(), functionParametersType)
+
+        /**
          * The name of the function to call.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
