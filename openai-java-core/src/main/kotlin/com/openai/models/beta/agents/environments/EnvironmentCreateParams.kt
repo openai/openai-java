@@ -565,8 +565,7 @@ private constructor(
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() =
-            "Body{environment=$environment, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
+        override fun toString() = "Body{<redacted>}"
     }
 
     /** The required hosting type and its configuration. */
@@ -1613,7 +1612,7 @@ private constructor(
 
             override fun hashCode(): Int = hashCode
 
-            override fun toString() = "Env{additionalProperties=$additionalProperties}"
+            override fun toString() = "Env{<redacted>}"
         }
 
         /**
@@ -2464,8 +2463,7 @@ private constructor(
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() =
-            "Environment{type=$type, capabilityDirectories=$capabilityDirectories, desktop=$desktop, env=$env, environmentTemplateId=$environmentTemplateId, files=$files, network=$network, packages=$packages, plugins=$plugins, setupCommands=$setupCommands, skills=$skills, additionalProperties=$additionalProperties}"
+        override fun toString() = "Environment{<redacted>}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -2483,6 +2481,5 @@ private constructor(
     override fun hashCode(): Int =
         Objects.hash(idempotencyKey, body, additionalHeaders, additionalQueryParams)
 
-    override fun toString() =
-        "EnvironmentCreateParams{idempotencyKey=$idempotencyKey, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+    override fun toString() = "EnvironmentCreateParams{<redacted>}"
 }

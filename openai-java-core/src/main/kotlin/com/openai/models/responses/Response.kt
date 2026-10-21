@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
@@ -978,7 +979,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .accessPrograms()
          * .createdAt()
          * .error()
          * .incompleteDetails()
@@ -1000,7 +1000,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var accessPrograms: JsonField<AccessPrograms>? = null
+        private var accessPrograms: JsonField<AccessPrograms>? = JsonNull.of()
         private var createdAt: JsonField<Double>? = null
         private var error: JsonField<ResponseError>? = null
         private var incompleteDetails: JsonField<IncompleteDetails>? = null
@@ -2243,7 +2243,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .accessPrograms()
          * .createdAt()
          * .error()
          * .incompleteDetails()

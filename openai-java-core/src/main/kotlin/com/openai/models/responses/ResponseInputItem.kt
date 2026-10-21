@@ -3594,6 +3594,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /** Sets the output to the JSON serialized form of a function result. */
+            fun outputAsJson(functionResult: Any) = apply {
+                output(com.openai.core.toJsonString(functionResult))
+            }
+
             /**
              * Returns an immutable instance of [FunctionCallOutput].
              *

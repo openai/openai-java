@@ -194,7 +194,7 @@ private constructor(
             staticBearer != null -> "CredentialAuth{staticBearer=$staticBearer}"
             environmentVariable != null ->
                 "CredentialAuth{environmentVariable=$environmentVariable}"
-            _json != null -> "CredentialAuth{_unknown=$_json}"
+            _json != null -> "CredentialAuth{_unknown=${redactSecretValue(_json)}}"
             else -> throw IllegalStateException("Invalid CredentialAuth")
         }
 
@@ -218,6 +218,20 @@ private constructor(
         @JvmStatic
         fun ofEnvironmentVariable(environmentVariable: EnvironmentVariable) =
             CredentialAuth(environmentVariable = environmentVariable)
+
+        // Only diagnostics use this copy; raw JSON and custom visitors stay unchanged.
+        private fun redactSecretValue(json: JsonValue?): JsonValue? =
+            json
+                ?.asObject()
+                ?.getOrNull()
+                ?.takeIf { "secret_value" in it }
+                ?.let { source ->
+                    JsonValue.from(
+                        source.mapValues { (key, value) ->
+                            if (key == "secret_value") JsonValue.from("[REDACTED]") else value
+                        }
+                    )
+                } ?: json
     }
 
     /**
@@ -239,7 +253,8 @@ private constructor(
          * on ports 443 and 8443. The real secret is not available to sandbox code for local
          * computation and is never returned in this resource.
          */
-        fun visitEnvironmentVariable(environmentVariable: EnvironmentVariable): T
+        fun visitEnvironmentVariable(environmentVariable: EnvironmentVariable): T =
+            unknown(JsonValue.from(environmentVariable))
 
         /**
          * Maps an unknown variant of [CredentialAuth] to a value of type [T].
@@ -1590,7 +1605,12 @@ private constructor(
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() =
-            "EnvironmentVariable{networking=$networking, secretName=$secretName, type=$type, additionalProperties=$additionalProperties}"
+        override fun toString(): String {
+            val diagnosticProperties =
+                additionalProperties.mapValues { (key, value) ->
+                    if (key == "secret_value") JsonValue.from("[REDACTED]") else value
+                }
+            return "EnvironmentVariable{networking=$networking, secretName=$secretName, type=$type, additionalProperties=$diagnosticProperties}"
+        }
     }
 }

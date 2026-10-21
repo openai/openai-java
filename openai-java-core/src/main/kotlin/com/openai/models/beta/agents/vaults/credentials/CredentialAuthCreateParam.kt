@@ -196,7 +196,7 @@ private constructor(
             staticBearer != null -> "CredentialAuthCreateParam{staticBearer=$staticBearer}"
             environmentVariable != null ->
                 "CredentialAuthCreateParam{environmentVariable=$environmentVariable}"
-            _json != null -> "CredentialAuthCreateParam{_unknown=$_json}"
+            _json != null -> "CredentialAuthCreateParam{_unknown=${redactSecretValue(_json)}}"
             else -> throw IllegalStateException("Invalid CredentialAuthCreateParam")
         }
 
@@ -221,6 +221,20 @@ private constructor(
         @JvmStatic
         fun ofEnvironmentVariable(environmentVariable: EnvironmentVariable) =
             CredentialAuthCreateParam(environmentVariable = environmentVariable)
+
+        // Only diagnostics use this copy; raw JSON and custom visitors stay unchanged.
+        private fun redactSecretValue(json: JsonValue?): JsonValue? =
+            json
+                ?.asObject()
+                ?.getOrNull()
+                ?.takeIf { "secret_value" in it }
+                ?.let { source ->
+                    JsonValue.from(
+                        source.mapValues { (key, value) ->
+                            if (key == "secret_value") JsonValue.from("[REDACTED]") else value
+                        }
+                    )
+                } ?: json
     }
 
     /**
@@ -242,7 +256,8 @@ private constructor(
          * for allowed HTTPS destinations on ports 443 and 8443. Sandbox code cannot read the real
          * secret or use it for local computation, such as signing a request.
          */
-        fun visitEnvironmentVariable(environmentVariable: EnvironmentVariable): T
+        fun visitEnvironmentVariable(environmentVariable: EnvironmentVariable): T =
+            unknown(JsonValue.from(environmentVariable))
 
         /**
          * Maps an unknown variant of [CredentialAuthCreateParam] to a value of type [T].
@@ -1522,7 +1537,16 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun secretValue(): String = secretValue.getRequired("secret_value")
+        fun secretValue(): String {
+            if (
+                secretValue.asUnknown().isPresent &&
+                    !secretValue.isMissing() &&
+                    !secretValue.isNull()
+            ) {
+                throw OpenAIInvalidDataException("`secret_value` is invalid, received [REDACTED]")
+            }
+            return secretValue.getRequired("secret_value")
+        }
 
         /**
          * The type of the object. Always `environment_variable`.
@@ -1832,7 +1856,12 @@ private constructor(
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() =
-            "EnvironmentVariable{networking=$networking, secretName=$secretName, secretValue=$secretValue, type=$type, additionalProperties=$additionalProperties}"
+        override fun toString(): String {
+            val diagnosticProperties =
+                additionalProperties.mapValues { (key, value) ->
+                    if (key == "secret_value") JsonValue.from("[REDACTED]") else value
+                }
+            return "EnvironmentVariable{networking=$networking, secretName=$secretName, secretValue=[REDACTED], type=$type, additionalProperties=$diagnosticProperties}"
+        }
     }
 }

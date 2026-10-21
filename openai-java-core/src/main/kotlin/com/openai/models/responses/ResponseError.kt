@@ -13,6 +13,8 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
+import com.openai.core.legacyAdditionalProperties
+import com.openai.core.serializableAdditionalProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -147,10 +149,16 @@ private constructor(
      *   accessor retains its legacy additional-properties behavior.
      */
     @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+    fun _additionalProperties(): Map<String, JsonValue> =
+        legacyAdditionalProperties(additionalProperties, mapOf("type" to type, "param" to param))
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
-        Collections.unmodifiableMap(additionalProperties)
+    private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
+        serializableAdditionalProperties(
+            additionalProperties,
+            mapOf("type" to type, "param" to param),
+        )
 
     fun toBuilder() = Builder().from(this)
 

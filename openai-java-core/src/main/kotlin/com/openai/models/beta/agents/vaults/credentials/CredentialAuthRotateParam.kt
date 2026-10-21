@@ -193,7 +193,7 @@ private constructor(
             staticBearer != null -> "CredentialAuthRotateParam{staticBearer=$staticBearer}"
             environmentVariable != null ->
                 "CredentialAuthRotateParam{environmentVariable=$environmentVariable}"
-            _json != null -> "CredentialAuthRotateParam{_unknown=$_json}"
+            _json != null -> "CredentialAuthRotateParam{_unknown=${redactSecretValue(_json)}}"
             else -> throw IllegalStateException("Invalid CredentialAuthRotateParam")
         }
 
@@ -215,6 +215,20 @@ private constructor(
         @JvmStatic
         fun ofEnvironmentVariable(environmentVariable: EnvironmentVariable) =
             CredentialAuthRotateParam(environmentVariable = environmentVariable)
+
+        // Only diagnostics use this copy; raw JSON and custom visitors stay unchanged.
+        private fun redactSecretValue(json: JsonValue?): JsonValue? =
+            json
+                ?.asObject()
+                ?.getOrNull()
+                ?.takeIf { "secret_value" in it }
+                ?.let { source ->
+                    JsonValue.from(
+                        source.mapValues { (key, value) ->
+                            if (key == "secret_value") JsonValue.from("[REDACTED]") else value
+                        }
+                    )
+                } ?: json
     }
 
     /**
@@ -233,7 +247,8 @@ private constructor(
          * Replace the secret for an OpenAI-hosted environment credential. The environment variable
          * name and networking configuration remain unchanged.
          */
-        fun visitEnvironmentVariable(environmentVariable: EnvironmentVariable): T
+        fun visitEnvironmentVariable(environmentVariable: EnvironmentVariable): T =
+            unknown(JsonValue.from(environmentVariable))
 
         /**
          * Maps an unknown variant of [CredentialAuthRotateParam] to a value of type [T].
@@ -1188,7 +1203,16 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun secretValue(): String = secretValue.getRequired("secret_value")
+        fun secretValue(): String {
+            if (
+                secretValue.asUnknown().isPresent &&
+                    !secretValue.isMissing() &&
+                    !secretValue.isNull()
+            ) {
+                throw OpenAIInvalidDataException("`secret_value` is invalid, received [REDACTED]")
+            }
+            return secretValue.getRequired("secret_value")
+        }
 
         /**
          * The type of the object. Always `environment_variable`.
@@ -1403,7 +1427,12 @@ private constructor(
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() =
-            "EnvironmentVariable{secretValue=$secretValue, type=$type, additionalProperties=$additionalProperties}"
+        override fun toString(): String {
+            val diagnosticProperties =
+                additionalProperties.mapValues { (key, value) ->
+                    if (key == "secret_value") JsonValue.from("[REDACTED]") else value
+                }
+            return "EnvironmentVariable{secretValue=[REDACTED], type=$type, additionalProperties=$diagnosticProperties}"
+        }
     }
 }

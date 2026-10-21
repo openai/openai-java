@@ -47,4 +47,13 @@ internal class EventServiceTest {
                 .build()
         )
     }
+
+    // Streaming assertions and lifecycle remain in SDK-owned suite
+    // com.openai.services.blocking.beta.agents.sessions.AgentSessionEventStreamingRegressionTest.
+    // The callable reference is checked at compile time and never invoked here.
+    private fun streamStreamingContractCases() =
+        listOf(
+            com.openai.services.blocking.beta.agents.sessions
+                .AgentSessionEventStreamingRegressionTest::streamStreaming
+        )
 }

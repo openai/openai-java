@@ -1090,7 +1090,7 @@ private constructor(
         /** Sent when an agent environment expires and can no longer resume from a snapshot. */
         fun visitAgentEnvironmentExpired(
             agentEnvironmentExpired: AgentEnvironmentExpiredWebhookEvent
-        ): T
+        ): T = unknown(JsonValue.from(agentEnvironmentExpired))
 
         /**
          * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to
@@ -1098,39 +1098,44 @@ private constructor(
          */
         fun visitAgentEnvironmentFailed(
             agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent
-        ): T
+        ): T = unknown(JsonValue.from(agentEnvironmentFailed))
 
         /**
          * Sent when a prewarmed OpenAI-hosted environment finishes setup before being attached to a
          * session.
          */
-        fun visitAgentEnvironmentReady(agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent): T
+        fun visitAgentEnvironmentReady(
+            agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent
+        ): T = unknown(JsonValue.from(agentEnvironmentReady))
 
         /** Sent when an agent environment is suspended and can resume from a snapshot. */
         fun visitAgentEnvironmentSuspended(
             agentEnvironmentSuspended: AgentEnvironmentSuspendedWebhookEvent
-        ): T
+        ): T = unknown(JsonValue.from(agentEnvironmentSuspended))
 
         /**
          * Sent when an agent session requires an action. Retrieve the session for action details.
          */
         fun visitAgentSessionActionRequired(
             agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
-        ): T
+        ): T = unknown(JsonValue.from(agentSessionActionRequired))
 
         /** Sent when an agent session is created. */
-        fun visitAgentSessionCreated(agentSessionCreated: AgentSessionCreatedWebhookEvent): T
+        fun visitAgentSessionCreated(agentSessionCreated: AgentSessionCreatedWebhookEvent): T =
+            unknown(JsonValue.from(agentSessionCreated))
 
         /** Sent when an agent session fails. */
-        fun visitAgentSessionFailed(agentSessionFailed: AgentSessionFailedWebhookEvent): T
+        fun visitAgentSessionFailed(agentSessionFailed: AgentSessionFailedWebhookEvent): T =
+            unknown(JsonValue.from(agentSessionFailed))
 
         /** Sent when an agent session becomes idle. */
-        fun visitAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent): T
+        fun visitAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent): T =
+            unknown(JsonValue.from(agentSessionIdle))
 
         /** Sent when an agent session enters the in-progress state. */
         fun visitAgentSessionInProgress(
             agentSessionInProgress: AgentSessionInProgressWebhookEvent
-        ): T
+        ): T = unknown(JsonValue.from(agentSessionInProgress))
 
         /** Sent when a batch API request has been cancelled. */
         fun visitBatchCancelled(batchCancelled: BatchCancelledWebhookEvent): T
@@ -1208,13 +1213,14 @@ private constructor(
         /** Sent when a deactivation is issued for a safety identifier in your organization. */
         fun visitSafetyDeactivationIssued(
             safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
-        ): T
+        ): T = unknown(JsonValue.from(safetyDeactivationIssued))
 
         /** Sent when an approved safety alert is available for an enterprise workspace. */
         fun visitSafetyOrgAlertCreated(safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent): T
 
         /** Sent when a warning is issued for a safety identifier in your organization. */
-        fun visitSafetyWarningIssued(safetyWarningIssued: SafetyWarningIssuedWebhookEvent): T
+        fun visitSafetyWarningIssued(safetyWarningIssued: SafetyWarningIssuedWebhookEvent): T =
+            unknown(JsonValue.from(safetyWarningIssued))
 
         /**
          * Maps an unknown variant of [UnwrapWebhookEvent] to a value of type [T].

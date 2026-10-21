@@ -158,6 +158,18 @@ class AudioResponseFormat @JsonCreator private constructor(private val value: Js
      */
     @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
+    @JvmSynthetic
+    internal fun isJson(): Boolean =
+        when (this) {
+            JSON -> true
+            TEXT -> false
+            SRT -> false
+            VERBOSE_JSON -> true
+            VTT -> false
+            DIARIZED_JSON -> false
+            else -> false
+        }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true

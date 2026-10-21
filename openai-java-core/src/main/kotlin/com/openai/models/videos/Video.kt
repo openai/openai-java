@@ -677,7 +677,7 @@ private constructor(
         progress()
         prompt()
         remixedFromVideoId()
-        seconds().validate()
+        seconds()
         size().validate()
         status().validate()
         validated = true

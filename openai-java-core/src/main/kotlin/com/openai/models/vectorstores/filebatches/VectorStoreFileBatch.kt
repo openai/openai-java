@@ -360,7 +360,10 @@ private constructor(
         createdAt()
         fileCounts().validate()
         _object_().let {
-            if (it != JsonValue.from("vector_store.files_batch")) {
+            if (
+                !(object_ == JsonValue.from("vector_store.files_batch") ||
+                    object_ == JsonValue.from("vector_store.file_batch"))
+            ) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
             }
         }
@@ -387,7 +390,12 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (fileCounts.asKnown().getOrNull()?.validity() ?: 0) +
-            object_.let { if (it == JsonValue.from("vector_store.files_batch")) 1 else 0 } +
+            (if (
+                object_ == JsonValue.from("vector_store.files_batch") ||
+                    object_ == JsonValue.from("vector_store.file_batch")
+            )
+                1
+            else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (if (vectorStoreId.asKnown().isPresent) 1 else 0)
 

@@ -573,5 +573,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "WebhookEndpointWithSecret{id=$id, createdAt=$createdAt, eventTypes=$eventTypes, name=$name, object_=$object_, signingSecret=$signingSecret, signingSecretHint=$signingSecretHint, url=$url, updatedAt=$updatedAt, additionalProperties=$additionalProperties}"
+        "WebhookEndpointWithSecret{id=$id, createdAt=$createdAt, eventTypes=$eventTypes, name=$name, object_=$object_, signingSecret=[REDACTED], signingSecretHint=$signingSecretHint, url=$url, updatedAt=$updatedAt, additionalProperties=$additionalProperties}"
 }
