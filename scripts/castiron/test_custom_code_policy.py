@@ -8,9 +8,10 @@ import json
 import sys
 import tempfile
 import unittest
+import unittest.mock as mock  # noqa: PLR0402 - keep unittest imports consistent
+from collections.abc import Callable
 from pathlib import Path
-from unittest import mock
-from typing import Any, Callable
+from typing import Any
 
 import custom_code_budget as budget
 import custom_code_policy as selector
@@ -76,6 +77,7 @@ class ReviewedPinTests(GitTestCase):
             "commit_id": self.head,
             "user": {"type": "User", "login": "reviewer"},
             "author_association": "MEMBER",
+            "body": selector.HUMAN_REVIEW_RULES["attestation_prefix"] + self.head,
             **kwargs,
         }
 
@@ -124,6 +126,10 @@ class ReviewedPinTests(GitTestCase):
         with self.assertRaisesRegex(ValueError, "initialization"):
             self.select(base=self.main, head=self.head)
 
+    def test_absent_pin_preserves_value_error(self) -> None:
+        with self.assertRaisesRegex(ValueError, "trusted next base has no reviewed policy pin"):
+            selector.next_policy_sha(self.repo, REPO, self.main, self.main)
+
     def test_malformed_base_pin_cannot_bootstrap(self) -> None:
         self.git("checkout", "-q", "--detach", self.main)
         self.write_policy({**self.policy, "next_policy": {}})
@@ -141,11 +147,38 @@ class ReviewedPinTests(GitTestCase):
             self.assertEqual(result["policy_reviews"], [{"number": 3, "head_sha": self.head}])
             self.assertEqual(result["human_review_rules"], selector.HUMAN_REVIEW_RULES)
             self.assertEqual(result["policy_sha"], self.main)
-        with mock.patch.object(selector.report, "api", side_effect=self.review_api([])):
-            with self.assertRaisesRegex(ValueError, "human"):
-                self.select(base=self.main)
+        with (
+            mock.patch.object(selector.report, "api", side_effect=self.review_api([])),
+            self.assertRaisesRegex(ValueError, "human"),
+        ):
+            self.select(base=self.main)
         with self.assertRaisesRegex(ValueError, "policy-only"):
             self.select(base=self.main, head=self.git("rev-parse", "next"))
+
+    def test_queue_bootstrap_isolated_per_constituent(self) -> None:
+        self.git("checkout", "-q", "--detach", self.main)
+        (self.repo / "unrelated.txt").write_text("independent SDK change")
+        sdk_head = self.commit("unrelated PR on unpinned next")
+        self.git("merge", "--no-ff", "-qm", "queue initialization and SDK", self.base)
+        group = self.git("rev-parse", "HEAD")
+        with mock.patch.object(selector, "require_human_policy_review", return_value=3) as review:
+            result = self.select(base=self.main, head=group, pull_heads=[self.base, sdk_head])
+            self.assertTrue(result["bootstrap"])
+            self.assertEqual(result["policy_sha"], self.main)
+            self.assertEqual(result["policy_reviews"], [{"number": 3, "head_sha": self.base}])
+            review.assert_called_once_with(REPO, self.base)
+        with (
+            mock.patch.object(
+                selector, "require_human_policy_review", side_effect=ValueError("human required")
+            ),
+            self.assertRaisesRegex(ValueError, "human"),
+        ):
+            self.select(base=self.main, head=group, pull_heads=[self.base, sdk_head])
+        for heads in (None, [group]):
+            with self.subTest(heads=heads), self.assertRaisesRegex(ValueError, "policy-only"):
+                self.select(base=self.main, head=group, pull_heads=heads)
+        with self.assertRaisesRegex(ValueError, "verified constituent"):
+            self.select(base=self.main, head=group, pull_heads=[])
 
     def test_queue_pin_update_isolated_per_constituent(self) -> None:
         self.git("checkout", "-q", "--detach", self.main)
@@ -204,11 +237,13 @@ class ReviewedPinTests(GitTestCase):
             result = self.select(base=base, head=edited, main=later)
             self.assertEqual(result["policy_reviews"], [{"number": 3, "head_sha": edited}])
             review.assert_called_once_with(REPO, edited)
-        with mock.patch.object(
-            selector, "require_human_policy_review", side_effect=ValueError("human required")
+        with (
+            mock.patch.object(
+                selector, "require_human_policy_review", side_effect=ValueError("human required")
+            ),
+            self.assertRaisesRegex(ValueError, "human"),
         ):
-            with self.assertRaisesRegex(ValueError, "human"):
-                self.select(base=base, head=edited, main=later)
+            self.select(base=base, head=edited, main=later)
         (self.repo / "mixed-sdk.txt").write_text("SDK change")
         mixed = self.commit("mix policy and SDK")
         with self.assertRaisesRegex(ValueError, "policy-only"):
@@ -242,11 +277,15 @@ class ReviewedPinTests(GitTestCase):
         self.write_policy({**self.policy, "next_policy": self.pin, "max_custom_patch_lines": 5000})
         edited = self.commit("PR actually raises budget")
         for heads in (None, [edited]):
-            with mock.patch.object(
-                selector, "require_human_policy_review", side_effect=ValueError("human required")
+            with (
+                mock.patch.object(
+                    selector,
+                    "require_human_policy_review",
+                    side_effect=ValueError("human required"),
+                ),
+                self.assertRaisesRegex(ValueError, "human"),
             ):
-                with self.assertRaisesRegex(ValueError, "human"):
-                    self.select(base=base, head=edited, pull_heads=heads)
+                self.select(base=base, head=edited, pull_heads=heads)
         (self.repo / "mixed-sdk.txt").write_text("SDK change")
         mixed = self.commit("mix SDK and actual budget increase")
         with self.assertRaisesRegex(ValueError, "policy-only"):
@@ -292,6 +331,9 @@ class ReviewedPinTests(GitTestCase):
         self.head = self.base
         cases = [
             [],
+            [self.approved(body="")],
+            [self.approved(body="Looks good to me")],
+            [self.approved(body=selector.HUMAN_REVIEW_RULES["attestation_prefix"] + "f" * 40)],
             [self.approved(state="COMMENTED", body="APPROVED by a human")],
             [self.approved(user={"type": "Bot", "login": "reviewer[bot]"})],
             [self.approved(commit_id="a" * 40)],
@@ -318,9 +360,9 @@ class ReviewedPinTests(GitTestCase):
             with (
                 self.subTest(reviews=reviews),
                 mock.patch.object(selector.report, "api", side_effect=self.review_api(reviews)),
+                self.assertRaisesRegex(ValueError, "human"),
             ):
-                with self.assertRaisesRegex(ValueError, "human"):
-                    self.select(base=self.main)
+                self.select(base=self.main)
 
     def test_budget_increase_without_pin_change_requires_human(self) -> None:
         self.git("checkout", "-q", "--detach", self.base)
@@ -330,9 +372,11 @@ class ReviewedPinTests(GitTestCase):
         )
         self.head = self.commit("increase budget without changing pin")
         for reviews in ([], [self.approved(body="Automated source review.")]):
-            with mock.patch.object(selector.report, "api", side_effect=self.review_api(reviews)):
-                with self.assertRaisesRegex(ValueError, "human"):
-                    self.select()
+            with (
+                mock.patch.object(selector.report, "api", side_effect=self.review_api(reviews)),
+                self.assertRaisesRegex(ValueError, "human"),
+            ):
+                self.select()
         with mock.patch.object(
             selector.report, "api", side_effect=self.review_api([self.approved()])
         ):
@@ -342,6 +386,25 @@ class ReviewedPinTests(GitTestCase):
         self.git("update-ref", "refs/remotes/origin/main", self.head)
         with self.assertRaisesRegex(ValueError, "changed"):
             self.select()
+
+    def test_go_ratchet_activation_requires_human_for_pr_and_queue(self) -> None:
+        self.git("checkout", "-q", "--detach", self.base)
+        self.write_policy({**selector.read_policy(self.repo, self.base), "ratchet": "go"})
+        self.head = self.commit("activate Go ratchet without changing pin or ceiling")
+        for pull_heads in (None, [self.head]):
+            for reviews in ([], [self.approved(body="Automated source review.")]):
+                with (
+                    self.subTest(pull_heads=pull_heads, reviews=reviews),
+                    mock.patch.object(selector.report, "api", side_effect=self.review_api(reviews)),
+                    self.assertRaisesRegex(ValueError, "human"),
+                ):
+                    self.select(pull_heads=pull_heads)
+            with mock.patch.object(
+                selector.report, "api", side_effect=self.review_api([self.approved()])
+            ):
+                selected = self.select(pull_heads=pull_heads)
+                self.assertEqual(selected["policy_sha"], self.main)
+                self.assertEqual(selected["policy_reviews"], [{"number": 3, "head_sha": self.head}])
 
     def test_wrong_origin_rejected(self) -> None:
         self.git("remote", "set-url", "origin", "https://github.com/attacker/example.git")
@@ -360,9 +423,11 @@ class ReviewedPinTests(GitTestCase):
             selector.report, "api", side_effect=self.review_api([self.approved()])
         ):
             self.assertEqual(self.select(main=newer)["policy_sha"], self.main)
-        with mock.patch.object(selector.report, "api", side_effect=self.review_api([])):
-            with self.assertRaisesRegex(ValueError, "human"):
-                self.select(main=newer)
+        with (
+            mock.patch.object(selector.report, "api", side_effect=self.review_api([])),
+            self.assertRaisesRegex(ValueError, "human"),
+        ):
+            self.select(main=newer)
 
     def test_incapable_policy_is_not_executed(self) -> None:
         self.git("checkout", "-q", "--detach", self.main)
@@ -394,15 +459,16 @@ class PolicySourceWorkflowTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.repo = Path(self.temp.name) / "objects"
-        self.workflow_run: dict[str, Any] = dict(
-            id=42,
-            repository={"full_name": REPO},
-            head_sha="a" * 40,
-            status="completed",
-            event="pull_request",
-            run_attempt=3,
-            path=CANONICAL_POLICY_WORKFLOW + "@refs/pull/12/merge",
-        )
+        self.workflow_run: dict[str, Any] = {
+            "id": 42,
+            "workflow_id": 456,
+            "repository": {"full_name": REPO},
+            "head_sha": "a" * 40,
+            "status": "completed",
+            "event": "pull_request",
+            "run_attempt": 3,
+            "path": CANONICAL_POLICY_WORKFLOW + "@refs/pull/12/merge",
+        }
         self.event: dict[str, Any] = {
             "repository": {"full_name": REPO},
             "workflow_run": copy.deepcopy(self.workflow_run),
@@ -438,6 +504,14 @@ class PolicySourceWorkflowTests(unittest.TestCase):
         return {
             POLICY_SOURCE_ROOT: {"default_branch": "main"},
             POLICY_SOURCE_ROOT + "/actions/runs/42": self.workflow_run,
+            POLICY_SOURCE_ROOT + "/actions/workflows/castiron-custom-code.yml": {
+                "id": 456,
+                "path": CANONICAL_POLICY_WORKFLOW,
+            },
+            POLICY_SOURCE_ROOT + "/actions/workflows/ci.yml": {
+                "id": 456,
+                "path": CI_POLICY_WORKFLOW,
+            },
             POLICY_SOURCE_ROOT + "/git/ref/heads/main": {"object": {"sha": "c" * 40}},
             POLICY_SOURCE_ROOT + "/git/ref/heads/next": {"object": {"sha": "b" * 40}},
         }[path]
@@ -447,6 +521,13 @@ class PolicySourceWorkflowTests(unittest.TestCase):
 
     def use_ci(self) -> None:
         self.workflow_run["path"] = CI_POLICY_WORKFLOW + "@refs/pull/12/merge"
+
+    def test_lookalike_workflow_cannot_select_policy(self) -> None:
+        self.workflow_run["path"] = CANONICAL_POLICY_WORKFLOW + "@evil.yml"
+        self.workflow_run["workflow_id"] = 789
+        with self.assertRaisesRegex(ValueError, "canonical workflow"):
+            self.call()
+        self.select.assert_not_called()
 
     def test_default_canonical_unchanged(self) -> None:
         self.branch = "main"
