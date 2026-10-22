@@ -527,7 +527,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/projects/apikeys/ApiKeyDeleteParams.kt": {
       "mode": "100644",
-      "sha256": "5f248287b65f26add45cec747a6e0daf894357c0c7a3a07a049e5689ea86bd3e"
+      "sha256": "9da6a8e9766539775b0992d15a6b8067614a8f644cf719b45873b415d76b7dde"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/projects/apikeys/ApiKeyDeleteResponse.kt": {
       "mode": "100644",
@@ -6979,7 +6979,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/projects/ApiKeyServiceAsync.kt": {
       "mode": "100644",
-      "sha256": "075e0f249cae85b5935d0f61b20576073022535d24164f316c4233ae91c95ee7"
+      "sha256": "c8db74b78cc4b8d1b3c27789afc8b40a04e51101ebcd55e4eb72556571b844c2"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/projects/ApiKeyServiceAsyncImpl.kt": {
       "mode": "100644",
@@ -7979,7 +7979,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/projects/ApiKeyService.kt": {
       "mode": "100644",
-      "sha256": "4423905da9810bf6f61ebd4d31084b8e15feae95e812fef0a19e162c037e3448"
+      "sha256": "bac081447cd11586befee49bfe0cf47a8feeafbaf0ddd8017549394831b0852a"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/projects/ApiKeyServiceImpl.kt": {
       "mode": "100644",
