@@ -29,3 +29,7 @@ openai-java-core/src/test/kotlin/com/openai/services/ResponseStreamEventValidati
 # Scoped to the beta credential update API documented here:
 # https://developers.openai.com/api/reference/java/resources/beta/subresources/agents/subresources/vaults
 openai-java-core/src/test/kotlin/com/openai/models/beta/agents/vaults/credentials/CredentialAuthRotateParamTest.kt
+
+# Intentional Decisions beta exception: allow changes to DecisionInputMessage's generated API.
+# DecisionInputMessageCompatibility retains compile-time JSON roundtrip coverage.
+openai-java-core/src/test/kotlin/com/openai/models/decisions/DecisionInputMessageTest.kt
