@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.90.0](https://github.com/openai/openai-java/compare/v4.89.0...v4.90.0) (2026-10-22)
+
+
+### Features
+
+* **api:** add voice deletion ([#1263](https://github.com/openai/openai-java/issues/1263)) ([dcc7b18](https://github.com/openai/openai-java/commit/dcc7b18a3ed1228b9806dbaed9ce0426a4c023c7))
+
+
+### Performance Improvements
+
+* reuse Kotlin compiler classloaders for in-process builds ([#1266](https://github.com/openai/openai-java/issues/1266)) ([8e52b99](https://github.com/openai/openai-java/commit/8e52b99c2a8e2c5c367d317f34b0072e8e858fa2))
+
+
+### Chores
+
+* **api:** clarify service-account API key deletion ([#1265](https://github.com/openai/openai-java/issues/1265)) ([c73a262](https://github.com/openai/openai-java/commit/c73a2625992791f1f2ce41ef25fdea4f5db045a3))
+
+
+### Build System
+
+* isolate authenticator changes from model compilation ([#1264](https://github.com/openai/openai-java/issues/1264)) ([6ab4a33](https://github.com/openai/openai-java/commit/6ab4a33a3afa819aeb05eb215f57c7df1e758e1a))
+
 ## [4.89.0](https://github.com/openai/openai-java/compare/v4.88.0...v4.89.0) (2026-10-21)
 
 
