@@ -5,6 +5,7 @@ package com.openai.services.blocking.audio
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.SecurityOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
@@ -13,12 +14,16 @@ import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.json
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.models.audio.voices.Voice
 import com.openai.models.audio.voices.VoiceCreateParams
+import com.openai.models.audio.voices.VoiceDeleteParams
+import com.openai.models.audio.voices.VoiceDeleted
 import java.util.function.Consumer
+import kotlin.jvm.optionals.getOrNull
 
 /** Turn audio into text or text into audio. */
 class VoiceServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -36,6 +41,10 @@ class VoiceServiceImpl internal constructor(private val clientOptions: ClientOpt
     override fun create(params: VoiceCreateParams, requestOptions: RequestOptions): Voice =
         // post /audio/voices
         withRawResponse().create(params, requestOptions).parse()
+
+    override fun delete(params: VoiceDeleteParams, requestOptions: RequestOptions): VoiceDeleted =
+        // delete /audio/voices/{voice_id}
+        withRawResponse().delete(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         VoiceService.WithRawResponse {
@@ -73,6 +82,41 @@ class VoiceServiceImpl internal constructor(private val clientOptions: ClientOpt
             return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val deleteHandler: Handler<VoiceDeleted> =
+            jsonHandler<VoiceDeleted>(clientOptions.jsonMapper)
+
+        override fun delete(
+            params: VoiceDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VoiceDeleted> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("voiceId", params.voiceId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("audio", "voices", params._pathParam(0))
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(
+                        clientOptions,
+                        params,
+                        SecurityOptions.builder().bearerAuth(true).build(),
+                    )
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { deleteHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()
