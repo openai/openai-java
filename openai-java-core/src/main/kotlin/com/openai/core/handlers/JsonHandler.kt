@@ -15,6 +15,6 @@ internal inline fun <reified T> jsonHandler(jsonMapper: JsonMapper): Handler<T> 
             try {
                 jsonMapper.readValue(response.body(), jacksonTypeRef())
             } catch (e: Exception) {
-                throw OpenAIInvalidDataException("Error reading response", e)
+                throw OpenAIInvalidDataException("Error reading response", e, response.headers())
             }
     }
