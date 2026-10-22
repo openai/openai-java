@@ -602,7 +602,7 @@ def github_evaluate(
 
 def main() -> int:
     if sys.argv[1:2] == ["select-policy"]:
-        return cast(int, policy.main(sys.argv[1:]))
+        return policy.main(sys.argv[1:])
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     generated = commands.add_parser("verify-generated")

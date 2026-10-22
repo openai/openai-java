@@ -125,7 +125,7 @@ def next_policy_sha(repo: Path, repository: str, base: str, authenticated_main: 
     )
     if not capable:
         raise ValueError("pinned checker does not support reviewed next policies")
-    return cast(str, policy)
+    return policy
 
 
 class HumanReviewRules(TypedDict):
@@ -368,11 +368,10 @@ def select_github_policy(
 
 def merge_base(repo: Path, base: str, head: str) -> str:
     """Distinguish actual PR policy edits from later changes on the target."""
-    return cast(
-        str,
+    return (
         report.git(repo, "merge-base", report.require_sha(base), report.require_sha(head))
         .decode()
-        .strip(),
+        .strip()
     )
 
 
