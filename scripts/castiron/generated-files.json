@@ -1417,6 +1417,14 @@
       "mode": "100644",
       "sha256": "4b17093d52bb7adc26a80b7b1fe930ea955bd64206ea87beae8e25ca85cd1434"
     },
+    "openai-java-core/src/main/kotlin/com/openai/models/audio/voices/VoiceDeleteParams.kt": {
+      "mode": "100644",
+      "sha256": "d93bf8fc61882c23cc56508d259c5ca67959d22f4853a08258ad6aeb4434e69f"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/audio/voices/VoiceDeleted.kt": {
+      "mode": "100644",
+      "sha256": "89dd64423efdf482f60b149dbe00bffdbcc3e75dc735bfbc51f4cd95d53e76f0"
+    },
     "openai-java-core/src/main/kotlin/com/openai/models/batches/Batch.kt": {
       "mode": "100644",
       "sha256": "40663c5e3f849718e00ea7696b8f371d0444b1674d341af6216aa0d296592ee5"
@@ -7131,11 +7139,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/audio/VoiceServiceAsync.kt": {
       "mode": "100644",
-      "sha256": "28d631358a4ba39fcf1e7fb4176c86ff53c919b9df93d46819a6ccfa4b783bf0"
+      "sha256": "2e6c00df2eba70a3461ea7837790d453559dcfbbf58ea2c6af7b4a171104a911"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/audio/VoiceServiceAsyncImpl.kt": {
       "mode": "100644",
-      "sha256": "c782a735761c32a8067fd50dccd5449cbd04cd8f196cf8a32c66af843f482462"
+      "sha256": "609bdfe793d9ed8f9ae9885885e18a46d81edde178244463f2644b469d1b7137"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/beta/AgentServiceAsync.kt": {
       "mode": "100644",
@@ -8131,11 +8139,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/audio/VoiceService.kt": {
       "mode": "100644",
-      "sha256": "a2cb878dbc0dd6dc83b0ea4ec9c2118394da3a5aa19295d3fb479781a1ed11dd"
+      "sha256": "029c82c90024485552034f43fdfa59768a149b45da7a90984c906cccea9d01fd"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/audio/VoiceServiceImpl.kt": {
       "mode": "100644",
-      "sha256": "9a09dbc430db57551f083ec29f9d35d2032c6930a40b6a41cd0a37db7512e5d4"
+      "sha256": "071a641a01181c3c878877f75bdc5e22c617f8aff18202660aa82f86cbbbc2f8"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/beta/AgentService.kt": {
       "mode": "100644",
@@ -9744,6 +9752,14 @@
     "openai-java-core/src/test/kotlin/com/openai/models/audio/voiceconsents/VoiceConsentUpdateParamsTest.kt": {
       "mode": "100644",
       "sha256": "310a9486f6a0b53d28bd16698f500d455e005d8735c732ab33cdb88d18f5e2e1"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/audio/voices/VoiceDeleteParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "a122175544e946e2987e05e5b92b15715ea59be1587de10ba7bdb954e4cbf312"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/audio/voices/VoiceDeletedTest.kt": {
+      "mode": "100644",
+      "sha256": "e477658ec70829f295f69c2952e1d42fe7e36fcfc50a44e4f7cf8d7b648393b3"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/audio/voices/VoiceTest.kt": {
       "mode": "100644",
@@ -14789,6 +14805,10 @@
       "mode": "100644",
       "sha256": "b70b04f6bad2e667731535b83e7619cc859eee11300d964676c403443b08b6c1"
     },
+    "openai-java-core/src/test/kotlin/com/openai/services/async/audio/VoiceServiceAsyncTest.kt": {
+      "mode": "100644",
+      "sha256": "a1adc4efdde522ca61d05edf3cf0030ecd4529d782da81ca711cfee1ab8a77cd"
+    },
     "openai-java-core/src/test/kotlin/com/openai/services/async/beta/AgentServiceAsyncPaginationContractTest.kt": {
       "mode": "100644",
       "sha256": "4ba6732c0e454b857bf9d3019ea312ae33447ec075c411dd8110dc47f09a207d"
@@ -15516,6 +15536,10 @@
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/audio/VoiceConsentServiceTest.kt": {
       "mode": "100644",
       "sha256": "ec65e0d062d505d5830b134f98fd823baf3df4671727ff2b4e5957e6e7a1eb31"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/services/blocking/audio/VoiceServiceTest.kt": {
+      "mode": "100644",
+      "sha256": "498852c93b7194a95946e7e6759b92a6bd82ed1f687d0fbcd31be32939b35a19"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/beta/AgentServicePaginationContractTest.kt": {
       "mode": "100644",

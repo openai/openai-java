@@ -8,6 +8,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.models.audio.voices.Voice
 import com.openai.models.audio.voices.VoiceCreateParams
 import com.openai.models.audio.voices.VoiceCreateParams.Body
+import com.openai.models.audio.voices.VoiceDeleteParams
+import com.openai.models.audio.voices.VoiceDeleted
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -56,6 +58,47 @@ interface VoiceServiceAsync {
     /** @see create */
     fun create(body: Body): CompletableFuture<Voice> = create(body, RequestOptions.none())
 
+    /**
+     * Deletes a voice created from a text prompt or an audio sample.
+     *
+     * Requires voice write permission and access to the voice's project. Access to voices created
+     * from recordings is limited to eligible customers. See the
+     * [custom voices guide](https://developers.openai.com/api/docs/guides/custom-voices).
+     *
+     * Deleting a voice does not delete its consent recording. Deleting an already deleted voice
+     * returns a 404 error.
+     */
+    fun delete(voiceId: String): CompletableFuture<VoiceDeleted> =
+        delete(voiceId, VoiceDeleteParams.none())
+
+    /** @see delete */
+    fun delete(
+        voiceId: String,
+        params: VoiceDeleteParams = VoiceDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VoiceDeleted> =
+        delete(params.toBuilder().voiceId(voiceId).build(), requestOptions)
+
+    /** @see delete */
+    fun delete(
+        voiceId: String,
+        params: VoiceDeleteParams = VoiceDeleteParams.none(),
+    ): CompletableFuture<VoiceDeleted> = delete(voiceId, params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(
+        params: VoiceDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VoiceDeleted>
+
+    /** @see delete */
+    fun delete(params: VoiceDeleteParams): CompletableFuture<VoiceDeleted> =
+        delete(params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(voiceId: String, requestOptions: RequestOptions): CompletableFuture<VoiceDeleted> =
+        delete(voiceId, VoiceDeleteParams.none(), requestOptions)
+
     /** A view of [VoiceServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -91,5 +134,44 @@ interface VoiceServiceAsync {
         /** @see create */
         fun create(body: Body): CompletableFuture<HttpResponseFor<Voice>> =
             create(body, RequestOptions.none())
+
+        /**
+         * Returns a raw HTTP response for `delete /audio/voices/{voice_id}`, but is otherwise the
+         * same as [VoiceServiceAsync.delete].
+         */
+        fun delete(voiceId: String): CompletableFuture<HttpResponseFor<VoiceDeleted>> =
+            delete(voiceId, VoiceDeleteParams.none())
+
+        /** @see delete */
+        fun delete(
+            voiceId: String,
+            params: VoiceDeleteParams = VoiceDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VoiceDeleted>> =
+            delete(params.toBuilder().voiceId(voiceId).build(), requestOptions)
+
+        /** @see delete */
+        fun delete(
+            voiceId: String,
+            params: VoiceDeleteParams = VoiceDeleteParams.none(),
+        ): CompletableFuture<HttpResponseFor<VoiceDeleted>> =
+            delete(voiceId, params, RequestOptions.none())
+
+        /** @see delete */
+        fun delete(
+            params: VoiceDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VoiceDeleted>>
+
+        /** @see delete */
+        fun delete(params: VoiceDeleteParams): CompletableFuture<HttpResponseFor<VoiceDeleted>> =
+            delete(params, RequestOptions.none())
+
+        /** @see delete */
+        fun delete(
+            voiceId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VoiceDeleted>> =
+            delete(voiceId, VoiceDeleteParams.none(), requestOptions)
     }
 }
