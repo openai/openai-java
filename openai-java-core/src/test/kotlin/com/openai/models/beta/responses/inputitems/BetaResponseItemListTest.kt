@@ -4,6 +4,7 @@ package com.openai.models.beta.responses.inputitems
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.beta.responses.BetaResponseInputMessageItem
 import com.openai.models.beta.responses.BetaResponseInputText
 import com.openai.models.beta.responses.BetaResponseItem
@@ -23,7 +24,9 @@ internal class BetaResponseItemListTest {
                             BetaResponseInputText.builder()
                                 .text("text")
                                 .promptCacheBreakpoint(
-                                    BetaResponseInputText.PromptCacheBreakpoint.builder().build()
+                                    BetaResponseInputText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -50,7 +53,9 @@ internal class BetaResponseItemListTest {
                             BetaResponseInputText.builder()
                                 .text("text")
                                 .promptCacheBreakpoint(
-                                    BetaResponseInputText.PromptCacheBreakpoint.builder().build()
+                                    BetaResponseInputText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
+                                        .build()
                                 )
                                 .build()
                         )

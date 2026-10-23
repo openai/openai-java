@@ -35,7 +35,7 @@ internal class SessionResourceTest {
                         )
                         .build()
                 )
-                .delegation(ClientDelegation.builder().build())
+                .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                 .addInput(
                     InitialItem.Developer.builder()
                         .addContent(
@@ -92,7 +92,11 @@ internal class SessionResourceTest {
                     .build()
             )
         assertThat(sessionResource.delegation())
-            .contains(SessionResource.Delegation.ofClient(ClientDelegation.builder().build()))
+            .contains(
+                SessionResource.Delegation.ofClient(
+                    ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+                )
+            )
         assertThat(sessionResource.input().getOrNull())
             .containsExactly(
                 InitialItem.ofDeveloper(

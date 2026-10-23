@@ -61,6 +61,7 @@ internal class ForkClientEventTest {
                         )
                         .delegation(
                             ForkSessionConfig.Delegation.builder()
+                                .acknowledgementDelayMs(0L)
                                 .responses(
                                     ResponsesDelegationUpdateConfig.builder()
                                         .instructions("instructions")
@@ -165,6 +166,7 @@ internal class ForkClientEventTest {
                             )
                             .delegation(
                                 ForkSessionConfig.Delegation.builder()
+                                    .acknowledgementDelayMs(0L)
                                     .responses(
                                         ResponsesDelegationUpdateConfig.builder()
                                             .instructions("instructions")
@@ -245,6 +247,7 @@ internal class ForkClientEventTest {
                     SessionUpdateConfig.builder()
                         .delegation(
                             SessionUpdateConfig.Delegation.Responses.builder()
+                                .acknowledgementDelayMs(0L)
                                 .responses(
                                     ResponsesDelegationUpdateConfig.builder()
                                         .instructions(
@@ -350,6 +353,7 @@ internal class ForkClientEventTest {
                         SessionUpdateConfig.builder()
                             .delegation(
                                 SessionUpdateConfig.Delegation.Responses.builder()
+                                    .acknowledgementDelayMs(0L)
                                     .responses(
                                         ResponsesDelegationUpdateConfig.builder()
                                             .instructions(

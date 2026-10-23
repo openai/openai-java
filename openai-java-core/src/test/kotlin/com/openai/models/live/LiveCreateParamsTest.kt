@@ -32,7 +32,7 @@ internal class LiveCreateParamsTest {
                             )
                             .build()
                     )
-                    .delegation(ClientDelegation.builder().build())
+                    .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                     .addInput(
                         InitialItem.Developer.builder()
                             .addContent(
@@ -95,7 +95,7 @@ internal class LiveCreateParamsTest {
                                 )
                                 .build()
                         )
-                        .delegation(ClientDelegation.builder().build())
+                        .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                         .addInput(
                             InitialItem.Developer.builder()
                                 .addContent(
@@ -156,7 +156,7 @@ internal class LiveCreateParamsTest {
                             )
                             .build()
                     )
-                    .delegation(ClientDelegation.builder().build())
+                    .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                     .addInput(
                         InitialItem.Developer.builder()
                             .addContent(

@@ -96,7 +96,7 @@ private constructor(
     fun delta(): Optional<String> = delta.getOptional("delta")
 
     /**
-     * The log probabilities of the transcription. These can be enabled by configurating the session
+     * The log probabilities of the transcription. These can be enabled by configuring the session
      * with `"include": ["item.input_audio_transcription.logprobs"]`. Each entry in the array
      * corresponds a log probability of which token would be selected for this chunk of
      * transcription. This can help to identify if it was possible there were multiple valid options
@@ -290,7 +290,7 @@ private constructor(
         fun delta(delta: JsonField<String>) = apply { this.delta = delta }
 
         /**
-         * The log probabilities of the transcription. These can be enabled by configurating the
+         * The log probabilities of the transcription. These can be enabled by configuring the
          * session with `"include": ["item.input_audio_transcription.logprobs"]`. Each entry in the
          * array corresponds a log probability of which token would be selected for this chunk of
          * transcription. This can help to identify if it was possible there were multiple valid

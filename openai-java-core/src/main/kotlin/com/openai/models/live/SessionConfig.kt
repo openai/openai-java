@@ -1721,6 +1721,7 @@ private constructor(
         private constructor(
             private val responses: JsonField<ResponsesDelegationConfig>,
             private val type: JsonValue,
+            private val acknowledgementDelayMs: JsonField<Long>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -1730,7 +1731,10 @@ private constructor(
                 @ExcludeMissing
                 responses: JsonField<ResponsesDelegationConfig> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-            ) : this(responses, type, mutableMapOf())
+                @JsonProperty("acknowledgement_delay_ms")
+                @ExcludeMissing
+                acknowledgementDelayMs: JsonField<Long> = JsonMissing.of(),
+            ) : this(responses, type, acknowledgementDelayMs, mutableMapOf())
 
             /**
              * Backend model, prompt, and tools used when the Live session delegates a task to
@@ -1756,6 +1760,20 @@ private constructor(
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
+             * Milliseconds to wait before requesting an automatic spoken acknowledgement for a
+             * delegation. The model may still speak before this delay. Any commentary or thinking
+             * appended to the session cancels all pending acknowledgements, including those for
+             * other delegations. Defaults to 400 for Decisions sessions and 0 (request immediately)
+             * for other sessions. Omission in a session update preserves the current value. Updates
+             * apply to subsequent delegations.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun acknowledgementDelayMs(): Optional<Long> =
+                acknowledgementDelayMs.getOptional("acknowledgement_delay_ms")
+
+            /**
              * Returns the raw JSON value of [responses].
              *
              * Unlike [responses], this method doesn't throw if the JSON field has an unexpected
@@ -1764,6 +1782,16 @@ private constructor(
             @JsonProperty("responses")
             @ExcludeMissing
             fun _responses(): JsonField<ResponsesDelegationConfig> = responses
+
+            /**
+             * Returns the raw JSON value of [acknowledgementDelayMs].
+             *
+             * Unlike [acknowledgementDelayMs], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("acknowledgement_delay_ms")
+            @ExcludeMissing
+            fun _acknowledgementDelayMs(): JsonField<Long> = acknowledgementDelayMs
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1783,6 +1811,7 @@ private constructor(
                     additionalProperties,
                     "responses" to this.responses,
                     "type" to this.type,
+                    "acknowledgement_delay_ms" to this.acknowledgementDelayMs,
                 )
 
             /**
@@ -1819,12 +1848,14 @@ private constructor(
 
                 private var responses: JsonField<ResponsesDelegationConfig>? = null
                 private var type: JsonValue = JsonValue.from("responses")
+                private var acknowledgementDelayMs: JsonField<Long> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(responses: Responses) = apply {
                     this.responses = responses.responses
                     type = responses.type
+                    acknowledgementDelayMs = responses.acknowledgementDelayMs
                     additionalProperties = responses.additionalProperties.toMutableMap()
                 }
 
@@ -1859,6 +1890,28 @@ private constructor(
                  * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
+
+                /**
+                 * Milliseconds to wait before requesting an automatic spoken acknowledgement for a
+                 * delegation. The model may still speak before this delay. Any commentary or
+                 * thinking appended to the session cancels all pending acknowledgements, including
+                 * those for other delegations. Defaults to 400 for Decisions sessions and 0
+                 * (request immediately) for other sessions. Omission in a session update preserves
+                 * the current value. Updates apply to subsequent delegations.
+                 */
+                fun acknowledgementDelayMs(acknowledgementDelayMs: Long) =
+                    acknowledgementDelayMs(JsonField.of(acknowledgementDelayMs))
+
+                /**
+                 * Sets [Builder.acknowledgementDelayMs] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.acknowledgementDelayMs] with a well-typed [Long]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun acknowledgementDelayMs(acknowledgementDelayMs: JsonField<Long>) = apply {
+                    this.acknowledgementDelayMs = acknowledgementDelayMs
+                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -1898,6 +1951,7 @@ private constructor(
                     Responses(
                         checkRequired("responses", responses),
                         type,
+                        acknowledgementDelayMs,
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -1925,6 +1979,7 @@ private constructor(
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
                     }
                 }
+                acknowledgementDelayMs()
                 validated = true
             }
 
@@ -1945,7 +2000,8 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 (responses.asKnown().getOrNull()?.validity() ?: 0) +
-                    type.let { if (it == JsonValue.from("responses")) 1 else 0 }
+                    type.let { if (it == JsonValue.from("responses")) 1 else 0 } +
+                    (if (acknowledgementDelayMs.asKnown().isPresent) 1 else 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1955,17 +2011,18 @@ private constructor(
                 return other is Responses &&
                     responses == other.responses &&
                     type == other.type &&
+                    acknowledgementDelayMs == other.acknowledgementDelayMs &&
                     additionalProperties == other.additionalProperties
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(responses, type, additionalProperties)
+                Objects.hash(responses, type, acknowledgementDelayMs, additionalProperties)
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Responses{responses=$responses, type=$type, additionalProperties=$additionalProperties}"
+                "Responses{responses=$responses, type=$type, acknowledgementDelayMs=$acknowledgementDelayMs, additionalProperties=$additionalProperties}"
         }
 
         class Decisions
@@ -1973,6 +2030,7 @@ private constructor(
         private constructor(
             private val decisions: JsonField<DecisionsDelegationConfig>,
             private val type: JsonValue,
+            private val acknowledgementDelayMs: JsonField<Long>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -1982,7 +2040,10 @@ private constructor(
                 @ExcludeMissing
                 decisions: JsonField<DecisionsDelegationConfig> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-            ) : this(decisions, type, mutableMapOf())
+                @JsonProperty("acknowledgement_delay_ms")
+                @ExcludeMissing
+                acknowledgementDelayMs: JsonField<Long> = JsonMissing.of(),
+            ) : this(decisions, type, acknowledgementDelayMs, mutableMapOf())
 
             /**
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -2003,6 +2064,18 @@ private constructor(
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
+             * Milliseconds to wait before requesting an automatic spoken acknowledgement for a
+             * delegation. The model may still speak before this delay. Any commentary or thinking
+             * appended to the session cancels all pending acknowledgements, including those for
+             * other delegations. Defaults to 400. Updates apply to subsequent delegations.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun acknowledgementDelayMs(): Optional<Long> =
+                acknowledgementDelayMs.getOptional("acknowledgement_delay_ms")
+
+            /**
              * Returns the raw JSON value of [decisions].
              *
              * Unlike [decisions], this method doesn't throw if the JSON field has an unexpected
@@ -2011,6 +2084,16 @@ private constructor(
             @JsonProperty("decisions")
             @ExcludeMissing
             fun _decisions(): JsonField<DecisionsDelegationConfig> = decisions
+
+            /**
+             * Returns the raw JSON value of [acknowledgementDelayMs].
+             *
+             * Unlike [acknowledgementDelayMs], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("acknowledgement_delay_ms")
+            @ExcludeMissing
+            fun _acknowledgementDelayMs(): JsonField<Long> = acknowledgementDelayMs
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -2030,6 +2113,7 @@ private constructor(
                     additionalProperties,
                     "decisions" to this.decisions,
                     "type" to this.type,
+                    "acknowledgement_delay_ms" to this.acknowledgementDelayMs,
                 )
 
             /**
@@ -2066,12 +2150,14 @@ private constructor(
 
                 private var decisions: JsonField<DecisionsDelegationConfig>? = null
                 private var type: JsonValue = JsonValue.from("decisions")
+                private var acknowledgementDelayMs: JsonField<Long> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(decisions: Decisions) = apply {
                     this.decisions = decisions.decisions
                     type = decisions.type
+                    acknowledgementDelayMs = decisions.acknowledgementDelayMs
                     additionalProperties = decisions.additionalProperties.toMutableMap()
                 }
 
@@ -2102,6 +2188,27 @@ private constructor(
                  * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
+
+                /**
+                 * Milliseconds to wait before requesting an automatic spoken acknowledgement for a
+                 * delegation. The model may still speak before this delay. Any commentary or
+                 * thinking appended to the session cancels all pending acknowledgements, including
+                 * those for other delegations. Defaults to 400. Updates apply to subsequent
+                 * delegations.
+                 */
+                fun acknowledgementDelayMs(acknowledgementDelayMs: Long) =
+                    acknowledgementDelayMs(JsonField.of(acknowledgementDelayMs))
+
+                /**
+                 * Sets [Builder.acknowledgementDelayMs] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.acknowledgementDelayMs] with a well-typed [Long]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun acknowledgementDelayMs(acknowledgementDelayMs: JsonField<Long>) = apply {
+                    this.acknowledgementDelayMs = acknowledgementDelayMs
+                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -2141,6 +2248,7 @@ private constructor(
                     Decisions(
                         checkRequired("decisions", decisions),
                         type,
+                        acknowledgementDelayMs,
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -2168,6 +2276,7 @@ private constructor(
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
                     }
                 }
+                acknowledgementDelayMs()
                 validated = true
             }
 
@@ -2188,7 +2297,8 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 (decisions.asKnown().getOrNull()?.validity() ?: 0) +
-                    type.let { if (it == JsonValue.from("decisions")) 1 else 0 }
+                    type.let { if (it == JsonValue.from("decisions")) 1 else 0 } +
+                    (if (acknowledgementDelayMs.asKnown().isPresent) 1 else 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2198,17 +2308,18 @@ private constructor(
                 return other is Decisions &&
                     decisions == other.decisions &&
                     type == other.type &&
+                    acknowledgementDelayMs == other.acknowledgementDelayMs &&
                     additionalProperties == other.additionalProperties
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(decisions, type, additionalProperties)
+                Objects.hash(decisions, type, acknowledgementDelayMs, additionalProperties)
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Decisions{decisions=$decisions, type=$type, additionalProperties=$additionalProperties}"
+                "Decisions{decisions=$decisions, type=$type, acknowledgementDelayMs=$acknowledgementDelayMs, additionalProperties=$additionalProperties}"
         }
     }
 

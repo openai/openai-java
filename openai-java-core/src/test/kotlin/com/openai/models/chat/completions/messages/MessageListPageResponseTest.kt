@@ -4,6 +4,7 @@ package com.openai.models.chat.completions.messages
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.chat.completions.ChatCompletionAudio
 import com.openai.models.chat.completions.ChatCompletionContentPartText
 import com.openai.models.chat.completions.ChatCompletionMessage
@@ -65,6 +66,7 @@ internal class MessageListPageResponseTest {
                                 .text("text")
                                 .promptCacheBreakpoint(
                                     ChatCompletionContentPartText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
                                         .build()
                                 )
                                 .build()
@@ -124,6 +126,7 @@ internal class MessageListPageResponseTest {
                             .text("text")
                             .promptCacheBreakpoint(
                                 ChatCompletionContentPartText.PromptCacheBreakpoint.builder()
+                                    .ttl(PromptCacheBreakpointTtl._30M)
                                     .build()
                             )
                             .build()

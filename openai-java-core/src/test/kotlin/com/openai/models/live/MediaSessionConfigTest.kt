@@ -34,7 +34,7 @@ internal class MediaSessionConfigTest {
                         )
                         .build()
                 )
-                .delegation(ClientDelegation.builder().build())
+                .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                 .addInput(
                     InitialItem.Developer.builder()
                         .addContent(
@@ -88,7 +88,11 @@ internal class MediaSessionConfigTest {
                     .build()
             )
         assertThat(mediaSessionConfig.delegation())
-            .contains(MediaSessionConfig.Delegation.ofClient(ClientDelegation.builder().build()))
+            .contains(
+                MediaSessionConfig.Delegation.ofClient(
+                    ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+                )
+            )
         assertThat(mediaSessionConfig.input().getOrNull())
             .containsExactly(
                 InitialItem.ofDeveloper(

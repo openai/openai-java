@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -20,7 +21,9 @@ internal class ChatCompletionContentPartTest {
             ChatCompletionContentPartText.builder()
                 .text("text")
                 .promptCacheBreakpoint(
-                    ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                    ChatCompletionContentPartText.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -40,7 +43,9 @@ internal class ChatCompletionContentPartTest {
                 ChatCompletionContentPartText.builder()
                     .text("text")
                     .promptCacheBreakpoint(
-                        ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                        ChatCompletionContentPartText.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )
@@ -65,7 +70,9 @@ internal class ChatCompletionContentPartTest {
                         .build()
                 )
                 .promptCacheBreakpoint(
-                    ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build()
+                    ChatCompletionContentPartImage.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -90,7 +97,9 @@ internal class ChatCompletionContentPartTest {
                             .build()
                     )
                     .promptCacheBreakpoint(
-                        ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build()
+                        ChatCompletionContentPartImage.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )
@@ -115,7 +124,9 @@ internal class ChatCompletionContentPartTest {
                         .build()
                 )
                 .promptCacheBreakpoint(
-                    ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build()
+                    ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -140,7 +151,9 @@ internal class ChatCompletionContentPartTest {
                             .build()
                     )
                     .promptCacheBreakpoint(
-                        ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build()
+                        ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )
@@ -166,7 +179,9 @@ internal class ChatCompletionContentPartTest {
                         .build()
                 )
                 .promptCacheBreakpoint(
-                    ChatCompletionContentPart.File.PromptCacheBreakpoint.builder().build()
+                    ChatCompletionContentPart.File.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -192,7 +207,9 @@ internal class ChatCompletionContentPartTest {
                             .build()
                     )
                     .promptCacheBreakpoint(
-                        ChatCompletionContentPart.File.PromptCacheBreakpoint.builder().build()
+                        ChatCompletionContentPart.File.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )

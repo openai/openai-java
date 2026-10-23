@@ -4,6 +4,7 @@ package com.openai.models.chat.completions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -20,7 +21,9 @@ internal class ChatCompletionContentPartImageTest {
                         .build()
                 )
                 .promptCacheBreakpoint(
-                    ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build()
+                    ChatCompletionContentPartImage.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -32,7 +35,11 @@ internal class ChatCompletionContentPartImageTest {
                     .build()
             )
         assertThat(chatCompletionContentPartImage.promptCacheBreakpoint())
-            .contains(ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build())
+            .contains(
+                ChatCompletionContentPartImage.PromptCacheBreakpoint.builder()
+                    .ttl(PromptCacheBreakpointTtl._30M)
+                    .build()
+            )
 
         val jsonMapper = jsonMapper()
 

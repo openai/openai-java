@@ -4,6 +4,7 @@ package com.openai.models.conversations.items
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.conversations.Message
 import com.openai.models.responses.ResponseInputText
 import org.assertj.core.api.Assertions.assertThat
@@ -22,7 +23,9 @@ internal class ConversationItemListTest {
                             ResponseInputText.builder()
                                 .text("text")
                                 .promptCacheBreakpoint(
-                                    ResponseInputText.PromptCacheBreakpoint.builder().build()
+                                    ResponseInputText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -45,7 +48,9 @@ internal class ConversationItemListTest {
                             ResponseInputText.builder()
                                 .text("text")
                                 .promptCacheBreakpoint(
-                                    ResponseInputText.PromptCacheBreakpoint.builder().build()
+                                    ResponseInputText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
+                                        .build()
                                 )
                                 .build()
                         )

@@ -4,6 +4,7 @@ package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -19,7 +20,9 @@ internal class BetaResponseInputFileTest {
                 .fileUrl("https://example.com")
                 .filename("filename")
                 .promptCacheBreakpoint(
-                    BetaResponseInputFile.PromptCacheBreakpoint.builder().build()
+                    BetaResponseInputFile.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -29,7 +32,11 @@ internal class BetaResponseInputFileTest {
         assertThat(betaResponseInputFile.fileUrl()).contains("https://example.com")
         assertThat(betaResponseInputFile.filename()).contains("filename")
         assertThat(betaResponseInputFile.promptCacheBreakpoint())
-            .contains(BetaResponseInputFile.PromptCacheBreakpoint.builder().build())
+            .contains(
+                BetaResponseInputFile.PromptCacheBreakpoint.builder()
+                    .ttl(PromptCacheBreakpointTtl._30M)
+                    .build()
+            )
 
         val jsonMapper = jsonMapper()
 

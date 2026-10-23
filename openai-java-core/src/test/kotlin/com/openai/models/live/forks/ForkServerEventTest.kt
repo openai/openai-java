@@ -76,7 +76,7 @@ internal class ForkServerEventTest {
                                 )
                                 .build()
                         )
-                        .delegation(ClientDelegation.builder().build())
+                        .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                         .input(listOf())
                         .instructions(
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
@@ -165,7 +165,9 @@ internal class ForkServerEventTest {
                                     )
                                     .build()
                             )
-                            .delegation(ClientDelegation.builder().build())
+                            .delegation(
+                                ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+                            )
                             .input(listOf())
                             .instructions(
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."
@@ -234,32 +236,43 @@ internal class ForkServerEventTest {
                                 )
                                 .build()
                         )
-                        .responsesDelegation(
-                            ResponsesDelegationConfig.builder()
-                                .model("gpt-6-astra")
-                                .instructions(
-                                    "Check restaurant availability. Ask before confirming a booking."
-                                )
-                                .maxOutputTokens(1024L)
-                                .parallelToolCalls(true)
-                                .reasoning(
-                                    ResponsesDelegationConfig.Reasoning.builder()
-                                        .effort(ResponsesDelegationConfig.Reasoning.Effort.NONE)
-                                        .summary(
-                                            ResponsesDelegationConfig.Reasoning.Summary.CONCISE
+                        .delegation(
+                            SessionResource.Delegation.Responses.builder()
+                                .responses(
+                                    ResponsesDelegationConfig.builder()
+                                        .model("gpt-6-astra")
+                                        .instructions(
+                                            "Check restaurant availability. Ask before confirming a booking."
                                         )
+                                        .maxOutputTokens(1024L)
+                                        .parallelToolCalls(true)
+                                        .reasoning(
+                                            ResponsesDelegationConfig.Reasoning.builder()
+                                                .effort(
+                                                    ResponsesDelegationConfig.Reasoning.Effort.NONE
+                                                )
+                                                .summary(
+                                                    ResponsesDelegationConfig.Reasoning.Summary
+                                                        .CONCISE
+                                                )
+                                                .build()
+                                        )
+                                        .serviceTier(ResponsesDelegationConfig.ServiceTier.AUTO)
+                                        .text(
+                                            ResponsesDelegationConfig.Text.builder()
+                                                .verbosity(
+                                                    ResponsesDelegationConfig.Text.Verbosity.LOW
+                                                )
+                                                .build()
+                                        )
+                                        .toolChoice(
+                                            ResponsesDelegationConfig.ToolChoice.LiveToolChoiceEnum
+                                                .AUTO
+                                        )
+                                        .tools(listOf())
                                         .build()
                                 )
-                                .serviceTier(ResponsesDelegationConfig.ServiceTier.AUTO)
-                                .text(
-                                    ResponsesDelegationConfig.Text.builder()
-                                        .verbosity(ResponsesDelegationConfig.Text.Verbosity.LOW)
-                                        .build()
-                                )
-                                .toolChoice(
-                                    ResponsesDelegationConfig.ToolChoice.LiveToolChoiceEnum.AUTO
-                                )
-                                .tools(listOf())
+                                .acknowledgementDelayMs(0L)
                                 .build()
                         )
                         .input(listOf())
@@ -350,32 +363,45 @@ internal class ForkServerEventTest {
                                     )
                                     .build()
                             )
-                            .responsesDelegation(
-                                ResponsesDelegationConfig.builder()
-                                    .model("gpt-6-astra")
-                                    .instructions(
-                                        "Check restaurant availability. Ask before confirming a booking."
-                                    )
-                                    .maxOutputTokens(1024L)
-                                    .parallelToolCalls(true)
-                                    .reasoning(
-                                        ResponsesDelegationConfig.Reasoning.builder()
-                                            .effort(ResponsesDelegationConfig.Reasoning.Effort.NONE)
-                                            .summary(
-                                                ResponsesDelegationConfig.Reasoning.Summary.CONCISE
+                            .delegation(
+                                SessionResource.Delegation.Responses.builder()
+                                    .responses(
+                                        ResponsesDelegationConfig.builder()
+                                            .model("gpt-6-astra")
+                                            .instructions(
+                                                "Check restaurant availability. Ask before confirming a booking."
                                             )
+                                            .maxOutputTokens(1024L)
+                                            .parallelToolCalls(true)
+                                            .reasoning(
+                                                ResponsesDelegationConfig.Reasoning.builder()
+                                                    .effort(
+                                                        ResponsesDelegationConfig.Reasoning.Effort
+                                                            .NONE
+                                                    )
+                                                    .summary(
+                                                        ResponsesDelegationConfig.Reasoning.Summary
+                                                            .CONCISE
+                                                    )
+                                                    .build()
+                                            )
+                                            .serviceTier(ResponsesDelegationConfig.ServiceTier.AUTO)
+                                            .text(
+                                                ResponsesDelegationConfig.Text.builder()
+                                                    .verbosity(
+                                                        ResponsesDelegationConfig.Text.Verbosity.LOW
+                                                    )
+                                                    .build()
+                                            )
+                                            .toolChoice(
+                                                ResponsesDelegationConfig.ToolChoice
+                                                    .LiveToolChoiceEnum
+                                                    .AUTO
+                                            )
+                                            .tools(listOf())
                                             .build()
                                     )
-                                    .serviceTier(ResponsesDelegationConfig.ServiceTier.AUTO)
-                                    .text(
-                                        ResponsesDelegationConfig.Text.builder()
-                                            .verbosity(ResponsesDelegationConfig.Text.Verbosity.LOW)
-                                            .build()
-                                    )
-                                    .toolChoice(
-                                        ResponsesDelegationConfig.ToolChoice.LiveToolChoiceEnum.AUTO
-                                    )
-                                    .tools(listOf())
+                                    .acknowledgementDelayMs(0L)
                                     .build()
                             )
                             .input(listOf())
@@ -1625,7 +1651,7 @@ internal class ForkServerEventTest {
                                 )
                                 .build()
                         )
-                        .delegation(ClientDelegation.builder().build())
+                        .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                         .input(listOf())
                         .instructions(
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
@@ -1716,7 +1742,9 @@ internal class ForkServerEventTest {
                                     )
                                     .build()
                             )
-                            .delegation(ClientDelegation.builder().build())
+                            .delegation(
+                                ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+                            )
                             .input(listOf())
                             .instructions(
                                 "Help the caller plan a restaurant reservation. Confirm details before booking."

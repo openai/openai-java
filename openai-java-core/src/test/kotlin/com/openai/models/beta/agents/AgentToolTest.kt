@@ -35,6 +35,7 @@ internal class AgentToolTest {
         assertThat(agentTool.mcp()).isEmpty
         assertThat(agentTool.webSearch()).isEmpty
         assertThat(agentTool.computerUse()).isEmpty
+        assertThat(agentTool.automations()).isEmpty
     }
 
     @Test
@@ -75,6 +76,7 @@ internal class AgentToolTest {
         assertThat(agentTool.mcp()).isEmpty
         assertThat(agentTool.webSearch()).isEmpty
         assertThat(agentTool.computerUse()).isEmpty
+        assertThat(agentTool.automations()).isEmpty
     }
 
     @Test
@@ -118,6 +120,7 @@ internal class AgentToolTest {
         assertThat(agentTool.mcp()).contains(mcp)
         assertThat(agentTool.webSearch()).isEmpty
         assertThat(agentTool.computerUse()).isEmpty
+        assertThat(agentTool.automations()).isEmpty
     }
 
     @Test
@@ -173,6 +176,7 @@ internal class AgentToolTest {
         assertThat(agentTool.mcp()).isEmpty
         assertThat(agentTool.webSearch()).contains(webSearch)
         assertThat(agentTool.computerUse()).isEmpty
+        assertThat(agentTool.automations()).isEmpty
     }
 
     @Test
@@ -215,6 +219,7 @@ internal class AgentToolTest {
         assertThat(agentTool.mcp()).isEmpty
         assertThat(agentTool.webSearch()).isEmpty
         assertThat(agentTool.computerUse()).contains(computerUse)
+        assertThat(agentTool.automations()).isEmpty
     }
 
     @Test
@@ -224,6 +229,32 @@ internal class AgentToolTest {
             AgentTool.ofComputerUse(
                 AgentTool.ComputerUse.builder().includeScreenshots(true).build()
             )
+
+        val roundtrippedAgentTool =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(agentTool),
+                jacksonTypeRef<AgentTool>(),
+            )
+
+        assertThat(roundtrippedAgentTool).isEqualTo(agentTool)
+    }
+
+    @Test
+    fun ofAutomations() {
+        val agentTool = AgentTool.ofAutomations()
+
+        assertThat(agentTool.function()).isEmpty
+        assertThat(agentTool.programmaticToolCalling()).isEmpty
+        assertThat(agentTool.mcp()).isEmpty
+        assertThat(agentTool.webSearch()).isEmpty
+        assertThat(agentTool.computerUse()).isEmpty
+        assertThat(agentTool.automations()).contains(JsonValue.from(mapOf("type" to "automations")))
+    }
+
+    @Test
+    fun ofAutomationsRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val agentTool = AgentTool.ofAutomations()
 
         val roundtrippedAgentTool =
             jsonMapper.readValue(

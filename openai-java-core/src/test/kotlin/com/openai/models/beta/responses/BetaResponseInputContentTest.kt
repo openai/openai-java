@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -20,7 +21,9 @@ internal class BetaResponseInputContentTest {
             BetaResponseInputText.builder()
                 .text("text")
                 .promptCacheBreakpoint(
-                    BetaResponseInputText.PromptCacheBreakpoint.builder().build()
+                    BetaResponseInputText.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -39,7 +42,9 @@ internal class BetaResponseInputContentTest {
                 BetaResponseInputText.builder()
                     .text("text")
                     .promptCacheBreakpoint(
-                        BetaResponseInputText.PromptCacheBreakpoint.builder().build()
+                        BetaResponseInputText.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )
@@ -61,7 +66,9 @@ internal class BetaResponseInputContentTest {
                 .fileId("file_id")
                 .imageUrl("https://example.com")
                 .promptCacheBreakpoint(
-                    BetaResponseInputImage.PromptCacheBreakpoint.builder().build()
+                    BetaResponseInputImage.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -82,7 +89,9 @@ internal class BetaResponseInputContentTest {
                     .fileId("file_id")
                     .imageUrl("https://example.com")
                     .promptCacheBreakpoint(
-                        BetaResponseInputImage.PromptCacheBreakpoint.builder().build()
+                        BetaResponseInputImage.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )
@@ -106,7 +115,9 @@ internal class BetaResponseInputContentTest {
                 .fileUrl("https://example.com")
                 .filename("filename")
                 .promptCacheBreakpoint(
-                    BetaResponseInputFile.PromptCacheBreakpoint.builder().build()
+                    BetaResponseInputFile.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -129,7 +140,9 @@ internal class BetaResponseInputContentTest {
                     .fileUrl("https://example.com")
                     .filename("filename")
                     .promptCacheBreakpoint(
-                        BetaResponseInputFile.PromptCacheBreakpoint.builder().build()
+                        BetaResponseInputFile.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )

@@ -40,6 +40,7 @@ internal class SidebandClientEventTest {
                     SessionUpdateConfig.builder()
                         .delegation(
                             SessionUpdateConfig.Delegation.Responses.builder()
+                                .acknowledgementDelayMs(0L)
                                 .responses(
                                     ResponsesDelegationUpdateConfig.builder()
                                         .instructions(
@@ -143,6 +144,7 @@ internal class SidebandClientEventTest {
                         SessionUpdateConfig.builder()
                             .delegation(
                                 SessionUpdateConfig.Delegation.Responses.builder()
+                                    .acknowledgementDelayMs(0L)
                                     .responses(
                                         ResponsesDelegationUpdateConfig.builder()
                                             .instructions(

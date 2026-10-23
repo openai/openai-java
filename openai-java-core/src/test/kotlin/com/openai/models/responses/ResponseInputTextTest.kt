@@ -4,6 +4,7 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -14,12 +15,20 @@ internal class ResponseInputTextTest {
         val responseInputText =
             ResponseInputText.builder()
                 .text("text")
-                .promptCacheBreakpoint(ResponseInputText.PromptCacheBreakpoint.builder().build())
+                .promptCacheBreakpoint(
+                    ResponseInputText.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
+                )
                 .build()
 
         assertThat(responseInputText.text()).isEqualTo("text")
         assertThat(responseInputText.promptCacheBreakpoint())
-            .contains(ResponseInputText.PromptCacheBreakpoint.builder().build())
+            .contains(
+                ResponseInputText.PromptCacheBreakpoint.builder()
+                    .ttl(PromptCacheBreakpointTtl._30M)
+                    .build()
+            )
 
         val jsonMapper = jsonMapper()
 
