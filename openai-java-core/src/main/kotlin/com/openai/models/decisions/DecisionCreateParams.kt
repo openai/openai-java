@@ -30,6 +30,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.DecisionQuestionInputPart
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -47,10 +48,9 @@ private constructor(
 ) : Params {
 
     /**
-     * The text or images to evaluate for every question. Provide a text string or user messages
-     * containing text and images. Images can be base64 data URLs or publicly accessible HTTP(S)
-     * URLs; at most 128 images are allowed across all messages in one request. Files, audio, tools,
-     * and item references are not supported.
+     * The input to evaluate for every question. Provide a text string or an ordered array of
+     * messages, function calls and outputs, or custom tool calls and outputs. Each tool output must
+     * identify a matching call by call ID.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -66,7 +66,7 @@ private constructor(
     fun model(): String = body.model()
 
     /**
-     * Ask 1–200 questions about the input. Each question can be a predicate, choice, or score.
+     * Ask 1–400 questions about the input. Each question can be a predicate, choice, or score.
      * Answers come back in the same order.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -204,10 +204,9 @@ private constructor(
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * The text or images to evaluate for every question. Provide a text string or user messages
-         * containing text and images. Images can be base64 data URLs or publicly accessible HTTP(S)
-         * URLs; at most 128 images are allowed across all messages in one request. Files, audio,
-         * tools, and item references are not supported.
+         * The input to evaluate for every question. Provide a text string or an ordered array of
+         * messages, function calls and outputs, or custom tool calls and outputs. Each tool output
+         * must identify a matching call by call ID.
          */
         fun input(input: Input) = apply { body.input(input) }
 
@@ -222,13 +221,10 @@ private constructor(
         /** Alias for calling [input] with `Input.ofString(string)`. */
         fun input(string: String) = apply { body.input(string) }
 
-        /**
-         * Alias for calling [input] with `Input.ofDecisionInputMessages(decisionInputMessages)`.
-         */
-        fun inputOfDecisionInputMessages(decisionInputMessages: List<DecisionInputMessage>) =
-            apply {
-                body.inputOfDecisionInputMessages(decisionInputMessages)
-            }
+        /** Alias for calling [input] with `Input.ofDecisionInputItems(decisionInputItems)`. */
+        fun inputOfDecisionInputItems(decisionInputItems: List<DecisionInputItem>) = apply {
+            body.inputOfDecisionInputItems(decisionInputItems)
+        }
 
         /** The model to use. Only `gpt-6-luna` is supported. */
         fun model(model: String) = apply { body.model(model) }
@@ -242,7 +238,7 @@ private constructor(
         fun model(model: JsonField<String>) = apply { body.model(model) }
 
         /**
-         * Ask 1–200 questions about the input. Each question can be a predicate, choice, or score.
+         * Ask 1–400 questions about the input. Each question can be a predicate, choice, or score.
          * Answers come back in the same order.
          */
         fun questions(questions: List<Question>) = apply { body.questions(questions) }
@@ -274,8 +270,24 @@ private constructor(
          *     .build()
          * ```
          */
-        fun addPredicateQuestion(instructions: String) = apply {
+        fun addPredicateQuestion(instructions: Question.Predicate.Instructions) = apply {
             body.addPredicateQuestion(instructions)
+        }
+
+        /**
+         * Alias for calling [addPredicateQuestion] with
+         * `Question.Predicate.Instructions.ofString(string)`.
+         */
+        fun addPredicateQuestion(string: String) = apply { body.addPredicateQuestion(string) }
+
+        /**
+         * Alias for calling [addPredicateQuestion] with
+         * `Question.Predicate.Instructions.ofDecisionQuestionInputParts(decisionQuestionInputParts)`.
+         */
+        fun addPredicateQuestionOfDecisionQuestionInputParts(
+            decisionQuestionInputParts: List<DecisionQuestionInputPart>
+        ) = apply {
+            body.addPredicateQuestionOfDecisionQuestionInputParts(decisionQuestionInputParts)
         }
 
         /** Alias for calling [addQuestion] with `Question.ofChoice(choice)`. */
@@ -541,10 +553,9 @@ private constructor(
         )
 
         /**
-         * The text or images to evaluate for every question. Provide a text string or user messages
-         * containing text and images. Images can be base64 data URLs or publicly accessible HTTP(S)
-         * URLs; at most 128 images are allowed across all messages in one request. Files, audio,
-         * tools, and item references are not supported.
+         * The input to evaluate for every question. Provide a text string or an ordered array of
+         * messages, function calls and outputs, or custom tool calls and outputs. Each tool output
+         * must identify a matching call by call ID.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -560,7 +571,7 @@ private constructor(
         fun model(): String = model.getRequired("model")
 
         /**
-         * Ask 1–200 questions about the input. Each question can be a predicate, choice, or score.
+         * Ask 1–400 questions about the input. Each question can be a predicate, choice, or score.
          * Answers come back in the same order.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -731,10 +742,9 @@ private constructor(
             }
 
             /**
-             * The text or images to evaluate for every question. Provide a text string or user
-             * messages containing text and images. Images can be base64 data URLs or publicly
-             * accessible HTTP(S) URLs; at most 128 images are allowed across all messages in one
-             * request. Files, audio, tools, and item references are not supported.
+             * The input to evaluate for every question. Provide a text string or an ordered array
+             * of messages, function calls and outputs, or custom tool calls and outputs. Each tool
+             * output must identify a matching call by call ID.
              */
             fun input(input: Input) = input(JsonField.of(input))
 
@@ -750,12 +760,9 @@ private constructor(
             /** Alias for calling [input] with `Input.ofString(string)`. */
             fun input(string: String) = input(Input.ofString(string))
 
-            /**
-             * Alias for calling [input] with
-             * `Input.ofDecisionInputMessages(decisionInputMessages)`.
-             */
-            fun inputOfDecisionInputMessages(decisionInputMessages: List<DecisionInputMessage>) =
-                input(Input.ofDecisionInputMessages(decisionInputMessages))
+            /** Alias for calling [input] with `Input.ofDecisionInputItems(decisionInputItems)`. */
+            fun inputOfDecisionInputItems(decisionInputItems: List<DecisionInputItem>) =
+                input(Input.ofDecisionInputItems(decisionInputItems))
 
             /** The model to use. Only `gpt-6-luna` is supported. */
             fun model(model: String) = model(JsonField.of(model))
@@ -770,7 +777,7 @@ private constructor(
             fun model(model: JsonField<String>) = apply { this.model = model }
 
             /**
-             * Ask 1–200 questions about the input. Each question can be a predicate, choice, or
+             * Ask 1–400 questions about the input. Each question can be a predicate, choice, or
              * score. Answers come back in the same order.
              */
             fun questions(questions: List<Question>) = questions(JsonField.of(questions))
@@ -809,8 +816,28 @@ private constructor(
              *     .build()
              * ```
              */
-            fun addPredicateQuestion(instructions: String) =
+            fun addPredicateQuestion(instructions: Question.Predicate.Instructions) =
                 addQuestion(Question.Predicate.builder().instructions(instructions).build())
+
+            /**
+             * Alias for calling [addPredicateQuestion] with
+             * `Question.Predicate.Instructions.ofString(string)`.
+             */
+            fun addPredicateQuestion(string: String) =
+                addPredicateQuestion(Question.Predicate.Instructions.ofString(string))
+
+            /**
+             * Alias for calling [addPredicateQuestion] with
+             * `Question.Predicate.Instructions.ofDecisionQuestionInputParts(decisionQuestionInputParts)`.
+             */
+            fun addPredicateQuestionOfDecisionQuestionInputParts(
+                decisionQuestionInputParts: List<DecisionQuestionInputPart>
+            ) =
+                addPredicateQuestion(
+                    Question.Predicate.Instructions.ofDecisionQuestionInputParts(
+                        decisionQuestionInputParts
+                    )
+                )
 
             /** Alias for calling [addQuestion] with `Question.ofChoice(choice)`. */
             fun addQuestion(choice: Question.Choice) = addQuestion(Question.ofChoice(choice))
@@ -1020,33 +1047,32 @@ private constructor(
     }
 
     /**
-     * The text or images to evaluate for every question. Provide a text string or user messages
-     * containing text and images. Images can be base64 data URLs or publicly accessible HTTP(S)
-     * URLs; at most 128 images are allowed across all messages in one request. Files, audio, tools,
-     * and item references are not supported.
+     * The input to evaluate for every question. Provide a text string or an ordered array of
+     * messages, function calls and outputs, or custom tool calls and outputs. Each tool output must
+     * identify a matching call by call ID.
      */
     @JsonDeserialize(using = Input.Deserializer::class)
     @JsonSerialize(using = Input.Serializer::class)
     class Input
     private constructor(
         private val string: String? = null,
-        private val decisionInputMessages: List<DecisionInputMessage>? = null,
+        private val decisionInputItems: List<DecisionInputItem>? = null,
         private val _json: JsonValue? = null,
     ) {
 
         fun string(): Optional<String> = Optional.ofNullable(string)
 
-        fun decisionInputMessages(): Optional<List<DecisionInputMessage>> =
-            Optional.ofNullable(decisionInputMessages)
+        fun decisionInputItems(): Optional<List<DecisionInputItem>> =
+            Optional.ofNullable(decisionInputItems)
 
         fun isString(): Boolean = string != null
 
-        fun isDecisionInputMessages(): Boolean = decisionInputMessages != null
+        fun isDecisionInputItems(): Boolean = decisionInputItems != null
 
         fun asString(): String = string.getOrThrow("string")
 
-        fun asDecisionInputMessages(): List<DecisionInputMessage> =
-            decisionInputMessages.getOrThrow("decisionInputMessages")
+        fun asDecisionInputItems(): List<DecisionInputItem> =
+            decisionInputItems.getOrThrow("decisionInputItems")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -1082,8 +1108,7 @@ private constructor(
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 string != null -> visitor.visitString(string)
-                decisionInputMessages != null ->
-                    visitor.visitDecisionInputMessages(decisionInputMessages)
+                decisionInputItems != null -> visitor.visitDecisionInputItems(decisionInputItems)
                 else -> visitor.unknown(_json)
             }
 
@@ -1107,10 +1132,10 @@ private constructor(
                 object : Visitor<Unit> {
                     override fun visitString(string: String) {}
 
-                    override fun visitDecisionInputMessages(
-                        decisionInputMessages: List<DecisionInputMessage>
+                    override fun visitDecisionInputItems(
+                        decisionInputItems: List<DecisionInputItem>
                     ) {
-                        decisionInputMessages.forEach { it.validate() }
+                        decisionInputItems.forEach { it.validate() }
                     }
                 }
             )
@@ -1137,9 +1162,9 @@ private constructor(
                 object : Visitor<Int> {
                     override fun visitString(string: String) = 1
 
-                    override fun visitDecisionInputMessages(
-                        decisionInputMessages: List<DecisionInputMessage>
-                    ) = decisionInputMessages.sumOf { it.validity().toInt() }
+                    override fun visitDecisionInputItems(
+                        decisionInputItems: List<DecisionInputItem>
+                    ) = decisionInputItems.sumOf { it.validity().toInt() }
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -1152,16 +1177,15 @@ private constructor(
 
             return other is Input &&
                 string == other.string &&
-                decisionInputMessages == other.decisionInputMessages
+                decisionInputItems == other.decisionInputItems
         }
 
-        override fun hashCode(): Int = Objects.hash(string, decisionInputMessages)
+        override fun hashCode(): Int = Objects.hash(string, decisionInputItems)
 
         override fun toString(): String =
             when {
                 string != null -> "Input{string=$string}"
-                decisionInputMessages != null ->
-                    "Input{decisionInputMessages=$decisionInputMessages}"
+                decisionInputItems != null -> "Input{decisionInputItems=$decisionInputItems}"
                 _json != null -> "Input{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Input")
             }
@@ -1171,8 +1195,8 @@ private constructor(
             @JvmStatic fun ofString(string: String) = Input(string = string)
 
             @JvmStatic
-            fun ofDecisionInputMessages(decisionInputMessages: List<DecisionInputMessage>) =
-                Input(decisionInputMessages = decisionInputMessages.toImmutable())
+            fun ofDecisionInputItems(decisionInputItems: List<DecisionInputItem>) =
+                Input(decisionInputItems = decisionInputItems.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [Input] to a value of type [T]. */
@@ -1180,7 +1204,7 @@ private constructor(
 
             fun visitString(string: String): T
 
-            fun visitDecisionInputMessages(decisionInputMessages: List<DecisionInputMessage>): T
+            fun visitDecisionInputItems(decisionInputItems: List<DecisionInputItem>): T
 
             /**
              * Maps an unknown variant of [Input] to a value of type [T].
@@ -1207,8 +1231,9 @@ private constructor(
                             tryDeserialize(node, jacksonTypeRef<String>())?.let {
                                 Input(string = it, _json = json)
                             },
-                            tryDeserialize(node, jacksonTypeRef<List<DecisionInputMessage>>())
-                                ?.let { Input(decisionInputMessages = it, _json = json) },
+                            tryDeserialize(node, jacksonTypeRef<List<DecisionInputItem>>())?.let {
+                                Input(decisionInputItems = it, _json = json)
+                            },
                         )
                         .filterNotNull()
                         .allMaxBy { it.validity() }
@@ -1235,8 +1260,8 @@ private constructor(
             ) {
                 when {
                     value.string != null -> generator.writeObject(value.string)
-                    value.decisionInputMessages != null ->
-                        generator.writeObject(value.decisionInputMessages)
+                    value.decisionInputItems != null ->
+                        generator.writeObject(value.decisionInputItems)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Input")
                 }
@@ -1492,7 +1517,7 @@ private constructor(
         class Predicate
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
-            private val instructions: JsonField<String>,
+            private val instructions: JsonField<Instructions>,
             private val type: JsonValue,
             private val name: JsonField<String>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1502,7 +1527,7 @@ private constructor(
             private constructor(
                 @JsonProperty("instructions")
                 @ExcludeMissing
-                instructions: JsonField<String> = JsonMissing.of(),
+                instructions: JsonField<Instructions> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                 @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
             ) : this(instructions, type, name, mutableMapOf())
@@ -1512,7 +1537,7 @@ private constructor(
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
              *   value).
              */
-            fun instructions(): String = instructions.getRequired("instructions")
+            fun instructions(): Instructions = instructions.getRequired("instructions")
 
             /**
              * The type of the object. Always `predicate`.
@@ -1541,7 +1566,7 @@ private constructor(
              */
             @JsonProperty("instructions")
             @ExcludeMissing
-            fun _instructions(): JsonField<String> = instructions
+            fun _instructions(): JsonField<Instructions> = instructions
 
             /**
              * Returns the raw JSON value of [name].
@@ -1603,7 +1628,7 @@ private constructor(
             /** A builder for [Predicate]. */
             class Builder internal constructor() {
 
-                private var instructions: JsonField<String>? = null
+                private var instructions: JsonField<Instructions>? = null
                 private var type: JsonValue = JsonValue.from("predicate")
                 private var name: JsonField<String> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1616,18 +1641,33 @@ private constructor(
                     additionalProperties = predicate.additionalProperties.toMutableMap()
                 }
 
-                fun instructions(instructions: String) = instructions(JsonField.of(instructions))
+                fun instructions(instructions: Instructions) =
+                    instructions(JsonField.of(instructions))
 
                 /**
                  * Sets [Builder.instructions] to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.instructions] with a well-typed [String] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
+                 * You should usually call [Builder.instructions] with a well-typed [Instructions]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
                  */
-                fun instructions(instructions: JsonField<String>) = apply {
+                fun instructions(instructions: JsonField<Instructions>) = apply {
                     this.instructions = instructions
                 }
+
+                /** Alias for calling [instructions] with `Instructions.ofString(string)`. */
+                fun instructions(string: String) = instructions(Instructions.ofString(string))
+
+                /**
+                 * Alias for calling [instructions] with
+                 * `Instructions.ofDecisionQuestionInputParts(decisionQuestionInputParts)`.
+                 */
+                fun instructionsOfDecisionQuestionInputParts(
+                    decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                ) =
+                    instructions(
+                        Instructions.ofDecisionQuestionInputParts(decisionQuestionInputParts)
+                    )
 
                 /**
                  * Sets the field to an arbitrary JSON value.
@@ -1714,7 +1754,7 @@ private constructor(
                     return@apply
                 }
 
-                instructions()
+                instructions().validate()
                 _type().let {
                     if (it != JsonValue.from("predicate")) {
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -1740,9 +1780,248 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                (if (instructions.asKnown().isPresent) 1 else 0) +
+                (instructions.asKnown().getOrNull()?.validity() ?: 0) +
                     type.let { if (it == JsonValue.from("predicate")) 1 else 0 } +
                     (if (name.asKnown().isPresent) 1 else 0)
+
+            @JsonDeserialize(using = Instructions.Deserializer::class)
+            @JsonSerialize(using = Instructions.Serializer::class)
+            class Instructions
+            private constructor(
+                private val string: String? = null,
+                private val decisionQuestionInputParts: List<DecisionQuestionInputPart>? = null,
+                private val _json: JsonValue? = null,
+            ) {
+
+                fun string(): Optional<String> = Optional.ofNullable(string)
+
+                fun decisionQuestionInputParts(): Optional<List<DecisionQuestionInputPart>> =
+                    Optional.ofNullable(decisionQuestionInputParts)
+
+                fun isString(): Boolean = string != null
+
+                fun isDecisionQuestionInputParts(): Boolean = decisionQuestionInputParts != null
+
+                fun asString(): String = string.getOrThrow("string")
+
+                fun asDecisionQuestionInputParts(): List<DecisionQuestionInputPart> =
+                    decisionQuestionInputParts.getOrThrow("decisionQuestionInputParts")
+
+                fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                /**
+                 * Maps this instance's current variant to a value of type [T] using the given
+                 * [visitor].
+                 *
+                 * Note that this method is _not_ forwards compatible with new variants from the
+                 * API, unless [visitor] overrides [Visitor.unknown]. To handle variants not known
+                 * to this version of the SDK gracefully, consider overriding [Visitor.unknown]:
+                 * ```java
+                 * import com.openai.core.JsonValue;
+                 * import java.util.Optional;
+                 *
+                 * Optional<String> result = instructions.accept(new Instructions.Visitor<Optional<String>>() {
+                 *     @Override
+                 *     public Optional<String> visitString(String string) {
+                 *         return Optional.of(string.toString());
+                 *     }
+                 *
+                 *     // ...
+                 *
+                 *     @Override
+                 *     public Optional<String> unknown(JsonValue json) {
+                 *         // Or inspect the `json`.
+                 *         return Optional.empty();
+                 *     }
+                 * });
+                 * ```
+                 *
+                 * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+                 *   [visitor] and the current variant is unknown.
+                 */
+                fun <T> accept(visitor: Visitor<T>): T =
+                    when {
+                        string != null -> visitor.visitString(string)
+                        decisionQuestionInputParts != null ->
+                            visitor.visitDecisionQuestionInputParts(decisionQuestionInputParts)
+                        else -> visitor.unknown(_json)
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Instructions = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    accept(
+                        object : Visitor<Unit> {
+                            override fun visitString(string: String) {}
+
+                            override fun visitDecisionQuestionInputParts(
+                                decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                            ) {
+                                decisionQuestionInputParts.forEach { it.validate() }
+                            }
+                        }
+                    )
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    accept(
+                        object : Visitor<Int> {
+                            override fun visitString(string: String) = 1
+
+                            override fun visitDecisionQuestionInputParts(
+                                decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                            ) = decisionQuestionInputParts.sumOf { it.validity().toInt() }
+
+                            override fun unknown(json: JsonValue?) = 0
+                        }
+                    )
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Instructions &&
+                        string == other.string &&
+                        decisionQuestionInputParts == other.decisionQuestionInputParts
+                }
+
+                override fun hashCode(): Int = Objects.hash(string, decisionQuestionInputParts)
+
+                override fun toString(): String =
+                    when {
+                        string != null -> "Instructions{string=$string}"
+                        decisionQuestionInputParts != null ->
+                            "Instructions{decisionQuestionInputParts=$decisionQuestionInputParts}"
+                        _json != null -> "Instructions{_unknown=$_json}"
+                        else -> throw IllegalStateException("Invalid Instructions")
+                    }
+
+                companion object {
+
+                    @JvmStatic fun ofString(string: String) = Instructions(string = string)
+
+                    @JvmStatic
+                    fun ofDecisionQuestionInputParts(
+                        decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                    ) =
+                        Instructions(
+                            decisionQuestionInputParts = decisionQuestionInputParts.toImmutable()
+                        )
+                }
+
+                /**
+                 * An interface that defines how to map each variant of [Instructions] to a value of
+                 * type [T].
+                 */
+                interface Visitor<out T> {
+
+                    fun visitString(string: String): T
+
+                    fun visitDecisionQuestionInputParts(
+                        decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                    ): T
+
+                    /**
+                     * Maps an unknown variant of [Instructions] to a value of type [T].
+                     *
+                     * An instance of [Instructions] can contain an unknown variant if it was
+                     * deserialized from data that doesn't match any known variant. For example, if
+                     * the SDK is on an older version than the API, then the API may respond with
+                     * new variants that the SDK is unaware of.
+                     *
+                     * @throws OpenAIInvalidDataException in the default implementation.
+                     */
+                    fun unknown(json: JsonValue?): T {
+                        throw OpenAIInvalidDataException("Unknown Instructions")
+                    }
+                }
+
+                internal class Deserializer : BaseDeserializer<Instructions>(Instructions::class) {
+
+                    override fun ObjectCodec.deserialize(node: JsonNode): Instructions {
+                        val json = JsonValue.fromJsonNode(node)
+
+                        val bestMatches =
+                            sequenceOf(
+                                    tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                        Instructions(string = it, _json = json)
+                                    },
+                                    tryDeserialize(
+                                            node,
+                                            jacksonTypeRef<List<DecisionQuestionInputPart>>(),
+                                        )
+                                        ?.let {
+                                            Instructions(
+                                                decisionQuestionInputParts = it,
+                                                _json = json,
+                                            )
+                                        },
+                                )
+                                .filterNotNull()
+                                .allMaxBy { it.validity() }
+                                .toList()
+                        return when (bestMatches.size) {
+                            // This can happen if what we're deserializing is completely
+                            // incompatible with all the possible variants (e.g. deserializing from
+                            // boolean).
+                            0 -> Instructions(_json = json)
+                            1 -> bestMatches.single()
+                            // If there's more than one match with the highest validity, then use
+                            // the first completely valid match, or simply the first match if none
+                            // are completely valid.
+                            else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                        }
+                    }
+                }
+
+                internal class Serializer : BaseSerializer<Instructions>(Instructions::class) {
+
+                    override fun serialize(
+                        value: Instructions,
+                        generator: JsonGenerator,
+                        provider: SerializerProvider,
+                    ) {
+                        when {
+                            value.string != null -> generator.writeObject(value.string)
+                            value.decisionQuestionInputParts != null ->
+                                generator.writeObject(value.decisionQuestionInputParts)
+                            value._json != null -> generator.writeObject(value._json)
+                            else -> throw IllegalStateException("Invalid Instructions")
+                        }
+                    }
+                }
+            }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1771,7 +2050,7 @@ private constructor(
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val choices: JsonField<List<DecisionChoiceOption>>,
-            private val instructions: JsonField<String>,
+            private val instructions: JsonField<Instructions>,
             private val type: JsonValue,
             private val name: JsonField<String>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1784,7 +2063,7 @@ private constructor(
                 choices: JsonField<List<DecisionChoiceOption>> = JsonMissing.of(),
                 @JsonProperty("instructions")
                 @ExcludeMissing
-                instructions: JsonField<String> = JsonMissing.of(),
+                instructions: JsonField<Instructions> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
                 @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
             ) : this(choices, instructions, type, name, mutableMapOf())
@@ -1803,7 +2082,7 @@ private constructor(
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
              *   value).
              */
-            fun instructions(): String = instructions.getRequired("instructions")
+            fun instructions(): Instructions = instructions.getRequired("instructions")
 
             /**
              * The type of the object. Always `choice`.
@@ -1841,7 +2120,7 @@ private constructor(
              */
             @JsonProperty("instructions")
             @ExcludeMissing
-            fun _instructions(): JsonField<String> = instructions
+            fun _instructions(): JsonField<Instructions> = instructions
 
             /**
              * Returns the raw JSON value of [name].
@@ -1906,7 +2185,7 @@ private constructor(
             class Builder internal constructor() {
 
                 private var choices: JsonField<MutableList<DecisionChoiceOption>>? = null
-                private var instructions: JsonField<String>? = null
+                private var instructions: JsonField<Instructions>? = null
                 private var type: JsonValue = JsonValue.from("choice")
                 private var name: JsonField<String> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1946,18 +2225,33 @@ private constructor(
                         }
                 }
 
-                fun instructions(instructions: String) = instructions(JsonField.of(instructions))
+                fun instructions(instructions: Instructions) =
+                    instructions(JsonField.of(instructions))
 
                 /**
                  * Sets [Builder.instructions] to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.instructions] with a well-typed [String] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
+                 * You should usually call [Builder.instructions] with a well-typed [Instructions]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
                  */
-                fun instructions(instructions: JsonField<String>) = apply {
+                fun instructions(instructions: JsonField<Instructions>) = apply {
                     this.instructions = instructions
                 }
+
+                /** Alias for calling [instructions] with `Instructions.ofString(string)`. */
+                fun instructions(string: String) = instructions(Instructions.ofString(string))
+
+                /**
+                 * Alias for calling [instructions] with
+                 * `Instructions.ofDecisionQuestionInputParts(decisionQuestionInputParts)`.
+                 */
+                fun instructionsOfDecisionQuestionInputParts(
+                    decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                ) =
+                    instructions(
+                        Instructions.ofDecisionQuestionInputParts(decisionQuestionInputParts)
+                    )
 
                 /**
                  * Sets the field to an arbitrary JSON value.
@@ -2047,7 +2341,7 @@ private constructor(
                 }
 
                 choices().forEach { it.validate() }
-                instructions()
+                instructions().validate()
                 _type().let {
                     if (it != JsonValue.from("choice")) {
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -2074,9 +2368,248 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 (choices.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-                    (if (instructions.asKnown().isPresent) 1 else 0) +
+                    (instructions.asKnown().getOrNull()?.validity() ?: 0) +
                     type.let { if (it == JsonValue.from("choice")) 1 else 0 } +
                     (if (name.asKnown().isPresent) 1 else 0)
+
+            @JsonDeserialize(using = Instructions.Deserializer::class)
+            @JsonSerialize(using = Instructions.Serializer::class)
+            class Instructions
+            private constructor(
+                private val string: String? = null,
+                private val decisionQuestionInputParts: List<DecisionQuestionInputPart>? = null,
+                private val _json: JsonValue? = null,
+            ) {
+
+                fun string(): Optional<String> = Optional.ofNullable(string)
+
+                fun decisionQuestionInputParts(): Optional<List<DecisionQuestionInputPart>> =
+                    Optional.ofNullable(decisionQuestionInputParts)
+
+                fun isString(): Boolean = string != null
+
+                fun isDecisionQuestionInputParts(): Boolean = decisionQuestionInputParts != null
+
+                fun asString(): String = string.getOrThrow("string")
+
+                fun asDecisionQuestionInputParts(): List<DecisionQuestionInputPart> =
+                    decisionQuestionInputParts.getOrThrow("decisionQuestionInputParts")
+
+                fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                /**
+                 * Maps this instance's current variant to a value of type [T] using the given
+                 * [visitor].
+                 *
+                 * Note that this method is _not_ forwards compatible with new variants from the
+                 * API, unless [visitor] overrides [Visitor.unknown]. To handle variants not known
+                 * to this version of the SDK gracefully, consider overriding [Visitor.unknown]:
+                 * ```java
+                 * import com.openai.core.JsonValue;
+                 * import java.util.Optional;
+                 *
+                 * Optional<String> result = instructions.accept(new Instructions.Visitor<Optional<String>>() {
+                 *     @Override
+                 *     public Optional<String> visitString(String string) {
+                 *         return Optional.of(string.toString());
+                 *     }
+                 *
+                 *     // ...
+                 *
+                 *     @Override
+                 *     public Optional<String> unknown(JsonValue json) {
+                 *         // Or inspect the `json`.
+                 *         return Optional.empty();
+                 *     }
+                 * });
+                 * ```
+                 *
+                 * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+                 *   [visitor] and the current variant is unknown.
+                 */
+                fun <T> accept(visitor: Visitor<T>): T =
+                    when {
+                        string != null -> visitor.visitString(string)
+                        decisionQuestionInputParts != null ->
+                            visitor.visitDecisionQuestionInputParts(decisionQuestionInputParts)
+                        else -> visitor.unknown(_json)
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Instructions = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    accept(
+                        object : Visitor<Unit> {
+                            override fun visitString(string: String) {}
+
+                            override fun visitDecisionQuestionInputParts(
+                                decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                            ) {
+                                decisionQuestionInputParts.forEach { it.validate() }
+                            }
+                        }
+                    )
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    accept(
+                        object : Visitor<Int> {
+                            override fun visitString(string: String) = 1
+
+                            override fun visitDecisionQuestionInputParts(
+                                decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                            ) = decisionQuestionInputParts.sumOf { it.validity().toInt() }
+
+                            override fun unknown(json: JsonValue?) = 0
+                        }
+                    )
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Instructions &&
+                        string == other.string &&
+                        decisionQuestionInputParts == other.decisionQuestionInputParts
+                }
+
+                override fun hashCode(): Int = Objects.hash(string, decisionQuestionInputParts)
+
+                override fun toString(): String =
+                    when {
+                        string != null -> "Instructions{string=$string}"
+                        decisionQuestionInputParts != null ->
+                            "Instructions{decisionQuestionInputParts=$decisionQuestionInputParts}"
+                        _json != null -> "Instructions{_unknown=$_json}"
+                        else -> throw IllegalStateException("Invalid Instructions")
+                    }
+
+                companion object {
+
+                    @JvmStatic fun ofString(string: String) = Instructions(string = string)
+
+                    @JvmStatic
+                    fun ofDecisionQuestionInputParts(
+                        decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                    ) =
+                        Instructions(
+                            decisionQuestionInputParts = decisionQuestionInputParts.toImmutable()
+                        )
+                }
+
+                /**
+                 * An interface that defines how to map each variant of [Instructions] to a value of
+                 * type [T].
+                 */
+                interface Visitor<out T> {
+
+                    fun visitString(string: String): T
+
+                    fun visitDecisionQuestionInputParts(
+                        decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                    ): T
+
+                    /**
+                     * Maps an unknown variant of [Instructions] to a value of type [T].
+                     *
+                     * An instance of [Instructions] can contain an unknown variant if it was
+                     * deserialized from data that doesn't match any known variant. For example, if
+                     * the SDK is on an older version than the API, then the API may respond with
+                     * new variants that the SDK is unaware of.
+                     *
+                     * @throws OpenAIInvalidDataException in the default implementation.
+                     */
+                    fun unknown(json: JsonValue?): T {
+                        throw OpenAIInvalidDataException("Unknown Instructions")
+                    }
+                }
+
+                internal class Deserializer : BaseDeserializer<Instructions>(Instructions::class) {
+
+                    override fun ObjectCodec.deserialize(node: JsonNode): Instructions {
+                        val json = JsonValue.fromJsonNode(node)
+
+                        val bestMatches =
+                            sequenceOf(
+                                    tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                        Instructions(string = it, _json = json)
+                                    },
+                                    tryDeserialize(
+                                            node,
+                                            jacksonTypeRef<List<DecisionQuestionInputPart>>(),
+                                        )
+                                        ?.let {
+                                            Instructions(
+                                                decisionQuestionInputParts = it,
+                                                _json = json,
+                                            )
+                                        },
+                                )
+                                .filterNotNull()
+                                .allMaxBy { it.validity() }
+                                .toList()
+                        return when (bestMatches.size) {
+                            // This can happen if what we're deserializing is completely
+                            // incompatible with all the possible variants (e.g. deserializing from
+                            // boolean).
+                            0 -> Instructions(_json = json)
+                            1 -> bestMatches.single()
+                            // If there's more than one match with the highest validity, then use
+                            // the first completely valid match, or simply the first match if none
+                            // are completely valid.
+                            else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                        }
+                    }
+                }
+
+                internal class Serializer : BaseSerializer<Instructions>(Instructions::class) {
+
+                    override fun serialize(
+                        value: Instructions,
+                        generator: JsonGenerator,
+                        provider: SerializerProvider,
+                    ) {
+                        when {
+                            value.string != null -> generator.writeObject(value.string)
+                            value.decisionQuestionInputParts != null ->
+                                generator.writeObject(value.decisionQuestionInputParts)
+                            value._json != null -> generator.writeObject(value._json)
+                            else -> throw IllegalStateException("Invalid Instructions")
+                        }
+                    }
+                }
+            }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2105,7 +2638,7 @@ private constructor(
         class Score
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
-            private val instructions: JsonField<String>,
+            private val instructions: JsonField<Instructions>,
             private val levels: JsonField<List<Level>>,
             private val type: JsonValue,
             private val name: JsonField<String>,
@@ -2116,7 +2649,7 @@ private constructor(
             private constructor(
                 @JsonProperty("instructions")
                 @ExcludeMissing
-                instructions: JsonField<String> = JsonMissing.of(),
+                instructions: JsonField<Instructions> = JsonMissing.of(),
                 @JsonProperty("levels")
                 @ExcludeMissing
                 levels: JsonField<List<Level>> = JsonMissing.of(),
@@ -2129,7 +2662,7 @@ private constructor(
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
              *   value).
              */
-            fun instructions(): String = instructions.getRequired("instructions")
+            fun instructions(): Instructions = instructions.getRequired("instructions")
 
             /**
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -2165,7 +2698,7 @@ private constructor(
              */
             @JsonProperty("instructions")
             @ExcludeMissing
-            fun _instructions(): JsonField<String> = instructions
+            fun _instructions(): JsonField<Instructions> = instructions
 
             /**
              * Returns the raw JSON value of [levels].
@@ -2236,7 +2769,7 @@ private constructor(
             /** A builder for [Score]. */
             class Builder internal constructor() {
 
-                private var instructions: JsonField<String>? = null
+                private var instructions: JsonField<Instructions>? = null
                 private var levels: JsonField<MutableList<Level>>? = null
                 private var type: JsonValue = JsonValue.from("score")
                 private var name: JsonField<String> = JsonMissing.of()
@@ -2251,18 +2784,33 @@ private constructor(
                     additionalProperties = score.additionalProperties.toMutableMap()
                 }
 
-                fun instructions(instructions: String) = instructions(JsonField.of(instructions))
+                fun instructions(instructions: Instructions) =
+                    instructions(JsonField.of(instructions))
 
                 /**
                  * Sets [Builder.instructions] to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.instructions] with a well-typed [String] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
+                 * You should usually call [Builder.instructions] with a well-typed [Instructions]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
                  */
-                fun instructions(instructions: JsonField<String>) = apply {
+                fun instructions(instructions: JsonField<Instructions>) = apply {
                     this.instructions = instructions
                 }
+
+                /** Alias for calling [instructions] with `Instructions.ofString(string)`. */
+                fun instructions(string: String) = instructions(Instructions.ofString(string))
+
+                /**
+                 * Alias for calling [instructions] with
+                 * `Instructions.ofDecisionQuestionInputParts(decisionQuestionInputParts)`.
+                 */
+                fun instructionsOfDecisionQuestionInputParts(
+                    decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                ) =
+                    instructions(
+                        Instructions.ofDecisionQuestionInputParts(decisionQuestionInputParts)
+                    )
 
                 fun levels(levels: List<Level>) = levels(JsonField.of(levels))
 
@@ -2376,7 +2924,7 @@ private constructor(
                     return@apply
                 }
 
-                instructions()
+                instructions().validate()
                 levels().forEach { it.validate() }
                 _type().let {
                     if (it != JsonValue.from("score")) {
@@ -2403,10 +2951,249 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                (if (instructions.asKnown().isPresent) 1 else 0) +
+                (instructions.asKnown().getOrNull()?.validity() ?: 0) +
                     (levels.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                     type.let { if (it == JsonValue.from("score")) 1 else 0 } +
                     (if (name.asKnown().isPresent) 1 else 0)
+
+            @JsonDeserialize(using = Instructions.Deserializer::class)
+            @JsonSerialize(using = Instructions.Serializer::class)
+            class Instructions
+            private constructor(
+                private val string: String? = null,
+                private val decisionQuestionInputParts: List<DecisionQuestionInputPart>? = null,
+                private val _json: JsonValue? = null,
+            ) {
+
+                fun string(): Optional<String> = Optional.ofNullable(string)
+
+                fun decisionQuestionInputParts(): Optional<List<DecisionQuestionInputPart>> =
+                    Optional.ofNullable(decisionQuestionInputParts)
+
+                fun isString(): Boolean = string != null
+
+                fun isDecisionQuestionInputParts(): Boolean = decisionQuestionInputParts != null
+
+                fun asString(): String = string.getOrThrow("string")
+
+                fun asDecisionQuestionInputParts(): List<DecisionQuestionInputPart> =
+                    decisionQuestionInputParts.getOrThrow("decisionQuestionInputParts")
+
+                fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                /**
+                 * Maps this instance's current variant to a value of type [T] using the given
+                 * [visitor].
+                 *
+                 * Note that this method is _not_ forwards compatible with new variants from the
+                 * API, unless [visitor] overrides [Visitor.unknown]. To handle variants not known
+                 * to this version of the SDK gracefully, consider overriding [Visitor.unknown]:
+                 * ```java
+                 * import com.openai.core.JsonValue;
+                 * import java.util.Optional;
+                 *
+                 * Optional<String> result = instructions.accept(new Instructions.Visitor<Optional<String>>() {
+                 *     @Override
+                 *     public Optional<String> visitString(String string) {
+                 *         return Optional.of(string.toString());
+                 *     }
+                 *
+                 *     // ...
+                 *
+                 *     @Override
+                 *     public Optional<String> unknown(JsonValue json) {
+                 *         // Or inspect the `json`.
+                 *         return Optional.empty();
+                 *     }
+                 * });
+                 * ```
+                 *
+                 * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in
+                 *   [visitor] and the current variant is unknown.
+                 */
+                fun <T> accept(visitor: Visitor<T>): T =
+                    when {
+                        string != null -> visitor.visitString(string)
+                        decisionQuestionInputParts != null ->
+                            visitor.visitDecisionQuestionInputParts(decisionQuestionInputParts)
+                        else -> visitor.unknown(_json)
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Instructions = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    accept(
+                        object : Visitor<Unit> {
+                            override fun visitString(string: String) {}
+
+                            override fun visitDecisionQuestionInputParts(
+                                decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                            ) {
+                                decisionQuestionInputParts.forEach { it.validate() }
+                            }
+                        }
+                    )
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    accept(
+                        object : Visitor<Int> {
+                            override fun visitString(string: String) = 1
+
+                            override fun visitDecisionQuestionInputParts(
+                                decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                            ) = decisionQuestionInputParts.sumOf { it.validity().toInt() }
+
+                            override fun unknown(json: JsonValue?) = 0
+                        }
+                    )
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Instructions &&
+                        string == other.string &&
+                        decisionQuestionInputParts == other.decisionQuestionInputParts
+                }
+
+                override fun hashCode(): Int = Objects.hash(string, decisionQuestionInputParts)
+
+                override fun toString(): String =
+                    when {
+                        string != null -> "Instructions{string=$string}"
+                        decisionQuestionInputParts != null ->
+                            "Instructions{decisionQuestionInputParts=$decisionQuestionInputParts}"
+                        _json != null -> "Instructions{_unknown=$_json}"
+                        else -> throw IllegalStateException("Invalid Instructions")
+                    }
+
+                companion object {
+
+                    @JvmStatic fun ofString(string: String) = Instructions(string = string)
+
+                    @JvmStatic
+                    fun ofDecisionQuestionInputParts(
+                        decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                    ) =
+                        Instructions(
+                            decisionQuestionInputParts = decisionQuestionInputParts.toImmutable()
+                        )
+                }
+
+                /**
+                 * An interface that defines how to map each variant of [Instructions] to a value of
+                 * type [T].
+                 */
+                interface Visitor<out T> {
+
+                    fun visitString(string: String): T
+
+                    fun visitDecisionQuestionInputParts(
+                        decisionQuestionInputParts: List<DecisionQuestionInputPart>
+                    ): T
+
+                    /**
+                     * Maps an unknown variant of [Instructions] to a value of type [T].
+                     *
+                     * An instance of [Instructions] can contain an unknown variant if it was
+                     * deserialized from data that doesn't match any known variant. For example, if
+                     * the SDK is on an older version than the API, then the API may respond with
+                     * new variants that the SDK is unaware of.
+                     *
+                     * @throws OpenAIInvalidDataException in the default implementation.
+                     */
+                    fun unknown(json: JsonValue?): T {
+                        throw OpenAIInvalidDataException("Unknown Instructions")
+                    }
+                }
+
+                internal class Deserializer : BaseDeserializer<Instructions>(Instructions::class) {
+
+                    override fun ObjectCodec.deserialize(node: JsonNode): Instructions {
+                        val json = JsonValue.fromJsonNode(node)
+
+                        val bestMatches =
+                            sequenceOf(
+                                    tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                        Instructions(string = it, _json = json)
+                                    },
+                                    tryDeserialize(
+                                            node,
+                                            jacksonTypeRef<List<DecisionQuestionInputPart>>(),
+                                        )
+                                        ?.let {
+                                            Instructions(
+                                                decisionQuestionInputParts = it,
+                                                _json = json,
+                                            )
+                                        },
+                                )
+                                .filterNotNull()
+                                .allMaxBy { it.validity() }
+                                .toList()
+                        return when (bestMatches.size) {
+                            // This can happen if what we're deserializing is completely
+                            // incompatible with all the possible variants (e.g. deserializing from
+                            // boolean).
+                            0 -> Instructions(_json = json)
+                            1 -> bestMatches.single()
+                            // If there's more than one match with the highest validity, then use
+                            // the first completely valid match, or simply the first match if none
+                            // are completely valid.
+                            else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                        }
+                    }
+                }
+
+                internal class Serializer : BaseSerializer<Instructions>(Instructions::class) {
+
+                    override fun serialize(
+                        value: Instructions,
+                        generator: JsonGenerator,
+                        provider: SerializerProvider,
+                    ) {
+                        when {
+                            value.string != null -> generator.writeObject(value.string)
+                            value.decisionQuestionInputParts != null ->
+                                generator.writeObject(value.decisionQuestionInputParts)
+                            value._json != null -> generator.writeObject(value._json)
+                            else -> throw IllegalStateException("Invalid Instructions")
+                        }
+                    }
+                }
+            }
 
             class Level
             @JsonCreator(mode = JsonCreator.Mode.DISABLED)

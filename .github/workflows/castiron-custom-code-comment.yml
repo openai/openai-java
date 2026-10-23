@@ -70,6 +70,24 @@ jobs:
                   policy.max_custom_patch_lines < 0n) throw new Error('Invalid policy budget');
               return policy;
             }
+            async function supportsEffectivePinReview(ref) {
+              let file;
+              try {
+                ({data: file} = await github.rest.repos.getContent({
+                  ...context.repo, path: 'scripts/castiron/custom_code_policy.py', ref,
+                }));
+              } catch (error) {
+                if (error.status === 404) return false;
+                throw error;
+              }
+              if (file.type !== 'file' || file.encoding !== 'base64' || !Number.isSafeInteger(file.size) ||
+                  file.size < 0 || typeof file.content !== 'string') throw new Error('Invalid checker contract');
+              const content = Buffer.from(file.content, 'base64');
+              if (content.length !== file.size) throw new Error('Invalid checker content');
+              // Read data only from the effective checker, never import or execute it.
+              const declarations = content.toString('utf8').match(/^PIN_REVIEW_POLICY = .*$/gm) || [];
+              return declarations.length === 1 && declarations[0] === 'PIN_REVIEW_POLICY = "effective-policy-v1"';
+            }
             async function pinRequiresHuman(pr, headPolicy, mainSha) {
               const targetPolicy = await readPolicy(pr.base.sha);
               const pinSha = pin => pin?.repository === repo && /^[0-9a-f]{40}$/.test(pin.main_sha || '')
@@ -78,6 +96,9 @@ jobs:
               const previousChecker = targetPolicy.next_policy ? pinSha(targetPolicy.next_policy) : mainSha;
               if (!proposedChecker || !/^[0-9a-f]{40}$/.test(previousChecker || '') ||
                   !/^[0-9a-f]{40}$/.test(mainSha || '')) return true;
+              // Older checkers require human review for every pin edit. Retain that
+              // requirement until the protected checker explicitly supports the exemption.
+              if (!await supportsEffectivePinReview(previousChecker)) return true;
               const [previous, proposed, previousBase, proposedBase] = await Promise.all([
                 readPolicy(previousChecker),
                 readPolicy(proposedChecker), mergeBase(previousChecker, proposedChecker),

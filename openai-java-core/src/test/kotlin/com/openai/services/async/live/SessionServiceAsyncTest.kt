@@ -83,7 +83,7 @@ internal class SessionServiceAsyncTest {
                                             .addQuestion(
                                                 DecisionTrigger.Decisions.Question.Predicate
                                                     .builder()
-                                                    .instructions("instructions")
+                                                    .instructions("string")
                                                     .name("name")
                                                     .build()
                                             )

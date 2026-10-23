@@ -122,6 +122,11 @@ Next uses separate `Castiron next / budget-only change` and
 two tracks cannot overwrite each other's authorization. The policy version is
 fixed by next's protected base; advancing main does not silently change it.
 Changing the reviewed pin changes next's own base and rebuilds its merge queue.
+Review invalidation reads the effective checker's inert `PIN_REVIEW_POLICY`
+capability marker at that exact revision. Legacy or unknown versions retain
+human review for every pin edit; only the recognized effective-policy contract
+allows non-increasing forward pin changes to use ordinary review. No checker
+code is executed by the invalidation handler.
 
 The effective policy is read from the selected authenticated main commit. The
 next base selects that version; a candidate never selects its own executing
