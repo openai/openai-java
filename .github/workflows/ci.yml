@@ -84,6 +84,65 @@ jobs:
             exit 1
           fi
 
+      - name: Verify Maven visibility contract
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/create-releases.yml
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          yq -er '.jobs.maven_visibility.steps[] | select(.name == "Wait for Maven Central").run' "$workflow" > "$scratch/poll.sh"
+          yq -er '.jobs.release_outcome.steps[] | select(.name == "Verify release outcome").run' "$workflow" > "$scratch/outcome.sh"
+          cat > "$scratch/mock.sh" <<'SH'
+          curl() {
+            printf '%s\n' "${!#}" >> "$PROBE_LOG"
+            [[ "${!#}" != "$MISSING_URL" || ( "$RECOVER_MISSING" == true && -f "$RECOVERY_FILE" ) ]]
+          }
+          sleep() { touch "$RECOVERY_FILE"; }
+          date() {
+            if [[ "${EXPIRE_AFTER_SLEEP:-false}" == true && -f "$RECOVERY_FILE" ]]; then
+              printf '%s\n' "$PUBLISH_DEADLINE"
+            else
+              command date "$@"
+            fi
+          }
+          SH
+          export RELEASE_TAG=v1.2.3 MAVEN_CENTRAL_BASE_URL=https://maven.invalid/com/openai
+          MAVEN_ARTIFACTS="$(yq -er '.env.MAVEN_ARTIFACTS' "$workflow")"
+          export MAVEN_ARTIFACTS
+          export PUBLISH_ATTEMPT="$GITHUB_RUN_ATTEMPT" PUBLISH_DEADLINE="$(( $(date +%s) + 90 ))"
+          export PROBE_LOG="$scratch/probes" RECOVERY_FILE="$scratch/recovered" RECOVER_MISSING=true
+          export MISSING_URL="$MAVEN_CENTRAL_BASE_URL/openai-java-vertex/1.2.3/openai-java-vertex-1.2.3-javadoc.jar"
+
+          BASH_ENV="$scratch/mock.sh" bash "$scratch/poll.sh" > "$scratch/poll.log"
+          for artifact in openai-java openai-java-core openai-java-client-okhttp openai-java-bedrock openai-java-vertex; do
+            for suffix in .pom .jar -sources.jar -javadoc.jar; do
+              echo "$MAVEN_CENTRAL_BASE_URL/$artifact/1.2.3/$artifact-1.2.3$suffix"
+            done
+          done | sort > "$scratch/expected"
+          sort -u "$PROBE_LOG" > "$scratch/observed"
+          diff -u "$scratch/expected" "$scratch/observed"
+          test "$(wc -l < "$PROBE_LOG")" -eq 41 # 20 initial, 1 pending, 20 final
+
+          rm "$RECOVERY_FILE"
+          : > "$PROBE_LOG"
+          if EXPIRE_AFTER_SLEEP=true RECOVER_MISSING=false BASH_ENV="$scratch/mock.sh" bash "$scratch/poll.sh" > "$scratch/poll.log" 2>&1; then
+            echo "::error::Maven visibility passed with a missing file"
+            exit 1
+          fi
+          grep -Fq "Maven visibility deadline expired" "$scratch/poll.log"
+          test "$(wc -l < "$PROBE_LOG")" -eq 20
+          GITHUB_RUN_ATTEMPT="$((PUBLISH_ATTEMPT + 1))" PUBLISH_DEADLINE=1 BASH_ENV="$scratch/mock.sh" bash "$scratch/poll.sh" > "$scratch/poll.log"
+
+          export EVENT_NAME=push AUTOMATIC_RESULT=success RETRY_RESULT=skipped RELEASE_RESULT=success
+          export SHOULD_PUBLISH=true RUNTIME_RESULT=success PUBLISH_RESULT=success VISIBILITY_RESULT=success
+          bash "$scratch/outcome.sh"
+          EVENT_NAME=workflow_dispatch AUTOMATIC_RESULT=skipped RETRY_RESULT=success bash "$scratch/outcome.sh"
+          if VISIBILITY_RESULT=skipped bash "$scratch/outcome.sh" > "$scratch/outcome.log" 2>&1; then
+            echo "::error::Release outcome passed with skipped visibility"
+            exit 1
+          fi
+          SHOULD_PUBLISH=false RUNTIME_RESULT=skipped PUBLISH_RESULT=skipped VISIBILITY_RESULT=skipped bash "$scratch/outcome.sh"
+
       - name: Run lints
         run: ./scripts/lint
 

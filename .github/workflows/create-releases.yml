@@ -260,8 +260,18 @@ jobs:
     runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
     timeout-minutes: 90
     environment: publish
+    outputs:
+      visibility_deadline: ${{ steps.visibility_window.outputs.deadline }}
+      publish_attempt: ${{ steps.visibility_window.outputs.attempt }}
 
     steps:
+      - name: Record publication window
+        id: visibility_window
+        run: |
+          # Match the publisher timeout across the visibility handoff.
+          echo "deadline=$(( $(date +%s) + 90 * 60 ))" >> "$GITHUB_OUTPUT"
+          echo "attempt=$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
+
       - name: Check out workflow scripts
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
@@ -480,38 +490,97 @@ jobs:
       - name: Verify attested Maven artifacts
         run: sha256sum --check "$RUNNER_TEMP/maven-artifact-provenance.sha256"
 
+  maven_visibility:
+    name: Release / verify Maven visibility
+    needs:
+      - release
+      - publish
+    if: >-
+      !cancelled() &&
+      needs.release.result == 'success' &&
+      needs.release.outputs.should_publish == 'true' &&
+      needs.publish.result == 'success'
+    permissions: {}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+
+    steps:
       - name: Wait for Maven Central
         env:
           RELEASE_TAG: ${{ needs.release.outputs.release_tag }}
+          PUBLISH_DEADLINE: ${{ needs.publish.outputs.visibility_deadline }}
+          PUBLISH_ATTEMPT: ${{ needs.publish.outputs.publish_attempt }}
         run: |
           set -euo pipefail
 
-          version="${RELEASE_TAG#v}"
-          for attempt in {1..31}; do
-            missing=()
-            for artifact in $MAVEN_ARTIFACTS; do
-              for suffix in .pom .jar -sources.jar -javadoc.jar; do
-                file="$artifact-$version$suffix"
-                url="$MAVEN_CENTRAL_BASE_URL/$artifact/$version/$file"
-                if ! curl --fail --silent --show-error --head --location \
-                  --connect-timeout 10 --max-time 30 "$url" >/dev/null; then
-                  missing+=("$file")
-                fi
-              done
-            done
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ||
+                ! "$PUBLISH_DEADLINE" =~ ^[1-9][0-9]*$ ||
+                ! "$PUBLISH_ATTEMPT" =~ ^[1-9][0-9]*$ ||
+                ! "$GITHUB_RUN_ATTEMPT" =~ ^[1-9][0-9]*$ ]] ||
+             (( GITHUB_RUN_ATTEMPT < PUBLISH_ATTEMPT )); then
+            echo "::error::Invalid publication window or release tag"
+            exit 1
+          fi
+          deadline=$PUBLISH_DEADLINE
+          if (( GITHUB_RUN_ATTEMPT > PUBLISH_ATTEMPT )); then
+            # Rerunning only this job must not reuse the original attempt's expired window.
+            deadline=$(( $(date +%s) + 90 * 60 ))
+          fi
 
-            if [[ "${#missing[@]}" -eq 0 ]]; then
+          check_files() {
+            local remaining
+            remaining=$((deadline - $(date +%s)))
+            if (( remaining <= 0 )); then
+              echo "::error::Maven visibility deadline expired; rerun this job to recheck without republishing" >&2
+              return 1
+            fi
+            if ! printf '%s\0' "$@" |
+              timeout "$remaining" xargs -0 -n 1 -P 10 bash -c '
+                if ! curl --fail --silent --show-error --head --location \
+                  --connect-timeout 10 --max-time 30 "$MAVEN_CENTRAL_BASE_URL/$1" >/dev/null; then
+                  printf "%s\n" "$1"
+                fi
+              ' _; then
+              echo "::error::Maven visibility probe failed; rerun this job to recheck without republishing" >&2
+              return 1
+            fi
+          }
+
+          version="${RELEASE_TAG#v}"
+          files=()
+          for artifact in $MAVEN_ARTIFACTS; do
+            for suffix in .pom .jar -sources.jar -javadoc.jar; do
+              files+=("$artifact/$version/$artifact-$version$suffix")
+            done
+          done
+          if [[ "${#files[@]}" -ne 20 ]]; then
+            echo "::error::Expected exactly 20 Maven files, got ${#files[@]}"
+            exit 1
+          fi
+
+          pending=("${files[@]}")
+          for attempt in {1..31}; do
+            missing="$(check_files "${pending[@]}")"
+            if [[ -z "$missing" && "${#pending[@]}" -lt "${#files[@]}" ]]; then
+              # Recheck the whole release together before reporting success.
+              missing="$(check_files "${files[@]}")"
+            fi
+            if [[ -z "$missing" ]]; then
               echo "Maven Central serves every expected $version artifact"
               exit 0
             fi
 
-            echo "Attempt $attempt/31; waiting for: ${missing[*]}"
+            mapfile -t pending <<< "$missing"
+            echo "Attempt $attempt/31; waiting for: ${pending[*]}"
             if [[ "$attempt" -lt 31 ]]; then
-              sleep 60
+              remaining=$((deadline - $(date +%s)))
+              if (( remaining > 0 )); then
+                sleep "$((remaining < 60 ? remaining : 60))"
+              fi
             fi
           done
 
-          echo "::error::Upload completed, but $version was not fully public after 30 minutes"
+          echo "::error::Upload completed, but $version was not fully public after 31 checks; rerun this job to recheck without republishing"
           exit 1
 
   release_outcome:
@@ -522,6 +591,7 @@ jobs:
       - release
       - runtime_compatibility
       - publish
+      - maven_visibility
     # Run after failures and intentional skips, but do not keep a cancelled
     # workflow alive. This makes an unexpected skipped publication fail closed.
     if: ${{ !cancelled() && github.repository == 'openai/openai-java' }}
@@ -539,6 +609,7 @@ jobs:
           SHOULD_PUBLISH: ${{ needs.release.outputs.should_publish }}
           RUNTIME_RESULT: ${{ needs.runtime_compatibility.result }}
           PUBLISH_RESULT: ${{ needs.publish.result }}
+          VISIBILITY_RESULT: ${{ needs.maven_visibility.result }}
         run: |
           set -euo pipefail
 
@@ -585,6 +656,9 @@ jobs:
               if [[ "$PUBLISH_RESULT" != "success" ]]; then
                 fail "Maven Central publication concluded $PUBLISH_RESULT"
               fi
+              if [[ "$VISIBILITY_RESULT" != "success" ]]; then
+                fail "Maven Central visibility concluded $VISIBILITY_RESULT"
+              fi
               ;;
             false)
               if [[ "$RUNTIME_RESULT" != "skipped" ]]; then
@@ -592,6 +666,9 @@ jobs:
               fi
               if [[ "$PUBLISH_RESULT" != "skipped" ]]; then
                 fail "No-release run expected Maven Central publication to be skipped, got $PUBLISH_RESULT"
+              fi
+              if [[ "$VISIBILITY_RESULT" != "skipped" ]]; then
+                fail "No-release run expected Maven Central visibility to be skipped, got $VISIBILITY_RESULT"
               fi
               ;;
             *)
