@@ -210,7 +210,8 @@ base, never the candidate. Pin-only updates and initial pin adoption use ordinar
 CODEOWNERS and required reviews when the pin does not roll back to an older main
 checker, the effective pinned budget stays the same or decreases, and its schema,
 strictness and ratchet mode stay unchanged. Initial adoption compares checker age
-with authenticated bootstrap main; later updates compare with the current protected
+and effective policy with authenticated bootstrap main, not the unpinned target's
+local policy fields; later updates compare with the current protected
 target pin and effective policy, even for stale PRs. A
 checker rollback, an effective pinned-budget increase or mode transition, a local numeric budget increase, or Go
 ratchet activation still requires an exact-head human approving review from a

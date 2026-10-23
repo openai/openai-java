@@ -79,7 +79,7 @@ jobs:
               if (!proposedChecker || !/^[0-9a-f]{40}$/.test(previousChecker || '') ||
                   !/^[0-9a-f]{40}$/.test(mainSha || '')) return true;
               const [previous, proposed, previousBase, proposedBase] = await Promise.all([
-                targetPolicy.next_policy ? readPolicy(previousChecker) : targetPolicy,
+                readPolicy(previousChecker),
                 readPolicy(proposedChecker), mergeBase(previousChecker, proposedChecker),
                 mergeBase(proposedChecker, mainSha),
               ]);
