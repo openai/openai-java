@@ -475,12 +475,13 @@ class ReviewedPinTests(GitTestCase):
                 self.head = self.commit("request pin without changing local budget")
                 for heads in (None, [self.head]):
                     with self.subTest(proposed=proposed, bootstrap=bootstrap, heads=heads):
+                        needs_proof = requires_human and not bootstrap
                         with mock.patch.object(
                             selector,
                             "require_human_policy_review",
                             side_effect=ValueError("human review missing"),
                         ) as review:
-                            if requires_human:
+                            if needs_proof:
                                 with self.assertRaisesRegex(ValueError, "human"):
                                     self.select(base=base, main=newer, pull_heads=heads)
                                 review.assert_called_once_with(REPO, self.head)
@@ -488,7 +489,7 @@ class ReviewedPinTests(GitTestCase):
                                 result = self.select(base=base, main=newer, pull_heads=heads)
                                 review.assert_not_called()
                                 self.assertEqual(result["policy_reviews"], [])
-                        if requires_human:
+                        if needs_proof:
                             with mock.patch.object(
                                 selector.report,
                                 "api",
@@ -605,6 +606,40 @@ class ReviewedPinTests(GitTestCase):
                         result["policy_reviews"],
                         [{"number": 3, "head_sha": self.head}] if pin_sha == self.main else [],
                     )
+
+    def test_bootstrap_uses_active_main_policy_for_pr_and_queue(self) -> None:
+        self.git("checkout", "-q", "--detach", self.main)
+        self.write_policy(
+            {"schema_version": 2, "max_custom_patch_lines": 0, "generated_files": "strict"}
+        )
+        current = self.commit("main activates strict zero policy")
+        self.git("update-ref", "refs/remotes/origin/main", current)
+        for proposed in (self.main, current):
+            self.git("checkout", "-q", "--detach", self.main)
+            self.write_policy(
+                {**self.policy, "next_policy": {"repository": REPO, "main_sha": proposed}}
+            )
+            self.head = self.commit("initial pin with unchanged legacy local ceiling")
+            for heads in (None, [self.head]):
+                with self.subTest(proposed=proposed, heads=heads):
+                    with mock.patch.object(selector.report, "api", side_effect=self.review_api([])):
+                        if proposed == self.main:
+                            with self.assertRaisesRegex(ValueError, "human"):
+                                self.select(base=self.main, main=current, pull_heads=heads)
+                        else:
+                            result = self.select(base=self.main, main=current, pull_heads=heads)
+                            self.assertEqual(result["policy_reviews"], [])
+                            self.assertEqual(result["policy_sha"], current)
+                    with mock.patch.object(
+                        selector.report, "api", side_effect=self.review_api([self.approved()])
+                    ):
+                        result = self.select(base=self.main, main=current, pull_heads=heads)
+                        self.assertTrue(result["bootstrap"])
+                        self.assertEqual(result["policy_sha"], current)
+                        self.assertEqual(
+                            result["policy_reviews"],
+                            [{"number": 3, "head_sha": self.head}] if proposed == self.main else [],
+                        )
 
     def test_incapable_policy_is_not_executed(self) -> None:
         self.git("checkout", "-q", "--detach", self.main)

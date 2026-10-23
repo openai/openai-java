@@ -278,8 +278,9 @@ def select_policy(
                 repo, next_policy_sha(repo, repository, candidate, authenticated_main)
             )
             # Authored changes come from the merge base, but their safety must be
-            # measured against the protected target that will actually be replaced.
-            previous = read_policy(repo, policy) if "next_policy" in base_policy else base_policy
+            # measured against the active policy: the protected target's pin, or
+            # authenticated main during bootstrap.
+            previous = read_policy(repo, policy)
             # Bootstrap executes authenticated main; initial adoption must not silently
             # replace it with older checker code, even when policy fields match.
             previous_checker = (
