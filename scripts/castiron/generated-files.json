@@ -3,11 +3,11 @@
   "files": {
     ".github/workflows/castiron-custom-code-comment.yml": {
       "mode": "100644",
-      "sha256": "87fda8ee677c655a5e8138491e71358f3631700ba87bb1f420aa0736c889381a"
+      "sha256": "afebb2d21c7b322905e67452004da087d5bd3f60fc3c0cc11d9bccad9900103d"
     },
     ".github/workflows/castiron-custom-code.yml": {
       "mode": "100644",
-      "sha256": "402da2fd16cc575eef7f4bf6bb1cff25272ee350452cb776f17c1589c036a3a1"
+      "sha256": "2760a19c1e05a2a01d73a679dac9d59ba7cfee2faa2fe426182f740ae1603202"
     },
     "openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt": {
       "mode": "100644",
@@ -15911,31 +15911,31 @@
     },
     "scripts/castiron/CUSTOM_CODE.md": {
       "mode": "100644",
-      "sha256": "6578db0d17cf297ea01b862f772a716bef56a81192498f423463505950707701"
+      "sha256": "c0315b363849bcebb2819d07ed84615db47f03132ad3f59f1fcdfcf9ffad2ece"
     },
     "scripts/castiron/README.md": {
       "mode": "100644",
       "sha256": "4aff82cb988d01babde79902ae20de842fdd4b2b447d5f4cb3c5ce0a36d6fab8"
     },
     "scripts/castiron/custom_code_budget.py": {
-      "mode": "100644",
-      "sha256": "447adc841dfdca7ad75956d277778b6f79d77efa17e8b5f08a4a79664060da77"
+      "mode": "100755",
+      "sha256": "3c96300546afb5e57fbfb596d4e1bde90821928e44904c4aeb91e2d7e4e27ff5"
     },
     "scripts/castiron/custom_code_policy.py": {
-      "mode": "100644",
-      "sha256": "4b9c374b838bb544e1325823f195bca0f99989745ad09add43ad3b702016e492"
+      "mode": "100755",
+      "sha256": "b1425b2c9c5fcf47897c266776fbd1ce28f98df1cfd8af492335589a707f840a"
     },
     "scripts/castiron/custom_code_report.py": {
-      "mode": "100644",
-      "sha256": "6b7cfda1f85426daaa2e4f6186e2d1b20ac638dadaa54be8142ecec89fefd880"
+      "mode": "100755",
+      "sha256": "a52a1aabf4047f4c20e96d1d788c25a4aa78c1987b4fa73a13d22c92ef213a3f"
     },
     "scripts/castiron/custom_code_test_support.py": {
       "mode": "100644",
-      "sha256": "27a1c5ee377fa601f896191e3914cb74e4bf65ab814819a408e884332b713bde"
+      "sha256": "15b2c1243f1cbec53b73707e5806a8566d40f78763fe85c4ab7dc48bc1405a6c"
     },
     "scripts/castiron/fixtures/github_publisher.cjs": {
       "mode": "100644",
-      "sha256": "3c39971b4371f2dd547f0dfa692e2980f1e7a14844799fe1834f7d8d1ab0a60b"
+      "sha256": "7cd554d124da0ae9eb7fac3c4bbb1c8129f0d6868e442698105fe4945f6ee814"
     },
     "scripts/castiron/ruff.toml": {
       "mode": "100644",
@@ -15943,23 +15943,23 @@
     },
     "scripts/castiron/test_custom_code_budget.py": {
       "mode": "100644",
-      "sha256": "71527f2e594989bb3f7f94a723322714bf9bd2669aa861719f29f462b925a4b6"
+      "sha256": "feaf35f7f30deecb89d95b31b8a325033180c64650e1d965cbdee486ab11f16d"
     },
     "scripts/castiron/test_custom_code_github.py": {
       "mode": "100644",
-      "sha256": "203acb9491117d6fb7e3c7fd3379055aa42d7e4884be4dcbef364c9f13ea4c7c"
+      "sha256": "f0f3fa6810ef73b0656d722e65125003a5685b61324dda6c93d1d0dbf619df37"
     },
     "scripts/castiron/test_custom_code_policy.py": {
       "mode": "100644",
-      "sha256": "14cc036ca21d6cdc271cce93027e7b90636d780d9550bf119f70a2316fab782d"
+      "sha256": "5de73d64a2f89a4b7bd805f59f0c6a6d29452866ef050c1191e04a8c48e6db25"
     },
     "scripts/castiron/test_custom_code_publication.py": {
       "mode": "100644",
-      "sha256": "8c55aaf375ca85cdf6921598205f3a67dee008f471404015c48bbcf4c8104dfc"
+      "sha256": "4e9077ffc214685e49d4156163eaf904e650bc9ed82ecbdb03a19fc22bd4fbbf"
     },
     "scripts/castiron/test_custom_code_report.py": {
       "mode": "100644",
-      "sha256": "f8f6b883c545963b4f82d8b078734298294607a9371e70e01fb0c3a37304be61"
+      "sha256": "f4d90fd38b17aac59096488391b65ef9da5493d2049d4c038d5926a960257ca7"
     }
   }
 }
