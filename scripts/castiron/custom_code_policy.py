@@ -59,6 +59,10 @@ def read_policy(repo: Path, revision: str) -> dict[str, Any]:
     if type(version) is not int or version not in (1, 2):
         raise ValueError("unsupported budget schema_version")
     keys = {"schema_version", "max_custom_patch_lines"}
+    if "ratchet" in value:
+        keys.add("ratchet")
+        if value["ratchet"] != "go":
+            raise ValueError("ratchet must be go")
     if version == 2:
         keys.add("generated_files")
     if "next_policy" in value:
@@ -99,7 +103,8 @@ def next_policy_sha(repo: Path, repository: str, base: str, authenticated_main: 
     if fetched_main != authenticated_main:
         raise ValueError("authenticated main changed during policy selection; retry")
     pin = read_policy(repo, base).get("next_policy")
-    if not isinstance(pin, dict):
+    # read_policy validates the shape of every present next_policy pin.
+    if pin is None:
         raise ValueError("trusted next base has no reviewed policy pin")
     if pin["repository"] != repository:
         raise ValueError("next policy pin belongs to another repository")
@@ -125,17 +130,19 @@ def next_policy_sha(repo: Path, repository: str, base: str, authenticated_main: 
     )
     if not capable:
         raise ValueError("pinned checker does not support reviewed next policies")
-    return policy
+    return cast(str, policy)
 
 
 class HumanReviewRules(TypedDict):
     version: int
     associations: list[str]
     negative_pattern: str
+    attestation_prefix: str
 
 
 HUMAN_REVIEW_RULES: HumanReviewRules = {
-    "version": 1,
+    "version": 2,
+    "attestation_prefix": "I personally reviewed and approve this policy change as a human: ",
     "associations": ["OWNER", "MEMBER", "COLLABORATOR"],
     "negative_pattern": (
         r"automated[\s_:-]*(?:source[\s_:-]*)?review|source[- ]only review|"
@@ -149,7 +156,7 @@ def has_human_approval(reviews: list[dict[str, Any]], author: str, head: str) ->
     """Versioned review predicate; publisher consumes these same trusted rules."""
     latest: dict[str, dict[str, Any]] = {}
     for review in reviews:
-        if review["state"] != "PENDING":
+        if review["state"] != "PENDING" and review.get("user") is not None:
             login = review["user"]["login"]
             if login not in latest or review["id"] > latest[login]["id"]:
                 latest[login] = review
@@ -160,6 +167,7 @@ def has_human_approval(reviews: list[dict[str, Any]], author: str, head: str) ->
         and review.get("author_association") in HUMAN_REVIEW_RULES["associations"]
         and not review["user"]["login"].endswith("[bot]")
         and review["user"]["login"] != author
+        and (review.get("body") or "").strip() == HUMAN_REVIEW_RULES["attestation_prefix"] + head
         and not re.search(
             HUMAN_REVIEW_RULES["negative_pattern"], review.get("body") or "", re.IGNORECASE
         )
@@ -227,7 +235,9 @@ def select_policy(
     head_policy = read_policy(repo, head)
     bootstrap = "next_policy" not in base_policy
     if bootstrap:
-        if "next_policy" not in head_policy or changed_paths(repo, base, head) != {POLICY.encode()}:
+        if "next_policy" not in head_policy or (
+            pull_heads is None and changed_paths(repo, base, head) != {POLICY.encode()}
+        ):
             raise ValueError("missing next pin allows only reviewed policy-only initialization")
         policy = authenticated_main
     else:
@@ -246,7 +256,8 @@ def select_policy(
         raise ValueError("next evaluation has no verified constituent PR")
     for candidate in candidates:
         candidate_policy = read_policy(repo, candidate)
-        candidate_base_policy = read_policy(repo, merge_base(repo, base, candidate))
+        candidate_base = merge_base(repo, base, candidate)
+        candidate_base_policy = read_policy(repo, candidate_base)
         pin_changed = candidate_policy.get("next_policy") != candidate_base_policy.get(
             "next_policy"
         )
@@ -254,9 +265,46 @@ def select_policy(
             candidate_policy["max_custom_patch_lines"]
             > candidate_base_policy["max_custom_patch_lines"]
         )
-        if pin_changed or budget_increased:
-            if changed_paths(repo, base, candidate) != {POLICY.encode()}:
-                raise ValueError("each next policy activation or increase must be policy-only")
+        ratchet_activated = (
+            candidate_policy.get("ratchet") == "go" and candidate_base_policy.get("ratchet") != "go"
+        )
+        if (pin_changed or budget_increased or ratchet_activated) and changed_paths(
+            repo, base, candidate
+        ) != {POLICY.encode()}:
+            raise ValueError("each next policy activation or increase must be policy-only")
+        pin_requires_human = False
+        if pin_changed:
+            proposed = read_policy(
+                repo, next_policy_sha(repo, repository, candidate, authenticated_main)
+            )
+            # Authored changes come from the merge base, but their safety must be
+            # measured against the protected target that will actually be replaced.
+            previous = read_policy(repo, policy) if "next_policy" in base_policy else base_policy
+            # Bootstrap executes authenticated main; initial adoption must not silently
+            # replace it with older checker code, even when policy fields match.
+            previous_checker = (
+                base_policy["next_policy"]["main_sha"]
+                if "next_policy" in base_policy
+                else authenticated_main
+            )
+            rolled_back = bool(
+                report.git(
+                    repo,
+                    "rev-list",
+                    "--first-parent",
+                    f"{candidate_policy['next_policy']['main_sha']}..{previous_checker}",
+                ).strip()
+            )
+            # Compare effective policies, not the candidate's unchanged local ceiling.
+            # Schema/strictness or ratchet transitions also retain human authorization.
+            pin_requires_human = (
+                rolled_back
+                or proposed["max_custom_patch_lines"] > previous["max_custom_patch_lines"]
+                or proposed["schema_version"] != previous["schema_version"]
+                or proposed.get("generated_files") != previous.get("generated_files")
+                or proposed.get("ratchet") != previous.get("ratchet")
+            )
+        if budget_increased or ratchet_activated or pin_requires_human:
             number = require_human_policy_review(repository, candidate)
             policy_reviews.append({"number": number, "head_sha": candidate})
     return {
@@ -305,6 +353,13 @@ def select_github_policy(
         or run["path"].split("@", 1)[0] != source_workflow
     ):
         raise ValueError("unexpected or superseded policy source run")
+    workflow = report.api("GET", f"{root}/actions/workflows/{source_workflow.rsplit('/', 1)[1]}")
+    if (
+        type(run.get("workflow_id")) is not int
+        or run["workflow_id"] != workflow["id"]
+        or workflow["path"] != source_workflow
+    ):
+        raise ValueError("policy source run is not the canonical workflow")
     head = report.require_sha(run["head_sha"])
     if run["event"] == "pull_request":
         current = report.current_pull(repository, run)
@@ -368,10 +423,11 @@ def select_github_policy(
 
 def merge_base(repo: Path, base: str, head: str) -> str:
     """Distinguish actual PR policy edits from later changes on the target."""
-    return (
+    return cast(
+        str,
         report.git(repo, "merge-base", report.require_sha(base), report.require_sha(head))
         .decode()
-        .strip()
+        .strip(),
     )
 
 
@@ -459,10 +515,10 @@ def main(argv: list[str] | None = None) -> int:
     args.out.write_text(json.dumps(selected, sort_keys=True) + "\n")
     if "GITHUB_OUTPUT" in os.environ:
         with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
-            for key, value in selected.items():
-                output.write(
-                    f"{key}={json.dumps(value) if isinstance(value, (bool, list, dict)) else value}\n"
-                )
+            output.writelines(
+                f"{key}={json.dumps(value) if isinstance(value, (bool, list, dict)) else value}\n"
+                for key, value in selected.items()
+            )
     return 0
 
 
