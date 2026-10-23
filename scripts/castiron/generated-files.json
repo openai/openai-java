@@ -3,7 +3,7 @@
   "files": {
     ".github/workflows/castiron-custom-code-comment.yml": {
       "mode": "100644",
-      "sha256": "e509efc5bc41f8a5b3494ad849af5acfc9fd72ac878589effb8c79dff01b28a3"
+      "sha256": "db521f2e39d1c39ad2edacedc9903954471308e660e6df5b4ba8ca7615e5a5a8"
     },
     ".github/workflows/castiron-custom-code.yml": {
       "mode": "100644",
@@ -15979,7 +15979,7 @@
     },
     "scripts/castiron/fixtures/github_publisher.cjs": {
       "mode": "100644",
-      "sha256": "32ac621f6f062644c065002289d092b607755e567e4422369a66e7040051741c"
+      "sha256": "3f77c368ed668bb6ddcde1f2e806e3f307d64cb68cc45fe4c4968adfe1f7c0fe"
     },
     "scripts/castiron/ruff.toml": {
       "mode": "100644",
@@ -16007,7 +16007,7 @@
     },
     "scripts/castiron/test_custom_code_review_revocation.py": {
       "mode": "100644",
-      "sha256": "efc1e3e75fea75f74c1e6acf09ccca2e5ff25c550b576b2435f2edd7508654f8"
+      "sha256": "2ad322e7e7b2cbd425f6647edc1cde98d4354b989dfb0b61f326030292e9c460"
     }
   }
 }
