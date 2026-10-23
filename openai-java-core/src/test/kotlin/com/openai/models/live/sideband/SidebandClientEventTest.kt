@@ -102,7 +102,7 @@ internal class SidebandClientEventTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -208,7 +208,7 @@ internal class SidebandClientEventTest {
                                             .addQuestion(
                                                 DecisionTrigger.Decisions.Question.Predicate
                                                     .builder()
-                                                    .instructions("instructions")
+                                                    .instructions("string")
                                                     .name("name")
                                                     .build()
                                             )

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.DecisionInputJson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -26,6 +27,7 @@ internal class DecisionInputPartTest {
 
         assertThat(decisionInputPart.inputText()).contains(inputText)
         assertThat(decisionInputPart.inputImage()).isEmpty
+        assertThat(decisionInputPart.inputJson()).isEmpty
     }
 
     @Test
@@ -61,6 +63,7 @@ internal class DecisionInputPartTest {
 
         assertThat(decisionInputPart.inputText()).isEmpty
         assertThat(decisionInputPart.inputImage()).contains(inputImage)
+        assertThat(decisionInputPart.inputJson()).isEmpty
     }
 
     @Test
@@ -72,6 +75,39 @@ internal class DecisionInputPartTest {
                     .imageUrl("https://")
                     .detail(DecisionInputImage.Detail.LOW)
                     .promptCacheBreakpoint(DecisionPromptCacheBreakpoint.builder().build())
+                    .build()
+            )
+
+        val roundtrippedDecisionInputPart =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(decisionInputPart),
+                jacksonTypeRef<DecisionInputPart>(),
+            )
+
+        assertThat(roundtrippedDecisionInputPart).isEqualTo(decisionInputPart)
+    }
+
+    @Test
+    fun ofInputJson() {
+        val inputJson =
+            DecisionInputJson.builder()
+                .data(DecisionInputJson.Data.UnionMember0.builder().build())
+                .build()
+
+        val decisionInputPart = DecisionInputPart.ofInputJson(inputJson)
+
+        assertThat(decisionInputPart.inputText()).isEmpty
+        assertThat(decisionInputPart.inputImage()).isEmpty
+        assertThat(decisionInputPart.inputJson()).contains(inputJson)
+    }
+
+    @Test
+    fun ofInputJsonRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val decisionInputPart =
+            DecisionInputPart.ofInputJson(
+                DecisionInputJson.builder()
+                    .data(DecisionInputJson.Data.UnionMember0.builder().build())
                     .build()
             )
 

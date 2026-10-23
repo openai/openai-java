@@ -30,6 +30,8 @@ _spec.loader.exec_module(report)
 
 POLICY = ".castiron-ratchet.json"
 NEXT_POLICY_VERSION = 1
+# Inert capability marker read by trusted review invalidation at this exact revision.
+PIN_REVIEW_POLICY = "effective-policy-v1"
 SELECTION_RECEIPT_VERSION = 1
 
 

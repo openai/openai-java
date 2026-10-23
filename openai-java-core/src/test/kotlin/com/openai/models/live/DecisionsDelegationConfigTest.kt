@@ -16,7 +16,7 @@ internal class DecisionsDelegationConfigTest {
                 .model("x")
                 .addQuestion(
                     DecisionsDelegationConfig.Question.Predicate.builder()
-                        .instructions("instructions")
+                        .instructions("string")
                         .name("name")
                         .build()
                 )
@@ -27,7 +27,7 @@ internal class DecisionsDelegationConfigTest {
             .containsExactly(
                 DecisionsDelegationConfig.Question.ofPredicate(
                     DecisionsDelegationConfig.Question.Predicate.builder()
-                        .instructions("instructions")
+                        .instructions("string")
                         .name("name")
                         .build()
                 )
