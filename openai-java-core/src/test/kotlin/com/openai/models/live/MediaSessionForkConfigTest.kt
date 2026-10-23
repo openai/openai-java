@@ -26,6 +26,7 @@ internal class MediaSessionForkConfigTest {
                 )
                 .delegation(
                     MediaSessionForkConfig.Delegation.builder()
+                        .acknowledgementDelayMs(0L)
                         .responses(
                             ResponsesDelegationUpdateConfig.builder()
                                 .instructions("instructions")
@@ -88,6 +89,7 @@ internal class MediaSessionForkConfigTest {
         assertThat(mediaSessionForkConfig.delegation())
             .contains(
                 MediaSessionForkConfig.Delegation.builder()
+                    .acknowledgementDelayMs(0L)
                     .responses(
                         ResponsesDelegationUpdateConfig.builder()
                             .instructions("instructions")

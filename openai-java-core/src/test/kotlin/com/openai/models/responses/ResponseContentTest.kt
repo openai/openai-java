@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -19,7 +20,11 @@ internal class ResponseContentTest {
         val inputText =
             ResponseInputText.builder()
                 .text("text")
-                .promptCacheBreakpoint(ResponseInputText.PromptCacheBreakpoint.builder().build())
+                .promptCacheBreakpoint(
+                    ResponseInputText.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
+                )
                 .build()
 
         val responseContent = ResponseContent.ofInputText(inputText)
@@ -40,7 +45,9 @@ internal class ResponseContentTest {
                 ResponseInputText.builder()
                     .text("text")
                     .promptCacheBreakpoint(
-                        ResponseInputText.PromptCacheBreakpoint.builder().build()
+                        ResponseInputText.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )
@@ -61,7 +68,11 @@ internal class ResponseContentTest {
                 .detail(ResponseInputImage.Detail.LOW)
                 .fileId("file_id")
                 .imageUrl("https://example.com")
-                .promptCacheBreakpoint(ResponseInputImage.PromptCacheBreakpoint.builder().build())
+                .promptCacheBreakpoint(
+                    ResponseInputImage.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
+                )
                 .build()
 
         val responseContent = ResponseContent.ofInputImage(inputImage)
@@ -84,7 +95,9 @@ internal class ResponseContentTest {
                     .fileId("file_id")
                     .imageUrl("https://example.com")
                     .promptCacheBreakpoint(
-                        ResponseInputImage.PromptCacheBreakpoint.builder().build()
+                        ResponseInputImage.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )
@@ -107,7 +120,11 @@ internal class ResponseContentTest {
                 .fileId("file_id")
                 .fileUrl("https://example.com")
                 .filename("filename")
-                .promptCacheBreakpoint(ResponseInputFile.PromptCacheBreakpoint.builder().build())
+                .promptCacheBreakpoint(
+                    ResponseInputFile.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
+                )
                 .build()
 
         val responseContent = ResponseContent.ofInputFile(inputFile)
@@ -132,7 +149,9 @@ internal class ResponseContentTest {
                     .fileUrl("https://example.com")
                     .filename("filename")
                     .promptCacheBreakpoint(
-                        ResponseInputFile.PromptCacheBreakpoint.builder().build()
+                        ResponseInputFile.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )

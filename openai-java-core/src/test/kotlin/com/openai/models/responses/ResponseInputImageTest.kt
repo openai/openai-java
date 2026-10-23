@@ -4,6 +4,7 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -16,14 +17,22 @@ internal class ResponseInputImageTest {
                 .detail(ResponseInputImage.Detail.LOW)
                 .fileId("file_id")
                 .imageUrl("https://example.com")
-                .promptCacheBreakpoint(ResponseInputImage.PromptCacheBreakpoint.builder().build())
+                .promptCacheBreakpoint(
+                    ResponseInputImage.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
+                )
                 .build()
 
         assertThat(responseInputImage.detail()).isEqualTo(ResponseInputImage.Detail.LOW)
         assertThat(responseInputImage.fileId()).contains("file_id")
         assertThat(responseInputImage.imageUrl()).contains("https://example.com")
         assertThat(responseInputImage.promptCacheBreakpoint())
-            .contains(ResponseInputImage.PromptCacheBreakpoint.builder().build())
+            .contains(
+                ResponseInputImage.PromptCacheBreakpoint.builder()
+                    .ttl(PromptCacheBreakpointTtl._30M)
+                    .build()
+            )
 
         val jsonMapper = jsonMapper()
 

@@ -31,6 +31,7 @@ internal class ForkSessionConfigTest {
                 )
                 .delegation(
                     ForkSessionConfig.Delegation.builder()
+                        .acknowledgementDelayMs(0L)
                         .responses(
                             ResponsesDelegationUpdateConfig.builder()
                                 .instructions("instructions")
@@ -99,6 +100,7 @@ internal class ForkSessionConfigTest {
         assertThat(forkSessionConfig.delegation())
             .contains(
                 ForkSessionConfig.Delegation.builder()
+                    .acknowledgementDelayMs(0L)
                     .responses(
                         ResponsesDelegationUpdateConfig.builder()
                             .instructions("instructions")

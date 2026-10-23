@@ -4,6 +4,7 @@ package com.openai.models.chat.completions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -20,7 +21,9 @@ internal class ChatCompletionContentPartInputAudioTest {
                         .build()
                 )
                 .promptCacheBreakpoint(
-                    ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build()
+                    ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -32,7 +35,11 @@ internal class ChatCompletionContentPartInputAudioTest {
                     .build()
             )
         assertThat(chatCompletionContentPartInputAudio.promptCacheBreakpoint())
-            .contains(ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build())
+            .contains(
+                ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder()
+                    .ttl(PromptCacheBreakpointTtl._30M)
+                    .build()
+            )
 
         val jsonMapper = jsonMapper()
 

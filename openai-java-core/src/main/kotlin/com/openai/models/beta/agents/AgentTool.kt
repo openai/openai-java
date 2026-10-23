@@ -41,6 +41,7 @@ private constructor(
     private val mcp: Mcp? = null,
     private val webSearch: WebSearch? = null,
     private val computerUse: ComputerUse? = null,
+    private val automations: JsonValue? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -60,6 +61,9 @@ private constructor(
     /** Browser use in an OpenAI-hosted session. */
     fun computerUse(): Optional<ComputerUse> = Optional.ofNullable(computerUse)
 
+    /** Lets the agent manage its own scheduled wakeups. */
+    fun automations(): Optional<JsonValue> = Optional.ofNullable(automations)
+
     fun isFunction(): Boolean = function != null
 
     fun isProgrammaticToolCalling(): Boolean = programmaticToolCalling != null
@@ -69,6 +73,8 @@ private constructor(
     fun isWebSearch(): Boolean = webSearch != null
 
     fun isComputerUse(): Boolean = computerUse != null
+
+    fun isAutomations(): Boolean = automations != null
 
     /** A function defined by the application. */
     fun asFunction(): Function = function.getOrThrow("function")
@@ -85,6 +91,9 @@ private constructor(
 
     /** Browser use in an OpenAI-hosted session. */
     fun asComputerUse(): ComputerUse = computerUse.getOrThrow("computerUse")
+
+    /** Lets the agent manage its own scheduled wakeups. */
+    fun asAutomations(): JsonValue = automations.getOrThrow("automations")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -125,6 +134,7 @@ private constructor(
             mcp != null -> visitor.visitMcp(mcp)
             webSearch != null -> visitor.visitWebSearch(webSearch)
             computerUse != null -> visitor.visitComputerUse(computerUse)
+            automations != null -> visitor.visitAutomations(automations)
             else -> visitor.unknown(_json)
         }
 
@@ -166,6 +176,16 @@ private constructor(
                 override fun visitComputerUse(computerUse: ComputerUse) {
                     computerUse.validate()
                 }
+
+                override fun visitAutomations(automations: JsonValue) {
+                    automations.let {
+                        if (it != JsonValue.from(mapOf("type" to "automations"))) {
+                            throw OpenAIInvalidDataException(
+                                "'automations' is invalid, received $it"
+                            )
+                        }
+                    }
+                }
             }
         )
         validated = true
@@ -200,6 +220,11 @@ private constructor(
 
                 override fun visitComputerUse(computerUse: ComputerUse) = computerUse.validity()
 
+                override fun visitAutomations(automations: JsonValue) =
+                    automations.let {
+                        if (it == JsonValue.from(mapOf("type" to "automations"))) 1 else 0
+                    }
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -214,11 +239,12 @@ private constructor(
             programmaticToolCalling == other.programmaticToolCalling &&
             mcp == other.mcp &&
             webSearch == other.webSearch &&
-            computerUse == other.computerUse
+            computerUse == other.computerUse &&
+            automations == other.automations
     }
 
     override fun hashCode(): Int =
-        Objects.hash(function, programmaticToolCalling, mcp, webSearch, computerUse)
+        Objects.hash(function, programmaticToolCalling, mcp, webSearch, computerUse, automations)
 
     override fun toString(): String =
         when {
@@ -228,6 +254,7 @@ private constructor(
             mcp != null -> "AgentTool{mcp=$mcp}"
             webSearch != null -> "AgentTool{webSearch=$webSearch}"
             computerUse != null -> "AgentTool{computerUse=$computerUse}"
+            automations != null -> "AgentTool{automations=$automations}"
             _json != null -> "AgentTool{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid AgentTool")
         }
@@ -251,6 +278,11 @@ private constructor(
         /** Browser use in an OpenAI-hosted session. */
         @JvmStatic
         fun ofComputerUse(computerUse: ComputerUse) = AgentTool(computerUse = computerUse)
+
+        /** Lets the agent manage its own scheduled wakeups. */
+        @JvmStatic
+        fun ofAutomations() =
+            AgentTool(automations = JsonValue.from(mapOf("type" to "automations")))
     }
 
     /** An interface that defines how to map each variant of [AgentTool] to a value of type [T]. */
@@ -270,6 +302,9 @@ private constructor(
 
         /** Browser use in an OpenAI-hosted session. */
         fun visitComputerUse(computerUse: ComputerUse): T
+
+        /** Lets the agent manage its own scheduled wakeups. */
+        fun visitAutomations(automations: JsonValue): T = unknown(JsonValue.from(automations))
 
         /**
          * Maps an unknown variant of [AgentTool] to a value of type [T].
@@ -317,6 +352,11 @@ private constructor(
                         AgentTool(computerUse = it, _json = json)
                     } ?: AgentTool(_json = json)
                 }
+                "automations" -> {
+                    return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                        ?.let { AgentTool(automations = it, _json = json) }
+                        ?.takeIf { it.isValid() } ?: AgentTool(_json = json)
+                }
             }
 
             return AgentTool(_json = json)
@@ -337,6 +377,7 @@ private constructor(
                 value.mcp != null -> generator.writeObject(value.mcp)
                 value.webSearch != null -> generator.writeObject(value.webSearch)
                 value.computerUse != null -> generator.writeObject(value.computerUse)
+                value.automations != null -> generator.writeObject(value.automations)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid AgentTool")
             }

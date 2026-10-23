@@ -11,7 +11,9 @@ internal class ClientDelegationTest {
 
     @Test
     fun createAndRoundtrip() {
-        val clientDelegation = ClientDelegation.builder().build()
+        val clientDelegation = ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+
+        assertThat(clientDelegation.acknowledgementDelayMs()).contains(0L)
 
         val jsonMapper = jsonMapper()
 

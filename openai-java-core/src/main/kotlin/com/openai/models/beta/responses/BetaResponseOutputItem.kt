@@ -26,6 +26,7 @@ import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.PromptCacheBreakpointTtl
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -3676,13 +3677,17 @@ private constructor(
                 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val mode: JsonValue,
+                    private val ttl: JsonField<PromptCacheBreakpointTtl>,
                     private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
 
                     @JsonCreator
                     private constructor(
-                        @JsonProperty("mode") @ExcludeMissing mode: JsonValue = JsonMissing.of()
-                    ) : this(mode, mutableMapOf())
+                        @JsonProperty("mode") @ExcludeMissing mode: JsonValue = JsonMissing.of(),
+                        @JsonProperty("ttl")
+                        @ExcludeMissing
+                        ttl: JsonField<PromptCacheBreakpointTtl> = JsonMissing.of(),
+                    ) : this(mode, ttl, mutableMapOf())
 
                     /**
                      * The breakpoint mode. Always `explicit`.
@@ -3696,6 +3701,24 @@ private constructor(
                      * server responded with an unexpected value).
                      */
                     @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonValue = mode
+
+                    /**
+                     * The minimum lifetime of this cache breakpoint. Defaults to the request TTL.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun ttl(): Optional<PromptCacheBreakpointTtl> = ttl.getOptional("ttl")
+
+                    /**
+                     * Returns the raw JSON value of [ttl].
+                     *
+                     * Unlike [ttl], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("ttl")
+                    @ExcludeMissing
+                    fun _ttl(): JsonField<PromptCacheBreakpointTtl> = ttl
 
                     @JsonAnySetter
                     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -3711,7 +3734,11 @@ private constructor(
                      * while explicit nulls and unrecognized values are preserved.
                      */
                     fun _allProperties(): Map<String, JsonValue> =
-                        collectAllProperties(additionalProperties, "mode" to this.mode)
+                        collectAllProperties(
+                            additionalProperties,
+                            "mode" to this.mode,
+                            "ttl" to this.ttl,
+                        )
 
                     /**
                      * Returns the legacy additional-properties view.
@@ -3743,12 +3770,14 @@ private constructor(
                     class Builder internal constructor() {
 
                         private var mode: JsonValue = JsonValue.from("explicit")
+                        private var ttl: JsonField<PromptCacheBreakpointTtl> = JsonMissing.of()
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
                         @JvmSynthetic
                         internal fun from(promptCacheBreakpoint: PromptCacheBreakpoint) = apply {
                             mode = promptCacheBreakpoint.mode
+                            ttl = promptCacheBreakpoint.ttl
                             additionalProperties =
                                 promptCacheBreakpoint.additionalProperties.toMutableMap()
                         }
@@ -3766,6 +3795,21 @@ private constructor(
                          * yet supported value.
                          */
                         fun mode(mode: JsonValue) = apply { this.mode = mode }
+
+                        /**
+                         * The minimum lifetime of this cache breakpoint. Defaults to the request
+                         * TTL.
+                         */
+                        fun ttl(ttl: PromptCacheBreakpointTtl) = ttl(JsonField.of(ttl))
+
+                        /**
+                         * Sets [Builder.ttl] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.ttl] with a well-typed
+                         * [PromptCacheBreakpointTtl] value instead. This method is primarily for
+                         * setting the field to an undocumented or not yet supported value.
+                         */
+                        fun ttl(ttl: JsonField<PromptCacheBreakpointTtl>) = apply { this.ttl = ttl }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                             apply {
@@ -3795,7 +3839,7 @@ private constructor(
                          * Further updates to this [Builder] will not mutate the returned instance.
                          */
                         fun build(): PromptCacheBreakpoint =
-                            PromptCacheBreakpoint(mode, additionalProperties.toMutableMap())
+                            PromptCacheBreakpoint(mode, ttl, additionalProperties.toMutableMap())
                     }
 
                     private var validated: Boolean = false
@@ -3820,6 +3864,7 @@ private constructor(
                                 throw OpenAIInvalidDataException("'mode' is invalid, received $it")
                             }
                         }
+                        ttl().ifPresent { it.validate() }
                         validated = true
                     }
 
@@ -3839,7 +3884,8 @@ private constructor(
                      */
                     @JvmSynthetic
                     internal fun validity(): Int =
-                        mode.let { if (it == JsonValue.from("explicit")) 1 else 0 }
+                        mode.let { if (it == JsonValue.from("explicit")) 1 else 0 } +
+                            (ttl.asKnown().getOrNull()?.validity() ?: 0)
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -3848,15 +3894,18 @@ private constructor(
 
                         return other is PromptCacheBreakpoint &&
                             mode == other.mode &&
+                            ttl == other.ttl &&
                             additionalProperties == other.additionalProperties
                     }
 
-                    private val hashCode: Int by lazy { Objects.hash(mode, additionalProperties) }
+                    private val hashCode: Int by lazy {
+                        Objects.hash(mode, ttl, additionalProperties)
+                    }
 
                     override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "PromptCacheBreakpoint{mode=$mode, additionalProperties=$additionalProperties}"
+                        "PromptCacheBreakpoint{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
                 }
 
                 override fun equals(other: Any?): Boolean {

@@ -14,7 +14,7 @@ internal class SessionUpdateConfigTest {
     fun createAndRoundtrip() {
         val sessionUpdateConfig =
             SessionUpdateConfig.builder()
-                .delegation(ClientDelegation.builder().build())
+                .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                 .addTrigger(
                     DecisionTrigger.builder()
                         .decisions(
@@ -33,7 +33,11 @@ internal class SessionUpdateConfigTest {
                 .build()
 
         assertThat(sessionUpdateConfig.delegation())
-            .contains(SessionUpdateConfig.Delegation.ofClient(ClientDelegation.builder().build()))
+            .contains(
+                SessionUpdateConfig.Delegation.ofClient(
+                    ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+                )
+            )
         assertThat(sessionUpdateConfig.triggers().getOrNull())
             .containsExactly(
                 DecisionTrigger.builder()

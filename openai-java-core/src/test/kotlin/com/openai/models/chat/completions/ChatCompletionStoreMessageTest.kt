@@ -4,6 +4,7 @@ package com.openai.models.chat.completions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -58,7 +59,9 @@ internal class ChatCompletionStoreMessageTest {
                     ChatCompletionContentPartText.builder()
                         .text("text")
                         .promptCacheBreakpoint(
-                            ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                            ChatCompletionContentPartText.PromptCacheBreakpoint.builder()
+                                .ttl(PromptCacheBreakpointTtl._30M)
+                                .build()
                         )
                         .build()
                 )
@@ -116,7 +119,9 @@ internal class ChatCompletionStoreMessageTest {
                     ChatCompletionContentPartText.builder()
                         .text("text")
                         .promptCacheBreakpoint(
-                            ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                            ChatCompletionContentPartText.PromptCacheBreakpoint.builder()
+                                .ttl(PromptCacheBreakpointTtl._30M)
+                                .build()
                         )
                         .build()
                 )

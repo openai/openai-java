@@ -413,6 +413,9 @@ private constructor(
             body.addTool(computerUse)
         }
 
+        /** Alias for calling [addTool] with `PersistedAgentToolParam.ofAutomations()`. */
+        fun addToolAutomations() = apply { body.addToolAutomations() }
+
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -1048,6 +1051,9 @@ private constructor(
              */
             fun addTool(computerUse: PersistedAgentToolParam.ComputerUse) =
                 addTool(PersistedAgentToolParam.ofComputerUse(computerUse))
+
+            /** Alias for calling [addTool] with `PersistedAgentToolParam.ofAutomations()`. */
+            fun addToolAutomations() = addTool(PersistedAgentToolParam.ofAutomations())
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()

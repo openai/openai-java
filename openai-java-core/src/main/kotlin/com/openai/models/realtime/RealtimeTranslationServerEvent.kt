@@ -35,7 +35,7 @@ private constructor(
 
     /**
      * Returned when an error occurs, which could be a client problem or a server problem. Most
-     * errors are recoverable and the session will stay open, we recommend to implementors to
+     * errors are recoverable and the session will stay open, we recommend to implementers to
      * monitor and log error messages by default.
      */
     fun error(): Optional<RealtimeErrorEvent> = Optional.ofNullable(error)
@@ -102,7 +102,7 @@ private constructor(
 
     /**
      * Returned when an error occurs, which could be a client problem or a server problem. Most
-     * errors are recoverable and the session will stay open, we recommend to implementors to
+     * errors are recoverable and the session will stay open, we recommend to implementers to
      * monitor and log error messages by default.
      */
     fun asError(): RealtimeErrorEvent = error.getOrThrow("error")
@@ -355,7 +355,7 @@ private constructor(
 
         /**
          * Returned when an error occurs, which could be a client problem or a server problem. Most
-         * errors are recoverable and the session will stay open, we recommend to implementors to
+         * errors are recoverable and the session will stay open, we recommend to implementers to
          * monitor and log error messages by default.
          */
         @JvmStatic
@@ -431,7 +431,7 @@ private constructor(
 
         /**
          * Returned when an error occurs, which could be a client problem or a server problem. Most
-         * errors are recoverable and the session will stay open, we recommend to implementors to
+         * errors are recoverable and the session will stay open, we recommend to implementers to
          * monitor and log error messages by default.
          */
         fun visitError(error: RealtimeErrorEvent): T = unknown(JsonValue.from(error))

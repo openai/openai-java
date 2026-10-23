@@ -33,7 +33,7 @@ internal class SessionConfigTest {
                         )
                         .build()
                 )
-                .delegation(ClientDelegation.builder().build())
+                .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                 .addInput(
                     InitialItem.Developer.builder()
                         .addContent(
@@ -86,7 +86,11 @@ internal class SessionConfigTest {
                     .build()
             )
         assertThat(sessionConfig.delegation())
-            .contains(SessionConfig.Delegation.ofClient(ClientDelegation.builder().build()))
+            .contains(
+                SessionConfig.Delegation.ofClient(
+                    ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+                )
+            )
         assertThat(sessionConfig.input().getOrNull())
             .containsExactly(
                 InitialItem.ofDeveloper(
