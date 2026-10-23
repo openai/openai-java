@@ -21,6 +21,8 @@
 -keep class com.openai.models.completions.CompletionUsage { *; }
 -keep class com.openai.models.responses.ResponseUsage { *; }
 -keep class com.openai.models.beta.responses.BetaResponseUsage { *; }
+# Preserve the default for an omitted optional TTL during reflective deserialization.
+-keep class com.openai.models.**$PromptCacheBreakpoint { *; }
 
 # Jackson uses reflection to access annotation members.
 -keepclassmembers @interface com.fasterxml.jackson.annotation.** {

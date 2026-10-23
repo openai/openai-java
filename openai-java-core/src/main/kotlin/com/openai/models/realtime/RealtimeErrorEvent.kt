@@ -19,7 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Returned when an error occurs, which could be a client problem or a server problem. Most errors
- * are recoverable and the session will stay open, we recommend to implementors to monitor and log
+ * are recoverable and the session will stay open, we recommend to implementers to monitor and log
  * error messages by default.
  */
 class RealtimeErrorEvent

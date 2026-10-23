@@ -1443,6 +1443,9 @@ private constructor(
             fun addTool(computerUse: AgentToolParam.ComputerUse) =
                 addTool(AgentToolParam.ofComputerUse(computerUse))
 
+            /** Alias for calling [addTool] with `AgentToolParam.ofAutomations()`. */
+            fun addToolAutomations() = addTool(AgentToolParam.ofAutomations())
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)

@@ -40,7 +40,7 @@ internal class SessionClosedEventTest {
                                 )
                                 .build()
                         )
-                        .delegation(ClientDelegation.builder().build())
+                        .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                         .input(listOf())
                         .instructions(
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
@@ -95,7 +95,7 @@ internal class SessionClosedEventTest {
                             )
                             .build()
                     )
-                    .delegation(ClientDelegation.builder().build())
+                    .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                     .input(listOf())
                     .instructions(
                         "Help the caller plan a restaurant reservation. Confirm details before booking."

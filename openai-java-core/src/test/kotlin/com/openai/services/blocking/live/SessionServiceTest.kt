@@ -59,7 +59,7 @@ internal class SessionServiceTest {
                                 )
                                 .build()
                         )
-                        .delegation(ClientDelegation.builder().build())
+                        .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                         .addInput(
                             InitialItem.Developer.builder()
                                 .addContent(
@@ -141,6 +141,7 @@ internal class SessionServiceTest {
                             )
                             .delegation(
                                 MediaSessionForkConfig.Delegation.builder()
+                                    .acknowledgementDelayMs(0L)
                                     .responses(
                                         ResponsesDelegationUpdateConfig.builder()
                                             .instructions("instructions")

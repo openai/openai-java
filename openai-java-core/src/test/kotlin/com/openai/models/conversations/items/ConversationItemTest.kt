@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.ReasoningEffort
 import com.openai.models.conversations.Message
 import com.openai.models.responses.ComputerAction
@@ -50,7 +51,9 @@ internal class ConversationItemTest {
                     ResponseInputText.builder()
                         .text("text")
                         .promptCacheBreakpoint(
-                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                            ResponseInputText.PromptCacheBreakpoint.builder()
+                                .ttl(PromptCacheBreakpointTtl._30M)
+                                .build()
                         )
                         .build()
                 )
@@ -103,7 +106,9 @@ internal class ConversationItemTest {
                         ResponseInputText.builder()
                             .text("text")
                             .promptCacheBreakpoint(
-                                ResponseInputText.PromptCacheBreakpoint.builder().build()
+                                ResponseInputText.PromptCacheBreakpoint.builder()
+                                    .ttl(PromptCacheBreakpointTtl._30M)
+                                    .build()
                             )
                             .build()
                     )

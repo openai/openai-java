@@ -36,6 +36,7 @@ internal class PersistedAgentToolParamTest {
         assertThat(persistedAgentToolParam.mcp()).isEmpty
         assertThat(persistedAgentToolParam.webSearch()).isEmpty
         assertThat(persistedAgentToolParam.computerUse()).isEmpty
+        assertThat(persistedAgentToolParam.automations()).isEmpty
     }
 
     @Test
@@ -75,6 +76,7 @@ internal class PersistedAgentToolParamTest {
         assertThat(persistedAgentToolParam.mcp()).isEmpty
         assertThat(persistedAgentToolParam.webSearch()).isEmpty
         assertThat(persistedAgentToolParam.computerUse()).isEmpty
+        assertThat(persistedAgentToolParam.automations()).isEmpty
     }
 
     @Test
@@ -106,6 +108,7 @@ internal class PersistedAgentToolParamTest {
         assertThat(persistedAgentToolParam.mcp()).isEmpty
         assertThat(persistedAgentToolParam.webSearch()).isEmpty
         assertThat(persistedAgentToolParam.computerUse()).isEmpty
+        assertThat(persistedAgentToolParam.automations()).isEmpty
     }
 
     @Test
@@ -159,6 +162,7 @@ internal class PersistedAgentToolParamTest {
         assertThat(persistedAgentToolParam.mcp()).contains(mcp)
         assertThat(persistedAgentToolParam.webSearch()).isEmpty
         assertThat(persistedAgentToolParam.computerUse()).isEmpty
+        assertThat(persistedAgentToolParam.automations()).isEmpty
     }
 
     @Test
@@ -224,6 +228,7 @@ internal class PersistedAgentToolParamTest {
         assertThat(persistedAgentToolParam.mcp()).isEmpty
         assertThat(persistedAgentToolParam.webSearch()).contains(webSearch)
         assertThat(persistedAgentToolParam.computerUse()).isEmpty
+        assertThat(persistedAgentToolParam.automations()).isEmpty
     }
 
     @Test
@@ -268,6 +273,7 @@ internal class PersistedAgentToolParamTest {
         assertThat(persistedAgentToolParam.mcp()).isEmpty
         assertThat(persistedAgentToolParam.webSearch()).isEmpty
         assertThat(persistedAgentToolParam.computerUse()).contains(computerUse)
+        assertThat(persistedAgentToolParam.automations()).isEmpty
     }
 
     @Test
@@ -277,6 +283,34 @@ internal class PersistedAgentToolParamTest {
             PersistedAgentToolParam.ofComputerUse(
                 PersistedAgentToolParam.ComputerUse.builder().includeScreenshots(true).build()
             )
+
+        val roundtrippedPersistedAgentToolParam =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(persistedAgentToolParam),
+                jacksonTypeRef<PersistedAgentToolParam>(),
+            )
+
+        assertThat(roundtrippedPersistedAgentToolParam).isEqualTo(persistedAgentToolParam)
+    }
+
+    @Test
+    fun ofAutomations() {
+        val persistedAgentToolParam = PersistedAgentToolParam.ofAutomations()
+
+        assertThat(persistedAgentToolParam.function()).isEmpty
+        assertThat(persistedAgentToolParam.toolSearch()).isEmpty
+        assertThat(persistedAgentToolParam.programmaticToolCalling()).isEmpty
+        assertThat(persistedAgentToolParam.mcp()).isEmpty
+        assertThat(persistedAgentToolParam.webSearch()).isEmpty
+        assertThat(persistedAgentToolParam.computerUse()).isEmpty
+        assertThat(persistedAgentToolParam.automations())
+            .contains(JsonValue.from(mapOf("type" to "automations")))
+    }
+
+    @Test
+    fun ofAutomationsRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val persistedAgentToolParam = PersistedAgentToolParam.ofAutomations()
 
         val roundtrippedPersistedAgentToolParam =
             jsonMapper.readValue(

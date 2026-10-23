@@ -607,6 +607,9 @@ private constructor(
                     .build()
             )
 
+        /** Alias for calling [addTool] with `PersistedAgentTool.ofAutomations()`. */
+        fun addToolAutomations() = addTool(PersistedAgentTool.ofAutomations())
+
         /** The Unix timestamp, in seconds, when the agent was last updated. */
         fun updatedAt(updatedAt: Long) = updatedAt(JsonField.of(updatedAt))
 

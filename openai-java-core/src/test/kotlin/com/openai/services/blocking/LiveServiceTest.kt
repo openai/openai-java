@@ -53,7 +53,9 @@ internal class LiveServiceTest {
                                     )
                                     .build()
                             )
-                            .delegation(ClientDelegation.builder().build())
+                            .delegation(
+                                ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+                            )
                             .addInput(
                                 InitialItem.Developer.builder()
                                     .addContent(

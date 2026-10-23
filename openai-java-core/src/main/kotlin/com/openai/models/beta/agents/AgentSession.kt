@@ -1238,6 +1238,9 @@ private constructor(
                     AgentTool.ComputerUse.builder().includeScreenshots(includeScreenshots).build()
                 )
 
+            /** Alias for calling [addTool] with `AgentTool.ofAutomations()`. */
+            fun addToolAutomations() = addTool(AgentTool.ofAutomations())
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)

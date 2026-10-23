@@ -4,6 +4,7 @@ package com.openai.models.responses.inputitems
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.responses.ResponseInputMessageItem
 import com.openai.models.responses.ResponseInputText
 import com.openai.models.responses.ResponseItem
@@ -23,7 +24,9 @@ internal class ResponseItemListTest {
                             ResponseInputText.builder()
                                 .text("text")
                                 .promptCacheBreakpoint(
-                                    ResponseInputText.PromptCacheBreakpoint.builder().build()
+                                    ResponseInputText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -45,7 +48,9 @@ internal class ResponseItemListTest {
                             ResponseInputText.builder()
                                 .text("text")
                                 .promptCacheBreakpoint(
-                                    ResponseInputText.PromptCacheBreakpoint.builder().build()
+                                    ResponseInputText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
+                                        .build()
                                 )
                                 .build()
                         )
