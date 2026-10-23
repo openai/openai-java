@@ -88,7 +88,7 @@ internal class ForkServerEventTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -178,7 +178,7 @@ internal class ForkServerEventTest {
                                             .addQuestion(
                                                 DecisionTrigger.Decisions.Question.Predicate
                                                     .builder()
-                                                    .instructions("instructions")
+                                                    .instructions("string")
                                                     .name("name")
                                                     .build()
                                             )
@@ -273,7 +273,7 @@ internal class ForkServerEventTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -390,7 +390,7 @@ internal class ForkServerEventTest {
                                             .addQuestion(
                                                 DecisionTrigger.Decisions.Question.Predicate
                                                     .builder()
-                                                    .instructions("instructions")
+                                                    .instructions("string")
                                                     .name("name")
                                                     .build()
                                             )
@@ -1637,7 +1637,7 @@ internal class ForkServerEventTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -1729,7 +1729,7 @@ internal class ForkServerEventTest {
                                             .addQuestion(
                                                 DecisionTrigger.Decisions.Question.Predicate
                                                     .builder()
-                                                    .instructions("instructions")
+                                                    .instructions("string")
                                                     .name("name")
                                                     .build()
                                             )

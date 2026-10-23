@@ -60,7 +60,7 @@ internal class SessionStartEventTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -122,7 +122,7 @@ internal class SessionStartEventTest {
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
                                         DecisionTrigger.Decisions.Question.Predicate.builder()
-                                            .instructions("instructions")
+                                            .instructions("string")
                                             .name("name")
                                             .build()
                                     )

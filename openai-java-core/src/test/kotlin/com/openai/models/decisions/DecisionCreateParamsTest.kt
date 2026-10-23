@@ -14,7 +14,7 @@ internal class DecisionCreateParamsTest {
             .model("model")
             .addQuestion(
                 DecisionCreateParams.Question.Predicate.builder()
-                    .instructions("instructions")
+                    .instructions("string")
                     .name("name")
                     .build()
             )
@@ -37,7 +37,7 @@ internal class DecisionCreateParamsTest {
                 .model("model")
                 .addQuestion(
                     DecisionCreateParams.Question.Predicate.builder()
-                        .instructions("instructions")
+                        .instructions("string")
                         .name("name")
                         .build()
                 )
@@ -59,7 +59,7 @@ internal class DecisionCreateParamsTest {
             .containsExactly(
                 DecisionCreateParams.Question.ofPredicate(
                     DecisionCreateParams.Question.Predicate.builder()
-                        .instructions("instructions")
+                        .instructions("string")
                         .name("name")
                         .build()
                 )
@@ -81,7 +81,7 @@ internal class DecisionCreateParamsTest {
             DecisionCreateParams.builder()
                 .input("string")
                 .model("model")
-                .addPredicateQuestion("instructions")
+                .addPredicateQuestion("string")
                 .build()
 
         val body = params._body()
@@ -91,9 +91,7 @@ internal class DecisionCreateParamsTest {
         assertThat(body.questions())
             .containsExactly(
                 DecisionCreateParams.Question.ofPredicate(
-                    DecisionCreateParams.Question.Predicate.builder()
-                        .instructions("instructions")
-                        .build()
+                    DecisionCreateParams.Question.Predicate.builder().instructions("string").build()
                 )
             )
     }

@@ -76,7 +76,7 @@ internal class LiveServiceTest {
                                             .addQuestion(
                                                 DecisionTrigger.Decisions.Question.Predicate
                                                     .builder()
-                                                    .instructions("instructions")
+                                                    .instructions("string")
                                                     .name("name")
                                                     .build()
                                             )

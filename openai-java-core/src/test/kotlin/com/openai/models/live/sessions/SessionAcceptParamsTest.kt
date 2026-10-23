@@ -49,7 +49,7 @@ internal class SessionAcceptParamsTest {
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
                                         DecisionTrigger.Decisions.Question.Predicate.builder()
-                                            .instructions("instructions")
+                                            .instructions("string")
                                             .name("name")
                                             .build()
                                     )
@@ -119,7 +119,7 @@ internal class SessionAcceptParamsTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -169,7 +169,7 @@ internal class SessionAcceptParamsTest {
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
                                         DecisionTrigger.Decisions.Question.Predicate.builder()
-                                            .instructions("instructions")
+                                            .instructions("string")
                                             .name("name")
                                             .build()
                                     )
