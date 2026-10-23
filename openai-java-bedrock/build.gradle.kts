@@ -8,7 +8,7 @@ dependencies {
     api(project(":openai-java-client-okhttp"))
 
     // Keep AWS dependencies isolated to this optional Bedrock artifact.
-    api(platform("software.amazon.awssdk:bom:2.46.8"))
+    api(platform("software.amazon.awssdk:bom:2.55.14"))
     api("software.amazon.awssdk:auth")
     api("software.amazon.awssdk:regions")
 
