@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.91.0](https://github.com/openai/openai-java/compare/v4.90.0...v4.91.0) (2026-10-23)
+
+
+### Features
+
+* **api:** Breaking change in a minor release. Live Decisions question `instructions()` now returns an `Instructions` union containing a string or a list of text, image, or JSON parts. Code such as `question.instructions().trim()` no longer compiles; check `instructions.isString()` and use `instructions.asString()`, or handle `instructions.asDecisionQuestionInputParts()`. String inputs still work with `instructions(String)`. Decisions request inputs also support additional message roles and tool-history items; update code that assumes a fixed set of input types. `DecisionInputMessage.builder()`, `DecisionInputMessage.Type`, and `DecisionInputMessage.Content` were removed. Build a role-specific message, wrap it with `DecisionInputMessage.ofUser(...)` for user messages, and pass it through `DecisionInputItem.ofDecisionInputMessage(...)`. ([f7607c8](https://github.com/openai/openai-java/commit/f7607c84edf39c5f962beb1b988b35207c46e289))
+
+
+### Chores
+
+* **api:** align initial policy-pin review with active main ([#1271](https://github.com/openai/openai-java/issues/1271)) ([1599b41](https://github.com/openai/openai-java/commit/1599b41cab0743a3543809cf3644678f570bd44a))
+* refresh custom-code enforcement tooling ([#1270](https://github.com/openai/openai-java/issues/1270)) ([d865378](https://github.com/openai/openai-java/commit/d8653786396518d29eaeb9ec112d5209ed148489))
+
+
+### Build System
+
+* bump actions/download-artifact from 8.0.1 to 8.0.2 ([#1232](https://github.com/openai/openai-java/issues/1232)) ([65bd9e4](https://github.com/openai/openai-java/commit/65bd9e403f8e7f576bf7de904ba7237b6142368f))
+
 ## [4.90.0](https://github.com/openai/openai-java/compare/v4.89.0...v4.90.0) (2026-10-22)
 
 
