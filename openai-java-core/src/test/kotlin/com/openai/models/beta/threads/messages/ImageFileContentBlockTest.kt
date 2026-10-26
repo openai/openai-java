@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ImageFileContentBlockTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val imageFileContentBlock =
             ImageFileContentBlock.builder()
                 .imageFile(
@@ -20,17 +20,8 @@ internal class ImageFileContentBlockTest {
 
         assertThat(imageFileContentBlock.imageFile())
             .isEqualTo(ImageFile.builder().fileId("file_id").detail(ImageFile.Detail.AUTO).build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val imageFileContentBlock =
-            ImageFileContentBlock.builder()
-                .imageFile(
-                    ImageFile.builder().fileId("file_id").detail(ImageFile.Detail.AUTO).build()
-                )
-                .build()
 
         val roundtrippedImageFileContentBlock =
             jsonMapper.readValue(

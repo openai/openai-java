@@ -11,7 +11,9 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.PromptCacheBreakpointTtl
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -89,6 +91,29 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "text" to this.text,
+            "type" to this.type,
+            "prompt_cache_breakpoint" to this.promptCacheBreakpoint,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -267,13 +292,17 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val mode: JsonValue,
+        private val ttl: JsonField<PromptCacheBreakpointTtl>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("mode") @ExcludeMissing mode: JsonValue = JsonMissing.of()
-        ) : this(mode, mutableMapOf())
+            @JsonProperty("mode") @ExcludeMissing mode: JsonValue = JsonMissing.of(),
+            @JsonProperty("ttl")
+            @ExcludeMissing
+            ttl: JsonField<PromptCacheBreakpointTtl> = JsonMissing.of(),
+        ) : this(mode, ttl, mutableMapOf())
 
         /**
          * The breakpoint mode. Always `explicit`.
@@ -288,11 +317,44 @@ private constructor(
          */
         @JsonProperty("mode") @ExcludeMissing fun _mode(): JsonValue = mode
 
+        /**
+         * The minimum lifetime of this cache breakpoint. Defaults to the request TTL.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun ttl(): Optional<PromptCacheBreakpointTtl> = ttl.getOptional("ttl")
+
+        /**
+         * Returns the raw JSON value of [ttl].
+         *
+         * Unlike [ttl], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("ttl") @ExcludeMissing fun _ttl(): JsonField<PromptCacheBreakpointTtl> = ttl
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "mode" to this.mode, "ttl" to this.ttl)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -312,11 +374,13 @@ private constructor(
         class Builder internal constructor() {
 
             private var mode: JsonValue = JsonValue.from("explicit")
+            private var ttl: JsonField<PromptCacheBreakpointTtl> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(promptCacheBreakpoint: PromptCacheBreakpoint) = apply {
                 mode = promptCacheBreakpoint.mode
+                ttl = promptCacheBreakpoint.ttl
                 additionalProperties = promptCacheBreakpoint.additionalProperties.toMutableMap()
             }
 
@@ -333,6 +397,18 @@ private constructor(
              * supported value.
              */
             fun mode(mode: JsonValue) = apply { this.mode = mode }
+
+            /** The minimum lifetime of this cache breakpoint. Defaults to the request TTL. */
+            fun ttl(ttl: PromptCacheBreakpointTtl) = ttl(JsonField.of(ttl))
+
+            /**
+             * Sets [Builder.ttl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ttl] with a well-typed [PromptCacheBreakpointTtl]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun ttl(ttl: JsonField<PromptCacheBreakpointTtl>) = apply { this.ttl = ttl }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -359,7 +435,7 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): PromptCacheBreakpoint =
-                PromptCacheBreakpoint(mode, additionalProperties.toMutableMap())
+                PromptCacheBreakpoint(mode, ttl, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -383,6 +459,7 @@ private constructor(
                     throw OpenAIInvalidDataException("'mode' is invalid, received $it")
                 }
             }
+            ttl().ifPresent { it.validate() }
             validated = true
         }
 
@@ -401,7 +478,9 @@ private constructor(
          * Used for best match union deserialization.
          */
         @JvmSynthetic
-        internal fun validity(): Int = mode.let { if (it == JsonValue.from("explicit")) 1 else 0 }
+        internal fun validity(): Int =
+            mode.let { if (it == JsonValue.from("explicit")) 1 else 0 } +
+                (ttl.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -410,15 +489,16 @@ private constructor(
 
             return other is PromptCacheBreakpoint &&
                 mode == other.mode &&
+                ttl == other.ttl &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(mode, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(mode, ttl, additionalProperties) }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "PromptCacheBreakpoint{mode=$mode, additionalProperties=$additionalProperties}"
+            "PromptCacheBreakpoint{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

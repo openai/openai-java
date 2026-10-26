@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SessionUsageUpdatedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionUsageUpdatedEvent =
             SessionUsageUpdatedEvent.builder()
                 .eventId("evt_usage_001")
@@ -27,20 +27,8 @@ internal class SessionUsageUpdatedEventTest {
         assertThat(sessionUsageUpdatedEvent.clientEventId()).contains("client_event_id")
         assertThat(sessionUsageUpdatedEvent.contextWindow())
             .contains(SessionUsageUpdatedEvent.ContextWindow.builder().usageRatio(0.12).build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionUsageUpdatedEvent =
-            SessionUsageUpdatedEvent.builder()
-                .eventId("evt_usage_001")
-                .usage(SessionUsage.builder().seconds(32.5).build())
-                .clientEventId("client_event_id")
-                .contextWindow(
-                    SessionUsageUpdatedEvent.ContextWindow.builder().usageRatio(0.12).build()
-                )
-                .build()
 
         val roundtrippedSessionUsageUpdatedEvent =
             jsonMapper.readValue(

@@ -21,7 +21,21 @@ private constructor(
 
     fun names(): Set<String> = map.keys
 
+    /**
+     * Returns all values associated with [name], or an empty list if the header is absent. Names
+     * returned by [names] always have at least one value.
+     */
     fun values(name: String): List<String> = map[name].orEmpty()
+
+    /**
+     * Returns an immutable map of header names to their values, with case-insensitive lookup. Value
+     * lists are immutable and preserve insertion order.
+     *
+     * ```java
+     * Map<String, List<String>> headers = request.headers().asMap();
+     * ```
+     */
+    fun asMap(): Map<String, List<String>> = map
 
     fun toBuilder(): Builder = Builder().putAll(map)
 

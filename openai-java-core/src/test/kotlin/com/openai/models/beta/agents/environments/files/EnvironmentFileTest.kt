@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class EnvironmentFileTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val environmentFile =
             EnvironmentFile.builder()
                 .environmentId("environment_id")
@@ -21,17 +21,8 @@ internal class EnvironmentFileTest {
         assertThat(environmentFile.environmentId()).isEqualTo("environment_id")
         assertThat(environmentFile.path()).isEqualTo("path")
         assertThat(environmentFile.sizeBytes()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val environmentFile =
-            EnvironmentFile.builder()
-                .environmentId("environment_id")
-                .path("path")
-                .sizeBytes(0L)
-                .build()
 
         val roundtrippedEnvironmentFile =
             jsonMapper.readValue(

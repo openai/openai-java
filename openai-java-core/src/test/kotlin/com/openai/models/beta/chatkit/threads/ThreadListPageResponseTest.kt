@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ThreadListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val threadListPageResponse =
             ThreadListPageResponse.builder()
                 .addData(
@@ -40,26 +40,8 @@ internal class ThreadListPageResponseTest {
         assertThat(threadListPageResponse.firstId()).contains("first_id")
         assertThat(threadListPageResponse.hasMore()).isEqualTo(true)
         assertThat(threadListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val threadListPageResponse =
-            ThreadListPageResponse.builder()
-                .addData(
-                    ChatKitThread.builder()
-                        .id("cthr_def456")
-                        .createdAt(1712345600L)
-                        .statusActive()
-                        .title("Demo feedback")
-                        .user("user_456")
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedThreadListPageResponse =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class TranscriptionTextSegmentEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val transcriptionTextSegmentEvent =
             TranscriptionTextSegmentEvent.builder()
                 .id("id")
@@ -25,19 +25,8 @@ internal class TranscriptionTextSegmentEventTest {
         assertThat(transcriptionTextSegmentEvent.speaker()).isEqualTo("speaker")
         assertThat(transcriptionTextSegmentEvent.start()).isEqualTo(0.0)
         assertThat(transcriptionTextSegmentEvent.text()).isEqualTo("text")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val transcriptionTextSegmentEvent =
-            TranscriptionTextSegmentEvent.builder()
-                .id("id")
-                .end(0.0)
-                .speaker("speaker")
-                .start(0.0)
-                .text("text")
-                .build()
 
         val roundtrippedTranscriptionTextSegmentEvent =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeTranslationSessionUpdatedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeTranslationSessionUpdatedEvent =
             RealtimeTranslationSessionUpdatedEvent.builder()
                 .eventId("event_id")
@@ -82,47 +82,8 @@ internal class RealtimeTranslationSessionUpdatedEventTest {
                     .model("model")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeTranslationSessionUpdatedEvent =
-            RealtimeTranslationSessionUpdatedEvent.builder()
-                .eventId("event_id")
-                .session(
-                    RealtimeTranslationSession.builder()
-                        .id("id")
-                        .audio(
-                            RealtimeTranslationSession.Audio.builder()
-                                .input(
-                                    RealtimeTranslationSession.Audio.Input.builder()
-                                        .noiseReduction(
-                                            RealtimeTranslationSession.Audio.Input.NoiseReduction
-                                                .builder()
-                                                .type(NoiseReductionType.NEAR_FIELD)
-                                                .build()
-                                        )
-                                        .transcription(
-                                            RealtimeTranslationSession.Audio.Input.Transcription
-                                                .builder()
-                                                .model("model")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .output(
-                                    RealtimeTranslationSession.Audio.Output.builder()
-                                        .language("language")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .expiresAt(0L)
-                        .model("model")
-                        .build()
-                )
-                .build()
 
         val roundtrippedRealtimeTranslationSessionUpdatedEvent =
             jsonMapper.readValue(

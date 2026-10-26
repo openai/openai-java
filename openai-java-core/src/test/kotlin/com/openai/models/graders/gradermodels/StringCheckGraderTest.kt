@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class StringCheckGraderTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val stringCheckGrader =
             StringCheckGrader.builder()
                 .input("input")
@@ -23,18 +23,8 @@ internal class StringCheckGraderTest {
         assertThat(stringCheckGrader.name()).isEqualTo("name")
         assertThat(stringCheckGrader.operation()).isEqualTo(StringCheckGrader.Operation.EQ)
         assertThat(stringCheckGrader.reference()).isEqualTo("reference")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val stringCheckGrader =
-            StringCheckGrader.builder()
-                .input("input")
-                .name("name")
-                .operation(StringCheckGrader.Operation.EQ)
-                .reference("reference")
-                .build()
 
         val roundtrippedStringCheckGrader =
             jsonMapper.readValue(

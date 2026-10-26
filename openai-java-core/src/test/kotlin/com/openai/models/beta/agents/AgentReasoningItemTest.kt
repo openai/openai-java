@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentReasoningItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentReasoningItem =
             AgentReasoningItem.builder()
                 .id("id")
@@ -24,18 +24,8 @@ internal class AgentReasoningItemTest {
         assertThat(agentReasoningItem.summary())
             .containsExactly(SummaryText.builder().text("text").build())
         assertThat(agentReasoningItem.turnId()).isEqualTo("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentReasoningItem =
-            AgentReasoningItem.builder()
-                .id("id")
-                .status(AgentOutputItemStatus.IN_PROGRESS)
-                .addSummary(SummaryText.builder().text("text").build())
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentReasoningItem =
             jsonMapper.readValue(

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ForkSessionStartEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val forkSessionStartEvent =
             ForkSessionStartEvent.builder()
                 .session(
@@ -33,6 +33,7 @@ internal class ForkSessionStartEventTest {
                         )
                         .delegation(
                             ForkSessionConfig.Delegation.builder()
+                                .acknowledgementDelayMs(0L)
                                 .responses(
                                     ResponsesDelegationUpdateConfig.builder()
                                         .instructions("instructions")
@@ -113,6 +114,7 @@ internal class ForkSessionStartEventTest {
                     )
                     .delegation(
                         ForkSessionConfig.Delegation.builder()
+                            .acknowledgementDelayMs(0L)
                             .responses(
                                 ResponsesDelegationUpdateConfig.builder()
                                     .instructions("instructions")
@@ -167,91 +169,8 @@ internal class ForkSessionStartEventTest {
                     .build()
             )
         assertThat(forkSessionStartEvent.eventId()).contains("event_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val forkSessionStartEvent =
-            ForkSessionStartEvent.builder()
-                .session(
-                    ForkSessionConfig.builder()
-                        .audio(
-                            ForkSessionConfig.Audio.builder()
-                                .audioPcmFormat(AudioFormat.AudioPcm.Rate._16000)
-                                .build()
-                        )
-                        .client(
-                            ClientConfig.builder()
-                                .dataChannel(
-                                    DataChannelConfig.builder()
-                                        .allowedClientEventsOfStrings(listOf("string"))
-                                        .allowedServerEventsAll()
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .delegation(
-                            ForkSessionConfig.Delegation.builder()
-                                .responses(
-                                    ResponsesDelegationUpdateConfig.builder()
-                                        .instructions("instructions")
-                                        .maxOutputTokens(16L)
-                                        .model("model")
-                                        .parallelToolCalls(true)
-                                        .reasoning(
-                                            ResponsesDelegationUpdateConfig.Reasoning.builder()
-                                                .effort(
-                                                    ResponsesDelegationUpdateConfig.Reasoning.Effort
-                                                        .NONE
-                                                )
-                                                .summary(
-                                                    ResponsesDelegationUpdateConfig.Reasoning
-                                                        .Summary
-                                                        .CONCISE
-                                                )
-                                                .build()
-                                        )
-                                        .serviceTier(
-                                            ResponsesDelegationUpdateConfig.ServiceTier.AUTO
-                                        )
-                                        .text(
-                                            ResponsesDelegationUpdateConfig.Text.builder()
-                                                .verbosity(
-                                                    ResponsesDelegationUpdateConfig.Text.Verbosity
-                                                        .LOW
-                                                )
-                                                .build()
-                                        )
-                                        .toolChoice(
-                                            ResponsesDelegationUpdateConfig.ToolChoice
-                                                .LiveToolChoiceEnum
-                                                .AUTO
-                                        )
-                                        .addTool(
-                                            FunctionTool.builder()
-                                                .name("name")
-                                                .description("description")
-                                                .parameters(
-                                                    FunctionTool.Parameters.builder()
-                                                        .putAdditionalProperty(
-                                                            "foo",
-                                                            JsonValue.from("bar"),
-                                                        )
-                                                        .build()
-                                                )
-                                                .strict(true)
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .store(true)
-                        .build()
-                )
-                .eventId("event_id")
-                .build()
 
         val roundtrippedForkSessionStartEvent =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class CompoundFilterTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val compoundFilter =
             CompoundFilter.builder()
                 .addFilter(
@@ -34,22 +34,8 @@ internal class CompoundFilterTest {
                 )
             )
         assertThat(compoundFilter.type()).isEqualTo(CompoundFilter.Type.AND)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val compoundFilter =
-            CompoundFilter.builder()
-                .addFilter(
-                    ComparisonFilter.builder()
-                        .key("key")
-                        .type(ComparisonFilter.Type.EQ)
-                        .value("string")
-                        .build()
-                )
-                .type(CompoundFilter.Type.AND)
-                .build()
 
         val roundtrippedCompoundFilter =
             jsonMapper.readValue(

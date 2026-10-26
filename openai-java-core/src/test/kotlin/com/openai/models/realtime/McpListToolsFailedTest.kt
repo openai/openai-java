@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class McpListToolsFailedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val mcpListToolsFailed =
             McpListToolsFailed.builder().eventId("event_id").itemId("item_id").build()
 
         assertThat(mcpListToolsFailed.eventId()).isEqualTo("event_id")
         assertThat(mcpListToolsFailed.itemId()).isEqualTo("item_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val mcpListToolsFailed =
-            McpListToolsFailed.builder().eventId("event_id").itemId("item_id").build()
 
         val roundtrippedMcpListToolsFailed =
             jsonMapper.readValue(

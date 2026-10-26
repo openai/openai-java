@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class RoleRetrieveResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val roleRetrieveResponse =
             RoleRetrieveResponse.builder()
                 .id("id")
@@ -70,39 +70,8 @@ internal class RoleRetrieveResponseTest {
         assertThat(roleRetrieveResponse.predefinedRole()).isEqualTo(true)
         assertThat(roleRetrieveResponse.resourceType()).isEqualTo("resource_type")
         assertThat(roleRetrieveResponse.updatedAt()).contains(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val roleRetrieveResponse =
-            RoleRetrieveResponse.builder()
-                .id("id")
-                .addAssignmentSource(
-                    RoleRetrieveResponse.AssignmentSource.builder()
-                        .principalId("principal_id")
-                        .principalType("principal_type")
-                        .build()
-                )
-                .createdAt(0L)
-                .createdBy("created_by")
-                .createdByUserObj(
-                    RoleRetrieveResponse.CreatedByUserObj.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .description("description")
-                .metadata(
-                    RoleRetrieveResponse.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .name("name")
-                .addPermission("string")
-                .predefinedRole(true)
-                .resourceType("resource_type")
-                .updatedAt(0L)
-                .build()
 
         val roundtrippedRoleRetrieveResponse =
             jsonMapper.readValue(

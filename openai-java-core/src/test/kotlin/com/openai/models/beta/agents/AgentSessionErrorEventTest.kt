@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionErrorEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionErrorEvent =
             AgentSessionErrorEvent.builder()
                 .error(
@@ -36,24 +36,8 @@ internal class AgentSessionErrorEventTest {
             )
         assertThat(agentSessionErrorEvent.eventId()).isEqualTo("event_id")
         assertThat(agentSessionErrorEvent.sessionId()).isEqualTo("session_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionErrorEvent =
-            AgentSessionErrorEvent.builder()
-                .error(
-                    SessionError.builder()
-                        .code("code")
-                        .message("message")
-                        .param("param")
-                        .type("type")
-                        .build()
-                )
-                .eventId("event_id")
-                .sessionId("session_id")
-                .build()
 
         val roundtrippedAgentSessionErrorEvent =
             jsonMapper.readValue(

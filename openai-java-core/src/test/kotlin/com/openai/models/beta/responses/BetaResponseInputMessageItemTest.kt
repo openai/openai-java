@@ -4,13 +4,14 @@ package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class BetaResponseInputMessageItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseInputMessageItem =
             BetaResponseInputMessageItem.builder()
                 .id("id")
@@ -18,7 +19,9 @@ internal class BetaResponseInputMessageItemTest {
                     BetaResponseInputText.builder()
                         .text("text")
                         .promptCacheBreakpoint(
-                            BetaResponseInputText.PromptCacheBreakpoint.builder().build()
+                            BetaResponseInputText.PromptCacheBreakpoint.builder()
+                                .ttl(PromptCacheBreakpointTtl._30M)
+                                .build()
                         )
                         .build()
                 )
@@ -34,7 +37,9 @@ internal class BetaResponseInputMessageItemTest {
                     BetaResponseInputText.builder()
                         .text("text")
                         .promptCacheBreakpoint(
-                            BetaResponseInputText.PromptCacheBreakpoint.builder().build()
+                            BetaResponseInputText.PromptCacheBreakpoint.builder()
+                                .ttl(PromptCacheBreakpointTtl._30M)
+                                .build()
                         )
                         .build()
                 )
@@ -45,26 +50,8 @@ internal class BetaResponseInputMessageItemTest {
             .contains(BetaResponseInputMessageItem.Agent.builder().agentName("agent_name").build())
         assertThat(betaResponseInputMessageItem.status())
             .contains(BetaResponseInputMessageItem.Status.IN_PROGRESS)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseInputMessageItem =
-            BetaResponseInputMessageItem.builder()
-                .id("id")
-                .addContent(
-                    BetaResponseInputText.builder()
-                        .text("text")
-                        .promptCacheBreakpoint(
-                            BetaResponseInputText.PromptCacheBreakpoint.builder().build()
-                        )
-                        .build()
-                )
-                .role(BetaResponseInputMessageItem.Role.USER)
-                .agent(BetaResponseInputMessageItem.Agent.builder().agentName("agent_name").build())
-                .status(BetaResponseInputMessageItem.Status.IN_PROGRESS)
-                .build()
 
         val roundtrippedBetaResponseInputMessageItem =
             jsonMapper.readValue(

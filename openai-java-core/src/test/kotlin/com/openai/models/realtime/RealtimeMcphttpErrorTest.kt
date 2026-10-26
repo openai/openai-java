@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class RealtimeMcphttpErrorTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeMcphttpError =
             RealtimeMcphttpError.builder().code(0L).message("message").build()
 
         assertThat(realtimeMcphttpError.code()).isEqualTo(0L)
         assertThat(realtimeMcphttpError.message()).isEqualTo("message")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeMcphttpError =
-            RealtimeMcphttpError.builder().code(0L).message("message").build()
 
         val roundtrippedRealtimeMcphttpError =
             jsonMapper.readValue(

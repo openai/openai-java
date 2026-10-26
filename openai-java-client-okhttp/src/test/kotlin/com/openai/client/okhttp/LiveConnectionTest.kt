@@ -9,6 +9,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketWriteNotAttempted
 import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIIoException
 import com.openai.helpers.LiveConnection
 import com.openai.helpers.LiveTranscriptGrouper
 import com.openai.helpers.LiveWebSocketOptions
@@ -650,6 +651,75 @@ class LiveConnectionTest {
     }
 
     @Test
+    fun failureSettlesAsyncReceiveWhileTransportIsStillClosing() {
+        FakeTransport().use { http ->
+            val enteredClose = CountDownLatch(1)
+            val releaseClose = CountDownLatch(1)
+            http.onClose = {
+                enteredClose.countDown()
+                check(releaseClose.await(8, TimeUnit.SECONDS))
+            }
+            val client = ClientOptions.builder().httpClient(http).apiKey("fake-key").build()
+            LiveConnection.connect(client).use { live ->
+                val pending = live.receiveAsync()
+                val failure = IOException("transport ended")
+                try {
+                    http.listener!!.onFailure(failure)
+                    assertThat(enteredClose.await(3, TimeUnit.SECONDS)).isTrue()
+                    val error =
+                        assertThrows<ExecutionException> { pending.get(3, TimeUnit.SECONDS) }
+                    assertThat(error.cause).isSameAs(failure)
+                } finally {
+                    releaseClose.countDown()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun failureSettlesBlockingReceiveWhileTransportIsStillClosing() {
+        FakeTransport().use { http ->
+            val enteredClose = CountDownLatch(1)
+            val releaseClose = CountDownLatch(1)
+            http.onClose = {
+                enteredClose.countDown()
+                check(releaseClose.await(8, TimeUnit.SECONDS))
+            }
+            val client = ClientOptions.builder().httpClient(http).apiKey("fake-key").build()
+            LiveConnection.connect(client).use { live ->
+                val received = CompletableFuture<Void>()
+                val reader = Thread {
+                    try {
+                        live.receive()
+                        received.complete(null)
+                    } catch (error: Throwable) {
+                        received.completeExceptionally(error)
+                    }
+                }
+                val failure = IOException("transport ended")
+                reader.start()
+                try {
+                    val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(3)
+                    while (reader.state != Thread.State.WAITING && System.nanoTime() < deadline) {
+                        Thread.sleep(5)
+                    }
+                    assertThat(reader.state).isEqualTo(Thread.State.WAITING)
+                    http.listener!!.onFailure(failure)
+                    assertThat(enteredClose.await(3, TimeUnit.SECONDS)).isTrue()
+                    val error =
+                        assertThrows<ExecutionException> { received.get(3, TimeUnit.SECONDS) }
+                    assertThat(error.cause).isInstanceOf(OpenAIIoException::class.java)
+                    assertThat(error.cause!!.cause).isSameAs(failure)
+                } finally {
+                    releaseClose.countDown()
+                    reader.join(3000)
+                    assertThat(reader.isAlive).isFalse()
+                }
+            }
+        }
+    }
+
+    @Test
     fun retiredHandshakeWithThrowingTransportCloseStillCompletesTheOpening() {
         FakeTransport().use { http ->
             val original = IOException("failed before open acknowledgement")
@@ -769,6 +839,10 @@ class LiveConnectionTest {
                     http.closeFailure = AssertionError("close failed")
                     assertThatThrownBy { live.send(start()) }.isSameAs(failure)
                     assertThatThrownBy { read.get(8, TimeUnit.SECONDS) }.hasCause(failure)
+                    val until = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+                    while (failure.suppressed.isEmpty() && System.nanoTime() < until) {
+                        Thread.sleep(5)
+                    }
                     assertThat(failure.suppressed).containsExactly(http.closeFailure)
                     assertThat(http.closed).isTrue()
                     assertThatThrownBy { live.send(start()) }.hasMessageContaining("not connected")

@@ -42,7 +42,7 @@ internal class ClientEventTest {
                                 )
                                 .build()
                         )
-                        .delegation(ClientDelegation.builder().build())
+                        .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                         .addInput(
                             InitialItem.Developer.builder()
                                 .addContent(
@@ -66,7 +66,7 @@ internal class ClientEventTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -128,7 +128,9 @@ internal class ClientEventTest {
                                     )
                                     .build()
                             )
-                            .delegation(ClientDelegation.builder().build())
+                            .delegation(
+                                ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+                            )
                             .addInput(
                                 InitialItem.Developer.builder()
                                     .addContent(
@@ -153,7 +155,7 @@ internal class ClientEventTest {
                                             .addQuestion(
                                                 DecisionTrigger.Decisions.Question.Predicate
                                                     .builder()
-                                                    .instructions("instructions")
+                                                    .instructions("string")
                                                     .name("name")
                                                     .build()
                                             )
@@ -187,6 +189,7 @@ internal class ClientEventTest {
                     SessionUpdateConfig.builder()
                         .delegation(
                             SessionUpdateConfig.Delegation.Responses.builder()
+                                .acknowledgementDelayMs(0L)
                                 .responses(
                                     ResponsesDelegationUpdateConfig.builder()
                                         .instructions(
@@ -249,7 +252,7 @@ internal class ClientEventTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -292,6 +295,7 @@ internal class ClientEventTest {
                         SessionUpdateConfig.builder()
                             .delegation(
                                 SessionUpdateConfig.Delegation.Responses.builder()
+                                    .acknowledgementDelayMs(0L)
                                     .responses(
                                         ResponsesDelegationUpdateConfig.builder()
                                             .instructions(
@@ -357,7 +361,7 @@ internal class ClientEventTest {
                                             .addQuestion(
                                                 DecisionTrigger.Decisions.Question.Predicate
                                                     .builder()
-                                                    .instructions("instructions")
+                                                    .instructions("string")
                                                     .name("name")
                                                     .build()
                                             )

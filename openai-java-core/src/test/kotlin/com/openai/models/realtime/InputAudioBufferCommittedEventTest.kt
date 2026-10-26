@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class InputAudioBufferCommittedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val inputAudioBufferCommittedEvent =
             InputAudioBufferCommittedEvent.builder()
                 .eventId("event_id")
@@ -21,17 +21,8 @@ internal class InputAudioBufferCommittedEventTest {
         assertThat(inputAudioBufferCommittedEvent.eventId()).isEqualTo("event_id")
         assertThat(inputAudioBufferCommittedEvent.itemId()).isEqualTo("item_id")
         assertThat(inputAudioBufferCommittedEvent.previousItemId()).contains("previous_item_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val inputAudioBufferCommittedEvent =
-            InputAudioBufferCommittedEvent.builder()
-                .eventId("event_id")
-                .itemId("item_id")
-                .previousItemId("previous_item_id")
-                .build()
 
         val roundtrippedInputAudioBufferCommittedEvent =
             jsonMapper.readValue(

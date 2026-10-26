@@ -55,7 +55,11 @@ class StructuredResponseOutputMessage<T : Any>(
     /** @see ResponseOutputMessage._status */
     fun _status(): JsonField<ResponseOutputMessage.Status> = rawMessage._status()
 
+    /** @see ResponseOutputMessage._allProperties */
+    fun _allProperties(): Map<String, JsonValue> = rawMessage._allProperties()
+
     /** @see ResponseOutputMessage._additionalProperties */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     fun _additionalProperties(): Map<String, JsonValue> = rawMessage._additionalProperties()
 
     /** @see ResponseOutputMessage.validate */

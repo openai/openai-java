@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeResponseUsageInputTokenDetailsTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeResponseUsageInputTokenDetails =
             RealtimeResponseUsageInputTokenDetails.builder()
                 .audioTokens(0L)
@@ -38,25 +38,8 @@ internal class RealtimeResponseUsageInputTokenDetailsTest {
             )
         assertThat(realtimeResponseUsageInputTokenDetails.imageTokens()).contains(0L)
         assertThat(realtimeResponseUsageInputTokenDetails.textTokens()).contains(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeResponseUsageInputTokenDetails =
-            RealtimeResponseUsageInputTokenDetails.builder()
-                .audioTokens(0L)
-                .cachedTokens(0L)
-                .cachedTokensDetails(
-                    RealtimeResponseUsageInputTokenDetails.CachedTokensDetails.builder()
-                        .audioTokens(0L)
-                        .imageTokens(0L)
-                        .textTokens(0L)
-                        .build()
-                )
-                .imageTokens(0L)
-                .textTokens(0L)
-                .build()
 
         val roundtrippedRealtimeResponseUsageInputTokenDetails =
             jsonMapper.readValue(

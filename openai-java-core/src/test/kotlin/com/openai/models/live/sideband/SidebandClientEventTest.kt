@@ -40,6 +40,7 @@ internal class SidebandClientEventTest {
                     SessionUpdateConfig.builder()
                         .delegation(
                             SessionUpdateConfig.Delegation.Responses.builder()
+                                .acknowledgementDelayMs(0L)
                                 .responses(
                                     ResponsesDelegationUpdateConfig.builder()
                                         .instructions(
@@ -102,7 +103,7 @@ internal class SidebandClientEventTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -143,6 +144,7 @@ internal class SidebandClientEventTest {
                         SessionUpdateConfig.builder()
                             .delegation(
                                 SessionUpdateConfig.Delegation.Responses.builder()
+                                    .acknowledgementDelayMs(0L)
                                     .responses(
                                         ResponsesDelegationUpdateConfig.builder()
                                             .instructions(
@@ -208,7 +210,7 @@ internal class SidebandClientEventTest {
                                             .addQuestion(
                                                 DecisionTrigger.Decisions.Question.Predicate
                                                     .builder()
-                                                    .instructions("instructions")
+                                                    .instructions("string")
                                                     .name("name")
                                                     .build()
                                             )

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaWebSearchPreviewToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaWebSearchPreviewTool =
             BetaWebSearchPreviewTool.builder()
                 .type(BetaWebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
@@ -42,25 +42,8 @@ internal class BetaWebSearchPreviewToolTest {
                     .timezone("timezone")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaWebSearchPreviewTool =
-            BetaWebSearchPreviewTool.builder()
-                .type(BetaWebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
-                .addSearchContentType(BetaWebSearchPreviewTool.SearchContentType.TEXT)
-                .searchContextSize(BetaWebSearchPreviewTool.SearchContextSize.LOW)
-                .userLocation(
-                    BetaWebSearchPreviewTool.UserLocation.builder()
-                        .city("city")
-                        .country("country")
-                        .region("region")
-                        .timezone("timezone")
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaWebSearchPreviewTool =
             jsonMapper.readValue(

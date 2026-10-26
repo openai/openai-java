@@ -27,7 +27,7 @@ concurrency:
 env:
   MAVEN_CENTRAL_BASE_URL: https://repo.maven.apache.org/maven2/com/openai
   # Keep this list in sync with projects that apply the openai.publish plugin.
-  MAVEN_ARTIFACTS: openai-java openai-java-core openai-java-client-okhttp openai-java-bedrock
+  MAVEN_ARTIFACTS: openai-java openai-java-core openai-java-client-okhttp openai-java-bedrock openai-java-vertex
 
 jobs:
   automatic_release:

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class VaultTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val vault =
             Vault.builder()
                 .id("id")
@@ -33,22 +33,8 @@ internal class VaultTest {
                     .build()
             )
         assertThat(vault.name()).contains("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val vault =
-            Vault.builder()
-                .id("id")
-                .createdAt(0L)
-                .metadata(
-                    Vault.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .name("name")
-                .build()
 
         val roundtrippedVault =
             jsonMapper.readValue(jsonMapper.writeValueAsString(vault), jacksonTypeRef<Vault>())

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ToolChoiceAllowedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val toolChoiceAllowed =
             ToolChoiceAllowed.builder()
                 .mode(ToolChoiceAllowed.Mode.AUTO)
@@ -29,20 +29,8 @@ internal class ToolChoiceAllowedTest {
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val toolChoiceAllowed =
-            ToolChoiceAllowed.builder()
-                .mode(ToolChoiceAllowed.Mode.AUTO)
-                .addTool(
-                    ToolChoiceAllowed.Tool.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .build()
 
         val roundtrippedToolChoiceAllowed =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ImageEditCompletedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val imageEditCompletedEvent =
             ImageEditCompletedEvent.builder()
                 .b64Json("b64_json")
@@ -59,34 +59,8 @@ internal class ImageEditCompletedEventTest {
                     .build()
             )
         assertThat(imageEditCompletedEvent.safetyIdentifier()).contains("safety_identifier")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val imageEditCompletedEvent =
-            ImageEditCompletedEvent.builder()
-                .b64Json("b64_json")
-                .background(ImageEditCompletedEvent.Background.TRANSPARENT)
-                .createdAt(0L)
-                .outputFormat(ImageEditCompletedEvent.OutputFormat.PNG)
-                .quality(ImageEditCompletedEvent.Quality.LOW)
-                .size(ImageEditCompletedEvent.Size._1024X1024)
-                .usage(
-                    ImageEditCompletedEvent.Usage.builder()
-                        .inputTokens(0L)
-                        .inputTokensDetails(
-                            ImageEditCompletedEvent.Usage.InputTokensDetails.builder()
-                                .imageTokens(0L)
-                                .textTokens(0L)
-                                .build()
-                        )
-                        .outputTokens(0L)
-                        .totalTokens(0L)
-                        .build()
-                )
-                .safetyIdentifier("safety_identifier")
-                .build()
 
         val roundtrippedImageEditCompletedEvent =
             jsonMapper.readValue(

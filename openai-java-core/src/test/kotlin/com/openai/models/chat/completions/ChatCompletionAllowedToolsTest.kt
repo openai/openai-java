@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionAllowedToolsTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionAllowedTools =
             ChatCompletionAllowedTools.builder()
                 .mode(ChatCompletionAllowedTools.Mode.AUTO)
@@ -30,20 +30,8 @@ internal class ChatCompletionAllowedToolsTest {
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionAllowedTools =
-            ChatCompletionAllowedTools.builder()
-                .mode(ChatCompletionAllowedTools.Mode.AUTO)
-                .addTool(
-                    ChatCompletionAllowedTools.Tool.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .build()
 
         val roundtrippedChatCompletionAllowedTools =
             jsonMapper.readValue(

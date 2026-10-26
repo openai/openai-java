@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class LiveTransportIncomingWebhookEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val liveTransportIncomingWebhookEvent =
             LiveTransportIncomingWebhookEvent.builder()
                 .id("id")
@@ -49,31 +49,8 @@ internal class LiveTransportIncomingWebhookEventTest {
             )
         assertThat(liveTransportIncomingWebhookEvent.object_())
             .contains(LiveTransportIncomingWebhookEvent.Object.EVENT)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val liveTransportIncomingWebhookEvent =
-            LiveTransportIncomingWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(
-                    LiveTransportIncomingWebhookEvent.Data.builder()
-                        .sessionId("session_id")
-                        .addSipHeader(
-                            LiveTransportIncomingWebhookEvent.Data.SipHeader.builder()
-                                .name("name")
-                                .value("value")
-                                .build()
-                        )
-                        .sipMediaSecurity(
-                            LiveTransportIncomingWebhookEvent.Data.SipMediaSecurity.RTP
-                        )
-                        .build()
-                )
-                .object_(LiveTransportIncomingWebhookEvent.Object.EVENT)
-                .build()
 
         val roundtrippedLiveTransportIncomingWebhookEvent =
             jsonMapper.readValue(

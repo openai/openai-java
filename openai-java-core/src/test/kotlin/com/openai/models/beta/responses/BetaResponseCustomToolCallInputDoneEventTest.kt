@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseCustomToolCallInputDoneEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseCustomToolCallInputDoneEvent =
             BetaResponseCustomToolCallInputDoneEvent.builder()
                 .input("input")
@@ -34,23 +34,8 @@ internal class BetaResponseCustomToolCallInputDoneEventTest {
                     .agentName("agent_name")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseCustomToolCallInputDoneEvent =
-            BetaResponseCustomToolCallInputDoneEvent.builder()
-                .input("input")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .agent(
-                    BetaResponseCustomToolCallInputDoneEvent.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseCustomToolCallInputDoneEvent =
             jsonMapper.readValue(

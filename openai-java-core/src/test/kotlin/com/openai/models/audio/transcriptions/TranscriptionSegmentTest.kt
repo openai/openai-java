@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class TranscriptionSegmentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val transcriptionSegment =
             TranscriptionSegment.builder()
                 .id(0L)
@@ -35,24 +35,8 @@ internal class TranscriptionSegmentTest {
         assertThat(transcriptionSegment.temperature()).isEqualTo(0.0f)
         assertThat(transcriptionSegment.text()).isEqualTo("text")
         assertThat(transcriptionSegment.tokens()).containsExactly(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val transcriptionSegment =
-            TranscriptionSegment.builder()
-                .id(0L)
-                .avgLogprob(0.0f)
-                .compressionRatio(0.0f)
-                .end(0.0)
-                .noSpeechProb(0.0f)
-                .seek(0L)
-                .start(0.0)
-                .temperature(0.0f)
-                .text("text")
-                .addToken(0L)
-                .build()
 
         val roundtrippedTranscriptionSegment =
             jsonMapper.readValue(

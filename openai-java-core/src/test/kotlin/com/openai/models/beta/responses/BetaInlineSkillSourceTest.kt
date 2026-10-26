@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class BetaInlineSkillSourceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaInlineSkillSource = BetaInlineSkillSource.builder().data("x").build()
 
         assertThat(betaInlineSkillSource.data()).isEqualTo("x")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaInlineSkillSource = BetaInlineSkillSource.builder().data("x").build()
 
         val roundtrippedBetaInlineSkillSource =
             jsonMapper.readValue(

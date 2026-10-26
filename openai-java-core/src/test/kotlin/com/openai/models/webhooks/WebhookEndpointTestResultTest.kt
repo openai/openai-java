@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class WebhookEndpointTestResultTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val webhookEndpointTestResult =
             WebhookEndpointTestResult.builder()
                 .eventType("event_type")
@@ -21,17 +21,8 @@ internal class WebhookEndpointTestResultTest {
         assertThat(webhookEndpointTestResult.eventType()).isEqualTo("event_type")
         assertThat(webhookEndpointTestResult.statusCode()).isEqualTo(0L)
         assertThat(webhookEndpointTestResult.webhookEndpointId()).isEqualTo("webhook_endpoint_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val webhookEndpointTestResult =
-            WebhookEndpointTestResult.builder()
-                .eventType("event_type")
-                .statusCode(0L)
-                .webhookEndpointId("webhook_endpoint_id")
-                .build()
 
         val roundtrippedWebhookEndpointTestResult =
             jsonMapper.readValue(

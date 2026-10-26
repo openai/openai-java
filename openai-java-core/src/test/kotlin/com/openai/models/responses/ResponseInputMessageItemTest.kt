@@ -4,13 +4,14 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class ResponseInputMessageItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseInputMessageItem =
             ResponseInputMessageItem.builder()
                 .id("id")
@@ -18,7 +19,9 @@ internal class ResponseInputMessageItemTest {
                     ResponseInputText.builder()
                         .text("text")
                         .promptCacheBreakpoint(
-                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                            ResponseInputText.PromptCacheBreakpoint.builder()
+                                .ttl(PromptCacheBreakpointTtl._30M)
+                                .build()
                         )
                         .build()
                 )
@@ -33,7 +36,9 @@ internal class ResponseInputMessageItemTest {
                     ResponseInputText.builder()
                         .text("text")
                         .promptCacheBreakpoint(
-                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                            ResponseInputText.PromptCacheBreakpoint.builder()
+                                .ttl(PromptCacheBreakpointTtl._30M)
+                                .build()
                         )
                         .build()
                 )
@@ -41,25 +46,8 @@ internal class ResponseInputMessageItemTest {
         assertThat(responseInputMessageItem.role()).isEqualTo(ResponseInputMessageItem.Role.USER)
         assertThat(responseInputMessageItem.status())
             .contains(ResponseInputMessageItem.Status.IN_PROGRESS)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseInputMessageItem =
-            ResponseInputMessageItem.builder()
-                .id("id")
-                .addContent(
-                    ResponseInputText.builder()
-                        .text("text")
-                        .promptCacheBreakpoint(
-                            ResponseInputText.PromptCacheBreakpoint.builder().build()
-                        )
-                        .build()
-                )
-                .role(ResponseInputMessageItem.Role.USER)
-                .status(ResponseInputMessageItem.Status.IN_PROGRESS)
-                .build()
 
         val roundtrippedResponseInputMessageItem =
             jsonMapper.readValue(

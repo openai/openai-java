@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseReasoningSummaryPartAddedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseReasoningSummaryPartAddedEvent =
             BetaResponseReasoningSummaryPartAddedEvent.builder()
                 .itemId("item_id")
@@ -41,26 +41,8 @@ internal class BetaResponseReasoningSummaryPartAddedEventTest {
                     .agentName("agent_name")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseReasoningSummaryPartAddedEvent =
-            BetaResponseReasoningSummaryPartAddedEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .part(
-                    BetaResponseReasoningSummaryPartAddedEvent.Part.builder().text("text").build()
-                )
-                .sequenceNumber(0L)
-                .summaryIndex(0L)
-                .agent(
-                    BetaResponseReasoningSummaryPartAddedEvent.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseReasoningSummaryPartAddedEvent =
             jsonMapper.readValue(

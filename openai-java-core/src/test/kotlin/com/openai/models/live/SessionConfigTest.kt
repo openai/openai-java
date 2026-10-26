@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class SessionConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionConfig =
             SessionConfig.builder()
                 .model(SessionConfig.Model.GPT_LIVE_1)
@@ -33,7 +33,7 @@ internal class SessionConfigTest {
                         )
                         .build()
                 )
-                .delegation(ClientDelegation.builder().build())
+                .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                 .addInput(
                     InitialItem.Developer.builder()
                         .addContent(
@@ -55,7 +55,7 @@ internal class SessionConfigTest {
                             DecisionTrigger.Decisions.builder()
                                 .addQuestion(
                                     DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
+                                        .instructions("string")
                                         .name("name")
                                         .build()
                                 )
@@ -86,7 +86,11 @@ internal class SessionConfigTest {
                     .build()
             )
         assertThat(sessionConfig.delegation())
-            .contains(SessionConfig.Delegation.ofClient(ClientDelegation.builder().build()))
+            .contains(
+                SessionConfig.Delegation.ofClient(
+                    ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+                )
+            )
         assertThat(sessionConfig.input().getOrNull())
             .containsExactly(
                 InitialItem.ofDeveloper(
@@ -112,7 +116,7 @@ internal class SessionConfigTest {
                         DecisionTrigger.Decisions.builder()
                             .addQuestion(
                                 DecisionTrigger.Decisions.Question.Predicate.builder()
-                                    .instructions("instructions")
+                                    .instructions("string")
                                     .name("name")
                                     .build()
                             )
@@ -121,64 +125,8 @@ internal class SessionConfigTest {
                     .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionConfig =
-            SessionConfig.builder()
-                .model(SessionConfig.Model.GPT_LIVE_1)
-                .audio(
-                    SessionConfig.Audio.builder()
-                        .audioPcmFormat(AudioFormat.AudioPcm.Rate._16000)
-                        .output(
-                            SessionConfig.Audio.Output.builder().voice(BuiltInVoice.ALLOY).build()
-                        )
-                        .build()
-                )
-                .client(
-                    ClientConfig.builder()
-                        .dataChannel(
-                            DataChannelConfig.builder()
-                                .allowedClientEventsOfStrings(listOf("string"))
-                                .allowedServerEventsAll()
-                                .build()
-                        )
-                        .build()
-                )
-                .delegation(ClientDelegation.builder().build())
-                .addInput(
-                    InitialItem.Developer.builder()
-                        .addContent(
-                            InitialItem.Developer.Content.builder()
-                                .text("text")
-                                .type(InitialItem.Developer.Content.Type.INPUT_TEXT)
-                                .build()
-                        )
-                        .id("id")
-                        .status(InitialItem.Developer.Status.INCOMPLETE)
-                        .type(InitialItem.Developer.Type.MESSAGE)
-                        .build()
-                )
-                .instructions("instructions")
-                .store(true)
-                .addTrigger(
-                    DecisionTrigger.builder()
-                        .decisions(
-                            DecisionTrigger.Decisions.builder()
-                                .addQuestion(
-                                    DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
-                                        .name("name")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                        .build()
-                )
-                .build()
 
         val roundtrippedSessionConfig =
             jsonMapper.readValue(

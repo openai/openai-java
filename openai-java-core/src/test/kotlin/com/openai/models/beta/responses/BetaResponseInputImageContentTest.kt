@@ -4,20 +4,23 @@ package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class BetaResponseInputImageContentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseInputImageContent =
             BetaResponseInputImageContent.builder()
                 .detail(BetaResponseInputImageContent.Detail.LOW)
                 .fileId("file-123")
                 .imageUrl("https://example.com")
                 .promptCacheBreakpoint(
-                    BetaResponseInputImageContent.PromptCacheBreakpoint.builder().build()
+                    BetaResponseInputImageContent.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -26,21 +29,13 @@ internal class BetaResponseInputImageContentTest {
         assertThat(betaResponseInputImageContent.fileId()).contains("file-123")
         assertThat(betaResponseInputImageContent.imageUrl()).contains("https://example.com")
         assertThat(betaResponseInputImageContent.promptCacheBreakpoint())
-            .contains(BetaResponseInputImageContent.PromptCacheBreakpoint.builder().build())
-    }
+            .contains(
+                BetaResponseInputImageContent.PromptCacheBreakpoint.builder()
+                    .ttl(PromptCacheBreakpointTtl._30M)
+                    .build()
+            )
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseInputImageContent =
-            BetaResponseInputImageContent.builder()
-                .detail(BetaResponseInputImageContent.Detail.LOW)
-                .fileId("file-123")
-                .imageUrl("https://example.com")
-                .promptCacheBreakpoint(
-                    BetaResponseInputImageContent.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedBetaResponseInputImageContent =
             jsonMapper.readValue(

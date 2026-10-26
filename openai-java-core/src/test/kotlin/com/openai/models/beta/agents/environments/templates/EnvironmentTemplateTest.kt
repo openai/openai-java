@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class EnvironmentTemplateTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val environmentTemplate =
             EnvironmentTemplate.builder()
                 .id("id")
@@ -84,43 +84,8 @@ internal class EnvironmentTemplateTest {
         assertThat(environmentTemplate.updatedAt()).isEqualTo(0L)
         assertThat(environmentTemplate.desktop())
             .contains(EnvironmentTemplate.Desktop.builder().enabled(true).build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val environmentTemplate =
-            EnvironmentTemplate.builder()
-                .id("id")
-                .addCapabilityDirectory("string")
-                .createdAt(0L)
-                .addFile(
-                    EnvironmentTemplate.File.FileId.builder().fileId("file_id").path("path").build()
-                )
-                .name("name")
-                .network(
-                    EnvironmentTemplate.Network.builder()
-                        .access(EnvironmentTemplate.Network.Access.ENABLED)
-                        .addAllowedDomain("string")
-                        .build()
-                )
-                .packages(
-                    EnvironmentTemplate.Packages.builder()
-                        .addNpm("string")
-                        .addPython("string")
-                        .addSystem("string")
-                        .build()
-                )
-                .addPlugin(HostedPlugin.builder().description("description").name("name").build())
-                .addSkill(
-                    EnvironmentTemplate.Skill.SkillReference.builder()
-                        .skillId("skill_id")
-                        .version("version")
-                        .build()
-                )
-                .updatedAt(0L)
-                .desktop(EnvironmentTemplate.Desktop.builder().enabled(true).build())
-                .build()
 
         val roundtrippedEnvironmentTemplate =
             jsonMapper.readValue(

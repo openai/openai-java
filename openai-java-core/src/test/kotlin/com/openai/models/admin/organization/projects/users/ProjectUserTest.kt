@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ProjectUserTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectUser =
             ProjectUser.builder()
                 .id("id")
@@ -25,19 +25,8 @@ internal class ProjectUserTest {
         assertThat(projectUser.role()).isEqualTo("role")
         assertThat(projectUser.email()).contains("email")
         assertThat(projectUser.name()).contains("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectUser =
-            ProjectUser.builder()
-                .id("id")
-                .addedAt(0L)
-                .role("role")
-                .email("email")
-                .name("name")
-                .build()
 
         val roundtrippedProjectUser =
             jsonMapper.readValue(

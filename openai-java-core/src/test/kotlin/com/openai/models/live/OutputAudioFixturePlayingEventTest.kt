@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class OutputAudioFixturePlayingEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val outputAudioFixturePlayingEvent =
             OutputAudioFixturePlayingEvent.builder()
                 .eventId("evt_playing_001")
@@ -19,16 +19,8 @@ internal class OutputAudioFixturePlayingEventTest {
 
         assertThat(outputAudioFixturePlayingEvent.eventId()).isEqualTo("evt_playing_001")
         assertThat(outputAudioFixturePlayingEvent.clientEventId()).contains("evt_play_001")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val outputAudioFixturePlayingEvent =
-            OutputAudioFixturePlayingEvent.builder()
-                .eventId("evt_playing_001")
-                .clientEventId("evt_play_001")
-                .build()
 
         val roundtrippedOutputAudioFixturePlayingEvent =
             jsonMapper.readValue(

@@ -53,7 +53,9 @@ internal class LiveServiceAsyncTest {
                                     )
                                     .build()
                             )
-                            .delegation(ClientDelegation.builder().build())
+                            .delegation(
+                                ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+                            )
                             .addInput(
                                 InitialItem.Developer.builder()
                                     .addContent(
@@ -76,7 +78,7 @@ internal class LiveServiceAsyncTest {
                                             .addQuestion(
                                                 DecisionTrigger.Decisions.Question.Predicate
                                                     .builder()
-                                                    .instructions("instructions")
+                                                    .instructions("string")
                                                     .name("name")
                                                     .build()
                                             )

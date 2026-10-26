@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -95,7 +96,9 @@ internal class BetaResponseInputItemTest {
                     BetaResponseInputText.builder()
                         .text("text")
                         .promptCacheBreakpoint(
-                            BetaResponseInputText.PromptCacheBreakpoint.builder().build()
+                            BetaResponseInputText.PromptCacheBreakpoint.builder()
+                                .ttl(PromptCacheBreakpointTtl._30M)
+                                .build()
                         )
                         .build()
                 )
@@ -157,7 +160,9 @@ internal class BetaResponseInputItemTest {
                         BetaResponseInputText.builder()
                             .text("text")
                             .promptCacheBreakpoint(
-                                BetaResponseInputText.PromptCacheBreakpoint.builder().build()
+                                BetaResponseInputText.PromptCacheBreakpoint.builder()
+                                    .ttl(PromptCacheBreakpointTtl._30M)
+                                    .build()
                             )
                             .build()
                     )
@@ -920,7 +925,9 @@ internal class BetaResponseInputItemTest {
                     BetaResponseInputTextContent.builder()
                         .text("text")
                         .promptCacheBreakpoint(
-                            BetaResponseInputTextContent.PromptCacheBreakpoint.builder().build()
+                            BetaResponseInputTextContent.PromptCacheBreakpoint.builder()
+                                .ttl(PromptCacheBreakpointTtl._30M)
+                                .build()
                         )
                         .build()
                 )
@@ -984,7 +991,9 @@ internal class BetaResponseInputItemTest {
                         BetaResponseInputTextContent.builder()
                             .text("text")
                             .promptCacheBreakpoint(
-                                BetaResponseInputTextContent.PromptCacheBreakpoint.builder().build()
+                                BetaResponseInputTextContent.PromptCacheBreakpoint.builder()
+                                    .ttl(PromptCacheBreakpointTtl._30M)
+                                    .build()
                             )
                             .build()
                     )
@@ -3081,6 +3090,7 @@ internal class BetaResponseInputItemTest {
     fun ofCompactionTrigger() {
         val compactionTrigger =
             BetaResponseInputItem.CompactionTrigger.builder()
+                .id("msg_123")
                 .agent(
                     BetaResponseInputItem.CompactionTrigger.Agent.builder()
                         .agentName("agent_name")
@@ -3134,6 +3144,7 @@ internal class BetaResponseInputItemTest {
         val betaResponseInputItem =
             BetaResponseInputItem.ofCompactionTrigger(
                 BetaResponseInputItem.CompactionTrigger.builder()
+                    .id("msg_123")
                     .agent(
                         BetaResponseInputItem.CompactionTrigger.Agent.builder()
                             .agentName("agent_name")

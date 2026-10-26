@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class NamespaceToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val namespaceTool =
             NamespaceTool.builder()
                 .description("description")
@@ -55,32 +55,8 @@ internal class NamespaceToolTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val namespaceTool =
-            NamespaceTool.builder()
-                .description("description")
-                .name("x")
-                .addTool(
-                    NamespaceTool.Tool.Function.builder()
-                        .name("name")
-                        .addAllowedCaller(NamespaceTool.Tool.Function.AllowedCaller.DIRECT)
-                        .async(true)
-                        .deferLoading(true)
-                        .description("description")
-                        .outputSchema(
-                            NamespaceTool.Tool.Function.OutputSchema.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .parameters(JsonValue.from(mapOf<String, Any>()))
-                        .strict(true)
-                        .build()
-                )
-                .build()
 
         val roundtrippedNamespaceTool =
             jsonMapper.readValue(

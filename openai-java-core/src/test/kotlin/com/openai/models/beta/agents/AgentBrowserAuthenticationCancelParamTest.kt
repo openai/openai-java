@@ -10,16 +10,11 @@ import org.junit.jupiter.api.Test
 internal class AgentBrowserAuthenticationCancelParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentBrowserAuthenticationCancelParam =
             AgentBrowserAuthenticationCancelParam.builder().build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentBrowserAuthenticationCancelParam =
-            AgentBrowserAuthenticationCancelParam.builder().build()
 
         val roundtrippedAgentBrowserAuthenticationCancelParam =
             jsonMapper.readValue(

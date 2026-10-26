@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ChatKitThreadUserMessageItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatkitThreadUserMessageItem =
             ChatKitThreadUserMessageItem.builder()
                 .id("id")
@@ -68,37 +68,8 @@ internal class ChatKitThreadUserMessageItemTest {
                     .build()
             )
         assertThat(chatkitThreadUserMessageItem.threadId()).isEqualTo("thread_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatkitThreadUserMessageItem =
-            ChatKitThreadUserMessageItem.builder()
-                .id("id")
-                .addAttachment(
-                    ChatKitAttachment.builder()
-                        .id("id")
-                        .mimeType("mime_type")
-                        .name("name")
-                        .previewUrl("https://example.com")
-                        .type(ChatKitAttachment.Type.IMAGE)
-                        .build()
-                )
-                .addInputTextContent("text")
-                .createdAt(0L)
-                .inferenceOptions(
-                    ChatKitThreadUserMessageItem.InferenceOptions.builder()
-                        .model("model")
-                        .toolChoice(
-                            ChatKitThreadUserMessageItem.InferenceOptions.ToolChoice.builder()
-                                .id("id")
-                                .build()
-                        )
-                        .build()
-                )
-                .threadId("thread_id")
-                .build()
 
         val roundtrippedChatKitThreadUserMessageItem =
             jsonMapper.readValue(

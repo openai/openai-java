@@ -27,7 +27,7 @@ internal class SessionAcceptParamsTest {
                             )
                             .build()
                     )
-                    .delegation(ClientDelegation.builder().build())
+                    .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                     .addInput(
                         InitialItem.Developer.builder()
                             .addContent(
@@ -49,7 +49,7 @@ internal class SessionAcceptParamsTest {
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
                                         DecisionTrigger.Decisions.Question.Predicate.builder()
-                                            .instructions("instructions")
+                                            .instructions("string")
                                             .name("name")
                                             .build()
                                     )
@@ -97,7 +97,7 @@ internal class SessionAcceptParamsTest {
                                 )
                                 .build()
                         )
-                        .delegation(ClientDelegation.builder().build())
+                        .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                         .addInput(
                             InitialItem.Developer.builder()
                                 .addContent(
@@ -119,7 +119,7 @@ internal class SessionAcceptParamsTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -147,7 +147,7 @@ internal class SessionAcceptParamsTest {
                             )
                             .build()
                     )
-                    .delegation(ClientDelegation.builder().build())
+                    .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                     .addInput(
                         InitialItem.Developer.builder()
                             .addContent(
@@ -169,7 +169,7 @@ internal class SessionAcceptParamsTest {
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
                                         DecisionTrigger.Decisions.Question.Predicate.builder()
-                                            .instructions("instructions")
+                                            .instructions("string")
                                             .name("name")
                                             .build()
                                     )

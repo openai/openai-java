@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class ThreadStreamEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val threadStreamEvent =
             ThreadStreamEvent.builder()
                 .data(
@@ -70,40 +70,8 @@ internal class ThreadStreamEventTest {
                     .build()
             )
         assertThat(threadStreamEvent.enabled()).contains(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val threadStreamEvent =
-            ThreadStreamEvent.builder()
-                .data(
-                    Thread.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .metadata(
-                            Thread.Metadata.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .toolResources(
-                            Thread.ToolResources.builder()
-                                .codeInterpreter(
-                                    Thread.ToolResources.CodeInterpreter.builder()
-                                        .addFileId("string")
-                                        .build()
-                                )
-                                .fileSearch(
-                                    Thread.ToolResources.FileSearch.builder()
-                                        .addVectorStoreId("string")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .enabled(true)
-                .build()
 
         val roundtrippedThreadStreamEvent =
             jsonMapper.readValue(

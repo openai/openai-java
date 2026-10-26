@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class VoiceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val voice =
             Voice.builder()
                 .id("id")
@@ -25,19 +25,8 @@ internal class VoiceTest {
         assertThat(voice.name()).isEqualTo("name")
         assertThat(voice.type()).isEqualTo(Voice.Type.AUDIO_SAMPLE)
         assertThat(voice.prompt()).contains("prompt")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val voice =
-            Voice.builder()
-                .id("id")
-                .createdAt(0L)
-                .name("name")
-                .type(Voice.Type.AUDIO_SAMPLE)
-                .prompt("prompt")
-                .build()
 
         val roundtrippedVoice =
             jsonMapper.readValue(jsonMapper.writeValueAsString(voice), jacksonTypeRef<Voice>())

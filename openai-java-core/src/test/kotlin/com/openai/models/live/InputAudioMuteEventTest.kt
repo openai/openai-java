@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class InputAudioMuteEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val inputAudioMuteEvent = InputAudioMuteEvent.builder().eventId("evt_mute_001").build()
 
         assertThat(inputAudioMuteEvent.eventId()).contains("evt_mute_001")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val inputAudioMuteEvent = InputAudioMuteEvent.builder().eventId("evt_mute_001").build()
 
         val roundtrippedInputAudioMuteEvent =
             jsonMapper.readValue(

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ChatKitWorkflowTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatkitWorkflow =
             ChatKitWorkflow.builder()
                 .id("id")
@@ -34,22 +34,8 @@ internal class ChatKitWorkflowTest {
         assertThat(chatkitWorkflow.tracing())
             .isEqualTo(ChatKitWorkflow.Tracing.builder().enabled(true).build())
         assertThat(chatkitWorkflow.version()).contains("version")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatkitWorkflow =
-            ChatKitWorkflow.builder()
-                .id("id")
-                .stateVariables(
-                    ChatKitWorkflow.StateVariables.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .tracing(ChatKitWorkflow.Tracing.builder().enabled(true).build())
-                .version("version")
-                .build()
 
         val roundtrippedChatKitWorkflow =
             jsonMapper.readValue(

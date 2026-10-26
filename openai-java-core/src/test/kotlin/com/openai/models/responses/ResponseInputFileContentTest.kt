@@ -4,13 +4,14 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class ResponseInputFileContentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseInputFileContent =
             ResponseInputFileContent.builder()
                 .detail(ResponseInputFileContent.Detail.AUTO)
@@ -19,7 +20,9 @@ internal class ResponseInputFileContentTest {
                 .fileUrl("https://example.com")
                 .filename("filename")
                 .promptCacheBreakpoint(
-                    ResponseInputFileContent.PromptCacheBreakpoint.builder().build()
+                    ResponseInputFileContent.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -29,23 +32,13 @@ internal class ResponseInputFileContentTest {
         assertThat(responseInputFileContent.fileUrl()).contains("https://example.com")
         assertThat(responseInputFileContent.filename()).contains("filename")
         assertThat(responseInputFileContent.promptCacheBreakpoint())
-            .contains(ResponseInputFileContent.PromptCacheBreakpoint.builder().build())
-    }
+            .contains(
+                ResponseInputFileContent.PromptCacheBreakpoint.builder()
+                    .ttl(PromptCacheBreakpointTtl._30M)
+                    .build()
+            )
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseInputFileContent =
-            ResponseInputFileContent.builder()
-                .detail(ResponseInputFileContent.Detail.AUTO)
-                .fileData("file_data")
-                .fileId("file-123")
-                .fileUrl("https://example.com")
-                .filename("filename")
-                .promptCacheBreakpoint(
-                    ResponseInputFileContent.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedResponseInputFileContent =
             jsonMapper.readValue(

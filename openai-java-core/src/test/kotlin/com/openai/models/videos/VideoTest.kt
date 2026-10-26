@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class VideoTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val video =
             Video.builder()
                 .id("id")
@@ -95,53 +95,8 @@ internal class VideoTest {
         assertThat(video.seconds()).isEqualTo(VideoSeconds._4)
         assertThat(video.size()).isEqualTo(VideoSize._720X1280)
         assertThat(video.status()).isEqualTo(Video.Status.QUEUED)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val video =
-            Video.builder()
-                .id("id")
-                .completedAt(0L)
-                .createdAt(0L)
-                .error(
-                    VideoCreateError.builder()
-                        .code("code")
-                        .message("message")
-                        .headers(
-                            VideoCreateError.Headers.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .misalignment(
-                            VideoCreateError.Misalignment.builder()
-                                .detailedExplanation("detailed_explanation")
-                                .errorType(
-                                    VideoCreateError.Misalignment.ErrorType
-                                        .POTENTIALLY_UNINTENDED_DATA_TRANSFER
-                                )
-                                .reviewTarget("review_target")
-                                .steer(
-                                    VideoCreateError.Misalignment.Steer.builder()
-                                        .message("message")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .param("param")
-                        .type("type")
-                        .build()
-                )
-                .expiresAt(0L)
-                .model(VideoModel.SORA_2)
-                .progress(0L)
-                .prompt("prompt")
-                .remixedFromVideoId("remixed_from_video_id")
-                .seconds(VideoSeconds._4)
-                .size(VideoSize._720X1280)
-                .status(Video.Status.QUEUED)
-                .build()
 
         val roundtrippedVideo =
             jsonMapper.readValue(jsonMapper.writeValueAsString(video), jacksonTypeRef<Video>())

@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class AgentTextTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentText = AgentText.builder().formatText().verbosity(AgentText.Verbosity.LOW).build()
 
         assertThat(agentText.format()).isEqualTo(TextFormat.ofText())
         assertThat(agentText.verbosity()).isEqualTo(AgentText.Verbosity.LOW)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentText = AgentText.builder().formatText().verbosity(AgentText.Verbosity.LOW).build()
 
         val roundtrippedAgentText =
             jsonMapper.readValue(

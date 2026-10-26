@@ -12,6 +12,7 @@ updates:
       - /openai-java-core
       - /openai-java-example
       - /openai-java-runtime-compatibility
+      - /openai-java-vertex
     schedule:
       interval: weekly
       day: monday

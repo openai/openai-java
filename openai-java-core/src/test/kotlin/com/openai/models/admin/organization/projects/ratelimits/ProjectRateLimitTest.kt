@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ProjectRateLimitTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectRateLimit =
             ProjectRateLimit.builder()
                 .id("id")
@@ -31,22 +31,8 @@ internal class ProjectRateLimitTest {
         assertThat(projectRateLimit.maxAudioMegabytesPer1Minute()).contains(0L)
         assertThat(projectRateLimit.maxImagesPer1Minute()).contains(0L)
         assertThat(projectRateLimit.maxRequestsPer1Day()).contains(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectRateLimit =
-            ProjectRateLimit.builder()
-                .id("id")
-                .maxRequestsPer1Minute(0L)
-                .maxTokensPer1Minute(0L)
-                .model("model")
-                .batch1DayMaxInputTokens(0L)
-                .maxAudioMegabytesPer1Minute(0L)
-                .maxImagesPer1Minute(0L)
-                .maxRequestsPer1Day(0L)
-                .build()
 
         val roundtrippedProjectRateLimit =
             jsonMapper.readValue(

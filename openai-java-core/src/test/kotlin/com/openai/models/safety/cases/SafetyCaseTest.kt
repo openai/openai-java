@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SafetyCaseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val safetyCase =
             SafetyCase.builder()
                 .id("id")
@@ -26,19 +26,8 @@ internal class SafetyCaseTest {
         assertThat(safetyCase.notice())
             .isEqualTo(SafetyCase.Notice.builder().type(SafetyCase.Notice.Type.WARNING).build())
         assertThat(safetyCase.reason()).contains("reason")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val safetyCase =
-            SafetyCase.builder()
-                .id("id")
-                .createdAt(0L)
-                .entityIdentifier("entity_identifier")
-                .notice(SafetyCase.Notice.builder().type(SafetyCase.Notice.Type.WARNING).build())
-                .reason("reason")
-                .build()
 
         val roundtrippedSafetyCase =
             jsonMapper.readValue(

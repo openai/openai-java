@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ChatSessionChatKitConfigurationParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatSessionChatKitConfigurationParam =
             ChatSessionChatKitConfigurationParam.builder()
                 .automaticThreadTitling(
@@ -54,32 +54,8 @@ internal class ChatSessionChatKitConfigurationParamTest {
                     .recentThreads(1L)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatSessionChatKitConfigurationParam =
-            ChatSessionChatKitConfigurationParam.builder()
-                .automaticThreadTitling(
-                    ChatSessionChatKitConfigurationParam.AutomaticThreadTitling.builder()
-                        .enabled(true)
-                        .build()
-                )
-                .fileUpload(
-                    ChatSessionChatKitConfigurationParam.FileUpload.builder()
-                        .enabled(true)
-                        .maxFileSize(1L)
-                        .maxFiles(1L)
-                        .build()
-                )
-                .history(
-                    ChatSessionChatKitConfigurationParam.History.builder()
-                        .enabled(true)
-                        .recentThreads(1L)
-                        .build()
-                )
-                .build()
 
         val roundtrippedChatSessionChatKitConfigurationParam =
             jsonMapper.readValue(

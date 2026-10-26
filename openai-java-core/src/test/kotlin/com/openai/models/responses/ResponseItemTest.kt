@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.ReasoningEffort
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -24,7 +25,9 @@ internal class ResponseItemTest {
                     ResponseInputText.builder()
                         .text("text")
                         .promptCacheBreakpoint(
-                            ResponseInputText.PromptCacheBreakpoint.builder().build()
+                            ResponseInputText.PromptCacheBreakpoint.builder()
+                                .ttl(PromptCacheBreakpointTtl._30M)
+                                .build()
                         )
                         .build()
                 )
@@ -77,7 +80,9 @@ internal class ResponseItemTest {
                         ResponseInputText.builder()
                             .text("text")
                             .promptCacheBreakpoint(
-                                ResponseInputText.PromptCacheBreakpoint.builder().build()
+                                ResponseInputText.PromptCacheBreakpoint.builder()
+                                    .ttl(PromptCacheBreakpointTtl._30M)
+                                    .build()
                             )
                             .build()
                     )

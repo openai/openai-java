@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class InlineCapabilitySourceParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val inlineCapabilitySourceParam = InlineCapabilitySourceParam.builder().data("x").build()
 
         assertThat(inlineCapabilitySourceParam.data()).isEqualTo("x")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val inlineCapabilitySourceParam = InlineCapabilitySourceParam.builder().data("x").build()
 
         val roundtrippedInlineCapabilitySourceParam =
             jsonMapper.readValue(

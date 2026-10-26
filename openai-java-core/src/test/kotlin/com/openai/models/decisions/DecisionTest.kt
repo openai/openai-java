@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class DecisionTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val decision =
             Decision.builder()
                 .addAnswer(
@@ -63,36 +63,8 @@ internal class DecisionTest {
                     .totalTokens(-2147483648L)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val decision =
-            Decision.builder()
-                .addAnswer(
-                    Decision.Answer.Predicate.builder().name("name").probability(0.0).build()
-                )
-                .model("model")
-                .usage(
-                    Decision.Usage.builder()
-                        .inputTokens(-2147483648L)
-                        .inputTokensDetails(
-                            Decision.Usage.InputTokensDetails.builder()
-                                .cacheWriteTokens(-2147483648L)
-                                .cachedTokens(-2147483648L)
-                                .build()
-                        )
-                        .outputTokens(-2147483648L)
-                        .outputTokensDetails(
-                            Decision.Usage.OutputTokensDetails.builder()
-                                .reasoningTokens(-2147483648L)
-                                .build()
-                        )
-                        .totalTokens(-2147483648L)
-                        .build()
-                )
-                .build()
 
         val roundtrippedDecision =
             jsonMapper.readValue(

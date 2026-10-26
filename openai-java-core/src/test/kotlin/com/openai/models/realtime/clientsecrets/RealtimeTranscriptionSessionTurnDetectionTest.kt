@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeTranscriptionSessionTurnDetectionTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeTranscriptionSessionTurnDetection =
             RealtimeTranscriptionSessionTurnDetection.builder()
                 .prefixPaddingMs(0L)
@@ -23,18 +23,8 @@ internal class RealtimeTranscriptionSessionTurnDetectionTest {
         assertThat(realtimeTranscriptionSessionTurnDetection.silenceDurationMs()).contains(0L)
         assertThat(realtimeTranscriptionSessionTurnDetection.threshold()).contains(0.0)
         assertThat(realtimeTranscriptionSessionTurnDetection.type()).contains("type")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeTranscriptionSessionTurnDetection =
-            RealtimeTranscriptionSessionTurnDetection.builder()
-                .prefixPaddingMs(0L)
-                .silenceDurationMs(0L)
-                .threshold(0.0)
-                .type("type")
-                .build()
 
         val roundtrippedRealtimeTranscriptionSessionTurnDetection =
             jsonMapper.readValue(

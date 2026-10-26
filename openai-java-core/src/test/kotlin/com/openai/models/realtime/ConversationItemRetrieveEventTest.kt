@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class ConversationItemRetrieveEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val conversationItemRetrieveEvent =
             ConversationItemRetrieveEvent.builder().itemId("item_id").eventId("event_id").build()
 
         assertThat(conversationItemRetrieveEvent.itemId()).isEqualTo("item_id")
         assertThat(conversationItemRetrieveEvent.eventId()).contains("event_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val conversationItemRetrieveEvent =
-            ConversationItemRetrieveEvent.builder().itemId("item_id").eventId("event_id").build()
 
         val roundtrippedConversationItemRetrieveEvent =
             jsonMapper.readValue(

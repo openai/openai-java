@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class VectorStoreFileDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val vectorStoreFileDeleted = VectorStoreFileDeleted.builder().id("id").deleted(true).build()
 
         assertThat(vectorStoreFileDeleted.id()).isEqualTo("id")
         assertThat(vectorStoreFileDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val vectorStoreFileDeleted = VectorStoreFileDeleted.builder().id("id").deleted(true).build()
 
         val roundtrippedVectorStoreFileDeleted =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeTranslationInputTranscriptDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeTranslationInputTranscriptDeltaEvent =
             RealtimeTranslationInputTranscriptDeltaEvent.builder()
                 .delta("delta")
@@ -21,17 +21,8 @@ internal class RealtimeTranslationInputTranscriptDeltaEventTest {
         assertThat(realtimeTranslationInputTranscriptDeltaEvent.delta()).isEqualTo("delta")
         assertThat(realtimeTranslationInputTranscriptDeltaEvent.eventId()).isEqualTo("event_id")
         assertThat(realtimeTranslationInputTranscriptDeltaEvent.elapsedMs()).contains(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeTranslationInputTranscriptDeltaEvent =
-            RealtimeTranslationInputTranscriptDeltaEvent.builder()
-                .delta("delta")
-                .eventId("event_id")
-                .elapsedMs(0L)
-                .build()
 
         val roundtrippedRealtimeTranslationInputTranscriptDeltaEvent =
             jsonMapper.readValue(

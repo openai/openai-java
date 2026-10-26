@@ -8,7 +8,6 @@ import com.openai.models.audio.AudioModel
 import com.openai.models.audio.AudioResponseFormat
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionInclude
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -46,47 +45,5 @@ internal class TranscriptionServiceAsyncTest {
 
         val transcription = transcriptionFuture.get()
         transcription.validate()
-    }
-
-    @Disabled("Prism does not support SSE streaming mock responses")
-    @Test
-    fun createStreaming() {
-        val client =
-            OpenAIOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .adminApiKey("My Admin API Key")
-                .build()
-        val transcriptionServiceAsync = client.audio().transcriptions()
-
-        val transcriptionStreamResponse =
-            transcriptionServiceAsync.createStreaming(
-                TranscriptionCreateParams.builder()
-                    .file("Example data".byteInputStream())
-                    .model(AudioModel.GPT_4O_TRANSCRIBE)
-                    .chunkingStrategyAuto()
-                    .addInclude(TranscriptionInclude.LOGPROBS)
-                    .addKeyword("string")
-                    .addKnownSpeakerName("string")
-                    .addKnownSpeakerReference("string")
-                    .language("language")
-                    .addLanguage("string")
-                    .prompt("prompt")
-                    .responseFormat(AudioResponseFormat.JSON)
-                    .temperature(0.0)
-                    .addTimestampGranularity(TranscriptionCreateParams.TimestampGranularity.WORD)
-                    .build()
-            )
-
-        val received = java.util.concurrent.atomic.AtomicInteger()
-        val onCompleteFuture =
-            transcriptionStreamResponse
-                .subscribe { event ->
-                    event.validate()
-                    received.incrementAndGet()
-                }
-                .onCompleteFuture()
-        onCompleteFuture.get()
-        check(received.get() > 0) { "Expected at least one streaming event" }
     }
 }

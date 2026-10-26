@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SessionTurnErrorTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionTurnError =
             SessionTurnError.builder()
                 .code(SessionTurnError.Code.CONTEXT_LENGTH_EXCEEDED)
@@ -19,16 +19,8 @@ internal class SessionTurnErrorTest {
 
         assertThat(sessionTurnError.code()).isEqualTo(SessionTurnError.Code.CONTEXT_LENGTH_EXCEEDED)
         assertThat(sessionTurnError.message()).isEqualTo("message")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionTurnError =
-            SessionTurnError.builder()
-                .code(SessionTurnError.Code.CONTEXT_LENGTH_EXCEEDED)
-                .message("message")
-                .build()
 
         val roundtrippedSessionTurnError =
             jsonMapper.readValue(

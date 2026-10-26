@@ -1,0 +1,7 @@
+# Accepted Decisions beta API compatibility exceptions.
+openai-java-core/src/main/kotlin/com/openai/models/decisions/DecisionCreateParams.kt
+openai-java-core/src/main/kotlin/com/openai/models/decisions/DecisionInputMessage.kt
+openai-java-core/src/main/kotlin/com/openai/models/decisions/DecisionInputPart.kt
+openai-java-core/src/main/kotlin/com/openai/models/live/DecisionTrigger.kt
+openai-java-core/src/main/kotlin/com/openai/models/live/DecisionsDelegationConfig.kt
+openai-java-core/src/main/kotlin/com/openai/models/live/DecisionsDelegationUpdateConfig.kt

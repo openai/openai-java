@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class RealtimeReasoningTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeReasoning =
             RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
 
         assertThat(realtimeReasoning.effort()).contains(RealtimeReasoningEffort.MINIMAL)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeReasoning =
-            RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
 
         val roundtrippedRealtimeReasoning =
             jsonMapper.readValue(

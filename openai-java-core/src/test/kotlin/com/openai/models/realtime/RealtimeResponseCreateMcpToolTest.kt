@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeResponseCreateMcpToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeResponseCreateMcpTool =
             RealtimeResponseCreateMcpTool.builder()
                 .serverLabel("server_label")
@@ -59,31 +59,8 @@ internal class RealtimeResponseCreateMcpToolTest {
         assertThat(realtimeResponseCreateMcpTool.serverUrl()).contains("https://example.com")
         assertThat(realtimeResponseCreateMcpTool.tunnelId())
             .contains("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeResponseCreateMcpTool =
-            RealtimeResponseCreateMcpTool.builder()
-                .serverLabel("server_label")
-                .addAllowedCaller(RealtimeResponseCreateMcpTool.AllowedCaller.DIRECT)
-                .allowedToolsOfMcp(listOf("string"))
-                .authorization("authorization")
-                .connectorId(RealtimeResponseCreateMcpTool.ConnectorId.CONNECTOR_DROPBOX)
-                .deferLoading(true)
-                .headers(
-                    RealtimeResponseCreateMcpTool.Headers.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .requireApproval(
-                    RealtimeResponseCreateMcpTool.RequireApproval.McpToolApprovalSetting.ALWAYS
-                )
-                .serverDescription("server_description")
-                .serverUrl("https://example.com")
-                .tunnelId("tunnel_210b9798ad53ecc4y69z31e1071cx03v")
-                .build()
 
         val roundtrippedRealtimeResponseCreateMcpTool =
             jsonMapper.readValue(

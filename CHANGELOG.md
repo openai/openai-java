@@ -1,5 +1,127 @@
 # Changelog
 
+## [4.93.0](https://github.com/openai/openai-java/compare/v4.92.0...v4.93.0) (2026-10-26)
+
+
+### Features
+
+* **api:** add gpt-6.1-terra model identifier ([#1276](https://github.com/openai/openai-java/issues/1276)) ([763fb37](https://github.com/openai/openai-java/commit/763fb37cdd19f6e3a6252a271e41264919fc39cd))
+
+## [4.92.0](https://github.com/openai/openai-java/compare/v4.91.0...v4.92.0) (2026-10-26)
+
+
+### Features
+
+* **api:** add delegation controls and prompt cache lifetimes ([#1272](https://github.com/openai/openai-java/issues/1272)) ([2ddb859](https://github.com/openai/openai-java/commit/2ddb8597164e5e5b672fa79e01400eea92fc16cc))
+
+## [4.91.0](https://github.com/openai/openai-java/compare/v4.90.0...v4.91.0) (2026-10-23)
+
+
+### Features
+
+* **api:** Breaking change in a minor release. Live Decisions question `instructions()` now returns an `Instructions` union containing a string or a list of text, image, or JSON parts. Code such as `question.instructions().trim()` no longer compiles; check `instructions.isString()` and use `instructions.asString()`, or handle `instructions.asDecisionQuestionInputParts()`. String inputs still work with `instructions(String)`. Decisions request inputs also support additional message roles and tool-history items; update code that assumes a fixed set of input types. `DecisionInputMessage.builder()`, `DecisionInputMessage.Type`, and `DecisionInputMessage.Content` were removed. Build a role-specific message, wrap it with `DecisionInputMessage.ofUser(...)` for user messages, and pass it through `DecisionInputItem.ofDecisionInputMessage(...)`. ([f7607c8](https://github.com/openai/openai-java/commit/f7607c84edf39c5f962beb1b988b35207c46e289))
+
+
+### Chores
+
+* **api:** align initial policy-pin review with active main ([#1271](https://github.com/openai/openai-java/issues/1271)) ([1599b41](https://github.com/openai/openai-java/commit/1599b41cab0743a3543809cf3644678f570bd44a))
+* refresh custom-code enforcement tooling ([#1270](https://github.com/openai/openai-java/issues/1270)) ([d865378](https://github.com/openai/openai-java/commit/d8653786396518d29eaeb9ec112d5209ed148489))
+
+
+### Build System
+
+* bump actions/download-artifact from 8.0.1 to 8.0.2 ([#1232](https://github.com/openai/openai-java/issues/1232)) ([65bd9e4](https://github.com/openai/openai-java/commit/65bd9e403f8e7f576bf7de904ba7237b6142368f))
+
+## [4.90.0](https://github.com/openai/openai-java/compare/v4.89.0...v4.90.0) (2026-10-22)
+
+
+### Features
+
+* **api:** add voice deletion ([#1263](https://github.com/openai/openai-java/issues/1263)) ([dcc7b18](https://github.com/openai/openai-java/commit/dcc7b18a3ed1228b9806dbaed9ce0426a4c023c7))
+
+
+### Performance Improvements
+
+* reuse Kotlin compiler classloaders for in-process builds ([#1266](https://github.com/openai/openai-java/issues/1266)) ([8e52b99](https://github.com/openai/openai-java/commit/8e52b99c2a8e2c5c367d317f34b0072e8e858fa2))
+
+
+### Chores
+
+* **api:** clarify service-account API key deletion ([#1265](https://github.com/openai/openai-java/issues/1265)) ([c73a262](https://github.com/openai/openai-java/commit/c73a2625992791f1f2ce41ef25fdea4f5db045a3))
+
+
+### Build System
+
+* isolate authenticator changes from model compilation ([#1264](https://github.com/openai/openai-java/issues/1264)) ([6ab4a33](https://github.com/openai/openai-java/commit/6ab4a33a3afa819aeb05eb215f57c7df1e758e1a))
+
+## [4.89.0](https://github.com/openai/openai-java/compare/v4.88.0...v4.89.0) (2026-10-21)
+
+
+### Features
+
+* add Vertex AI support for the Responses API ([#1256](https://github.com/openai/openai-java/issues/1256)) ([dc3546f](https://github.com/openai/openai-java/commit/dc3546faa12de4aded643c90666f8ca379e75e5b))
+
+
+### Chores
+
+* **api:** preserve environment creation idempotency ([#1260](https://github.com/openai/openai-java/issues/1260)) ([da2a49c](https://github.com/openai/openai-java/commit/da2a49cd4edd9629012581946b9162dc7b2068a6))
+* **api:** preserve Java compatibility helpers ([#1257](https://github.com/openai/openai-java/issues/1257)) ([954cee7](https://github.com/openai/openai-java/commit/954cee79ff30d407ab02430c1a32f4e72a0a2efd))
+* **api:** preserve Java model compatibility ([#1259](https://github.com/openai/openai-java/issues/1259)) ([da98b6b](https://github.com/openai/openai-java/commit/da98b6bc444df53f8d817dbd8c0b007f6e97075f))
+
+## [4.88.0](https://github.com/openai/openai-java/compare/v4.87.1...v4.88.0) (2026-10-21)
+
+
+### Features
+
+* **api:** add custom voice consent management ([#1252](https://github.com/openai/openai-java/issues/1252)) ([bdce13f](https://github.com/openai/openai-java/commit/bdce13f5e0c273758472335592f06ddee9c6807b))
+
+
+### Chores
+
+* **api:** maintain voice consent compatibility ([#1254](https://github.com/openai/openai-java/issues/1254)) ([fc17079](https://github.com/openai/openai-java/commit/fc1707968412255545338722b4862c36d11e2444))
+* **api:** preserve Java runtime and model contracts ([#1255](https://github.com/openai/openai-java/issues/1255)) ([5e993ab](https://github.com/openai/openai-java/commit/5e993ab6dcf913f10a0efdbabd554752a8ea6960))
+
+## [4.87.1](https://github.com/openai/openai-java/compare/v4.87.0...v4.87.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* **auth:** recover after synchronous refresh startup failure ([#1246](https://github.com/openai/openai-java/issues/1246)) ([efe5b95](https://github.com/openai/openai-java/commit/efe5b95b0bece00ef33f17139c0b397bb28946d6))
+
+
+### Chores
+
+* **api:** clarify project API key update requirements ([#1244](https://github.com/openai/openai-java/issues/1244)) ([1e54d93](https://github.com/openai/openai-java/commit/1e54d93d6d1c68bbd8529b0327aa06bdea0abdb9))
+
+## [4.87.0](https://github.com/openai/openai-java/compare/v4.86.0...v4.87.0) (2026-10-20)
+
+
+### Features
+
+* **api:** add 30-minute cache-write usage counts ([#1233](https://github.com/openai/openai-java/issues/1233)) ([2f3608a](https://github.com/openai/openai-java/commit/2f3608a0282fd21e7e17644fdb2a25434c0caf27))
+* **api:** add compaction trigger IDs ([#1243](https://github.com/openai/openai-java/issues/1243)) ([623d448](https://github.com/openai/openai-java/commit/623d44830879212d06e0f93d709dbcef43fec540))
+* **api:** add complete JSON property access ([#1241](https://github.com/openai/openai-java/issues/1241)) ([98eacfb](https://github.com/openai/openai-java/commit/98eacfbff0ea959f36b0fdcdef39879972ed48c0))
+* **core:** add HTTP adapter headers and body accessors ([#1245](https://github.com/openai/openai-java/issues/1245)) ([04f464e](https://github.com/openai/openai-java/commit/04f464e58affd7066af228f72f276b2152c3d982))
+
+
+### Bug Fixes
+
+* **api:** accept canonical file batch discriminator ([#1224](https://github.com/openai/openai-java/issues/1224)) ([f886d7a](https://github.com/openai/openai-java/commit/f886d7a12fee9c3cedce9084dd692b9933a8f7ab))
+* **api:** accept compaction trigger payload fields ([#1226](https://github.com/openai/openai-java/issues/1226)) ([caa95e1](https://github.com/openai/openai-java/commit/caa95e12459e3cca6e85403dd3727f5eacd9a9d5))
+* **api:** close responses from void-returning calls ([#1242](https://github.com/openai/openai-java/issues/1242)) ([fc5b772](https://github.com/openai/openai-java/commit/fc5b772a597b32b4ef563820f72ea813a4a55b71))
+* complete WebSocket receives before closing failed transport ([#1240](https://github.com/openai/openai-java/issues/1240)) ([973fd4e](https://github.com/openai/openai-java/commit/973fd4e176ead42d46254b75213e8157ae496fb7))
+
+
+### Chores
+
+* restore generated budget-checker explanation ([#1235](https://github.com/openai/openai-java/issues/1235)) ([479972a](https://github.com/openai/openai-java/commit/479972a1ee2a7cd181f67f478c95aad9d1d1e261))
+
+
+### Documentation
+
+* checkpoint generated-code transition after initial merges ([#1238](https://github.com/openai/openai-java/issues/1238)) ([b79d85f](https://github.com/openai/openai-java/commit/b79d85f90c13c9cdc6d536b29704dfc50e8f9df8))
+* inventory Java custom patches and plan generated-code transition ([#1234](https://github.com/openai/openai-java/issues/1234)) ([1499ace](https://github.com/openai/openai-java/commit/1499ace53dda09c46af2feb693a876c7b6eed890))
+
 ## [4.86.0](https://github.com/openai/openai-java/compare/v4.85.0...v4.86.0) (2026-10-19)
 
 

@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ChatSessionExpiresAfterParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatSessionExpiresAfterParam =
             ChatSessionExpiresAfterParam.builder().seconds(1L).build()
 
         assertThat(chatSessionExpiresAfterParam.seconds()).isEqualTo(1L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatSessionExpiresAfterParam =
-            ChatSessionExpiresAfterParam.builder().seconds(1L).build()
 
         val roundtrippedChatSessionExpiresAfterParam =
             jsonMapper.readValue(

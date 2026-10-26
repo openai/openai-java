@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class CustomToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val customTool =
             CustomTool.builder()
                 .name("name")
@@ -30,20 +30,8 @@ internal class CustomToolTest {
         assertThat(customTool.deferLoading()).contains(true)
         assertThat(customTool.description()).contains("description")
         assertThat(customTool.format()).contains(CustomToolInputFormat.ofText())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val customTool =
-            CustomTool.builder()
-                .name("name")
-                .addAllowedCaller(CustomTool.AllowedCaller.DIRECT)
-                .async(true)
-                .deferLoading(true)
-                .description("description")
-                .formatText()
-                .build()
 
         val roundtrippedCustomTool =
             jsonMapper.readValue(

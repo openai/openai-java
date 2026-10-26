@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseConfigurationUpdateItemParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseConfigurationUpdateItemParam =
             ResponseConfigurationUpdateItemParam.builder()
                 .id("cnfu_123")
@@ -29,20 +29,8 @@ internal class ResponseConfigurationUpdateItemParamTest {
                     .effort(ReasoningEffort.NONE)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseConfigurationUpdateItemParam =
-            ResponseConfigurationUpdateItemParam.builder()
-                .id("cnfu_123")
-                .reasoning(
-                    ResponseConfigurationUpdateItemParam.Reasoning.builder()
-                        .effort(ReasoningEffort.NONE)
-                        .build()
-                )
-                .build()
 
         val roundtrippedResponseConfigurationUpdateItemParam =
             jsonMapper.readValue(

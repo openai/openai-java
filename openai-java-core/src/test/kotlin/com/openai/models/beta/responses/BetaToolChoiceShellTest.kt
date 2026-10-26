@@ -10,14 +10,10 @@ import org.junit.jupiter.api.Test
 internal class BetaToolChoiceShellTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaToolChoiceShell = BetaToolChoiceShell.builder().build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaToolChoiceShell = BetaToolChoiceShell.builder().build()
 
         val roundtrippedBetaToolChoiceShell =
             jsonMapper.readValue(

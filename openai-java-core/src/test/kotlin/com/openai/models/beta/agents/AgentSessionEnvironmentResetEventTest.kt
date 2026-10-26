@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionEnvironmentResetEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionEnvironmentResetEvent =
             AgentSessionEnvironmentResetEvent.builder()
                 .environmentId("environment_id")
@@ -25,19 +25,8 @@ internal class AgentSessionEnvironmentResetEventTest {
         assertThat(agentSessionEnvironmentResetEvent.resetCount()).isEqualTo(0L)
         assertThat(agentSessionEnvironmentResetEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentSessionEnvironmentResetEvent.turnId()).contains("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionEnvironmentResetEvent =
-            AgentSessionEnvironmentResetEvent.builder()
-                .environmentId("environment_id")
-                .eventId("event_id")
-                .resetCount(0L)
-                .sessionId("session_id")
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentSessionEnvironmentResetEvent =
             jsonMapper.readValue(

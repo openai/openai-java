@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseMcpCallFailedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseMcpCallFailed =
             ResponseMcpCallFailed.builder()
                 .eventId("event_id")
@@ -21,17 +21,8 @@ internal class ResponseMcpCallFailedTest {
         assertThat(responseMcpCallFailed.eventId()).isEqualTo("event_id")
         assertThat(responseMcpCallFailed.itemId()).isEqualTo("item_id")
         assertThat(responseMcpCallFailed.outputIndex()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseMcpCallFailed =
-            ResponseMcpCallFailed.builder()
-                .eventId("event_id")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .build()
 
         val roundtrippedResponseMcpCallFailed =
             jsonMapper.readValue(
