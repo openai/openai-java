@@ -28,6 +28,7 @@ import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
 import kotlin.jvm.optionals.getOrNull
+import okhttp3.Interceptor
 
 /**
  * A class that allows building an instance of [OpenAIClient] with [OkHttpClient] as the underlying
@@ -53,7 +54,7 @@ class OpenAIOkHttpClient private constructor() {
 
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
         private var dispatcherExecutorService: ExecutorService? = null
-        private var followRedirects: Boolean = true
+        private var followRedirects: Boolean? = null
         private var proxy: Proxy? = null
         private var proxyAuthenticator: ProxyAuthenticator? = null
         private var maxIdleConnections: Int? = null
@@ -61,8 +62,46 @@ class OpenAIOkHttpClient private constructor() {
         private var sslSocketFactory: SSLSocketFactory? = null
         private var trustManager: X509TrustManager? = null
         private var hostnameVerifier: HostnameVerifier? = null
+        private var okHttpClient: okhttp3.OkHttpClient? = null
+        private var timeoutConfigured: Boolean = false
+        private val interceptors: MutableList<Interceptor> = mutableListOf()
         private var x509WorkloadIdentity: X509WorkloadIdentity? = null
         private var x509BaseUrl: String? = null
+
+        /**
+         * Uses a caller-owned OkHttp client for full transport configuration, including its
+         * dispatcher, DNS, connection pool, TLS, cache, and interceptors. The SDK uses a derived
+         * client and does not shut down its shared dispatcher, evict its pool, or close its cache.
+         * The caller must release those resources after all users have finished.
+         *
+         * Native timeouts apply unless [timeout] is explicitly set on this builder. A stock native
+         * client uses a ten-second read timeout and no overall deadline, instead of ten minutes for
+         * both. Use `timeout(Timeout.builder().build())` to retain SDK timeouts. Request-level
+         * timeouts override client defaults. [addInterceptor] appends application interceptors to
+         * those already on the supplied client.
+         *
+         * Configure other transport settings on the native client: combining this with this
+         * builder's proxy, TLS, pool, dispatcher, or redirect setters is rejected at build time.
+         * Cannot be combined with X.509 workload identity. SDK retries remain authoritative (native
+         * connection retries are disabled), and SDK redirect credential protection is appended
+         * after native network interceptors. Proxy authentication is restricted to proxy
+         * challenges. Other native HTTP settings are retained. SDK WebSockets retain their isolated
+         * dispatcher. Caller network interceptors and authenticators other than
+         * `okhttp3.Authenticator.NONE` are rejected when connecting a WebSocket, before opening a
+         * connection, rather than at build time. WebSocket redirects and compression remain
+         * disabled.
+         */
+        fun okHttpClient(okHttpClient: okhttp3.OkHttpClient) = apply {
+            this.okHttpClient = okHttpClient
+        }
+
+        /**
+         * Adds an OkHttp application interceptor. Interceptors run in registration order for each
+         * HTTP attempt, including SDK retries. Instances may be called concurrently.
+         *
+         * Cannot be combined with [x509WorkloadIdentity].
+         */
+        fun addInterceptor(interceptor: Interceptor) = apply { interceptors.add(interceptor) }
 
         /**
          * The executor service to use for running HTTP requests.
@@ -294,7 +333,10 @@ class OpenAIOkHttpClient private constructor() {
          *
          * Defaults to [Timeout.default].
          */
-        fun timeout(timeout: Timeout) = apply { clientOptions.timeout(timeout) }
+        fun timeout(timeout: Timeout) = apply {
+            timeoutConfigured = true
+            clientOptions.timeout(timeout)
+        }
 
         /**
          * Sets the maximum time allowed for a complete HTTP call, not including retries.
@@ -303,7 +345,7 @@ class OpenAIOkHttpClient private constructor() {
          *
          * For fine-grained control, pass a [Timeout] object.
          */
-        fun timeout(timeout: Duration) = apply { clientOptions.timeout(timeout) }
+        fun timeout(timeout: Duration) = timeout(Timeout.builder().request(timeout).build())
 
         /**
          * The maximum number of times to retry failed requests, with a short exponential backoff
@@ -504,7 +546,9 @@ class OpenAIOkHttpClient private constructor() {
                             dispatcherExecutorService == null &&
                             sslSocketFactory == null &&
                             trustManager == null &&
-                            hostnameVerifier == null
+                            hostnameVerifier == null &&
+                            interceptors.isEmpty() &&
+                            okHttpClient == null
                     ) {
                         "X.509 workload identity cannot be combined with custom transport settings"
                     }
@@ -512,18 +556,40 @@ class OpenAIOkHttpClient private constructor() {
                 }
                     ?: clientOptions
                         .httpClient(
-                            OkHttpClient.builder()
-                                .timeout(clientOptions.timeout())
-                                .followRedirects(followRedirects)
-                                .proxy(proxy)
-                                .proxyAuthenticator(proxyAuthenticator)
-                                .maxIdleConnections(maxIdleConnections)
-                                .keepAliveDuration(keepAliveDuration)
-                                .dispatcherExecutorService(dispatcherExecutorService)
-                                .sslSocketFactory(sslSocketFactory)
-                                .trustManager(trustManager)
-                                .hostnameVerifier(hostnameVerifier)
-                                .build()
+                            okHttpClient?.let { native ->
+                                require(
+                                    followRedirects == null &&
+                                        proxy == null &&
+                                        proxyAuthenticator == null &&
+                                        maxIdleConnections == null &&
+                                        keepAliveDuration == null &&
+                                        dispatcherExecutorService == null &&
+                                        sslSocketFactory == null &&
+                                        trustManager == null &&
+                                        hostnameVerifier == null
+                                ) {
+                                    "Configure transport settings on the supplied okHttpClient instead of the SDK builder"
+                                }
+                                if (!timeoutConfigured) {
+                                    clientOptions.timeout(native.sdkTimeout())
+                                }
+                                OkHttpClient.borrow(native, interceptors)
+                            }
+                                ?: OkHttpClient.builder()
+                                    .timeout(clientOptions.timeout())
+                                    .followRedirects(followRedirects ?: true)
+                                    .proxy(proxy)
+                                    .proxyAuthenticator(proxyAuthenticator)
+                                    .maxIdleConnections(maxIdleConnections)
+                                    .keepAliveDuration(keepAliveDuration)
+                                    .dispatcherExecutorService(dispatcherExecutorService)
+                                    .sslSocketFactory(sslSocketFactory)
+                                    .trustManager(trustManager)
+                                    .hostnameVerifier(hostnameVerifier)
+                                    .also { builder ->
+                                        interceptors.forEach(builder::addInterceptor)
+                                    }
+                                    .build()
                         )
                         .build()
             )

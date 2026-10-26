@@ -29,6 +29,7 @@ import okhttp3.ConnectionPool
 import okhttp3.Dispatcher
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -40,8 +41,12 @@ import okio.buffer
 import okio.sink
 
 class OkHttpClient
-internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClient) :
-    HttpClient, com.openai.core.http.WebSocketClient {
+private constructor(
+    @JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClient,
+    private val ownsResources: Boolean,
+) : HttpClient, com.openai.core.http.WebSocketClient {
+
+    internal constructor(okHttpClient: okhttp3.OkHttpClient) : this(okHttpClient, true)
 
     private val webSockets =
         java.util.concurrent.ConcurrentHashMap.newKeySet<
@@ -104,12 +109,13 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
     }
 
     override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
-        val call = newCall(request, requestOptions)
         var response: HttpResponse? = null
         try {
             return request.body.use {
                 try {
-                    call.execute().toHttpResponse().also { response = it }
+                    newCall(request, requestOptions).execute().toHttpResponse().also {
+                        response = it
+                    }
                 } catch (e: IOException) {
                     throw OpenAIIoException("Request failed", e)
                 }
@@ -125,27 +131,26 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
     ): CompletableFuture<HttpResponse> {
         val future = CompletableFuture<HttpResponse>()
 
-        val call = newCall(request, requestOptions)
-        call.enqueue(
-            object : Callback {
-                override fun onResponse(call: Call, response: Response) {
-                    val httpResponse = response.toHttpResponse()
-                    if (!future.complete(httpResponse)) {
-                        httpResponse.close()
+        future.whenComplete { _, _ -> request.body?.close() }
+        try {
+            val call = newCall(request, requestOptions)
+            future.whenComplete { _, e -> if (e is CancellationException) call.cancel() }
+            call.enqueue(
+                object : Callback {
+                    override fun onResponse(call: Call, response: Response) {
+                        val httpResponse = response.toHttpResponse()
+                        if (!future.complete(httpResponse)) {
+                            httpResponse.close()
+                        }
+                    }
+
+                    override fun onFailure(call: Call, e: IOException) {
+                        future.completeExceptionally(OpenAIIoException("Request failed", e))
                     }
                 }
-
-                override fun onFailure(call: Call, e: IOException) {
-                    future.completeExceptionally(OpenAIIoException("Request failed", e))
-                }
-            }
-        )
-
-        future.whenComplete { _, e ->
-            if (e is CancellationException) {
-                call.cancel()
-            }
-            request.body?.close()
+            )
+        } catch (failure: Throwable) {
+            future.completeExceptionally(failure)
         }
 
         return future
@@ -157,13 +162,29 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         pendingWebSockets.clear()
         webSockets.forEach { it.close() }
         webSockets.clear()
-        okHttpClient.dispatcher.executorService.shutdown()
-        okHttpClient.connectionPool.evictAll()
-        okHttpClient.cache?.close()
+        if (ownsResources) {
+            okHttpClient.dispatcher.executorService.shutdown()
+            okHttpClient.connectionPool.evictAll()
+            okHttpClient.cache?.close()
+        }
     }
 
     private fun newCall(request: HttpRequest, requestOptions: RequestOptions): Call {
+        check(!closed.get()) { "Client is closed" }
         val clientBuilder = okHttpClient.newBuilder()
+        val proxyCredentials = ProxyCredentials()
+        // Caller application interceptors may rebuild requests without preserving private tags.
+        // Install the binding after them, before OkHttp handles cached responses and follow-ups.
+        clientBuilder.addInterceptor { chain ->
+            proxyCredentials.proxy = null
+            chain.proceed(
+                chain
+                    .request()
+                    .newBuilder()
+                    .tag(ProxyCredentials::class.java, proxyCredentials)
+                    .build()
+            )
+        }
 
         requestOptions.timeout?.let {
             clientBuilder
@@ -175,7 +196,11 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
 
         val client = clientBuilder.build()
         return client.newCall(
-            request.toRequest(client, disableTelemetry = requestOptions.disableTelemetry == true)
+            request
+                .toRequest(client, disableTelemetry = requestOptions.disableTelemetry == true)
+                .newBuilder()
+                .tag(ProxyCredentials::class.java, proxyCredentials)
+                .build()
         )
     }
 
@@ -190,13 +215,53 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
                     originalUrl.scheme == url.scheme &&
                         originalUrl.host == url.host &&
                         originalUrl.port == url.port
-                // OkHttp strips Authorization on cross-origin redirects, but does not
-                // recognize the Azure API-key header as a credential.
+                val proxy = chain.connection()?.route()?.proxy
+                val credentials =
+                    request.tag(ProxyCredentials::class.java)
+                        ?: chain.call().request().tag(ProxyCredentials::class.java)
+                if (credentials?.proxy == null && request.header("Proxy-Authorization") != null) {
+                    // A cached redirect can skip the initial network exchange. Never assign its
+                    // unbound credentials to a different origin's proxy; require fresh
+                    // authentication.
+                    credentials?.proxy = if (sameOrigin) proxy ?: Proxy.NO_PROXY else Proxy.NO_PROXY
+                }
+                val credentialProxy = credentials?.proxy
+                val stripProxyCredentials =
+                    url.isHttps ||
+                        proxy?.type() != Proxy.Type.HTTP ||
+                        (credentialProxy != null && credentialProxy != proxy)
+                // Run after caller network interceptors. Follow-ups may retain credentials from
+                // an earlier proxy challenge even when ProxySelector chooses a different route.
                 chain.proceed(
-                    if (sameOrigin) request
-                    else request.newBuilder().removeHeader("api-key").build()
+                    request
+                        .newBuilder()
+                        .apply {
+                            if (!sameOrigin) {
+                                removeHeader("Authorization")
+                                removeHeader("api-key")
+                            }
+                            if (stripProxyCredentials) removeHeader("Proxy-Authorization")
+                        }
+                        .build()
                 )
             }
+
+        // newBuilder shares the caller's dispatcher, pool, and cache. Never close those resources
+        // or change dispatcher limits. Append credential protection after caller network
+        // interceptors.
+        @JvmSynthetic
+        internal fun borrow(client: okhttp3.OkHttpClient, interceptors: List<Interceptor>) =
+            OkHttpClient(
+                client
+                    .newBuilder()
+                    .retryOnConnectionFailure(false)
+                    .authenticator(preservingProxyCredentials(client.authenticator))
+                    .proxyAuthenticator(guardedProxyAuthenticator(client.proxyAuthenticator))
+                    .addNetworkInterceptor(apiKeyRedirectInterceptor)
+                    .apply { interceptors.forEach(::addInterceptor) }
+                    .build(),
+                ownsResources = false,
+            )
 
         @JvmStatic fun builder() = Builder()
     }
@@ -213,6 +278,13 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
         private var sslSocketFactory: SSLSocketFactory? = null
         private var trustManager: X509TrustManager? = null
         private var hostnameVerifier: HostnameVerifier? = null
+        private val interceptors: MutableList<Interceptor> = mutableListOf()
+
+        /**
+         * Adds an OkHttp application interceptor. Interceptors run in registration order for each
+         * HTTP attempt, including SDK retries. Instances may be called concurrently.
+         */
+        fun addInterceptor(interceptor: Interceptor) = apply { interceptors.add(interceptor) }
 
         fun timeout(timeout: Timeout) = apply { this.timeout = timeout }
 
@@ -281,30 +353,22 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
                     .callTimeout(timeout.request())
                     .proxy(proxy)
                     .apply {
+                        this@Builder.interceptors.forEach(::addInterceptor)
                         proxyAuthenticator?.let { auth ->
-                            proxyAuthenticator { route, response ->
-                                val proxy = route?.proxy ?: Proxy.NO_PROXY
-                                // A 407 inside an HTTPS tunnel comes from the origin, not the
-                                // proxy, even for an application CONNECT request. Proxy CONNECT
-                                // challenges have no TLS handshake attached to their response.
-                                if (
-                                    proxy.type() != Proxy.Type.HTTP ||
-                                        response.handshake != null ||
-                                        (response.request.url.isHttps &&
-                                            response.request.method != "CONNECT")
-                                ) {
-                                    null
-                                } else {
-                                    auth
-                                        .authenticate(
-                                            proxy,
-                                            response.request.toHttpRequest(),
-                                            response.toHttpResponse(),
-                                        )
-                                        .getOrNull()
-                                        ?.toRequest(client = null)
-                                }
-                            }
+                            proxyAuthenticator(
+                                guardedProxyAuthenticator(
+                                    okhttp3.Authenticator { route, response ->
+                                        auth
+                                            .authenticate(
+                                                route!!.proxy,
+                                                response.request.toHttpRequest(),
+                                                response.toHttpResponse(),
+                                            )
+                                            .getOrNull()
+                                            ?.toRequest(client = null)
+                                    }
+                                )
+                            )
                         }
 
                         dispatcherExecutorService?.let { dispatcher(Dispatcher(it)) }
@@ -346,6 +410,77 @@ internal constructor(@JvmSynthetic internal val okHttpClient: okhttp3.OkHttpClie
             )
     }
 }
+
+// Install before OkHttp's follow-up handling so preemptive headers retain their first proxy
+// binding.
+// BridgeInterceptor restores the request it received, so a tag added by a network hook is too late.
+private class ProxyCredentials(var proxy: Proxy? = null)
+
+private fun preservingProxyCredentials(
+    authenticator: okhttp3.Authenticator
+): okhttp3.Authenticator =
+    if (authenticator === okhttp3.Authenticator.NONE) authenticator
+    else
+        okhttp3.Authenticator { route, response ->
+            // Native origin authenticators may return a new request without private tags.
+            authenticator
+                .authenticate(route, response)
+                ?.newBuilder()
+                ?.tag(
+                    ProxyCredentials::class.java,
+                    response.request.tag(ProxyCredentials::class.java),
+                )
+                ?.build()
+        }
+
+private fun guardedProxyAuthenticator(authenticator: okhttp3.Authenticator): okhttp3.Authenticator =
+    // Preserve NONE's identity for WebSocket validation and clients with no proxy authentication.
+    if (authenticator === okhttp3.Authenticator.NONE) authenticator
+    else
+        okhttp3.Authenticator { route, response ->
+            // Proxy CONNECT challenges have no TLS handshake. A 407 inside an HTTPS tunnel comes
+            // from the origin, including when the application request itself uses CONNECT.
+            if (
+                route?.proxy?.type() != Proxy.Type.HTTP ||
+                    response.handshake != null ||
+                    (response.request.url.isHttps && response.request.method != "CONNECT")
+            )
+                null
+            else {
+                val credentialProxy = response.request.tag(ProxyCredentials::class.java)?.proxy
+                val challenge =
+                    if (credentialProxy != null && credentialProxy != route.proxy) {
+                        // Match the request sent on the wire so the new proxy can authenticate.
+                        response
+                            .newBuilder()
+                            .request(
+                                response.request
+                                    .newBuilder()
+                                    .removeHeader("Proxy-Authorization")
+                                    .build()
+                            )
+                            .build()
+                    } else response
+                authenticator
+                    .authenticate(route, challenge)
+                    ?.newBuilder()
+                    ?.tag(
+                        ProxyCredentials::class.java,
+                        (response.request.tag(ProxyCredentials::class.java) ?: ProxyCredentials())
+                            .apply { proxy = route.proxy },
+                    )
+                    ?.build()
+            }
+        }
+
+@JvmSynthetic
+internal fun okhttp3.OkHttpClient.sdkTimeout(): Timeout =
+    Timeout.builder()
+        .connect(Duration.ofMillis(connectTimeoutMillis.toLong()))
+        .read(Duration.ofMillis(readTimeoutMillis.toLong()))
+        .write(Duration.ofMillis(writeTimeoutMillis.toLong()))
+        .request(Duration.ofMillis(callTimeoutMillis.toLong()))
+        .build()
 
 private fun HttpRequest.toRequest(
     client: okhttp3.OkHttpClient?,

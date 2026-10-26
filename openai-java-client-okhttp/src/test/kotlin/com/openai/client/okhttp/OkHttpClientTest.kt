@@ -51,6 +51,58 @@ internal class OkHttpClientTest {
     }
 
     @TestFactory
+    fun requestsAfterCloseReleaseBodies() =
+        listOf(false, true).flatMap { borrowed ->
+            listOf(false, true).map { async ->
+                dynamicTest("borrowed=$borrowed async=$async") {
+                    val closes = AtomicInteger()
+                    val body =
+                        object : HttpRequestBody {
+                            override fun writeTo(outputStream: OutputStream) = Unit
+
+                            override fun contentType() = "application/octet-stream"
+
+                            override fun contentLength() = 0L
+
+                            override fun repeatable() = false
+
+                            override fun close() {
+                                closes.incrementAndGet()
+                            }
+                        }
+                    val native = okhttp3.OkHttpClient()
+                    try {
+                        val client =
+                            if (borrowed) OkHttpClient.borrow(native, emptyList())
+                            else OkHttpClient.builder().build()
+                        client.close()
+                        val request =
+                            HttpRequest.builder()
+                                .method(HttpMethod.POST)
+                                .baseUrl("https://example.test")
+                                .body(body)
+                                .build()
+                        val failure =
+                            if (async) {
+                                // Calling executeAsync itself must succeed and return a failed
+                                // future.
+                                val future = client.executeAsync(request)
+                                assertThat(future.isCompletedExceptionally).isTrue()
+                                catchThrowable { future.join() }.cause
+                            } else catchThrowable { client.execute(request) }
+                        assertThat(failure)
+                            .isInstanceOf(IllegalStateException::class.java)
+                            .hasMessage("Client is closed")
+                        assertThat(closes.get()).isEqualTo(1)
+                    } finally {
+                        native.dispatcher.executorService.shutdown()
+                        native.connectionPool.evictAll()
+                    }
+                }
+            }
+        }
+
+    @TestFactory
     fun syncBodyCloseFailurePreservesOperationAndReleasesResponse() =
         listOf(false, true).map { transportFails ->
             dynamicTest("transportFails=$transportFails") {
