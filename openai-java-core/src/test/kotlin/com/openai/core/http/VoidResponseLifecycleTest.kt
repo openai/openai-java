@@ -3,17 +3,19 @@ package com.openai.core.http
 import com.openai.core.ClientOptions
 import com.openai.errors.NotFoundException
 import com.openai.services.async.ResponseServiceAsyncImpl
+import com.openai.services.async.realtime.CallServiceAsyncImpl
 import com.openai.services.blocking.ResponseServiceImpl
+import com.openai.services.blocking.realtime.CallServiceImpl
 import java.io.ByteArrayInputStream
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.SECONDS
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
-import org.junit.jupiter.params.provider.ValueSource
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doThrow
@@ -22,7 +24,35 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-internal class ResponseDeletionLifecycleTest {
+internal class VoidResponseLifecycleTest {
+
+    enum class Endpoint(
+        val blocking: (ClientOptions) -> Unit,
+        val async: (ClientOptions) -> CompletableFuture<Void?>,
+        val rawBlocking: (ClientOptions) -> HttpResponse,
+        val rawAsync: (ClientOptions) -> CompletableFuture<HttpResponse>,
+    ) {
+        RESPONSES_DELETE(
+            { ResponseServiceImpl(it).delete("resp_test") },
+            { ResponseServiceAsyncImpl(it).delete("resp_test") },
+            { ResponseServiceImpl(it).withRawResponse().delete("resp_test") },
+            { ResponseServiceAsyncImpl(it).withRawResponse().delete("resp_test") },
+        ),
+        REALTIME_HANGUP(
+            { CallServiceImpl(it).hangup("call_test") },
+            { CallServiceAsyncImpl(it).hangup("call_test") },
+            { CallServiceImpl(it).withRawResponse().hangup("call_test") },
+            { CallServiceAsyncImpl(it).withRawResponse().hangup("call_test") },
+        ),
+    }
+
+    companion object {
+        @JvmStatic
+        fun endpointModes(): List<Arguments> =
+            Endpoint.values().flatMap { endpoint ->
+                listOf(Arguments.of(endpoint, false), Arguments.of(endpoint, true))
+            }
+    }
 
     private val transport = mock<HttpClient>()
 
@@ -47,41 +77,40 @@ internal class ResponseDeletionLifecycleTest {
             .thenReturn(CompletableFuture.completedFuture(response))
     }
 
-    private fun delete(async: Boolean, retries: Int = 0) {
+    private fun call(endpoint: Endpoint, async: Boolean, retries: Int = 0) {
         if (async) {
-            val result = ResponseServiceAsyncImpl(options(retries)).delete("resp_test")
+            val result = endpoint.async(options(retries))
             assertThat(result.get(5, SECONDS)).isNull()
         } else {
-            ResponseServiceImpl(options(retries)).delete("resp_test")
+            endpoint.blocking(options(retries))
         }
     }
 
     @ParameterizedTest
-    @CsvSource("false, 200", "true, 200", "false, 204", "true, 204")
-    fun successfulDeleteClosesResponseWithoutReadingBody(async: Boolean, status: Int) {
-        val response = response(status, "ignored response body")
-        returns(response)
+    @MethodSource("endpointModes")
+    fun successClosesResponseWithoutReadingBody(endpoint: Endpoint, async: Boolean) {
+        for (status in listOf(200, 204)) {
+            val response = response(status, "ignored response body")
+            returns(response)
 
-        delete(async)
+            call(endpoint, async)
 
-        verify(response).close()
-        verify(response, never()).body()
+            verify(response).close()
+            verify(response, never()).body()
+        }
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun rawDeleteLeavesResponseOpenForCaller(async: Boolean) {
+    @MethodSource("endpointModes")
+    fun rawResponseRemainsOpenForCaller(endpoint: Endpoint, async: Boolean) {
         val response = response(200)
         returns(response)
 
         val raw =
             if (async) {
-                ResponseServiceAsyncImpl(options())
-                    .withRawResponse()
-                    .delete("resp_test")
-                    .get(5, SECONDS)
+                endpoint.rawAsync(options()).get(5, SECONDS)
             } else {
-                ResponseServiceImpl(options()).withRawResponse().delete("resp_test")
+                endpoint.rawBlocking(options())
             }
 
         verify(response, never()).close()
@@ -90,24 +119,24 @@ internal class ResponseDeletionLifecycleTest {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun deletePreservesApiErrorAndClosesResponse(async: Boolean) {
+    @MethodSource("endpointModes")
+    fun apiErrorClosesResponse(endpoint: Endpoint, async: Boolean) {
         val response = response(404, """{"error":{"message":"missing"}}""")
         returns(response)
 
         if (async) {
-            val result = ResponseServiceAsyncImpl(options()).delete("resp_test")
+            val result = endpoint.async(options())
             assertThatThrownBy { result.get(5, SECONDS) }
                 .hasCauseInstanceOf(NotFoundException::class.java)
         } else {
-            assertThatThrownBy { delete(false) }.isInstanceOf(NotFoundException::class.java)
+            assertThatThrownBy { call(endpoint, false) }.isInstanceOf(NotFoundException::class.java)
         }
         verify(response).close()
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun deleteClosesRetriedAndFinalResponses(async: Boolean) {
+    @MethodSource("endpointModes")
+    fun retryClosesRetriedAndFinalResponses(endpoint: Endpoint, async: Boolean) {
         val retry = response(429)
         val success = response(200)
         whenever(transport.execute(any(), any())).thenReturn(retry, success)
@@ -117,38 +146,39 @@ internal class ResponseDeletionLifecycleTest {
                 CompletableFuture.completedFuture(success),
             )
 
-        delete(async, retries = 1)
+        call(endpoint, async, retries = 1)
 
         verify(retry).close()
         verify(success).close()
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = [false, true])
-    fun deletePropagatesCloseFailure(async: Boolean) {
+    @MethodSource("endpointModes")
+    fun closeFailurePropagates(endpoint: Endpoint, async: Boolean) {
         val response = response(200)
         val failure = IllegalStateException("close failed")
         doThrow(failure).whenever(response).close()
         returns(response)
 
         if (async) {
-            val result = ResponseServiceAsyncImpl(options()).delete("resp_test")
+            val result = endpoint.async(options())
             assertThatThrownBy { result.get(5, SECONDS) }.hasCause(failure)
         } else {
-            assertThatThrownBy { delete(false) }.isSameAs(failure)
+            assertThatThrownBy { call(endpoint, false) }.isSameAs(failure)
         }
         verify(response).close()
     }
 
-    @Test
-    fun cancelledDeleteClosesResponseThatArrivesLater() {
+    @ParameterizedTest
+    @EnumSource(Endpoint::class)
+    fun cancellationClosesResponseThatArrivesLater(endpoint: Endpoint) {
         val pending = CompletableFuture<HttpResponse>()
         val started = CountDownLatch(1)
         whenever(transport.executeAsync(any(), any())).thenAnswer {
             started.countDown()
             pending
         }
-        val result = ResponseServiceAsyncImpl(options()).delete("resp_test")
+        val result = endpoint.async(options())
         assertThat(started.await(5, SECONDS)).isTrue()
         assertThat(result.cancel(true)).isTrue()
         val response = response(200)
