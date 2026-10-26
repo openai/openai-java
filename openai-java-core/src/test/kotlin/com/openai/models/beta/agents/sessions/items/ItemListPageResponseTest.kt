@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 internal class ItemListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val itemListPageResponse =
             ItemListPageResponse.builder()
                 .addData(
@@ -47,27 +47,8 @@ internal class ItemListPageResponseTest {
         assertThat(itemListPageResponse.firstId()).contains("first_id")
         assertThat(itemListPageResponse.hasMore()).isEqualTo(true)
         assertThat(itemListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val itemListPageResponse =
-            ItemListPageResponse.builder()
-                .addData(
-                    AgentSessionMessage.builder()
-                        .id("id")
-                        .addInputTextContent("text")
-                        .phase(AgentSessionMessage.Phase.COMMENTARY)
-                        .role(AgentSessionMessage.Role.USER)
-                        .status(AgentOutputItemStatus.IN_PROGRESS)
-                        .turnId("turn_id")
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedItemListPageResponse =
             jsonMapper.readValue(

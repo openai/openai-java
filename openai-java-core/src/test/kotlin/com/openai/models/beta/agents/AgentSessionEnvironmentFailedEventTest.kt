@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionEnvironmentFailedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionEnvironmentFailedEvent =
             AgentSessionEnvironmentFailedEvent.builder()
                 .environment(
@@ -50,31 +50,8 @@ internal class AgentSessionEnvironmentFailedEventTest {
         assertThat(agentSessionEnvironmentFailedEvent.eventId()).isEqualTo("event_id")
         assertThat(agentSessionEnvironmentFailedEvent.sessionId()).isEqualTo("session_id")
         assertThat(agentSessionEnvironmentFailedEvent.turnId()).contains("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionEnvironmentFailedEvent =
-            AgentSessionEnvironmentFailedEvent.builder()
-                .environment(
-                    AgentSessionEnvironmentState.builder()
-                        .id("id")
-                        .error(
-                            AgentSessionEnvironmentState.Error.builder()
-                                .code("code")
-                                .message("message")
-                                .type("type")
-                                .build()
-                        )
-                        .status(AgentSessionEnvironmentState.Status.PENDING)
-                        .type("type")
-                        .build()
-                )
-                .eventId("event_id")
-                .sessionId("session_id")
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentSessionEnvironmentFailedEvent =
             jsonMapper.readValue(

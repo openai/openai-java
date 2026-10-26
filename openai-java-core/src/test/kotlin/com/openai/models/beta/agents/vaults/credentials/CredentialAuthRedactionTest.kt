@@ -54,7 +54,18 @@ internal class CredentialAuthRedactionTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = ["{}", "{\"type\":\"future\",\"future_field\":\"preserved\"}"])
+    @ValueSource(
+        strings =
+            [
+                "{}",
+                "{\"type\":\"future\",\"future_field\":\"preserved\"}",
+                "false",
+                "\"invalid\"",
+                "-1",
+                "3.14",
+                "[\"invalid\",\"array\"]",
+            ]
+    )
     fun unknownDiagnosticsOmitPayloadWithoutChangingToString(json: String) {
         val mapper = jsonMapper()
         val raw = mapper.readValue(json, jacksonTypeRef<JsonValue>())

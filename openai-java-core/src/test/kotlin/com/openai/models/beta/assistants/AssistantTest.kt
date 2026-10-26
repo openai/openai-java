@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class AssistantTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val assistant =
             Assistant.builder()
                 .id("id")
@@ -78,43 +78,8 @@ internal class AssistantTest {
                     .build()
             )
         assertThat(assistant.topP()).contains(1.0)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val assistant =
-            Assistant.builder()
-                .id("id")
-                .createdAt(0L)
-                .description("description")
-                .instructions("instructions")
-                .metadata(
-                    Assistant.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .model("model")
-                .name("name")
-                .addTool(CodeInterpreterTool.builder().build())
-                .responseFormatAuto()
-                .temperature(1.0)
-                .toolResources(
-                    Assistant.ToolResources.builder()
-                        .codeInterpreter(
-                            Assistant.ToolResources.CodeInterpreter.builder()
-                                .addFileId("string")
-                                .build()
-                        )
-                        .fileSearch(
-                            Assistant.ToolResources.FileSearch.builder()
-                                .addVectorStoreId("string")
-                                .build()
-                        )
-                        .build()
-                )
-                .topP(1.0)
-                .build()
 
         val roundtrippedAssistant =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeConversationItemFunctionCallTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeConversationItemFunctionCall =
             RealtimeConversationItemFunctionCall.builder()
                 .arguments("arguments")
@@ -29,20 +29,8 @@ internal class RealtimeConversationItemFunctionCallTest {
             .contains(RealtimeConversationItemFunctionCall.Object.REALTIME_ITEM)
         assertThat(realtimeConversationItemFunctionCall.status())
             .contains(RealtimeConversationItemFunctionCall.Status.COMPLETED)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeConversationItemFunctionCall =
-            RealtimeConversationItemFunctionCall.builder()
-                .arguments("arguments")
-                .name("name")
-                .id("id")
-                .callId("call_id")
-                .object_(RealtimeConversationItemFunctionCall.Object.REALTIME_ITEM)
-                .status(RealtimeConversationItemFunctionCall.Status.COMPLETED)
-                .build()
 
         val roundtrippedRealtimeConversationItemFunctionCall =
             jsonMapper.readValue(

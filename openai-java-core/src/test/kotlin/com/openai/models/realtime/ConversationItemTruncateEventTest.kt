@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ConversationItemTruncateEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val conversationItemTruncateEvent =
             ConversationItemTruncateEvent.builder()
                 .audioEndMs(0L)
@@ -23,18 +23,8 @@ internal class ConversationItemTruncateEventTest {
         assertThat(conversationItemTruncateEvent.contentIndex()).isEqualTo(0L)
         assertThat(conversationItemTruncateEvent.itemId()).isEqualTo("item_id")
         assertThat(conversationItemTruncateEvent.eventId()).contains("event_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val conversationItemTruncateEvent =
-            ConversationItemTruncateEvent.builder()
-                .audioEndMs(0L)
-                .contentIndex(0L)
-                .itemId("item_id")
-                .eventId("event_id")
-                .build()
 
         val roundtrippedConversationItemTruncateEvent =
             jsonMapper.readValue(

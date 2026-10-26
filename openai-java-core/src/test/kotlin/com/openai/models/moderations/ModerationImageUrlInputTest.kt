@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ModerationImageUrlInputTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val moderationImageUrlInput =
             ModerationImageUrlInput.builder()
                 .imageUrl(
@@ -26,19 +26,8 @@ internal class ModerationImageUrlInputTest {
                     .url("https://example.com/image.jpg")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val moderationImageUrlInput =
-            ModerationImageUrlInput.builder()
-                .imageUrl(
-                    ModerationImageUrlInput.ImageUrl.builder()
-                        .url("https://example.com/image.jpg")
-                        .build()
-                )
-                .build()
 
         val roundtrippedModerationImageUrlInput =
             jsonMapper.readValue(

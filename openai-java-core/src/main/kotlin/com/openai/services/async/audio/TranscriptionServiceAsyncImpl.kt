@@ -19,6 +19,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
 import com.openai.core.http.map
+import com.openai.core.http.mapMultipartResponse
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
@@ -48,7 +49,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
         requestOptions: RequestOptions,
     ): CompletableFuture<TranscriptionCreateResponse> =
         // post /audio/transcriptions
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
+        withRawResponse().create(params, requestOptions).mapMultipartResponse { it.parse() }
 
     override fun createStreaming(
         params: TranscriptionCreateParams,
@@ -57,7 +58,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
         // post /audio/transcriptions
         withRawResponse()
             .createStreaming(params, requestOptions)
-            .thenApply { it.parse() }
+            .mapMultipartResponse { it.parse() }
             .toAsync(clientOptions.streamHandlerExecutor)
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -99,7 +100,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .mapMultipartResponse(request) { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it, responseFormat) }
@@ -140,7 +141,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
+                .mapMultipartResponse(request) { response ->
                     errorHandler.handle(response).parseable {
                         response
                             .let { createStreamingHandler.handle(it) }

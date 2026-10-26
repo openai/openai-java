@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseOutputTextTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseOutputText =
             BetaResponseOutputText.builder()
                 .addAnnotation(
@@ -64,36 +64,8 @@ internal class BetaResponseOutputTextTest {
                     )
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseOutputText =
-            BetaResponseOutputText.builder()
-                .addAnnotation(
-                    BetaResponseOutputText.Annotation.FileCitation.builder()
-                        .fileId("file_id")
-                        .filename("filename")
-                        .index(0L)
-                        .build()
-                )
-                .text("text")
-                .addLogprob(
-                    BetaResponseOutputText.Logprob.builder()
-                        .token("token")
-                        .addByte(0L)
-                        .logprob(0.0)
-                        .addTopLogprob(
-                            BetaResponseOutputText.Logprob.TopLogprob.builder()
-                                .token("token")
-                                .addByte(0L)
-                                .logprob(0.0)
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseOutputText =
             jsonMapper.readValue(

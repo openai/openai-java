@@ -32,6 +32,7 @@ internal class SessionForkParamsTest {
                     )
                     .delegation(
                         MediaSessionForkConfig.Delegation.builder()
+                            .acknowledgementDelayMs(0L)
                             .responses(
                                 ResponsesDelegationUpdateConfig.builder()
                                     .instructions("instructions")
@@ -121,6 +122,7 @@ internal class SessionForkParamsTest {
                         )
                         .delegation(
                             MediaSessionForkConfig.Delegation.builder()
+                                .acknowledgementDelayMs(0L)
                                 .responses(
                                     ResponsesDelegationUpdateConfig.builder()
                                         .instructions("instructions")
@@ -199,6 +201,7 @@ internal class SessionForkParamsTest {
                     )
                     .delegation(
                         MediaSessionForkConfig.Delegation.builder()
+                            .acknowledgementDelayMs(0L)
                             .responses(
                                 ResponsesDelegationUpdateConfig.builder()
                                     .instructions("instructions")

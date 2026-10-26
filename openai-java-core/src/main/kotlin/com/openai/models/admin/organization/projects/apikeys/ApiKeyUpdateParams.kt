@@ -13,6 +13,7 @@ import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -59,13 +60,12 @@ private constructor(
      * organization and project expiry policies. Expired keys cannot be updated. Retrying resets the
      * expiry relative to the new request. Omit to keep the current expiration.
      *
-     * For scope-only updates, use [expiresInSecondsOptional] to inspect the omitted expiry.
-     *
-     * @throws OpenAIInvalidDataException if the field is missing, null, or has an unexpected type.
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun expiresInSeconds(): Long = body.expiresInSeconds()
 
-    /** Returns the requested expiry, or empty when only scopes are being updated. */
+    /** Returns the requested value, or empty if the field is omitted or null. */
     fun expiresInSecondsOptional(): Optional<Long> = body.expiresInSecondsOptional()
 
     /**
@@ -371,14 +371,12 @@ private constructor(
          * organization and project expiry policies. Expired keys cannot be updated. Retrying resets
          * the expiry relative to the new request. Omit to keep the current expiration.
          *
-         * For scope-only updates, use [expiresInSecondsOptional] to inspect the omitted expiry.
-         *
-         * @throws OpenAIInvalidDataException if the field is missing, null, or has an unexpected
-         *   type.
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun expiresInSeconds(): Long = expiresInSeconds.getRequired("expires_in_seconds")
 
-        /** Returns the requested expiry, or empty when only scopes are being updated. */
+        /** Returns the requested value, or empty if the field is omitted or null. */
         fun expiresInSecondsOptional(): Optional<Long> =
             expiresInSeconds.getOptional("expires_in_seconds")
 
@@ -415,6 +413,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "expires_in_seconds" to this.expiresInSeconds,
+                "scopes" to this.scopes,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =

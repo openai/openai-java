@@ -99,6 +99,27 @@ class CoreCompilationShardsTest {
     }
 
     @Test
+    fun `authenticator lifecycle changes do not invalidate model domains`() {
+        val authenticatorSources =
+            listOf(
+                "com/openai/core/http/PhantomReachableClosingHttpRequestAuthenticator.kt",
+                "com/openai/core/http/TimeoutAwareHttpRequestAuthenticator.kt",
+            )
+        authenticatorSources.forEach { source ->
+            val owner = assertNotNull(CoreCompilationShards.shardFor(source), source)
+            assertEquals(CoreCompilationShard.CLIENT_BASE, owner)
+            CoreCompilationShard.values()
+                .filter { it.id.startsWith("models-") }
+                .forEach { modelShard ->
+                    assertTrue(
+                        owner !in modelShard.transitiveDependencies() + modelShard,
+                        "${modelShard.id} must not be invalidated by changes to $source",
+                    )
+                }
+        }
+    }
+
+    @Test
     fun `service shards depend only on their model domains`() {
         assertEquals(
             listOf(CoreCompilationShard.MODELS_COMMON),

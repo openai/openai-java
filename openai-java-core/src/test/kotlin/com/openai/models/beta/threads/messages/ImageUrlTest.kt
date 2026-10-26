@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class ImageUrlTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val imageUrl =
             ImageUrl.builder().url("https://example.com").detail(ImageUrl.Detail.AUTO).build()
 
         assertThat(imageUrl.url()).isEqualTo("https://example.com")
         assertThat(imageUrl.detail()).contains(ImageUrl.Detail.AUTO)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val imageUrl =
-            ImageUrl.builder().url("https://example.com").detail(ImageUrl.Detail.AUTO).build()
 
         val roundtrippedImageUrl =
             jsonMapper.readValue(

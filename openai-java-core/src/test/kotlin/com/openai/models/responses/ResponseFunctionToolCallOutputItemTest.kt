@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseFunctionToolCallOutputItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseFunctionToolCallOutputItem =
             ResponseFunctionToolCallOutputItem.builder()
                 .id("id")
@@ -34,22 +34,8 @@ internal class ResponseFunctionToolCallOutputItemTest {
         assertThat(responseFunctionToolCallOutputItem.createdBy()).contains("created_by")
         assertThat(responseFunctionToolCallOutputItem.name()).contains("name")
         assertThat(responseFunctionToolCallOutputItem.namespace()).contains("namespace")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseFunctionToolCallOutputItem =
-            ResponseFunctionToolCallOutputItem.builder()
-                .id("id")
-                .output("string")
-                .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
-                .callId("call_id")
-                .callerDirect()
-                .createdBy("created_by")
-                .name("name")
-                .namespace("namespace")
-                .build()
 
         val roundtrippedResponseFunctionToolCallOutputItem =
             jsonMapper.readValue(

@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ChatSessionAutomaticThreadTitlingTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatSessionAutomaticThreadTitling =
             ChatSessionAutomaticThreadTitling.builder().enabled(true).build()
 
         assertThat(chatSessionAutomaticThreadTitling.enabled()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatSessionAutomaticThreadTitling =
-            ChatSessionAutomaticThreadTitling.builder().enabled(true).build()
 
         val roundtrippedChatSessionAutomaticThreadTitling =
             jsonMapper.readValue(

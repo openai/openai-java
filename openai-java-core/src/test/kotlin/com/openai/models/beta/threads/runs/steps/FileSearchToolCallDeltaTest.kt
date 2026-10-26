@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class FileSearchToolCallDeltaTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fileSearchToolCallDelta =
             FileSearchToolCallDelta.builder()
                 .fileSearch(JsonValue.from(mapOf<String, Any>()))
@@ -23,17 +23,8 @@ internal class FileSearchToolCallDeltaTest {
             .isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(fileSearchToolCallDelta.index()).isEqualTo(0L)
         assertThat(fileSearchToolCallDelta.id()).contains("id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fileSearchToolCallDelta =
-            FileSearchToolCallDelta.builder()
-                .fileSearch(JsonValue.from(mapOf<String, Any>()))
-                .index(0L)
-                .id("id")
-                .build()
 
         val roundtrippedFileSearchToolCallDelta =
             jsonMapper.readValue(

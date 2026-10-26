@@ -11,17 +11,17 @@ import org.junit.jupiter.api.Test
 internal class SessionUpdateConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionUpdateConfig =
             SessionUpdateConfig.builder()
-                .delegation(ClientDelegation.builder().build())
+                .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                 .addTrigger(
                     DecisionTrigger.builder()
                         .decisions(
                             DecisionTrigger.Decisions.builder()
                                 .addQuestion(
                                     DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
+                                        .instructions("string")
                                         .name("name")
                                         .build()
                                 )
@@ -33,7 +33,11 @@ internal class SessionUpdateConfigTest {
                 .build()
 
         assertThat(sessionUpdateConfig.delegation())
-            .contains(SessionUpdateConfig.Delegation.ofClient(ClientDelegation.builder().build()))
+            .contains(
+                SessionUpdateConfig.Delegation.ofClient(
+                    ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+                )
+            )
         assertThat(sessionUpdateConfig.triggers().getOrNull())
             .containsExactly(
                 DecisionTrigger.builder()
@@ -41,7 +45,7 @@ internal class SessionUpdateConfigTest {
                         DecisionTrigger.Decisions.builder()
                             .addQuestion(
                                 DecisionTrigger.Decisions.Question.Predicate.builder()
-                                    .instructions("instructions")
+                                    .instructions("string")
                                     .name("name")
                                     .build()
                             )
@@ -50,30 +54,8 @@ internal class SessionUpdateConfigTest {
                     .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionUpdateConfig =
-            SessionUpdateConfig.builder()
-                .delegation(ClientDelegation.builder().build())
-                .addTrigger(
-                    DecisionTrigger.builder()
-                        .decisions(
-                            DecisionTrigger.Decisions.builder()
-                                .addQuestion(
-                                    DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
-                                        .name("name")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                        .build()
-                )
-                .build()
 
         val roundtrippedSessionUpdateConfig =
             jsonMapper.readValue(

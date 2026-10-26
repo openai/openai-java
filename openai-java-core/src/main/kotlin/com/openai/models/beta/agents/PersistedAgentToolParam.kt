@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -41,6 +42,7 @@ private constructor(
     private val mcp: Mcp? = null,
     private val webSearch: WebSearch? = null,
     private val computerUse: ComputerUse? = null,
+    private val automations: JsonValue? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -63,6 +65,9 @@ private constructor(
     /** Browser use in an OpenAI-hosted session. */
     fun computerUse(): Optional<ComputerUse> = Optional.ofNullable(computerUse)
 
+    /** Lets the agent manage its own scheduled wakeups. */
+    fun automations(): Optional<JsonValue> = Optional.ofNullable(automations)
+
     fun isFunction(): Boolean = function != null
 
     fun isToolSearch(): Boolean = toolSearch != null
@@ -74,6 +79,8 @@ private constructor(
     fun isWebSearch(): Boolean = webSearch != null
 
     fun isComputerUse(): Boolean = computerUse != null
+
+    fun isAutomations(): Boolean = automations != null
 
     /** A function defined by the application. */
     fun asFunction(): Function = function.getOrThrow("function")
@@ -93,6 +100,9 @@ private constructor(
 
     /** Browser use in an OpenAI-hosted session. */
     fun asComputerUse(): ComputerUse = computerUse.getOrThrow("computerUse")
+
+    /** Lets the agent manage its own scheduled wakeups. */
+    fun asAutomations(): JsonValue = automations.getOrThrow("automations")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -134,6 +144,7 @@ private constructor(
             mcp != null -> visitor.visitMcp(mcp)
             webSearch != null -> visitor.visitWebSearch(webSearch)
             computerUse != null -> visitor.visitComputerUse(computerUse)
+            automations != null -> visitor.visitAutomations(automations)
             else -> visitor.unknown(_json)
         }
 
@@ -185,6 +196,16 @@ private constructor(
                 override fun visitComputerUse(computerUse: ComputerUse) {
                     computerUse.validate()
                 }
+
+                override fun visitAutomations(automations: JsonValue) {
+                    automations.let {
+                        if (it != JsonValue.from(mapOf("type" to "automations"))) {
+                            throw OpenAIInvalidDataException(
+                                "'automations' is invalid, received $it"
+                            )
+                        }
+                    }
+                }
             }
         )
         validated = true
@@ -224,6 +245,11 @@ private constructor(
 
                 override fun visitComputerUse(computerUse: ComputerUse) = computerUse.validity()
 
+                override fun visitAutomations(automations: JsonValue) =
+                    automations.let {
+                        if (it == JsonValue.from(mapOf("type" to "automations"))) 1 else 0
+                    }
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -239,11 +265,20 @@ private constructor(
             programmaticToolCalling == other.programmaticToolCalling &&
             mcp == other.mcp &&
             webSearch == other.webSearch &&
-            computerUse == other.computerUse
+            computerUse == other.computerUse &&
+            automations == other.automations
     }
 
     override fun hashCode(): Int =
-        Objects.hash(function, toolSearch, programmaticToolCalling, mcp, webSearch, computerUse)
+        Objects.hash(
+            function,
+            toolSearch,
+            programmaticToolCalling,
+            mcp,
+            webSearch,
+            computerUse,
+            automations,
+        )
 
     override fun toString(): String =
         when {
@@ -254,6 +289,7 @@ private constructor(
             mcp != null -> "PersistedAgentToolParam{mcp=$mcp}"
             webSearch != null -> "PersistedAgentToolParam{webSearch=$webSearch}"
             computerUse != null -> "PersistedAgentToolParam{computerUse=$computerUse}"
+            automations != null -> "PersistedAgentToolParam{automations=$automations}"
             _json != null -> "PersistedAgentToolParam{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid PersistedAgentToolParam")
         }
@@ -284,6 +320,11 @@ private constructor(
         @JvmStatic
         fun ofComputerUse(computerUse: ComputerUse) =
             PersistedAgentToolParam(computerUse = computerUse)
+
+        /** Lets the agent manage its own scheduled wakeups. */
+        @JvmStatic
+        fun ofAutomations() =
+            PersistedAgentToolParam(automations = JsonValue.from(mapOf("type" to "automations")))
     }
 
     /**
@@ -309,6 +350,9 @@ private constructor(
 
         /** Browser use in an OpenAI-hosted session. */
         fun visitComputerUse(computerUse: ComputerUse): T
+
+        /** Lets the agent manage its own scheduled wakeups. */
+        fun visitAutomations(automations: JsonValue): T = unknown(JsonValue.from(automations))
 
         /**
          * Maps an unknown variant of [PersistedAgentToolParam] to a value of type [T].
@@ -363,6 +407,11 @@ private constructor(
                         PersistedAgentToolParam(computerUse = it, _json = json)
                     } ?: PersistedAgentToolParam(_json = json)
                 }
+                "automations" -> {
+                    return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                        ?.let { PersistedAgentToolParam(automations = it, _json = json) }
+                        ?.takeIf { it.isValid() } ?: PersistedAgentToolParam(_json = json)
+                }
             }
 
             return PersistedAgentToolParam(_json = json)
@@ -385,6 +434,7 @@ private constructor(
                 value.mcp != null -> generator.writeObject(value.mcp)
                 value.webSearch != null -> generator.writeObject(value.webSearch)
                 value.computerUse != null -> generator.writeObject(value.computerUse)
+                value.automations != null -> generator.writeObject(value.automations)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid PersistedAgentToolParam")
             }
@@ -504,6 +554,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "description" to this.description,
+                "name" to this.name,
+                "parameters" to this.parameters,
+                "type" to this.type,
+                "defer_loading" to this.deferLoading,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -719,6 +794,26 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue>
         ) {
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties)
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -896,6 +991,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "type" to this.type,
+                "enabled" to this.enabled,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1235,6 +1352,34 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "server_label" to this.serverLabel,
+                "transport" to this.transport,
+                "type" to this.type,
+                "allowed_tools" to this.allowedTools,
+                "connection_origin" to this.connectionOrigin,
+                "credential_id" to this.credentialId,
+                "request_metadata" to this.requestMetadata,
+                "required" to this.required,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1710,6 +1855,26 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue>
         ) {
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties)
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -1963,6 +2128,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "type" to this.type,
+                "allowed_domains" to this.allowedDomains,
+                "context_size" to this.contextSize,
+                "location" to this.location,
+                "mode" to this.mode,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -2413,6 +2603,32 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "city" to this.city,
+                    "country" to this.country,
+                    "region" to this.region,
+                    "timezone" to this.timezone,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -2834,6 +3050,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "type" to this.type,
+                "include_screenshots" to this.includeScreenshots,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BatchCompletedWebhookEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val batchCompletedWebhookEvent =
             BatchCompletedWebhookEvent.builder()
                 .id("id")
@@ -25,18 +25,8 @@ internal class BatchCompletedWebhookEventTest {
             .isEqualTo(BatchCompletedWebhookEvent.Data.builder().id("id").build())
         assertThat(batchCompletedWebhookEvent.object_())
             .contains(BatchCompletedWebhookEvent.Object.EVENT)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val batchCompletedWebhookEvent =
-            BatchCompletedWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(BatchCompletedWebhookEvent.Data.builder().id("id").build())
-                .object_(BatchCompletedWebhookEvent.Object.EVENT)
-                .build()
 
         val roundtrippedBatchCompletedWebhookEvent =
             jsonMapper.readValue(

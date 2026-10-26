@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SessionClosedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionClosedEvent =
             SessionClosedEvent.builder()
                 .eventId("evt_closed_001")
@@ -40,7 +40,7 @@ internal class SessionClosedEventTest {
                                 )
                                 .build()
                         )
-                        .delegation(ClientDelegation.builder().build())
+                        .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                         .input(listOf())
                         .instructions(
                             "Help the caller plan a restaurant reservation. Confirm details before booking."
@@ -52,7 +52,7 @@ internal class SessionClosedEventTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -95,7 +95,7 @@ internal class SessionClosedEventTest {
                             )
                             .build()
                     )
-                    .delegation(ClientDelegation.builder().build())
+                    .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                     .input(listOf())
                     .instructions(
                         "Help the caller plan a restaurant reservation. Confirm details before booking."
@@ -107,7 +107,7 @@ internal class SessionClosedEventTest {
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
                                         DecisionTrigger.Decisions.Question.Predicate.builder()
-                                            .instructions("instructions")
+                                            .instructions("string")
                                             .name("name")
                                             .build()
                                     )
@@ -121,66 +121,8 @@ internal class SessionClosedEventTest {
         assertThat(sessionClosedEvent.usage())
             .isEqualTo(SessionUsage.builder().seconds(45.8).build())
         assertThat(sessionClosedEvent.clientEventId()).contains("evt_close_001")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionClosedEvent =
-            SessionClosedEvent.builder()
-                .eventId("evt_closed_001")
-                .reason(SessionClosedEvent.Reason.CLOSE_REQUESTED)
-                .session(
-                    SessionResource.builder()
-                        .id("live_abc123")
-                        .expiresAt(1788555600L)
-                        .model(SessionResource.Model.GPT_LIVE_1)
-                        .audio(
-                            SessionResource.Audio.builder()
-                                .audioPcmFormat(AudioFormat.AudioPcm.Rate._24000)
-                                .output(
-                                    SessionResource.Audio.Output.builder()
-                                        .voice(BuiltInVoice.MARIN)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .client(
-                            ClientConfig.builder()
-                                .dataChannel(
-                                    DataChannelConfig.builder()
-                                        .allowedClientEventsOfStrings(listOf("string"))
-                                        .allowedServerEventsAll()
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .delegation(ClientDelegation.builder().build())
-                        .input(listOf())
-                        .instructions(
-                            "Help the caller plan a restaurant reservation. Confirm details before booking."
-                        )
-                        .store(true)
-                        .addTrigger(
-                            DecisionTrigger.builder()
-                                .decisions(
-                                    DecisionTrigger.Decisions.builder()
-                                        .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                                .build()
-                        )
-                        .build()
-                )
-                .usage(SessionUsage.builder().seconds(45.8).build())
-                .clientEventId("evt_close_001")
-                .build()
 
         val roundtrippedSessionClosedEvent =
             jsonMapper.readValue(

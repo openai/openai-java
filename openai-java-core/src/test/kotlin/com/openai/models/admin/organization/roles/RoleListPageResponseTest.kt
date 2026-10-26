@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RoleListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val roleListPageResponse =
             RoleListPageResponse.builder()
                 .addData(
@@ -40,26 +40,8 @@ internal class RoleListPageResponseTest {
             )
         assertThat(roleListPageResponse.hasMore()).isEqualTo(true)
         assertThat(roleListPageResponse.next()).contains("next")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val roleListPageResponse =
-            RoleListPageResponse.builder()
-                .addData(
-                    Role.builder()
-                        .id("id")
-                        .description("description")
-                        .name("name")
-                        .addPermission("string")
-                        .predefinedRole(true)
-                        .resourceType("resource_type")
-                        .build()
-                )
-                .hasMore(true)
-                .next("next")
-                .build()
 
         val roundtrippedRoleListPageResponse =
             jsonMapper.readValue(

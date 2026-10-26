@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionInProgressWebhookEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionInProgressWebhookEvent =
             AgentSessionInProgressWebhookEvent.builder()
                 .id("id")
@@ -34,23 +34,8 @@ internal class AgentSessionInProgressWebhookEventTest {
                     .environmentId("environment_id")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionInProgressWebhookEvent =
-            AgentSessionInProgressWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(
-                    AgentSessionInProgressWebhookEvent.Data.builder()
-                        .id("id")
-                        .environmentType("environment_type")
-                        .environmentId("environment_id")
-                        .build()
-                )
-                .build()
 
         val roundtrippedAgentSessionInProgressWebhookEvent =
             jsonMapper.readValue(

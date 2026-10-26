@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentWebSearchCallItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentWebSearchCallItem =
             AgentWebSearchCallItem.builder()
                 .id("id")
@@ -28,18 +28,8 @@ internal class AgentWebSearchCallItemTest {
             )
         assertThat(agentWebSearchCallItem.status()).isEqualTo(AgentOutputItemStatus.IN_PROGRESS)
         assertThat(agentWebSearchCallItem.turnId()).isEqualTo("turn_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentWebSearchCallItem =
-            AgentWebSearchCallItem.builder()
-                .id("id")
-                .action(WebSearchAction.Search.builder().addQuery("string").query("query").build())
-                .status(AgentOutputItemStatus.IN_PROGRESS)
-                .turnId("turn_id")
-                .build()
 
         val roundtrippedAgentWebSearchCallItem =
             jsonMapper.readValue(

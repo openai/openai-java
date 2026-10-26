@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class TextSimilarityGraderTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val textSimilarityGrader =
             TextSimilarityGrader.builder()
                 .evaluationMetric(TextSimilarityGrader.EvaluationMetric.COSINE)
@@ -24,18 +24,8 @@ internal class TextSimilarityGraderTest {
         assertThat(textSimilarityGrader.input()).isEqualTo("input")
         assertThat(textSimilarityGrader.name()).isEqualTo("name")
         assertThat(textSimilarityGrader.reference()).isEqualTo("reference")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val textSimilarityGrader =
-            TextSimilarityGrader.builder()
-                .evaluationMetric(TextSimilarityGrader.EvaluationMetric.COSINE)
-                .input("input")
-                .name("name")
-                .reference("reference")
-                .build()
 
         val roundtrippedTextSimilarityGrader =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class LiveCreateResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val liveCreateResponse =
             LiveCreateResponse.builder()
                 .session(LiveCreateResponse.Session.builder().id("id").build())
@@ -21,16 +21,8 @@ internal class LiveCreateResponseTest {
             .isEqualTo(LiveCreateResponse.Session.builder().id("id").build())
         assertThat(liveCreateResponse.transport())
             .isEqualTo(LiveCreateResponse.Transport.builder().sdp("x").build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val liveCreateResponse =
-            LiveCreateResponse.builder()
-                .session(LiveCreateResponse.Session.builder().id("id").build())
-                .transport(LiveCreateResponse.Transport.builder().sdp("x").build())
-                .build()
 
         val roundtrippedLiveCreateResponse =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class PermissionListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val permissionListPageResponse =
             PermissionListPageResponse.builder()
                 .addData(
@@ -36,24 +36,8 @@ internal class PermissionListPageResponseTest {
         assertThat(permissionListPageResponse.hasMore()).isEqualTo(true)
         assertThat(permissionListPageResponse.firstId()).contains("first_id")
         assertThat(permissionListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val permissionListPageResponse =
-            PermissionListPageResponse.builder()
-                .addData(
-                    PermissionListResponse.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .projectId("project_id")
-                        .build()
-                )
-                .hasMore(true)
-                .firstId("first_id")
-                .lastId("last_id")
-                .build()
 
         val roundtrippedPermissionListPageResponse =
             jsonMapper.readValue(

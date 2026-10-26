@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class CustomVoiceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val customVoice = CustomVoice.builder().id("x").build()
 
         assertThat(customVoice.id()).isEqualTo("x")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val customVoice = CustomVoice.builder().id("x").build()
 
         val roundtrippedCustomVoice =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AgentSessionInputMessageParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val agentSessionInputMessageParam =
             AgentSessionInputMessageParam.builder()
                 .addInputTextContent("text")
@@ -25,16 +25,8 @@ internal class AgentSessionInputMessageParamTest {
             )
         assertThat(agentSessionInputMessageParam.type())
             .contains(AgentSessionInputMessageParam.Type.MESSAGE)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val agentSessionInputMessageParam =
-            AgentSessionInputMessageParam.builder()
-                .addInputTextContent("text")
-                .type(AgentSessionInputMessageParam.Type.MESSAGE)
-                .build()
 
         val roundtrippedAgentSessionInputMessageParam =
             jsonMapper.readValue(

@@ -66,7 +66,11 @@ internal constructor(
     /** @see ChatCompletionMessage._toolCalls */
     fun _toolCalls(): JsonField<List<ChatCompletionMessageToolCall>> = rawMessage._toolCalls()
 
+    /** @see ChatCompletionMessage._allProperties */
+    fun _allProperties(): Map<String, JsonValue> = rawMessage._allProperties()
+
     /** @see ChatCompletionMessage._additionalProperties */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     fun _additionalProperties(): Map<String, JsonValue> = rawMessage._additionalProperties()
 
     /** @see ChatCompletionMessage.validate */

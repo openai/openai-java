@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class DataChannelConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val dataChannelConfig =
             DataChannelConfig.builder()
                 .allowedClientEventsOfStrings(listOf("string"))
@@ -21,16 +21,8 @@ internal class DataChannelConfigTest {
             .contains(DataChannelConfig.AllowedClientEvents.ofStrings(listOf("string")))
         assertThat(dataChannelConfig.allowedServerEvents())
             .contains(DataChannelConfig.AllowedServerEvents.ofAll())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val dataChannelConfig =
-            DataChannelConfig.builder()
-                .allowedClientEventsOfStrings(listOf("string"))
-                .allowedServerEventsAll()
-                .build()
 
         val roundtrippedDataChannelConfig =
             jsonMapper.readValue(

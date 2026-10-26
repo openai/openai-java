@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BatchErrorTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val batchError =
             BatchError.builder().code("code").line(0L).message("message").param("param").build()
 
@@ -18,13 +18,8 @@ internal class BatchErrorTest {
         assertThat(batchError.line()).contains(0L)
         assertThat(batchError.message()).contains("message")
         assertThat(batchError.param()).contains("param")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val batchError =
-            BatchError.builder().code("code").line(0L).message("message").param("param").build()
 
         val roundtrippedBatchError =
             jsonMapper.readValue(

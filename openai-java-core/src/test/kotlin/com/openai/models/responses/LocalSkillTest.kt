@@ -10,20 +10,15 @@ import org.junit.jupiter.api.Test
 internal class LocalSkillTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val localSkill =
             LocalSkill.builder().description("description").name("name").path("path").build()
 
         assertThat(localSkill.description()).isEqualTo("description")
         assertThat(localSkill.name()).isEqualTo("name")
         assertThat(localSkill.path()).isEqualTo("path")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val localSkill =
-            LocalSkill.builder().description("description").name("name").path("path").build()
 
         val roundtrippedLocalSkill =
             jsonMapper.readValue(

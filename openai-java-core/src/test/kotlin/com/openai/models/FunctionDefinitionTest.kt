@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class FunctionDefinitionTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val functionDefinition =
             FunctionDefinition.builder()
                 .name("name")
@@ -33,22 +33,8 @@ internal class FunctionDefinitionTest {
                     .build()
             )
         assertThat(functionDefinition.strict()).contains(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val functionDefinition =
-            FunctionDefinition.builder()
-                .name("name")
-                .description("description")
-                .parameters(
-                    FunctionParameters.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .strict(true)
-                .build()
 
         val roundtrippedFunctionDefinition =
             jsonMapper.readValue(

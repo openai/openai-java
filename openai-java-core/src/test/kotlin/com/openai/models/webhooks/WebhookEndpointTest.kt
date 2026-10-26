@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class WebhookEndpointTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val webhookEndpoint =
             WebhookEndpoint.builder()
                 .id("id")
@@ -29,21 +29,8 @@ internal class WebhookEndpointTest {
         assertThat(webhookEndpoint.signingSecretHint()).contains("signing_secret_hint")
         assertThat(webhookEndpoint.url()).isEqualTo("url")
         assertThat(webhookEndpoint.updatedAt()).contains(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val webhookEndpoint =
-            WebhookEndpoint.builder()
-                .id("id")
-                .createdAt(0L)
-                .addEventType("string")
-                .name("name")
-                .signingSecretHint("signing_secret_hint")
-                .url("url")
-                .updatedAt(0L)
-                .build()
 
         val roundtrippedWebhookEndpoint =
             jsonMapper.readValue(

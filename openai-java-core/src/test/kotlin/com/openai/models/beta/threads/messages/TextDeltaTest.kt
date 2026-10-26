@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class TextDeltaTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val textDelta =
             TextDelta.builder()
                 .addAnnotation(
@@ -49,29 +49,8 @@ internal class TextDeltaTest {
                 )
             )
         assertThat(textDelta.value()).contains("value")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val textDelta =
-            TextDelta.builder()
-                .addAnnotation(
-                    FileCitationDeltaAnnotation.builder()
-                        .index(0L)
-                        .endIndex(0L)
-                        .fileCitation(
-                            FileCitationDeltaAnnotation.FileCitation.builder()
-                                .fileId("file_id")
-                                .quote("quote")
-                                .build()
-                        )
-                        .startIndex(0L)
-                        .text("text")
-                        .build()
-                )
-                .value("value")
-                .build()
 
         val roundtrippedTextDelta =
             jsonMapper.readValue(

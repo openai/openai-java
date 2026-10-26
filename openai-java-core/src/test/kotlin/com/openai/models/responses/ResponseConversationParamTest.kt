@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class ResponseConversationParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseConversationParam = ResponseConversationParam.builder().id("conv_123").build()
 
         assertThat(responseConversationParam.id()).isEqualTo("conv_123")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseConversationParam = ResponseConversationParam.builder().id("conv_123").build()
 
         val roundtrippedResponseConversationParam =
             jsonMapper.readValue(

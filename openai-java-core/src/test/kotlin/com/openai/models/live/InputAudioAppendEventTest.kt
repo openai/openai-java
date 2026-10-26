@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class InputAudioAppendEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val inputAudioAppendEvent =
             InputAudioAppendEvent.builder()
                 .audio("AACAAIAAAIAAAP9/AIAAgA==")
@@ -19,16 +19,8 @@ internal class InputAudioAppendEventTest {
 
         assertThat(inputAudioAppendEvent.audio()).isEqualTo("AACAAIAAAIAAAP9/AIAAgA==")
         assertThat(inputAudioAppendEvent.eventId()).contains("event_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val inputAudioAppendEvent =
-            InputAudioAppendEvent.builder()
-                .audio("AACAAIAAAIAAAP9/AIAAgA==")
-                .eventId("event_id")
-                .build()
 
         val roundtrippedInputAudioAppendEvent =
             jsonMapper.readValue(

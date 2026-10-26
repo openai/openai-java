@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeResponseCreateParamsTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeResponseCreateParams =
             RealtimeResponseCreateParams.builder()
                 .audio(
@@ -158,78 +158,8 @@ internal class RealtimeResponseCreateParamsTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeResponseCreateParams =
-            RealtimeResponseCreateParams.builder()
-                .audio(
-                    RealtimeResponseCreateAudioOutput.builder()
-                        .output(
-                            RealtimeResponseCreateAudioOutput.Output.builder()
-                                .format(
-                                    RealtimeAudioFormats.AudioPcm.builder()
-                                        .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
-                                        .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
-                                        .build()
-                                )
-                                .voice(
-                                    RealtimeResponseCreateAudioOutput.Output.Voice.UnionMember1
-                                        .ALLOY
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
-                .addInput(
-                    RealtimeConversationItemSystemMessage.builder()
-                        .addContent(
-                            RealtimeConversationItemSystemMessage.Content.builder()
-                                .text("text")
-                                .type(RealtimeConversationItemSystemMessage.Content.Type.INPUT_TEXT)
-                                .build()
-                        )
-                        .id("id")
-                        .object_(RealtimeConversationItemSystemMessage.Object.REALTIME_ITEM)
-                        .status(RealtimeConversationItemSystemMessage.Status.COMPLETED)
-                        .build()
-                )
-                .instructions("instructions")
-                .maxOutputTokensInf()
-                .metadata(
-                    RealtimeResponseCreateParams.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
-                .parallelToolCalls(true)
-                .prompt(
-                    ResponsePrompt.builder()
-                        .id("id")
-                        .variables(
-                            ResponsePrompt.Variables.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .version("version")
-                        .build()
-                )
-                .reasoning(
-                    RealtimeReasoning.builder().effort(RealtimeReasoningEffort.MINIMAL).build()
-                )
-                .toolChoice(ToolChoiceOptions.NONE)
-                .addTool(
-                    RealtimeFunctionTool.builder()
-                        .description("description")
-                        .name("name")
-                        .parameters(JsonValue.from(mapOf<String, Any>()))
-                        .type(RealtimeFunctionTool.Type.FUNCTION)
-                        .build()
-                )
-                .build()
 
         val roundtrippedRealtimeResponseCreateParams =
             jsonMapper.readValue(

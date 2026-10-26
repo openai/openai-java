@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class AudioTranscriptionTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val audioTranscription =
             AudioTranscription.builder()
                 .delay(AudioTranscription.Delay.MINIMAL)
@@ -28,20 +28,8 @@ internal class AudioTranscriptionTest {
         assertThat(audioTranscription.languages().getOrNull()).containsExactly("string")
         assertThat(audioTranscription.model()).contains(AudioTranscription.Model.WHISPER_1)
         assertThat(audioTranscription.prompt()).contains("prompt")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val audioTranscription =
-            AudioTranscription.builder()
-                .delay(AudioTranscription.Delay.MINIMAL)
-                .addKeyword("string")
-                .language("language")
-                .addLanguage("string")
-                .model(AudioTranscription.Model.WHISPER_1)
-                .prompt("prompt")
-                .build()
 
         val roundtrippedAudioTranscription =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeResponseCreateAudioOutputTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeResponseCreateAudioOutput =
             RealtimeResponseCreateAudioOutput.builder()
                 .output(
@@ -38,25 +38,8 @@ internal class RealtimeResponseCreateAudioOutputTest {
                     .voice(RealtimeResponseCreateAudioOutput.Output.Voice.UnionMember1.ALLOY)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeResponseCreateAudioOutput =
-            RealtimeResponseCreateAudioOutput.builder()
-                .output(
-                    RealtimeResponseCreateAudioOutput.Output.builder()
-                        .format(
-                            RealtimeAudioFormats.AudioPcm.builder()
-                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
-                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
-                                .build()
-                        )
-                        .voice(RealtimeResponseCreateAudioOutput.Output.Voice.UnionMember1.ALLOY)
-                        .build()
-                )
-                .build()
 
         val roundtrippedRealtimeResponseCreateAudioOutput =
             jsonMapper.readValue(

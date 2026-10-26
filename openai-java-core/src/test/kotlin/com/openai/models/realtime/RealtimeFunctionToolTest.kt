@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeFunctionToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeFunctionTool =
             RealtimeFunctionTool.builder()
                 .description("description")
@@ -25,18 +25,8 @@ internal class RealtimeFunctionToolTest {
         assertThat(realtimeFunctionTool._parameters())
             .isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(realtimeFunctionTool.type()).contains(RealtimeFunctionTool.Type.FUNCTION)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeFunctionTool =
-            RealtimeFunctionTool.builder()
-                .description("description")
-                .name("name")
-                .parameters(JsonValue.from(mapOf<String, Any>()))
-                .type(RealtimeFunctionTool.Type.FUNCTION)
-                .build()
 
         val roundtrippedRealtimeFunctionTool =
             jsonMapper.readValue(

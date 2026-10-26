@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ConversationItemDoneTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val conversationItemDone =
             ConversationItemDone.builder()
                 .eventId("event_id")
@@ -48,29 +48,8 @@ internal class ConversationItemDoneTest {
                 )
             )
         assertThat(conversationItemDone.previousItemId()).contains("previous_item_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val conversationItemDone =
-            ConversationItemDone.builder()
-                .eventId("event_id")
-                .item(
-                    RealtimeConversationItemSystemMessage.builder()
-                        .addContent(
-                            RealtimeConversationItemSystemMessage.Content.builder()
-                                .text("text")
-                                .type(RealtimeConversationItemSystemMessage.Content.Type.INPUT_TEXT)
-                                .build()
-                        )
-                        .id("id")
-                        .object_(RealtimeConversationItemSystemMessage.Object.REALTIME_ITEM)
-                        .status(RealtimeConversationItemSystemMessage.Status.COMPLETED)
-                        .build()
-                )
-                .previousItemId("previous_item_id")
-                .build()
 
         val roundtrippedConversationItemDone =
             jsonMapper.readValue(

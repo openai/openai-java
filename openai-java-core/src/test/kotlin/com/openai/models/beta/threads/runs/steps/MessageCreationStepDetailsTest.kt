@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class MessageCreationStepDetailsTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val messageCreationStepDetails =
             MessageCreationStepDetails.builder()
                 .messageCreation(
@@ -24,19 +24,8 @@ internal class MessageCreationStepDetailsTest {
             .isEqualTo(
                 MessageCreationStepDetails.MessageCreation.builder().messageId("message_id").build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val messageCreationStepDetails =
-            MessageCreationStepDetails.builder()
-                .messageCreation(
-                    MessageCreationStepDetails.MessageCreation.builder()
-                        .messageId("message_id")
-                        .build()
-                )
-                .build()
 
         val roundtrippedMessageCreationStepDetails =
             jsonMapper.readValue(

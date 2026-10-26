@@ -11,13 +11,14 @@ import org.junit.jupiter.api.Test
 internal class SessionUpdateEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val sessionUpdateEvent =
             SessionUpdateEvent.builder()
                 .session(
                     SessionUpdateConfig.builder()
                         .delegation(
                             SessionUpdateConfig.Delegation.Responses.builder()
+                                .acknowledgementDelayMs(0L)
                                 .responses(
                                     ResponsesDelegationUpdateConfig.builder()
                                         .instructions(
@@ -80,7 +81,7 @@ internal class SessionUpdateEventTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -99,6 +100,7 @@ internal class SessionUpdateEventTest {
                 SessionUpdateConfig.builder()
                     .delegation(
                         SessionUpdateConfig.Delegation.Responses.builder()
+                            .acknowledgementDelayMs(0L)
                             .responses(
                                 ResponsesDelegationUpdateConfig.builder()
                                     .instructions(
@@ -157,7 +159,7 @@ internal class SessionUpdateEventTest {
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
                                         DecisionTrigger.Decisions.Question.Predicate.builder()
-                                            .instructions("instructions")
+                                            .instructions("string")
                                             .name("name")
                                             .build()
                                     )
@@ -169,92 +171,8 @@ internal class SessionUpdateEventTest {
                     .build()
             )
         assertThat(sessionUpdateEvent.eventId()).contains("evt_update_001")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val sessionUpdateEvent =
-            SessionUpdateEvent.builder()
-                .session(
-                    SessionUpdateConfig.builder()
-                        .delegation(
-                            SessionUpdateConfig.Delegation.Responses.builder()
-                                .responses(
-                                    ResponsesDelegationUpdateConfig.builder()
-                                        .instructions(
-                                            "Check restaurant availability. Ask before confirming a booking."
-                                        )
-                                        .maxOutputTokens(1024L)
-                                        .model("model")
-                                        .parallelToolCalls(true)
-                                        .reasoning(
-                                            ResponsesDelegationUpdateConfig.Reasoning.builder()
-                                                .effort(
-                                                    ResponsesDelegationUpdateConfig.Reasoning.Effort
-                                                        .NONE
-                                                )
-                                                .summary(
-                                                    ResponsesDelegationUpdateConfig.Reasoning
-                                                        .Summary
-                                                        .CONCISE
-                                                )
-                                                .build()
-                                        )
-                                        .serviceTier(
-                                            ResponsesDelegationUpdateConfig.ServiceTier.AUTO
-                                        )
-                                        .text(
-                                            ResponsesDelegationUpdateConfig.Text.builder()
-                                                .verbosity(
-                                                    ResponsesDelegationUpdateConfig.Text.Verbosity
-                                                        .LOW
-                                                )
-                                                .build()
-                                        )
-                                        .toolChoice(
-                                            ResponsesDelegationUpdateConfig.ToolChoice
-                                                .LiveToolChoiceEnum
-                                                .AUTO
-                                        )
-                                        .addTool(
-                                            FunctionTool.builder()
-                                                .name("name")
-                                                .description("description")
-                                                .parameters(
-                                                    FunctionTool.Parameters.builder()
-                                                        .putAdditionalProperty(
-                                                            "foo",
-                                                            JsonValue.from("bar"),
-                                                        )
-                                                        .build()
-                                                )
-                                                .strict(true)
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .addTrigger(
-                            DecisionTrigger.builder()
-                                .decisions(
-                                    DecisionTrigger.Decisions.builder()
-                                        .addQuestion(
-                                            DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                                .build()
-                        )
-                        .build()
-                )
-                .eventId("evt_update_001")
-                .build()
 
         val roundtrippedSessionUpdateEvent =
             jsonMapper.readValue(

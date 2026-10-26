@@ -15,7 +15,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:4.86.0")
+implementation("com.openai:openai-java:4.93.0")
 ```
 
 ### Maven
@@ -24,7 +24,7 @@ implementation("com.openai:openai-java:4.86.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>4.86.0</version>
+  <version>4.93.0</version>
 </dependency>
 ```
 
@@ -99,7 +99,7 @@ with normal AWS credentials:
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java-bedrock:4.86.0")
+implementation("com.openai:openai-java-bedrock:4.93.0")
 ```
 
 <!-- x-release-please-end -->
@@ -1942,7 +1942,7 @@ ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .build();
 ```
 
-These properties can be accessed on the nested built object later using the `_additionalProperties()` method.
+To read raw JSON properties from a nested JSON-backed object, call `_allProperties()`. It returns both declared and additional properties.
 
 To set a documented parameter or property to an undocumented or not yet supported _value_, pass a [`JsonValue`](openai-java-core/src/main/kotlin/com/openai/core/Values.kt) object to its setter:
 
@@ -2013,14 +2013,14 @@ ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
 
 ### Response properties
 
-To access undocumented response properties, call the `_additionalProperties()` method:
+To access raw response properties, including undocumented properties, call the `_allProperties()` method:
 
 ```java
 import com.openai.core.JsonValue;
 import java.util.Map;
 
-Map<String, JsonValue> additionalProperties = client.chat().completions().create(params)._additionalProperties();
-JsonValue secretPropertyValue = additionalProperties.get("secretProperty");
+Map<String, JsonValue> allProperties = client.chat().completions().create(params)._allProperties();
+JsonValue secretPropertyValue = allProperties.get("secretProperty");
 
 String result = secretPropertyValue.accept(new JsonValue.Visitor<>() {
     @Override

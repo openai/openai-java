@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseCodeInterpreterCallCodeDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseCodeInterpreterCallCodeDeltaEvent =
             BetaResponseCodeInterpreterCallCodeDeltaEvent.builder()
                 .delta("delta")
@@ -34,23 +34,8 @@ internal class BetaResponseCodeInterpreterCallCodeDeltaEventTest {
                     .agentName("agent_name")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseCodeInterpreterCallCodeDeltaEvent =
-            BetaResponseCodeInterpreterCallCodeDeltaEvent.builder()
-                .delta("delta")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .agent(
-                    BetaResponseCodeInterpreterCallCodeDeltaEvent.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseCodeInterpreterCallCodeDeltaEvent =
             jsonMapper.readValue(

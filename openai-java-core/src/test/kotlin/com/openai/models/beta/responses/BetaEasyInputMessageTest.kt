@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaEasyInputMessageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaEasyInputMessage =
             BetaEasyInputMessage.builder()
                 .content("string")
@@ -24,18 +24,8 @@ internal class BetaEasyInputMessageTest {
         assertThat(betaEasyInputMessage.role()).isEqualTo(BetaEasyInputMessage.Role.USER)
         assertThat(betaEasyInputMessage.phase()).contains(BetaEasyInputMessage.Phase.COMMENTARY)
         assertThat(betaEasyInputMessage.type()).contains(BetaEasyInputMessage.Type.MESSAGE)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaEasyInputMessage =
-            BetaEasyInputMessage.builder()
-                .content("string")
-                .role(BetaEasyInputMessage.Role.USER)
-                .phase(BetaEasyInputMessage.Phase.COMMENTARY)
-                .type(BetaEasyInputMessage.Type.MESSAGE)
-                .build()
 
         val roundtrippedBetaEasyInputMessage =
             jsonMapper.readValue(

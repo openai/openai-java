@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseErrorTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseError =
             BetaResponseError.builder()
                 .code(BetaResponseError.Code.SERVER_ERROR)
@@ -52,33 +52,8 @@ internal class BetaResponseErrorTest {
             )
         assertThat(betaResponseError.param()).contains("param")
         assertThat(betaResponseError.type()).contains("type")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseError =
-            BetaResponseError.builder()
-                .code(BetaResponseError.Code.SERVER_ERROR)
-                .message("message")
-                .misalignment(
-                    BetaResponseError.Misalignment.builder()
-                        .detailedExplanation("detailed_explanation")
-                        .errorType(
-                            BetaResponseError.Misalignment.ErrorType
-                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
-                        )
-                        .reviewTarget("review_target")
-                        .steer(
-                            BetaResponseError.Misalignment.Steer.builder()
-                                .message("message")
-                                .build()
-                        )
-                        .build()
-                )
-                .param("param")
-                .type("type")
-                .build()
 
         val roundtrippedBetaResponseError =
             jsonMapper.readValue(

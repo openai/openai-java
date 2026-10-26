@@ -36,6 +36,7 @@ internal class AgentToolParamTest {
         assertThat(agentToolParam.mcp()).isEmpty
         assertThat(agentToolParam.webSearch()).isEmpty
         assertThat(agentToolParam.computerUse()).isEmpty
+        assertThat(agentToolParam.automations()).isEmpty
     }
 
     @Test
@@ -75,6 +76,7 @@ internal class AgentToolParamTest {
         assertThat(agentToolParam.mcp()).isEmpty
         assertThat(agentToolParam.webSearch()).isEmpty
         assertThat(agentToolParam.computerUse()).isEmpty
+        assertThat(agentToolParam.automations()).isEmpty
     }
 
     @Test
@@ -104,6 +106,7 @@ internal class AgentToolParamTest {
         assertThat(agentToolParam.mcp()).isEmpty
         assertThat(agentToolParam.webSearch()).isEmpty
         assertThat(agentToolParam.computerUse()).isEmpty
+        assertThat(agentToolParam.automations()).isEmpty
     }
 
     @Test
@@ -158,6 +161,7 @@ internal class AgentToolParamTest {
         assertThat(agentToolParam.mcp()).contains(mcp)
         assertThat(agentToolParam.webSearch()).isEmpty
         assertThat(agentToolParam.computerUse()).isEmpty
+        assertThat(agentToolParam.automations()).isEmpty
     }
 
     @Test
@@ -224,6 +228,7 @@ internal class AgentToolParamTest {
         assertThat(agentToolParam.mcp()).isEmpty
         assertThat(agentToolParam.webSearch()).contains(webSearch)
         assertThat(agentToolParam.computerUse()).isEmpty
+        assertThat(agentToolParam.automations()).isEmpty
     }
 
     @Test
@@ -267,6 +272,7 @@ internal class AgentToolParamTest {
         assertThat(agentToolParam.mcp()).isEmpty
         assertThat(agentToolParam.webSearch()).isEmpty
         assertThat(agentToolParam.computerUse()).contains(computerUse)
+        assertThat(agentToolParam.automations()).isEmpty
     }
 
     @Test
@@ -276,6 +282,34 @@ internal class AgentToolParamTest {
             AgentToolParam.ofComputerUse(
                 AgentToolParam.ComputerUse.builder().includeScreenshots(true).build()
             )
+
+        val roundtrippedAgentToolParam =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(agentToolParam),
+                jacksonTypeRef<AgentToolParam>(),
+            )
+
+        assertThat(roundtrippedAgentToolParam).isEqualTo(agentToolParam)
+    }
+
+    @Test
+    fun ofAutomations() {
+        val agentToolParam = AgentToolParam.ofAutomations()
+
+        assertThat(agentToolParam.function()).isEmpty
+        assertThat(agentToolParam.toolSearch()).isEmpty
+        assertThat(agentToolParam.programmaticToolCalling()).isEmpty
+        assertThat(agentToolParam.mcp()).isEmpty
+        assertThat(agentToolParam.webSearch()).isEmpty
+        assertThat(agentToolParam.computerUse()).isEmpty
+        assertThat(agentToolParam.automations())
+            .contains(JsonValue.from(mapOf("type" to "automations")))
+    }
+
+    @Test
+    fun ofAutomationsRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val agentToolParam = AgentToolParam.ofAutomations()
 
         val roundtrippedAgentToolParam =
             jsonMapper.readValue(

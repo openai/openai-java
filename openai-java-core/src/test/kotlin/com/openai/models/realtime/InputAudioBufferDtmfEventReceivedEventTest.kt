@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class InputAudioBufferDtmfEventReceivedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val inputAudioBufferDtmfEventReceivedEvent =
             InputAudioBufferDtmfEventReceivedEvent.builder().event("event").receivedAt(0L).build()
 
         assertThat(inputAudioBufferDtmfEventReceivedEvent.event()).isEqualTo("event")
         assertThat(inputAudioBufferDtmfEventReceivedEvent.receivedAt()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val inputAudioBufferDtmfEventReceivedEvent =
-            InputAudioBufferDtmfEventReceivedEvent.builder().event("event").receivedAt(0L).build()
 
         val roundtrippedInputAudioBufferDtmfEventReceivedEvent =
             jsonMapper.readValue(

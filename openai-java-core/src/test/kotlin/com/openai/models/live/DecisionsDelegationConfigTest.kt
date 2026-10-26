@@ -10,13 +10,13 @@ import org.junit.jupiter.api.Test
 internal class DecisionsDelegationConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val decisionsDelegationConfig =
             DecisionsDelegationConfig.builder()
                 .model("x")
                 .addQuestion(
                     DecisionsDelegationConfig.Question.Predicate.builder()
-                        .instructions("instructions")
+                        .instructions("string")
                         .name("name")
                         .build()
                 )
@@ -27,26 +27,13 @@ internal class DecisionsDelegationConfigTest {
             .containsExactly(
                 DecisionsDelegationConfig.Question.ofPredicate(
                     DecisionsDelegationConfig.Question.Predicate.builder()
-                        .instructions("instructions")
+                        .instructions("string")
                         .name("name")
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val decisionsDelegationConfig =
-            DecisionsDelegationConfig.builder()
-                .model("x")
-                .addQuestion(
-                    DecisionsDelegationConfig.Question.Predicate.builder()
-                        .instructions("instructions")
-                        .name("name")
-                        .build()
-                )
-                .build()
 
         val roundtrippedDecisionsDelegationConfig =
             jsonMapper.readValue(

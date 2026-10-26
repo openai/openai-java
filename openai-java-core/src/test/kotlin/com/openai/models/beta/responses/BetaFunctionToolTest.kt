@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class BetaFunctionToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaFunctionTool =
             BetaFunctionTool.builder()
                 .name("name")
@@ -52,30 +52,8 @@ internal class BetaFunctionToolTest {
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaFunctionTool =
-            BetaFunctionTool.builder()
-                .name("name")
-                .parameters(
-                    BetaFunctionTool.Parameters.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .strict(true)
-                .addAllowedCaller(BetaFunctionTool.AllowedCaller.DIRECT)
-                .async(true)
-                .deferLoading(true)
-                .description("description")
-                .outputSchema(
-                    BetaFunctionTool.OutputSchema.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaFunctionTool =
             jsonMapper.readValue(

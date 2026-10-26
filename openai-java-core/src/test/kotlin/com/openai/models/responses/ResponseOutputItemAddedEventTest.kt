@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseOutputItemAddedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseOutputItemAddedEvent =
             ResponseOutputItemAddedEvent.builder()
                 .item(
@@ -88,49 +88,8 @@ internal class ResponseOutputItemAddedEventTest {
             )
         assertThat(responseOutputItemAddedEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseOutputItemAddedEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseOutputItemAddedEvent =
-            ResponseOutputItemAddedEvent.builder()
-                .item(
-                    ResponseOutputMessage.builder()
-                        .id("id")
-                        .addContent(
-                            ResponseOutputText.builder()
-                                .addAnnotation(
-                                    ResponseOutputText.Annotation.FileCitation.builder()
-                                        .fileId("file_id")
-                                        .filename("filename")
-                                        .index(0L)
-                                        .build()
-                                )
-                                .text("text")
-                                .addLogprob(
-                                    ResponseOutputText.Logprob.builder()
-                                        .token("token")
-                                        .addByte(0L)
-                                        .logprob(0.0)
-                                        .addTopLogprob(
-                                            ResponseOutputText.Logprob.TopLogprob.builder()
-                                                .token("token")
-                                                .addByte(0L)
-                                                .logprob(0.0)
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .status(ResponseOutputMessage.Status.IN_PROGRESS)
-                        .phase(ResponseOutputMessage.Phase.COMMENTARY)
-                        .build()
-                )
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseOutputItemAddedEvent =
             jsonMapper.readValue(

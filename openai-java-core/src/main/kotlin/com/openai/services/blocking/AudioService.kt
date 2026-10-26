@@ -6,6 +6,7 @@ import com.openai.core.ClientOptions
 import com.openai.services.blocking.audio.SpeechService
 import com.openai.services.blocking.audio.TranscriptionService
 import com.openai.services.blocking.audio.TranslationService
+import com.openai.services.blocking.audio.VoiceConsentService
 import com.openai.services.blocking.audio.VoiceService
 import java.util.function.Consumer
 
@@ -39,6 +40,10 @@ interface AudioService {
     fun voices(): VoiceService =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
+    /** Turn audio into text or text into audio. */
+    fun voiceConsents(): VoiceConsentService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
     /** A view of [AudioService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -69,6 +74,12 @@ interface AudioService {
 
         /** Turn audio into text or text into audio. */
         fun voices(): VoiceService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
+        /** Turn audio into text or text into audio. */
+        fun voiceConsents(): VoiceConsentService.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
             )

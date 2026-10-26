@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseFileSearchToolCallTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseFileSearchToolCall =
             ResponseFileSearchToolCall.builder()
                 .id("id")
@@ -51,30 +51,8 @@ internal class ResponseFileSearchToolCallTest {
                     .text("text")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseFileSearchToolCall =
-            ResponseFileSearchToolCall.builder()
-                .id("id")
-                .addQuery("string")
-                .status(ResponseFileSearchToolCall.Status.IN_PROGRESS)
-                .addResult(
-                    ResponseFileSearchToolCall.Result.builder()
-                        .attributes(
-                            ResponseFileSearchToolCall.Result.Attributes.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .fileId("file_id")
-                        .filename("filename")
-                        .score(0.0f)
-                        .text("text")
-                        .build()
-                )
-                .build()
 
         val roundtrippedResponseFileSearchToolCall =
             jsonMapper.readValue(

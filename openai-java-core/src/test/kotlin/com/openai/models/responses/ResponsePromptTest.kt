@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponsePromptTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responsePrompt =
             ResponsePrompt.builder()
                 .id("id")
@@ -31,21 +31,8 @@ internal class ResponsePromptTest {
                     .build()
             )
         assertThat(responsePrompt.version()).contains("version")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responsePrompt =
-            ResponsePrompt.builder()
-                .id("id")
-                .variables(
-                    ResponsePrompt.Variables.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .version("version")
-                .build()
 
         val roundtrippedResponsePrompt =
             jsonMapper.readValue(

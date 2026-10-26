@@ -163,6 +163,9 @@ class ResponsesWebSocketLifecycleTest {
 
     @Test
     fun `failed send returns and fences reuse while its transport cleanup is held`() {
+        // Build the model before starting the timed transport-cleanup scenario.
+        val event = command()
+        val sendEntered = CountDownLatch(1)
         val cleanupEntered = CountDownLatch(1)
         val sendReturned = CountDownLatch(1)
         val cleanupDone = CountDownLatch(1)
@@ -170,7 +173,10 @@ class ResponsesWebSocketLifecycleTest {
         val failure = IOException("write attempted")
         val transport =
             CallbackTransport(
-                onSend = { throw failure },
+                onSend = {
+                    sendEntered.countDown()
+                    throw failure
+                },
                 onClose = {
                     cleanupEntered.countDown()
                     try {
@@ -183,12 +189,15 @@ class ResponsesWebSocketLifecycleTest {
         try {
             connection(transport).use { connection ->
                 val pending = connection.receive()
-                val sent = writer.submit { connection.send(command()) }
+                val sent = writer.submit { connection.send(event) }
                 try {
+                    assertThat(sendEntered.await(10, TimeUnit.SECONDS))
+                        .describedAs("send reached the transport")
+                        .isTrue()
                     assertThat(cleanupEntered.await(3, TimeUnit.SECONDS)).isTrue()
                     assertThatThrownBy { sent.get(2, TimeUnit.SECONDS) }.hasCause(failure)
                     assertThatThrownBy { pending.get(2, TimeUnit.SECONDS) }.hasCause(failure)
-                    assertThatThrownBy { connection.send(command()) }
+                    assertThatThrownBy { connection.send(event) }
                         .isInstanceOf(IllegalStateException::class.java)
                 } finally {
                     sendReturned.countDown()

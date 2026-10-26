@@ -28,7 +28,7 @@ internal class DecisionServiceTest {
                     .model("model")
                     .addQuestion(
                         DecisionCreateParams.Question.Predicate.builder()
-                            .instructions("instructions")
+                            .instructions("string")
                             .name("name")
                             .build()
                     )

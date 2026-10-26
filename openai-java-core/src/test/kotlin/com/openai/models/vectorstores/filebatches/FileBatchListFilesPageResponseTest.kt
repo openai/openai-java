@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 internal class FileBatchListFilesPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fileBatchListFilesPageResponse =
             FileBatchListFilesPageResponse.builder()
                 .addData(
@@ -79,44 +79,8 @@ internal class FileBatchListFilesPageResponseTest {
         assertThat(fileBatchListFilesPageResponse.hasMore()).isEqualTo(false)
         assertThat(fileBatchListFilesPageResponse.lastId()).isEqualTo("file-abc456")
         assertThat(fileBatchListFilesPageResponse.object_()).isEqualTo("list")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fileBatchListFilesPageResponse =
-            FileBatchListFilesPageResponse.builder()
-                .addData(
-                    VectorStoreFile.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .lastError(
-                            VectorStoreFile.LastError.builder()
-                                .code(VectorStoreFile.LastError.Code.SERVER_ERROR)
-                                .message("message")
-                                .build()
-                        )
-                        .status(VectorStoreFile.Status.IN_PROGRESS)
-                        .usageBytes(0L)
-                        .vectorStoreId("vector_store_id")
-                        .attributes(
-                            VectorStoreFile.Attributes.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .staticChunkingStrategy(
-                            StaticFileChunkingStrategy.builder()
-                                .chunkOverlapTokens(0L)
-                                .maxChunkSizeTokens(100L)
-                                .build()
-                        )
-                        .build()
-                )
-                .firstId("file-abc123")
-                .hasMore(false)
-                .lastId("file-abc456")
-                .object_("list")
-                .build()
 
         val roundtrippedFileBatchListFilesPageResponse =
             jsonMapper.readValue(

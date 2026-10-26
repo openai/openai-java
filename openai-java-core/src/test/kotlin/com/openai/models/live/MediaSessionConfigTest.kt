@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class MediaSessionConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val mediaSessionConfig =
             MediaSessionConfig.builder()
                 .model(MediaSessionConfig.Model.GPT_LIVE_1)
@@ -34,7 +34,7 @@ internal class MediaSessionConfigTest {
                         )
                         .build()
                 )
-                .delegation(ClientDelegation.builder().build())
+                .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                 .addInput(
                     InitialItem.Developer.builder()
                         .addContent(
@@ -56,7 +56,7 @@ internal class MediaSessionConfigTest {
                             DecisionTrigger.Decisions.builder()
                                 .addQuestion(
                                     DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
+                                        .instructions("string")
                                         .name("name")
                                         .build()
                                 )
@@ -88,7 +88,11 @@ internal class MediaSessionConfigTest {
                     .build()
             )
         assertThat(mediaSessionConfig.delegation())
-            .contains(MediaSessionConfig.Delegation.ofClient(ClientDelegation.builder().build()))
+            .contains(
+                MediaSessionConfig.Delegation.ofClient(
+                    ClientDelegation.builder().acknowledgementDelayMs(0L).build()
+                )
+            )
         assertThat(mediaSessionConfig.input().getOrNull())
             .containsExactly(
                 InitialItem.ofDeveloper(
@@ -114,7 +118,7 @@ internal class MediaSessionConfigTest {
                         DecisionTrigger.Decisions.builder()
                             .addQuestion(
                                 DecisionTrigger.Decisions.Question.Predicate.builder()
-                                    .instructions("instructions")
+                                    .instructions("string")
                                     .name("name")
                                     .build()
                             )
@@ -123,65 +127,8 @@ internal class MediaSessionConfigTest {
                     .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val mediaSessionConfig =
-            MediaSessionConfig.builder()
-                .model(MediaSessionConfig.Model.GPT_LIVE_1)
-                .audio(
-                    MediaSessionConfig.Audio.builder()
-                        .output(
-                            MediaSessionConfig.Audio.Output.builder()
-                                .voice(BuiltInVoice.ALLOY)
-                                .build()
-                        )
-                        .build()
-                )
-                .client(
-                    ClientConfig.builder()
-                        .dataChannel(
-                            DataChannelConfig.builder()
-                                .allowedClientEventsOfStrings(listOf("string"))
-                                .allowedServerEventsAll()
-                                .build()
-                        )
-                        .build()
-                )
-                .delegation(ClientDelegation.builder().build())
-                .addInput(
-                    InitialItem.Developer.builder()
-                        .addContent(
-                            InitialItem.Developer.Content.builder()
-                                .text("text")
-                                .type(InitialItem.Developer.Content.Type.INPUT_TEXT)
-                                .build()
-                        )
-                        .id("id")
-                        .status(InitialItem.Developer.Status.INCOMPLETE)
-                        .type(InitialItem.Developer.Type.MESSAGE)
-                        .build()
-                )
-                .instructions("instructions")
-                .store(true)
-                .addTrigger(
-                    DecisionTrigger.builder()
-                        .decisions(
-                            DecisionTrigger.Decisions.builder()
-                                .addQuestion(
-                                    DecisionTrigger.Decisions.Question.Predicate.builder()
-                                        .instructions("instructions")
-                                        .name("name")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .eventType(DecisionTrigger.EventType.SESSION_INPUT_TRANSCRIPT_DELTA)
-                        .build()
-                )
-                .build()
 
         val roundtrippedMediaSessionConfig =
             jsonMapper.readValue(

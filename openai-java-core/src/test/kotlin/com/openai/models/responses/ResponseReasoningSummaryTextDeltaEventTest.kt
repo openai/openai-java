@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseReasoningSummaryTextDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseReasoningSummaryTextDeltaEvent =
             ResponseReasoningSummaryTextDeltaEvent.builder()
                 .delta("delta")
@@ -25,19 +25,8 @@ internal class ResponseReasoningSummaryTextDeltaEventTest {
         assertThat(responseReasoningSummaryTextDeltaEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseReasoningSummaryTextDeltaEvent.sequenceNumber()).isEqualTo(0L)
         assertThat(responseReasoningSummaryTextDeltaEvent.summaryIndex()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseReasoningSummaryTextDeltaEvent =
-            ResponseReasoningSummaryTextDeltaEvent.builder()
-                .delta("delta")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .summaryIndex(0L)
-                .build()
 
         val roundtrippedResponseReasoningSummaryTextDeltaEvent =
             jsonMapper.readValue(

@@ -10,16 +10,11 @@ import org.junit.jupiter.api.Test
 internal class BetaContainerNetworkPolicyDisabledTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaContainerNetworkPolicyDisabled =
             BetaContainerNetworkPolicyDisabled.builder().build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaContainerNetworkPolicyDisabled =
-            BetaContainerNetworkPolicyDisabled.builder().build()
 
         val roundtrippedBetaContainerNetworkPolicyDisabled =
             jsonMapper.readValue(

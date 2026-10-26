@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BatchExpiredWebhookEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val batchExpiredWebhookEvent =
             BatchExpiredWebhookEvent.builder()
                 .id("id")
@@ -25,18 +25,8 @@ internal class BatchExpiredWebhookEventTest {
             .isEqualTo(BatchExpiredWebhookEvent.Data.builder().id("id").build())
         assertThat(batchExpiredWebhookEvent.object_())
             .contains(BatchExpiredWebhookEvent.Object.EVENT)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val batchExpiredWebhookEvent =
-            BatchExpiredWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(BatchExpiredWebhookEvent.Data.builder().id("id").build())
-                .object_(BatchExpiredWebhookEvent.Object.EVENT)
-                .build()
 
         val roundtrippedBatchExpiredWebhookEvent =
             jsonMapper.readValue(

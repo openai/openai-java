@@ -10,14 +10,10 @@ import org.junit.jupiter.api.Test
 internal class AutoFileChunkingStrategyParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val autoFileChunkingStrategyParam = AutoFileChunkingStrategyParam.builder().build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val autoFileChunkingStrategyParam = AutoFileChunkingStrategyParam.builder().build()
 
         val roundtrippedAutoFileChunkingStrategyParam =
             jsonMapper.readValue(

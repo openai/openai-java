@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class RefusalContentBlockTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val refusalContentBlock = RefusalContentBlock.builder().refusal("refusal").build()
 
         assertThat(refusalContentBlock.refusal()).isEqualTo("refusal")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val refusalContentBlock = RefusalContentBlock.builder().refusal("refusal").build()
 
         val roundtrippedRefusalContentBlock =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class FineTuningJobWandbIntegrationObjectTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fineTuningJobWandbIntegrationObject =
             FineTuningJobWandbIntegrationObject.builder()
                 .wandb(
@@ -32,22 +32,8 @@ internal class FineTuningJobWandbIntegrationObjectTest {
                     .addTag("custom-tag")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fineTuningJobWandbIntegrationObject =
-            FineTuningJobWandbIntegrationObject.builder()
-                .wandb(
-                    FineTuningJobWandbIntegration.builder()
-                        .project("my-wandb-project")
-                        .entity("entity")
-                        .name("name")
-                        .addTag("custom-tag")
-                        .build()
-                )
-                .build()
 
         val roundtrippedFineTuningJobWandbIntegrationObject =
             jsonMapper.readValue(

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseOutputTextAnnotationAddedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseOutputTextAnnotationAddedEvent =
             BetaResponseOutputTextAnnotationAddedEvent.builder()
                 .annotation(
@@ -53,31 +53,8 @@ internal class BetaResponseOutputTextAnnotationAddedEventTest {
                     .agentName("agent_name")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseOutputTextAnnotationAddedEvent =
-            BetaResponseOutputTextAnnotationAddedEvent.builder()
-                .annotation(
-                    BetaResponseOutputTextAnnotationAddedEvent.Annotation.FileCitation.builder()
-                        .fileId("file_id")
-                        .filename("filename")
-                        .index(0L)
-                        .build()
-                )
-                .annotationIndex(0L)
-                .contentIndex(0L)
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .agent(
-                    BetaResponseOutputTextAnnotationAddedEvent.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseOutputTextAnnotationAddedEvent =
             jsonMapper.readValue(

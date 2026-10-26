@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class InputTokenCountResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val inputTokenCountResponse = InputTokenCountResponse.builder().inputTokens(123L).build()
 
         assertThat(inputTokenCountResponse.inputTokens()).isEqualTo(123L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val inputTokenCountResponse = InputTokenCountResponse.builder().inputTokens(123L).build()
 
         val roundtrippedInputTokenCountResponse =
             jsonMapper.readValue(

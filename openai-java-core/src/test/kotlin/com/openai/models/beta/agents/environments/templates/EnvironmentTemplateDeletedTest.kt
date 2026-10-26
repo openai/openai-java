@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class EnvironmentTemplateDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val environmentTemplateDeleted =
             EnvironmentTemplateDeleted.builder().id("id").deleted(true).build()
 
         assertThat(environmentTemplateDeleted.id()).isEqualTo("id")
         assertThat(environmentTemplateDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val environmentTemplateDeleted =
-            EnvironmentTemplateDeleted.builder().id("id").deleted(true).build()
 
         val roundtrippedEnvironmentTemplateDeleted =
             jsonMapper.readValue(

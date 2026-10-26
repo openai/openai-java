@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ModelListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val modelListPageResponse =
             ModelListPageResponse.builder()
                 .addData(
@@ -33,22 +33,8 @@ internal class ModelListPageResponseTest {
                     .shutdownDate(LocalDate.parse("2019-12-27"))
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val modelListPageResponse =
-            ModelListPageResponse.builder()
-                .addData(
-                    Model.builder()
-                        .id("id")
-                        .created(0L)
-                        .ownedBy("owned_by")
-                        .shutdownDate(LocalDate.parse("2019-12-27"))
-                        .build()
-                )
-                .build()
 
         val roundtrippedModelListPageResponse =
             jsonMapper.readValue(

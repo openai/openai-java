@@ -12,6 +12,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -95,7 +96,7 @@ private constructor(
     fun delta(): Optional<String> = delta.getOptional("delta")
 
     /**
-     * The log probabilities of the transcription. These can be enabled by configurating the session
+     * The log probabilities of the transcription. These can be enabled by configuring the session
      * with `"include": ["item.input_audio_transcription.logprobs"]`. Each entry in the array
      * corresponds a log probability of which token would be selected for this chunk of
      * transcription. This can help to identify if it was possible there were multiple valid options
@@ -150,6 +151,32 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "event_id" to this.eventId,
+            "item_id" to this.itemId,
+            "type" to this.type,
+            "content_index" to this.contentIndex,
+            "delta" to this.delta,
+            "logprobs" to this.logprobs,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -263,7 +290,7 @@ private constructor(
         fun delta(delta: JsonField<String>) = apply { this.delta = delta }
 
         /**
-         * The log probabilities of the transcription. These can be enabled by configurating the
+         * The log probabilities of the transcription. These can be enabled by configuring the
          * session with `"include": ["item.input_audio_transcription.logprobs"]`. Each entry in the
          * array corresponds a log probability of which token would be selected for this chunk of
          * transcription. This can help to identify if it was possible there were multiple valid

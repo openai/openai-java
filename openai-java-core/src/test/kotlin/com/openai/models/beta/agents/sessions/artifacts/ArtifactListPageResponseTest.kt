@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ArtifactListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val artifactListPageResponse =
             ArtifactListPageResponse.builder()
                 .addData(
@@ -44,28 +44,8 @@ internal class ArtifactListPageResponseTest {
         assertThat(artifactListPageResponse.firstId()).contains("first_id")
         assertThat(artifactListPageResponse.hasMore()).isEqualTo(true)
         assertThat(artifactListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val artifactListPageResponse =
-            ArtifactListPageResponse.builder()
-                .addData(
-                    SessionArtifact.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .environmentId("environment_id")
-                        .path("path")
-                        .sessionId("session_id")
-                        .sizeBytes(0L)
-                        .turnId("turn_id")
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedArtifactListPageResponse =
             jsonMapper.readValue(

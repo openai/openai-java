@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BatchUsageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val batchUsage =
             BatchUsage.builder()
                 .inputTokens(0L)
@@ -31,23 +31,8 @@ internal class BatchUsageTest {
         assertThat(batchUsage.outputTokensDetails())
             .isEqualTo(BatchUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
         assertThat(batchUsage.totalTokens()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val batchUsage =
-            BatchUsage.builder()
-                .inputTokens(0L)
-                .inputTokensDetails(
-                    BatchUsage.InputTokensDetails.builder().cachedTokens(0L).build()
-                )
-                .outputTokens(0L)
-                .outputTokensDetails(
-                    BatchUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
-                )
-                .totalTokens(0L)
-                .build()
 
         val roundtrippedBatchUsage =
             jsonMapper.readValue(

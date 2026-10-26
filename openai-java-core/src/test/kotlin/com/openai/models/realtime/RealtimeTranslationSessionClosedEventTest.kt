@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class RealtimeTranslationSessionClosedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeTranslationSessionClosedEvent =
             RealtimeTranslationSessionClosedEvent.builder().eventId("event_id").build()
 
         assertThat(realtimeTranslationSessionClosedEvent.eventId()).isEqualTo("event_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeTranslationSessionClosedEvent =
-            RealtimeTranslationSessionClosedEvent.builder().eventId("event_id").build()
 
         val roundtrippedRealtimeTranslationSessionClosedEvent =
             jsonMapper.readValue(

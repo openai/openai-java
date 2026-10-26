@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class ResponsesDelegationConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responsesDelegationConfig =
             ResponsesDelegationConfig.builder()
                 .model("model")
@@ -86,43 +86,8 @@ internal class ResponsesDelegationConfigTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responsesDelegationConfig =
-            ResponsesDelegationConfig.builder()
-                .model("model")
-                .instructions("instructions")
-                .maxOutputTokens(16L)
-                .parallelToolCalls(true)
-                .reasoning(
-                    ResponsesDelegationConfig.Reasoning.builder()
-                        .effort(ResponsesDelegationConfig.Reasoning.Effort.NONE)
-                        .summary(ResponsesDelegationConfig.Reasoning.Summary.CONCISE)
-                        .build()
-                )
-                .serviceTier(ResponsesDelegationConfig.ServiceTier.AUTO)
-                .text(
-                    ResponsesDelegationConfig.Text.builder()
-                        .verbosity(ResponsesDelegationConfig.Text.Verbosity.LOW)
-                        .build()
-                )
-                .toolChoice(ResponsesDelegationConfig.ToolChoice.LiveToolChoiceEnum.AUTO)
-                .addTool(
-                    FunctionTool.builder()
-                        .name("name")
-                        .description("description")
-                        .parameters(
-                            FunctionTool.Parameters.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .strict(true)
-                        .build()
-                )
-                .build()
 
         val roundtrippedResponsesDelegationConfig =
             jsonMapper.readValue(

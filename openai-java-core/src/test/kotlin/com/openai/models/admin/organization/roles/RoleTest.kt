@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RoleTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val role =
             Role.builder()
                 .id("id")
@@ -27,20 +27,8 @@ internal class RoleTest {
         assertThat(role.permissions()).containsExactly("string")
         assertThat(role.predefinedRole()).isEqualTo(true)
         assertThat(role.resourceType()).isEqualTo("resource_type")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val role =
-            Role.builder()
-                .id("id")
-                .description("description")
-                .name("name")
-                .addPermission("string")
-                .predefinedRole(true)
-                .resourceType("resource_type")
-                .build()
 
         val roundtrippedRole =
             jsonMapper.readValue(jsonMapper.writeValueAsString(role), jacksonTypeRef<Role>())

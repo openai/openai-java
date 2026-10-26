@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class CreateEvalJsonlRunDataSourceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val createEvalJsonlRunDataSource =
             CreateEvalJsonlRunDataSource.builder()
                 .fileContentSource(
@@ -57,32 +57,8 @@ internal class CreateEvalJsonlRunDataSourceTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val createEvalJsonlRunDataSource =
-            CreateEvalJsonlRunDataSource.builder()
-                .fileContentSource(
-                    listOf(
-                        CreateEvalJsonlRunDataSource.Source.FileContent.Content.builder()
-                            .item(
-                                CreateEvalJsonlRunDataSource.Source.FileContent.Content.Item
-                                    .builder()
-                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                    .build()
-                            )
-                            .sample(
-                                CreateEvalJsonlRunDataSource.Source.FileContent.Content.Sample
-                                    .builder()
-                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                    .build()
-                            )
-                            .build()
-                    )
-                )
-                .build()
 
         val roundtrippedCreateEvalJsonlRunDataSource =
             jsonMapper.readValue(

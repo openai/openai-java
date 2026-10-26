@@ -23,6 +23,7 @@ import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -829,6 +830,34 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "model" to this.model,
+                "input" to this.input,
+                "instructions" to this.instructions,
+                "previous_response_id" to this.previousResponseId,
+                "prompt_cache_key" to this.promptCacheKey,
+                "prompt_cache_options" to this.promptCacheOptions,
+                "prompt_cache_retention" to this.promptCacheRetention,
+                "service_tier" to this.serviceTier,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1246,6 +1275,8 @@ private constructor(
             @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
 
             @JvmField val GPT_6_1_SOL = of("gpt-6.1-sol")
+
+            @JvmField val GPT_6_1_TERRA = of("gpt-6.1-terra")
 
             @JvmField val GPT_6_SOL = of("gpt-6-sol")
 
@@ -1806,6 +1837,7 @@ private constructor(
         enum class Known {
             GPT_6_ASTRA,
             GPT_6_1_SOL,
+            GPT_6_1_TERRA,
             GPT_6_SOL,
             GPT_6_LUNA,
             GPT_5_6_SOL,
@@ -2179,6 +2211,7 @@ private constructor(
         enum class Value {
             GPT_6_ASTRA,
             GPT_6_1_SOL,
+            GPT_6_1_TERRA,
             GPT_6_SOL,
             GPT_6_LUNA,
             GPT_5_6_SOL,
@@ -2553,6 +2586,7 @@ private constructor(
             when (this) {
                 GPT_6_ASTRA -> Value.GPT_6_ASTRA
                 GPT_6_1_SOL -> Value.GPT_6_1_SOL
+                GPT_6_1_TERRA -> Value.GPT_6_1_TERRA
                 GPT_6_SOL -> Value.GPT_6_SOL
                 GPT_6_LUNA -> Value.GPT_6_LUNA
                 GPT_5_6_SOL -> Value.GPT_5_6_SOL
@@ -2676,6 +2710,7 @@ private constructor(
             when (this) {
                 GPT_6_ASTRA -> Known.GPT_6_ASTRA
                 GPT_6_1_SOL -> Known.GPT_6_1_SOL
+                GPT_6_1_TERRA -> Known.GPT_6_1_TERRA
                 GPT_6_SOL -> Known.GPT_6_SOL
                 GPT_6_LUNA -> Known.GPT_6_LUNA
                 GPT_5_6_SOL -> Known.GPT_5_6_SOL
@@ -3143,6 +3178,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "mode" to this.mode, "ttl" to this.ttl)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =

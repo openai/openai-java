@@ -14,6 +14,7 @@ import com.openai.core.BaseSerializer
 import com.openai.core.JsonValue
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.DecisionInputJson
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -28,6 +29,7 @@ class DecisionInputPart
 private constructor(
     private val inputText: DecisionInputText? = null,
     private val inputImage: DecisionInputImage? = null,
+    private val inputJson: DecisionInputJson? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -39,9 +41,17 @@ private constructor(
      */
     fun inputImage(): Optional<DecisionInputImage> = Optional.ofNullable(inputImage)
 
+    /**
+     * A JSON object or an array of objects rendered as text. Nested values may be any JSON value.
+     * Limited to 32 container levels, 10,000 values, and 256 KiB of compact UTF-8 JSON.
+     */
+    fun inputJson(): Optional<DecisionInputJson> = Optional.ofNullable(inputJson)
+
     fun isInputText(): Boolean = inputText != null
 
     fun isInputImage(): Boolean = inputImage != null
+
+    fun isInputJson(): Boolean = inputJson != null
 
     fun asInputText(): DecisionInputText = inputText.getOrThrow("inputText")
 
@@ -50,6 +60,12 @@ private constructor(
      * supported.
      */
     fun asInputImage(): DecisionInputImage = inputImage.getOrThrow("inputImage")
+
+    /**
+     * A JSON object or an array of objects rendered as text. Nested values may be any JSON value.
+     * Limited to 32 container levels, 10,000 values, and 256 KiB of compact UTF-8 JSON.
+     */
+    fun asInputJson(): DecisionInputJson = inputJson.getOrThrow("inputJson")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -86,6 +102,7 @@ private constructor(
         when {
             inputText != null -> visitor.visitInputText(inputText)
             inputImage != null -> visitor.visitInputImage(inputImage)
+            inputJson != null -> visitor.visitInputJson(inputJson)
             else -> visitor.unknown(_json)
         }
 
@@ -113,6 +130,10 @@ private constructor(
                 override fun visitInputImage(inputImage: DecisionInputImage) {
                     inputImage.validate()
                 }
+
+                override fun visitInputJson(inputJson: DecisionInputJson) {
+                    inputJson.validate()
+                }
             }
         )
         validated = true
@@ -139,6 +160,8 @@ private constructor(
 
                 override fun visitInputImage(inputImage: DecisionInputImage) = inputImage.validity()
 
+                override fun visitInputJson(inputJson: DecisionInputJson) = inputJson.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -150,15 +173,17 @@ private constructor(
 
         return other is DecisionInputPart &&
             inputText == other.inputText &&
-            inputImage == other.inputImage
+            inputImage == other.inputImage &&
+            inputJson == other.inputJson
     }
 
-    override fun hashCode(): Int = Objects.hash(inputText, inputImage)
+    override fun hashCode(): Int = Objects.hash(inputText, inputImage, inputJson)
 
     override fun toString(): String =
         when {
             inputText != null -> "DecisionInputPart{inputText=$inputText}"
             inputImage != null -> "DecisionInputPart{inputImage=$inputImage}"
+            inputJson != null -> "DecisionInputPart{inputJson=$inputJson}"
             _json != null -> "DecisionInputPart{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid DecisionInputPart")
         }
@@ -175,6 +200,13 @@ private constructor(
         @JvmStatic
         fun ofInputImage(inputImage: DecisionInputImage) =
             DecisionInputPart(inputImage = inputImage)
+
+        /**
+         * A JSON object or an array of objects rendered as text. Nested values may be any JSON
+         * value. Limited to 32 container levels, 10,000 values, and 256 KiB of compact UTF-8 JSON.
+         */
+        @JvmStatic
+        fun ofInputJson(inputJson: DecisionInputJson) = DecisionInputPart(inputJson = inputJson)
     }
 
     /**
@@ -190,6 +222,12 @@ private constructor(
          * not supported.
          */
         fun visitInputImage(inputImage: DecisionInputImage): T
+
+        /**
+         * A JSON object or an array of objects rendered as text. Nested values may be any JSON
+         * value. Limited to 32 container levels, 10,000 values, and 256 KiB of compact UTF-8 JSON.
+         */
+        fun visitInputJson(inputJson: DecisionInputJson): T
 
         /**
          * Maps an unknown variant of [DecisionInputPart] to a value of type [T].
@@ -223,6 +261,11 @@ private constructor(
                         DecisionInputPart(inputImage = it, _json = json)
                     } ?: DecisionInputPart(_json = json)
                 }
+                "input_json" -> {
+                    return tryDeserialize(node, jacksonTypeRef<DecisionInputJson>())?.let {
+                        DecisionInputPart(inputJson = it, _json = json)
+                    } ?: DecisionInputPart(_json = json)
+                }
             }
 
             return DecisionInputPart(_json = json)
@@ -239,6 +282,7 @@ private constructor(
             when {
                 value.inputText != null -> generator.writeObject(value.inputText)
                 value.inputImage != null -> generator.writeObject(value.inputImage)
+                value.inputJson != null -> generator.writeObject(value.inputJson)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid DecisionInputPart")
             }

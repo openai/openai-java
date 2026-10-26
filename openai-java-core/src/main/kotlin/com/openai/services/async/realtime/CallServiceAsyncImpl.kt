@@ -15,6 +15,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.encodeMultipartFields
 import com.openai.core.http.json
+import com.openai.core.http.mapMultipartResponse
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
@@ -51,28 +52,32 @@ class CallServiceAsyncImpl internal constructor(private val clientOptions: Clien
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /realtime/calls/{call_id}/accept
-        withRawResponse().accept(params, requestOptions).thenAccept {}
+        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
+        withRawResponse().accept(params, requestOptions).thenApply { it.close() }.thenAccept {}
 
     override fun hangup(
         params: CallHangupParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /realtime/calls/{call_id}/hangup
-        withRawResponse().hangup(params, requestOptions).thenAccept {}
+        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
+        withRawResponse().hangup(params, requestOptions).thenApply { it.close() }.thenAccept {}
 
     override fun refer(
         params: CallReferParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /realtime/calls/{call_id}/refer
-        withRawResponse().refer(params, requestOptions).thenAccept {}
+        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
+        withRawResponse().refer(params, requestOptions).thenApply { it.close() }.thenAccept {}
 
     override fun reject(
         params: CallRejectParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
         // post /realtime/calls/{call_id}/reject
-        withRawResponse().reject(params, requestOptions).thenAccept {}
+        // Keep cleanup upstream of the returned future so cancellation cannot skip it.
+        withRawResponse().reject(params, requestOptions).thenApply { it.close() }.thenAccept {}
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CallServiceAsync.WithRawResponse {
@@ -118,7 +123,7 @@ class CallServiceAsyncImpl internal constructor(private val clientOptions: Clien
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response -> errorHandler.handle(response) }
+                .mapMultipartResponse(request) { response -> errorHandler.handle(response) }
         }
 
         private val acceptHandler: Handler<Void?> = emptyHandler()

@@ -13,6 +13,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -93,6 +94,30 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "data" to this.data,
+            "has_more" to this.hasMore,
+            "next_page" to this.nextPage,
+            "object" to this.object_,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -360,6 +385,30 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "end_time" to this.endTime,
+                "object" to this.object_,
+                "results" to this.results,
+                "start_time" to this.startTime,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -565,6 +614,7 @@ private constructor(
             private val batch: JsonField<Boolean>,
             private val inputAudioTokens: JsonField<Long>,
             private val inputCacheWrite12hTokens: JsonField<Long>,
+            private val inputCacheWrite30mTokens: JsonField<Long>,
             private val inputCacheWriteTokens: JsonField<Long>,
             private val inputCachedAudioTokens: JsonField<Long>,
             private val inputCachedImageTokens: JsonField<Long>,
@@ -608,6 +658,9 @@ private constructor(
                 @JsonProperty("input_cache_write_12h_tokens")
                 @ExcludeMissing
                 inputCacheWrite12hTokens: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("input_cache_write_30m_tokens")
+                @ExcludeMissing
+                inputCacheWrite30mTokens: JsonField<Long> = JsonMissing.of(),
                 @JsonProperty("input_cache_write_tokens")
                 @ExcludeMissing
                 inputCacheWriteTokens: JsonField<Long> = JsonMissing.of(),
@@ -661,6 +714,7 @@ private constructor(
                 batch,
                 inputAudioTokens,
                 inputCacheWrite12hTokens,
+                inputCacheWrite30mTokens,
                 inputCacheWriteTokens,
                 inputCachedAudioTokens,
                 inputCachedImageTokens,
@@ -771,6 +825,16 @@ private constructor(
             /**
              * The aggregated number of input tokens written to the cache with a 30-minute retention
              * period.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun inputCacheWrite30mTokens(): Optional<Long> =
+                inputCacheWrite30mTokens.getOptional("input_cache_write_30m_tokens")
+
+            /**
+             * The aggregated number of input tokens written to the cache across 30-minute and
+             * 12-hour retention periods.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -983,6 +1047,16 @@ private constructor(
             fun _inputCacheWrite12hTokens(): JsonField<Long> = inputCacheWrite12hTokens
 
             /**
+             * Returns the raw JSON value of [inputCacheWrite30mTokens].
+             *
+             * Unlike [inputCacheWrite30mTokens], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("input_cache_write_30m_tokens")
+            @ExcludeMissing
+            fun _inputCacheWrite30mTokens(): JsonField<Long> = inputCacheWrite30mTokens
+
+            /**
              * Returns the raw JSON value of [inputCacheWriteTokens].
              *
              * Unlike [inputCacheWriteTokens], this method doesn't throw if the JSON field has an
@@ -1131,6 +1205,53 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "input_tokens" to this.inputTokens,
+                    "num_model_requests" to this.numModelRequests,
+                    "object" to this.object_,
+                    "output_tokens" to this.outputTokens,
+                    "api_key_id" to this.apiKeyId,
+                    "api_source" to this.apiSource,
+                    "batch" to this.batch,
+                    "input_audio_tokens" to this.inputAudioTokens,
+                    "input_cache_write_12h_tokens" to this.inputCacheWrite12hTokens,
+                    "input_cache_write_30m_tokens" to this.inputCacheWrite30mTokens,
+                    "input_cache_write_tokens" to this.inputCacheWriteTokens,
+                    "input_cached_audio_tokens" to this.inputCachedAudioTokens,
+                    "input_cached_image_tokens" to this.inputCachedImageTokens,
+                    "input_cached_text_tokens" to this.inputCachedTextTokens,
+                    "input_cached_tokens" to this.inputCachedTokens,
+                    "input_image_tokens" to this.inputImageTokens,
+                    "input_text_tokens" to this.inputTextTokens,
+                    "input_uncached_tokens" to this.inputUncachedTokens,
+                    "model" to this.model,
+                    "output_audio_tokens" to this.outputAudioTokens,
+                    "output_image_tokens" to this.outputImageTokens,
+                    "output_text_tokens" to this.outputTextTokens,
+                    "project_id" to this.projectId,
+                    "service_tier" to this.serviceTier,
+                    "user_id" to this.userId,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -1166,6 +1287,7 @@ private constructor(
                 private var batch: JsonField<Boolean> = JsonMissing.of()
                 private var inputAudioTokens: JsonField<Long> = JsonMissing.of()
                 private var inputCacheWrite12hTokens: JsonField<Long> = JsonMissing.of()
+                private var inputCacheWrite30mTokens: JsonField<Long> = JsonMissing.of()
                 private var inputCacheWriteTokens: JsonField<Long> = JsonMissing.of()
                 private var inputCachedAudioTokens: JsonField<Long> = JsonMissing.of()
                 private var inputCachedImageTokens: JsonField<Long> = JsonMissing.of()
@@ -1194,6 +1316,7 @@ private constructor(
                     batch = result.batch
                     inputAudioTokens = result.inputAudioTokens
                     inputCacheWrite12hTokens = result.inputCacheWrite12hTokens
+                    inputCacheWrite30mTokens = result.inputCacheWrite30mTokens
                     inputCacheWriteTokens = result.inputCacheWriteTokens
                     inputCachedAudioTokens = result.inputCachedAudioTokens
                     inputCachedImageTokens = result.inputCachedImageTokens
@@ -1407,6 +1530,39 @@ private constructor(
                 /**
                  * The aggregated number of input tokens written to the cache with a 30-minute
                  * retention period.
+                 */
+                fun inputCacheWrite30mTokens(inputCacheWrite30mTokens: Long?) =
+                    inputCacheWrite30mTokens(JsonField.ofNullable(inputCacheWrite30mTokens))
+
+                /**
+                 * Alias for [Builder.inputCacheWrite30mTokens].
+                 *
+                 * This unboxed primitive overload exists for backwards compatibility.
+                 */
+                fun inputCacheWrite30mTokens(inputCacheWrite30mTokens: Long) =
+                    inputCacheWrite30mTokens(inputCacheWrite30mTokens as Long?)
+
+                /**
+                 * Alias for calling [Builder.inputCacheWrite30mTokens] with
+                 * `inputCacheWrite30mTokens.orElse(null)`.
+                 */
+                fun inputCacheWrite30mTokens(inputCacheWrite30mTokens: Optional<Long>) =
+                    inputCacheWrite30mTokens(inputCacheWrite30mTokens.getOrNull())
+
+                /**
+                 * Sets [Builder.inputCacheWrite30mTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.inputCacheWrite30mTokens] with a well-typed
+                 * [Long] value instead. This method is primarily for setting the field to an
+                 * undocumented or not yet supported value.
+                 */
+                fun inputCacheWrite30mTokens(inputCacheWrite30mTokens: JsonField<Long>) = apply {
+                    this.inputCacheWrite30mTokens = inputCacheWrite30mTokens
+                }
+
+                /**
+                 * The aggregated number of input tokens written to the cache across 30-minute and
+                 * 12-hour retention periods.
                  */
                 fun inputCacheWriteTokens(inputCacheWriteTokens: Long?) =
                     inputCacheWriteTokens(JsonField.ofNullable(inputCacheWriteTokens))
@@ -1868,6 +2024,7 @@ private constructor(
                         batch,
                         inputAudioTokens,
                         inputCacheWrite12hTokens,
+                        inputCacheWrite30mTokens,
                         inputCacheWriteTokens,
                         inputCachedAudioTokens,
                         inputCachedImageTokens,
@@ -1917,6 +2074,7 @@ private constructor(
                 batch()
                 inputAudioTokens()
                 inputCacheWrite12hTokens()
+                inputCacheWrite30mTokens()
                 inputCacheWriteTokens()
                 inputCachedAudioTokens()
                 inputCachedImageTokens()
@@ -1962,6 +2120,7 @@ private constructor(
                     (if (batch.asKnown().isPresent) 1 else 0) +
                     (if (inputAudioTokens.asKnown().isPresent) 1 else 0) +
                     (if (inputCacheWrite12hTokens.asKnown().isPresent) 1 else 0) +
+                    (if (inputCacheWrite30mTokens.asKnown().isPresent) 1 else 0) +
                     (if (inputCacheWriteTokens.asKnown().isPresent) 1 else 0) +
                     (if (inputCachedAudioTokens.asKnown().isPresent) 1 else 0) +
                     (if (inputCachedImageTokens.asKnown().isPresent) 1 else 0) +
@@ -2140,6 +2299,7 @@ private constructor(
                     batch == other.batch &&
                     inputAudioTokens == other.inputAudioTokens &&
                     inputCacheWrite12hTokens == other.inputCacheWrite12hTokens &&
+                    inputCacheWrite30mTokens == other.inputCacheWrite30mTokens &&
                     inputCacheWriteTokens == other.inputCacheWriteTokens &&
                     inputCachedAudioTokens == other.inputCachedAudioTokens &&
                     inputCachedImageTokens == other.inputCachedImageTokens &&
@@ -2169,6 +2329,7 @@ private constructor(
                     batch,
                     inputAudioTokens,
                     inputCacheWrite12hTokens,
+                    inputCacheWrite30mTokens,
                     inputCacheWriteTokens,
                     inputCachedAudioTokens,
                     inputCachedImageTokens,
@@ -2191,7 +2352,7 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Result{inputTokens=$inputTokens, numModelRequests=$numModelRequests, object_=$object_, outputTokens=$outputTokens, apiKeyId=$apiKeyId, apiSource=$apiSource, batch=$batch, inputAudioTokens=$inputAudioTokens, inputCacheWrite12hTokens=$inputCacheWrite12hTokens, inputCacheWriteTokens=$inputCacheWriteTokens, inputCachedAudioTokens=$inputCachedAudioTokens, inputCachedImageTokens=$inputCachedImageTokens, inputCachedTextTokens=$inputCachedTextTokens, inputCachedTokens=$inputCachedTokens, inputImageTokens=$inputImageTokens, inputTextTokens=$inputTextTokens, inputUncachedTokens=$inputUncachedTokens, model=$model, outputAudioTokens=$outputAudioTokens, outputImageTokens=$outputImageTokens, outputTextTokens=$outputTextTokens, projectId=$projectId, serviceTier=$serviceTier, userId=$userId, additionalProperties=$additionalProperties}"
+                "Result{inputTokens=$inputTokens, numModelRequests=$numModelRequests, object_=$object_, outputTokens=$outputTokens, apiKeyId=$apiKeyId, apiSource=$apiSource, batch=$batch, inputAudioTokens=$inputAudioTokens, inputCacheWrite12hTokens=$inputCacheWrite12hTokens, inputCacheWrite30mTokens=$inputCacheWrite30mTokens, inputCacheWriteTokens=$inputCacheWriteTokens, inputCachedAudioTokens=$inputCachedAudioTokens, inputCachedImageTokens=$inputCachedImageTokens, inputCachedTextTokens=$inputCachedTextTokens, inputCachedTokens=$inputCachedTokens, inputImageTokens=$inputImageTokens, inputTextTokens=$inputTextTokens, inputUncachedTokens=$inputUncachedTokens, model=$model, outputAudioTokens=$outputAudioTokens, outputImageTokens=$outputImageTokens, outputTextTokens=$outputTextTokens, projectId=$projectId, serviceTier=$serviceTier, userId=$userId, additionalProperties=$additionalProperties}"
         }
 
         override fun equals(other: Any?): Boolean {

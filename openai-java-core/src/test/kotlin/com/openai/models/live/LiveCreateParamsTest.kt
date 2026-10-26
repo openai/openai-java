@@ -32,7 +32,7 @@ internal class LiveCreateParamsTest {
                             )
                             .build()
                     )
-                    .delegation(ClientDelegation.builder().build())
+                    .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                     .addInput(
                         InitialItem.Developer.builder()
                             .addContent(
@@ -54,7 +54,7 @@ internal class LiveCreateParamsTest {
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
                                         DecisionTrigger.Decisions.Question.Predicate.builder()
-                                            .instructions("instructions")
+                                            .instructions("string")
                                             .name("name")
                                             .build()
                                     )
@@ -95,7 +95,7 @@ internal class LiveCreateParamsTest {
                                 )
                                 .build()
                         )
-                        .delegation(ClientDelegation.builder().build())
+                        .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                         .addInput(
                             InitialItem.Developer.builder()
                                 .addContent(
@@ -117,7 +117,7 @@ internal class LiveCreateParamsTest {
                                     DecisionTrigger.Decisions.builder()
                                         .addQuestion(
                                             DecisionTrigger.Decisions.Question.Predicate.builder()
-                                                .instructions("instructions")
+                                                .instructions("string")
                                                 .name("name")
                                                 .build()
                                         )
@@ -156,7 +156,7 @@ internal class LiveCreateParamsTest {
                             )
                             .build()
                     )
-                    .delegation(ClientDelegation.builder().build())
+                    .delegation(ClientDelegation.builder().acknowledgementDelayMs(0L).build())
                     .addInput(
                         InitialItem.Developer.builder()
                             .addContent(
@@ -178,7 +178,7 @@ internal class LiveCreateParamsTest {
                                 DecisionTrigger.Decisions.builder()
                                     .addQuestion(
                                         DecisionTrigger.Decisions.Question.Predicate.builder()
-                                            .instructions("instructions")
+                                            .instructions("string")
                                             .name("name")
                                             .build()
                                     )

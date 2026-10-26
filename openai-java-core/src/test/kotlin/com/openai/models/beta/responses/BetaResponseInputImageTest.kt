@@ -4,20 +4,23 @@ package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class BetaResponseInputImageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseInputImage =
             BetaResponseInputImage.builder()
                 .detail(BetaResponseInputImage.Detail.LOW)
                 .fileId("file_id")
                 .imageUrl("https://example.com")
                 .promptCacheBreakpoint(
-                    BetaResponseInputImage.PromptCacheBreakpoint.builder().build()
+                    BetaResponseInputImage.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -25,21 +28,13 @@ internal class BetaResponseInputImageTest {
         assertThat(betaResponseInputImage.fileId()).contains("file_id")
         assertThat(betaResponseInputImage.imageUrl()).contains("https://example.com")
         assertThat(betaResponseInputImage.promptCacheBreakpoint())
-            .contains(BetaResponseInputImage.PromptCacheBreakpoint.builder().build())
-    }
+            .contains(
+                BetaResponseInputImage.PromptCacheBreakpoint.builder()
+                    .ttl(PromptCacheBreakpointTtl._30M)
+                    .build()
+            )
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseInputImage =
-            BetaResponseInputImage.builder()
-                .detail(BetaResponseInputImage.Detail.LOW)
-                .fileId("file_id")
-                .imageUrl("https://example.com")
-                .promptCacheBreakpoint(
-                    BetaResponseInputImage.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedBetaResponseInputImage =
             jsonMapper.readValue(

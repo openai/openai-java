@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class OutputTranscriptDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val outputTranscriptDeltaEvent =
             OutputTranscriptDeltaEvent.builder()
                 .delta("Would you like me to reserve that table?")
@@ -26,19 +26,8 @@ internal class OutputTranscriptDeltaEventTest {
         assertThat(outputTranscriptDeltaEvent.eventId()).isEqualTo("evt_output_transcript_001")
         assertThat(outputTranscriptDeltaEvent.startMs()).isEqualTo(5400L)
         assertThat(outputTranscriptDeltaEvent.clientEventId()).contains("client_event_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val outputTranscriptDeltaEvent =
-            OutputTranscriptDeltaEvent.builder()
-                .delta("Would you like me to reserve that table?")
-                .endMs(7200L)
-                .eventId("evt_output_transcript_001")
-                .startMs(5400L)
-                .clientEventId("client_event_id")
-                .build()
 
         val roundtrippedOutputTranscriptDeltaEvent =
             jsonMapper.readValue(
