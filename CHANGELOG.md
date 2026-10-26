@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.92.0](https://github.com/openai/openai-java/compare/v4.91.0...v4.92.0) (2026-10-26)
+
+
+### Features
+
+* **api:** add delegation controls and prompt cache lifetimes ([#1272](https://github.com/openai/openai-java/issues/1272)) ([2ddb859](https://github.com/openai/openai-java/commit/2ddb8597164e5e5b672fa79e01400eea92fc16cc))
+
 ## [4.91.0](https://github.com/openai/openai-java/compare/v4.90.0...v4.91.0) (2026-10-23)
 
 
