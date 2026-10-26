@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async
 
@@ -8,7 +8,6 @@ import com.openai.models.images.ImageCreateVariationParams
 import com.openai.models.images.ImageEditParams
 import com.openai.models.images.ImageGenerateParams
 import com.openai.models.images.ImageModel
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -29,7 +28,7 @@ internal class ImageServiceAsyncTest {
             imageServiceAsync.createVariation(
                 ImageCreateVariationParams.builder()
                     .image("Example data".byteInputStream())
-                    .model(ImageModel.GPT_IMAGE_1)
+                    .model(ImageModel.GPT_IMAGE_1_5)
                     .n(1L)
                     .responseFormat(ImageCreateVariationParams.ResponseFormat.URL)
                     .size(ImageCreateVariationParams.Size._1024X1024)
@@ -59,58 +58,21 @@ internal class ImageServiceAsyncTest {
                     .background(ImageEditParams.Background.TRANSPARENT)
                     .inputFidelity(ImageEditParams.InputFidelity.HIGH)
                     .mask("Example data".byteInputStream())
-                    .model(ImageModel.GPT_IMAGE_2)
+                    .model(ImageModel.GPT_IMAGE_1_5)
                     .n(1L)
                     .outputCompression(100L)
                     .outputFormat(ImageEditParams.OutputFormat.PNG)
                     .partialImages(1L)
                     .quality(ImageEditParams.Quality.HIGH)
                     .responseFormat(ImageEditParams.ResponseFormat.URL)
-                    .size(ImageEditParams.Size._256X256)
+                    .safetyIdentifier("user-1234")
+                    .size(ImageEditParams.Size._1024X1024)
                     .user("user-1234")
                     .build()
             )
 
         val imagesResponse = imagesResponseFuture.get()
         imagesResponse.validate()
-    }
-
-    @Disabled("Prism does not support SSE streaming mock responses")
-    @Test
-    fun editStreaming() {
-        val client =
-            OpenAIOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .adminApiKey("My Admin API Key")
-                .build()
-        val imageServiceAsync = client.images()
-
-        val imagesResponseStreamResponse =
-            imageServiceAsync.editStreaming(
-                ImageEditParams.builder()
-                    .image("Example data".byteInputStream())
-                    .prompt("A cute baby sea otter wearing a beret")
-                    .background(ImageEditParams.Background.TRANSPARENT)
-                    .inputFidelity(ImageEditParams.InputFidelity.HIGH)
-                    .mask("Example data".byteInputStream())
-                    .model(ImageModel.GPT_IMAGE_2)
-                    .n(1L)
-                    .outputCompression(100L)
-                    .outputFormat(ImageEditParams.OutputFormat.PNG)
-                    .partialImages(1L)
-                    .quality(ImageEditParams.Quality.HIGH)
-                    .responseFormat(ImageEditParams.ResponseFormat.URL)
-                    .size(ImageEditParams.Size._256X256)
-                    .user("user-1234")
-                    .build()
-            )
-
-        val onCompleteFuture =
-            imagesResponseStreamResponse
-                .subscribe { imagesResponse -> imagesResponse.validate() }
-                .onCompleteFuture()
-        onCompleteFuture.get()
     }
 
     @Test
@@ -128,7 +90,7 @@ internal class ImageServiceAsyncTest {
                 ImageGenerateParams.builder()
                     .prompt("A cute baby sea otter")
                     .background(ImageGenerateParams.Background.TRANSPARENT)
-                    .model(ImageModel.GPT_IMAGE_2)
+                    .model(ImageModel.GPT_IMAGE_2_5_FLARE)
                     .moderation(ImageGenerateParams.Moderation.LOW)
                     .n(1L)
                     .outputCompression(100L)
@@ -136,7 +98,8 @@ internal class ImageServiceAsyncTest {
                     .partialImages(1L)
                     .quality(ImageGenerateParams.Quality.MEDIUM)
                     .responseFormat(ImageGenerateParams.ResponseFormat.URL)
-                    .size(ImageGenerateParams.Size.AUTO)
+                    .safetyIdentifier("user-1234")
+                    .size(ImageGenerateParams.Size._1024X1024)
                     .style(ImageGenerateParams.Style.VIVID)
                     .user("user-1234")
                     .build()
@@ -144,42 +107,5 @@ internal class ImageServiceAsyncTest {
 
         val imagesResponse = imagesResponseFuture.get()
         imagesResponse.validate()
-    }
-
-    @Disabled("Prism does not support SSE streaming mock responses")
-    @Test
-    fun generateStreaming() {
-        val client =
-            OpenAIOkHttpClientAsync.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .adminApiKey("My Admin API Key")
-                .build()
-        val imageServiceAsync = client.images()
-
-        val imagesResponseStreamResponse =
-            imageServiceAsync.generateStreaming(
-                ImageGenerateParams.builder()
-                    .prompt("A cute baby sea otter")
-                    .background(ImageGenerateParams.Background.TRANSPARENT)
-                    .model(ImageModel.GPT_IMAGE_2)
-                    .moderation(ImageGenerateParams.Moderation.LOW)
-                    .n(1L)
-                    .outputCompression(100L)
-                    .outputFormat(ImageGenerateParams.OutputFormat.PNG)
-                    .partialImages(1L)
-                    .quality(ImageGenerateParams.Quality.MEDIUM)
-                    .responseFormat(ImageGenerateParams.ResponseFormat.URL)
-                    .size(ImageGenerateParams.Size.AUTO)
-                    .style(ImageGenerateParams.Style.VIVID)
-                    .user("user-1234")
-                    .build()
-            )
-
-        val onCompleteFuture =
-            imagesResponseStreamResponse
-                .subscribe { imagesResponse -> imagesResponse.validate() }
-                .onCompleteFuture()
-        onCompleteFuture.get()
     }
 }

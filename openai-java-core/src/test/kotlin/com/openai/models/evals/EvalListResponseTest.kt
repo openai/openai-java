@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.evals
 
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class EvalListResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val evalListResponse =
             EvalListResponse.builder()
                 .id("id")
@@ -84,42 +84,8 @@ internal class EvalListResponseTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val evalListResponse =
-            EvalListResponse.builder()
-                .id("id")
-                .createdAt(0L)
-                .customDataSourceConfig(
-                    EvalCustomDataSourceConfig.Schema.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .metadata(
-                    EvalListResponse.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .name("Chatbot effectiveness Evaluation")
-                .addTestingCriterion(
-                    LabelModelGrader.builder()
-                        .addInput(
-                            LabelModelGrader.Input.builder()
-                                .content("string")
-                                .role(LabelModelGrader.Input.Role.USER)
-                                .type(LabelModelGrader.Input.Type.MESSAGE)
-                                .build()
-                        )
-                        .addLabel("string")
-                        .model("model")
-                        .name("name")
-                        .addPassingLabel("string")
-                        .build()
-                )
-                .build()
 
         val roundtrippedEvalListResponse =
             jsonMapper.readValue(

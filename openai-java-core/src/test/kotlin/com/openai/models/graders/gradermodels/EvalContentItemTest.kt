@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.graders.gradermodels
 
@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.responses.ResponseInputAudio
 import com.openai.models.responses.ResponseInputText
 import org.assertj.core.api.Assertions.assertThat
@@ -48,7 +49,11 @@ internal class EvalContentItemTest {
         val responseInputText =
             ResponseInputText.builder()
                 .text("text")
-                .promptCacheBreakpoint(ResponseInputText.PromptCacheBreakpoint.builder().build())
+                .promptCacheBreakpoint(
+                    ResponseInputText.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
+                )
                 .build()
 
         val evalContentItem = EvalContentItem.ofResponseInputText(responseInputText)
@@ -68,7 +73,9 @@ internal class EvalContentItemTest {
                 ResponseInputText.builder()
                     .text("text")
                     .promptCacheBreakpoint(
-                        ResponseInputText.PromptCacheBreakpoint.builder().build()
+                        ResponseInputText.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )

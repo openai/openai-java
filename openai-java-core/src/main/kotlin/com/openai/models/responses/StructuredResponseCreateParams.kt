@@ -12,6 +12,7 @@ import com.openai.models.Reasoning
 import com.openai.models.ResponsesModel
 import java.util.Objects
 import java.util.Optional
+import java.util.function.Consumer
 
 /**
  * A wrapper for [ResponseCreateParams] that provides a type-safe [Builder] that can record the
@@ -65,6 +66,16 @@ class StructuredResponseCreateParams<T : Any>(
         @JvmSynthetic
         internal fun inject(paramsBuilder: ResponseCreateParams.Builder) = apply {
             this.paramsBuilder = paramsBuilder
+        }
+
+        /** @see ResponseCreateParams.Builder.accessPrograms */
+        fun accessPrograms(accessPrograms: ResponseCreateParams.AccessPrograms) = apply {
+            paramsBuilder.accessPrograms(accessPrograms)
+        }
+
+        /** @see ResponseCreateParams.Builder.accessPrograms */
+        fun accessPrograms(accessPrograms: JsonField<ResponseCreateParams.AccessPrograms>) = apply {
+            paramsBuilder.accessPrograms(accessPrograms)
         }
 
         // The `body(...)` function is deliberately not supported.
@@ -504,6 +515,14 @@ class StructuredResponseCreateParams<T : Any>(
             functionParametersType: Class<*>,
             localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
         ) = apply { paramsBuilder.addTool(functionParametersType, localValidation) }
+
+        /** @see ResponseCreateParams.Builder.addTool */
+        @JvmOverloads
+        fun addTool(
+            functionParametersType: Class<*>,
+            localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
+            customize: Consumer<FunctionTool.Builder>,
+        ) = apply { paramsBuilder.addTool(functionParametersType, localValidation, customize) }
 
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(fileSearch: FileSearchTool) = apply { paramsBuilder.addTool(fileSearch) }

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.vectorstores
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class StaticFileChunkingStrategyObjectParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val staticFileChunkingStrategyObjectParam =
             StaticFileChunkingStrategyObjectParam.builder()
                 .static_(
@@ -28,20 +28,8 @@ internal class StaticFileChunkingStrategyObjectParamTest {
                     .maxChunkSizeTokens(100L)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val staticFileChunkingStrategyObjectParam =
-            StaticFileChunkingStrategyObjectParam.builder()
-                .static_(
-                    StaticFileChunkingStrategy.builder()
-                        .chunkOverlapTokens(0L)
-                        .maxChunkSizeTokens(100L)
-                        .build()
-                )
-                .build()
 
         val roundtrippedStaticFileChunkingStrategyObjectParam =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.evals
 
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class EvalListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val evalListPageResponse =
             EvalListPageResponse.builder()
                 .addData(
@@ -88,49 +88,8 @@ internal class EvalListPageResponseTest {
         assertThat(evalListPageResponse.firstId()).isEqualTo("first_id")
         assertThat(evalListPageResponse.hasMore()).isEqualTo(true)
         assertThat(evalListPageResponse.lastId()).isEqualTo("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val evalListPageResponse =
-            EvalListPageResponse.builder()
-                .addData(
-                    EvalListResponse.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .customDataSourceConfig(
-                            EvalCustomDataSourceConfig.Schema.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .metadata(
-                            EvalListResponse.Metadata.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .name("Chatbot effectiveness Evaluation")
-                        .addTestingCriterion(
-                            LabelModelGrader.builder()
-                                .addInput(
-                                    LabelModelGrader.Input.builder()
-                                        .content("string")
-                                        .role(LabelModelGrader.Input.Role.USER)
-                                        .type(LabelModelGrader.Input.Type.MESSAGE)
-                                        .build()
-                                )
-                                .addLabel("string")
-                                .model("model")
-                                .name("name")
-                                .addPassingLabel("string")
-                                .build()
-                        )
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedEvalListPageResponse =
             jsonMapper.readValue(

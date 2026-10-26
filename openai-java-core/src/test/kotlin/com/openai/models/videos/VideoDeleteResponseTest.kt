@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.videos
 
@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class VideoDeleteResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val videoDeleteResponse = VideoDeleteResponse.builder().id("id").deleted(true).build()
 
         assertThat(videoDeleteResponse.id()).isEqualTo("id")
         assertThat(videoDeleteResponse.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val videoDeleteResponse = VideoDeleteResponse.builder().id("id").deleted(true).build()
 
         val roundtrippedVideoDeleteResponse =
             jsonMapper.readValue(

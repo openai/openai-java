@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.finetuning
 
@@ -21,7 +21,8 @@ interface CheckpointServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointServiceAsync
 
     /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-    fun permissions(): PermissionServiceAsync
+    fun permissions(): PermissionServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * A view of [CheckpointServiceAsync] that provides access to raw HTTP responses for each
@@ -39,6 +40,9 @@ interface CheckpointServiceAsync {
         ): CheckpointServiceAsync.WithRawResponse
 
         /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-        fun permissions(): PermissionServiceAsync.WithRawResponse
+        fun permissions(): PermissionServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
     }
 }

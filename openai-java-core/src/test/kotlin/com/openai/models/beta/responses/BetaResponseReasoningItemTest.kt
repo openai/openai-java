@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseReasoningItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseReasoningItem =
             BetaResponseReasoningItem.builder()
                 .id("id")
@@ -32,20 +32,8 @@ internal class BetaResponseReasoningItemTest {
         assertThat(betaResponseReasoningItem.encryptedContent()).contains("encrypted_content")
         assertThat(betaResponseReasoningItem.status())
             .contains(BetaResponseReasoningItem.Status.IN_PROGRESS)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseReasoningItem =
-            BetaResponseReasoningItem.builder()
-                .id("id")
-                .addSummary(BetaResponseReasoningItem.Summary.builder().text("text").build())
-                .agent(BetaResponseReasoningItem.Agent.builder().agentName("agent_name").build())
-                .addContent(BetaResponseReasoningItem.Content.builder().text("text").build())
-                .encryptedContent("encrypted_content")
-                .status(BetaResponseReasoningItem.Status.IN_PROGRESS)
-                .build()
 
         val roundtrippedBetaResponseReasoningItem =
             jsonMapper.readValue(

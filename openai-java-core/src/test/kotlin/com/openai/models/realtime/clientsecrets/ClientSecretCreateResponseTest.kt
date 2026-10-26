@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime.clientsecrets
 
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test
 internal class ClientSecretCreateResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val clientSecretCreateResponse =
             ClientSecretCreateResponse.builder()
                 .expiresAt(0L)
@@ -222,111 +222,8 @@ internal class ClientSecretCreateResponseTest {
                 )
             )
         assertThat(clientSecretCreateResponse.value()).isEqualTo("value")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val clientSecretCreateResponse =
-            ClientSecretCreateResponse.builder()
-                .expiresAt(0L)
-                .session(
-                    RealtimeSessionCreateResponse.builder()
-                        .id("id")
-                        .audio(
-                            RealtimeSessionCreateResponse.Audio.builder()
-                                .input(
-                                    RealtimeSessionCreateResponse.Audio.Input.builder()
-                                        .format(
-                                            RealtimeAudioFormats.AudioPcm.builder()
-                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
-                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
-                                                .build()
-                                        )
-                                        .noiseReduction(
-                                            RealtimeSessionCreateResponse.Audio.Input.NoiseReduction
-                                                .builder()
-                                                .type(NoiseReductionType.NEAR_FIELD)
-                                                .build()
-                                        )
-                                        .transcription(
-                                            AudioTranscription.builder()
-                                                .delay(AudioTranscription.Delay.MINIMAL)
-                                                .addKeyword("string")
-                                                .language("language")
-                                                .addLanguage("string")
-                                                .model(AudioTranscription.Model.WHISPER_1)
-                                                .prompt("prompt")
-                                                .build()
-                                        )
-                                        .turnDetection(
-                                            RealtimeSessionCreateResponse.Audio.Input.TurnDetection
-                                                .ServerVad
-                                                .builder()
-                                                .createResponse(true)
-                                                .idleTimeoutMs(5000L)
-                                                .interruptResponse(true)
-                                                .prefixPaddingMs(0L)
-                                                .silenceDurationMs(0L)
-                                                .threshold(0.0)
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .output(
-                                    RealtimeSessionCreateResponse.Audio.Output.builder()
-                                        .format(
-                                            RealtimeAudioFormats.AudioPcm.builder()
-                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
-                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
-                                                .build()
-                                        )
-                                        .speed(0.25)
-                                        .voice(RealtimeSessionCreateResponse.Audio.Output.Voice.ASH)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .expiresAt(0L)
-                        .addInclude(
-                            RealtimeSessionCreateResponse.Include
-                                .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
-                        )
-                        .instructions("instructions")
-                        .maxOutputTokensInf()
-                        .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
-                        .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
-                        .prompt(
-                            ResponsePrompt.builder()
-                                .id("id")
-                                .variables(
-                                    ResponsePrompt.Variables.builder()
-                                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                                        .build()
-                                )
-                                .version("version")
-                                .build()
-                        )
-                        .reasoning(
-                            RealtimeReasoning.builder()
-                                .effort(RealtimeReasoningEffort.MINIMAL)
-                                .build()
-                        )
-                        .toolChoice(ToolChoiceOptions.NONE)
-                        .addTool(
-                            RealtimeFunctionTool.builder()
-                                .description("description")
-                                .name("name")
-                                .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(RealtimeFunctionTool.Type.FUNCTION)
-                                .build()
-                        )
-                        .tracingAuto()
-                        .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
-                        .build()
-                )
-                .value("value")
-                .build()
 
         val roundtrippedClientSecretCreateResponse =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.groups
 
@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class GroupDeleteResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val groupDeleteResponse = GroupDeleteResponse.builder().id("id").deleted(true).build()
 
         assertThat(groupDeleteResponse.id()).isEqualTo("id")
         assertThat(groupDeleteResponse.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val groupDeleteResponse = GroupDeleteResponse.builder().id("id").deleted(true).build()
 
         val roundtrippedGroupDeleteResponse =
             jsonMapper.readValue(

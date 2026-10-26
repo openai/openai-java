@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeTranslationClientSecretCreateResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeTranslationClientSecretCreateResponse =
             RealtimeTranslationClientSecretCreateResponse.builder()
                 .expiresAt(0L)
@@ -84,48 +84,8 @@ internal class RealtimeTranslationClientSecretCreateResponseTest {
                     .build()
             )
         assertThat(realtimeTranslationClientSecretCreateResponse.value()).isEqualTo("value")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeTranslationClientSecretCreateResponse =
-            RealtimeTranslationClientSecretCreateResponse.builder()
-                .expiresAt(0L)
-                .session(
-                    RealtimeTranslationSession.builder()
-                        .id("id")
-                        .audio(
-                            RealtimeTranslationSession.Audio.builder()
-                                .input(
-                                    RealtimeTranslationSession.Audio.Input.builder()
-                                        .noiseReduction(
-                                            RealtimeTranslationSession.Audio.Input.NoiseReduction
-                                                .builder()
-                                                .type(NoiseReductionType.NEAR_FIELD)
-                                                .build()
-                                        )
-                                        .transcription(
-                                            RealtimeTranslationSession.Audio.Input.Transcription
-                                                .builder()
-                                                .model("model")
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .output(
-                                    RealtimeTranslationSession.Audio.Output.builder()
-                                        .language("language")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .expiresAt(0L)
-                        .model("model")
-                        .build()
-                )
-                .value("value")
-                .build()
 
         val roundtrippedRealtimeTranslationClientSecretCreateResponse =
             jsonMapper.readValue(

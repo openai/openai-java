@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ProjectTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val project =
             Project.builder()
                 .id("id")
@@ -18,6 +18,7 @@ internal class ProjectTest {
                 .archivedAt(0L)
                 .externalKeyId("external_key_id")
                 .name("name")
+                .residency(ProjectResidency.GLOBAL)
                 .status("status")
                 .build()
 
@@ -26,21 +27,10 @@ internal class ProjectTest {
         assertThat(project.archivedAt()).contains(0L)
         assertThat(project.externalKeyId()).contains("external_key_id")
         assertThat(project.name()).contains("name")
+        assertThat(project.residency()).contains(ProjectResidency.GLOBAL)
         assertThat(project.status()).contains("status")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val project =
-            Project.builder()
-                .id("id")
-                .createdAt(0L)
-                .archivedAt(0L)
-                .externalKeyId("external_key_id")
-                .name("name")
-                .status("status")
-                .build()
 
         val roundtrippedProject =
             jsonMapper.readValue(jsonMapper.writeValueAsString(project), jacksonTypeRef<Project>())

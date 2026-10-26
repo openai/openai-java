@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.chatkit.threads
 
@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ChatSessionRateLimitsTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatSessionRateLimits =
             ChatSessionRateLimits.builder().maxRequestsPer1Minute(0L).build()
 
         assertThat(chatSessionRateLimits.maxRequestsPer1Minute()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatSessionRateLimits =
-            ChatSessionRateLimits.builder().maxRequestsPer1Minute(0L).build()
 
         val roundtrippedChatSessionRateLimits =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.vectorstores.files
 
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 internal class VectorStoreFileTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val vectorStoreFile =
             VectorStoreFile.builder()
                 .id("id")
@@ -72,36 +72,8 @@ internal class VectorStoreFileTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val vectorStoreFile =
-            VectorStoreFile.builder()
-                .id("id")
-                .createdAt(0L)
-                .lastError(
-                    VectorStoreFile.LastError.builder()
-                        .code(VectorStoreFile.LastError.Code.SERVER_ERROR)
-                        .message("message")
-                        .build()
-                )
-                .status(VectorStoreFile.Status.IN_PROGRESS)
-                .usageBytes(0L)
-                .vectorStoreId("vector_store_id")
-                .attributes(
-                    VectorStoreFile.Attributes.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .staticChunkingStrategy(
-                    StaticFileChunkingStrategy.builder()
-                        .chunkOverlapTokens(0L)
-                        .maxChunkSizeTokens(100L)
-                        .build()
-                )
-                .build()
 
         val roundtrippedVectorStoreFile =
             jsonMapper.readValue(

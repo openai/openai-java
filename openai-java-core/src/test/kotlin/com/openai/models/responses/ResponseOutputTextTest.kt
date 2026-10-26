@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseOutputTextTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseOutputText =
             ResponseOutputText.builder()
                 .addAnnotation(
@@ -64,36 +64,8 @@ internal class ResponseOutputTextTest {
                     )
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseOutputText =
-            ResponseOutputText.builder()
-                .addAnnotation(
-                    ResponseOutputText.Annotation.FileCitation.builder()
-                        .fileId("file_id")
-                        .filename("filename")
-                        .index(0L)
-                        .build()
-                )
-                .text("text")
-                .addLogprob(
-                    ResponseOutputText.Logprob.builder()
-                        .token("token")
-                        .addByte(0L)
-                        .logprob(0.0)
-                        .addTopLogprob(
-                            ResponseOutputText.Logprob.TopLogprob.builder()
-                                .token("token")
-                                .addByte(0L)
-                                .logprob(0.0)
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedResponseOutputText =
             jsonMapper.readValue(

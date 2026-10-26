@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.methods
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SupervisedMethodTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val supervisedMethod =
             SupervisedMethod.builder()
                 .hyperparameters(
@@ -30,21 +30,8 @@ internal class SupervisedMethodTest {
                     .nEpochsAuto()
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val supervisedMethod =
-            SupervisedMethod.builder()
-                .hyperparameters(
-                    SupervisedHyperparameters.builder()
-                        .batchSizeAuto()
-                        .learningRateMultiplierAuto()
-                        .nEpochsAuto()
-                        .build()
-                )
-                .build()
 
         val roundtrippedSupervisedMethod =
             jsonMapper.readValue(

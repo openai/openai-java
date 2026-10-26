@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.webhooks
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseCancelledWebhookEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseCancelledWebhookEvent =
             ResponseCancelledWebhookEvent.builder()
                 .id("id")
@@ -25,18 +25,8 @@ internal class ResponseCancelledWebhookEventTest {
             .isEqualTo(ResponseCancelledWebhookEvent.Data.builder().id("id").build())
         assertThat(responseCancelledWebhookEvent.object_())
             .contains(ResponseCancelledWebhookEvent.Object.EVENT)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseCancelledWebhookEvent =
-            ResponseCancelledWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(ResponseCancelledWebhookEvent.Data.builder().id("id").build())
-                .object_(ResponseCancelledWebhookEvent.Object.EVENT)
-                .build()
 
         val roundtrippedResponseCancelledWebhookEvent =
             jsonMapper.readValue(

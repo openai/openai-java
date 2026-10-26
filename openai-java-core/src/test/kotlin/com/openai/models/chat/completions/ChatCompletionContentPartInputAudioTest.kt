@@ -1,16 +1,17 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class ChatCompletionContentPartInputAudioTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionContentPartInputAudio =
             ChatCompletionContentPartInputAudio.builder()
                 .inputAudio(
@@ -20,7 +21,9 @@ internal class ChatCompletionContentPartInputAudioTest {
                         .build()
                 )
                 .promptCacheBreakpoint(
-                    ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build()
+                    ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -32,24 +35,13 @@ internal class ChatCompletionContentPartInputAudioTest {
                     .build()
             )
         assertThat(chatCompletionContentPartInputAudio.promptCacheBreakpoint())
-            .contains(ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build())
-    }
+            .contains(
+                ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder()
+                    .ttl(PromptCacheBreakpointTtl._30M)
+                    .build()
+            )
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionContentPartInputAudio =
-            ChatCompletionContentPartInputAudio.builder()
-                .inputAudio(
-                    ChatCompletionContentPartInputAudio.InputAudio.builder()
-                        .data("data")
-                        .format(ChatCompletionContentPartInputAudio.InputAudio.Format.WAV)
-                        .build()
-                )
-                .promptCacheBreakpoint(
-                    ChatCompletionContentPartInputAudio.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedChatCompletionContentPartInputAudio =
             jsonMapper.readValue(

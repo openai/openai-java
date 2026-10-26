@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseErrorEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseErrorEvent =
             ResponseErrorEvent.builder()
                 .code("code")
@@ -23,18 +23,8 @@ internal class ResponseErrorEventTest {
         assertThat(responseErrorEvent.message()).isEqualTo("message")
         assertThat(responseErrorEvent.param()).contains("param")
         assertThat(responseErrorEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseErrorEvent =
-            ResponseErrorEvent.builder()
-                .code("code")
-                .message("message")
-                .param("param")
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseErrorEvent =
             jsonMapper.readValue(

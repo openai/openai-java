@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,11 +10,10 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseFunctionToolCallOutputItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseFunctionToolCallOutputItem =
             BetaResponseFunctionToolCallOutputItem.builder()
                 .id("id")
-                .callId("call_id")
                 .output("string")
                 .status(BetaResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                 .agent(
@@ -22,6 +21,7 @@ internal class BetaResponseFunctionToolCallOutputItemTest {
                         .agentName("agent_name")
                         .build()
                 )
+                .callId("call_id")
                 .callerDirect()
                 .createdBy("created_by")
                 .name("name")
@@ -29,7 +29,6 @@ internal class BetaResponseFunctionToolCallOutputItemTest {
                 .build()
 
         assertThat(betaResponseFunctionToolCallOutputItem.id()).isEqualTo("id")
-        assertThat(betaResponseFunctionToolCallOutputItem.callId()).isEqualTo("call_id")
         assertThat(betaResponseFunctionToolCallOutputItem.output())
             .isEqualTo(BetaResponseFunctionToolCallOutputItem.Output.ofString("string"))
         assertThat(betaResponseFunctionToolCallOutputItem.status())
@@ -40,32 +39,14 @@ internal class BetaResponseFunctionToolCallOutputItemTest {
                     .agentName("agent_name")
                     .build()
             )
+        assertThat(betaResponseFunctionToolCallOutputItem.callId()).contains("call_id")
         assertThat(betaResponseFunctionToolCallOutputItem.caller())
             .contains(BetaResponseFunctionToolCallOutputItem.Caller.ofDirect())
         assertThat(betaResponseFunctionToolCallOutputItem.createdBy()).contains("created_by")
         assertThat(betaResponseFunctionToolCallOutputItem.name()).contains("name")
         assertThat(betaResponseFunctionToolCallOutputItem.namespace()).contains("namespace")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseFunctionToolCallOutputItem =
-            BetaResponseFunctionToolCallOutputItem.builder()
-                .id("id")
-                .callId("call_id")
-                .output("string")
-                .status(BetaResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
-                .agent(
-                    BetaResponseFunctionToolCallOutputItem.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .callerDirect()
-                .createdBy("created_by")
-                .name("name")
-                .namespace("namespace")
-                .build()
 
         val roundtrippedBetaResponseFunctionToolCallOutputItem =
             jsonMapper.readValue(

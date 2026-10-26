@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -18,7 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * Cancels a model response with the given ID. Only responses created with the `background`
  * parameter set to `true` can be cancelled.
- * [Learn more](https://platform.openai.com/docs/guides/background).
+ * [Learn more](https://developers.openai.com/api/docs/guides/background).
  */
 class ResponseCancelParams
 private constructor(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.runs.steps
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class CodeInterpreterOutputImageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val codeInterpreterOutputImage =
             CodeInterpreterOutputImage.builder()
                 .index(0L)
@@ -20,16 +20,8 @@ internal class CodeInterpreterOutputImageTest {
         assertThat(codeInterpreterOutputImage.index()).isEqualTo(0L)
         assertThat(codeInterpreterOutputImage.image())
             .contains(CodeInterpreterOutputImage.Image.builder().fileId("file_id").build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val codeInterpreterOutputImage =
-            CodeInterpreterOutputImage.builder()
-                .index(0L)
-                .image(CodeInterpreterOutputImage.Image.builder().fileId("file_id").build())
-                .build()
 
         val roundtrippedCodeInterpreterOutputImage =
             jsonMapper.readValue(

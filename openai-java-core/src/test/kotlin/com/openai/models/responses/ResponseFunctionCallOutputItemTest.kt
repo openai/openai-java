@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -20,7 +21,9 @@ internal class ResponseFunctionCallOutputItemTest {
             ResponseInputTextContent.builder()
                 .text("text")
                 .promptCacheBreakpoint(
-                    ResponseInputTextContent.PromptCacheBreakpoint.builder().build()
+                    ResponseInputTextContent.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -39,7 +42,9 @@ internal class ResponseFunctionCallOutputItemTest {
                 ResponseInputTextContent.builder()
                     .text("text")
                     .promptCacheBreakpoint(
-                        ResponseInputTextContent.PromptCacheBreakpoint.builder().build()
+                        ResponseInputTextContent.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )
@@ -62,7 +67,9 @@ internal class ResponseFunctionCallOutputItemTest {
                 .fileId("file-123")
                 .imageUrl("https://example.com")
                 .promptCacheBreakpoint(
-                    ResponseInputImageContent.PromptCacheBreakpoint.builder().build()
+                    ResponseInputImageContent.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -83,7 +90,9 @@ internal class ResponseFunctionCallOutputItemTest {
                     .fileId("file-123")
                     .imageUrl("https://example.com")
                     .promptCacheBreakpoint(
-                        ResponseInputImageContent.PromptCacheBreakpoint.builder().build()
+                        ResponseInputImageContent.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )
@@ -108,7 +117,9 @@ internal class ResponseFunctionCallOutputItemTest {
                 .fileUrl("https://example.com")
                 .filename("filename")
                 .promptCacheBreakpoint(
-                    ResponseInputFileContent.PromptCacheBreakpoint.builder().build()
+                    ResponseInputFileContent.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -131,7 +142,9 @@ internal class ResponseFunctionCallOutputItemTest {
                     .fileUrl("https://example.com")
                     .filename("filename")
                     .promptCacheBreakpoint(
-                        ResponseInputFileContent.PromptCacheBreakpoint.builder().build()
+                        ResponseInputFileContent.PromptCacheBreakpoint.builder()
+                            .ttl(PromptCacheBreakpointTtl._30M)
+                            .build()
                     )
                     .build()
             )

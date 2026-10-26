@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ComputerUsePreviewToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val computerUsePreviewTool =
             ComputerUsePreviewTool.builder()
                 .displayHeight(0L)
@@ -22,17 +22,8 @@ internal class ComputerUsePreviewToolTest {
         assertThat(computerUsePreviewTool.displayWidth()).isEqualTo(0L)
         assertThat(computerUsePreviewTool.environment())
             .isEqualTo(ComputerUsePreviewTool.Environment.WINDOWS)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val computerUsePreviewTool =
-            ComputerUsePreviewTool.builder()
-                .displayHeight(0L)
-                .displayWidth(0L)
-                .environment(ComputerUsePreviewTool.Environment.WINDOWS)
-                .build()
 
         val roundtrippedComputerUsePreviewTool =
             jsonMapper.readValue(

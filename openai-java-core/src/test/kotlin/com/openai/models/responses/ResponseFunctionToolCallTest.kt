@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,13 +10,14 @@ import org.junit.jupiter.api.Test
 internal class ResponseFunctionToolCallTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseFunctionToolCall =
             ResponseFunctionToolCall.builder()
                 .arguments("arguments")
                 .callId("call_id")
                 .name("name")
                 .id("id")
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -26,26 +27,14 @@ internal class ResponseFunctionToolCallTest {
         assertThat(responseFunctionToolCall.callId()).isEqualTo("call_id")
         assertThat(responseFunctionToolCall.name()).isEqualTo("name")
         assertThat(responseFunctionToolCall.id()).contains("id")
+        assertThat(responseFunctionToolCall.async()).contains(true)
         assertThat(responseFunctionToolCall.caller())
             .contains(ResponseFunctionToolCall.Caller.ofDirect())
         assertThat(responseFunctionToolCall.namespace()).contains("namespace")
         assertThat(responseFunctionToolCall.status())
             .contains(ResponseFunctionToolCall.Status.IN_PROGRESS)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseFunctionToolCall =
-            ResponseFunctionToolCall.builder()
-                .arguments("arguments")
-                .callId("call_id")
-                .name("name")
-                .id("id")
-                .callerDirect()
-                .namespace("namespace")
-                .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
-                .build()
 
         val roundtrippedResponseFunctionToolCall =
             jsonMapper.readValue(

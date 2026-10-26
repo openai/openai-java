@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -19,10 +19,12 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -35,6 +37,7 @@ class BetaResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
+    private val accessPrograms: JsonField<AccessPrograms>,
     private val createdAt: JsonField<Double>,
     private val error: JsonField<BetaResponseError>,
     private val incompleteDetails: JsonField<IncompleteDetails>,
@@ -56,6 +59,7 @@ private constructor(
     private val moderation: JsonField<Moderation>,
     private val previousResponseId: JsonField<String>,
     private val prompt: JsonField<BetaResponsePrompt>,
+    private val promptCacheDiagnostics: JsonField<PromptCacheDiagnostics>,
     private val promptCacheKey: JsonField<String>,
     private val promptCacheOptions: JsonField<PromptCacheOptions>,
     private val promptCacheRetention: JsonField<PromptCacheRetention>,
@@ -74,6 +78,9 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("access_programs")
+        @ExcludeMissing
+        accessPrograms: JsonField<AccessPrograms> = JsonMissing.of(),
         @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("error")
         @ExcludeMissing
@@ -125,6 +132,9 @@ private constructor(
         @JsonProperty("prompt")
         @ExcludeMissing
         prompt: JsonField<BetaResponsePrompt> = JsonMissing.of(),
+        @JsonProperty("prompt_cache_diagnostics")
+        @ExcludeMissing
+        promptCacheDiagnostics: JsonField<PromptCacheDiagnostics> = JsonMissing.of(),
         @JsonProperty("prompt_cache_key")
         @ExcludeMissing
         promptCacheKey: JsonField<String> = JsonMissing.of(),
@@ -161,6 +171,7 @@ private constructor(
         @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
     ) : this(
         id,
+        accessPrograms,
         createdAt,
         error,
         incompleteDetails,
@@ -182,6 +193,7 @@ private constructor(
         moderation,
         previousResponseId,
         prompt,
+        promptCacheDiagnostics,
         promptCacheKey,
         promptCacheOptions,
         promptCacheRetention,
@@ -204,6 +216,12 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun id(): String = id.getRequired("id")
+
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun accessPrograms(): Optional<AccessPrograms> = accessPrograms.getOptional("access_programs")
 
     /**
      * Unix timestamp (in seconds) of when this Response was created.
@@ -256,10 +274,10 @@ private constructor(
     fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
+     * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
+     * available models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -324,16 +342,16 @@ private constructor(
      *
      * We support the following categories of tools:
      * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's capabilities,
-     *   like [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-     *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more about
-     *   [built-in tools](https://platform.openai.com/docs/guides/tools).
+     *   like [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+     *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn more
+     *   about [built-in tools](https://developers.openai.com/api/docs/guides/tools).
      * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or predefined
      *   connectors such as Google Drive and SharePoint. Learn more about
-     *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+     *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
      * - **Function calls (custom tools)**: Functions that are defined by you, enabling the model to
      *   call your own code with strongly typed arguments and outputs. Learn more about
-     *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can also
-     *   use custom tools to call your own code.
+     *   [function calling](https://developers.openai.com/api/docs/guides/function-calling). You can
+     *   also use custom tools to call your own code.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -354,7 +372,7 @@ private constructor(
 
     /**
      * Whether to run the model response in the background.
-     * [Learn more](https://platform.openai.com/docs/guides/background).
+     * [Learn more](https://developers.openai.com/api/docs/guides/background).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -382,7 +400,7 @@ private constructor(
     /**
      * An upper bound for the number of tokens that can be generated for a response, including
      * visible output tokens and
-     * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+     * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -411,8 +429,8 @@ private constructor(
     /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
-     * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot be
-     * used in conjunction with `conversation`.
+     * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+     * Cannot be used in conjunction with `conversation`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -422,7 +440,7 @@ private constructor(
 
     /**
      * Reference to a prompt template and its variables.
-     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+     * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -430,9 +448,18 @@ private constructor(
     fun prompt(): Optional<BetaResponsePrompt> = prompt.getOptional("prompt")
 
     /**
+     * Prompt cache diagnostics requested for this response.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheDiagnostics(): Optional<PromptCacheDiagnostics> =
+        promptCacheDiagnostics.getOptional("prompt_cache_diagnostics")
+
+    /**
      * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
      * Replaces the `user` field.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+     * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -454,7 +481,7 @@ private constructor(
      *
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
      * This field expresses a maximum retention policy, while `prompt_cache_options.ttl` expresses a
      * minimum cache lifetime. The two fields are independent and do not interact. For `gpt-5.5`,
      * `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -473,10 +500,8 @@ private constructor(
         promptCacheRetention.getOptional("prompt_cache_retention")
 
     /**
-     * **gpt-5 and o-series models only**
-     *
      * Configuration options for
-     * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+     * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -486,9 +511,9 @@ private constructor(
     /**
      * A stable identifier used to help detect users of your application that may be violating
      * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user, with
-     * a maximum length of 64 characters. We recommend hashing their username or email address, in
+     * a maximum length of 128 characters. We recommend hashing their username or email address, in
      * order to avoid sending us any identifying information.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -501,12 +526,15 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
      *   request will be processed with the Flex Processing service tier.
-     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
-     *   The response will show `service_tier=priority` regardless of if you specify
-     *   `service_tier=fast` or `priority` in your request.
+     * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the
+     *   request level, include the `service_tier=fast` or `service_tier=priority` parameter for
+     *   Responses or Chat Completions. The response will show `service_tier=priority` regardless of
+     *   if you specify `service_tier=fast` or `priority` in your request.
+     * - If set to 'ultrafast', then the request will be processed with the access-controlled
+     *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`; a
+     *   response served through it will show `service_tier=ultrafast`.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -530,8 +558,8 @@ private constructor(
     /**
      * Configuration options for a text response from the model. Can be plain text or structured
      * JSON data. Learn more:
-     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-     * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+     * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+     * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -575,7 +603,7 @@ private constructor(
      * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for your
      * end-users. Used to boost cache hit rates by better bucketing similar requests and to help
      * OpenAI detect and prevent abuse.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+     * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -588,6 +616,15 @@ private constructor(
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+    /**
+     * Returns the raw JSON value of [accessPrograms].
+     *
+     * Unlike [accessPrograms], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("access_programs")
+    @ExcludeMissing
+    fun _accessPrograms(): JsonField<AccessPrograms> = accessPrograms
 
     /**
      * Returns the raw JSON value of [createdAt].
@@ -755,6 +792,16 @@ private constructor(
     @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<BetaResponsePrompt> = prompt
 
     /**
+     * Returns the raw JSON value of [promptCacheDiagnostics].
+     *
+     * Unlike [promptCacheDiagnostics], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
+    @JsonProperty("prompt_cache_diagnostics")
+    @ExcludeMissing
+    fun _promptCacheDiagnostics(): JsonField<PromptCacheDiagnostics> = promptCacheDiagnostics
+
+    /**
      * Returns the raw JSON value of [promptCacheKey].
      *
      * Unlike [promptCacheKey], this method doesn't throw if the JSON field has an unexpected type.
@@ -862,6 +909,62 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "id" to this.id,
+            "access_programs" to this.accessPrograms,
+            "created_at" to this.createdAt,
+            "error" to this.error,
+            "incomplete_details" to this.incompleteDetails,
+            "instructions" to this.instructions,
+            "metadata" to this.metadata,
+            "model" to this.model,
+            "object" to this.object_,
+            "output" to this.output,
+            "parallel_tool_calls" to this.parallelToolCalls,
+            "temperature" to this.temperature,
+            "tool_choice" to this.toolChoice,
+            "tools" to this.tools,
+            "top_p" to this.topP,
+            "background" to this.background,
+            "completed_at" to this.completedAt,
+            "conversation" to this.conversation,
+            "max_output_tokens" to this.maxOutputTokens,
+            "max_tool_calls" to this.maxToolCalls,
+            "moderation" to this.moderation,
+            "previous_response_id" to this.previousResponseId,
+            "prompt" to this.prompt,
+            "prompt_cache_diagnostics" to this.promptCacheDiagnostics,
+            "prompt_cache_key" to this.promptCacheKey,
+            "prompt_cache_options" to this.promptCacheOptions,
+            "prompt_cache_retention" to this.promptCacheRetention,
+            "reasoning" to this.reasoning,
+            "safety_identifier" to this.safetyIdentifier,
+            "service_tier" to this.serviceTier,
+            "status" to this.status,
+            "text" to this.text,
+            "top_logprobs" to this.topLogprobs,
+            "truncation" to this.truncation,
+            "usage" to this.usage,
+            "user" to this.user,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -898,6 +1001,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
+        private var accessPrograms: JsonField<AccessPrograms>? = JsonNull.of()
         private var createdAt: JsonField<Double>? = null
         private var error: JsonField<BetaResponseError>? = null
         private var incompleteDetails: JsonField<IncompleteDetails>? = null
@@ -919,6 +1023,7 @@ private constructor(
         private var moderation: JsonField<Moderation> = JsonMissing.of()
         private var previousResponseId: JsonField<String> = JsonMissing.of()
         private var prompt: JsonField<BetaResponsePrompt> = JsonMissing.of()
+        private var promptCacheDiagnostics: JsonField<PromptCacheDiagnostics> = JsonMissing.of()
         private var promptCacheKey: JsonField<String> = JsonMissing.of()
         private var promptCacheOptions: JsonField<PromptCacheOptions> = JsonMissing.of()
         private var promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of()
@@ -936,6 +1041,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(betaResponse: BetaResponse) = apply {
             id = betaResponse.id
+            accessPrograms = betaResponse.accessPrograms
             createdAt = betaResponse.createdAt
             error = betaResponse.error
             incompleteDetails = betaResponse.incompleteDetails
@@ -957,6 +1063,7 @@ private constructor(
             moderation = betaResponse.moderation
             previousResponseId = betaResponse.previousResponseId
             prompt = betaResponse.prompt
+            promptCacheDiagnostics = betaResponse.promptCacheDiagnostics
             promptCacheKey = betaResponse.promptCacheKey
             promptCacheOptions = betaResponse.promptCacheOptions
             promptCacheRetention = betaResponse.promptCacheRetention
@@ -982,6 +1089,24 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
+
+        fun accessPrograms(accessPrograms: AccessPrograms?) =
+            accessPrograms(JsonField.ofNullable(accessPrograms))
+
+        /** Alias for calling [Builder.accessPrograms] with `accessPrograms.orElse(null)`. */
+        fun accessPrograms(accessPrograms: Optional<AccessPrograms>) =
+            accessPrograms(accessPrograms.getOrNull())
+
+        /**
+         * Sets [Builder.accessPrograms] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.accessPrograms] with a well-typed [AccessPrograms] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun accessPrograms(accessPrograms: JsonField<AccessPrograms>) = apply {
+            this.accessPrograms = accessPrograms
+        }
 
         /** Unix timestamp (in seconds) of when this Response was created. */
         fun createdAt(createdAt: Double) = createdAt(JsonField.of(createdAt))
@@ -1084,9 +1209,9 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
+         * models with different capabilities, performance characteristics, and price points. Refer
+         * to the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
          * available models.
          */
         fun model(model: Model) = model(JsonField.of(model))
@@ -1474,16 +1599,16 @@ private constructor(
          * We support the following categories of tools:
          * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
          *   capabilities, like
-         *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-         *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
-         *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
+         *   [web search](https://developers.openai.com/api/docs/guides/tools-web-search) or
+         *   [file search](https://developers.openai.com/api/docs/guides/tools-file-search). Learn
+         *   more about [built-in tools](https://developers.openai.com/api/docs/guides/tools).
          * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
          *   predefined connectors such as Google Drive and SharePoint. Learn more about
-         *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
+         *   [MCP Tools](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
          *   model to call your own code with strongly typed arguments and outputs. Learn more about
-         *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can
-         *   also use custom tools to call your own code.
+         *   [function calling](https://developers.openai.com/api/docs/guides/function-calling). You
+         *   can also use custom tools to call your own code.
          */
         fun tools(tools: List<BetaTool>) = tools(JsonField.of(tools))
 
@@ -1652,7 +1777,7 @@ private constructor(
 
         /**
          * Whether to run the model response in the background.
-         * [Learn more](https://platform.openai.com/docs/guides/background).
+         * [Learn more](https://developers.openai.com/api/docs/guides/background).
          */
         fun background(background: Boolean?) = background(JsonField.ofNullable(background))
 
@@ -1725,7 +1850,7 @@ private constructor(
         /**
          * An upper bound for the number of tokens that can be generated for a response, including
          * visible output tokens and
-         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning tokens](https://developers.openai.com/api/docs/guides/reasoning).
          */
         fun maxOutputTokens(maxOutputTokens: Long?) =
             maxOutputTokens(JsonField.ofNullable(maxOutputTokens))
@@ -1799,8 +1924,8 @@ private constructor(
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
-         * be used in conjunction with `conversation`.
+         * [conversation state](https://developers.openai.com/api/docs/guides/conversation-state).
+         * Cannot be used in conjunction with `conversation`.
          */
         fun previousResponseId(previousResponseId: String?) =
             previousResponseId(JsonField.ofNullable(previousResponseId))
@@ -1824,7 +1949,7 @@ private constructor(
 
         /**
          * Reference to a prompt template and its variables.
-         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
          */
         fun prompt(prompt: BetaResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
 
@@ -1840,10 +1965,52 @@ private constructor(
          */
         fun prompt(prompt: JsonField<BetaResponsePrompt>) = apply { this.prompt = prompt }
 
+        /** Prompt cache diagnostics requested for this response. */
+        fun promptCacheDiagnostics(promptCacheDiagnostics: PromptCacheDiagnostics) =
+            promptCacheDiagnostics(JsonField.of(promptCacheDiagnostics))
+
+        /**
+         * Sets [Builder.promptCacheDiagnostics] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheDiagnostics] with a well-typed
+         * [PromptCacheDiagnostics] value instead. This method is primarily for setting the field to
+         * an undocumented or not yet supported value.
+         */
+        fun promptCacheDiagnostics(promptCacheDiagnostics: JsonField<PromptCacheDiagnostics>) =
+            apply {
+                this.promptCacheDiagnostics = promptCacheDiagnostics
+            }
+
+        /**
+         * Alias for calling [promptCacheDiagnostics] with
+         * `PromptCacheDiagnostics.ofCacheMiss(cacheMiss)`.
+         */
+        fun promptCacheDiagnostics(cacheMiss: PromptCacheDiagnostics.CacheMiss) =
+            promptCacheDiagnostics(PromptCacheDiagnostics.ofCacheMiss(cacheMiss))
+
+        /**
+         * Alias for calling [promptCacheDiagnostics] with `PromptCacheDiagnostics.ofCacheHit()`.
+         */
+        fun promptCacheDiagnosticsCacheHit() =
+            promptCacheDiagnostics(PromptCacheDiagnostics.ofCacheHit())
+
+        /**
+         * Alias for calling [promptCacheDiagnostics] with
+         * `PromptCacheDiagnostics.ofComparisonResponseNotFound()`.
+         */
+        fun promptCacheDiagnosticsComparisonResponseNotFound() =
+            promptCacheDiagnostics(PromptCacheDiagnostics.ofComparisonResponseNotFound())
+
+        /**
+         * Alias for calling [promptCacheDiagnostics] with `PromptCacheDiagnostics.ofUnavailable()`.
+         */
+        fun promptCacheDiagnosticsUnavailable() =
+            promptCacheDiagnostics(PromptCacheDiagnostics.ofUnavailable())
+
         /**
          * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
          * Replaces the `user` field.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching).
          */
         fun promptCacheKey(promptCacheKey: String?) =
             promptCacheKey(JsonField.ofNullable(promptCacheKey))
@@ -1886,7 +2053,7 @@ private constructor(
          *
          * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
          * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
          * This field expresses a maximum retention policy, while `prompt_cache_options.ttl`
          * expresses a minimum cache lifetime. The two fields are independent and do not interact.
          * For `gpt-5.5`, `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -1922,10 +2089,8 @@ private constructor(
         }
 
         /**
-         * **gpt-5 and o-series models only**
-         *
          * Configuration options for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+         * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
          */
         fun reasoning(reasoning: Reasoning?) = reasoning(JsonField.ofNullable(reasoning))
 
@@ -1944,9 +2109,9 @@ private constructor(
         /**
          * A stable identifier used to help detect users of your application that may be violating
          * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user,
-         * with a maximum length of 64 characters. We recommend hashing their username or email
+         * with a maximum length of 128 characters. We recommend hashing their username or email
          * address, in order to avoid sending us any identifying information.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          */
         fun safetyIdentifier(safetyIdentifier: String?) =
             safetyIdentifier(JsonField.ofNullable(safetyIdentifier))
@@ -1972,12 +2137,15 @@ private constructor(
          *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
-         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
-         *   request will be processed with the Flex Processing service tier.
-         * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-         *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat
-         *   Completions. The response will show `service_tier=priority` regardless of if you
-         *   specify `service_tier=fast` or `priority` in your request.
+         * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then
+         *   the request will be processed with the Flex Processing service tier.
+         * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at
+         *   the request level, include the `service_tier=fast` or `service_tier=priority` parameter
+         *   for Responses or Chat Completions. The response will show `service_tier=priority`
+         *   regardless of if you specify `service_tier=fast` or `priority` in your request.
+         * - If set to 'ultrafast', then the request will be processed with the access-controlled
+         *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`;
+         *   a response served through it will show `service_tier=ultrafast`.
          * - When not set, the default behavior is 'auto'.
          *
          *   When the `service_tier` parameter is set, the response body will include the
@@ -2018,8 +2186,8 @@ private constructor(
         /**
          * Configuration options for a text response from the model. Can be plain text or structured
          * JSON data. Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+         * - [Text inputs and outputs](https://developers.openai.com/api/docs/guides/text)
+         * - [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
          */
         fun text(text: BetaResponseTextConfig) = text(JsonField.of(text))
 
@@ -2100,7 +2268,7 @@ private constructor(
          * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for
          * your end-users. Used to boost cache hit rates by better bucketing similar requests and to
          * help OpenAI detect and prevent abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         * [Learn more](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
          */
         @Deprecated("deprecated") fun user(user: String) = user(JsonField.of(user))
 
@@ -2158,6 +2326,7 @@ private constructor(
         fun build(): BetaResponse =
             BetaResponse(
                 checkRequired("id", id),
+                checkRequired("accessPrograms", accessPrograms),
                 checkRequired("createdAt", createdAt),
                 checkRequired("error", error),
                 checkRequired("incompleteDetails", incompleteDetails),
@@ -2179,6 +2348,7 @@ private constructor(
                 moderation,
                 previousResponseId,
                 prompt,
+                promptCacheDiagnostics,
                 promptCacheKey,
                 promptCacheOptions,
                 promptCacheRetention,
@@ -2211,6 +2381,7 @@ private constructor(
         }
 
         id()
+        accessPrograms().ifPresent { it.validate() }
         createdAt()
         error().ifPresent { it.validate() }
         incompleteDetails().ifPresent { it.validate() }
@@ -2236,6 +2407,7 @@ private constructor(
         moderation().ifPresent { it.validate() }
         previousResponseId()
         prompt().ifPresent { it.validate() }
+        promptCacheDiagnostics().ifPresent { it.validate() }
         promptCacheKey()
         promptCacheOptions().ifPresent { it.validate() }
         promptCacheRetention().ifPresent { it.validate() }
@@ -2267,6 +2439,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
+            (accessPrograms.asKnown().getOrNull()?.validity() ?: 0) +
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (error.asKnown().getOrNull()?.validity() ?: 0) +
             (incompleteDetails.asKnown().getOrNull()?.validity() ?: 0) +
@@ -2288,6 +2461,7 @@ private constructor(
             (moderation.asKnown().getOrNull()?.validity() ?: 0) +
             (if (previousResponseId.asKnown().isPresent) 1 else 0) +
             (prompt.asKnown().getOrNull()?.validity() ?: 0) +
+            (promptCacheDiagnostics.asKnown().getOrNull()?.validity() ?: 0) +
             (if (promptCacheKey.asKnown().isPresent) 1 else 0) +
             (promptCacheOptions.asKnown().getOrNull()?.validity() ?: 0) +
             (promptCacheRetention.asKnown().getOrNull()?.validity() ?: 0) +
@@ -2300,6 +2474,335 @@ private constructor(
             (truncation.asKnown().getOrNull()?.validity() ?: 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0) +
             (if (user.asKnown().isPresent) 1 else 0)
+
+    class AccessPrograms
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val cyber: JsonField<Cyber>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("cyber") @ExcludeMissing cyber: JsonField<Cyber> = JsonMissing.of()
+        ) : this(cyber, mutableMapOf())
+
+        /**
+         * The effective Cyber access program used for this response.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun cyber(): Cyber = cyber.getRequired("cyber")
+
+        /**
+         * Returns the raw JSON value of [cyber].
+         *
+         * Unlike [cyber], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("cyber") @ExcludeMissing fun _cyber(): JsonField<Cyber> = cyber
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "cyber" to this.cyber)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [AccessPrograms].
+             *
+             * The following fields are required:
+             * ```java
+             * .cyber()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [AccessPrograms]. */
+        class Builder internal constructor() {
+
+            private var cyber: JsonField<Cyber>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(accessPrograms: AccessPrograms) = apply {
+                cyber = accessPrograms.cyber
+                additionalProperties = accessPrograms.additionalProperties.toMutableMap()
+            }
+
+            /** The effective Cyber access program used for this response. */
+            fun cyber(cyber: Cyber) = cyber(JsonField.of(cyber))
+
+            /**
+             * Sets [Builder.cyber] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.cyber] with a well-typed [Cyber] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun cyber(cyber: JsonField<Cyber>) = apply { this.cyber = cyber }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [AccessPrograms].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .cyber()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): AccessPrograms =
+                AccessPrograms(checkRequired("cyber", cyber), additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): AccessPrograms = apply {
+            if (validated) {
+                return@apply
+            }
+
+            cyber().validate()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (cyber.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** The effective Cyber access program used for this response. */
+        class Cyber @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val STANDARD = of("standard")
+
+                @JvmField val DAYBREAK_BLUE = of("daybreak_blue")
+
+                @JvmField val DAYBREAK_RED = of("daybreak_red")
+
+                @JvmStatic fun of(value: String) = Cyber(JsonField.of(value))
+            }
+
+            /** An enum containing [Cyber]'s known values. */
+            enum class Known {
+                STANDARD,
+                DAYBREAK_BLUE,
+                DAYBREAK_RED,
+            }
+
+            /**
+             * An enum containing [Cyber]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Cyber] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                STANDARD,
+                DAYBREAK_BLUE,
+                DAYBREAK_RED,
+                /**
+                 * An enum member indicating that [Cyber] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    STANDARD -> Value.STANDARD
+                    DAYBREAK_BLUE -> Value.DAYBREAK_BLUE
+                    DAYBREAK_RED -> Value.DAYBREAK_RED
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    STANDARD -> Known.STANDARD
+                    DAYBREAK_BLUE -> Known.DAYBREAK_BLUE
+                    DAYBREAK_RED -> Known.DAYBREAK_RED
+                    else -> throw OpenAIInvalidDataException("Unknown Cyber: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Cyber = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Cyber && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is AccessPrograms &&
+                cyber == other.cyber &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(cyber, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "AccessPrograms{cyber=$cyber, additionalProperties=$additionalProperties}"
+    }
 
     /** Details about why the response is incomplete. */
     class IncompleteDetails
@@ -2315,7 +2818,9 @@ private constructor(
         ) : this(reason, mutableMapOf())
 
         /**
-         * The reason why the response is incomplete.
+         * The reason why the response is incomplete. `steered` means the response stopped at a safe
+         * output boundary after a WebSocket `response.steer` event. The server can then create a
+         * successor response automatically with the queued input.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2334,6 +2839,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "reason" to this.reason)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -2359,7 +2882,11 @@ private constructor(
                 additionalProperties = incompleteDetails.additionalProperties.toMutableMap()
             }
 
-            /** The reason why the response is incomplete. */
+            /**
+             * The reason why the response is incomplete. `steered` means the response stopped at a
+             * safe output boundary after a WebSocket `response.steer` event. The server can then
+             * create a successor response automatically with the queued input.
+             */
             fun reason(reason: Reason) = reason(JsonField.of(reason))
 
             /**
@@ -2435,7 +2962,11 @@ private constructor(
          */
         @JvmSynthetic internal fun validity(): Int = (reason.asKnown().getOrNull()?.validity() ?: 0)
 
-        /** The reason why the response is incomplete. */
+        /**
+         * The reason why the response is incomplete. `steered` means the response stopped at a safe
+         * output boundary after a WebSocket `response.steer` event. The server can then create a
+         * successor response automatically with the queued input.
+         */
         class Reason @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
@@ -2452,7 +2983,11 @@ private constructor(
 
                 @JvmField val MAX_OUTPUT_TOKENS = of("max_output_tokens")
 
+                @JvmField val MAX_MESSAGES = of("max_messages")
+
                 @JvmField val CONTENT_FILTER = of("content_filter")
+
+                @JvmField val STEERED = of("steered")
 
                 @JvmStatic fun of(value: String) = Reason(JsonField.of(value))
             }
@@ -2460,7 +2995,9 @@ private constructor(
             /** An enum containing [Reason]'s known values. */
             enum class Known {
                 MAX_OUTPUT_TOKENS,
+                MAX_MESSAGES,
                 CONTENT_FILTER,
+                STEERED,
             }
 
             /**
@@ -2474,7 +3011,9 @@ private constructor(
              */
             enum class Value {
                 MAX_OUTPUT_TOKENS,
+                MAX_MESSAGES,
                 CONTENT_FILTER,
+                STEERED,
                 /**
                  * An enum member indicating that [Reason] was instantiated with an unknown value.
                  */
@@ -2491,7 +3030,9 @@ private constructor(
             fun value(): Value =
                 when (this) {
                     MAX_OUTPUT_TOKENS -> Value.MAX_OUTPUT_TOKENS
+                    MAX_MESSAGES -> Value.MAX_MESSAGES
                     CONTENT_FILTER -> Value.CONTENT_FILTER
+                    STEERED -> Value.STEERED
                     else -> Value._UNKNOWN
                 }
 
@@ -2507,7 +3048,9 @@ private constructor(
             fun known(): Known =
                 when (this) {
                     MAX_OUTPUT_TOKENS -> Known.MAX_OUTPUT_TOKENS
+                    MAX_MESSAGES -> Known.MAX_MESSAGES
                     CONTENT_FILTER -> Known.CONTENT_FILTER
+                    STEERED -> Known.STEERED
                     else -> throw OpenAIInvalidDataException("Unknown Reason: $value")
                 }
 
@@ -2778,7 +3321,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Instructions: $json")
+                throw OpenAIInvalidDataException("Unknown Instructions")
             }
         }
 
@@ -2843,6 +3386,23 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -2872,6 +3432,11 @@ private constructor(
 
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
+            }
+
+            /** Adds a string-valued property. */
+            fun putProperty(key: String, value: String) = apply {
+                putAdditionalProperty(key, JsonValue.from(value))
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2945,10 +3510,10 @@ private constructor(
     }
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-6-astra`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
+     * the [model guide](https://developers.openai.com/api/docs/models) to browse and compare
+     * available models.
      */
     class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -2964,6 +3529,16 @@ private constructor(
 
         companion object {
 
+            @JvmField val GPT_6_ASTRA = of("gpt-6-astra")
+
+            @JvmField val GPT_6_1_SOL = of("gpt-6.1-sol")
+
+            @JvmField val GPT_6_1_TERRA = of("gpt-6.1-terra")
+
+            @JvmField val GPT_6_SOL = of("gpt-6-sol")
+
+            @JvmField val GPT_6_LUNA = of("gpt-6-luna")
+
             @JvmField val GPT_5_6_SOL = of("gpt-5.6-sol")
 
             @JvmField val GPT_5_6_TERRA = of("gpt-5.6-terra")
@@ -2972,293 +3547,913 @@ private constructor(
 
             @JvmField val GPT_5_5 = of("gpt-5.5")
 
+            @JvmField val GPT_5_5_2026_04_23 = of("gpt-5.5-2026-04-23")
+
             @JvmField val GPT_5_4 = of("gpt-5.4")
 
             @JvmField val GPT_5_4_MINI = of("gpt-5.4-mini")
 
-            @JvmField val GPT_5_4_NANO = of("gpt-5.4-nano")
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_4_NANO = of("gpt-5.4-nano")
 
             @JvmField val GPT_5_4_MINI_2026_03_17 = of("gpt-5.4-mini-2026-03-17")
 
             @JvmField val GPT_5_4_NANO_2026_03_17 = of("gpt-5.4-nano-2026-03-17")
 
-            @JvmField val GPT_5_3_CHAT_LATEST = of("gpt-5.3-chat-latest")
+            @Deprecated(
+                "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_3_CHAT_LATEST = of("gpt-5.3-chat-latest")
 
             @JvmField val GPT_5_2 = of("gpt-5.2")
 
             @JvmField val GPT_5_2_2025_12_11 = of("gpt-5.2-2025-12-11")
 
-            @JvmField val GPT_5_2_CHAT_LATEST = of("gpt-5.2-chat-latest")
+            @Deprecated(
+                "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_2_CHAT_LATEST = of("gpt-5.2-chat-latest")
 
             @JvmField val GPT_5_2_PRO = of("gpt-5.2-pro")
 
             @JvmField val GPT_5_2_PRO_2025_12_11 = of("gpt-5.2-pro-2025-12-11")
 
-            @JvmField val GPT_5_1 = of("gpt-5.1")
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_1 = of("gpt-5.1")
 
             @JvmField val GPT_5_1_2025_11_13 = of("gpt-5.1-2025-11-13")
 
-            @JvmField val GPT_5_1_CODEX = of("gpt-5.1-codex")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_1_CODEX = of("gpt-5.1-codex")
 
-            @JvmField val GPT_5_1_MINI = of("gpt-5.1-mini")
+            @Deprecated("Not a supported model ID. Retained for SDK compatibility.")
+            @JvmField
+            val GPT_5_1_MINI = of("gpt-5.1-mini")
 
-            @JvmField val GPT_5_1_CHAT_LATEST = of("gpt-5.1-chat-latest")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_1_CHAT_LATEST = of("gpt-5.1-chat-latest")
 
-            @JvmField val GPT_5 = of("gpt-5")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5 = of("gpt-5")
 
-            @JvmField val GPT_5_MINI = of("gpt-5-mini")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_MINI = of("gpt-5-mini")
 
-            @JvmField val GPT_5_NANO = of("gpt-5-nano")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_NANO = of("gpt-5-nano")
 
-            @JvmField val GPT_5_2025_08_07 = of("gpt-5-2025-08-07")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_2025_08_07 = of("gpt-5-2025-08-07")
 
-            @JvmField val GPT_5_MINI_2025_08_07 = of("gpt-5-mini-2025-08-07")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_MINI_2025_08_07 = of("gpt-5-mini-2025-08-07")
 
-            @JvmField val GPT_5_NANO_2025_08_07 = of("gpt-5-nano-2025-08-07")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_NANO_2025_08_07 = of("gpt-5-nano-2025-08-07")
 
-            @JvmField val GPT_5_CHAT_LATEST = of("gpt-5-chat-latest")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_CHAT_LATEST = of("gpt-5-chat-latest")
 
-            @JvmField val GPT_4_1 = of("gpt-4.1")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1 = of("gpt-4.1")
 
-            @JvmField val GPT_4_1_MINI = of("gpt-4.1-mini")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1_MINI = of("gpt-4.1-mini")
 
-            @JvmField val GPT_4_1_NANO = of("gpt-4.1-nano")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1_NANO = of("gpt-4.1-nano")
 
-            @JvmField val GPT_4_1_2025_04_14 = of("gpt-4.1-2025-04-14")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1_2025_04_14 = of("gpt-4.1-2025-04-14")
 
-            @JvmField val GPT_4_1_MINI_2025_04_14 = of("gpt-4.1-mini-2025-04-14")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1_MINI_2025_04_14 = of("gpt-4.1-mini-2025-04-14")
 
-            @JvmField val GPT_4_1_NANO_2025_04_14 = of("gpt-4.1-nano-2025-04-14")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1_NANO_2025_04_14 = of("gpt-4.1-nano-2025-04-14")
 
-            @JvmField val O4_MINI = of("o4-mini")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O4_MINI = of("o4-mini")
 
-            @JvmField val O4_MINI_2025_04_16 = of("o4-mini-2025-04-16")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O4_MINI_2025_04_16 = of("o4-mini-2025-04-16")
 
-            @JvmField val O3 = of("o3")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3 = of("o3")
 
-            @JvmField val O3_2025_04_16 = of("o3-2025-04-16")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_2025_04_16 = of("o3-2025-04-16")
 
-            @JvmField val O3_MINI = of("o3-mini")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_MINI = of("o3-mini")
 
-            @JvmField val O3_MINI_2025_01_31 = of("o3-mini-2025-01-31")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_MINI_2025_01_31 = of("o3-mini-2025-01-31")
 
-            @JvmField val O1 = of("o1")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1 = of("o1")
 
-            @JvmField val O1_2024_12_17 = of("o1-2024-12-17")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_2024_12_17 = of("o1-2024-12-17")
 
-            @JvmField val O1_PREVIEW = of("o1-preview")
+            @Deprecated(
+                "Announced shutdown date: 2025-07-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_PREVIEW = of("o1-preview")
 
-            @JvmField val O1_PREVIEW_2024_09_12 = of("o1-preview-2024-09-12")
+            @Deprecated(
+                "Announced shutdown date: 2025-07-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_PREVIEW_2024_09_12 = of("o1-preview-2024-09-12")
 
-            @JvmField val O1_MINI = of("o1-mini")
+            @Deprecated(
+                "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_MINI = of("o1-mini")
 
-            @JvmField val O1_MINI_2024_09_12 = of("o1-mini-2024-09-12")
+            @Deprecated(
+                "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_MINI_2024_09_12 = of("o1-mini-2024-09-12")
 
-            @JvmField val GPT_4O = of("gpt-4o")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O = of("gpt-4o")
 
-            @JvmField val GPT_4O_2024_11_20 = of("gpt-4o-2024-11-20")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_2024_11_20 = of("gpt-4o-2024-11-20")
 
-            @JvmField val GPT_4O_2024_08_06 = of("gpt-4o-2024-08-06")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_2024_08_06 = of("gpt-4o-2024-08-06")
 
-            @JvmField val GPT_4O_2024_05_13 = of("gpt-4o-2024-05-13")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_2024_05_13 = of("gpt-4o-2024-05-13")
 
-            @JvmField val GPT_4O_AUDIO_PREVIEW = of("gpt-4o-audio-preview")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_AUDIO_MINI = of("gpt-audio-mini")
 
-            @JvmField val GPT_4O_AUDIO_PREVIEW_2024_10_01 = of("gpt-4o-audio-preview-2024-10-01")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_AUDIO_MINI_2025_12_15 = of("gpt-audio-mini-2025-12-15")
 
-            @JvmField val GPT_4O_AUDIO_PREVIEW_2024_12_17 = of("gpt-4o-audio-preview-2024-12-17")
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_AUDIO_PREVIEW = of("gpt-4o-audio-preview")
 
-            @JvmField val GPT_4O_AUDIO_PREVIEW_2025_06_03 = of("gpt-4o-audio-preview-2025-06-03")
+            @Deprecated(
+                "Announced shutdown date: 2025-10-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_AUDIO_PREVIEW_2024_10_01 = of("gpt-4o-audio-preview-2024-10-01")
 
-            @JvmField val GPT_4O_MINI_AUDIO_PREVIEW = of("gpt-4o-mini-audio-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_AUDIO_PREVIEW_2024_12_17 = of("gpt-4o-audio-preview-2024-12-17")
 
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_AUDIO_PREVIEW_2025_06_03 = of("gpt-4o-audio-preview-2025-06-03")
+
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_MINI_AUDIO_PREVIEW = of("gpt-4o-mini-audio-preview")
+
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             @JvmField
             val GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17 = of("gpt-4o-mini-audio-preview-2024-12-17")
 
-            @JvmField val GPT_4O_SEARCH_PREVIEW = of("gpt-4o-search-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_SEARCH_PREVIEW = of("gpt-4o-search-preview")
 
-            @JvmField val GPT_4O_MINI_SEARCH_PREVIEW = of("gpt-4o-mini-search-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_MINI_SEARCH_PREVIEW = of("gpt-4o-mini-search-preview")
 
-            @JvmField val GPT_4O_SEARCH_PREVIEW_2025_03_11 = of("gpt-4o-search-preview-2025-03-11")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_SEARCH_PREVIEW_2025_03_11 = of("gpt-4o-search-preview-2025-03-11")
 
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             @JvmField
             val GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11 = of("gpt-4o-mini-search-preview-2025-03-11")
 
-            @JvmField val CHATGPT_4O_LATEST = of("chatgpt-4o-latest")
+            @Deprecated(
+                "Announced shutdown date: 2026-02-17. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val CHATGPT_4O_LATEST = of("chatgpt-4o-latest")
 
-            @JvmField val CODEX_MINI_LATEST = of("codex-mini-latest")
+            @Deprecated(
+                "Announced shutdown date: 2026-02-12. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val CODEX_MINI_LATEST = of("codex-mini-latest")
 
-            @JvmField val GPT_4O_MINI = of("gpt-4o-mini")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_MINI = of("gpt-4o-mini")
 
-            @JvmField val GPT_4O_MINI_2024_07_18 = of("gpt-4o-mini-2024-07-18")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_MINI_2024_07_18 = of("gpt-4o-mini-2024-07-18")
 
-            @JvmField val GPT_4_TURBO = of("gpt-4-turbo")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_TURBO = of("gpt-4-turbo")
 
-            @JvmField val GPT_4_TURBO_2024_04_09 = of("gpt-4-turbo-2024-04-09")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_TURBO_2024_04_09 = of("gpt-4-turbo-2024-04-09")
 
-            @JvmField val GPT_4_0125_PREVIEW = of("gpt-4-0125-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_0125_PREVIEW = of("gpt-4-0125-preview")
 
-            @JvmField val GPT_4_TURBO_PREVIEW = of("gpt-4-turbo-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_TURBO_PREVIEW = of("gpt-4-turbo-preview")
 
-            @JvmField val GPT_4_1106_PREVIEW = of("gpt-4-1106-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_1106_PREVIEW = of("gpt-4-1106-preview")
 
-            @JvmField val GPT_4_VISION_PREVIEW = of("gpt-4-vision-preview")
+            @Deprecated(
+                "Announced shutdown date: 2024-12-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_VISION_PREVIEW = of("gpt-4-vision-preview")
 
-            @JvmField val GPT_4 = of("gpt-4")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4 = of("gpt-4")
 
-            @JvmField val GPT_4_0314 = of("gpt-4-0314")
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_0314 = of("gpt-4-0314")
 
-            @JvmField val GPT_4_0613 = of("gpt-4-0613")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_0613 = of("gpt-4-0613")
 
-            @JvmField val GPT_4_32K = of("gpt-4-32k")
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_32K = of("gpt-4-32k")
 
-            @JvmField val GPT_4_32K_0314 = of("gpt-4-32k-0314")
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_32K_0314 = of("gpt-4-32k-0314")
 
-            @JvmField val GPT_4_32K_0613 = of("gpt-4-32k-0613")
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4_32K_0613 = of("gpt-4-32k-0613")
 
-            @JvmField val GPT_3_5_TURBO = of("gpt-3.5-turbo")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO = of("gpt-3.5-turbo")
 
-            @JvmField val GPT_3_5_TURBO_16K = of("gpt-3.5-turbo-16k")
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO_16K = of("gpt-3.5-turbo-16k")
 
-            @JvmField val GPT_3_5_TURBO_0301 = of("gpt-3.5-turbo-0301")
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO_0301 = of("gpt-3.5-turbo-0301")
 
-            @JvmField val GPT_3_5_TURBO_0613 = of("gpt-3.5-turbo-0613")
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO_0613 = of("gpt-3.5-turbo-0613")
 
-            @JvmField val GPT_3_5_TURBO_1106 = of("gpt-3.5-turbo-1106")
+            @Deprecated(
+                "Announced shutdown date: 2026-09-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO_1106 = of("gpt-3.5-turbo-1106")
 
-            @JvmField val GPT_3_5_TURBO_0125 = of("gpt-3.5-turbo-0125")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO_0125 = of("gpt-3.5-turbo-0125")
 
-            @JvmField val GPT_3_5_TURBO_16K_0613 = of("gpt-3.5-turbo-16k-0613")
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_3_5_TURBO_16K_0613 = of("gpt-3.5-turbo-16k-0613")
 
-            @JvmField val O1_PRO = of("o1-pro")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_PRO = of("o1-pro")
 
-            @JvmField val O1_PRO_2025_03_19 = of("o1-pro-2025-03-19")
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O1_PRO_2025_03_19 = of("o1-pro-2025-03-19")
 
-            @JvmField val O3_PRO = of("o3-pro")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_PRO = of("o3-pro")
 
-            @JvmField val O3_PRO_2025_06_10 = of("o3-pro-2025-06-10")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_PRO_2025_06_10 = of("o3-pro-2025-06-10")
 
-            @JvmField val O3_DEEP_RESEARCH = of("o3-deep-research")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_DEEP_RESEARCH = of("o3-deep-research")
 
-            @JvmField val O3_DEEP_RESEARCH_2025_06_26 = of("o3-deep-research-2025-06-26")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O3_DEEP_RESEARCH_2025_06_26 = of("o3-deep-research-2025-06-26")
 
-            @JvmField val O4_MINI_DEEP_RESEARCH = of("o4-mini-deep-research")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O4_MINI_DEEP_RESEARCH = of("o4-mini-deep-research")
 
-            @JvmField val O4_MINI_DEEP_RESEARCH_2025_06_26 = of("o4-mini-deep-research-2025-06-26")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val O4_MINI_DEEP_RESEARCH_2025_06_26 = of("o4-mini-deep-research-2025-06-26")
 
-            @JvmField val COMPUTER_USE_PREVIEW = of("computer-use-preview")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val COMPUTER_USE_PREVIEW = of("computer-use-preview")
 
-            @JvmField val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
 
-            @JvmField val GPT_5_CODEX = of("gpt-5-codex")
+            @JvmField val GPT_5_5_PRO = of("gpt-5.5-pro")
 
-            @JvmField val GPT_5_PRO = of("gpt-5-pro")
+            @JvmField val GPT_5_5_PRO_2026_04_23 = of("gpt-5.5-pro-2026-04-23")
 
-            @JvmField val GPT_5_PRO_2025_10_06 = of("gpt-5-pro-2025-10-06")
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_CODEX = of("gpt-5-codex")
 
-            @JvmField val GPT_5_1_CODEX_MAX = of("gpt-5.1-codex-max")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_PRO = of("gpt-5-pro")
+
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_PRO_2025_10_06 = of("gpt-5-pro-2025-10-06")
+
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_1_CODEX_MAX = of("gpt-5.1-codex-max")
+
+            @JvmField val GPT_DAYBREAK_BLUE_LATEST = of("gpt-daybreak-blue-latest")
+
+            @JvmField val GPT_DAYBREAK_RED_LATEST = of("gpt-daybreak-red-latest")
+
+            @JvmField val GPT_5_6_CYBER = of("gpt-5.6-cyber")
+
+            @JvmField val GPT_ROSALIND_RESEARCH = of("gpt-rosalind-research")
 
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            GPT_6_ASTRA,
+            GPT_6_1_SOL,
+            GPT_6_1_TERRA,
+            GPT_6_SOL,
+            GPT_6_LUNA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
             GPT_5_5,
+            GPT_5_5_2026_04_23,
             GPT_5_4,
             GPT_5_4_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_4_NANO,
             GPT_5_4_MINI_2026_03_17,
             GPT_5_4_NANO_2026_03_17,
+            @Deprecated(
+                "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_3_CHAT_LATEST,
             GPT_5_2,
             GPT_5_2_2025_12_11,
+            @Deprecated(
+                "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_2_CHAT_LATEST,
             GPT_5_2_PRO,
             GPT_5_2_PRO_2025_12_11,
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1,
             GPT_5_1_2025_11_13,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_CODEX,
-            GPT_5_1_MINI,
+            @Deprecated("Not a supported model ID. Retained for SDK compatibility.") GPT_5_1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_CHAT_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_NANO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_MINI_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_NANO_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_CHAT_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_NANO,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_2025_04_14,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_MINI_2025_04_14,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_NANO_2025_04_14,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI_2025_04_16,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_2025_04_16,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_MINI_2025_01_31,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2025-07-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2025-07-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PREVIEW_2024_09_12,
+            @Deprecated(
+                "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_MINI_2024_09_12,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_2024_11_20,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_2024_08_06,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_2024_05_13,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            GPT_AUDIO_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            GPT_AUDIO_MINI_2025_12_15,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2025-10-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW_2024_10_01,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW_2025_06_03,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_AUDIO_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_SEARCH_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_SEARCH_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_SEARCH_PREVIEW_2025_03_11,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11,
+            @Deprecated(
+                "Announced shutdown date: 2026-02-17. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             CHATGPT_4O_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2026-02-12. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             CODEX_MINI_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_2024_07_18,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_TURBO,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_TURBO_2024_04_09,
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_0125_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_TURBO_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1106_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2024-12-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_VISION_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4,
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_0314,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_0613,
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_32K,
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_32K_0314,
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_32K_0613,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_16K,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_0301,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_0613,
+            @Deprecated(
+                "Announced shutdown date: 2026-09-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_1106,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_0125,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_16K_0613,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PRO,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PRO_2025_03_19,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_PRO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_PRO_2025_06_10,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_DEEP_RESEARCH,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_DEEP_RESEARCH_2025_06_26,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI_DEEP_RESEARCH,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI_DEEP_RESEARCH_2025_06_26,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             COMPUTER_USE_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_5_PRO,
+            GPT_5_5_PRO_2026_04_23,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_CODEX,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_PRO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_PRO_2025_10_06,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_CODEX_MAX,
+            GPT_DAYBREAK_BLUE_LATEST,
+            GPT_DAYBREAK_RED_LATEST,
+            GPT_5_6_CYBER,
+            GPT_ROSALIND_RESEARCH,
         }
 
         /**
@@ -3271,102 +4466,368 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            GPT_6_ASTRA,
+            GPT_6_1_SOL,
+            GPT_6_1_TERRA,
+            GPT_6_SOL,
+            GPT_6_LUNA,
             GPT_5_6_SOL,
             GPT_5_6_TERRA,
             GPT_5_6_LUNA,
             GPT_5_5,
+            GPT_5_5_2026_04_23,
             GPT_5_4,
             GPT_5_4_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_4_NANO,
             GPT_5_4_MINI_2026_03_17,
             GPT_5_4_NANO_2026_03_17,
+            @Deprecated(
+                "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_3_CHAT_LATEST,
             GPT_5_2,
             GPT_5_2_2025_12_11,
+            @Deprecated(
+                "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_2_CHAT_LATEST,
             GPT_5_2_PRO,
             GPT_5_2_PRO_2025_12_11,
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1,
             GPT_5_1_2025_11_13,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_CODEX,
-            GPT_5_1_MINI,
+            @Deprecated("Not a supported model ID. Retained for SDK compatibility.") GPT_5_1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_CHAT_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_NANO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_MINI_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_NANO_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_CHAT_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_NANO,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_2025_04_14,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_MINI_2025_04_14,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1_NANO_2025_04_14,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI_2025_04_16,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_2025_04_16,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_MINI_2025_01_31,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2025-07-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2025-07-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PREVIEW_2024_09_12,
+            @Deprecated(
+                "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2025-10-27. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_MINI_2024_09_12,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_2024_11_20,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_2024_08_06,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_2024_05_13,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            GPT_AUDIO_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            GPT_AUDIO_MINI_2025_12_15,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2025-10-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW_2024_10_01,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_AUDIO_PREVIEW_2025_06_03,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_AUDIO_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-05-07. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_SEARCH_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_SEARCH_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_SEARCH_PREVIEW_2025_03_11,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11,
+            @Deprecated(
+                "Announced shutdown date: 2026-02-17. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             CHATGPT_4O_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2026-02-12. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             CODEX_MINI_LATEST,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_2024_07_18,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_TURBO,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_TURBO_2024_04_09,
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_0125_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_TURBO_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_1106_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2024-12-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_VISION_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4,
+            @Deprecated(
+                "Announced shutdown date: 2026-03-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_0314,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_0613,
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_32K,
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_32K_0314,
+            @Deprecated(
+                "Announced shutdown date: 2025-06-06. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4_32K_0613,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_16K,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_0301,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_0613,
+            @Deprecated(
+                "Announced shutdown date: 2026-09-28. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_1106,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_0125,
+            @Deprecated(
+                "Announced shutdown date: 2024-09-13. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_3_5_TURBO_16K_0613,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PRO,
+            @Deprecated(
+                "Announced shutdown date: 2026-10-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O1_PRO_2025_03_19,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_PRO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_PRO_2025_06_10,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_DEEP_RESEARCH,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O3_DEEP_RESEARCH_2025_06_26,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI_DEEP_RESEARCH,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             O4_MINI_DEEP_RESEARCH_2025_06_26,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             COMPUTER_USE_PREVIEW,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_5_PRO,
+            GPT_5_5_PRO_2026_04_23,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_CODEX,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_PRO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_PRO_2025_10_06,
+            @Deprecated(
+                "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_CODEX_MAX,
+            GPT_DAYBREAK_BLUE_LATEST,
+            GPT_DAYBREAK_RED_LATEST,
+            GPT_5_6_CYBER,
+            GPT_ROSALIND_RESEARCH,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -3380,10 +4841,16 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                GPT_6_ASTRA -> Value.GPT_6_ASTRA
+                GPT_6_1_SOL -> Value.GPT_6_1_SOL
+                GPT_6_1_TERRA -> Value.GPT_6_1_TERRA
+                GPT_6_SOL -> Value.GPT_6_SOL
+                GPT_6_LUNA -> Value.GPT_6_LUNA
                 GPT_5_6_SOL -> Value.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Value.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Value.GPT_5_6_LUNA
                 GPT_5_5 -> Value.GPT_5_5
+                GPT_5_5_2026_04_23 -> Value.GPT_5_5_2026_04_23
                 GPT_5_4 -> Value.GPT_5_4
                 GPT_5_4_MINI -> Value.GPT_5_4_MINI
                 GPT_5_4_NANO -> Value.GPT_5_4_NANO
@@ -3429,6 +4896,8 @@ private constructor(
                 GPT_4O_2024_11_20 -> Value.GPT_4O_2024_11_20
                 GPT_4O_2024_08_06 -> Value.GPT_4O_2024_08_06
                 GPT_4O_2024_05_13 -> Value.GPT_4O_2024_05_13
+                GPT_AUDIO_MINI -> Value.GPT_AUDIO_MINI
+                GPT_AUDIO_MINI_2025_12_15 -> Value.GPT_AUDIO_MINI_2025_12_15
                 GPT_4O_AUDIO_PREVIEW -> Value.GPT_4O_AUDIO_PREVIEW
                 GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Value.GPT_4O_AUDIO_PREVIEW_2024_10_01
                 GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Value.GPT_4O_AUDIO_PREVIEW_2024_12_17
@@ -3472,10 +4941,16 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Value.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Value.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_5_PRO -> Value.GPT_5_5_PRO
+                GPT_5_5_PRO_2026_04_23 -> Value.GPT_5_5_PRO_2026_04_23
                 GPT_5_CODEX -> Value.GPT_5_CODEX
                 GPT_5_PRO -> Value.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Value.GPT_5_PRO_2025_10_06
                 GPT_5_1_CODEX_MAX -> Value.GPT_5_1_CODEX_MAX
+                GPT_DAYBREAK_BLUE_LATEST -> Value.GPT_DAYBREAK_BLUE_LATEST
+                GPT_DAYBREAK_RED_LATEST -> Value.GPT_DAYBREAK_RED_LATEST
+                GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
+                GPT_ROSALIND_RESEARCH -> Value.GPT_ROSALIND_RESEARCH
                 else -> Value._UNKNOWN
             }
 
@@ -3490,10 +4965,16 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                GPT_6_ASTRA -> Known.GPT_6_ASTRA
+                GPT_6_1_SOL -> Known.GPT_6_1_SOL
+                GPT_6_1_TERRA -> Known.GPT_6_1_TERRA
+                GPT_6_SOL -> Known.GPT_6_SOL
+                GPT_6_LUNA -> Known.GPT_6_LUNA
                 GPT_5_6_SOL -> Known.GPT_5_6_SOL
                 GPT_5_6_TERRA -> Known.GPT_5_6_TERRA
                 GPT_5_6_LUNA -> Known.GPT_5_6_LUNA
                 GPT_5_5 -> Known.GPT_5_5
+                GPT_5_5_2026_04_23 -> Known.GPT_5_5_2026_04_23
                 GPT_5_4 -> Known.GPT_5_4
                 GPT_5_4_MINI -> Known.GPT_5_4_MINI
                 GPT_5_4_NANO -> Known.GPT_5_4_NANO
@@ -3539,6 +5020,8 @@ private constructor(
                 GPT_4O_2024_11_20 -> Known.GPT_4O_2024_11_20
                 GPT_4O_2024_08_06 -> Known.GPT_4O_2024_08_06
                 GPT_4O_2024_05_13 -> Known.GPT_4O_2024_05_13
+                GPT_AUDIO_MINI -> Known.GPT_AUDIO_MINI
+                GPT_AUDIO_MINI_2025_12_15 -> Known.GPT_AUDIO_MINI_2025_12_15
                 GPT_4O_AUDIO_PREVIEW -> Known.GPT_4O_AUDIO_PREVIEW
                 GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Known.GPT_4O_AUDIO_PREVIEW_2024_10_01
                 GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Known.GPT_4O_AUDIO_PREVIEW_2024_12_17
@@ -3582,10 +5065,16 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Known.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_5_PRO -> Known.GPT_5_5_PRO
+                GPT_5_5_PRO_2026_04_23 -> Known.GPT_5_5_PRO_2026_04_23
                 GPT_5_CODEX -> Known.GPT_5_CODEX
                 GPT_5_PRO -> Known.GPT_5_PRO
                 GPT_5_PRO_2025_10_06 -> Known.GPT_5_PRO_2025_10_06
                 GPT_5_1_CODEX_MAX -> Known.GPT_5_1_CODEX_MAX
+                GPT_DAYBREAK_BLUE_LATEST -> Known.GPT_DAYBREAK_BLUE_LATEST
+                GPT_DAYBREAK_RED_LATEST -> Known.GPT_DAYBREAK_RED_LATEST
+                GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
+                GPT_ROSALIND_RESEARCH -> Known.GPT_ROSALIND_RESEARCH
                 else -> throw OpenAIInvalidDataException("Unknown Model: $value")
             }
 
@@ -3689,7 +5178,7 @@ private constructor(
 
         /**
          * Indicates that the model should use a built-in tool to generate a response.
-         * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+         * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
          */
         fun betaToolChoiceTypes(): Optional<BetaToolChoiceTypes> =
             Optional.ofNullable(betaToolChoiceTypes)
@@ -3755,7 +5244,7 @@ private constructor(
 
         /**
          * Indicates that the model should use a built-in tool to generate a response.
-         * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+         * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
          */
         fun asBetaToolChoiceTypes(): BetaToolChoiceTypes =
             betaToolChoiceTypes.getOrThrow("betaToolChoiceTypes")
@@ -4059,7 +5548,7 @@ private constructor(
 
             /**
              * Indicates that the model should use a built-in tool to generate a response.
-             * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+             * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
              */
             @JvmStatic
             fun ofBetaToolChoiceTypes(betaToolChoiceTypes: BetaToolChoiceTypes) =
@@ -4122,7 +5611,7 @@ private constructor(
 
             /**
              * Indicates that the model should use a built-in tool to generate a response.
-             * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
+             * [Learn more about built-in tools](https://developers.openai.com/api/docs/guides/tools).
              */
             fun visitBetaToolChoiceTypes(betaToolChoiceTypes: BetaToolChoiceTypes): T
 
@@ -4158,7 +5647,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ToolChoice: $json")
+                throw OpenAIInvalidDataException("Unknown ToolChoice")
             }
         }
 
@@ -4287,6 +5776,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "id" to this.id)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -4472,6 +5979,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "input" to this.input,
+                "output" to this.output,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -4807,7 +6336,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Input: $json")
+                    throw OpenAIInvalidDataException("Unknown Input")
                 }
             }
 
@@ -5008,6 +6537,34 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "categories" to this.categories,
+                        "category_applied_input_types" to this.categoryAppliedInputTypes,
+                        "category_scores" to this.categoryScores,
+                        "flagged" to this.flagged,
+                        "model" to this.model,
+                        "type" to this.type,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -5255,6 +6812,27 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue>
                 ) {
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(additionalProperties)
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -5375,6 +6953,27 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue>
                 ) {
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(additionalProperties)
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -5499,6 +7098,27 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue>
                 ) {
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(additionalProperties)
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -5720,6 +7340,31 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "code" to this.code,
+                        "message" to this.message,
+                        "type" to this.type,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -6091,7 +7736,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException in the default implementation.
                  */
                 fun unknown(json: JsonValue?): T {
-                    throw OpenAIInvalidDataException("Unknown Output: $json")
+                    throw OpenAIInvalidDataException("Unknown Output")
                 }
             }
 
@@ -6292,6 +7937,34 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "categories" to this.categories,
+                        "category_applied_input_types" to this.categoryAppliedInputTypes,
+                        "category_scores" to this.categoryScores,
+                        "flagged" to this.flagged,
+                        "model" to this.model,
+                        "type" to this.type,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -6539,6 +8212,27 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue>
                 ) {
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(additionalProperties)
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -6659,6 +8353,27 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue>
                 ) {
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(additionalProperties)
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -6783,6 +8498,27 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue>
                 ) {
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(additionalProperties)
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -7004,6 +8740,31 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "code" to this.code,
+                        "message" to this.message,
+                        "type" to this.type,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -7212,6 +8973,853 @@ private constructor(
             "Moderation{input=$input, output=$output, additionalProperties=$additionalProperties}"
     }
 
+    /** Prompt cache diagnostics requested for this response. */
+    @JsonDeserialize(using = PromptCacheDiagnostics.Deserializer::class)
+    @JsonSerialize(using = PromptCacheDiagnostics.Serializer::class)
+    class PromptCacheDiagnostics
+    private constructor(
+        private val cacheMiss: CacheMiss? = null,
+        private val cacheHit: JsonValue? = null,
+        private val comparisonResponseNotFound: JsonValue? = null,
+        private val unavailable: JsonValue? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        fun cacheMiss(): Optional<CacheMiss> = Optional.ofNullable(cacheMiss)
+
+        fun cacheHit(): Optional<JsonValue> = Optional.ofNullable(cacheHit)
+
+        fun comparisonResponseNotFound(): Optional<JsonValue> =
+            Optional.ofNullable(comparisonResponseNotFound)
+
+        fun unavailable(): Optional<JsonValue> = Optional.ofNullable(unavailable)
+
+        fun isCacheMiss(): Boolean = cacheMiss != null
+
+        fun isCacheHit(): Boolean = cacheHit != null
+
+        fun isComparisonResponseNotFound(): Boolean = comparisonResponseNotFound != null
+
+        fun isUnavailable(): Boolean = unavailable != null
+
+        fun asCacheMiss(): CacheMiss = cacheMiss.getOrThrow("cacheMiss")
+
+        fun asCacheHit(): JsonValue = cacheHit.getOrThrow("cacheHit")
+
+        fun asComparisonResponseNotFound(): JsonValue =
+            comparisonResponseNotFound.getOrThrow("comparisonResponseNotFound")
+
+        fun asUnavailable(): JsonValue = unavailable.getOrThrow("unavailable")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        /**
+         * Maps this instance's current variant to a value of type [T] using the given [visitor].
+         *
+         * Note that this method is _not_ forwards compatible with new variants from the API, unless
+         * [visitor] overrides [Visitor.unknown]. To handle variants not known to this version of
+         * the SDK gracefully, consider overriding [Visitor.unknown]:
+         * ```java
+         * import com.openai.core.JsonValue;
+         * import java.util.Optional;
+         *
+         * Optional<String> result = promptCacheDiagnostics.accept(new PromptCacheDiagnostics.Visitor<Optional<String>>() {
+         *     @Override
+         *     public Optional<String> visitCacheMiss(CacheMiss cacheMiss) {
+         *         return Optional.of(cacheMiss.toString());
+         *     }
+         *
+         *     // ...
+         *
+         *     @Override
+         *     public Optional<String> unknown(JsonValue json) {
+         *         // Or inspect the `json`.
+         *         return Optional.empty();
+         *     }
+         * });
+         * ```
+         *
+         * @throws OpenAIInvalidDataException if [Visitor.unknown] is not overridden in [visitor]
+         *   and the current variant is unknown.
+         */
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                cacheMiss != null -> visitor.visitCacheMiss(cacheMiss)
+                cacheHit != null -> visitor.visitCacheHit(cacheHit)
+                comparisonResponseNotFound != null ->
+                    visitor.visitComparisonResponseNotFound(comparisonResponseNotFound)
+                unavailable != null -> visitor.visitUnavailable(unavailable)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): PromptCacheDiagnostics = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitCacheMiss(cacheMiss: CacheMiss) {
+                        cacheMiss.validate()
+                    }
+
+                    override fun visitCacheHit(cacheHit: JsonValue) {
+                        cacheHit.let {
+                            if (it != JsonValue.from(mapOf("type" to "cache_hit"))) {
+                                throw OpenAIInvalidDataException(
+                                    "'cacheHit' is invalid, received $it"
+                                )
+                            }
+                        }
+                    }
+
+                    override fun visitComparisonResponseNotFound(
+                        comparisonResponseNotFound: JsonValue
+                    ) {
+                        comparisonResponseNotFound.let {
+                            if (
+                                it !=
+                                    JsonValue.from(mapOf("type" to "comparison_response_not_found"))
+                            ) {
+                                throw OpenAIInvalidDataException(
+                                    "'comparisonResponseNotFound' is invalid, received $it"
+                                )
+                            }
+                        }
+                    }
+
+                    override fun visitUnavailable(unavailable: JsonValue) {
+                        unavailable.let {
+                            if (it != JsonValue.from(mapOf("type" to "unavailable"))) {
+                                throw OpenAIInvalidDataException(
+                                    "'unavailable' is invalid, received $it"
+                                )
+                            }
+                        }
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitCacheMiss(cacheMiss: CacheMiss) = cacheMiss.validity()
+
+                    override fun visitCacheHit(cacheHit: JsonValue) =
+                        cacheHit.let {
+                            if (it == JsonValue.from(mapOf("type" to "cache_hit"))) 1 else 0
+                        }
+
+                    override fun visitComparisonResponseNotFound(
+                        comparisonResponseNotFound: JsonValue
+                    ) =
+                        comparisonResponseNotFound.let {
+                            if (
+                                it ==
+                                    JsonValue.from(mapOf("type" to "comparison_response_not_found"))
+                            )
+                                1
+                            else 0
+                        }
+
+                    override fun visitUnavailable(unavailable: JsonValue) =
+                        unavailable.let {
+                            if (it == JsonValue.from(mapOf("type" to "unavailable"))) 1 else 0
+                        }
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PromptCacheDiagnostics &&
+                cacheMiss == other.cacheMiss &&
+                cacheHit == other.cacheHit &&
+                comparisonResponseNotFound == other.comparisonResponseNotFound &&
+                unavailable == other.unavailable
+        }
+
+        override fun hashCode(): Int =
+            Objects.hash(cacheMiss, cacheHit, comparisonResponseNotFound, unavailable)
+
+        override fun toString(): String =
+            when {
+                cacheMiss != null -> "PromptCacheDiagnostics{cacheMiss=$cacheMiss}"
+                cacheHit != null -> "PromptCacheDiagnostics{cacheHit=$cacheHit}"
+                comparisonResponseNotFound != null ->
+                    "PromptCacheDiagnostics{comparisonResponseNotFound=$comparisonResponseNotFound}"
+                unavailable != null -> "PromptCacheDiagnostics{unavailable=$unavailable}"
+                _json != null -> "PromptCacheDiagnostics{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid PromptCacheDiagnostics")
+            }
+
+        companion object {
+
+            @JvmStatic
+            fun ofCacheMiss(cacheMiss: CacheMiss) = PromptCacheDiagnostics(cacheMiss = cacheMiss)
+
+            @JvmStatic
+            fun ofCacheHit() =
+                PromptCacheDiagnostics(cacheHit = JsonValue.from(mapOf("type" to "cache_hit")))
+
+            @JvmStatic
+            fun ofComparisonResponseNotFound() =
+                PromptCacheDiagnostics(
+                    comparisonResponseNotFound =
+                        JsonValue.from(mapOf("type" to "comparison_response_not_found"))
+                )
+
+            @JvmStatic
+            fun ofUnavailable() =
+                PromptCacheDiagnostics(unavailable = JsonValue.from(mapOf("type" to "unavailable")))
+        }
+
+        /**
+         * An interface that defines how to map each variant of [PromptCacheDiagnostics] to a value
+         * of type [T].
+         */
+        interface Visitor<out T> {
+
+            fun visitCacheMiss(cacheMiss: CacheMiss): T
+
+            fun visitCacheHit(cacheHit: JsonValue): T
+
+            fun visitComparisonResponseNotFound(comparisonResponseNotFound: JsonValue): T
+
+            fun visitUnavailable(unavailable: JsonValue): T
+
+            /**
+             * Maps an unknown variant of [PromptCacheDiagnostics] to a value of type [T].
+             *
+             * An instance of [PromptCacheDiagnostics] can contain an unknown variant if it was
+             * deserialized from data that doesn't match any known variant. For example, if the SDK
+             * is on an older version than the API, then the API may respond with new variants that
+             * the SDK is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown PromptCacheDiagnostics")
+            }
+        }
+
+        internal class Deserializer :
+            BaseDeserializer<PromptCacheDiagnostics>(PromptCacheDiagnostics::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): PromptCacheDiagnostics {
+                val json = JsonValue.fromJsonNode(node)
+                val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                when (type) {
+                    "cache_miss" -> {
+                        return tryDeserialize(node, jacksonTypeRef<CacheMiss>())?.let {
+                            PromptCacheDiagnostics(cacheMiss = it, _json = json)
+                        } ?: PromptCacheDiagnostics(_json = json)
+                    }
+                    "cache_hit" -> {
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { PromptCacheDiagnostics(cacheHit = it, _json = json) }
+                            ?.takeIf { it.isValid() } ?: PromptCacheDiagnostics(_json = json)
+                    }
+                    "comparison_response_not_found" -> {
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let {
+                                PromptCacheDiagnostics(
+                                    comparisonResponseNotFound = it,
+                                    _json = json,
+                                )
+                            }
+                            ?.takeIf { it.isValid() } ?: PromptCacheDiagnostics(_json = json)
+                    }
+                    "unavailable" -> {
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { PromptCacheDiagnostics(unavailable = it, _json = json) }
+                            ?.takeIf { it.isValid() } ?: PromptCacheDiagnostics(_json = json)
+                    }
+                }
+
+                return PromptCacheDiagnostics(_json = json)
+            }
+        }
+
+        internal class Serializer :
+            BaseSerializer<PromptCacheDiagnostics>(PromptCacheDiagnostics::class) {
+
+            override fun serialize(
+                value: PromptCacheDiagnostics,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.cacheMiss != null -> generator.writeObject(value.cacheMiss)
+                    value.cacheHit != null -> generator.writeObject(value.cacheHit)
+                    value.comparisonResponseNotFound != null ->
+                        generator.writeObject(value.comparisonResponseNotFound)
+                    value.unavailable != null -> generator.writeObject(value.unavailable)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid PromptCacheDiagnostics")
+                }
+            }
+        }
+
+        class CacheMiss
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val cacheMissedTokens: JsonField<Long>,
+            private val reason: JsonField<Reason>,
+            private val type: JsonValue,
+            private val comparisonReusableTokens: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("cache_missed_tokens")
+                @ExcludeMissing
+                cacheMissedTokens: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("reason")
+                @ExcludeMissing
+                reason: JsonField<Reason> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("comparison_reusable_tokens")
+                @ExcludeMissing
+                comparisonReusableTokens: JsonField<Long> = JsonMissing.of(),
+            ) : this(cacheMissedTokens, reason, type, comparisonReusableTokens, mutableMapOf())
+
+            /**
+             * The estimated number of input tokens affected after the first detected divergence.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun cacheMissedTokens(): Long = cacheMissedTokens.getRequired("cache_missed_tokens")
+
+            /**
+             * The reason prompt cache reuse did not occur.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun reason(): Reason = reason.getRequired("reason")
+
+            /**
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("cache_miss")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * The raw token count of the reusable prefix in the compared response.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun comparisonReusableTokens(): Optional<Long> =
+                comparisonReusableTokens.getOptional("comparison_reusable_tokens")
+
+            /**
+             * Returns the raw JSON value of [cacheMissedTokens].
+             *
+             * Unlike [cacheMissedTokens], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("cache_missed_tokens")
+            @ExcludeMissing
+            fun _cacheMissedTokens(): JsonField<Long> = cacheMissedTokens
+
+            /**
+             * Returns the raw JSON value of [reason].
+             *
+             * Unlike [reason], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("reason") @ExcludeMissing fun _reason(): JsonField<Reason> = reason
+
+            /**
+             * Returns the raw JSON value of [comparisonReusableTokens].
+             *
+             * Unlike [comparisonReusableTokens], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("comparison_reusable_tokens")
+            @ExcludeMissing
+            fun _comparisonReusableTokens(): JsonField<Long> = comparisonReusableTokens
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "cache_missed_tokens" to this.cacheMissedTokens,
+                    "reason" to this.reason,
+                    "type" to this.type,
+                    "comparison_reusable_tokens" to this.comparisonReusableTokens,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [CacheMiss].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .cacheMissedTokens()
+                 * .reason()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [CacheMiss]. */
+            class Builder internal constructor() {
+
+                private var cacheMissedTokens: JsonField<Long>? = null
+                private var reason: JsonField<Reason>? = null
+                private var type: JsonValue = JsonValue.from("cache_miss")
+                private var comparisonReusableTokens: JsonField<Long> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(cacheMiss: CacheMiss) = apply {
+                    cacheMissedTokens = cacheMiss.cacheMissedTokens
+                    reason = cacheMiss.reason
+                    type = cacheMiss.type
+                    comparisonReusableTokens = cacheMiss.comparisonReusableTokens
+                    additionalProperties = cacheMiss.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * The estimated number of input tokens affected after the first detected
+                 * divergence.
+                 */
+                fun cacheMissedTokens(cacheMissedTokens: Long) =
+                    cacheMissedTokens(JsonField.of(cacheMissedTokens))
+
+                /**
+                 * Sets [Builder.cacheMissedTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.cacheMissedTokens] with a well-typed [Long]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun cacheMissedTokens(cacheMissedTokens: JsonField<Long>) = apply {
+                    this.cacheMissedTokens = cacheMissedTokens
+                }
+
+                /** The reason prompt cache reuse did not occur. */
+                fun reason(reason: Reason) = reason(JsonField.of(reason))
+
+                /**
+                 * Sets [Builder.reason] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.reason] with a well-typed [Reason] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun reason(reason: JsonField<Reason>) = apply { this.reason = reason }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("cache_miss")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                /** The raw token count of the reusable prefix in the compared response. */
+                fun comparisonReusableTokens(comparisonReusableTokens: Long) =
+                    comparisonReusableTokens(JsonField.of(comparisonReusableTokens))
+
+                /**
+                 * Sets [Builder.comparisonReusableTokens] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.comparisonReusableTokens] with a well-typed
+                 * [Long] value instead. This method is primarily for setting the field to an
+                 * undocumented or not yet supported value.
+                 */
+                fun comparisonReusableTokens(comparisonReusableTokens: JsonField<Long>) = apply {
+                    this.comparisonReusableTokens = comparisonReusableTokens
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [CacheMiss].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .cacheMissedTokens()
+                 * .reason()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): CacheMiss =
+                    CacheMiss(
+                        checkRequired("cacheMissedTokens", cacheMissedTokens),
+                        checkRequired("reason", reason),
+                        type,
+                        comparisonReusableTokens,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): CacheMiss = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                cacheMissedTokens()
+                reason().validate()
+                _type().let {
+                    if (it != JsonValue.from("cache_miss")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                comparisonReusableTokens()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (cacheMissedTokens.asKnown().isPresent) 1 else 0) +
+                    (reason.asKnown().getOrNull()?.validity() ?: 0) +
+                    type.let { if (it == JsonValue.from("cache_miss")) 1 else 0 } +
+                    (if (comparisonReusableTokens.asKnown().isPresent) 1 else 0)
+
+            /** The reason prompt cache reuse did not occur. */
+            class Reason @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val MODEL_CHANGED = of("model_changed")
+
+                    @JvmField val PROMPT_CACHE_KEY_CHANGED = of("prompt_cache_key_changed")
+
+                    @JvmField val TOOLS_CHANGED = of("tools_changed")
+
+                    @JvmField val TEXT_FORMAT_CHANGED = of("text_format_changed")
+
+                    @JvmField val REASONING_EFFORT_CHANGED = of("reasoning_effort_changed")
+
+                    @JvmField val VERBOSITY_CHANGED = of("verbosity_changed")
+
+                    @JvmField val CONTEXT_COMPACTED = of("context_compacted")
+
+                    @JvmField val INPUT_CHANGED = of("input_changed")
+
+                    @JvmField val SERVICE_TIER_CHANGED = of("service_tier_changed")
+
+                    @JvmStatic fun of(value: String) = Reason(JsonField.of(value))
+                }
+
+                /** An enum containing [Reason]'s known values. */
+                enum class Known {
+                    MODEL_CHANGED,
+                    PROMPT_CACHE_KEY_CHANGED,
+                    TOOLS_CHANGED,
+                    TEXT_FORMAT_CHANGED,
+                    REASONING_EFFORT_CHANGED,
+                    VERBOSITY_CHANGED,
+                    CONTEXT_COMPACTED,
+                    INPUT_CHANGED,
+                    SERVICE_TIER_CHANGED,
+                }
+
+                /**
+                 * An enum containing [Reason]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Reason] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    MODEL_CHANGED,
+                    PROMPT_CACHE_KEY_CHANGED,
+                    TOOLS_CHANGED,
+                    TEXT_FORMAT_CHANGED,
+                    REASONING_EFFORT_CHANGED,
+                    VERBOSITY_CHANGED,
+                    CONTEXT_COMPACTED,
+                    INPUT_CHANGED,
+                    SERVICE_TIER_CHANGED,
+                    /**
+                     * An enum member indicating that [Reason] was instantiated with an unknown
+                     * value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        MODEL_CHANGED -> Value.MODEL_CHANGED
+                        PROMPT_CACHE_KEY_CHANGED -> Value.PROMPT_CACHE_KEY_CHANGED
+                        TOOLS_CHANGED -> Value.TOOLS_CHANGED
+                        TEXT_FORMAT_CHANGED -> Value.TEXT_FORMAT_CHANGED
+                        REASONING_EFFORT_CHANGED -> Value.REASONING_EFFORT_CHANGED
+                        VERBOSITY_CHANGED -> Value.VERBOSITY_CHANGED
+                        CONTEXT_COMPACTED -> Value.CONTEXT_COMPACTED
+                        INPUT_CHANGED -> Value.INPUT_CHANGED
+                        SERVICE_TIER_CHANGED -> Value.SERVICE_TIER_CHANGED
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        MODEL_CHANGED -> Known.MODEL_CHANGED
+                        PROMPT_CACHE_KEY_CHANGED -> Known.PROMPT_CACHE_KEY_CHANGED
+                        TOOLS_CHANGED -> Known.TOOLS_CHANGED
+                        TEXT_FORMAT_CHANGED -> Known.TEXT_FORMAT_CHANGED
+                        REASONING_EFFORT_CHANGED -> Known.REASONING_EFFORT_CHANGED
+                        VERBOSITY_CHANGED -> Known.VERBOSITY_CHANGED
+                        CONTEXT_COMPACTED -> Known.CONTEXT_COMPACTED
+                        INPUT_CHANGED -> Known.INPUT_CHANGED
+                        SERVICE_TIER_CHANGED -> Known.SERVICE_TIER_CHANGED
+                        else -> throw OpenAIInvalidDataException("Unknown Reason: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Reason = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Reason && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is CacheMiss &&
+                    cacheMissedTokens == other.cacheMissedTokens &&
+                    reason == other.reason &&
+                    type == other.type &&
+                    comparisonReusableTokens == other.comparisonReusableTokens &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    cacheMissedTokens,
+                    reason,
+                    type,
+                    comparisonReusableTokens,
+                    additionalProperties,
+                )
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "CacheMiss{cacheMissedTokens=$cacheMissedTokens, reason=$reason, type=$type, comparisonReusableTokens=$comparisonReusableTokens, additionalProperties=$additionalProperties}"
+        }
+    }
+
     /**
      * The prompt-caching options that were applied to the response. Supported for `gpt-5.6` and
      * later models.
@@ -7221,6 +9829,7 @@ private constructor(
     private constructor(
         private val mode: JsonField<Mode>,
         private val ttl: JsonField<Ttl>,
+        private val comparisonResponseId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -7228,7 +9837,10 @@ private constructor(
         private constructor(
             @JsonProperty("mode") @ExcludeMissing mode: JsonField<Mode> = JsonMissing.of(),
             @JsonProperty("ttl") @ExcludeMissing ttl: JsonField<Ttl> = JsonMissing.of(),
-        ) : this(mode, ttl, mutableMapOf())
+            @JsonProperty("comparison_response_id")
+            @ExcludeMissing
+            comparisonResponseId: JsonField<String> = JsonMissing.of(),
+        ) : this(mode, ttl, comparisonResponseId, mutableMapOf())
 
         /**
          * Whether implicit prompt-cache breakpoints were enabled.
@@ -7247,6 +9859,15 @@ private constructor(
         fun ttl(): Ttl = ttl.getRequired("ttl")
 
         /**
+         * The response ID supplied as the prompt cache diagnostics comparison.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun comparisonResponseId(): Optional<String> =
+            comparisonResponseId.getOptional("comparison_response_id")
+
+        /**
          * Returns the raw JSON value of [mode].
          *
          * Unlike [mode], this method doesn't throw if the JSON field has an unexpected type.
@@ -7260,11 +9881,44 @@ private constructor(
          */
         @JsonProperty("ttl") @ExcludeMissing fun _ttl(): JsonField<Ttl> = ttl
 
+        /**
+         * Returns the raw JSON value of [comparisonResponseId].
+         *
+         * Unlike [comparisonResponseId], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("comparison_response_id")
+        @ExcludeMissing
+        fun _comparisonResponseId(): JsonField<String> = comparisonResponseId
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "mode" to this.mode,
+                "ttl" to this.ttl,
+                "comparison_response_id" to this.comparisonResponseId,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -7291,12 +9945,14 @@ private constructor(
 
             private var mode: JsonField<Mode>? = null
             private var ttl: JsonField<Ttl>? = null
+            private var comparisonResponseId: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(promptCacheOptions: PromptCacheOptions) = apply {
                 mode = promptCacheOptions.mode
                 ttl = promptCacheOptions.ttl
+                comparisonResponseId = promptCacheOptions.comparisonResponseId
                 additionalProperties = promptCacheOptions.additionalProperties.toMutableMap()
             }
 
@@ -7323,6 +9979,28 @@ private constructor(
              * value.
              */
             fun ttl(ttl: JsonField<Ttl>) = apply { this.ttl = ttl }
+
+            /** The response ID supplied as the prompt cache diagnostics comparison. */
+            fun comparisonResponseId(comparisonResponseId: String?) =
+                comparisonResponseId(JsonField.ofNullable(comparisonResponseId))
+
+            /**
+             * Alias for calling [Builder.comparisonResponseId] with
+             * `comparisonResponseId.orElse(null)`.
+             */
+            fun comparisonResponseId(comparisonResponseId: Optional<String>) =
+                comparisonResponseId(comparisonResponseId.getOrNull())
+
+            /**
+             * Sets [Builder.comparisonResponseId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.comparisonResponseId] with a well-typed [String]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun comparisonResponseId(comparisonResponseId: JsonField<String>) = apply {
+                this.comparisonResponseId = comparisonResponseId
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -7360,6 +10038,7 @@ private constructor(
                 PromptCacheOptions(
                     checkRequired("mode", mode),
                     checkRequired("ttl", ttl),
+                    comparisonResponseId,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -7382,6 +10061,7 @@ private constructor(
 
             mode().validate()
             ttl().validate()
+            comparisonResponseId()
             validated = true
         }
 
@@ -7402,7 +10082,8 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (mode.asKnown().getOrNull()?.validity() ?: 0) +
-                (ttl.asKnown().getOrNull()?.validity() ?: 0)
+                (ttl.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (comparisonResponseId.asKnown().isPresent) 1 else 0)
 
         /** Whether implicit prompt-cache breakpoints were enabled. */
         class Mode @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -7682,15 +10363,18 @@ private constructor(
             return other is PromptCacheOptions &&
                 mode == other.mode &&
                 ttl == other.ttl &&
+                comparisonResponseId == other.comparisonResponseId &&
                 additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(mode, ttl, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(mode, ttl, comparisonResponseId, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "PromptCacheOptions{mode=$mode, ttl=$ttl, additionalProperties=$additionalProperties}"
+            "PromptCacheOptions{mode=$mode, ttl=$ttl, comparisonResponseId=$comparisonResponseId, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -7698,7 +10382,7 @@ private constructor(
      *
      * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
      * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
-     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     * [Learn more](https://developers.openai.com/api/docs/guides/prompt-caching#prompt-cache-retention).
      * This field expresses a maximum retention policy, while `prompt_cache_options.ttl` expresses a
      * minimum cache lifetime. The two fields are independent and do not interact. For `gpt-5.5`,
      * `gpt-5.5-pro`, and future models, only `24h` is supported.
@@ -7851,10 +10535,8 @@ private constructor(
     }
 
     /**
-     * **gpt-5 and o-series models only**
-     *
      * Configuration options for
-     * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+     * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
      */
     class Reasoning
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -7896,8 +10578,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -7983,6 +10665,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "context" to this.context,
+                "effort" to this.effort,
+                "generate_summary" to this.generateSummary,
+                "mode" to this.mode,
+                "summary" to this.summary,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -8043,7 +10750,7 @@ private constructor(
              * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning
              * effort can result in faster responses and fewer tokens used on reasoning in a
              * response. Not all reasoning models support every value. See the
-             * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+             * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
              * model-specific support.
              */
             fun effort(effort: Effort?) = effort(JsonField.ofNullable(effort))
@@ -8374,8 +11081,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          */
         class Effort @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -9026,12 +11733,15 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)', then the
+     * - If set to '[flex](https://developers.openai.com/api/docs/guides/flex-processing)', then the
      *   request will be processed with the Flex Processing service tier.
-     * - To opt-in to [Fast mode](/api/docs/guides/fast-mode) at the request level, include the
-     *   `service_tier=fast` or `service_tier=priority` parameter for Responses or Chat Completions.
-     *   The response will show `service_tier=priority` regardless of if you specify
-     *   `service_tier=fast` or `priority` in your request.
+     * - To opt-in to [Fast mode](https://developers.openai.com/api/docs/guides/fast-mode) at the
+     *   request level, include the `service_tier=fast` or `service_tier=priority` parameter for
+     *   Responses or Chat Completions. The response will show `service_tier=priority` regardless of
+     *   if you specify `service_tier=fast` or `priority` in your request.
+     * - If set to 'ultrafast', then the request will be processed with the access-controlled
+     *   Ultrafast Processing service tier. This tier is currently available for `gpt-5.6-sol`; a
+     *   response served through it will show `service_tier=ultrafast`.
      * - When not set, the default behavior is 'auto'.
      *
      *   When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -9065,6 +11775,8 @@ private constructor(
 
             @JvmField val FAST = of("fast")
 
+            @JvmField val ULTRAFAST = of("ultrafast")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -9076,6 +11788,7 @@ private constructor(
             SCALE,
             PRIORITY,
             FAST,
+            ULTRAFAST,
         }
 
         /**
@@ -9094,6 +11807,7 @@ private constructor(
             SCALE,
             PRIORITY,
             FAST,
+            ULTRAFAST,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -9115,6 +11829,7 @@ private constructor(
                 SCALE -> Value.SCALE
                 PRIORITY -> Value.PRIORITY
                 FAST -> Value.FAST
+                ULTRAFAST -> Value.ULTRAFAST
                 else -> Value._UNKNOWN
             }
 
@@ -9135,6 +11850,7 @@ private constructor(
                 SCALE -> Known.SCALE
                 PRIORITY -> Known.PRIORITY
                 FAST -> Known.FAST
+                ULTRAFAST -> Known.ULTRAFAST
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 
@@ -9350,6 +12066,7 @@ private constructor(
 
         return other is BetaResponse &&
             id == other.id &&
+            accessPrograms == other.accessPrograms &&
             createdAt == other.createdAt &&
             error == other.error &&
             incompleteDetails == other.incompleteDetails &&
@@ -9371,6 +12088,7 @@ private constructor(
             moderation == other.moderation &&
             previousResponseId == other.previousResponseId &&
             prompt == other.prompt &&
+            promptCacheDiagnostics == other.promptCacheDiagnostics &&
             promptCacheKey == other.promptCacheKey &&
             promptCacheOptions == other.promptCacheOptions &&
             promptCacheRetention == other.promptCacheRetention &&
@@ -9389,6 +12107,7 @@ private constructor(
     private val hashCode: Int by lazy {
         Objects.hash(
             id,
+            accessPrograms,
             createdAt,
             error,
             incompleteDetails,
@@ -9410,6 +12129,7 @@ private constructor(
             moderation,
             previousResponseId,
             prompt,
+            promptCacheDiagnostics,
             promptCacheKey,
             promptCacheOptions,
             promptCacheRetention,
@@ -9429,5 +12149,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "BetaResponse{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, completedAt=$completedAt, conversation=$conversation, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, moderation=$moderation, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
+        "BetaResponse{id=$id, accessPrograms=$accessPrograms, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, completedAt=$completedAt, conversation=$conversation, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, moderation=$moderation, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheDiagnostics=$promptCacheDiagnostics, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
 }

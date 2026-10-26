@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses.inputtokens
 
@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class InputTokenCountResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val inputTokenCountResponse = InputTokenCountResponse.builder().inputTokens(123L).build()
 
         assertThat(inputTokenCountResponse.inputTokens()).isEqualTo(123L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val inputTokenCountResponse = InputTokenCountResponse.builder().inputTokens(123L).build()
 
         val roundtrippedInputTokenCountResponse =
             jsonMapper.readValue(

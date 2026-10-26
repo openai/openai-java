@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.vectorstores.files
 
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class FileListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fileListPageResponse =
             FileListPageResponse.builder()
                 .addData(
@@ -78,44 +78,8 @@ internal class FileListPageResponseTest {
         assertThat(fileListPageResponse.hasMore()).isEqualTo(false)
         assertThat(fileListPageResponse.lastId()).isEqualTo("file-abc456")
         assertThat(fileListPageResponse.object_()).isEqualTo("list")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fileListPageResponse =
-            FileListPageResponse.builder()
-                .addData(
-                    VectorStoreFile.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .lastError(
-                            VectorStoreFile.LastError.builder()
-                                .code(VectorStoreFile.LastError.Code.SERVER_ERROR)
-                                .message("message")
-                                .build()
-                        )
-                        .status(VectorStoreFile.Status.IN_PROGRESS)
-                        .usageBytes(0L)
-                        .vectorStoreId("vector_store_id")
-                        .attributes(
-                            VectorStoreFile.Attributes.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .staticChunkingStrategy(
-                            StaticFileChunkingStrategy.builder()
-                                .chunkOverlapTokens(0L)
-                                .maxChunkSizeTokens(100L)
-                                .build()
-                        )
-                        .build()
-                )
-                .firstId("file-abc123")
-                .hasMore(false)
-                .lastId("file-abc456")
-                .object_("list")
-                .build()
 
         val roundtrippedFileListPageResponse =
             jsonMapper.readValue(

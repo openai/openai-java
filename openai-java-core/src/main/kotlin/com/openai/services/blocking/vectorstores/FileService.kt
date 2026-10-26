@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.vectorstores
 
@@ -34,8 +34,8 @@ interface FileService {
 
     /**
      * Create a vector store file by attaching a
-     * [File](https://platform.openai.com/docs/api-reference/files) to a
-     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object).
+     * [File](https://developers.openai.com/api/reference/resources/files) to a
+     * [vector store](https://developers.openai.com/api/reference/resources/vector_stores).
      */
     fun create(vectorStoreId: String, params: FileCreateParams): VectorStoreFile =
         create(vectorStoreId, params, RequestOptions.none())
@@ -128,7 +128,8 @@ interface FileService {
     /**
      * Delete a vector store file. This will remove the file from the vector store but the file
      * itself will not be deleted. To delete the file, use the
-     * [delete file](https://platform.openai.com/docs/api-reference/files/delete) endpoint.
+     * [delete file](https://developers.openai.com/api/reference/resources/files/methods/delete)
+     * endpoint.
      */
     fun delete(fileId: String, params: FileDeleteParams): VectorStoreFileDeleted =
         delete(fileId, params, RequestOptions.none())

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.runs.steps
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class FileSearchToolCallDeltaTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fileSearchToolCallDelta =
             FileSearchToolCallDelta.builder()
                 .fileSearch(JsonValue.from(mapOf<String, Any>()))
@@ -23,17 +23,8 @@ internal class FileSearchToolCallDeltaTest {
             .isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(fileSearchToolCallDelta.index()).isEqualTo(0L)
         assertThat(fileSearchToolCallDelta.id()).contains("id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fileSearchToolCallDelta =
-            FileSearchToolCallDelta.builder()
-                .fileSearch(JsonValue.from(mapOf<String, Any>()))
-                .index(0L)
-                .id("id")
-                .build()
 
         val roundtrippedFileSearchToolCallDelta =
             jsonMapper.readValue(

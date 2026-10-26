@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseRefusalDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseRefusalDeltaEvent =
             ResponseRefusalDeltaEvent.builder()
                 .contentIndex(0L)
@@ -25,19 +25,8 @@ internal class ResponseRefusalDeltaEventTest {
         assertThat(responseRefusalDeltaEvent.itemId()).isEqualTo("item_id")
         assertThat(responseRefusalDeltaEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseRefusalDeltaEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseRefusalDeltaEvent =
-            ResponseRefusalDeltaEvent.builder()
-                .contentIndex(0L)
-                .delta("delta")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseRefusalDeltaEvent =
             jsonMapper.readValue(

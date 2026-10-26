@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.groups
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ProjectGroupTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectGroup =
             ProjectGroup.builder()
                 .createdAt(0L)
@@ -25,19 +25,8 @@ internal class ProjectGroupTest {
         assertThat(projectGroup.groupName()).isEqualTo("group_name")
         assertThat(projectGroup.groupType()).isEqualTo(ProjectGroup.GroupType.GROUP)
         assertThat(projectGroup.projectId()).isEqualTo("project_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectGroup =
-            ProjectGroup.builder()
-                .createdAt(0L)
-                .groupId("group_id")
-                .groupName("group_name")
-                .groupType(ProjectGroup.GroupType.GROUP)
-                .projectId("project_id")
-                .build()
 
         val roundtrippedProjectGroup =
             jsonMapper.readValue(

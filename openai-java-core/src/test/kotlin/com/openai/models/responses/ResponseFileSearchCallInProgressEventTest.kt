@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseFileSearchCallInProgressEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseFileSearchCallInProgressEvent =
             ResponseFileSearchCallInProgressEvent.builder()
                 .itemId("item_id")
@@ -21,17 +21,8 @@ internal class ResponseFileSearchCallInProgressEventTest {
         assertThat(responseFileSearchCallInProgressEvent.itemId()).isEqualTo("item_id")
         assertThat(responseFileSearchCallInProgressEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseFileSearchCallInProgressEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseFileSearchCallInProgressEvent =
-            ResponseFileSearchCallInProgressEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseFileSearchCallInProgressEvent =
             jsonMapper.readValue(

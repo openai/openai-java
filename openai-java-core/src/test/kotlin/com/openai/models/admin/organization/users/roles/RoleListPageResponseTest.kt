@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.users.roles
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class RoleListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val roleListPageResponse =
             RoleListPageResponse.builder()
                 .addData(
@@ -79,45 +79,8 @@ internal class RoleListPageResponseTest {
             )
         assertThat(roleListPageResponse.hasMore()).isEqualTo(true)
         assertThat(roleListPageResponse.next()).contains("next")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val roleListPageResponse =
-            RoleListPageResponse.builder()
-                .addData(
-                    RoleListResponse.builder()
-                        .id("id")
-                        .addAssignmentSource(
-                            RoleListResponse.AssignmentSource.builder()
-                                .principalId("principal_id")
-                                .principalType("principal_type")
-                                .build()
-                        )
-                        .createdAt(0L)
-                        .createdBy("created_by")
-                        .createdByUserObj(
-                            RoleListResponse.CreatedByUserObj.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .description("description")
-                        .metadata(
-                            RoleListResponse.Metadata.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .name("name")
-                        .addPermission("string")
-                        .predefinedRole(true)
-                        .resourceType("resource_type")
-                        .updatedAt(0L)
-                        .build()
-                )
-                .hasMore(true)
-                .next("next")
-                .build()
 
         val roundtrippedRoleListPageResponse =
             jsonMapper.readValue(

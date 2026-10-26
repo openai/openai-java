@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.vectorstores
 
@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class VectorStoreDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val vectorStoreDeleted = VectorStoreDeleted.builder().id("id").deleted(true).build()
 
         assertThat(vectorStoreDeleted.id()).isEqualTo("id")
         assertThat(vectorStoreDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val vectorStoreDeleted = VectorStoreDeleted.builder().id("id").deleted(true).build()
 
         val roundtrippedVectorStoreDeleted =
             jsonMapper.readValue(

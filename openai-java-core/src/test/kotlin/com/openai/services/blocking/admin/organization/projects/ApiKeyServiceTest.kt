@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization.projects
 
@@ -6,6 +6,7 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyDeleteParams
 import com.openai.models.admin.organization.projects.apikeys.ApiKeyRetrieveParams
+import com.openai.models.admin.organization.projects.apikeys.ApiKeyUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -27,6 +28,29 @@ internal class ApiKeyServiceTest {
                 ApiKeyRetrieveParams.builder()
                     .projectId("project_id")
                     .apiKeyId("api_key_id")
+                    .build()
+            )
+
+        projectApiKey.validate()
+    }
+
+    @Test
+    fun update() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .adminApiKey("My Admin API Key")
+                .build()
+        val apiKeyService = client.admin().organization().projects().apiKeys()
+
+        val projectApiKey =
+            apiKeyService.update(
+                ApiKeyUpdateParams.builder()
+                    .projectId("project_id")
+                    .apiKeyId("api_key_id")
+                    .expiresInSeconds(1L)
+                    .addScope("api.all.read")
                     .build()
             )
 

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.images
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ImageEditPartialImageEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val imageEditPartialImageEvent =
             ImageEditPartialImageEvent.builder()
                 .b64Json("b64_json")
@@ -33,21 +33,8 @@ internal class ImageEditPartialImageEventTest {
             .isEqualTo(ImageEditPartialImageEvent.Quality.LOW)
         assertThat(imageEditPartialImageEvent.size())
             .isEqualTo(ImageEditPartialImageEvent.Size._1024X1024)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val imageEditPartialImageEvent =
-            ImageEditPartialImageEvent.builder()
-                .b64Json("b64_json")
-                .background(ImageEditPartialImageEvent.Background.TRANSPARENT)
-                .createdAt(0L)
-                .outputFormat(ImageEditPartialImageEvent.OutputFormat.PNG)
-                .partialImageIndex(0L)
-                .quality(ImageEditPartialImageEvent.Quality.LOW)
-                .size(ImageEditPartialImageEvent.Size._1024X1024)
-                .build()
 
         val roundtrippedImageEditPartialImageEvent =
             jsonMapper.readValue(

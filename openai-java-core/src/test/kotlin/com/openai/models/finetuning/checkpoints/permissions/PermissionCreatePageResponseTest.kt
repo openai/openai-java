@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.checkpoints.permissions
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class PermissionCreatePageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val permissionCreatePageResponse =
             PermissionCreatePageResponse.builder()
                 .addData(
@@ -36,24 +36,8 @@ internal class PermissionCreatePageResponseTest {
         assertThat(permissionCreatePageResponse.hasMore()).isEqualTo(true)
         assertThat(permissionCreatePageResponse.firstId()).contains("first_id")
         assertThat(permissionCreatePageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val permissionCreatePageResponse =
-            PermissionCreatePageResponse.builder()
-                .addData(
-                    PermissionCreateResponse.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .projectId("project_id")
-                        .build()
-                )
-                .hasMore(true)
-                .firstId("first_id")
-                .lastId("last_id")
-                .build()
 
         val roundtrippedPermissionCreatePageResponse =
             jsonMapper.readValue(

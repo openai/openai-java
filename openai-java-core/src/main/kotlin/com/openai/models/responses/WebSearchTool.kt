@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -13,6 +13,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -22,12 +23,13 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Search the Internet for sources related to the prompt. Learn more about the
- * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+ * [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search).
  */
 class WebSearchTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonField<Type>,
+    private val externalWebAccess: JsonField<Boolean>,
     private val filters: JsonField<Filters>,
     private val searchContextSize: JsonField<SearchContextSize>,
     private val userLocation: JsonField<UserLocation>,
@@ -37,6 +39,9 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("external_web_access")
+        @ExcludeMissing
+        externalWebAccess: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("filters") @ExcludeMissing filters: JsonField<Filters> = JsonMissing.of(),
         @JsonProperty("search_context_size")
         @ExcludeMissing
@@ -44,7 +49,7 @@ private constructor(
         @JsonProperty("user_location")
         @ExcludeMissing
         userLocation: JsonField<UserLocation> = JsonMissing.of(),
-    ) : this(type, filters, searchContextSize, userLocation, mutableMapOf())
+    ) : this(type, externalWebAccess, filters, searchContextSize, userLocation, mutableMapOf())
 
     /**
      * The type of the web search tool. One of `web_search` or `web_search_2025_08_26`.
@@ -53,6 +58,16 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun type(): Type = type.getRequired("type")
+
+    /**
+     * Allow live internet access for web search. Defaults to true when omitted. When false, the web
+     * search tool runs in offline/cache-only mode and will not fetch new external content.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun externalWebAccess(): Optional<Boolean> =
+        externalWebAccess.getOptional("external_web_access")
 
     /**
      * Filters for the search.
@@ -73,7 +88,9 @@ private constructor(
         searchContextSize.getOptional("search_context_size")
 
     /**
-     * The approximate location of the user.
+     * The approximate location of the user. If omitted or null, defaults to the United States. To
+     * avoid this fallback, pass `{"type": "approximate"}` without location fields. To localize
+     * results, provide the relevant location fields.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -86,6 +103,16 @@ private constructor(
      * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+    /**
+     * Returns the raw JSON value of [externalWebAccess].
+     *
+     * Unlike [externalWebAccess], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("external_web_access")
+    @ExcludeMissing
+    fun _externalWebAccess(): JsonField<Boolean> = externalWebAccess
 
     /**
      * Returns the raw JSON value of [filters].
@@ -118,6 +145,31 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "type" to this.type,
+            "external_web_access" to this.externalWebAccess,
+            "filters" to this.filters,
+            "search_context_size" to this.searchContextSize,
+            "user_location" to this.userLocation,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -142,6 +194,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var type: JsonField<Type>? = null
+        private var externalWebAccess: JsonField<Boolean> = JsonMissing.of()
         private var filters: JsonField<Filters> = JsonMissing.of()
         private var searchContextSize: JsonField<SearchContextSize> = JsonMissing.of()
         private var userLocation: JsonField<UserLocation> = JsonMissing.of()
@@ -150,6 +203,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(webSearchTool: WebSearchTool) = apply {
             type = webSearchTool.type
+            externalWebAccess = webSearchTool.externalWebAccess
             filters = webSearchTool.filters
             searchContextSize = webSearchTool.searchContextSize
             userLocation = webSearchTool.userLocation
@@ -166,6 +220,24 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
+
+        /**
+         * Allow live internet access for web search. Defaults to true when omitted. When false, the
+         * web search tool runs in offline/cache-only mode and will not fetch new external content.
+         */
+        fun externalWebAccess(externalWebAccess: Boolean) =
+            externalWebAccess(JsonField.of(externalWebAccess))
+
+        /**
+         * Sets [Builder.externalWebAccess] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.externalWebAccess] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun externalWebAccess(externalWebAccess: JsonField<Boolean>) = apply {
+            this.externalWebAccess = externalWebAccess
+        }
 
         /** Filters for the search. */
         fun filters(filters: Filters?) = filters(JsonField.ofNullable(filters))
@@ -199,7 +271,11 @@ private constructor(
             this.searchContextSize = searchContextSize
         }
 
-        /** The approximate location of the user. */
+        /**
+         * The approximate location of the user. If omitted or null, defaults to the United States.
+         * To avoid this fallback, pass `{"type": "approximate"}` without location fields. To
+         * localize results, provide the relevant location fields.
+         */
         fun userLocation(userLocation: UserLocation?) =
             userLocation(JsonField.ofNullable(userLocation))
 
@@ -252,6 +328,7 @@ private constructor(
         fun build(): WebSearchTool =
             WebSearchTool(
                 checkRequired("type", type),
+                externalWebAccess,
                 filters,
                 searchContextSize,
                 userLocation,
@@ -275,6 +352,7 @@ private constructor(
         }
 
         type().validate()
+        externalWebAccess()
         filters().ifPresent { it.validate() }
         searchContextSize().ifPresent { it.validate() }
         userLocation().ifPresent { it.validate() }
@@ -297,6 +375,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (type.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (externalWebAccess.asKnown().isPresent) 1 else 0) +
             (filters.asKnown().getOrNull()?.validity() ?: 0) +
             (searchContextSize.asKnown().getOrNull()?.validity() ?: 0) +
             (userLocation.asKnown().getOrNull()?.validity() ?: 0)
@@ -477,6 +556,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "allowed_domains" to this.allowedDomains)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -533,9 +630,8 @@ private constructor(
              */
             fun addAllowedDomain(allowedDomain: String) = apply {
                 allowedDomains =
-                    (allowedDomains ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("allowedDomains", it).add(allowedDomain)
-                    }
+                    (allowedDomains?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("allowedDomains", it).add(allowedDomain) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -772,7 +868,11 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The approximate location of the user. */
+    /**
+     * The approximate location of the user. If omitted or null, defaults to the United States. To
+     * avoid this fallback, pass `{"type": "approximate"}` without location fields. To localize
+     * results, provide the relevant location fields.
+     */
     class UserLocation
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -877,6 +977,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "city" to this.city,
+                "country" to this.country,
+                "region" to this.region,
+                "timezone" to this.timezone,
+                "type" to this.type,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -897,7 +1022,7 @@ private constructor(
             private var country: JsonField<String> = JsonMissing.of()
             private var region: JsonField<String> = JsonMissing.of()
             private var timezone: JsonField<String> = JsonMissing.of()
-            private var type: JsonField<Type> = JsonMissing.of()
+            private var type: JsonField<Type> = JsonField.of(Type.APPROXIMATE)
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1232,6 +1357,7 @@ private constructor(
 
         return other is WebSearchTool &&
             type == other.type &&
+            externalWebAccess == other.externalWebAccess &&
             filters == other.filters &&
             searchContextSize == other.searchContextSize &&
             userLocation == other.userLocation &&
@@ -1239,11 +1365,18 @@ private constructor(
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(type, filters, searchContextSize, userLocation, additionalProperties)
+        Objects.hash(
+            type,
+            externalWebAccess,
+            filters,
+            searchContextSize,
+            userLocation,
+            additionalProperties,
+        )
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "WebSearchTool{type=$type, filters=$filters, searchContextSize=$searchContextSize, userLocation=$userLocation, additionalProperties=$additionalProperties}"
+        "WebSearchTool{type=$type, externalWebAccess=$externalWebAccess, filters=$filters, searchContextSize=$searchContextSize, userLocation=$userLocation, additionalProperties=$additionalProperties}"
 }

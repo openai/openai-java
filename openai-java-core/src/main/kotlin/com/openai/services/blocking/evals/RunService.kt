@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.evals
 
@@ -35,7 +35,8 @@ interface RunService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService
 
     /** Manage and run evals in the OpenAI platform. */
-    fun outputItems(): OutputItemService
+    fun outputItems(): OutputItemService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Kicks off a new run for a given evaluation, specifying the data source, and what model
@@ -160,7 +161,10 @@ interface RunService {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService.WithRawResponse
 
         /** Manage and run evals in the OpenAI platform. */
-        fun outputItems(): OutputItemService.WithRawResponse
+        fun outputItems(): OutputItemService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /evals/{eval_id}/runs`, but is otherwise the same
@@ -292,8 +296,8 @@ interface RunService {
         ): HttpResponseFor<RunDeleteResponse>
 
         /**
-         * Returns a raw HTTP response for `post /evals/{eval_id}/runs/{run_id}`, but is otherwise
-         * the same as [RunService.cancel].
+         * Returns a raw HTTP response for `post /evals/{eval_id}/runs/{run_id}/cancel`, but is
+         * otherwise the same as [RunService.cancel].
          */
         @MustBeClosed
         fun cancel(runId: String, params: RunCancelParams): HttpResponseFor<RunCancelResponse> =

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeMcpApprovalResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeMcpApprovalResponse =
             RealtimeMcpApprovalResponse.builder()
                 .id("id")
@@ -23,18 +23,8 @@ internal class RealtimeMcpApprovalResponseTest {
         assertThat(realtimeMcpApprovalResponse.approvalRequestId()).isEqualTo("approval_request_id")
         assertThat(realtimeMcpApprovalResponse.approve()).isEqualTo(true)
         assertThat(realtimeMcpApprovalResponse.reason()).contains("reason")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeMcpApprovalResponse =
-            RealtimeMcpApprovalResponse.builder()
-                .id("id")
-                .approvalRequestId("approval_request_id")
-                .approve(true)
-                .reason("reason")
-                .build()
 
         val roundtrippedRealtimeMcpApprovalResponse =
             jsonMapper.readValue(

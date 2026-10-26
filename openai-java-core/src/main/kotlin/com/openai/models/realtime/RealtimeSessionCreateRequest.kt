@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -203,7 +204,7 @@ private constructor(
 
     /**
      * Reference to a prompt template and its variables.
-     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+     * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -386,6 +387,40 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "type" to this.type,
+            "audio" to this.audio,
+            "include" to this.include,
+            "instructions" to this.instructions,
+            "max_output_tokens" to this.maxOutputTokens,
+            "model" to this.model,
+            "output_modalities" to this.outputModalities,
+            "parallel_tool_calls" to this.parallelToolCalls,
+            "prompt" to this.prompt,
+            "reasoning" to this.reasoning,
+            "tool_choice" to this.toolChoice,
+            "tools" to this.tools,
+            "tracing" to this.tracing,
+            "truncation" to this.truncation,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -492,9 +527,8 @@ private constructor(
          */
         fun addInclude(include: Include) = apply {
             this.include =
-                (this.include ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("include", it).add(include)
-                }
+                (this.include?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("include", it).add(include) }
         }
 
         /**
@@ -593,9 +627,8 @@ private constructor(
          */
         fun addOutputModality(outputModality: OutputModality) = apply {
             outputModalities =
-                (outputModalities ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("outputModalities", it).add(outputModality)
-                }
+                (outputModalities?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("outputModalities", it).add(outputModality) }
         }
 
         /**
@@ -618,7 +651,7 @@ private constructor(
 
         /**
          * Reference to a prompt template and its variables.
-         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         * [Learn more](https://developers.openai.com/api/docs/guides/text?api-mode=responses#version-prompts-in-code).
          */
         fun prompt(prompt: ResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
 
@@ -707,7 +740,9 @@ private constructor(
          */
         fun addTool(tool: RealtimeToolsConfigUnion) = apply {
             tools =
-                (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
+                (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("tools", it).add(tool)
+                }
         }
 
         /** Alias for calling [addTool] with `RealtimeToolsConfigUnion.ofFunction(function)`. */
@@ -1213,7 +1248,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown MaxOutputTokens: $json")
+                throw OpenAIInvalidDataException("Unknown MaxOutputTokens")
             }
         }
 

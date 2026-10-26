@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -22,6 +22,7 @@ import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -74,7 +75,7 @@ private constructor(
 
     /**
      * Data about a previous audio response from the model.
-     * [Learn more](https://platform.openai.com/docs/guides/audio).
+     * [Learn more](https://developers.openai.com/api/docs/guides/audio).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -178,6 +179,33 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "role" to this.role,
+            "audio" to this.audio,
+            "content" to this.content,
+            "function_call" to this.functionCall,
+            "name" to this.name,
+            "refusal" to this.refusal,
+            "tool_calls" to this.toolCalls,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -237,7 +265,7 @@ private constructor(
 
         /**
          * Data about a previous audio response from the model.
-         * [Learn more](https://platform.openai.com/docs/guides/audio).
+         * [Learn more](https://developers.openai.com/api/docs/guides/audio).
          */
         fun audio(audio: Audio?) = audio(JsonField.ofNullable(audio))
 
@@ -354,7 +382,7 @@ private constructor(
          */
         fun addToolCall(toolCall: ChatCompletionMessageToolCall) = apply {
             toolCalls =
-                (toolCalls ?: JsonField.of(mutableListOf())).also {
+                (toolCalls?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                     checkKnown("toolCalls", it).add(toolCall)
                 }
         }
@@ -463,7 +491,7 @@ private constructor(
 
     /**
      * Data about a previous audio response from the model.
-     * [Learn more](https://platform.openai.com/docs/guides/audio).
+     * [Learn more](https://developers.openai.com/api/docs/guides/audio).
      */
     class Audio
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -497,6 +525,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "id" to this.id)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -825,7 +871,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Content: $json")
+                throw OpenAIInvalidDataException("Unknown Content")
             }
         }
 
@@ -880,7 +926,7 @@ private constructor(
             }
         }
 
-        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+        /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
         @JsonDeserialize(
             using = ChatCompletionRequestAssistantMessageContentPart.Deserializer::class
         )
@@ -892,9 +938,7 @@ private constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            /**
-             * Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-             */
+            /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
             fun text(): Optional<ChatCompletionContentPartText> = Optional.ofNullable(text)
 
             fun refusal(): Optional<ChatCompletionContentPartRefusal> = Optional.ofNullable(refusal)
@@ -903,9 +947,7 @@ private constructor(
 
             fun isRefusal(): Boolean = refusal != null
 
-            /**
-             * Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
-             */
+            /** Learn about [text inputs](https://developers.openai.com/api/docs/guides/text). */
             fun asText(): ChatCompletionContentPartText = text.getOrThrow("text")
 
             fun asRefusal(): ChatCompletionContentPartRefusal = refusal.getOrThrow("refusal")
@@ -1036,8 +1078,7 @@ private constructor(
             companion object {
 
                 /**
-                 * Learn about
-                 * [text inputs](https://platform.openai.com/docs/guides/text-generation).
+                 * Learn about [text inputs](https://developers.openai.com/api/docs/guides/text).
                  */
                 @JvmStatic
                 fun ofText(text: ChatCompletionContentPartText) =
@@ -1055,8 +1096,7 @@ private constructor(
             interface Visitor<out T> {
 
                 /**
-                 * Learn about
-                 * [text inputs](https://platform.openai.com/docs/guides/text-generation).
+                 * Learn about [text inputs](https://developers.openai.com/api/docs/guides/text).
                  */
                 fun visitText(text: ChatCompletionContentPartText): T
 
@@ -1075,7 +1115,7 @@ private constructor(
                  */
                 fun unknown(json: JsonValue?): T {
                     throw OpenAIInvalidDataException(
-                        "Unknown ChatCompletionRequestAssistantMessageContentPart: $json"
+                        "Unknown ChatCompletionRequestAssistantMessageContentPart"
                     )
                 }
             }
@@ -1205,6 +1245,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "arguments" to this.arguments,
+                "name" to this.name,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =

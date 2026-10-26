@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseInjectEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseInjectEvent =
             BetaResponseInjectEvent.builder()
                 .addInput(
@@ -36,23 +36,8 @@ internal class BetaResponseInjectEventTest {
                 )
             )
         assertThat(betaResponseInjectEvent.responseId()).isEqualTo("response_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseInjectEvent =
-            BetaResponseInjectEvent.builder()
-                .addInput(
-                    BetaEasyInputMessage.builder()
-                        .content("string")
-                        .role(BetaEasyInputMessage.Role.USER)
-                        .phase(BetaEasyInputMessage.Phase.COMMENTARY)
-                        .type(BetaEasyInputMessage.Type.MESSAGE)
-                        .build()
-                )
-                .responseId("response_id")
-                .build()
 
         val roundtrippedBetaResponseInjectEvent =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseReasoningItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseReasoningItem =
             ResponseReasoningItem.builder()
                 .id("id")
@@ -29,19 +29,8 @@ internal class ResponseReasoningItemTest {
         assertThat(responseReasoningItem.encryptedContent()).contains("encrypted_content")
         assertThat(responseReasoningItem.status())
             .contains(ResponseReasoningItem.Status.IN_PROGRESS)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseReasoningItem =
-            ResponseReasoningItem.builder()
-                .id("id")
-                .addSummary(ResponseReasoningItem.Summary.builder().text("text").build())
-                .addContent(ResponseReasoningItem.Content.builder().text("text").build())
-                .encryptedContent("encrypted_content")
-                .status(ResponseReasoningItem.Status.IN_PROGRESS)
-                .build()
 
         val roundtrippedResponseReasoningItem =
             jsonMapper.readValue(

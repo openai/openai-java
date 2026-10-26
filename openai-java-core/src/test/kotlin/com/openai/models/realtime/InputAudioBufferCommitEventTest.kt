@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class InputAudioBufferCommitEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val inputAudioBufferCommitEvent =
             InputAudioBufferCommitEvent.builder().eventId("event_id").build()
 
         assertThat(inputAudioBufferCommitEvent.eventId()).contains("event_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val inputAudioBufferCommitEvent =
-            InputAudioBufferCommitEvent.builder().eventId("event_id").build()
 
         val roundtrippedInputAudioBufferCommitEvent =
             jsonMapper.readValue(

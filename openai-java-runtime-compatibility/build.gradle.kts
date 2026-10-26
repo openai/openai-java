@@ -17,6 +17,7 @@ val runtimeProbes =
         "openai-java-client-okhttp" to "com.openai.compatibility.OkHttpRuntimeProbe",
         "openai-java" to "com.openai.compatibility.OkHttpRuntimeProbe",
         "openai-java-bedrock" to "com.openai.compatibility.BedrockRuntimeProbe",
+        "openai-java-vertex" to "com.openai.compatibility.VertexRuntimeProbe",
     )
 val supportedArtifacts =
     versionSupportPolicy.artifacts.filterValues { it.lifecycle.isSupported }.keys

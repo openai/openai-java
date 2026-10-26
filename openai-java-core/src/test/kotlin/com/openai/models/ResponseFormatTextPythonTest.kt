@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models
 
@@ -10,14 +10,10 @@ import org.junit.jupiter.api.Test
 internal class ResponseFormatTextPythonTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseFormatTextPython = ResponseFormatTextPython.builder().build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseFormatTextPython = ResponseFormatTextPython.builder().build()
 
         val roundtrippedResponseFormatTextPython =
             jsonMapper.readValue(

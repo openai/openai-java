@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class WebSearchPreviewToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val webSearchPreviewTool =
             WebSearchPreviewTool.builder()
                 .type(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
@@ -42,25 +42,8 @@ internal class WebSearchPreviewToolTest {
                     .timezone("timezone")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val webSearchPreviewTool =
-            WebSearchPreviewTool.builder()
-                .type(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
-                .addSearchContentType(WebSearchPreviewTool.SearchContentType.TEXT)
-                .searchContextSize(WebSearchPreviewTool.SearchContextSize.LOW)
-                .userLocation(
-                    WebSearchPreviewTool.UserLocation.builder()
-                        .city("city")
-                        .country("country")
-                        .region("region")
-                        .timezone("timezone")
-                        .build()
-                )
-                .build()
 
         val roundtrippedWebSearchPreviewTool =
             jsonMapper.readValue(

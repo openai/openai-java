@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.audio
 
@@ -166,6 +166,7 @@ class AudioResponseFormat @JsonCreator private constructor(private val value: Js
             SRT -> false
             VERBOSE_JSON -> true
             VTT -> false
+            DIARIZED_JSON -> false
             else -> false
         }
 

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization
 
@@ -30,7 +30,8 @@ interface UserService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserService
 
-    fun roles(): RoleService
+    fun roles(): RoleService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Retrieves a user by their identifier. */
     fun retrieve(userId: String): OrganizationUser = retrieve(userId, UserRetrieveParams.none())
@@ -147,7 +148,10 @@ interface UserService {
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): UserService.WithRawResponse
 
-        fun roles(): RoleService.WithRawResponse
+        fun roles(): RoleService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `get /organization/users/{user_id}`, but is otherwise the

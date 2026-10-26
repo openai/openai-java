@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.spendlimit
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ProjectSpendLimitTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectSpendLimit =
             ProjectSpendLimit.builder()
                 .currency(ProjectSpendLimit.Currency.USD)
@@ -32,22 +32,8 @@ internal class ProjectSpendLimitTest {
             )
         assertThat(projectSpendLimit.interval()).isEqualTo(ProjectSpendLimit.Interval.MONTH)
         assertThat(projectSpendLimit.thresholdAmount()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectSpendLimit =
-            ProjectSpendLimit.builder()
-                .currency(ProjectSpendLimit.Currency.USD)
-                .enforcement(
-                    ProjectSpendLimit.Enforcement.builder()
-                        .status(ProjectSpendLimit.Enforcement.Status.INACTIVE)
-                        .build()
-                )
-                .interval(ProjectSpendLimit.Interval.MONTH)
-                .thresholdAmount(0L)
-                .build()
 
         val roundtrippedProjectSpendLimit =
             jsonMapper.readValue(

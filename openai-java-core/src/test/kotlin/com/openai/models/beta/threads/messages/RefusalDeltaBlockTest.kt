@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.messages
 
@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class RefusalDeltaBlockTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val refusalDeltaBlock = RefusalDeltaBlock.builder().index(0L).refusal("refusal").build()
 
         assertThat(refusalDeltaBlock.index()).isEqualTo(0L)
         assertThat(refusalDeltaBlock.refusal()).contains("refusal")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val refusalDeltaBlock = RefusalDeltaBlock.builder().index(0L).refusal("refusal").build()
 
         val roundtrippedRefusalDeltaBlock =
             jsonMapper.readValue(

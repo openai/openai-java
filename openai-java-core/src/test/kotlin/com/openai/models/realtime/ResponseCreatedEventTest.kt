@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseCreatedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseCreatedEvent =
             ResponseCreatedEvent.builder()
                 .eventId("event_id")
@@ -64,6 +64,7 @@ internal class ResponseCreatedEventTest {
                                 .error(
                                     RealtimeResponseStatus.Error.builder()
                                         .code("code")
+                                        .message("message")
                                         .type("type")
                                         .build()
                                 )
@@ -156,6 +157,7 @@ internal class ResponseCreatedEventTest {
                             .error(
                                 RealtimeResponseStatus.Error.builder()
                                     .code("code")
+                                    .message("message")
                                     .type("type")
                                     .build()
                             )
@@ -194,103 +196,8 @@ internal class ResponseCreatedEventTest {
                     )
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseCreatedEvent =
-            ResponseCreatedEvent.builder()
-                .eventId("event_id")
-                .response(
-                    RealtimeResponse.builder()
-                        .id("id")
-                        .audio(
-                            RealtimeResponse.Audio.builder()
-                                .output(
-                                    RealtimeResponse.Audio.Output.builder()
-                                        .format(
-                                            RealtimeAudioFormats.AudioPcm.builder()
-                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
-                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
-                                                .build()
-                                        )
-                                        .voice(RealtimeResponse.Audio.Output.Voice.ASH)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .conversationId("conversation_id")
-                        .maxOutputTokensInf()
-                        .metadata(
-                            RealtimeResponse.Metadata.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .object_(RealtimeResponse.Object.REALTIME_RESPONSE)
-                        .addOutput(
-                            RealtimeConversationItemSystemMessage.builder()
-                                .addContent(
-                                    RealtimeConversationItemSystemMessage.Content.builder()
-                                        .text("text")
-                                        .type(
-                                            RealtimeConversationItemSystemMessage.Content.Type
-                                                .INPUT_TEXT
-                                        )
-                                        .build()
-                                )
-                                .id("id")
-                                .object_(RealtimeConversationItemSystemMessage.Object.REALTIME_ITEM)
-                                .status(RealtimeConversationItemSystemMessage.Status.COMPLETED)
-                                .build()
-                        )
-                        .addOutputModality(RealtimeResponse.OutputModality.TEXT)
-                        .status(RealtimeResponse.Status.COMPLETED)
-                        .statusDetails(
-                            RealtimeResponseStatus.builder()
-                                .error(
-                                    RealtimeResponseStatus.Error.builder()
-                                        .code("code")
-                                        .type("type")
-                                        .build()
-                                )
-                                .reason(RealtimeResponseStatus.Reason.TURN_DETECTED)
-                                .type(RealtimeResponseStatus.Type.COMPLETED)
-                                .build()
-                        )
-                        .usage(
-                            RealtimeResponseUsage.builder()
-                                .inputTokenDetails(
-                                    RealtimeResponseUsageInputTokenDetails.builder()
-                                        .audioTokens(0L)
-                                        .cachedTokens(0L)
-                                        .cachedTokensDetails(
-                                            RealtimeResponseUsageInputTokenDetails
-                                                .CachedTokensDetails
-                                                .builder()
-                                                .audioTokens(0L)
-                                                .imageTokens(0L)
-                                                .textTokens(0L)
-                                                .build()
-                                        )
-                                        .imageTokens(0L)
-                                        .textTokens(0L)
-                                        .build()
-                                )
-                                .inputTokens(0L)
-                                .outputTokenDetails(
-                                    RealtimeResponseUsageOutputTokenDetails.builder()
-                                        .audioTokens(0L)
-                                        .textTokens(0L)
-                                        .build()
-                                )
-                                .outputTokens(0L)
-                                .totalTokens(0L)
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedResponseCreatedEvent =
             jsonMapper.readValue(

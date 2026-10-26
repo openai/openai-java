@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AssistantToolChoiceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val assistantToolChoice =
             AssistantToolChoice.builder()
                 .type(AssistantToolChoice.Type.FUNCTION)
@@ -20,16 +20,8 @@ internal class AssistantToolChoiceTest {
         assertThat(assistantToolChoice.type()).isEqualTo(AssistantToolChoice.Type.FUNCTION)
         assertThat(assistantToolChoice.function())
             .contains(AssistantToolChoiceFunction.builder().name("name").build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val assistantToolChoice =
-            AssistantToolChoice.builder()
-                .type(AssistantToolChoice.Type.FUNCTION)
-                .function(AssistantToolChoiceFunction.builder().name("name").build())
-                .build()
 
         val roundtrippedAssistantToolChoice =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.spendalerts
 
@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class OrganizationSpendAlertDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val organizationSpendAlertDeleted =
             OrganizationSpendAlertDeleted.builder().id("id").deleted(true).build()
 
         assertThat(organizationSpendAlertDeleted.id()).isEqualTo("id")
         assertThat(organizationSpendAlertDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val organizationSpendAlertDeleted =
-            OrganizationSpendAlertDeleted.builder().id("id").deleted(true).build()
 
         val roundtrippedOrganizationSpendAlertDeleted =
             jsonMapper.readValue(

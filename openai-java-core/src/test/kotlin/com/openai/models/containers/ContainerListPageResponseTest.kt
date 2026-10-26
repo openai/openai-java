@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.containers
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ContainerListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val containerListPageResponse =
             ContainerListPageResponse.builder()
                 .addData(
@@ -68,40 +68,8 @@ internal class ContainerListPageResponseTest {
         assertThat(containerListPageResponse.firstId()).isEqualTo("first_id")
         assertThat(containerListPageResponse.hasMore()).isEqualTo(true)
         assertThat(containerListPageResponse.lastId()).isEqualTo("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val containerListPageResponse =
-            ContainerListPageResponse.builder()
-                .addData(
-                    ContainerListResponse.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .name("name")
-                        .object_("object")
-                        .status("status")
-                        .expiresAfter(
-                            ContainerListResponse.ExpiresAfter.builder()
-                                .anchor(ContainerListResponse.ExpiresAfter.Anchor.LAST_ACTIVE_AT)
-                                .minutes(0L)
-                                .build()
-                        )
-                        .lastActiveAt(0L)
-                        .memoryLimit(ContainerListResponse.MemoryLimit._1G)
-                        .networkPolicy(
-                            ContainerListResponse.NetworkPolicy.builder()
-                                .type(ContainerListResponse.NetworkPolicy.Type.ALLOWLIST)
-                                .addAllowedDomain("string")
-                                .build()
-                        )
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedContainerListPageResponse =
             jsonMapper.readValue(

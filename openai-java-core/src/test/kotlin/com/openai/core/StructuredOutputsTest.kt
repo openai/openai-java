@@ -90,6 +90,18 @@ internal class StructuredOutputsTest {
     }
 
     @Test
+    fun schemaTest_mapAsEntryList() {
+        class Entry(val key: String, val value: Int)
+        class X(val coolMap: List<Entry>)
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        assertThat(validator.errors()).isEmpty()
+        assertThat(schema.at("/properties/coolMap/type").asText()).isEqualTo("array")
+    }
+
+    @Test
     fun schemaTest_mapHasNoNamedProperties() {
         @Suppress("unused") class X(val m: Map<String, Integer>)
 
@@ -101,6 +113,7 @@ internal class StructuredOutputsTest {
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
             .startsWith("#/properties/m: 'properties' field is missing, empty or not an object.")
+            .contains("For Map fields, use a list of key/value objects instead.")
 
         // Do this check of `toString()` once for a validation failure, but do not repeat it in
         // other tests.

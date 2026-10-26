@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.roles
 
@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class RoleDeleteResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val roleDeleteResponse = RoleDeleteResponse.builder().id("id").deleted(true).build()
 
         assertThat(roleDeleteResponse.id()).isEqualTo("id")
         assertThat(roleDeleteResponse.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val roleDeleteResponse = RoleDeleteResponse.builder().id("id").deleted(true).build()
 
         val roundtrippedRoleDeleteResponse =
             jsonMapper.readValue(

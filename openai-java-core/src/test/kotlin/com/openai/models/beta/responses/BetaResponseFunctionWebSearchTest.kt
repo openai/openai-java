@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseFunctionWebSearchTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseFunctionWebSearch =
             BetaResponseFunctionWebSearch.builder()
                 .id("id")
@@ -50,30 +50,8 @@ internal class BetaResponseFunctionWebSearchTest {
             .isEqualTo(BetaResponseFunctionWebSearch.Status.IN_PROGRESS)
         assertThat(betaResponseFunctionWebSearch.agent())
             .contains(BetaResponseFunctionWebSearch.Agent.builder().agentName("agent_name").build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseFunctionWebSearch =
-            BetaResponseFunctionWebSearch.builder()
-                .id("id")
-                .action(
-                    BetaResponseFunctionWebSearch.Action.Search.builder()
-                        .addQuery("string")
-                        .query("query")
-                        .addSource(
-                            BetaResponseFunctionWebSearch.Action.Search.Source.builder()
-                                .url("https://example.com")
-                                .build()
-                        )
-                        .build()
-                )
-                .status(BetaResponseFunctionWebSearch.Status.IN_PROGRESS)
-                .agent(
-                    BetaResponseFunctionWebSearch.Agent.builder().agentName("agent_name").build()
-                )
-                .build()
 
         val roundtrippedBetaResponseFunctionWebSearch =
             jsonMapper.readValue(

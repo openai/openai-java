@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.runs.steps
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RunStepDeltaTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val runStepDelta =
             RunStepDelta.builder()
                 .stepDetails(
@@ -36,23 +36,8 @@ internal class RunStepDeltaTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val runStepDelta =
-            RunStepDelta.builder()
-                .stepDetails(
-                    RunStepDeltaMessageDelta.builder()
-                        .messageCreation(
-                            RunStepDeltaMessageDelta.MessageCreation.builder()
-                                .messageId("message_id")
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedRunStepDelta =
             jsonMapper.readValue(

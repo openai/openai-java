@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.certificates
 
@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class CertificateDeleteResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val certificateDeleteResponse = CertificateDeleteResponse.builder().id("id").build()
 
         assertThat(certificateDeleteResponse.id()).isEqualTo("id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val certificateDeleteResponse = CertificateDeleteResponse.builder().id("id").build()
 
         val roundtrippedCertificateDeleteResponse =
             jsonMapper.readValue(

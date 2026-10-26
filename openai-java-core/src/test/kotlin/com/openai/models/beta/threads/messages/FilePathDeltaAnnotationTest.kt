@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.messages
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class FilePathDeltaAnnotationTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val filePathDeltaAnnotation =
             FilePathDeltaAnnotation.builder()
                 .index(0L)
@@ -26,19 +26,8 @@ internal class FilePathDeltaAnnotationTest {
             .contains(FilePathDeltaAnnotation.FilePath.builder().fileId("file_id").build())
         assertThat(filePathDeltaAnnotation.startIndex()).contains(0L)
         assertThat(filePathDeltaAnnotation.text()).contains("text")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val filePathDeltaAnnotation =
-            FilePathDeltaAnnotation.builder()
-                .index(0L)
-                .endIndex(0L)
-                .filePath(FilePathDeltaAnnotation.FilePath.builder().fileId("file_id").build())
-                .startIndex(0L)
-                .text("text")
-                .build()
 
         val roundtrippedFilePathDeltaAnnotation =
             jsonMapper.readValue(

@@ -1,9 +1,9 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core.http
 
 import com.openai.core.LogLevel
 import com.openai.core.RequestOptions
+import com.openai.core.handlers.sseHandler
+import com.openai.core.jsonMapper
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceLock
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.slf4j.LoggerFactory
 
@@ -527,6 +528,30 @@ internal class LoggingHttpClientTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
+    fun debugLevel_sseCompletionIsNotEarlyClose(consumeTerminal: Boolean) {
+        val client =
+            loggingClient(
+                fakeHttpClient(
+                    responseHeaders =
+                        Headers.builder().put("Content-Type", "text/event-stream").build(),
+                    responseBody = "data: {}\n\ndata: [DONE]\n\n".toByteArray(),
+                ),
+                LogLevel.DEBUG,
+            )
+        sseHandler(jsonMapper()).handle(client.execute(simpleGetRequest())).use {
+            if (consumeTerminal) it.stream().forEach {} else it.stream().findFirst()
+        }
+        val endings = stderrOutput().lines().filter { it.startsWith("<-- END HTTP") }
+        assertThat(endings).hasSize(1)
+        if (consumeTerminal) {
+            assertThat(endings.single()).doesNotContain("closed early")
+        } else {
+            assertThat(endings.single()).contains("closed early")
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
     fun debugLevel_logsEndHttpMarkerOnEarlyClose(async: Boolean) {
         val responseBody = """{"id":1,"status":"ok"}"""
         val headers = Headers.builder().put("Content-Type", "application/json").build()
@@ -822,6 +847,78 @@ internal class LoggingHttpClientTest {
                 |"""
                     .trimMargin()
             )
+    }
+
+    @ParameterizedTest
+    @CsvSource("false,false", "false,true", "true,false", "true,true")
+    fun debugLevel_contentStreamsWithoutFallingBackToWriteTo(async: Boolean, closeEarly: Boolean) {
+        val bytes = "streaming body".toByteArray(StandardCharsets.UTF_8)
+        var contentCalls = 0
+        var closeCalls = 0
+        val requestBody =
+            object : HttpRequestBody {
+                override fun writeTo(outputStream: OutputStream) {
+                    error("writeTo must not be used by the content consumer")
+                }
+
+                override fun content(): InputStream {
+                    contentCalls++
+                    return object : ByteArrayInputStream(bytes) {
+                        override fun close() {
+                            closeCalls++
+                        }
+                    }
+                }
+
+                override fun contentType(): String = "text/plain"
+
+                override fun contentLength(): Long = bytes.size.toLong()
+
+                override fun repeatable(): Boolean = false
+
+                override fun close() {}
+            }
+        val delegate =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse {
+                    request.body!!.content().use {
+                        assertThat(it.read(ByteArray(0))).isZero()
+                        if (closeEarly) assertThat(it.read()).isEqualTo(bytes[0].toInt())
+                        else {
+                            assertThat(it.readBytes()).isEqualTo(bytes)
+                            assertThat(it.read(ByteArray(0))).isZero()
+                        }
+                        it.close()
+                    }
+                    return fakeResponse(200, Headers.builder().build(), ByteArray(0))
+                }
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> =
+                    CompletableFuture.completedFuture(execute(request, requestOptions))
+
+                override fun close() {}
+            }
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.POST)
+                .baseUrl("https://api.example.com")
+                .addPathSegment("stream")
+                .body(requestBody)
+                .build()
+        val client = loggingClient(delegate, LogLevel.DEBUG)
+
+        client.execute(request, async).close()
+
+        assertThat(contentCalls).isEqualTo(1)
+        assertThat(closeCalls).isEqualTo(1)
+        val suffix = if (closeEarly) "1-byte body, closed early" else "${bytes.size}-byte body"
+        assertThat(stderrOutput()).contains("--> END POST ($suffix)")
     }
 
     @Test

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseComputerToolCallOutputScreenshotTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseComputerToolCallOutputScreenshot =
             BetaResponseComputerToolCallOutputScreenshot.builder()
                 .fileId("file_id")
@@ -20,16 +20,8 @@ internal class BetaResponseComputerToolCallOutputScreenshotTest {
         assertThat(betaResponseComputerToolCallOutputScreenshot.fileId()).contains("file_id")
         assertThat(betaResponseComputerToolCallOutputScreenshot.imageUrl())
             .contains("https://example.com")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseComputerToolCallOutputScreenshot =
-            BetaResponseComputerToolCallOutputScreenshot.builder()
-                .fileId("file_id")
-                .imageUrl("https://example.com")
-                .build()
 
         val roundtrippedBetaResponseComputerToolCallOutputScreenshot =
             jsonMapper.readValue(

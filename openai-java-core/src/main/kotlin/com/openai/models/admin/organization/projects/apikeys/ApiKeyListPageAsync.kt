@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.apikeys
 
@@ -45,7 +45,8 @@ private constructor(
 
     override fun items(): List<ProjectApiKey> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty() && lastId().isPresent
+    override fun hasNextPage(): Boolean =
+        hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent
 
     fun nextPageParams(): ApiKeyListParams {
         val nextCursor =

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.adminapikeys
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AdminApiKeyCreateResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val adminApiKeyCreateResponse =
             AdminApiKeyCreateResponse.builder()
                 .id("key_abc")
@@ -50,31 +50,8 @@ internal class AdminApiKeyCreateResponseTest {
         assertThat(adminApiKeyCreateResponse.lastUsedAt()).contains(1711471534L)
         assertThat(adminApiKeyCreateResponse.name()).contains("Administration Key")
         assertThat(adminApiKeyCreateResponse.value()).isEqualTo("sk-admin-1234abcd")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val adminApiKeyCreateResponse =
-            AdminApiKeyCreateResponse.builder()
-                .id("key_abc")
-                .createdAt(1711471533L)
-                .expiresAt(1714063533L)
-                .owner(
-                    AdminApiKey.Owner.builder()
-                        .id("sa_456")
-                        .createdAt(1711471533L)
-                        .name("My Service Account")
-                        .object_("organization.user")
-                        .role("owner")
-                        .type("user")
-                        .build()
-                )
-                .redactedValue("sk-admin...def")
-                .lastUsedAt(1711471534L)
-                .name("Administration Key")
-                .value("sk-admin-1234abcd")
-                .build()
 
         val roundtrippedAdminApiKeyCreateResponse =
             jsonMapper.readValue(

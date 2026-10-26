@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseUsageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseUsage =
             ResponseUsage.builder()
                 .inputTokens(0L)
@@ -39,26 +39,8 @@ internal class ResponseUsageTest {
         assertThat(responseUsage.outputTokensDetails())
             .isEqualTo(ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())
         assertThat(responseUsage.totalTokens()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseUsage =
-            ResponseUsage.builder()
-                .inputTokens(0L)
-                .inputTokensDetails(
-                    ResponseUsage.InputTokensDetails.builder()
-                        .cacheWriteTokens(0L)
-                        .cachedTokens(0L)
-                        .build()
-                )
-                .outputTokens(0L)
-                .outputTokensDetails(
-                    ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
-                )
-                .totalTokens(0L)
-                .build()
 
         val roundtrippedResponseUsage =
             jsonMapper.readValue(

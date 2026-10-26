@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseCustomToolCallItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseCustomToolCallItem =
             BetaResponseCustomToolCallItem.builder()
                 .callId("call_id")
@@ -18,6 +18,7 @@ internal class BetaResponseCustomToolCallItemTest {
                 .name("name")
                 .id("id")
                 .agent(BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build())
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(BetaResponseCustomToolCallItem.Status.IN_PROGRESS)
@@ -30,29 +31,15 @@ internal class BetaResponseCustomToolCallItemTest {
         assertThat(betaResponseCustomToolCallItem.id()).contains("id")
         assertThat(betaResponseCustomToolCallItem.agent())
             .contains(BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build())
+        assertThat(betaResponseCustomToolCallItem.async()).contains(true)
         assertThat(betaResponseCustomToolCallItem.caller())
             .contains(BetaResponseCustomToolCall.Caller.ofDirect())
         assertThat(betaResponseCustomToolCallItem.namespace()).contains("namespace")
         assertThat(betaResponseCustomToolCallItem.status())
             .isEqualTo(BetaResponseCustomToolCallItem.Status.IN_PROGRESS)
         assertThat(betaResponseCustomToolCallItem.createdBy()).contains("created_by")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseCustomToolCallItem =
-            BetaResponseCustomToolCallItem.builder()
-                .callId("call_id")
-                .input("input")
-                .name("name")
-                .id("id")
-                .agent(BetaResponseCustomToolCall.Agent.builder().agentName("agent_name").build())
-                .callerDirect()
-                .namespace("namespace")
-                .status(BetaResponseCustomToolCallItem.Status.IN_PROGRESS)
-                .createdBy("created_by")
-                .build()
 
         val roundtrippedBetaResponseCustomToolCallItem =
             jsonMapper.readValue(

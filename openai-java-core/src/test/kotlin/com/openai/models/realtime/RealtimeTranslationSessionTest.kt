@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeTranslationSessionTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeTranslationSession =
             RealtimeTranslationSession.builder()
                 .id("id")
@@ -68,40 +68,8 @@ internal class RealtimeTranslationSessionTest {
             )
         assertThat(realtimeTranslationSession.expiresAt()).isEqualTo(0L)
         assertThat(realtimeTranslationSession.model()).isEqualTo("model")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeTranslationSession =
-            RealtimeTranslationSession.builder()
-                .id("id")
-                .audio(
-                    RealtimeTranslationSession.Audio.builder()
-                        .input(
-                            RealtimeTranslationSession.Audio.Input.builder()
-                                .noiseReduction(
-                                    RealtimeTranslationSession.Audio.Input.NoiseReduction.builder()
-                                        .type(NoiseReductionType.NEAR_FIELD)
-                                        .build()
-                                )
-                                .transcription(
-                                    RealtimeTranslationSession.Audio.Input.Transcription.builder()
-                                        .model("model")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .output(
-                            RealtimeTranslationSession.Audio.Output.builder()
-                                .language("language")
-                                .build()
-                        )
-                        .build()
-                )
-                .expiresAt(0L)
-                .model("model")
-                .build()
 
         val roundtrippedRealtimeTranslationSession =
             jsonMapper.readValue(

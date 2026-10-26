@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,16 +10,11 @@ import org.junit.jupiter.api.Test
 internal class BetaContainerNetworkPolicyDisabledTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaContainerNetworkPolicyDisabled =
             BetaContainerNetworkPolicyDisabled.builder().build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaContainerNetworkPolicyDisabled =
-            BetaContainerNetworkPolicyDisabled.builder().build()
 
         val roundtrippedBetaContainerNetworkPolicyDisabled =
             jsonMapper.readValue(

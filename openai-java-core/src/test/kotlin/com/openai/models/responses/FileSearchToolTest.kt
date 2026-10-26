@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class FileSearchToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fileSearchTool =
             FileSearchTool.builder()
                 .addVectorStoreId("string")
@@ -62,35 +62,8 @@ internal class FileSearchToolTest {
                     .scoreThreshold(0.0)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fileSearchTool =
-            FileSearchTool.builder()
-                .addVectorStoreId("string")
-                .filters(
-                    ComparisonFilter.builder()
-                        .key("key")
-                        .type(ComparisonFilter.Type.EQ)
-                        .value("string")
-                        .build()
-                )
-                .maxNumResults(0L)
-                .rankingOptions(
-                    FileSearchTool.RankingOptions.builder()
-                        .hybridSearch(
-                            FileSearchTool.RankingOptions.HybridSearch.builder()
-                                .embeddingWeight(0.0)
-                                .textWeight(0.0)
-                                .build()
-                        )
-                        .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                        .scoreThreshold(0.0)
-                        .build()
-                )
-                .build()
 
         val roundtrippedFileSearchTool =
             jsonMapper.readValue(

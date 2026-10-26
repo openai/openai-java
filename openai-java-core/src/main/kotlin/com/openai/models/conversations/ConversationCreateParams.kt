@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.conversations
 
@@ -12,6 +12,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkKnown
+import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -20,9 +21,11 @@ import com.openai.models.responses.EasyInputMessage
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseCompactionItemParam
 import com.openai.models.responses.ResponseComputerToolCall
+import com.openai.models.responses.ResponseConfigurationUpdateItemParam
 import com.openai.models.responses.ResponseCustomToolCall
 import com.openai.models.responses.ResponseCustomToolCallOutput
 import com.openai.models.responses.ResponseFileSearchToolCall
+import com.openai.models.responses.ResponseFunctionCallOutputItem
 import com.openai.models.responses.ResponseFunctionToolCall
 import com.openai.models.responses.ResponseFunctionWebSearch
 import com.openai.models.responses.ResponseInputItem
@@ -197,6 +200,38 @@ private constructor(
         }
 
         /**
+         * Alias for calling [addItem] with the following:
+         * ```java
+         * ResponseInputItem.FunctionCallOutput.builder()
+         *     .output(output)
+         *     .build()
+         * ```
+         */
+        fun addFunctionCallOutputItem(output: ResponseInputItem.FunctionCallOutput.Output) = apply {
+            body.addFunctionCallOutputItem(output)
+        }
+
+        /**
+         * Alias for calling [addFunctionCallOutputItem] with
+         * `ResponseInputItem.FunctionCallOutput.Output.ofString(string)`.
+         */
+        fun addFunctionCallOutputItem(string: String) = apply {
+            body.addFunctionCallOutputItem(string)
+        }
+
+        /**
+         * Alias for calling [addFunctionCallOutputItem] with
+         * `ResponseInputItem.FunctionCallOutput.Output.ofResponseFunctionCallOutputItemList(responseFunctionCallOutputItemList)`.
+         */
+        fun addFunctionCallOutputItemOfResponseFunctionCallOutputItemList(
+            responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
+        ) = apply {
+            body.addFunctionCallOutputItemOfResponseFunctionCallOutputItemList(
+                responseFunctionCallOutputItemList
+            )
+        }
+
+        /**
          * Alias for calling [addItem] with `ResponseInputItem.ofToolSearchCall(toolSearchCall)`.
          */
         fun addItem(toolSearchCall: ResponseInputItem.ToolSearchCall) = apply {
@@ -251,6 +286,14 @@ private constructor(
          * ```
          */
         fun addAdditionalToolsItem(tools: List<Tool>) = apply { body.addAdditionalToolsItem(tools) }
+
+        /**
+         * Alias for calling [addItem] with
+         * `ResponseInputItem.ofConfigurationUpdate(configurationUpdate)`.
+         */
+        fun addItem(configurationUpdate: ResponseConfigurationUpdateItemParam) = apply {
+            body.addItem(configurationUpdate)
+        }
 
         /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
         fun addItem(reasoning: ResponseReasoningItem) = apply { body.addItem(reasoning) }
@@ -609,6 +652,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "items" to this.items,
+                "metadata" to this.metadata,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -663,7 +728,7 @@ private constructor(
              */
             fun addItem(item: ResponseInputItem) = apply {
                 items =
-                    (items ?: JsonField.of(mutableListOf())).also {
+                    (items?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("items", it).add(item)
                     }
             }
@@ -726,6 +791,38 @@ private constructor(
                 addItem(ResponseInputItem.ofFunctionCallOutput(functionCallOutput))
 
             /**
+             * Alias for calling [addItem] with the following:
+             * ```java
+             * ResponseInputItem.FunctionCallOutput.builder()
+             *     .output(output)
+             *     .build()
+             * ```
+             */
+            fun addFunctionCallOutputItem(output: ResponseInputItem.FunctionCallOutput.Output) =
+                addItem(ResponseInputItem.FunctionCallOutput.builder().output(output).build())
+
+            /**
+             * Alias for calling [addFunctionCallOutputItem] with
+             * `ResponseInputItem.FunctionCallOutput.Output.ofString(string)`.
+             */
+            fun addFunctionCallOutputItem(string: String) =
+                addFunctionCallOutputItem(
+                    ResponseInputItem.FunctionCallOutput.Output.ofString(string)
+                )
+
+            /**
+             * Alias for calling [addFunctionCallOutputItem] with
+             * `ResponseInputItem.FunctionCallOutput.Output.ofResponseFunctionCallOutputItemList(responseFunctionCallOutputItemList)`.
+             */
+            fun addFunctionCallOutputItemOfResponseFunctionCallOutputItemList(
+                responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
+            ) =
+                addFunctionCallOutputItem(
+                    ResponseInputItem.FunctionCallOutput.Output
+                        .ofResponseFunctionCallOutputItemList(responseFunctionCallOutputItemList)
+                )
+
+            /**
              * Alias for calling [addItem] with
              * `ResponseInputItem.ofToolSearchCall(toolSearchCall)`.
              */
@@ -778,6 +875,13 @@ private constructor(
              */
             fun addAdditionalToolsItem(tools: List<Tool>) =
                 addItem(ResponseInputItem.AdditionalTools.builder().tools(tools).build())
+
+            /**
+             * Alias for calling [addItem] with
+             * `ResponseInputItem.ofConfigurationUpdate(configurationUpdate)`.
+             */
+            fun addItem(configurationUpdate: ResponseConfigurationUpdateItemParam) =
+                addItem(ResponseInputItem.ofConfigurationUpdate(configurationUpdate))
 
             /** Alias for calling [addItem] with `ResponseInputItem.ofReasoning(reasoning)`. */
             fun addItem(reasoning: ResponseReasoningItem) =
@@ -1055,6 +1159,23 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -1084,6 +1205,11 @@ private constructor(
 
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
+            }
+
+            /** Adds a string-valued property. */
+            fun putProperty(key: String, value: String) = apply {
+                putAdditionalProperty(key, JsonValue.from(value))
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

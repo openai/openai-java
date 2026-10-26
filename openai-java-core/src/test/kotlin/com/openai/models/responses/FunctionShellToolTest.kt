@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class FunctionShellToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val functionShellTool =
             FunctionShellTool.builder()
                 .addAllowedCaller(FunctionShellTool.AllowedCaller.DIRECT)
@@ -38,23 +38,8 @@ internal class FunctionShellToolTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val functionShellTool =
-            FunctionShellTool.builder()
-                .addAllowedCaller(FunctionShellTool.AllowedCaller.DIRECT)
-                .environment(
-                    ContainerAuto.builder()
-                        .addFileId("file-123")
-                        .memoryLimit(ContainerAuto.MemoryLimit._1G)
-                        .networkPolicy(ContainerNetworkPolicyDisabled.builder().build())
-                        .addSkill(SkillReference.builder().skillId("x").version("version").build())
-                        .build()
-                )
-                .build()
 
         val roundtrippedFunctionShellTool =
             jsonMapper.readValue(

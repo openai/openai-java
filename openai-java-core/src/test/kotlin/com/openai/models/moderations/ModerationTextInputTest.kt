@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.moderations
 
@@ -10,16 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ModerationTextInputTest {
 
     @Test
-    fun create() {
-        val moderationTextInput = ModerationTextInput.builder().text("I want to kill them").build()
+    fun createAndRoundtrip() {
+        val moderationTextInput =
+            ModerationTextInput.builder().text("...text to classify goes here...").build()
 
-        assertThat(moderationTextInput.text()).isEqualTo("I want to kill them")
-    }
+        assertThat(moderationTextInput.text()).isEqualTo("...text to classify goes here...")
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val moderationTextInput = ModerationTextInput.builder().text("I want to kill them").build()
 
         val roundtrippedModerationTextInput =
             jsonMapper.readValue(

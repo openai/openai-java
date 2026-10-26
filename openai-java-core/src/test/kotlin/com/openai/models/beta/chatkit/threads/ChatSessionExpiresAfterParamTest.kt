@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.chatkit.threads
 
@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ChatSessionExpiresAfterParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatSessionExpiresAfterParam =
             ChatSessionExpiresAfterParam.builder().seconds(1L).build()
 
         assertThat(chatSessionExpiresAfterParam.seconds()).isEqualTo(1L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatSessionExpiresAfterParam =
-            ChatSessionExpiresAfterParam.builder().seconds(1L).build()
 
         val roundtrippedChatSessionExpiresAfterParam =
             jsonMapper.readValue(

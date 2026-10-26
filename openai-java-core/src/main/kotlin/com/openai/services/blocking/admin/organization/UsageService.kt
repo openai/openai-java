@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization
 
@@ -16,6 +16,8 @@ import com.openai.models.admin.organization.usage.UsageCompletionsParams
 import com.openai.models.admin.organization.usage.UsageCompletionsResponse
 import com.openai.models.admin.organization.usage.UsageCostsParams
 import com.openai.models.admin.organization.usage.UsageCostsResponse
+import com.openai.models.admin.organization.usage.UsageDecisionsParams
+import com.openai.models.admin.organization.usage.UsageDecisionsResponse
 import com.openai.models.admin.organization.usage.UsageEmbeddingsParams
 import com.openai.models.admin.organization.usage.UsageEmbeddingsResponse
 import com.openai.models.admin.organization.usage.UsageFileSearchCallsParams
@@ -94,6 +96,16 @@ interface UsageService {
         params: UsageCostsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): UsageCostsResponse
+
+    /** Get Decisions API usage details for the organization. */
+    fun decisions(params: UsageDecisionsParams): UsageDecisionsResponse =
+        decisions(params, RequestOptions.none())
+
+    /** @see decisions */
+    fun decisions(
+        params: UsageDecisionsParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): UsageDecisionsResponse
 
     /** Get embeddings usage details for the organization. */
     fun embeddings(params: UsageEmbeddingsParams): UsageEmbeddingsResponse =
@@ -245,6 +257,21 @@ interface UsageService {
             params: UsageCostsParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<UsageCostsResponse>
+
+        /**
+         * Returns a raw HTTP response for `get /organization/usage/decisions`, but is otherwise the
+         * same as [UsageService.decisions].
+         */
+        @MustBeClosed
+        fun decisions(params: UsageDecisionsParams): HttpResponseFor<UsageDecisionsResponse> =
+            decisions(params, RequestOptions.none())
+
+        /** @see decisions */
+        @MustBeClosed
+        fun decisions(
+            params: UsageDecisionsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<UsageDecisionsResponse>
 
         /**
          * Returns a raw HTTP response for `get /organization/usage/embeddings`, but is otherwise

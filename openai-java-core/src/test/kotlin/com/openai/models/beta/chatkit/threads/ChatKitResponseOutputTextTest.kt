@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.chatkit.threads
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ChatKitResponseOutputTextTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatkitResponseOutputText =
             ChatKitResponseOutputText.builder()
                 .addFileAnnotation(
@@ -34,20 +34,8 @@ internal class ChatKitResponseOutputTextTest {
                 )
             )
         assertThat(chatkitResponseOutputText.text()).isEqualTo("text")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatkitResponseOutputText =
-            ChatKitResponseOutputText.builder()
-                .addFileAnnotation(
-                    ChatKitResponseOutputText.Annotation.File.Source.builder()
-                        .filename("filename")
-                        .build()
-                )
-                .text("text")
-                .build()
 
         val roundtrippedChatKitResponseOutputText =
             jsonMapper.readValue(

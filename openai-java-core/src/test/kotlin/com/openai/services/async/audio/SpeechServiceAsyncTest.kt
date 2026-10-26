@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.audio
 
@@ -38,7 +38,7 @@ internal class SpeechServiceAsyncTest {
                 SpeechCreateParams.builder()
                     .input("input")
                     .model(SpeechModel.TTS_1)
-                    .voice(SpeechCreateParams.Voice.UnionMember1.ALLOY)
+                    .voice(SpeechCreateParams.Voice.UnionMember1.ASH)
                     .instructions("instructions")
                     .responseFormat(SpeechCreateParams.ResponseFormat.MP3)
                     .speed(0.25)

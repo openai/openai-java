@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.jobs
 
@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 internal class FineTuningJobTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fineTuningJob =
             FineTuningJob.builder()
                 .id("id")
@@ -219,111 +219,8 @@ internal class FineTuningJobTest {
                     )
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fineTuningJob =
-            FineTuningJob.builder()
-                .id("id")
-                .createdAt(0L)
-                .error(
-                    FineTuningJob.Error.builder()
-                        .code("code")
-                        .message("message")
-                        .param("param")
-                        .build()
-                )
-                .fineTunedModel("fine_tuned_model")
-                .finishedAt(0L)
-                .hyperparameters(
-                    FineTuningJob.Hyperparameters.builder()
-                        .batchSizeAuto()
-                        .learningRateMultiplierAuto()
-                        .nEpochsAuto()
-                        .build()
-                )
-                .model("model")
-                .organizationId("organization_id")
-                .addResultFile("file-abc123")
-                .seed(0L)
-                .status(FineTuningJob.Status.VALIDATING_FILES)
-                .trainedTokens(0L)
-                .trainingFile("training_file")
-                .validationFile("validation_file")
-                .estimatedFinish(0L)
-                .addIntegration(
-                    FineTuningJobWandbIntegrationObject.builder()
-                        .wandb(
-                            FineTuningJobWandbIntegration.builder()
-                                .project("my-wandb-project")
-                                .entity("entity")
-                                .name("name")
-                                .addTag("custom-tag")
-                                .build()
-                        )
-                        .build()
-                )
-                .metadata(
-                    FineTuningJob.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .method(
-                    FineTuningJob.Method.builder()
-                        .type(FineTuningJob.Method.Type.SUPERVISED)
-                        .dpo(
-                            DpoMethod.builder()
-                                .hyperparameters(
-                                    DpoHyperparameters.builder()
-                                        .batchSizeAuto()
-                                        .betaAuto()
-                                        .learningRateMultiplierAuto()
-                                        .nEpochsAuto()
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .reinforcement(
-                            ReinforcementMethod.builder()
-                                .grader(
-                                    StringCheckGrader.builder()
-                                        .input("input")
-                                        .name("name")
-                                        .operation(StringCheckGrader.Operation.EQ)
-                                        .reference("reference")
-                                        .build()
-                                )
-                                .hyperparameters(
-                                    ReinforcementHyperparameters.builder()
-                                        .batchSizeAuto()
-                                        .computeMultiplierAuto()
-                                        .evalIntervalAuto()
-                                        .evalSamplesAuto()
-                                        .learningRateMultiplierAuto()
-                                        .nEpochsAuto()
-                                        .reasoningEffort(
-                                            ReinforcementHyperparameters.ReasoningEffort.DEFAULT
-                                        )
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .supervised(
-                            SupervisedMethod.builder()
-                                .hyperparameters(
-                                    SupervisedHyperparameters.builder()
-                                        .batchSizeAuto()
-                                        .learningRateMultiplierAuto()
-                                        .nEpochsAuto()
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedFineTuningJob =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -12,14 +12,22 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionChunkTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionChunk =
             ChatCompletionChunk.builder()
-                .id("id")
+                .id("chatcmpl-123")
                 .addChoice(
                     ChatCompletionChunk.Choice.builder()
                         .delta(
                             ChatCompletionChunk.Choice.Delta.builder()
+                                .audio(
+                                    ChatCompletionChunk.Choice.Delta.Audio.builder()
+                                        .id("id")
+                                        .data("data")
+                                        .expiresAt(0L)
+                                        .transcript("transcript")
+                                        .build()
+                                )
                                 .content("content")
                                 .functionCall(
                                     ChatCompletionChunk.Choice.Delta.FunctionCall.builder()
@@ -47,8 +55,8 @@ internal class ChatCompletionChunkTest {
                                 )
                                 .build()
                         )
-                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                         .index(0L)
+                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                         .logprobs(
                             ChatCompletionChunk.Choice.Logprobs.builder()
                                 .addContent(
@@ -83,8 +91,8 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
-                .created(0L)
-                .model("model")
+                .created(1694268190L)
+                .model("gpt-6-astra")
                 .moderation(
                     ChatCompletionChunk.Moderation.builder()
                         .input(
@@ -167,8 +175,9 @@ internal class ChatCompletionChunkTest {
                         )
                         .build()
                 )
+                .obfuscation("")
                 .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
-                .systemFingerprint("system_fingerprint")
+                .systemFingerprint("fp_44709d6fcb")
                 .usage(
                     CompletionUsage.builder()
                         .completionTokens(0L)
@@ -180,6 +189,7 @@ internal class ChatCompletionChunkTest {
                                 .audioTokens(0L)
                                 .reasoningTokens(0L)
                                 .rejectedPredictionTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .promptTokensDetails(
@@ -187,18 +197,28 @@ internal class ChatCompletionChunkTest {
                                 .audioTokens(0L)
                                 .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
+                                .imageTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .build()
                 )
                 .build()
 
-        assertThat(chatCompletionChunk.id()).isEqualTo("id")
+        assertThat(chatCompletionChunk.id()).isEqualTo("chatcmpl-123")
         assertThat(chatCompletionChunk.choices())
             .containsExactly(
                 ChatCompletionChunk.Choice.builder()
                     .delta(
                         ChatCompletionChunk.Choice.Delta.builder()
+                            .audio(
+                                ChatCompletionChunk.Choice.Delta.Audio.builder()
+                                    .id("id")
+                                    .data("data")
+                                    .expiresAt(0L)
+                                    .transcript("transcript")
+                                    .build()
+                            )
                             .content("content")
                             .functionCall(
                                 ChatCompletionChunk.Choice.Delta.FunctionCall.builder()
@@ -223,8 +243,8 @@ internal class ChatCompletionChunkTest {
                             )
                             .build()
                     )
-                    .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                     .index(0L)
+                    .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
                     .logprobs(
                         ChatCompletionChunk.Choice.Logprobs.builder()
                             .addContent(
@@ -259,8 +279,8 @@ internal class ChatCompletionChunkTest {
                     )
                     .build()
             )
-        assertThat(chatCompletionChunk.created()).isEqualTo(0L)
-        assertThat(chatCompletionChunk.model()).isEqualTo("model")
+        assertThat(chatCompletionChunk.created()).isEqualTo(1694268190L)
+        assertThat(chatCompletionChunk.model()).isEqualTo("gpt-6-astra")
         assertThat(chatCompletionChunk.moderation())
             .contains(
                 ChatCompletionChunk.Moderation.builder()
@@ -344,8 +364,9 @@ internal class ChatCompletionChunkTest {
                     )
                     .build()
             )
+        assertThat(chatCompletionChunk.obfuscation()).contains("")
         assertThat(chatCompletionChunk.serviceTier()).contains(ChatCompletionChunk.ServiceTier.AUTO)
-        assertThat(chatCompletionChunk.systemFingerprint()).contains("system_fingerprint")
+        assertThat(chatCompletionChunk.systemFingerprint()).contains("fp_44709d6fcb")
         assertThat(chatCompletionChunk.usage())
             .contains(
                 CompletionUsage.builder()
@@ -358,6 +379,7 @@ internal class ChatCompletionChunkTest {
                             .audioTokens(0L)
                             .reasoningTokens(0L)
                             .rejectedPredictionTokens(0L)
+                            .textTokens(0L)
                             .build()
                     )
                     .promptTokensDetails(
@@ -365,194 +387,14 @@ internal class ChatCompletionChunkTest {
                             .audioTokens(0L)
                             .cacheWriteTokens(0L)
                             .cachedTokens(0L)
+                            .imageTokens(0L)
+                            .textTokens(0L)
                             .build()
                     )
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionChunk =
-            ChatCompletionChunk.builder()
-                .id("id")
-                .addChoice(
-                    ChatCompletionChunk.Choice.builder()
-                        .delta(
-                            ChatCompletionChunk.Choice.Delta.builder()
-                                .content("content")
-                                .functionCall(
-                                    ChatCompletionChunk.Choice.Delta.FunctionCall.builder()
-                                        .arguments("arguments")
-                                        .name("name")
-                                        .build()
-                                )
-                                .refusal("refusal")
-                                .role(ChatCompletionChunk.Choice.Delta.Role.DEVELOPER)
-                                .addToolCall(
-                                    ChatCompletionChunk.Choice.Delta.ToolCall.builder()
-                                        .index(0L)
-                                        .id("id")
-                                        .function(
-                                            ChatCompletionChunk.Choice.Delta.ToolCall.Function
-                                                .builder()
-                                                .arguments("arguments")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .type(
-                                            ChatCompletionChunk.Choice.Delta.ToolCall.Type.FUNCTION
-                                        )
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
-                        .index(0L)
-                        .logprobs(
-                            ChatCompletionChunk.Choice.Logprobs.builder()
-                                .addContent(
-                                    ChatCompletionTokenLogprob.builder()
-                                        .token("token")
-                                        .addByte(0L)
-                                        .logprob(0.0)
-                                        .addTopLogprob(
-                                            ChatCompletionTokenLogprob.TopLogprob.builder()
-                                                .token("token")
-                                                .addByte(0L)
-                                                .logprob(0.0)
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .addRefusal(
-                                    ChatCompletionTokenLogprob.builder()
-                                        .token("token")
-                                        .addByte(0L)
-                                        .logprob(0.0)
-                                        .addTopLogprob(
-                                            ChatCompletionTokenLogprob.TopLogprob.builder()
-                                                .token("token")
-                                                .addByte(0L)
-                                                .logprob(0.0)
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .created(0L)
-                .model("model")
-                .moderation(
-                    ChatCompletionChunk.Moderation.builder()
-                        .input(
-                            ChatCompletionChunk.Moderation.Input.ModerationResults.builder()
-                                .model("model")
-                                .addResult(
-                                    ChatCompletionChunk.Moderation.Input.ModerationResults.Result
-                                        .builder()
-                                        .categories(
-                                            ChatCompletionChunk.Moderation.Input.ModerationResults
-                                                .Result
-                                                .Categories
-                                                .builder()
-                                                .putAdditionalProperty("foo", JsonValue.from(true))
-                                                .build()
-                                        )
-                                        .categoryAppliedInputTypes(
-                                            ChatCompletionChunk.Moderation.Input.ModerationResults
-                                                .Result
-                                                .CategoryAppliedInputTypes
-                                                .builder()
-                                                .putAdditionalProperty(
-                                                    "foo",
-                                                    JsonValue.from(listOf("text")),
-                                                )
-                                                .build()
-                                        )
-                                        .categoryScores(
-                                            ChatCompletionChunk.Moderation.Input.ModerationResults
-                                                .Result
-                                                .CategoryScores
-                                                .builder()
-                                                .putAdditionalProperty("foo", JsonValue.from(0))
-                                                .build()
-                                        )
-                                        .flagged(true)
-                                        .model("model")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .output(
-                            ChatCompletionChunk.Moderation.Output.ModerationResults.builder()
-                                .model("model")
-                                .addResult(
-                                    ChatCompletionChunk.Moderation.Output.ModerationResults.Result
-                                        .builder()
-                                        .categories(
-                                            ChatCompletionChunk.Moderation.Output.ModerationResults
-                                                .Result
-                                                .Categories
-                                                .builder()
-                                                .putAdditionalProperty("foo", JsonValue.from(true))
-                                                .build()
-                                        )
-                                        .categoryAppliedInputTypes(
-                                            ChatCompletionChunk.Moderation.Output.ModerationResults
-                                                .Result
-                                                .CategoryAppliedInputTypes
-                                                .builder()
-                                                .putAdditionalProperty(
-                                                    "foo",
-                                                    JsonValue.from(listOf("text")),
-                                                )
-                                                .build()
-                                        )
-                                        .categoryScores(
-                                            ChatCompletionChunk.Moderation.Output.ModerationResults
-                                                .Result
-                                                .CategoryScores
-                                                .builder()
-                                                .putAdditionalProperty("foo", JsonValue.from(0))
-                                                .build()
-                                        )
-                                        .flagged(true)
-                                        .model("model")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
-                .systemFingerprint("system_fingerprint")
-                .usage(
-                    CompletionUsage.builder()
-                        .completionTokens(0L)
-                        .promptTokens(0L)
-                        .totalTokens(0L)
-                        .completionTokensDetails(
-                            CompletionUsage.CompletionTokensDetails.builder()
-                                .acceptedPredictionTokens(0L)
-                                .audioTokens(0L)
-                                .reasoningTokens(0L)
-                                .rejectedPredictionTokens(0L)
-                                .build()
-                        )
-                        .promptTokensDetails(
-                            CompletionUsage.PromptTokensDetails.builder()
-                                .audioTokens(0L)
-                                .cacheWriteTokens(0L)
-                                .cachedTokens(0L)
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedChatCompletionChunk =
             jsonMapper.readValue(

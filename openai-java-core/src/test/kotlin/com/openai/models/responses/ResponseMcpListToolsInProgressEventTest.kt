@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseMcpListToolsInProgressEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseMcpListToolsInProgressEvent =
             ResponseMcpListToolsInProgressEvent.builder()
                 .itemId("item_id")
@@ -21,17 +21,8 @@ internal class ResponseMcpListToolsInProgressEventTest {
         assertThat(responseMcpListToolsInProgressEvent.itemId()).isEqualTo("item_id")
         assertThat(responseMcpListToolsInProgressEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseMcpListToolsInProgressEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseMcpListToolsInProgressEvent =
-            ResponseMcpListToolsInProgressEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseMcpListToolsInProgressEvent =
             jsonMapper.readValue(

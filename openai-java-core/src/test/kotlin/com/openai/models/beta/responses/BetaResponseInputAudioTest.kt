@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseInputAudioTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseInputAudio =
             BetaResponseInputAudio.builder()
                 .inputAudio(
@@ -28,20 +28,8 @@ internal class BetaResponseInputAudioTest {
                     .format(BetaResponseInputAudio.InputAudio.Format.MP3)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseInputAudio =
-            BetaResponseInputAudio.builder()
-                .inputAudio(
-                    BetaResponseInputAudio.InputAudio.builder()
-                        .data("data")
-                        .format(BetaResponseInputAudio.InputAudio.Format.MP3)
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaResponseInputAudio =
             jsonMapper.readValue(

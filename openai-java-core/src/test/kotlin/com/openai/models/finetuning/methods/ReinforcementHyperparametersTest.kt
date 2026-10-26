@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.methods
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ReinforcementHyperparametersTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val reinforcementHyperparameters =
             ReinforcementHyperparameters.builder()
                 .batchSizeAuto()
@@ -36,21 +36,8 @@ internal class ReinforcementHyperparametersTest {
             .contains(ReinforcementHyperparameters.NEpochs.ofAuto())
         assertThat(reinforcementHyperparameters.reasoningEffort())
             .contains(ReinforcementHyperparameters.ReasoningEffort.DEFAULT)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val reinforcementHyperparameters =
-            ReinforcementHyperparameters.builder()
-                .batchSizeAuto()
-                .computeMultiplierAuto()
-                .evalIntervalAuto()
-                .evalSamplesAuto()
-                .learningRateMultiplierAuto()
-                .nEpochsAuto()
-                .reasoningEffort(ReinforcementHyperparameters.ReasoningEffort.DEFAULT)
-                .build()
 
         val roundtrippedReinforcementHyperparameters =
             jsonMapper.readValue(

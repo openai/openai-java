@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.audio.transcriptions
 
@@ -37,8 +37,9 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * Transcribes audio into the input language.
  *
- * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, or a stream
- * of transcript events.
+ * Returns a transcription object in `json`, `diarized_json`, or `verbose_json` format, plain text
+ * in `text`, `srt`, or `vtt` format, or a stream of transcript events. Supported formats depend on
+ * the model.
  */
 class TranscriptionCreateParams
 private constructor(
@@ -49,7 +50,9 @@ private constructor(
 
     /**
      * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4,
-     * mpeg, mpga, m4a, ogg, wav, or webm.
+     * mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata for the
+     * file to be identified. We recommend an extension-bearing filename and an appropriate content
+     * type.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -143,8 +146,8 @@ private constructor(
 
     /**
      * An optional text to guide the model's style or continue a previous audio segment. The
-     * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match the
-     * audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
+     * [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting) should match
+     * the audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -339,7 +342,9 @@ private constructor(
 
         /**
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
-         * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         * mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata
+         * for the file to be identified. We recommend an extension-bearing filename and an
+         * appropriate content type.
          */
         fun file(file: InputStream) = apply { body.file(file) }
 
@@ -354,13 +359,17 @@ private constructor(
 
         /**
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
-         * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         * mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata
+         * for the file to be identified. We recommend an extension-bearing filename and an
+         * appropriate content type.
          */
         fun file(file: ByteArray) = apply { body.file(file) }
 
         /**
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
-         * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         * mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata
+         * for the file to be identified. We recommend an extension-bearing filename and an
+         * appropriate content type.
          */
         fun file(path: Path) = apply { body.file(path) }
 
@@ -572,8 +581,9 @@ private constructor(
 
         /**
          * An optional text to guide the model's style or continue a previous audio segment. The
-         * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match
-         * the audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
+         * [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting) should
+         * match the audio language. This field is not supported when using
+         * `gpt-4o-transcribe-diarize`.
          */
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
@@ -838,7 +848,9 @@ private constructor(
 
         /**
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
-         * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         * mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format metadata
+         * for the file to be identified. We recommend an extension-bearing filename and an
+         * appropriate content type.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -936,8 +948,9 @@ private constructor(
 
         /**
          * An optional text to guide the model's style or continue a previous audio segment. The
-         * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match
-         * the audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
+         * [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting) should
+         * match the audio language. This field is not supported when using
+         * `gpt-4o-transcribe-diarize`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1168,7 +1181,9 @@ private constructor(
 
             /**
              * The audio file object (not file name) to transcribe, in one of these formats: flac,
-             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format
+             * metadata for the file to be identified. We recommend an extension-bearing filename
+             * and an appropriate content type.
              */
             fun file(file: InputStream) = file(MultipartField.of(file))
 
@@ -1183,13 +1198,17 @@ private constructor(
 
             /**
              * The audio file object (not file name) to transcribe, in one of these formats: flac,
-             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format
+             * metadata for the file to be identified. We recommend an extension-bearing filename
+             * and an appropriate content type.
              */
             fun file(file: ByteArray) = file(file.inputStream())
 
             /**
              * The audio file object (not file name) to transcribe, in one of these formats: flac,
-             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm. The request must include enough format
+             * metadata for the file to be identified. We recommend an extension-bearing filename
+             * and an appropriate content type.
              */
             fun file(path: Path) =
                 file(
@@ -1435,8 +1454,8 @@ private constructor(
 
             /**
              * An optional text to guide the model's style or continue a previous audio segment. The
-             * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should
-             * match the audio language. This field is not supported when using
+             * [prompt](https://developers.openai.com/api/docs/guides/speech-to-text#prompting)
+             * should match the audio language. This field is not supported when using
              * `gpt-4o-transcribe-diarize`.
              */
             fun prompt(prompt: String) = prompt(MultipartField.of(prompt))
@@ -1826,7 +1845,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ChunkingStrategy: $json")
+                throw OpenAIInvalidDataException("Unknown ChunkingStrategy")
             }
         }
 

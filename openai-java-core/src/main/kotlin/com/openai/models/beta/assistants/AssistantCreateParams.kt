@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.assistants
 
@@ -22,6 +22,7 @@ import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -50,9 +51,9 @@ private constructor(
 
     /**
      * ID of the model to use. You can use the
-     * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
-     * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
-     * for descriptions of them.
+     * [List models](https://developers.openai.com/api/reference/resources/models/methods/list) API
+     * to see all of your available models, or see our
+     * [Model overview](https://developers.openai.com/api/docs/models) for descriptions of them.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -101,7 +102,7 @@ private constructor(
      * `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort can result
      * in faster responses and fewer tokens used on reasoning in a response. Not all reasoning
      * models support every value. See the
-     * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
+     * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for model-specific
      * support.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -111,13 +112,13 @@ private constructor(
 
     /**
      * Specifies the format that the model must output. Compatible with
-     * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-     * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo
+     * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+     * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
      * models since `gpt-3.5-turbo-1106`.
      *
      * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs which
      * ensures the model will match your supplied JSON schema. Learn more in the
-     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+     * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
      *
      * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
      * generates is valid JSON.
@@ -304,9 +305,9 @@ private constructor(
 
         /**
          * ID of the model to use. You can use the
-         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
-         * of your available models, or see our
-         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         * [List models](https://developers.openai.com/api/reference/resources/models/methods/list)
+         * API to see all of your available models, or see our
+         * [Model overview](https://developers.openai.com/api/docs/models) for descriptions of them.
          */
         fun model(model: ChatModel) = apply { body.model(model) }
 
@@ -402,8 +403,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          */
         fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
             body.reasoningEffort(reasoningEffort)
@@ -426,13 +427,13 @@ private constructor(
 
         /**
          * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
+         * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+         * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
+         * models since `gpt-3.5-turbo-1106`.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
          * model generates is valid JSON.
@@ -814,9 +815,9 @@ private constructor(
 
         /**
          * ID of the model to use. You can use the
-         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
-         * of your available models, or see our
-         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         * [List models](https://developers.openai.com/api/reference/resources/models/methods/list)
+         * API to see all of your available models, or see our
+         * [Model overview](https://developers.openai.com/api/docs/models) for descriptions of them.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -866,8 +867,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -877,13 +878,13 @@ private constructor(
 
         /**
          * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
+         * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+         * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5 Turbo
+         * models since `gpt-3.5-turbo-1106`.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
          *
          * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
          * model generates is valid JSON.
@@ -1040,6 +1041,37 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "model" to this.model,
+                "description" to this.description,
+                "instructions" to this.instructions,
+                "metadata" to this.metadata,
+                "name" to this.name,
+                "reasoning_effort" to this.reasoningEffort,
+                "response_format" to this.responseFormat,
+                "temperature" to this.temperature,
+                "tool_resources" to this.toolResources,
+                "tools" to this.tools,
+                "top_p" to this.topP,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1094,9 +1126,10 @@ private constructor(
 
             /**
              * ID of the model to use. You can use the
-             * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see
-             * all of your available models, or see our
-             * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+             * [List models](https://developers.openai.com/api/reference/resources/models/methods/list)
+             * API to see all of your available models, or see our
+             * [Model overview](https://developers.openai.com/api/docs/models) for descriptions of
+             * them.
              */
             fun model(model: ChatModel) = model(JsonField.of(model))
 
@@ -1199,7 +1232,7 @@ private constructor(
              * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning
              * effort can result in faster responses and fewer tokens used on reasoning in a
              * response. Not all reasoning models support every value. See the
-             * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for
+             * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
              * model-specific support.
              */
             fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
@@ -1222,14 +1255,14 @@ private constructor(
 
             /**
              * Specifies the format that the model must output. Compatible with
-             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
-             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
+             * [GPT-4o](https://developers.openai.com/api/docs/models/gpt-4o), [GPT-4
+             * Turbo](https://developers.openai.com/api/docs/models/gpt-4-turbo), and all GPT-3.5
+             * Turbo models since `gpt-3.5-turbo-1106`.
              *
              * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
              * Outputs which ensures the model will match your supplied JSON schema. Learn more in
              * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             * [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
              *
              * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
              * the model generates is valid JSON.
@@ -1368,7 +1401,7 @@ private constructor(
              */
             fun addTool(tool: AssistantTool) = apply {
                 tools =
-                    (tools ?: JsonField.of(mutableListOf())).also {
+                    (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
                         checkKnown("tools", it).add(tool)
                     }
             }
@@ -1589,6 +1622,23 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -1618,6 +1668,11 @@ private constructor(
 
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
+            }
+
+            /** Adds a string-valued property. */
+            fun putProperty(key: String, value: String) = apply {
+                putAdditionalProperty(key, JsonValue.from(value))
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1750,6 +1805,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "code_interpreter" to this.codeInterpreter,
+                "file_search" to this.fileSearch,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1887,8 +1964,8 @@ private constructor(
             ) : this(fileIds, mutableMapOf())
 
             /**
-             * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-             * available to the `code_interpreter` tool. There can be a maximum of 20 files
+             * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
+             * made available to the `code_interpreter` tool. There can be a maximum of 20 files
              * associated with the tool.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -1910,6 +1987,26 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties, "file_ids" to this.fileIds)
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -1936,8 +2033,8 @@ private constructor(
                 }
 
                 /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
+                 * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
+                 * made available to the `code_interpreter` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  */
                 fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
@@ -1960,9 +2057,8 @@ private constructor(
                  */
                 fun addFileId(fileId: String) = apply {
                     fileIds =
-                        (fileIds ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("fileIds", it).add(fileId)
-                        }
+                        (fileIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("fileIds", it).add(fileId) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2074,7 +2170,7 @@ private constructor(
 
             /**
              * The
-             * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+             * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
              * attached to this assistant. There can be a maximum of 1 vector store attached to the
              * assistant.
              *
@@ -2086,7 +2182,7 @@ private constructor(
 
             /**
              * A helper to create a
-             * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+             * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
              * with file_ids and attach it to this assistant. There can be a maximum of 1 vector
              * store attached to the assistant.
              *
@@ -2121,6 +2217,30 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "vector_store_ids" to this.vectorStoreIds,
+                    "vector_stores" to this.vectorStores,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -2150,7 +2270,7 @@ private constructor(
 
                 /**
                  * The
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
                  * attached to this assistant. There can be a maximum of 1 vector store attached to
                  * the assistant.
                  */
@@ -2175,14 +2295,14 @@ private constructor(
                  */
                 fun addVectorStoreId(vectorStoreId: String) = apply {
                     vectorStoreIds =
-                        (vectorStoreIds ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("vectorStoreIds", it).add(vectorStoreId)
-                        }
+                        (vectorStoreIds?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("vectorStoreIds", it).add(vectorStoreId) }
                 }
 
                 /**
                  * A helper to create a
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * [vector store](https://developers.openai.com/api/reference/resources/vector_stores)
                  * with file_ids and attach it to this assistant. There can be a maximum of 1 vector
                  * store attached to the assistant.
                  */
@@ -2207,9 +2327,9 @@ private constructor(
                  */
                 fun addVectorStore(vectorStore: VectorStore) = apply {
                     vectorStores =
-                        (vectorStores ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("vectorStores", it).add(vectorStore)
-                        }
+                        (vectorStores?.takeUnless { it.isMissing() }
+                                ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("vectorStores", it).add(vectorStore) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2321,10 +2441,10 @@ private constructor(
                     chunkingStrategy.getOptional("chunking_strategy")
 
                 /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to add
-                 * to the vector store. For vector stores created before Nov 2025, there can be a
-                 * maximum of 10,000 files in a vector store. For vector stores created starting in
-                 * Nov 2025, the limit is 100,000,000 files.
+                 * A list of [file](https://developers.openai.com/api/reference/resources/files) IDs
+                 * to add to the vector store. For vector stores created before Nov 2025, there can
+                 * be a maximum of 10,000 files in a vector store. For vector stores created
+                 * starting in Nov 2025, the limit is 100,000,000 files.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -2379,6 +2499,31 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "chunking_strategy" to this.chunkingStrategy,
+                        "file_ids" to this.fileIds,
+                        "metadata" to this.metadata,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -2448,10 +2593,10 @@ private constructor(
                         chunkingStrategy(ChunkingStrategy.Static.builder().static_(static_).build())
 
                     /**
-                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
-                     * add to the vector store. For vector stores created before Nov 2025, there can
-                     * be a maximum of 10,000 files in a vector store. For vector stores created
-                     * starting in Nov 2025, the limit is 100,000,000 files.
+                     * A list of [file](https://developers.openai.com/api/reference/resources/files)
+                     * IDs to add to the vector store. For vector stores created before Nov 2025,
+                     * there can be a maximum of 10,000 files in a vector store. For vector stores
+                     * created starting in Nov 2025, the limit is 100,000,000 files.
                      */
                     fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 
@@ -2473,9 +2618,9 @@ private constructor(
                      */
                     fun addFileId(fileId: String) = apply {
                         fileIds =
-                            (fileIds ?: JsonField.of(mutableListOf())).also {
-                                checkKnown("fileIds", it).add(fileId)
-                            }
+                            (fileIds?.takeUnless { it.isMissing() }
+                                    ?: JsonField.of(mutableListOf()))
+                                .also { checkKnown("fileIds", it).add(fileId) }
                     }
 
                     /**
@@ -2777,7 +2922,7 @@ private constructor(
                          * @throws OpenAIInvalidDataException in the default implementation.
                          */
                         fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException("Unknown ChunkingStrategy: $json")
+                            throw OpenAIInvalidDataException("Unknown ChunkingStrategy")
                         }
                     }
 
@@ -2874,6 +3019,31 @@ private constructor(
                             additionalProperties.put(key, value)
                         }
 
+                        /**
+                         * Returns an immutable snapshot of all present JSON properties, including
+                         * declared and additional properties.
+                         *
+                         * Keys use their JSON names. Declared properties take precedence over
+                         * additional properties with the same name. Missing properties are omitted,
+                         * while explicit nulls and unrecognized values are preserved.
+                         */
+                        fun _allProperties(): Map<String, JsonValue> =
+                            collectAllProperties(
+                                additionalProperties,
+                                "static" to this.static_,
+                                "type" to this.type,
+                            )
+
+                        /**
+                         * Returns the legacy additional-properties view.
+                         *
+                         * @deprecated Use [_allProperties] to access both declared and additional
+                         *   JSON properties. This accessor retains its legacy additional-properties
+                         *   behavior.
+                         */
+                        @Deprecated(
+                            "Use _allProperties() to access both declared and additional JSON properties."
+                        )
                         @JsonAnyGetter
                         @ExcludeMissing
                         fun _additionalProperties(): Map<String, JsonValue> =
@@ -3094,6 +3264,31 @@ private constructor(
                                 additionalProperties.put(key, value)
                             }
 
+                            /**
+                             * Returns an immutable snapshot of all present JSON properties,
+                             * including declared and additional properties.
+                             *
+                             * Keys use their JSON names. Declared properties take precedence over
+                             * additional properties with the same name. Missing properties are
+                             * omitted, while explicit nulls and unrecognized values are preserved.
+                             */
+                            fun _allProperties(): Map<String, JsonValue> =
+                                collectAllProperties(
+                                    additionalProperties,
+                                    "chunk_overlap_tokens" to this.chunkOverlapTokens,
+                                    "max_chunk_size_tokens" to this.maxChunkSizeTokens,
+                                )
+
+                            /**
+                             * Returns the legacy additional-properties view.
+                             *
+                             * @deprecated Use [_allProperties] to access both declared and
+                             *   additional JSON properties. This accessor retains its legacy
+                             *   additional-properties behavior.
+                             */
+                            @Deprecated(
+                                "Use _allProperties() to access both declared and additional JSON properties."
+                            )
                             @JsonAnyGetter
                             @ExcludeMissing
                             fun _additionalProperties(): Map<String, JsonValue> =
@@ -3322,6 +3517,27 @@ private constructor(
                     private val additionalProperties: Map<String, JsonValue>
                 ) {
 
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(additionalProperties)
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -3353,6 +3569,11 @@ private constructor(
 
                         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                             additionalProperties.put(key, value)
+                        }
+
+                        /** Adds a string-valued property. */
+                        fun putProperty(key: String, value: String) = apply {
+                            putAdditionalProperty(key, JsonValue.from(value))
                         }
 
                         fun putAllAdditionalProperties(

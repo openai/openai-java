@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeAudioConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeAudioConfig =
             RealtimeAudioConfig.builder()
                 .input(
@@ -111,61 +111,8 @@ internal class RealtimeAudioConfigTest {
                     .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeAudioConfig =
-            RealtimeAudioConfig.builder()
-                .input(
-                    RealtimeAudioConfigInput.builder()
-                        .format(
-                            RealtimeAudioFormats.AudioPcm.builder()
-                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
-                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
-                                .build()
-                        )
-                        .noiseReduction(
-                            RealtimeAudioConfigInput.NoiseReduction.builder()
-                                .type(NoiseReductionType.NEAR_FIELD)
-                                .build()
-                        )
-                        .transcription(
-                            AudioTranscription.builder()
-                                .delay(AudioTranscription.Delay.MINIMAL)
-                                .addKeyword("string")
-                                .language("language")
-                                .addLanguage("string")
-                                .model(AudioTranscription.Model.WHISPER_1)
-                                .prompt("prompt")
-                                .build()
-                        )
-                        .turnDetection(
-                            RealtimeAudioInputTurnDetection.ServerVad.builder()
-                                .createResponse(true)
-                                .idleTimeoutMs(5000L)
-                                .interruptResponse(true)
-                                .prefixPaddingMs(0L)
-                                .silenceDurationMs(0L)
-                                .threshold(0.0)
-                                .build()
-                        )
-                        .build()
-                )
-                .output(
-                    RealtimeAudioConfigOutput.builder()
-                        .format(
-                            RealtimeAudioFormats.AudioPcm.builder()
-                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
-                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
-                                .build()
-                        )
-                        .speed(0.25)
-                        .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
-                        .build()
-                )
-                .build()
 
         val roundtrippedRealtimeAudioConfig =
             jsonMapper.readValue(

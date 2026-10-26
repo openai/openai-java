@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.graders.gradermodels
 
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class ScoreModelGraderTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val scoreModelGrader =
             ScoreModelGrader.builder()
                 .addInput(
@@ -57,33 +57,8 @@ internal class ScoreModelGraderTest {
                     .topP(1.0)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val scoreModelGrader =
-            ScoreModelGrader.builder()
-                .addInput(
-                    ScoreModelGrader.Input.builder()
-                        .content("string")
-                        .role(ScoreModelGrader.Input.Role.USER)
-                        .type(ScoreModelGrader.Input.Type.MESSAGE)
-                        .build()
-                )
-                .model("model")
-                .name("name")
-                .addRange(0.0)
-                .samplingParams(
-                    ScoreModelGrader.SamplingParams.builder()
-                        .maxCompletionsTokens(1L)
-                        .reasoningEffort(ReasoningEffort.NONE)
-                        .seed(0L)
-                        .temperature(0.0)
-                        .topP(1.0)
-                        .build()
-                )
-                .build()
 
         val roundtrippedScoreModelGrader =
             jsonMapper.readValue(

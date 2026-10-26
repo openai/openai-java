@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.invites
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class InviteTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val invite =
             Invite.builder()
                 .id("id")
@@ -36,24 +36,8 @@ internal class InviteTest {
         assertThat(invite.status()).isEqualTo(Invite.Status.ACCEPTED)
         assertThat(invite.acceptedAt()).contains(0L)
         assertThat(invite.expiresAt()).contains(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val invite =
-            Invite.builder()
-                .id("id")
-                .createdAt(0L)
-                .email("email")
-                .addProject(
-                    Invite.Project.builder().id("id").role(Invite.Project.Role.MEMBER).build()
-                )
-                .role(Invite.Role.OWNER)
-                .status(Invite.Status.ACCEPTED)
-                .acceptedAt(0L)
-                .expiresAt(0L)
-                .build()
 
         val roundtrippedInvite =
             jsonMapper.readValue(jsonMapper.writeValueAsString(invite), jacksonTypeRef<Invite>())

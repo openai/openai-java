@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseWebSearchCallCompletedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseWebSearchCallCompletedEvent =
             ResponseWebSearchCallCompletedEvent.builder()
                 .itemId("item_id")
@@ -21,17 +21,8 @@ internal class ResponseWebSearchCallCompletedEventTest {
         assertThat(responseWebSearchCallCompletedEvent.itemId()).isEqualTo("item_id")
         assertThat(responseWebSearchCallCompletedEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseWebSearchCallCompletedEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseWebSearchCallCompletedEvent =
-            ResponseWebSearchCallCompletedEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseWebSearchCallCompletedEvent =
             jsonMapper.readValue(

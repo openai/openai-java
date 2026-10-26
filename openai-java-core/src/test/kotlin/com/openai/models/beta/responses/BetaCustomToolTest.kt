@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -11,11 +11,12 @@ import org.junit.jupiter.api.Test
 internal class BetaCustomToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaCustomTool =
             BetaCustomTool.builder()
                 .name("name")
                 .addAllowedCaller(BetaCustomTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .formatText()
@@ -24,22 +25,12 @@ internal class BetaCustomToolTest {
         assertThat(betaCustomTool.name()).isEqualTo("name")
         assertThat(betaCustomTool.allowedCallers().getOrNull())
             .containsExactly(BetaCustomTool.AllowedCaller.DIRECT)
+        assertThat(betaCustomTool.async()).contains(true)
         assertThat(betaCustomTool.deferLoading()).contains(true)
         assertThat(betaCustomTool.description()).contains("description")
         assertThat(betaCustomTool.format()).contains(BetaCustomTool.Format.ofText())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaCustomTool =
-            BetaCustomTool.builder()
-                .name("name")
-                .addAllowedCaller(BetaCustomTool.AllowedCaller.DIRECT)
-                .deferLoading(true)
-                .description("description")
-                .formatText()
-                .build()
 
         val roundtrippedBetaCustomTool =
             jsonMapper.readValue(

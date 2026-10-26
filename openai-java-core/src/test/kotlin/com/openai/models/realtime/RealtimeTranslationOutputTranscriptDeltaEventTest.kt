@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeTranslationOutputTranscriptDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeTranslationOutputTranscriptDeltaEvent =
             RealtimeTranslationOutputTranscriptDeltaEvent.builder()
                 .delta("delta")
@@ -21,17 +21,8 @@ internal class RealtimeTranslationOutputTranscriptDeltaEventTest {
         assertThat(realtimeTranslationOutputTranscriptDeltaEvent.delta()).isEqualTo("delta")
         assertThat(realtimeTranslationOutputTranscriptDeltaEvent.eventId()).isEqualTo("event_id")
         assertThat(realtimeTranslationOutputTranscriptDeltaEvent.elapsedMs()).contains(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeTranslationOutputTranscriptDeltaEvent =
-            RealtimeTranslationOutputTranscriptDeltaEvent.builder()
-                .delta("delta")
-                .eventId("event_id")
-                .elapsedMs(0L)
-                .build()
 
         val roundtrippedRealtimeTranslationOutputTranscriptDeltaEvent =
             jsonMapper.readValue(

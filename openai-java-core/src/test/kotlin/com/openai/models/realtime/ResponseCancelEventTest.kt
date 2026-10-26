@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class ResponseCancelEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseCancelEvent =
             ResponseCancelEvent.builder().eventId("event_id").responseId("response_id").build()
 
         assertThat(responseCancelEvent.eventId()).contains("event_id")
         assertThat(responseCancelEvent.responseId()).contains("response_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseCancelEvent =
-            ResponseCancelEvent.builder().eventId("event_id").responseId("response_id").build()
 
         val roundtrippedResponseCancelEvent =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.uploads
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class UploadTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val upload =
             Upload.builder()
                 .id("id")
@@ -55,33 +55,8 @@ internal class UploadTest {
                     .statusDetails("status_details")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val upload =
-            Upload.builder()
-                .id("id")
-                .bytes(0L)
-                .createdAt(0L)
-                .expiresAt(0L)
-                .filename("filename")
-                .purpose("purpose")
-                .status(Upload.Status.PENDING)
-                .file(
-                    FileObject.builder()
-                        .id("id")
-                        .bytes(0L)
-                        .createdAt(0L)
-                        .filename("filename")
-                        .purpose(FileObject.Purpose.ASSISTANTS)
-                        .status(FileObject.Status.UPLOADED)
-                        .expiresAt(0L)
-                        .statusDetails("status_details")
-                        .build()
-                )
-                .build()
 
         val roundtrippedUpload =
             jsonMapper.readValue(jsonMapper.writeValueAsString(upload), jacksonTypeRef<Upload>())

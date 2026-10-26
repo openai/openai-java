@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class RealtimeMcpToolExecutionErrorTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeMcpToolExecutionError =
             RealtimeMcpToolExecutionError.builder().message("message").build()
 
         assertThat(realtimeMcpToolExecutionError.message()).isEqualTo("message")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeMcpToolExecutionError =
-            RealtimeMcpToolExecutionError.builder().message("message").build()
 
         val roundtrippedRealtimeMcpToolExecutionError =
             jsonMapper.readValue(

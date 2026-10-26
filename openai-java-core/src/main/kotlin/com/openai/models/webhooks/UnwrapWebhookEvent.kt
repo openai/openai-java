@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.webhooks
 
@@ -18,11 +18,20 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Sent when a batch API request has been cancelled. */
+/** Sent when an agent environment expires and can no longer resume from a snapshot. */
 @JsonDeserialize(using = UnwrapWebhookEvent.Deserializer::class)
 @JsonSerialize(using = UnwrapWebhookEvent.Serializer::class)
 class UnwrapWebhookEvent
 private constructor(
+    private val agentEnvironmentExpired: AgentEnvironmentExpiredWebhookEvent? = null,
+    private val agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent? = null,
+    private val agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent? = null,
+    private val agentEnvironmentSuspended: AgentEnvironmentSuspendedWebhookEvent? = null,
+    private val agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent? = null,
+    private val agentSessionCreated: AgentSessionCreatedWebhookEvent? = null,
+    private val agentSessionFailed: AgentSessionFailedWebhookEvent? = null,
+    private val agentSessionIdle: AgentSessionIdleWebhookEvent? = null,
+    private val agentSessionInProgress: AgentSessionInProgressWebhookEvent? = null,
     private val batchCancelled: BatchCancelledWebhookEvent? = null,
     private val batchCompleted: BatchCompletedWebhookEvent? = null,
     private val batchExpired: BatchExpiredWebhookEvent? = null,
@@ -34,13 +43,60 @@ private constructor(
     private val fineTuningJobFailed: FineTuningJobFailedWebhookEvent? = null,
     private val fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent? = null,
     private val liveCallIncoming: LiveCallIncomingWebhookEvent? = null,
+    private val liveTransportIncoming: LiveTransportIncomingWebhookEvent? = null,
     private val realtimeCallIncoming: RealtimeCallIncomingWebhookEvent? = null,
     private val responseCancelled: ResponseCancelledWebhookEvent? = null,
     private val responseCompleted: ResponseCompletedWebhookEvent? = null,
     private val responseFailed: ResponseFailedWebhookEvent? = null,
     private val responseIncomplete: ResponseIncompleteWebhookEvent? = null,
+    private val safetyAlertCreated: SafetyAlertCreatedWebhookEvent? = null,
+    private val safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent? = null,
+    private val safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent? = null,
+    private val safetyWarningIssued: SafetyWarningIssuedWebhookEvent? = null,
     private val _json: JsonValue? = null,
 ) {
+
+    /** Sent when an agent environment expires and can no longer resume from a snapshot. */
+    fun agentEnvironmentExpired(): Optional<AgentEnvironmentExpiredWebhookEvent> =
+        Optional.ofNullable(agentEnvironmentExpired)
+
+    /**
+     * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to a
+     * session.
+     */
+    fun agentEnvironmentFailed(): Optional<AgentEnvironmentFailedWebhookEvent> =
+        Optional.ofNullable(agentEnvironmentFailed)
+
+    /**
+     * Sent when a prewarmed OpenAI-hosted environment finishes setup before being attached to a
+     * session.
+     */
+    fun agentEnvironmentReady(): Optional<AgentEnvironmentReadyWebhookEvent> =
+        Optional.ofNullable(agentEnvironmentReady)
+
+    /** Sent when an agent environment is suspended and can resume from a snapshot. */
+    fun agentEnvironmentSuspended(): Optional<AgentEnvironmentSuspendedWebhookEvent> =
+        Optional.ofNullable(agentEnvironmentSuspended)
+
+    /** Sent when an agent session requires an action. Retrieve the session for action details. */
+    fun agentSessionActionRequired(): Optional<AgentSessionActionRequiredWebhookEvent> =
+        Optional.ofNullable(agentSessionActionRequired)
+
+    /** Sent when an agent session is created. */
+    fun agentSessionCreated(): Optional<AgentSessionCreatedWebhookEvent> =
+        Optional.ofNullable(agentSessionCreated)
+
+    /** Sent when an agent session fails. */
+    fun agentSessionFailed(): Optional<AgentSessionFailedWebhookEvent> =
+        Optional.ofNullable(agentSessionFailed)
+
+    /** Sent when an agent session becomes idle. */
+    fun agentSessionIdle(): Optional<AgentSessionIdleWebhookEvent> =
+        Optional.ofNullable(agentSessionIdle)
+
+    /** Sent when an agent session enters the in-progress state. */
+    fun agentSessionInProgress(): Optional<AgentSessionInProgressWebhookEvent> =
+        Optional.ofNullable(agentSessionInProgress)
 
     /** Sent when a batch API request has been cancelled. */
     fun batchCancelled(): Optional<BatchCancelledWebhookEvent> = Optional.ofNullable(batchCancelled)
@@ -78,16 +134,27 @@ private constructor(
         Optional.ofNullable(fineTuningJobSucceeded)
 
     /**
-     * Sent when an incoming API SIP session is available for Live acceptance. The same pending
-     * session can also emit `realtime.call.incoming`; the first successful Realtime or Live accept
-     * endpoint selects the runtime surface.
+     * Deprecated: use `live.transport.incoming`. Retained for existing subscriptions during
+     * migration; new subscriptions to this event are not allowed. Sent when an incoming API SIP
+     * session is available for Live acceptance. The same pending session can also emit
+     * `realtime.call.incoming`; the first successful Realtime or Live accept endpoint selects the
+     * runtime surface.
      */
+    @Deprecated("deprecated")
     fun liveCallIncoming(): Optional<LiveCallIncomingWebhookEvent> =
         Optional.ofNullable(liveCallIncoming)
 
     /**
+     * Sent when an incoming API SIP session is available for Live acceptance. The same pending
+     * session can also emit `realtime.call.incoming`; the first successful Realtime or Live accept
+     * endpoint selects the runtime surface.
+     */
+    fun liveTransportIncoming(): Optional<LiveTransportIncomingWebhookEvent> =
+        Optional.ofNullable(liveTransportIncoming)
+
+    /**
      * Sent when an incoming API SIP session is available for Realtime acceptance. The same pending
-     * session can also emit `live.call.incoming`; the first successful Realtime or Live accept
+     * session can also emit `live.transport.incoming`; the first successful Realtime or Live accept
      * endpoint selects the runtime surface.
      */
     fun realtimeCallIncoming(): Optional<RealtimeCallIncomingWebhookEvent> =
@@ -107,6 +174,40 @@ private constructor(
     /** Sent when a background response has been interrupted. */
     fun responseIncomplete(): Optional<ResponseIncompleteWebhookEvent> =
         Optional.ofNullable(responseIncomplete)
+
+    /** Sent when an approved safety alert is available for an API project. */
+    fun safetyAlertCreated(): Optional<SafetyAlertCreatedWebhookEvent> =
+        Optional.ofNullable(safetyAlertCreated)
+
+    /** Sent when a deactivation is issued for a safety identifier in your organization. */
+    fun safetyDeactivationIssued(): Optional<SafetyDeactivationIssuedWebhookEvent> =
+        Optional.ofNullable(safetyDeactivationIssued)
+
+    /** Sent when an approved safety alert is available for an enterprise workspace. */
+    fun safetyOrgAlertCreated(): Optional<SafetyOrgAlertCreatedWebhookEvent> =
+        Optional.ofNullable(safetyOrgAlertCreated)
+
+    /** Sent when a warning is issued for a safety identifier in your organization. */
+    fun safetyWarningIssued(): Optional<SafetyWarningIssuedWebhookEvent> =
+        Optional.ofNullable(safetyWarningIssued)
+
+    fun isAgentEnvironmentExpired(): Boolean = agentEnvironmentExpired != null
+
+    fun isAgentEnvironmentFailed(): Boolean = agentEnvironmentFailed != null
+
+    fun isAgentEnvironmentReady(): Boolean = agentEnvironmentReady != null
+
+    fun isAgentEnvironmentSuspended(): Boolean = agentEnvironmentSuspended != null
+
+    fun isAgentSessionActionRequired(): Boolean = agentSessionActionRequired != null
+
+    fun isAgentSessionCreated(): Boolean = agentSessionCreated != null
+
+    fun isAgentSessionFailed(): Boolean = agentSessionFailed != null
+
+    fun isAgentSessionIdle(): Boolean = agentSessionIdle != null
+
+    fun isAgentSessionInProgress(): Boolean = agentSessionInProgress != null
 
     fun isBatchCancelled(): Boolean = batchCancelled != null
 
@@ -128,7 +229,9 @@ private constructor(
 
     fun isFineTuningJobSucceeded(): Boolean = fineTuningJobSucceeded != null
 
-    fun isLiveCallIncoming(): Boolean = liveCallIncoming != null
+    @Deprecated("deprecated") fun isLiveCallIncoming(): Boolean = liveCallIncoming != null
+
+    fun isLiveTransportIncoming(): Boolean = liveTransportIncoming != null
 
     fun isRealtimeCallIncoming(): Boolean = realtimeCallIncoming != null
 
@@ -139,6 +242,56 @@ private constructor(
     fun isResponseFailed(): Boolean = responseFailed != null
 
     fun isResponseIncomplete(): Boolean = responseIncomplete != null
+
+    fun isSafetyAlertCreated(): Boolean = safetyAlertCreated != null
+
+    fun isSafetyDeactivationIssued(): Boolean = safetyDeactivationIssued != null
+
+    fun isSafetyOrgAlertCreated(): Boolean = safetyOrgAlertCreated != null
+
+    fun isSafetyWarningIssued(): Boolean = safetyWarningIssued != null
+
+    /** Sent when an agent environment expires and can no longer resume from a snapshot. */
+    fun asAgentEnvironmentExpired(): AgentEnvironmentExpiredWebhookEvent =
+        agentEnvironmentExpired.getOrThrow("agentEnvironmentExpired")
+
+    /**
+     * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to a
+     * session.
+     */
+    fun asAgentEnvironmentFailed(): AgentEnvironmentFailedWebhookEvent =
+        agentEnvironmentFailed.getOrThrow("agentEnvironmentFailed")
+
+    /**
+     * Sent when a prewarmed OpenAI-hosted environment finishes setup before being attached to a
+     * session.
+     */
+    fun asAgentEnvironmentReady(): AgentEnvironmentReadyWebhookEvent =
+        agentEnvironmentReady.getOrThrow("agentEnvironmentReady")
+
+    /** Sent when an agent environment is suspended and can resume from a snapshot. */
+    fun asAgentEnvironmentSuspended(): AgentEnvironmentSuspendedWebhookEvent =
+        agentEnvironmentSuspended.getOrThrow("agentEnvironmentSuspended")
+
+    /** Sent when an agent session requires an action. Retrieve the session for action details. */
+    fun asAgentSessionActionRequired(): AgentSessionActionRequiredWebhookEvent =
+        agentSessionActionRequired.getOrThrow("agentSessionActionRequired")
+
+    /** Sent when an agent session is created. */
+    fun asAgentSessionCreated(): AgentSessionCreatedWebhookEvent =
+        agentSessionCreated.getOrThrow("agentSessionCreated")
+
+    /** Sent when an agent session fails. */
+    fun asAgentSessionFailed(): AgentSessionFailedWebhookEvent =
+        agentSessionFailed.getOrThrow("agentSessionFailed")
+
+    /** Sent when an agent session becomes idle. */
+    fun asAgentSessionIdle(): AgentSessionIdleWebhookEvent =
+        agentSessionIdle.getOrThrow("agentSessionIdle")
+
+    /** Sent when an agent session enters the in-progress state. */
+    fun asAgentSessionInProgress(): AgentSessionInProgressWebhookEvent =
+        agentSessionInProgress.getOrThrow("agentSessionInProgress")
 
     /** Sent when a batch API request has been cancelled. */
     fun asBatchCancelled(): BatchCancelledWebhookEvent = batchCancelled.getOrThrow("batchCancelled")
@@ -176,16 +329,27 @@ private constructor(
         fineTuningJobSucceeded.getOrThrow("fineTuningJobSucceeded")
 
     /**
-     * Sent when an incoming API SIP session is available for Live acceptance. The same pending
-     * session can also emit `realtime.call.incoming`; the first successful Realtime or Live accept
-     * endpoint selects the runtime surface.
+     * Deprecated: use `live.transport.incoming`. Retained for existing subscriptions during
+     * migration; new subscriptions to this event are not allowed. Sent when an incoming API SIP
+     * session is available for Live acceptance. The same pending session can also emit
+     * `realtime.call.incoming`; the first successful Realtime or Live accept endpoint selects the
+     * runtime surface.
      */
+    @Deprecated("deprecated")
     fun asLiveCallIncoming(): LiveCallIncomingWebhookEvent =
         liveCallIncoming.getOrThrow("liveCallIncoming")
 
     /**
+     * Sent when an incoming API SIP session is available for Live acceptance. The same pending
+     * session can also emit `realtime.call.incoming`; the first successful Realtime or Live accept
+     * endpoint selects the runtime surface.
+     */
+    fun asLiveTransportIncoming(): LiveTransportIncomingWebhookEvent =
+        liveTransportIncoming.getOrThrow("liveTransportIncoming")
+
+    /**
      * Sent when an incoming API SIP session is available for Realtime acceptance. The same pending
-     * session can also emit `live.call.incoming`; the first successful Realtime or Live accept
+     * session can also emit `live.transport.incoming`; the first successful Realtime or Live accept
      * endpoint selects the runtime surface.
      */
     fun asRealtimeCallIncoming(): RealtimeCallIncomingWebhookEvent =
@@ -206,6 +370,22 @@ private constructor(
     fun asResponseIncomplete(): ResponseIncompleteWebhookEvent =
         responseIncomplete.getOrThrow("responseIncomplete")
 
+    /** Sent when an approved safety alert is available for an API project. */
+    fun asSafetyAlertCreated(): SafetyAlertCreatedWebhookEvent =
+        safetyAlertCreated.getOrThrow("safetyAlertCreated")
+
+    /** Sent when a deactivation is issued for a safety identifier in your organization. */
+    fun asSafetyDeactivationIssued(): SafetyDeactivationIssuedWebhookEvent =
+        safetyDeactivationIssued.getOrThrow("safetyDeactivationIssued")
+
+    /** Sent when an approved safety alert is available for an enterprise workspace. */
+    fun asSafetyOrgAlertCreated(): SafetyOrgAlertCreatedWebhookEvent =
+        safetyOrgAlertCreated.getOrThrow("safetyOrgAlertCreated")
+
+    /** Sent when a warning is issued for a safety identifier in your organization. */
+    fun asSafetyWarningIssued(): SafetyWarningIssuedWebhookEvent =
+        safetyWarningIssued.getOrThrow("safetyWarningIssued")
+
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     /**
@@ -220,8 +400,8 @@ private constructor(
      *
      * Optional<String> result = unwrapWebhookEvent.accept(new UnwrapWebhookEvent.Visitor<Optional<String>>() {
      *     @Override
-     *     public Optional<String> visitBatchCancelled(BatchCancelledWebhookEvent batchCancelled) {
-     *         return Optional.of(batchCancelled.toString());
+     *     public Optional<String> visitAgentEnvironmentExpired(AgentEnvironmentExpiredWebhookEvent agentEnvironmentExpired) {
+     *         return Optional.of(agentEnvironmentExpired.toString());
      *     }
      *
      *     // ...
@@ -239,6 +419,21 @@ private constructor(
      */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
+            agentEnvironmentExpired != null ->
+                visitor.visitAgentEnvironmentExpired(agentEnvironmentExpired)
+            agentEnvironmentFailed != null ->
+                visitor.visitAgentEnvironmentFailed(agentEnvironmentFailed)
+            agentEnvironmentReady != null ->
+                visitor.visitAgentEnvironmentReady(agentEnvironmentReady)
+            agentEnvironmentSuspended != null ->
+                visitor.visitAgentEnvironmentSuspended(agentEnvironmentSuspended)
+            agentSessionActionRequired != null ->
+                visitor.visitAgentSessionActionRequired(agentSessionActionRequired)
+            agentSessionCreated != null -> visitor.visitAgentSessionCreated(agentSessionCreated)
+            agentSessionFailed != null -> visitor.visitAgentSessionFailed(agentSessionFailed)
+            agentSessionIdle != null -> visitor.visitAgentSessionIdle(agentSessionIdle)
+            agentSessionInProgress != null ->
+                visitor.visitAgentSessionInProgress(agentSessionInProgress)
             batchCancelled != null -> visitor.visitBatchCancelled(batchCancelled)
             batchCompleted != null -> visitor.visitBatchCompleted(batchCompleted)
             batchExpired != null -> visitor.visitBatchExpired(batchExpired)
@@ -252,11 +447,19 @@ private constructor(
             fineTuningJobSucceeded != null ->
                 visitor.visitFineTuningJobSucceeded(fineTuningJobSucceeded)
             liveCallIncoming != null -> visitor.visitLiveCallIncoming(liveCallIncoming)
+            liveTransportIncoming != null ->
+                visitor.visitLiveTransportIncoming(liveTransportIncoming)
             realtimeCallIncoming != null -> visitor.visitRealtimeCallIncoming(realtimeCallIncoming)
             responseCancelled != null -> visitor.visitResponseCancelled(responseCancelled)
             responseCompleted != null -> visitor.visitResponseCompleted(responseCompleted)
             responseFailed != null -> visitor.visitResponseFailed(responseFailed)
             responseIncomplete != null -> visitor.visitResponseIncomplete(responseIncomplete)
+            safetyAlertCreated != null -> visitor.visitSafetyAlertCreated(safetyAlertCreated)
+            safetyDeactivationIssued != null ->
+                visitor.visitSafetyDeactivationIssued(safetyDeactivationIssued)
+            safetyOrgAlertCreated != null ->
+                visitor.visitSafetyOrgAlertCreated(safetyOrgAlertCreated)
+            safetyWarningIssued != null -> visitor.visitSafetyWarningIssued(safetyWarningIssued)
             else -> visitor.unknown(_json)
         }
 
@@ -277,6 +480,58 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
+                override fun visitAgentEnvironmentExpired(
+                    agentEnvironmentExpired: AgentEnvironmentExpiredWebhookEvent
+                ) {
+                    agentEnvironmentExpired.validate()
+                }
+
+                override fun visitAgentEnvironmentFailed(
+                    agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent
+                ) {
+                    agentEnvironmentFailed.validate()
+                }
+
+                override fun visitAgentEnvironmentReady(
+                    agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent
+                ) {
+                    agentEnvironmentReady.validate()
+                }
+
+                override fun visitAgentEnvironmentSuspended(
+                    agentEnvironmentSuspended: AgentEnvironmentSuspendedWebhookEvent
+                ) {
+                    agentEnvironmentSuspended.validate()
+                }
+
+                override fun visitAgentSessionActionRequired(
+                    agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
+                ) {
+                    agentSessionActionRequired.validate()
+                }
+
+                override fun visitAgentSessionCreated(
+                    agentSessionCreated: AgentSessionCreatedWebhookEvent
+                ) {
+                    agentSessionCreated.validate()
+                }
+
+                override fun visitAgentSessionFailed(
+                    agentSessionFailed: AgentSessionFailedWebhookEvent
+                ) {
+                    agentSessionFailed.validate()
+                }
+
+                override fun visitAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent) {
+                    agentSessionIdle.validate()
+                }
+
+                override fun visitAgentSessionInProgress(
+                    agentSessionInProgress: AgentSessionInProgressWebhookEvent
+                ) {
+                    agentSessionInProgress.validate()
+                }
+
                 override fun visitBatchCancelled(batchCancelled: BatchCancelledWebhookEvent) {
                     batchCancelled.validate()
                 }
@@ -327,6 +582,12 @@ private constructor(
                     liveCallIncoming.validate()
                 }
 
+                override fun visitLiveTransportIncoming(
+                    liveTransportIncoming: LiveTransportIncomingWebhookEvent
+                ) {
+                    liveTransportIncoming.validate()
+                }
+
                 override fun visitRealtimeCallIncoming(
                     realtimeCallIncoming: RealtimeCallIncomingWebhookEvent
                 ) {
@@ -354,6 +615,30 @@ private constructor(
                 ) {
                     responseIncomplete.validate()
                 }
+
+                override fun visitSafetyAlertCreated(
+                    safetyAlertCreated: SafetyAlertCreatedWebhookEvent
+                ) {
+                    safetyAlertCreated.validate()
+                }
+
+                override fun visitSafetyDeactivationIssued(
+                    safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
+                ) {
+                    safetyDeactivationIssued.validate()
+                }
+
+                override fun visitSafetyOrgAlertCreated(
+                    safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent
+                ) {
+                    safetyOrgAlertCreated.validate()
+                }
+
+                override fun visitSafetyWarningIssued(
+                    safetyWarningIssued: SafetyWarningIssuedWebhookEvent
+                ) {
+                    safetyWarningIssued.validate()
+                }
             }
         )
         validated = true
@@ -376,6 +661,41 @@ private constructor(
     internal fun validity(): Int =
         accept(
             object : Visitor<Int> {
+                override fun visitAgentEnvironmentExpired(
+                    agentEnvironmentExpired: AgentEnvironmentExpiredWebhookEvent
+                ) = agentEnvironmentExpired.validity()
+
+                override fun visitAgentEnvironmentFailed(
+                    agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent
+                ) = agentEnvironmentFailed.validity()
+
+                override fun visitAgentEnvironmentReady(
+                    agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent
+                ) = agentEnvironmentReady.validity()
+
+                override fun visitAgentEnvironmentSuspended(
+                    agentEnvironmentSuspended: AgentEnvironmentSuspendedWebhookEvent
+                ) = agentEnvironmentSuspended.validity()
+
+                override fun visitAgentSessionActionRequired(
+                    agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
+                ) = agentSessionActionRequired.validity()
+
+                override fun visitAgentSessionCreated(
+                    agentSessionCreated: AgentSessionCreatedWebhookEvent
+                ) = agentSessionCreated.validity()
+
+                override fun visitAgentSessionFailed(
+                    agentSessionFailed: AgentSessionFailedWebhookEvent
+                ) = agentSessionFailed.validity()
+
+                override fun visitAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent) =
+                    agentSessionIdle.validity()
+
+                override fun visitAgentSessionInProgress(
+                    agentSessionInProgress: AgentSessionInProgressWebhookEvent
+                ) = agentSessionInProgress.validity()
+
                 override fun visitBatchCancelled(batchCancelled: BatchCancelledWebhookEvent) =
                     batchCancelled.validity()
 
@@ -412,6 +732,10 @@ private constructor(
                 override fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent) =
                     liveCallIncoming.validity()
 
+                override fun visitLiveTransportIncoming(
+                    liveTransportIncoming: LiveTransportIncomingWebhookEvent
+                ) = liveTransportIncoming.validity()
+
                 override fun visitRealtimeCallIncoming(
                     realtimeCallIncoming: RealtimeCallIncomingWebhookEvent
                 ) = realtimeCallIncoming.validity()
@@ -431,6 +755,22 @@ private constructor(
                     responseIncomplete: ResponseIncompleteWebhookEvent
                 ) = responseIncomplete.validity()
 
+                override fun visitSafetyAlertCreated(
+                    safetyAlertCreated: SafetyAlertCreatedWebhookEvent
+                ) = safetyAlertCreated.validity()
+
+                override fun visitSafetyDeactivationIssued(
+                    safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
+                ) = safetyDeactivationIssued.validity()
+
+                override fun visitSafetyOrgAlertCreated(
+                    safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent
+                ) = safetyOrgAlertCreated.validity()
+
+                override fun visitSafetyWarningIssued(
+                    safetyWarningIssued: SafetyWarningIssuedWebhookEvent
+                ) = safetyWarningIssued.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -441,6 +781,15 @@ private constructor(
         }
 
         return other is UnwrapWebhookEvent &&
+            agentEnvironmentExpired == other.agentEnvironmentExpired &&
+            agentEnvironmentFailed == other.agentEnvironmentFailed &&
+            agentEnvironmentReady == other.agentEnvironmentReady &&
+            agentEnvironmentSuspended == other.agentEnvironmentSuspended &&
+            agentSessionActionRequired == other.agentSessionActionRequired &&
+            agentSessionCreated == other.agentSessionCreated &&
+            agentSessionFailed == other.agentSessionFailed &&
+            agentSessionIdle == other.agentSessionIdle &&
+            agentSessionInProgress == other.agentSessionInProgress &&
             batchCancelled == other.batchCancelled &&
             batchCompleted == other.batchCompleted &&
             batchExpired == other.batchExpired &&
@@ -452,15 +801,29 @@ private constructor(
             fineTuningJobFailed == other.fineTuningJobFailed &&
             fineTuningJobSucceeded == other.fineTuningJobSucceeded &&
             liveCallIncoming == other.liveCallIncoming &&
+            liveTransportIncoming == other.liveTransportIncoming &&
             realtimeCallIncoming == other.realtimeCallIncoming &&
             responseCancelled == other.responseCancelled &&
             responseCompleted == other.responseCompleted &&
             responseFailed == other.responseFailed &&
-            responseIncomplete == other.responseIncomplete
+            responseIncomplete == other.responseIncomplete &&
+            safetyAlertCreated == other.safetyAlertCreated &&
+            safetyDeactivationIssued == other.safetyDeactivationIssued &&
+            safetyOrgAlertCreated == other.safetyOrgAlertCreated &&
+            safetyWarningIssued == other.safetyWarningIssued
     }
 
     override fun hashCode(): Int =
         Objects.hash(
+            agentEnvironmentExpired,
+            agentEnvironmentFailed,
+            agentEnvironmentReady,
+            agentEnvironmentSuspended,
+            agentSessionActionRequired,
+            agentSessionCreated,
+            agentSessionFailed,
+            agentSessionIdle,
+            agentSessionInProgress,
             batchCancelled,
             batchCompleted,
             batchExpired,
@@ -472,15 +835,37 @@ private constructor(
             fineTuningJobFailed,
             fineTuningJobSucceeded,
             liveCallIncoming,
+            liveTransportIncoming,
             realtimeCallIncoming,
             responseCancelled,
             responseCompleted,
             responseFailed,
             responseIncomplete,
+            safetyAlertCreated,
+            safetyDeactivationIssued,
+            safetyOrgAlertCreated,
+            safetyWarningIssued,
         )
 
     override fun toString(): String =
         when {
+            agentEnvironmentExpired != null ->
+                "UnwrapWebhookEvent{agentEnvironmentExpired=$agentEnvironmentExpired}"
+            agentEnvironmentFailed != null ->
+                "UnwrapWebhookEvent{agentEnvironmentFailed=$agentEnvironmentFailed}"
+            agentEnvironmentReady != null ->
+                "UnwrapWebhookEvent{agentEnvironmentReady=$agentEnvironmentReady}"
+            agentEnvironmentSuspended != null ->
+                "UnwrapWebhookEvent{agentEnvironmentSuspended=$agentEnvironmentSuspended}"
+            agentSessionActionRequired != null ->
+                "UnwrapWebhookEvent{agentSessionActionRequired=$agentSessionActionRequired}"
+            agentSessionCreated != null ->
+                "UnwrapWebhookEvent{agentSessionCreated=$agentSessionCreated}"
+            agentSessionFailed != null ->
+                "UnwrapWebhookEvent{agentSessionFailed=$agentSessionFailed}"
+            agentSessionIdle != null -> "UnwrapWebhookEvent{agentSessionIdle=$agentSessionIdle}"
+            agentSessionInProgress != null ->
+                "UnwrapWebhookEvent{agentSessionInProgress=$agentSessionInProgress}"
             batchCancelled != null -> "UnwrapWebhookEvent{batchCancelled=$batchCancelled}"
             batchCompleted != null -> "UnwrapWebhookEvent{batchCompleted=$batchCompleted}"
             batchExpired != null -> "UnwrapWebhookEvent{batchExpired=$batchExpired}"
@@ -495,6 +880,8 @@ private constructor(
             fineTuningJobSucceeded != null ->
                 "UnwrapWebhookEvent{fineTuningJobSucceeded=$fineTuningJobSucceeded}"
             liveCallIncoming != null -> "UnwrapWebhookEvent{liveCallIncoming=$liveCallIncoming}"
+            liveTransportIncoming != null ->
+                "UnwrapWebhookEvent{liveTransportIncoming=$liveTransportIncoming}"
             realtimeCallIncoming != null ->
                 "UnwrapWebhookEvent{realtimeCallIncoming=$realtimeCallIncoming}"
             responseCancelled != null -> "UnwrapWebhookEvent{responseCancelled=$responseCancelled}"
@@ -502,11 +889,75 @@ private constructor(
             responseFailed != null -> "UnwrapWebhookEvent{responseFailed=$responseFailed}"
             responseIncomplete != null ->
                 "UnwrapWebhookEvent{responseIncomplete=$responseIncomplete}"
+            safetyAlertCreated != null ->
+                "UnwrapWebhookEvent{safetyAlertCreated=$safetyAlertCreated}"
+            safetyDeactivationIssued != null ->
+                "UnwrapWebhookEvent{safetyDeactivationIssued=$safetyDeactivationIssued}"
+            safetyOrgAlertCreated != null ->
+                "UnwrapWebhookEvent{safetyOrgAlertCreated=$safetyOrgAlertCreated}"
+            safetyWarningIssued != null ->
+                "UnwrapWebhookEvent{safetyWarningIssued=$safetyWarningIssued}"
             _json != null -> "UnwrapWebhookEvent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid UnwrapWebhookEvent")
         }
 
     companion object {
+
+        /** Sent when an agent environment expires and can no longer resume from a snapshot. */
+        @JvmStatic
+        fun ofAgentEnvironmentExpired(
+            agentEnvironmentExpired: AgentEnvironmentExpiredWebhookEvent
+        ) = UnwrapWebhookEvent(agentEnvironmentExpired = agentEnvironmentExpired)
+
+        /**
+         * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to
+         * a session.
+         */
+        @JvmStatic
+        fun ofAgentEnvironmentFailed(agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent) =
+            UnwrapWebhookEvent(agentEnvironmentFailed = agentEnvironmentFailed)
+
+        /**
+         * Sent when a prewarmed OpenAI-hosted environment finishes setup before being attached to a
+         * session.
+         */
+        @JvmStatic
+        fun ofAgentEnvironmentReady(agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent) =
+            UnwrapWebhookEvent(agentEnvironmentReady = agentEnvironmentReady)
+
+        /** Sent when an agent environment is suspended and can resume from a snapshot. */
+        @JvmStatic
+        fun ofAgentEnvironmentSuspended(
+            agentEnvironmentSuspended: AgentEnvironmentSuspendedWebhookEvent
+        ) = UnwrapWebhookEvent(agentEnvironmentSuspended = agentEnvironmentSuspended)
+
+        /**
+         * Sent when an agent session requires an action. Retrieve the session for action details.
+         */
+        @JvmStatic
+        fun ofAgentSessionActionRequired(
+            agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
+        ) = UnwrapWebhookEvent(agentSessionActionRequired = agentSessionActionRequired)
+
+        /** Sent when an agent session is created. */
+        @JvmStatic
+        fun ofAgentSessionCreated(agentSessionCreated: AgentSessionCreatedWebhookEvent) =
+            UnwrapWebhookEvent(agentSessionCreated = agentSessionCreated)
+
+        /** Sent when an agent session fails. */
+        @JvmStatic
+        fun ofAgentSessionFailed(agentSessionFailed: AgentSessionFailedWebhookEvent) =
+            UnwrapWebhookEvent(agentSessionFailed = agentSessionFailed)
+
+        /** Sent when an agent session becomes idle. */
+        @JvmStatic
+        fun ofAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent) =
+            UnwrapWebhookEvent(agentSessionIdle = agentSessionIdle)
+
+        /** Sent when an agent session enters the in-progress state. */
+        @JvmStatic
+        fun ofAgentSessionInProgress(agentSessionInProgress: AgentSessionInProgressWebhookEvent) =
+            UnwrapWebhookEvent(agentSessionInProgress = agentSessionInProgress)
 
         /** Sent when a batch API request has been cancelled. */
         @JvmStatic
@@ -559,18 +1010,30 @@ private constructor(
             UnwrapWebhookEvent(fineTuningJobSucceeded = fineTuningJobSucceeded)
 
         /**
-         * Sent when an incoming API SIP session is available for Live acceptance. The same pending
-         * session can also emit `realtime.call.incoming`; the first successful Realtime or Live
-         * accept endpoint selects the runtime surface.
+         * Deprecated: use `live.transport.incoming`. Retained for existing subscriptions during
+         * migration; new subscriptions to this event are not allowed. Sent when an incoming API SIP
+         * session is available for Live acceptance. The same pending session can also emit
+         * `realtime.call.incoming`; the first successful Realtime or Live accept endpoint selects
+         * the runtime surface.
          */
+        @Deprecated("deprecated")
         @JvmStatic
         fun ofLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent) =
             UnwrapWebhookEvent(liveCallIncoming = liveCallIncoming)
 
         /**
-         * Sent when an incoming API SIP session is available for Realtime acceptance. The same
-         * pending session can also emit `live.call.incoming`; the first successful Realtime or Live
+         * Sent when an incoming API SIP session is available for Live acceptance. The same pending
+         * session can also emit `realtime.call.incoming`; the first successful Realtime or Live
          * accept endpoint selects the runtime surface.
+         */
+        @JvmStatic
+        fun ofLiveTransportIncoming(liveTransportIncoming: LiveTransportIncomingWebhookEvent) =
+            UnwrapWebhookEvent(liveTransportIncoming = liveTransportIncoming)
+
+        /**
+         * Sent when an incoming API SIP session is available for Realtime acceptance. The same
+         * pending session can also emit `live.transport.incoming`; the first successful Realtime or
+         * Live accept endpoint selects the runtime surface.
          */
         @JvmStatic
         fun ofRealtimeCallIncoming(realtimeCallIncoming: RealtimeCallIncomingWebhookEvent) =
@@ -595,6 +1058,27 @@ private constructor(
         @JvmStatic
         fun ofResponseIncomplete(responseIncomplete: ResponseIncompleteWebhookEvent) =
             UnwrapWebhookEvent(responseIncomplete = responseIncomplete)
+
+        /** Sent when an approved safety alert is available for an API project. */
+        @JvmStatic
+        fun ofSafetyAlertCreated(safetyAlertCreated: SafetyAlertCreatedWebhookEvent) =
+            UnwrapWebhookEvent(safetyAlertCreated = safetyAlertCreated)
+
+        /** Sent when a deactivation is issued for a safety identifier in your organization. */
+        @JvmStatic
+        fun ofSafetyDeactivationIssued(
+            safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
+        ) = UnwrapWebhookEvent(safetyDeactivationIssued = safetyDeactivationIssued)
+
+        /** Sent when an approved safety alert is available for an enterprise workspace. */
+        @JvmStatic
+        fun ofSafetyOrgAlertCreated(safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent) =
+            UnwrapWebhookEvent(safetyOrgAlertCreated = safetyOrgAlertCreated)
+
+        /** Sent when a warning is issued for a safety identifier in your organization. */
+        @JvmStatic
+        fun ofSafetyWarningIssued(safetyWarningIssued: SafetyWarningIssuedWebhookEvent) =
+            UnwrapWebhookEvent(safetyWarningIssued = safetyWarningIssued)
     }
 
     /**
@@ -602,6 +1086,56 @@ private constructor(
      * [T].
      */
     interface Visitor<out T> {
+
+        /** Sent when an agent environment expires and can no longer resume from a snapshot. */
+        fun visitAgentEnvironmentExpired(
+            agentEnvironmentExpired: AgentEnvironmentExpiredWebhookEvent
+        ): T = unknown(JsonValue.from(agentEnvironmentExpired))
+
+        /**
+         * Sent when setup fails for a prewarmed OpenAI-hosted environment before it is attached to
+         * a session.
+         */
+        fun visitAgentEnvironmentFailed(
+            agentEnvironmentFailed: AgentEnvironmentFailedWebhookEvent
+        ): T = unknown(JsonValue.from(agentEnvironmentFailed))
+
+        /**
+         * Sent when a prewarmed OpenAI-hosted environment finishes setup before being attached to a
+         * session.
+         */
+        fun visitAgentEnvironmentReady(
+            agentEnvironmentReady: AgentEnvironmentReadyWebhookEvent
+        ): T = unknown(JsonValue.from(agentEnvironmentReady))
+
+        /** Sent when an agent environment is suspended and can resume from a snapshot. */
+        fun visitAgentEnvironmentSuspended(
+            agentEnvironmentSuspended: AgentEnvironmentSuspendedWebhookEvent
+        ): T = unknown(JsonValue.from(agentEnvironmentSuspended))
+
+        /**
+         * Sent when an agent session requires an action. Retrieve the session for action details.
+         */
+        fun visitAgentSessionActionRequired(
+            agentSessionActionRequired: AgentSessionActionRequiredWebhookEvent
+        ): T = unknown(JsonValue.from(agentSessionActionRequired))
+
+        /** Sent when an agent session is created. */
+        fun visitAgentSessionCreated(agentSessionCreated: AgentSessionCreatedWebhookEvent): T =
+            unknown(JsonValue.from(agentSessionCreated))
+
+        /** Sent when an agent session fails. */
+        fun visitAgentSessionFailed(agentSessionFailed: AgentSessionFailedWebhookEvent): T =
+            unknown(JsonValue.from(agentSessionFailed))
+
+        /** Sent when an agent session becomes idle. */
+        fun visitAgentSessionIdle(agentSessionIdle: AgentSessionIdleWebhookEvent): T =
+            unknown(JsonValue.from(agentSessionIdle))
+
+        /** Sent when an agent session enters the in-progress state. */
+        fun visitAgentSessionInProgress(
+            agentSessionInProgress: AgentSessionInProgressWebhookEvent
+        ): T = unknown(JsonValue.from(agentSessionInProgress))
 
         /** Sent when a batch API request has been cancelled. */
         fun visitBatchCancelled(batchCancelled: BatchCancelledWebhookEvent): T
@@ -638,16 +1172,26 @@ private constructor(
         ): T
 
         /**
+         * Deprecated: use `live.transport.incoming`. Retained for existing subscriptions during
+         * migration; new subscriptions to this event are not allowed. Sent when an incoming API SIP
+         * session is available for Live acceptance. The same pending session can also emit
+         * `realtime.call.incoming`; the first successful Realtime or Live accept endpoint selects
+         * the runtime surface.
+         */
+        @Deprecated("deprecated")
+        fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent): T
+
+        /**
          * Sent when an incoming API SIP session is available for Live acceptance. The same pending
          * session can also emit `realtime.call.incoming`; the first successful Realtime or Live
          * accept endpoint selects the runtime surface.
          */
-        fun visitLiveCallIncoming(liveCallIncoming: LiveCallIncomingWebhookEvent): T
+        fun visitLiveTransportIncoming(liveTransportIncoming: LiveTransportIncomingWebhookEvent): T
 
         /**
          * Sent when an incoming API SIP session is available for Realtime acceptance. The same
-         * pending session can also emit `live.call.incoming`; the first successful Realtime or Live
-         * accept endpoint selects the runtime surface.
+         * pending session can also emit `live.transport.incoming`; the first successful Realtime or
+         * Live accept endpoint selects the runtime surface.
          */
         fun visitRealtimeCallIncoming(realtimeCallIncoming: RealtimeCallIncomingWebhookEvent): T
 
@@ -663,6 +1207,21 @@ private constructor(
         /** Sent when a background response has been interrupted. */
         fun visitResponseIncomplete(responseIncomplete: ResponseIncompleteWebhookEvent): T
 
+        /** Sent when an approved safety alert is available for an API project. */
+        fun visitSafetyAlertCreated(safetyAlertCreated: SafetyAlertCreatedWebhookEvent): T
+
+        /** Sent when a deactivation is issued for a safety identifier in your organization. */
+        fun visitSafetyDeactivationIssued(
+            safetyDeactivationIssued: SafetyDeactivationIssuedWebhookEvent
+        ): T = unknown(JsonValue.from(safetyDeactivationIssued))
+
+        /** Sent when an approved safety alert is available for an enterprise workspace. */
+        fun visitSafetyOrgAlertCreated(safetyOrgAlertCreated: SafetyOrgAlertCreatedWebhookEvent): T
+
+        /** Sent when a warning is issued for a safety identifier in your organization. */
+        fun visitSafetyWarningIssued(safetyWarningIssued: SafetyWarningIssuedWebhookEvent): T =
+            unknown(JsonValue.from(safetyWarningIssued))
+
         /**
          * Maps an unknown variant of [UnwrapWebhookEvent] to a value of type [T].
          *
@@ -674,7 +1233,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown UnwrapWebhookEvent: $json")
+            throw OpenAIInvalidDataException("Unknown UnwrapWebhookEvent")
         }
     }
 
@@ -685,6 +1244,66 @@ private constructor(
             val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
             when (type) {
+                "agent.environment.expired" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentEnvironmentExpiredWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(agentEnvironmentExpired = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.environment.failed" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentEnvironmentFailedWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(agentEnvironmentFailed = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.environment.ready" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AgentEnvironmentReadyWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(agentEnvironmentReady = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.environment.suspended" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentEnvironmentSuspendedWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(agentEnvironmentSuspended = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.action_required" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentSessionActionRequiredWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(agentSessionActionRequired = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.created" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AgentSessionCreatedWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(agentSessionCreated = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.failed" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AgentSessionFailedWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(agentSessionFailed = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.idle" -> {
+                    return tryDeserialize(node, jacksonTypeRef<AgentSessionIdleWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(agentSessionIdle = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "agent.session.in_progress" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<AgentSessionInProgressWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(agentSessionInProgress = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
                 "batch.cancelled" -> {
                     return tryDeserialize(node, jacksonTypeRef<BatchCancelledWebhookEvent>())?.let {
                         UnwrapWebhookEvent(batchCancelled = it, _json = json)
@@ -746,6 +1365,11 @@ private constructor(
                         ?.let { UnwrapWebhookEvent(liveCallIncoming = it, _json = json) }
                         ?: UnwrapWebhookEvent(_json = json)
                 }
+                "live.transport.incoming" -> {
+                    return tryDeserialize(node, jacksonTypeRef<LiveTransportIncomingWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(liveTransportIncoming = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
                 "realtime.call.incoming" -> {
                     return tryDeserialize(node, jacksonTypeRef<RealtimeCallIncomingWebhookEvent>())
                         ?.let { UnwrapWebhookEvent(realtimeCallIncoming = it, _json = json) }
@@ -771,6 +1395,29 @@ private constructor(
                         ?.let { UnwrapWebhookEvent(responseIncomplete = it, _json = json) }
                         ?: UnwrapWebhookEvent(_json = json)
                 }
+                "safety.alert.created" -> {
+                    return tryDeserialize(node, jacksonTypeRef<SafetyAlertCreatedWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(safetyAlertCreated = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "safety.deactivation_issued" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<SafetyDeactivationIssuedWebhookEvent>(),
+                        )
+                        ?.let { UnwrapWebhookEvent(safetyDeactivationIssued = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "safety.org_alert.created" -> {
+                    return tryDeserialize(node, jacksonTypeRef<SafetyOrgAlertCreatedWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(safetyOrgAlertCreated = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
+                "safety.warning_issued" -> {
+                    return tryDeserialize(node, jacksonTypeRef<SafetyWarningIssuedWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(safetyWarningIssued = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
             }
 
             return UnwrapWebhookEvent(_json = json)
@@ -785,6 +1432,22 @@ private constructor(
             provider: SerializerProvider,
         ) {
             when {
+                value.agentEnvironmentExpired != null ->
+                    generator.writeObject(value.agentEnvironmentExpired)
+                value.agentEnvironmentFailed != null ->
+                    generator.writeObject(value.agentEnvironmentFailed)
+                value.agentEnvironmentReady != null ->
+                    generator.writeObject(value.agentEnvironmentReady)
+                value.agentEnvironmentSuspended != null ->
+                    generator.writeObject(value.agentEnvironmentSuspended)
+                value.agentSessionActionRequired != null ->
+                    generator.writeObject(value.agentSessionActionRequired)
+                value.agentSessionCreated != null ->
+                    generator.writeObject(value.agentSessionCreated)
+                value.agentSessionFailed != null -> generator.writeObject(value.agentSessionFailed)
+                value.agentSessionIdle != null -> generator.writeObject(value.agentSessionIdle)
+                value.agentSessionInProgress != null ->
+                    generator.writeObject(value.agentSessionInProgress)
                 value.batchCancelled != null -> generator.writeObject(value.batchCancelled)
                 value.batchCompleted != null -> generator.writeObject(value.batchCompleted)
                 value.batchExpired != null -> generator.writeObject(value.batchExpired)
@@ -799,12 +1462,21 @@ private constructor(
                 value.fineTuningJobSucceeded != null ->
                     generator.writeObject(value.fineTuningJobSucceeded)
                 value.liveCallIncoming != null -> generator.writeObject(value.liveCallIncoming)
+                value.liveTransportIncoming != null ->
+                    generator.writeObject(value.liveTransportIncoming)
                 value.realtimeCallIncoming != null ->
                     generator.writeObject(value.realtimeCallIncoming)
                 value.responseCancelled != null -> generator.writeObject(value.responseCancelled)
                 value.responseCompleted != null -> generator.writeObject(value.responseCompleted)
                 value.responseFailed != null -> generator.writeObject(value.responseFailed)
                 value.responseIncomplete != null -> generator.writeObject(value.responseIncomplete)
+                value.safetyAlertCreated != null -> generator.writeObject(value.safetyAlertCreated)
+                value.safetyDeactivationIssued != null ->
+                    generator.writeObject(value.safetyDeactivationIssued)
+                value.safetyOrgAlertCreated != null ->
+                    generator.writeObject(value.safetyOrgAlertCreated)
+                value.safetyWarningIssued != null ->
+                    generator.writeObject(value.safetyWarningIssued)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid UnwrapWebhookEvent")
             }

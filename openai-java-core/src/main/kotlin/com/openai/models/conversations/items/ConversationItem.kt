@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.conversations.items
 
@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -33,6 +34,7 @@ import com.openai.models.responses.CustomTool
 import com.openai.models.responses.FileSearchTool
 import com.openai.models.responses.FunctionShellTool
 import com.openai.models.responses.FunctionTool
+import com.openai.models.responses.McpToolCallError
 import com.openai.models.responses.NamespaceTool
 import com.openai.models.responses.ResponseApplyPatchToolCall
 import com.openai.models.responses.ResponseApplyPatchToolCallOutput
@@ -40,6 +42,7 @@ import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
+import com.openai.models.responses.ResponseConfigurationUpdateItem
 import com.openai.models.responses.ResponseCustomToolCall
 import com.openai.models.responses.ResponseCustomToolCallOutput
 import com.openai.models.responses.ResponseFileSearchToolCall
@@ -63,7 +66,7 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * A single item within a conversation. The set of possible types are the same as the `output` type
  * of a
- * [Response object](https://platform.openai.com/docs/api-reference/responses/object#responses/object-output).
+ * [Response object](https://developers.openai.com/api/reference/resources/responses#%28resource%29%20responses%20%3E%20%28model%29%20response%20%3E%20%28schema%29%20%3E%20%28property%29%20output).
  */
 @JsonDeserialize(using = ConversationItem.Deserializer::class)
 @JsonSerialize(using = ConversationItem.Serializer::class)
@@ -80,6 +83,7 @@ private constructor(
     private val toolSearchCall: ResponseToolSearchCall? = null,
     private val toolSearchOutput: ResponseToolSearchOutputItem? = null,
     private val additionalTools: AdditionalTools? = null,
+    private val configurationUpdate: ResponseConfigurationUpdateItem? = null,
     private val reasoning: ResponseReasoningItem? = null,
     private val program: Program? = null,
     private val programOutput: ProgramOutput? = null,
@@ -105,8 +109,8 @@ private constructor(
 
     /**
      * A tool call to run a function. See the
-     * [function calling guide](https://platform.openai.com/docs/guides/function-calling) for more
-     * information.
+     * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling) for
+     * more information.
      */
     fun functionCall(): Optional<ResponseFunctionToolCallItem> = Optional.ofNullable(functionCall)
 
@@ -115,14 +119,14 @@ private constructor(
 
     /**
      * The results of a file search tool call. See the
-     * [file search guide](https://platform.openai.com/docs/guides/tools-file-search) for more
+     * [file search guide](https://developers.openai.com/api/docs/guides/tools-file-search) for more
      * information.
      */
     fun fileSearchCall(): Optional<ResponseFileSearchToolCall> = Optional.ofNullable(fileSearchCall)
 
     /**
      * The results of a web search tool call. See the
-     * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
+     * [web search guide](https://developers.openai.com/api/docs/guides/tools-web-search) for more
      * information.
      */
     fun webSearchCall(): Optional<ResponseFunctionWebSearch> = Optional.ofNullable(webSearchCall)
@@ -133,8 +137,8 @@ private constructor(
 
     /**
      * A tool call to a computer use tool. See the
-     * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more
-     * information.
+     * [computer use guide](https://developers.openai.com/api/docs/guides/tools-computer-use) for
+     * more information.
      */
     fun computerCall(): Optional<ResponseComputerToolCall> = Optional.ofNullable(computerCall)
 
@@ -149,10 +153,17 @@ private constructor(
     fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
 
     /**
+     * A configuration update that applies to subsequent responses until it is replaced by another
+     * configuration update.
+     */
+    fun configurationUpdate(): Optional<ResponseConfigurationUpdateItem> =
+        Optional.ofNullable(configurationUpdate)
+
+    /**
      * A description of the chain of thought used by a reasoning model while generating a response.
      * Be sure to include these items in your `input` to the Responses API for subsequent turns of a
      * conversation if you are manually
-     * [managing context](https://platform.openai.com/docs/guides/conversation-state).
+     * [managing context](https://developers.openai.com/api/docs/guides/conversation-state).
      */
     fun reasoning(): Optional<ResponseReasoningItem> = Optional.ofNullable(reasoning)
 
@@ -162,7 +173,7 @@ private constructor(
 
     /**
      * A compaction item generated by the
-     * [`v1/responses/compact` API](https://platform.openai.com/docs/api-reference/responses/compact).
+     * [`v1/responses/compact` API](https://developers.openai.com/api/reference/resources/responses/methods/compact).
      */
     fun compaction(): Optional<ResponseCompactionItem> = Optional.ofNullable(compaction)
 
@@ -233,6 +244,8 @@ private constructor(
 
     fun isAdditionalTools(): Boolean = additionalTools != null
 
+    fun isConfigurationUpdate(): Boolean = configurationUpdate != null
+
     fun isReasoning(): Boolean = reasoning != null
 
     fun isProgram(): Boolean = program != null
@@ -272,8 +285,8 @@ private constructor(
 
     /**
      * A tool call to run a function. See the
-     * [function calling guide](https://platform.openai.com/docs/guides/function-calling) for more
-     * information.
+     * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling) for
+     * more information.
      */
     fun asFunctionCall(): ResponseFunctionToolCallItem = functionCall.getOrThrow("functionCall")
 
@@ -282,14 +295,14 @@ private constructor(
 
     /**
      * The results of a file search tool call. See the
-     * [file search guide](https://platform.openai.com/docs/guides/tools-file-search) for more
+     * [file search guide](https://developers.openai.com/api/docs/guides/tools-file-search) for more
      * information.
      */
     fun asFileSearchCall(): ResponseFileSearchToolCall = fileSearchCall.getOrThrow("fileSearchCall")
 
     /**
      * The results of a web search tool call. See the
-     * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
+     * [web search guide](https://developers.openai.com/api/docs/guides/tools-web-search) for more
      * information.
      */
     fun asWebSearchCall(): ResponseFunctionWebSearch = webSearchCall.getOrThrow("webSearchCall")
@@ -300,8 +313,8 @@ private constructor(
 
     /**
      * A tool call to a computer use tool. See the
-     * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more
-     * information.
+     * [computer use guide](https://developers.openai.com/api/docs/guides/tools-computer-use) for
+     * more information.
      */
     fun asComputerCall(): ResponseComputerToolCall = computerCall.getOrThrow("computerCall")
 
@@ -316,10 +329,17 @@ private constructor(
     fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
 
     /**
+     * A configuration update that applies to subsequent responses until it is replaced by another
+     * configuration update.
+     */
+    fun asConfigurationUpdate(): ResponseConfigurationUpdateItem =
+        configurationUpdate.getOrThrow("configurationUpdate")
+
+    /**
      * A description of the chain of thought used by a reasoning model while generating a response.
      * Be sure to include these items in your `input` to the Responses API for subsequent turns of a
      * conversation if you are manually
-     * [managing context](https://platform.openai.com/docs/guides/conversation-state).
+     * [managing context](https://developers.openai.com/api/docs/guides/conversation-state).
      */
     fun asReasoning(): ResponseReasoningItem = reasoning.getOrThrow("reasoning")
 
@@ -329,7 +349,7 @@ private constructor(
 
     /**
      * A compaction item generated by the
-     * [`v1/responses/compact` API](https://platform.openai.com/docs/api-reference/responses/compact).
+     * [`v1/responses/compact` API](https://developers.openai.com/api/reference/resources/responses/methods/compact).
      */
     fun asCompaction(): ResponseCompactionItem = compaction.getOrThrow("compaction")
 
@@ -423,6 +443,7 @@ private constructor(
             toolSearchCall != null -> visitor.visitToolSearchCall(toolSearchCall)
             toolSearchOutput != null -> visitor.visitToolSearchOutput(toolSearchOutput)
             additionalTools != null -> visitor.visitAdditionalTools(additionalTools)
+            configurationUpdate != null -> visitor.visitConfigurationUpdate(configurationUpdate)
             reasoning != null -> visitor.visitReasoning(reasoning)
             program != null -> visitor.visitProgram(program)
             programOutput != null -> visitor.visitProgramOutput(programOutput)
@@ -506,6 +527,12 @@ private constructor(
 
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) {
                     additionalTools.validate()
+                }
+
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItem
+                ) {
+                    configurationUpdate.validate()
                 }
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
@@ -639,6 +666,10 @@ private constructor(
                 override fun visitAdditionalTools(additionalTools: AdditionalTools) =
                     additionalTools.validity()
 
+                override fun visitConfigurationUpdate(
+                    configurationUpdate: ResponseConfigurationUpdateItem
+                ) = configurationUpdate.validity()
+
                 override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
 
                 override fun visitProgram(program: Program) = program.validity()
@@ -711,6 +742,7 @@ private constructor(
             toolSearchCall == other.toolSearchCall &&
             toolSearchOutput == other.toolSearchOutput &&
             additionalTools == other.additionalTools &&
+            configurationUpdate == other.configurationUpdate &&
             reasoning == other.reasoning &&
             program == other.program &&
             programOutput == other.programOutput &&
@@ -743,6 +775,7 @@ private constructor(
             toolSearchCall,
             toolSearchOutput,
             additionalTools,
+            configurationUpdate,
             reasoning,
             program,
             programOutput,
@@ -776,6 +809,8 @@ private constructor(
             toolSearchCall != null -> "ConversationItem{toolSearchCall=$toolSearchCall}"
             toolSearchOutput != null -> "ConversationItem{toolSearchOutput=$toolSearchOutput}"
             additionalTools != null -> "ConversationItem{additionalTools=$additionalTools}"
+            configurationUpdate != null ->
+                "ConversationItem{configurationUpdate=$configurationUpdate}"
             reasoning != null -> "ConversationItem{reasoning=$reasoning}"
             program != null -> "ConversationItem{program=$program}"
             programOutput != null -> "ConversationItem{programOutput=$programOutput}"
@@ -809,8 +844,8 @@ private constructor(
 
         /**
          * A tool call to run a function. See the
-         * [function calling guide](https://platform.openai.com/docs/guides/function-calling) for
-         * more information.
+         * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling)
+         * for more information.
          */
         @JvmStatic
         fun ofFunctionCall(functionCall: ResponseFunctionToolCallItem) =
@@ -822,8 +857,8 @@ private constructor(
 
         /**
          * The results of a file search tool call. See the
-         * [file search guide](https://platform.openai.com/docs/guides/tools-file-search) for more
-         * information.
+         * [file search guide](https://developers.openai.com/api/docs/guides/tools-file-search) for
+         * more information.
          */
         @JvmStatic
         fun ofFileSearchCall(fileSearchCall: ResponseFileSearchToolCall) =
@@ -831,8 +866,8 @@ private constructor(
 
         /**
          * The results of a web search tool call. See the
-         * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
-         * information.
+         * [web search guide](https://developers.openai.com/api/docs/guides/tools-web-search) for
+         * more information.
          */
         @JvmStatic
         fun ofWebSearchCall(webSearchCall: ResponseFunctionWebSearch) =
@@ -845,8 +880,8 @@ private constructor(
 
         /**
          * A tool call to a computer use tool. See the
-         * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more
-         * information.
+         * [computer use guide](https://developers.openai.com/api/docs/guides/tools-computer-use)
+         * for more information.
          */
         @JvmStatic
         fun ofComputerCall(computerCall: ResponseComputerToolCall) =
@@ -869,10 +904,18 @@ private constructor(
             ConversationItem(additionalTools = additionalTools)
 
         /**
+         * A configuration update that applies to subsequent responses until it is replaced by
+         * another configuration update.
+         */
+        @JvmStatic
+        fun ofConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItem) =
+            ConversationItem(configurationUpdate = configurationUpdate)
+
+        /**
          * A description of the chain of thought used by a reasoning model while generating a
          * response. Be sure to include these items in your `input` to the Responses API for
          * subsequent turns of a conversation if you are manually
-         * [managing context](https://platform.openai.com/docs/guides/conversation-state).
+         * [managing context](https://developers.openai.com/api/docs/guides/conversation-state).
          */
         @JvmStatic
         fun ofReasoning(reasoning: ResponseReasoningItem) = ConversationItem(reasoning = reasoning)
@@ -885,7 +928,7 @@ private constructor(
 
         /**
          * A compaction item generated by the
-         * [`v1/responses/compact` API](https://platform.openai.com/docs/api-reference/responses/compact).
+         * [`v1/responses/compact` API](https://developers.openai.com/api/reference/resources/responses/methods/compact).
          */
         @JvmStatic
         fun ofCompaction(compaction: ResponseCompactionItem) =
@@ -966,8 +1009,8 @@ private constructor(
 
         /**
          * A tool call to run a function. See the
-         * [function calling guide](https://platform.openai.com/docs/guides/function-calling) for
-         * more information.
+         * [function calling guide](https://developers.openai.com/api/docs/guides/function-calling)
+         * for more information.
          */
         fun visitFunctionCall(functionCall: ResponseFunctionToolCallItem): T
 
@@ -975,15 +1018,15 @@ private constructor(
 
         /**
          * The results of a file search tool call. See the
-         * [file search guide](https://platform.openai.com/docs/guides/tools-file-search) for more
-         * information.
+         * [file search guide](https://developers.openai.com/api/docs/guides/tools-file-search) for
+         * more information.
          */
         fun visitFileSearchCall(fileSearchCall: ResponseFileSearchToolCall): T
 
         /**
          * The results of a web search tool call. See the
-         * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
-         * information.
+         * [web search guide](https://developers.openai.com/api/docs/guides/tools-web-search) for
+         * more information.
          */
         fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch): T
 
@@ -992,8 +1035,8 @@ private constructor(
 
         /**
          * A tool call to a computer use tool. See the
-         * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more
-         * information.
+         * [computer use guide](https://developers.openai.com/api/docs/guides/tools-computer-use)
+         * for more information.
          */
         fun visitComputerCall(computerCall: ResponseComputerToolCall): T
 
@@ -1006,10 +1049,16 @@ private constructor(
         fun visitAdditionalTools(additionalTools: AdditionalTools): T
 
         /**
+         * A configuration update that applies to subsequent responses until it is replaced by
+         * another configuration update.
+         */
+        fun visitConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItem): T
+
+        /**
          * A description of the chain of thought used by a reasoning model while generating a
          * response. Be sure to include these items in your `input` to the Responses API for
          * subsequent turns of a conversation if you are manually
-         * [managing context](https://platform.openai.com/docs/guides/conversation-state).
+         * [managing context](https://developers.openai.com/api/docs/guides/conversation-state).
          */
         fun visitReasoning(reasoning: ResponseReasoningItem): T
 
@@ -1019,7 +1068,7 @@ private constructor(
 
         /**
          * A compaction item generated by the
-         * [`v1/responses/compact` API](https://platform.openai.com/docs/api-reference/responses/compact).
+         * [`v1/responses/compact` API](https://developers.openai.com/api/reference/resources/responses/methods/compact).
          */
         fun visitCompaction(compaction: ResponseCompactionItem): T
 
@@ -1073,7 +1122,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown ConversationItem: $json")
+            throw OpenAIInvalidDataException("Unknown ConversationItem")
         }
     }
 
@@ -1144,6 +1193,11 @@ private constructor(
                     return tryDeserialize(node, jacksonTypeRef<AdditionalTools>())?.let {
                         ConversationItem(additionalTools = it, _json = json)
                     } ?: ConversationItem(_json = json)
+                }
+                "configuration_update" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseConfigurationUpdateItem>())
+                        ?.let { ConversationItem(configurationUpdate = it, _json = json) }
+                        ?: ConversationItem(_json = json)
                 }
                 "reasoning" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
@@ -1259,6 +1313,8 @@ private constructor(
                 value.toolSearchCall != null -> generator.writeObject(value.toolSearchCall)
                 value.toolSearchOutput != null -> generator.writeObject(value.toolSearchOutput)
                 value.additionalTools != null -> generator.writeObject(value.additionalTools)
+                value.configurationUpdate != null ->
+                    generator.writeObject(value.configurationUpdate)
                 value.reasoning != null -> generator.writeObject(value.reasoning)
                 value.program != null -> generator.writeObject(value.program)
                 value.programOutput != null -> generator.writeObject(value.programOutput)
@@ -1295,6 +1351,13 @@ private constructor(
         private val result: JsonField<String>,
         private val status: JsonField<Status>,
         private val type: JsonValue,
+        private val action: JsonField<Action>,
+        private val background: JsonField<Background>,
+        private val error: JsonField<Error>,
+        private val outputFormat: JsonField<OutputFormat>,
+        private val quality: JsonField<Quality>,
+        private val revisedPrompt: JsonField<String>,
+        private val size: JsonField<Size>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -1304,7 +1367,33 @@ private constructor(
             @JsonProperty("result") @ExcludeMissing result: JsonField<String> = JsonMissing.of(),
             @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        ) : this(id, result, status, type, mutableMapOf())
+            @JsonProperty("action") @ExcludeMissing action: JsonField<Action> = JsonMissing.of(),
+            @JsonProperty("background")
+            @ExcludeMissing
+            background: JsonField<Background> = JsonMissing.of(),
+            @JsonProperty("error") @ExcludeMissing error: JsonField<Error> = JsonMissing.of(),
+            @JsonProperty("output_format")
+            @ExcludeMissing
+            outputFormat: JsonField<OutputFormat> = JsonMissing.of(),
+            @JsonProperty("quality") @ExcludeMissing quality: JsonField<Quality> = JsonMissing.of(),
+            @JsonProperty("revised_prompt")
+            @ExcludeMissing
+            revisedPrompt: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("size") @ExcludeMissing size: JsonField<Size> = JsonMissing.of(),
+        ) : this(
+            id,
+            result,
+            status,
+            type,
+            action,
+            background,
+            error,
+            outputFormat,
+            quality,
+            revisedPrompt,
+            size,
+            mutableMapOf(),
+        )
 
         /**
          * The unique ID of the image generation call.
@@ -1344,6 +1433,63 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
+         * The action used for image generation.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun action(): Optional<Action> = action.getOptional("action")
+
+        /**
+         * The background setting used for generation.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun background(): Optional<Background> = background.getOptional("background")
+
+        /**
+         * Details of a moderation failure, when available.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun error(): Optional<Error> = error.getOptional("error")
+
+        /**
+         * The output format used for generation.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun outputFormat(): Optional<OutputFormat> = outputFormat.getOptional("output_format")
+
+        /**
+         * The quality of the image generated by the image generation tool call. One of `low`,
+         * `medium`, `high`, `xhigh`, `max`, or `auto`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun quality(): Optional<Quality> = quality.getOptional("quality")
+
+        /**
+         * The prompt that was used after any model prompt rewriting.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun revisedPrompt(): Optional<String> = revisedPrompt.getOptional("revised_prompt")
+
+        /**
+         * The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun size(): Optional<Size> = size.getOptional("size")
+
+        /**
          * Returns the raw JSON value of [id].
          *
          * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -1364,11 +1510,99 @@ private constructor(
          */
         @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
+        /**
+         * Returns the raw JSON value of [action].
+         *
+         * Unlike [action], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("action") @ExcludeMissing fun _action(): JsonField<Action> = action
+
+        /**
+         * Returns the raw JSON value of [background].
+         *
+         * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("background")
+        @ExcludeMissing
+        fun _background(): JsonField<Background> = background
+
+        /**
+         * Returns the raw JSON value of [error].
+         *
+         * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<Error> = error
+
+        /**
+         * Returns the raw JSON value of [outputFormat].
+         *
+         * Unlike [outputFormat], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("output_format")
+        @ExcludeMissing
+        fun _outputFormat(): JsonField<OutputFormat> = outputFormat
+
+        /**
+         * Returns the raw JSON value of [quality].
+         *
+         * Unlike [quality], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("quality") @ExcludeMissing fun _quality(): JsonField<Quality> = quality
+
+        /**
+         * Returns the raw JSON value of [revisedPrompt].
+         *
+         * Unlike [revisedPrompt], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("revised_prompt")
+        @ExcludeMissing
+        fun _revisedPrompt(): JsonField<String> = revisedPrompt
+
+        /**
+         * Returns the raw JSON value of [size].
+         *
+         * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<Size> = size
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "id" to this.id,
+                "result" to this.result,
+                "status" to this.status,
+                "type" to this.type,
+                "action" to this.action,
+                "background" to this.background,
+                "error" to this.error,
+                "output_format" to this.outputFormat,
+                "quality" to this.quality,
+                "revised_prompt" to this.revisedPrompt,
+                "size" to this.size,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -1398,6 +1632,13 @@ private constructor(
             private var result: JsonField<String>? = null
             private var status: JsonField<Status>? = null
             private var type: JsonValue = JsonValue.from("image_generation_call")
+            private var action: JsonField<Action> = JsonMissing.of()
+            private var background: JsonField<Background> = JsonMissing.of()
+            private var error: JsonField<Error> = JsonMissing.of()
+            private var outputFormat: JsonField<OutputFormat> = JsonMissing.of()
+            private var quality: JsonField<Quality> = JsonMissing.of()
+            private var revisedPrompt: JsonField<String> = JsonMissing.of()
+            private var size: JsonField<Size> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1406,6 +1647,13 @@ private constructor(
                 result = imageGenerationCall.result
                 status = imageGenerationCall.status
                 type = imageGenerationCall.type
+                action = imageGenerationCall.action
+                background = imageGenerationCall.background
+                error = imageGenerationCall.error
+                outputFormat = imageGenerationCall.outputFormat
+                quality = imageGenerationCall.quality
+                revisedPrompt = imageGenerationCall.revisedPrompt
+                size = imageGenerationCall.size
                 additionalProperties = imageGenerationCall.additionalProperties.toMutableMap()
             }
 
@@ -1462,6 +1710,129 @@ private constructor(
              */
             fun type(type: JsonValue) = apply { this.type = type }
 
+            /** The action used for image generation. */
+            fun action(action: Action?) = action(JsonField.ofNullable(action))
+
+            /** Alias for calling [Builder.action] with `action.orElse(null)`. */
+            fun action(action: Optional<Action>) = action(action.getOrNull())
+
+            /**
+             * Sets [Builder.action] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.action] with a well-typed [Action] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun action(action: JsonField<Action>) = apply { this.action = action }
+
+            /** The background setting used for generation. */
+            fun background(background: Background?) = background(JsonField.ofNullable(background))
+
+            /** Alias for calling [Builder.background] with `background.orElse(null)`. */
+            fun background(background: Optional<Background>) = background(background.getOrNull())
+
+            /**
+             * Sets [Builder.background] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.background] with a well-typed [Background] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun background(background: JsonField<Background>) = apply {
+                this.background = background
+            }
+
+            /** Details of a moderation failure, when available. */
+            fun error(error: Error) = error(JsonField.of(error))
+
+            /**
+             * Sets [Builder.error] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.error] with a well-typed [Error] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun error(error: JsonField<Error>) = apply { this.error = error }
+
+            /** The output format used for generation. */
+            fun outputFormat(outputFormat: OutputFormat?) =
+                outputFormat(JsonField.ofNullable(outputFormat))
+
+            /** Alias for calling [Builder.outputFormat] with `outputFormat.orElse(null)`. */
+            fun outputFormat(outputFormat: Optional<OutputFormat>) =
+                outputFormat(outputFormat.getOrNull())
+
+            /**
+             * Sets [Builder.outputFormat] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.outputFormat] with a well-typed [OutputFormat] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun outputFormat(outputFormat: JsonField<OutputFormat>) = apply {
+                this.outputFormat = outputFormat
+            }
+
+            /**
+             * The quality of the image generated by the image generation tool call. One of `low`,
+             * `medium`, `high`, `xhigh`, `max`, or `auto`.
+             */
+            fun quality(quality: Quality?) = quality(JsonField.ofNullable(quality))
+
+            /** Alias for calling [Builder.quality] with `quality.orElse(null)`. */
+            fun quality(quality: Optional<Quality>) = quality(quality.getOrNull())
+
+            /**
+             * Sets [Builder.quality] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.quality] with a well-typed [Quality] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
+
+            /** The prompt that was used after any model prompt rewriting. */
+            fun revisedPrompt(revisedPrompt: String?) =
+                revisedPrompt(JsonField.ofNullable(revisedPrompt))
+
+            /** Alias for calling [Builder.revisedPrompt] with `revisedPrompt.orElse(null)`. */
+            fun revisedPrompt(revisedPrompt: Optional<String>) =
+                revisedPrompt(revisedPrompt.getOrNull())
+
+            /**
+             * Sets [Builder.revisedPrompt] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.revisedPrompt] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun revisedPrompt(revisedPrompt: JsonField<String>) = apply {
+                this.revisedPrompt = revisedPrompt
+            }
+
+            /** The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. */
+            fun size(size: Size?) = size(JsonField.ofNullable(size))
+
+            /** Alias for calling [Builder.size] with `size.orElse(null)`. */
+            fun size(size: Optional<Size>) = size(size.getOrNull())
+
+            /**
+             * Sets [Builder.size] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.size] with a well-typed [Size] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun size(size: JsonField<Size>) = apply { this.size = size }
+
+            /**
+             * Sets [size] to an arbitrary [String].
+             *
+             * You should usually call [size] with a well-typed [Size] constant instead. This method
+             * is primarily for setting the field to an undocumented or not yet supported value.
+             */
+            fun size(value: String) = size(Size.of(value))
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -1501,6 +1872,13 @@ private constructor(
                     checkRequired("result", result),
                     checkRequired("status", status),
                     type,
+                    action,
+                    background,
+                    error,
+                    outputFormat,
+                    quality,
+                    revisedPrompt,
+                    size,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -1529,6 +1907,13 @@ private constructor(
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
+            action().ifPresent { it.validate() }
+            background().ifPresent { it.validate() }
+            error().ifPresent { it.validate() }
+            outputFormat().ifPresent { it.validate() }
+            quality().ifPresent { it.validate() }
+            revisedPrompt()
+            size()
             validated = true
         }
 
@@ -1551,7 +1936,14 @@ private constructor(
             (if (id.asKnown().isPresent) 1 else 0) +
                 (if (result.asKnown().isPresent) 1 else 0) +
                 (status.asKnown().getOrNull()?.validity() ?: 0) +
-                type.let { if (it == JsonValue.from("image_generation_call")) 1 else 0 }
+                type.let { if (it == JsonValue.from("image_generation_call")) 1 else 0 } +
+                (action.asKnown().getOrNull()?.validity() ?: 0) +
+                (background.asKnown().getOrNull()?.validity() ?: 0) +
+                (error.asKnown().getOrNull()?.validity() ?: 0) +
+                (outputFormat.asKnown().getOrNull()?.validity() ?: 0) +
+                (quality.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (revisedPrompt.asKnown().isPresent) 1 else 0) +
+                (if (size.asKnown().isPresent) 1 else 0)
 
         /** The status of the image generation call. */
         class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -1705,6 +2097,1552 @@ private constructor(
             override fun toString() = value.toString()
         }
 
+        /** The action used for image generation. */
+        class Action @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val GENERATE = of("generate")
+
+                @JvmField val EDIT = of("edit")
+
+                @JvmField val AUTO = of("auto")
+
+                @JvmStatic fun of(value: String) = Action(JsonField.of(value))
+            }
+
+            /** An enum containing [Action]'s known values. */
+            enum class Known {
+                GENERATE,
+                EDIT,
+                AUTO,
+            }
+
+            /**
+             * An enum containing [Action]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Action] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                GENERATE,
+                EDIT,
+                AUTO,
+                /**
+                 * An enum member indicating that [Action] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    GENERATE -> Value.GENERATE
+                    EDIT -> Value.EDIT
+                    AUTO -> Value.AUTO
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    GENERATE -> Known.GENERATE
+                    EDIT -> Known.EDIT
+                    AUTO -> Known.AUTO
+                    else -> throw OpenAIInvalidDataException("Unknown Action: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Action = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Action && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /** The background setting used for generation. */
+        class Background @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val TRANSPARENT = of("transparent")
+
+                @JvmField val OPAQUE = of("opaque")
+
+                @JvmField val AUTO = of("auto")
+
+                @JvmStatic fun of(value: String) = Background(JsonField.of(value))
+            }
+
+            /** An enum containing [Background]'s known values. */
+            enum class Known {
+                TRANSPARENT,
+                OPAQUE,
+                AUTO,
+            }
+
+            /**
+             * An enum containing [Background]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Background] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                TRANSPARENT,
+                OPAQUE,
+                AUTO,
+                /**
+                 * An enum member indicating that [Background] was instantiated with an unknown
+                 * value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    TRANSPARENT -> Value.TRANSPARENT
+                    OPAQUE -> Value.OPAQUE
+                    AUTO -> Value.AUTO
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    TRANSPARENT -> Known.TRANSPARENT
+                    OPAQUE -> Known.OPAQUE
+                    AUTO -> Known.AUTO
+                    else -> throw OpenAIInvalidDataException("Unknown Background: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Background = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Background && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /** Details of a moderation failure, when available. */
+        class Error
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val code: JsonField<String>,
+            private val message: JsonField<String>,
+            private val param: JsonField<String>,
+            private val type: JsonField<String>,
+            private val moderationDetails: JsonField<ModerationDetails>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("code") @ExcludeMissing code: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("message")
+                @ExcludeMissing
+                message: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("param") @ExcludeMissing param: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("moderation_details")
+                @ExcludeMissing
+                moderationDetails: JsonField<ModerationDetails> = JsonMissing.of(),
+            ) : this(code, message, param, type, moderationDetails, mutableMapOf())
+
+            /**
+             * The error code.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun code(): Optional<String> = code.getOptional("code")
+
+            /**
+             * A description of the error.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun message(): String = message.getRequired("message")
+
+            /**
+             * The related request parameter.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun param(): Optional<String> = param.getOptional("param")
+
+            /**
+             * The error type.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun type(): String = type.getRequired("type")
+
+            /**
+             * Public details for a `moderation_blocked` error, when available.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun moderationDetails(): Optional<ModerationDetails> =
+                moderationDetails.getOptional("moderation_details")
+
+            /**
+             * Returns the raw JSON value of [code].
+             *
+             * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
+
+            /**
+             * Returns the raw JSON value of [message].
+             *
+             * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
+
+            /**
+             * Returns the raw JSON value of [param].
+             *
+             * Unlike [param], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("param") @ExcludeMissing fun _param(): JsonField<String> = param
+
+            /**
+             * Returns the raw JSON value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
+
+            /**
+             * Returns the raw JSON value of [moderationDetails].
+             *
+             * Unlike [moderationDetails], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("moderation_details")
+            @ExcludeMissing
+            fun _moderationDetails(): JsonField<ModerationDetails> = moderationDetails
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "code" to this.code,
+                    "message" to this.message,
+                    "param" to this.param,
+                    "type" to this.type,
+                    "moderation_details" to this.moderationDetails,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Error].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .code()
+                 * .message()
+                 * .param()
+                 * .type()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Error]. */
+            class Builder internal constructor() {
+
+                private var code: JsonField<String>? = null
+                private var message: JsonField<String>? = null
+                private var param: JsonField<String>? = null
+                private var type: JsonField<String>? = null
+                private var moderationDetails: JsonField<ModerationDetails> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(error: Error) = apply {
+                    code = error.code
+                    message = error.message
+                    param = error.param
+                    type = error.type
+                    moderationDetails = error.moderationDetails
+                    additionalProperties = error.additionalProperties.toMutableMap()
+                }
+
+                /** The error code. */
+                fun code(code: String?) = code(JsonField.ofNullable(code))
+
+                /** Alias for calling [Builder.code] with `code.orElse(null)`. */
+                fun code(code: Optional<String>) = code(code.getOrNull())
+
+                /**
+                 * Sets [Builder.code] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.code] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun code(code: JsonField<String>) = apply { this.code = code }
+
+                /** A description of the error. */
+                fun message(message: String) = message(JsonField.of(message))
+
+                /**
+                 * Sets [Builder.message] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.message] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun message(message: JsonField<String>) = apply { this.message = message }
+
+                /** The related request parameter. */
+                fun param(param: String?) = param(JsonField.ofNullable(param))
+
+                /** Alias for calling [Builder.param] with `param.orElse(null)`. */
+                fun param(param: Optional<String>) = param(param.getOrNull())
+
+                /**
+                 * Sets [Builder.param] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.param] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun param(param: JsonField<String>) = apply { this.param = param }
+
+                /** The error type. */
+                fun type(type: String) = type(JsonField.of(type))
+
+                /**
+                 * Sets [Builder.type] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonField<String>) = apply { this.type = type }
+
+                /** Public details for a `moderation_blocked` error, when available. */
+                fun moderationDetails(moderationDetails: ModerationDetails) =
+                    moderationDetails(JsonField.of(moderationDetails))
+
+                /**
+                 * Sets [Builder.moderationDetails] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.moderationDetails] with a well-typed
+                 * [ModerationDetails] value instead. This method is primarily for setting the field
+                 * to an undocumented or not yet supported value.
+                 */
+                fun moderationDetails(moderationDetails: JsonField<ModerationDetails>) = apply {
+                    this.moderationDetails = moderationDetails
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Error].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .code()
+                 * .message()
+                 * .param()
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Error =
+                    Error(
+                        checkRequired("code", code),
+                        checkRequired("message", message),
+                        checkRequired("param", param),
+                        checkRequired("type", type),
+                        moderationDetails,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Error = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                code()
+                message()
+                param()
+                type()
+                moderationDetails().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (code.asKnown().isPresent) 1 else 0) +
+                    (if (message.asKnown().isPresent) 1 else 0) +
+                    (if (param.asKnown().isPresent) 1 else 0) +
+                    (if (type.asKnown().isPresent) 1 else 0) +
+                    (moderationDetails.asKnown().getOrNull()?.validity() ?: 0)
+
+            /** Public details for a `moderation_blocked` error, when available. */
+            class ModerationDetails
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val categories: JsonField<List<String>>,
+                private val moderationStage: JsonField<ModerationStage>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("categories")
+                    @ExcludeMissing
+                    categories: JsonField<List<String>> = JsonMissing.of(),
+                    @JsonProperty("moderation_stage")
+                    @ExcludeMissing
+                    moderationStage: JsonField<ModerationStage> = JsonMissing.of(),
+                ) : this(categories, moderationStage, mutableMapOf())
+
+                /**
+                 * Public moderation categories. New category values may be added over time.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun categories(): List<String> = categories.getRequired("categories")
+
+                /**
+                 * The stage where moderation blocked the image generation call.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun moderationStage(): ModerationStage =
+                    moderationStage.getRequired("moderation_stage")
+
+                /**
+                 * Returns the raw JSON value of [categories].
+                 *
+                 * Unlike [categories], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("categories")
+                @ExcludeMissing
+                fun _categories(): JsonField<List<String>> = categories
+
+                /**
+                 * Returns the raw JSON value of [moderationStage].
+                 *
+                 * Unlike [moderationStage], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("moderation_stage")
+                @ExcludeMissing
+                fun _moderationStage(): JsonField<ModerationStage> = moderationStage
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "categories" to this.categories,
+                        "moderation_stage" to this.moderationStage,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of
+                     * [ModerationDetails].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .categories()
+                     * .moderationStage()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [ModerationDetails]. */
+                class Builder internal constructor() {
+
+                    private var categories: JsonField<MutableList<String>>? = null
+                    private var moderationStage: JsonField<ModerationStage>? = null
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(moderationDetails: ModerationDetails) = apply {
+                        categories = moderationDetails.categories.map { it.toMutableList() }
+                        moderationStage = moderationDetails.moderationStage
+                        additionalProperties = moderationDetails.additionalProperties.toMutableMap()
+                    }
+
+                    /** Public moderation categories. New category values may be added over time. */
+                    fun categories(categories: List<String>) = categories(JsonField.of(categories))
+
+                    /**
+                     * Sets [Builder.categories] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.categories] with a well-typed `List<String>`
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun categories(categories: JsonField<List<String>>) = apply {
+                        this.categories = categories.map { it.toMutableList() }
+                    }
+
+                    /**
+                     * Adds a single [String] to [categories].
+                     *
+                     * @throws IllegalStateException if the field was previously set to a non-list.
+                     */
+                    fun addCategory(category: String) = apply {
+                        categories =
+                            (categories ?: JsonField.of(mutableListOf())).also {
+                                checkKnown("categories", it).add(category)
+                            }
+                    }
+
+                    /** The stage where moderation blocked the image generation call. */
+                    fun moderationStage(moderationStage: ModerationStage) =
+                        moderationStage(JsonField.of(moderationStage))
+
+                    /**
+                     * Sets [Builder.moderationStage] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.moderationStage] with a well-typed
+                     * [ModerationStage] value instead. This method is primarily for setting the
+                     * field to an undocumented or not yet supported value.
+                     */
+                    fun moderationStage(moderationStage: JsonField<ModerationStage>) = apply {
+                        this.moderationStage = moderationStage
+                    }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [ModerationDetails].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .categories()
+                     * .moderationStage()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): ModerationDetails =
+                        ModerationDetails(
+                            checkRequired("categories", categories).map { it.toImmutable() },
+                            checkRequired("moderationStage", moderationStage),
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): ModerationDetails = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    categories()
+                    moderationStage().validate()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (categories.asKnown().getOrNull()?.size ?: 0) +
+                        (moderationStage.asKnown().getOrNull()?.validity() ?: 0)
+
+                /** The stage where moderation blocked the image generation call. */
+                class ModerationStage
+                @JsonCreator
+                private constructor(private val value: JsonField<String>) : Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val INPUT = of("input")
+
+                        @JvmField val OUTPUT = of("output")
+
+                        @JvmField val UNKNOWN = of("unknown")
+
+                        @JvmStatic fun of(value: String) = ModerationStage(JsonField.of(value))
+                    }
+
+                    /** An enum containing [ModerationStage]'s known values. */
+                    enum class Known {
+                        INPUT,
+                        OUTPUT,
+                        UNKNOWN,
+                    }
+
+                    /**
+                     * An enum containing [ModerationStage]'s known values, as well as an [_UNKNOWN]
+                     * member.
+                     *
+                     * An instance of [ModerationStage] can contain an unknown value in a couple of
+                     * cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        INPUT,
+                        OUTPUT,
+                        UNKNOWN,
+                        /**
+                         * An enum member indicating that [ModerationStage] was instantiated with an
+                         * unknown value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            INPUT -> Value.INPUT
+                            OUTPUT -> Value.OUTPUT
+                            UNKNOWN -> Value.UNKNOWN
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            INPUT -> Known.INPUT
+                            OUTPUT -> Known.OUTPUT
+                            UNKNOWN -> Known.UNKNOWN
+                            else ->
+                                throw OpenAIInvalidDataException("Unknown ModerationStage: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): ModerationStage = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is ModerationStage && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is ModerationDetails &&
+                        categories == other.categories &&
+                        moderationStage == other.moderationStage &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(categories, moderationStage, additionalProperties)
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "ModerationDetails{categories=$categories, moderationStage=$moderationStage, additionalProperties=$additionalProperties}"
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Error &&
+                    code == other.code &&
+                    message == other.message &&
+                    param == other.param &&
+                    type == other.type &&
+                    moderationDetails == other.moderationDetails &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(code, message, param, type, moderationDetails, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Error{code=$code, message=$message, param=$param, type=$type, moderationDetails=$moderationDetails, additionalProperties=$additionalProperties}"
+        }
+
+        /** The output format used for generation. */
+        class OutputFormat @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val PNG = of("png")
+
+                @JvmField val WEBP = of("webp")
+
+                @JvmField val JPEG = of("jpeg")
+
+                @JvmStatic fun of(value: String) = OutputFormat(JsonField.of(value))
+            }
+
+            /** An enum containing [OutputFormat]'s known values. */
+            enum class Known {
+                PNG,
+                WEBP,
+                JPEG,
+            }
+
+            /**
+             * An enum containing [OutputFormat]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [OutputFormat] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                PNG,
+                WEBP,
+                JPEG,
+                /**
+                 * An enum member indicating that [OutputFormat] was instantiated with an unknown
+                 * value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    PNG -> Value.PNG
+                    WEBP -> Value.WEBP
+                    JPEG -> Value.JPEG
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    PNG -> Known.PNG
+                    WEBP -> Known.WEBP
+                    JPEG -> Known.JPEG
+                    else -> throw OpenAIInvalidDataException("Unknown OutputFormat: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): OutputFormat = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is OutputFormat && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /**
+         * The quality of the image generated by the image generation tool call. One of `low`,
+         * `medium`, `high`, `xhigh`, `max`, or `auto`.
+         */
+        class Quality @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val LOW = of("low")
+
+                @JvmField val MEDIUM = of("medium")
+
+                @JvmField val HIGH = of("high")
+
+                @JvmField val XHIGH = of("xhigh")
+
+                @JvmField val MAX = of("max")
+
+                @JvmField val AUTO = of("auto")
+
+                @JvmStatic fun of(value: String) = Quality(JsonField.of(value))
+            }
+
+            /** An enum containing [Quality]'s known values. */
+            enum class Known {
+                LOW,
+                MEDIUM,
+                HIGH,
+                XHIGH,
+                MAX,
+                AUTO,
+            }
+
+            /**
+             * An enum containing [Quality]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Quality] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                LOW,
+                MEDIUM,
+                HIGH,
+                XHIGH,
+                MAX,
+                AUTO,
+                /**
+                 * An enum member indicating that [Quality] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    LOW -> Value.LOW
+                    MEDIUM -> Value.MEDIUM
+                    HIGH -> Value.HIGH
+                    XHIGH -> Value.XHIGH
+                    MAX -> Value.MAX
+                    AUTO -> Value.AUTO
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    LOW -> Known.LOW
+                    MEDIUM -> Known.MEDIUM
+                    HIGH -> Known.HIGH
+                    XHIGH -> Known.XHIGH
+                    MAX -> Known.MAX
+                    AUTO -> Known.AUTO
+                    else -> throw OpenAIInvalidDataException("Unknown Quality: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Quality = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Quality && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /** The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`. */
+        class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val _1024X1024 = of("1024x1024")
+
+                @JvmField val _1024X1536 = of("1024x1536")
+
+                @JvmField val _1536X1024 = of("1536x1024")
+
+                @JvmStatic fun of(value: String) = Size(JsonField.of(value))
+            }
+
+            /** An enum containing [Size]'s known values. */
+            enum class Known {
+                _1024X1024,
+                _1024X1536,
+                _1536X1024,
+            }
+
+            /**
+             * An enum containing [Size]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Size] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                _1024X1024,
+                _1024X1536,
+                _1536X1024,
+                /** An enum member indicating that [Size] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    _1024X1024 -> Value._1024X1024
+                    _1024X1536 -> Value._1024X1536
+                    _1536X1024 -> Value._1536X1024
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    _1024X1024 -> Known._1024X1024
+                    _1024X1536 -> Known._1024X1536
+                    _1536X1024 -> Known._1536X1024
+                    else -> throw OpenAIInvalidDataException("Unknown Size: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Size = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Size && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1715,17 +3653,37 @@ private constructor(
                 result == other.result &&
                 status == other.status &&
                 type == other.type &&
+                action == other.action &&
+                background == other.background &&
+                error == other.error &&
+                outputFormat == other.outputFormat &&
+                quality == other.quality &&
+                revisedPrompt == other.revisedPrompt &&
+                size == other.size &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(id, result, status, type, additionalProperties)
+            Objects.hash(
+                id,
+                result,
+                status,
+                type,
+                action,
+                background,
+                error,
+                outputFormat,
+                quality,
+                revisedPrompt,
+                size,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ImageGenerationCall{id=$id, result=$result, status=$status, type=$type, additionalProperties=$additionalProperties}"
+            "ImageGenerationCall{id=$id, result=$result, status=$status, type=$type, action=$action, background=$background, error=$error, outputFormat=$outputFormat, quality=$quality, revisedPrompt=$revisedPrompt, size=$size, additionalProperties=$additionalProperties}"
     }
 
     class AdditionalTools
@@ -1809,6 +3767,30 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "id" to this.id,
+                "role" to this.role,
+                "tools" to this.tools,
+                "type" to this.type,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -2418,6 +4400,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "id" to this.id,
+                "call_id" to this.callId,
+                "code" to this.code,
+                "fingerprint" to this.fingerprint,
+                "type" to this.type,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -2742,6 +4749,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "id" to this.id,
+                "call_id" to this.callId,
+                "result" to this.result,
+                "status" to this.status,
+                "type" to this.type,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -3205,6 +5237,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "id" to this.id,
+                "action" to this.action,
+                "call_id" to this.callId,
+                "status" to this.status,
+                "type" to this.type,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -3538,6 +5595,34 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "command" to this.command,
+                    "env" to this.env,
+                    "type" to this.type,
+                    "timeout_ms" to this.timeoutMs,
+                    "user" to this.user,
+                    "working_directory" to this.workingDirectory,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -3800,6 +5885,26 @@ private constructor(
                 private val additionalProperties: Map<String, JsonValue>
             ) {
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(additionalProperties)
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -3829,6 +5934,11 @@ private constructor(
 
                     fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                         additionalProperties.put(key, value)
+                    }
+
+                    /** Adds a string-valued property. */
+                    fun putProperty(key: String, value: String) = apply {
+                        putAdditionalProperty(key, JsonValue.from(value))
                     }
 
                     fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -4192,6 +6302,30 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "id" to this.id,
+                "output" to this.output,
+                "type" to this.type,
+                "status" to this.status,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -4646,6 +6780,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "id" to this.id,
+                "server_label" to this.serverLabel,
+                "tools" to this.tools,
+                "type" to this.type,
+                "error" to this.error,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -4951,6 +7110,32 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "input_schema" to this.inputSchema,
+                    "name" to this.name,
+                    "annotations" to this.annotations,
+                    "description" to this.description,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -5265,6 +7450,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "id" to this.id,
+                "arguments" to this.arguments,
+                "name" to this.name,
+                "server_label" to this.serverLabel,
+                "type" to this.type,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -5595,6 +7805,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "id" to this.id,
+                "approval_request_id" to this.approvalRequestId,
+                "approve" to this.approve,
+                "type" to this.type,
+                "reason" to this.reason,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -5833,7 +8068,7 @@ private constructor(
         private val serverLabel: JsonField<String>,
         private val type: JsonValue,
         private val approvalRequestId: JsonField<String>,
-        private val error: JsonField<String>,
+        private val error: JsonField<McpToolCallError>,
         private val output: JsonField<String>,
         private val status: JsonField<Status>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -5853,7 +8088,9 @@ private constructor(
             @JsonProperty("approval_request_id")
             @ExcludeMissing
             approvalRequestId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("error") @ExcludeMissing error: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("error")
+            @ExcludeMissing
+            error: JsonField<McpToolCallError> = JsonMissing.of(),
             @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
             @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         ) : this(
@@ -5931,7 +8168,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun error(): Optional<String> = error.getOptional("error")
+        fun error(): Optional<McpToolCallError> = error.getOptional("error")
 
         /**
          * The output from the tool call.
@@ -5995,7 +8232,7 @@ private constructor(
          *
          * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<String> = error
+        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<McpToolCallError> = error
 
         /**
          * Returns the raw JSON value of [output].
@@ -6016,6 +8253,35 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "id" to this.id,
+                "arguments" to this.arguments,
+                "name" to this.name,
+                "server_label" to this.serverLabel,
+                "type" to this.type,
+                "approval_request_id" to this.approvalRequestId,
+                "error" to this.error,
+                "output" to this.output,
+                "status" to this.status,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -6048,7 +8314,7 @@ private constructor(
             private var serverLabel: JsonField<String>? = null
             private var type: JsonValue = JsonValue.from("mcp_call")
             private var approvalRequestId: JsonField<String> = JsonMissing.of()
-            private var error: JsonField<String> = JsonMissing.of()
+            private var error: JsonField<McpToolCallError> = JsonMissing.of()
             private var output: JsonField<String> = JsonMissing.of()
             private var status: JsonField<Status> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -6157,19 +8423,41 @@ private constructor(
             }
 
             /** The error from the tool call, if any. */
-            fun error(error: String?) = error(JsonField.ofNullable(error))
+            fun error(error: McpToolCallError?) = error(JsonField.ofNullable(error))
 
             /** Alias for calling [Builder.error] with `error.orElse(null)`. */
-            fun error(error: Optional<String>) = error(error.getOrNull())
+            fun error(error: Optional<McpToolCallError>) = error(error.getOrNull())
 
             /**
              * Sets [Builder.error] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.error] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.error] with a well-typed [McpToolCallError] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun error(error: JsonField<String>) = apply { this.error = error }
+            fun error(error: JsonField<McpToolCallError>) = apply { this.error = error }
+
+            /** Alias for calling [error] with `McpToolCallError.ofProtocol(protocol)`. */
+            fun error(protocol: McpToolCallError.McpProtocolError) =
+                error(McpToolCallError.ofProtocol(protocol))
+
+            /** Alias for calling [error] with `McpToolCallError.ofToolExecution(toolExecution)`. */
+            fun error(toolExecution: McpToolCallError.McpToolExecutionError) =
+                error(McpToolCallError.ofToolExecution(toolExecution))
+
+            /**
+             * Alias for calling [error] with the following:
+             * ```java
+             * McpToolCallError.McpToolExecutionError.builder()
+             *     .content(content)
+             *     .build()
+             * ```
+             */
+            fun toolExecutionError(content: JsonValue) =
+                error(McpToolCallError.McpToolExecutionError.builder().content(content).build())
+
+            /** Alias for calling [error] with `McpToolCallError.ofHttp(http)`. */
+            fun error(http: McpToolCallError.HttpError) = error(McpToolCallError.ofHttp(http))
 
             /** The output from the tool call. */
             fun output(output: String?) = output(JsonField.ofNullable(output))
@@ -6276,7 +8564,7 @@ private constructor(
                 }
             }
             approvalRequestId()
-            error()
+            error().ifPresent { it.validate() }
             output()
             status().ifPresent { it.validate() }
             validated = true
@@ -6304,7 +8592,7 @@ private constructor(
                 (if (serverLabel.asKnown().isPresent) 1 else 0) +
                 type.let { if (it == JsonValue.from("mcp_call")) 1 else 0 } +
                 (if (approvalRequestId.asKnown().isPresent) 1 else 0) +
-                (if (error.asKnown().isPresent) 1 else 0) +
+                (error.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (output.asKnown().isPresent) 1 else 0) +
                 (status.asKnown().getOrNull()?.validity() ?: 0)
 

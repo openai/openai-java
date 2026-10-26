@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,13 +10,14 @@ import org.junit.jupiter.api.Test
 internal class ResponseCustomToolCallItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseCustomToolCallItem =
             ResponseCustomToolCallItem.builder()
                 .callId("call_id")
                 .input("input")
                 .name("name")
                 .id("id")
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(ResponseCustomToolCallItem.Status.IN_PROGRESS)
@@ -27,28 +28,15 @@ internal class ResponseCustomToolCallItemTest {
         assertThat(responseCustomToolCallItem.input()).isEqualTo("input")
         assertThat(responseCustomToolCallItem.name()).isEqualTo("name")
         assertThat(responseCustomToolCallItem.id()).contains("id")
+        assertThat(responseCustomToolCallItem.async()).contains(true)
         assertThat(responseCustomToolCallItem.caller())
             .contains(ResponseCustomToolCall.Caller.ofDirect())
         assertThat(responseCustomToolCallItem.namespace()).contains("namespace")
         assertThat(responseCustomToolCallItem.status())
             .isEqualTo(ResponseCustomToolCallItem.Status.IN_PROGRESS)
         assertThat(responseCustomToolCallItem.createdBy()).contains("created_by")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseCustomToolCallItem =
-            ResponseCustomToolCallItem.builder()
-                .callId("call_id")
-                .input("input")
-                .name("name")
-                .id("id")
-                .callerDirect()
-                .namespace("namespace")
-                .status(ResponseCustomToolCallItem.Status.IN_PROGRESS)
-                .createdBy("created_by")
-                .build()
 
         val roundtrippedResponseCustomToolCallItem =
             jsonMapper.readValue(

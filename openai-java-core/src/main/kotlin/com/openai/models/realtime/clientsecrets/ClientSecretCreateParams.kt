@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime.clientsecrets
 
@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -44,7 +45,7 @@ import kotlin.jvm.optionals.getOrNull
  * connection.
  *
  * [Learn more about authentication with client secrets over
- * WebRTC](https://platform.openai.com/docs/guides/realtime-webrtc).
+ * WebRTC](https://developers.openai.com/api/docs/guides/realtime-webrtc).
  *
  * Returns the created client secret and the effective session object. The client secret is a string
  * that looks like `ek_1234`.
@@ -312,7 +313,7 @@ private constructor(
     /**
      * Create a session and client secret for the Realtime API. The request can specify either a
      * realtime or a transcription session configuration.
-     * [Learn more about the Realtime API](https://platform.openai.com/docs/guides/realtime).
+     * [Learn more about the Realtime API](https://developers.openai.com/api/docs/guides/realtime).
      */
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -372,6 +373,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "expires_after" to this.expiresAfter,
+                "session" to this.session,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -587,6 +610,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "anchor" to this.anchor,
+                "seconds" to this.seconds,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -603,7 +648,7 @@ private constructor(
         /** A builder for [ExpiresAfter]. */
         class Builder internal constructor() {
 
-            private var anchor: JsonField<Anchor> = JsonMissing.of()
+            private var anchor: JsonField<Anchor> = JsonField.of(Anchor.CREATED_AT)
             private var seconds: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -1054,7 +1099,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Session: $json")
+                throw OpenAIInvalidDataException("Unknown Session")
             }
         }
 

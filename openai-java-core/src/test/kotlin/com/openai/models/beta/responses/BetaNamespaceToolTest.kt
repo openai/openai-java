@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -11,15 +11,16 @@ import org.junit.jupiter.api.Test
 internal class BetaNamespaceToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaNamespaceTool =
             BetaNamespaceTool.builder()
-                .description("x")
+                .description("description")
                 .name("x")
                 .addTool(
                     BetaNamespaceTool.Tool.Function.builder()
                         .name("name")
                         .addAllowedCaller(BetaNamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -33,7 +34,7 @@ internal class BetaNamespaceToolTest {
                 )
                 .build()
 
-        assertThat(betaNamespaceTool.description()).isEqualTo("x")
+        assertThat(betaNamespaceTool.description()).isEqualTo("description")
         assertThat(betaNamespaceTool.name()).isEqualTo("x")
         assertThat(betaNamespaceTool.tools())
             .containsExactly(
@@ -41,6 +42,7 @@ internal class BetaNamespaceToolTest {
                     BetaNamespaceTool.Tool.Function.builder()
                         .name("name")
                         .addAllowedCaller(BetaNamespaceTool.Tool.Function.AllowedCaller.DIRECT)
+                        .async(true)
                         .deferLoading(true)
                         .description("description")
                         .outputSchema(
@@ -53,31 +55,8 @@ internal class BetaNamespaceToolTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaNamespaceTool =
-            BetaNamespaceTool.builder()
-                .description("x")
-                .name("x")
-                .addTool(
-                    BetaNamespaceTool.Tool.Function.builder()
-                        .name("name")
-                        .addAllowedCaller(BetaNamespaceTool.Tool.Function.AllowedCaller.DIRECT)
-                        .deferLoading(true)
-                        .description("description")
-                        .outputSchema(
-                            BetaNamespaceTool.Tool.Function.OutputSchema.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .parameters(JsonValue.from(mapOf<String, Any>()))
-                        .strict(true)
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaNamespaceTool =
             jsonMapper.readValue(

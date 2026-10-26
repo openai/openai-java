@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.conversations
 
@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class TextContentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val textContent = TextContent.builder().text("text").build()
 
         assertThat(textContent.text()).isEqualTo("text")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val textContent = TextContent.builder().text("text").build()
 
         val roundtrippedTextContent =
             jsonMapper.readValue(

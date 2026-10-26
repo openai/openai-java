@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeMcpListToolsTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeMcpListTools =
             RealtimeMcpListTools.builder()
                 .serverLabel("server_label")
@@ -37,24 +37,8 @@ internal class RealtimeMcpListToolsTest {
                     .build()
             )
         assertThat(realtimeMcpListTools.id()).contains("id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeMcpListTools =
-            RealtimeMcpListTools.builder()
-                .serverLabel("server_label")
-                .addTool(
-                    RealtimeMcpListTools.Tool.builder()
-                        .inputSchema(JsonValue.from(mapOf<String, Any>()))
-                        .name("name")
-                        .annotations(JsonValue.from(mapOf<String, Any>()))
-                        .description("description")
-                        .build()
-                )
-                .id("id")
-                .build()
 
         val roundtrippedRealtimeMcpListTools =
             jsonMapper.readValue(

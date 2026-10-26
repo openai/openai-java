@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.runs.steps
 
@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class CodeInterpreterLogsTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val codeInterpreterLogs = CodeInterpreterLogs.builder().index(0L).logs("logs").build()
 
         assertThat(codeInterpreterLogs.index()).isEqualTo(0L)
         assertThat(codeInterpreterLogs.logs()).contains("logs")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val codeInterpreterLogs = CodeInterpreterLogs.builder().index(0L).logs("logs").build()
 
         val roundtrippedCodeInterpreterLogs =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseToolSearchCallTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseToolSearchCall =
             ResponseToolSearchCall.builder()
                 .id("id")
@@ -31,20 +31,8 @@ internal class ResponseToolSearchCallTest {
         assertThat(responseToolSearchCall.status())
             .isEqualTo(ResponseToolSearchCall.Status.IN_PROGRESS)
         assertThat(responseToolSearchCall.createdBy()).contains("created_by")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseToolSearchCall =
-            ResponseToolSearchCall.builder()
-                .id("id")
-                .arguments(JsonValue.from(mapOf<String, Any>()))
-                .callId("call_id")
-                .execution(ResponseToolSearchCall.Execution.SERVER)
-                .status(ResponseToolSearchCall.Status.IN_PROGRESS)
-                .createdBy("created_by")
-                .build()
 
         val roundtrippedResponseToolSearchCall =
             jsonMapper.readValue(

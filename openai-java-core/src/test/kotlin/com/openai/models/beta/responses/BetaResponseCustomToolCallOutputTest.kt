@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseCustomToolCallOutputTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseCustomToolCallOutput =
             BetaResponseCustomToolCallOutput.builder()
                 .callId("call_id")
@@ -32,21 +32,8 @@ internal class BetaResponseCustomToolCallOutputTest {
             )
         assertThat(betaResponseCustomToolCallOutput.caller())
             .contains(BetaResponseCustomToolCallOutput.Caller.ofDirect())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseCustomToolCallOutput =
-            BetaResponseCustomToolCallOutput.builder()
-                .callId("call_id")
-                .output("string")
-                .id("id")
-                .agent(
-                    BetaResponseCustomToolCallOutput.Agent.builder().agentName("agent_name").build()
-                )
-                .callerDirect()
-                .build()
 
         val roundtrippedBetaResponseCustomToolCallOutput =
             jsonMapper.readValue(

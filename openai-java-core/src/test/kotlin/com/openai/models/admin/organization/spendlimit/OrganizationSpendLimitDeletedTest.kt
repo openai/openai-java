@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.spendlimit
 
@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class OrganizationSpendLimitDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val organizationSpendLimitDeleted =
             OrganizationSpendLimitDeleted.builder().deleted(true).build()
 
         assertThat(organizationSpendLimitDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val organizationSpendLimitDeleted =
-            OrganizationSpendLimitDeleted.builder().deleted(true).build()
 
         val roundtrippedOrganizationSpendLimitDeleted =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseComputerToolCallTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseComputerToolCall =
             BetaResponseComputerToolCall.builder()
                 .id("id")
@@ -82,42 +82,8 @@ internal class BetaResponseComputerToolCallTest {
             )
         assertThat(betaResponseComputerToolCall.agent())
             .contains(BetaResponseComputerToolCall.Agent.builder().agentName("agent_name").build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseComputerToolCall =
-            BetaResponseComputerToolCall.builder()
-                .id("id")
-                .callId("call_id")
-                .addPendingSafetyCheck(
-                    BetaResponseComputerToolCall.PendingSafetyCheck.builder()
-                        .id("id")
-                        .code("code")
-                        .message("message")
-                        .build()
-                )
-                .status(BetaResponseComputerToolCall.Status.IN_PROGRESS)
-                .type(BetaResponseComputerToolCall.Type.COMPUTER_CALL)
-                .action(
-                    BetaComputerAction.Click.builder()
-                        .button(BetaComputerAction.Click.Button.LEFT)
-                        .x(0L)
-                        .y(0L)
-                        .addKey("string")
-                        .build()
-                )
-                .addAction(
-                    BetaComputerAction.Click.builder()
-                        .button(BetaComputerAction.Click.Button.LEFT)
-                        .x(0L)
-                        .y(0L)
-                        .addKey("string")
-                        .build()
-                )
-                .agent(BetaResponseComputerToolCall.Agent.builder().agentName("agent_name").build())
-                .build()
 
         val roundtrippedBetaResponseComputerToolCall =
             jsonMapper.readValue(

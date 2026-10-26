@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseContainerReferenceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseContainerReference =
             BetaResponseContainerReference.builder().containerId("container_id").build()
 
         assertThat(betaResponseContainerReference.containerId()).isEqualTo("container_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseContainerReference =
-            BetaResponseContainerReference.builder().containerId("container_id").build()
 
         val roundtrippedBetaResponseContainerReference =
             jsonMapper.readValue(

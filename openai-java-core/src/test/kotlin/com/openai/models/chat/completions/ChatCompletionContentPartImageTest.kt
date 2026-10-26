@@ -1,16 +1,17 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class ChatCompletionContentPartImageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionContentPartImage =
             ChatCompletionContentPartImage.builder()
                 .imageUrl(
@@ -20,7 +21,9 @@ internal class ChatCompletionContentPartImageTest {
                         .build()
                 )
                 .promptCacheBreakpoint(
-                    ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build()
+                    ChatCompletionContentPartImage.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -32,24 +35,13 @@ internal class ChatCompletionContentPartImageTest {
                     .build()
             )
         assertThat(chatCompletionContentPartImage.promptCacheBreakpoint())
-            .contains(ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build())
-    }
+            .contains(
+                ChatCompletionContentPartImage.PromptCacheBreakpoint.builder()
+                    .ttl(PromptCacheBreakpointTtl._30M)
+                    .build()
+            )
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionContentPartImage =
-            ChatCompletionContentPartImage.builder()
-                .imageUrl(
-                    ChatCompletionContentPartImage.ImageUrl.builder()
-                        .url("https://example.com")
-                        .detail(ChatCompletionContentPartImage.ImageUrl.Detail.AUTO)
-                        .build()
-                )
-                .promptCacheBreakpoint(
-                    ChatCompletionContentPartImage.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedChatCompletionContentPartImage =
             jsonMapper.readValue(

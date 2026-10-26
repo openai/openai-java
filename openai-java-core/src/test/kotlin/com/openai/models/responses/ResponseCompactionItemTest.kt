@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseCompactionItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseCompactionItem =
             ResponseCompactionItem.builder()
                 .id("id")
@@ -21,17 +21,8 @@ internal class ResponseCompactionItemTest {
         assertThat(responseCompactionItem.id()).isEqualTo("id")
         assertThat(responseCompactionItem.encryptedContent()).isEqualTo("encrypted_content")
         assertThat(responseCompactionItem.createdBy()).contains("created_by")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseCompactionItem =
-            ResponseCompactionItem.builder()
-                .id("id")
-                .encryptedContent("encrypted_content")
-                .createdBy("created_by")
-                .build()
 
         val roundtrippedResponseCompactionItem =
             jsonMapper.readValue(

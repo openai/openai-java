@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaToolChoiceAllowedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaToolChoiceAllowed =
             BetaToolChoiceAllowed.builder()
                 .mode(BetaToolChoiceAllowed.Mode.AUTO)
@@ -29,20 +29,8 @@ internal class BetaToolChoiceAllowedTest {
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaToolChoiceAllowed =
-            BetaToolChoiceAllowed.builder()
-                .mode(BetaToolChoiceAllowed.Mode.AUTO)
-                .addTool(
-                    BetaToolChoiceAllowed.Tool.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .build()
 
         val roundtrippedBetaToolChoiceAllowed =
             jsonMapper.readValue(

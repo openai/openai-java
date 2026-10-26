@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async
 
@@ -31,7 +31,8 @@ interface ContainerServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContainerServiceAsync
 
-    fun files(): FileServiceAsync
+    fun files(): FileServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Create Container */
     fun create(params: ContainerCreateParams): CompletableFuture<ContainerCreateResponse> =
@@ -143,7 +144,10 @@ interface ContainerServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): ContainerServiceAsync.WithRawResponse
 
-        fun files(): FileServiceAsync.WithRawResponse
+        fun files(): FileServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /containers`, but is otherwise the same as

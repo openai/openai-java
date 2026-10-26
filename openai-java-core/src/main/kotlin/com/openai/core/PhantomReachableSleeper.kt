@@ -10,8 +10,10 @@ import java.util.concurrent.CompletableFuture
  */
 internal class PhantomReachableSleeper(private val sleeper: Sleeper) : Sleeper {
 
+    private val cleanup: AutoCloseable
+
     init {
-        closeWhenPhantomReachable(this, sleeper)
+        cleanup = registerPhantomCleanup(this, sleeper::close)
     }
 
     override fun sleep(duration: Duration) = sleeper.sleep(duration)
@@ -19,5 +21,5 @@ internal class PhantomReachableSleeper(private val sleeper: Sleeper) : Sleeper {
     override fun sleepAsync(duration: Duration): CompletableFuture<Void> =
         sleeper.sleepAsync(duration)
 
-    override fun close() = sleeper.close()
+    override fun close() = cleanup.close()
 }

@@ -1,9 +1,10 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionStoreMessageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionStoreMessage =
             ChatCompletionStoreMessage.builder()
                 .content("content")
@@ -58,7 +59,9 @@ internal class ChatCompletionStoreMessageTest {
                     ChatCompletionContentPartText.builder()
                         .text("text")
                         .promptCacheBreakpoint(
-                            ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                            ChatCompletionContentPartText.PromptCacheBreakpoint.builder()
+                                .ttl(PromptCacheBreakpointTtl._30M)
+                                .build()
                         )
                         .build()
                 )
@@ -116,67 +119,15 @@ internal class ChatCompletionStoreMessageTest {
                     ChatCompletionContentPartText.builder()
                         .text("text")
                         .promptCacheBreakpoint(
-                            ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
+                            ChatCompletionContentPartText.PromptCacheBreakpoint.builder()
+                                .ttl(PromptCacheBreakpointTtl._30M)
+                                .build()
                         )
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionStoreMessage =
-            ChatCompletionStoreMessage.builder()
-                .content("content")
-                .refusal("refusal")
-                .addAnnotation(
-                    ChatCompletionMessage.Annotation.builder()
-                        .urlCitation(
-                            ChatCompletionMessage.Annotation.UrlCitation.builder()
-                                .endIndex(0L)
-                                .startIndex(0L)
-                                .title("title")
-                                .url("https://example.com")
-                                .build()
-                        )
-                        .build()
-                )
-                .audio(
-                    ChatCompletionAudio.builder()
-                        .id("id")
-                        .data("data")
-                        .expiresAt(0L)
-                        .transcript("transcript")
-                        .build()
-                )
-                .functionCall(
-                    ChatCompletionMessage.FunctionCall.builder()
-                        .arguments("arguments")
-                        .name("name")
-                        .build()
-                )
-                .addToolCall(
-                    ChatCompletionMessageFunctionToolCall.builder()
-                        .id("id")
-                        .function(
-                            ChatCompletionMessageFunctionToolCall.Function.builder()
-                                .arguments("arguments")
-                                .name("name")
-                                .build()
-                        )
-                        .build()
-                )
-                .id("id")
-                .addContentPart(
-                    ChatCompletionContentPartText.builder()
-                        .text("text")
-                        .promptCacheBreakpoint(
-                            ChatCompletionContentPartText.PromptCacheBreakpoint.builder().build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedChatCompletionStoreMessage =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.messages
 
@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class MessageDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val messageDeleted = MessageDeleted.builder().id("id").deleted(true).build()
 
         assertThat(messageDeleted.id()).isEqualTo("id")
         assertThat(messageDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val messageDeleted = MessageDeleted.builder().id("id").deleted(true).build()
 
         val roundtrippedMessageDeleted =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.invites
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class InviteListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val inviteListPageResponse =
             InviteListPageResponse.builder()
                 .addData(
@@ -53,34 +53,8 @@ internal class InviteListPageResponseTest {
         assertThat(inviteListPageResponse.hasMore()).isEqualTo(true)
         assertThat(inviteListPageResponse.firstId()).contains("first_id")
         assertThat(inviteListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val inviteListPageResponse =
-            InviteListPageResponse.builder()
-                .addData(
-                    Invite.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .email("email")
-                        .addProject(
-                            Invite.Project.builder()
-                                .id("id")
-                                .role(Invite.Project.Role.MEMBER)
-                                .build()
-                        )
-                        .role(Invite.Role.OWNER)
-                        .status(Invite.Status.ACCEPTED)
-                        .acceptedAt(0L)
-                        .expiresAt(0L)
-                        .build()
-                )
-                .hasMore(true)
-                .firstId("first_id")
-                .lastId("last_id")
-                .build()
 
         val roundtrippedInviteListPageResponse =
             jsonMapper.readValue(

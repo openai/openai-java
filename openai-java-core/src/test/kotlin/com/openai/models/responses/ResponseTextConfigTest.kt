@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseTextConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseTextConfig =
             ResponseTextConfig.builder()
                 .format(ResponseFormatText.builder().build())
@@ -21,16 +21,8 @@ internal class ResponseTextConfigTest {
         assertThat(responseTextConfig.format())
             .contains(ResponseFormatTextConfig.ofText(ResponseFormatText.builder().build()))
         assertThat(responseTextConfig.verbosity()).contains(ResponseTextConfig.Verbosity.LOW)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseTextConfig =
-            ResponseTextConfig.builder()
-                .format(ResponseFormatText.builder().build())
-                .verbosity(ResponseTextConfig.Verbosity.LOW)
-                .build()
 
         val roundtrippedResponseTextConfig =
             jsonMapper.readValue(

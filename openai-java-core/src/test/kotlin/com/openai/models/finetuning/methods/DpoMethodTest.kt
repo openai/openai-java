@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.methods
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class DpoMethodTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val dpoMethod =
             DpoMethod.builder()
                 .hyperparameters(
@@ -32,22 +32,8 @@ internal class DpoMethodTest {
                     .nEpochsAuto()
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val dpoMethod =
-            DpoMethod.builder()
-                .hyperparameters(
-                    DpoHyperparameters.builder()
-                        .batchSizeAuto()
-                        .betaAuto()
-                        .learningRateMultiplierAuto()
-                        .nEpochsAuto()
-                        .build()
-                )
-                .build()
 
         val roundtrippedDpoMethod =
             jsonMapper.readValue(

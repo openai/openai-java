@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.chatkit.threads
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ChatSessionChatKitConfigurationTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatSessionChatKitConfiguration =
             ChatSessionChatKitConfiguration.builder()
                 .automaticThreadTitling(
@@ -34,25 +34,8 @@ internal class ChatSessionChatKitConfigurationTest {
             )
         assertThat(chatSessionChatKitConfiguration.history())
             .isEqualTo(ChatSessionHistory.builder().enabled(true).recentThreads(0L).build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatSessionChatKitConfiguration =
-            ChatSessionChatKitConfiguration.builder()
-                .automaticThreadTitling(
-                    ChatSessionAutomaticThreadTitling.builder().enabled(true).build()
-                )
-                .fileUpload(
-                    ChatSessionFileUpload.builder()
-                        .enabled(true)
-                        .maxFileSize(0L)
-                        .maxFiles(0L)
-                        .build()
-                )
-                .history(ChatSessionHistory.builder().enabled(true).recentThreads(0L).build())
-                .build()
 
         val roundtrippedChatSessionChatKitConfiguration =
             jsonMapper.readValue(

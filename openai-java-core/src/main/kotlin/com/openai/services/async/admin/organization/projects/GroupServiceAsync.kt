@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async.admin.organization.projects
 
@@ -30,7 +30,8 @@ interface GroupServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): GroupServiceAsync
 
-    fun roles(): RoleServiceAsync
+    fun roles(): RoleServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /** Grants a group access to a project. */
     fun create(projectId: String, params: GroupCreateParams): CompletableFuture<ProjectGroup> =
@@ -145,7 +146,10 @@ interface GroupServiceAsync {
             modifier: Consumer<ClientOptions.Builder>
         ): GroupServiceAsync.WithRawResponse
 
-        fun roles(): RoleServiceAsync.WithRawResponse
+        fun roles(): RoleServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /organization/projects/{project_id}/groups`, but is

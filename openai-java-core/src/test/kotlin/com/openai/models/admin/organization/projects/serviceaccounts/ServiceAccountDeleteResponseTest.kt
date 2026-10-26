@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.serviceaccounts
 
@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class ServiceAccountDeleteResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val serviceAccountDeleteResponse =
             ServiceAccountDeleteResponse.builder().id("id").deleted(true).build()
 
         assertThat(serviceAccountDeleteResponse.id()).isEqualTo("id")
         assertThat(serviceAccountDeleteResponse.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val serviceAccountDeleteResponse =
-            ServiceAccountDeleteResponse.builder().id("id").deleted(true).build()
 
         val roundtrippedServiceAccountDeleteResponse =
             jsonMapper.readValue(

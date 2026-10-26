@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.admin.organization.projects
 
@@ -30,6 +30,7 @@ internal class ServiceAccountServiceTest {
                     .projectId("project_id")
                     .name("name")
                     .createServiceAccountOnly(true)
+                    .expiresInSeconds(1L)
                     .build()
             )
 

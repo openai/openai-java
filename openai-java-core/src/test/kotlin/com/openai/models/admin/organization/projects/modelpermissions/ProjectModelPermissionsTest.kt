@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.modelpermissions
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ProjectModelPermissionsTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectModelPermissions =
             ProjectModelPermissions.builder()
                 .mode(ProjectModelPermissions.Mode.ALLOW_LIST)
@@ -20,16 +20,8 @@ internal class ProjectModelPermissionsTest {
         assertThat(projectModelPermissions.mode())
             .isEqualTo(ProjectModelPermissions.Mode.ALLOW_LIST)
         assertThat(projectModelPermissions.modelIds()).containsExactly("string")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectModelPermissions =
-            ProjectModelPermissions.builder()
-                .mode(ProjectModelPermissions.Mode.ALLOW_LIST)
-                .addModelId("string")
-                .build()
 
         val roundtrippedProjectModelPermissions =
             jsonMapper.readValue(

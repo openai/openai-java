@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.evals
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class EvalStoredCompletionsDataSourceConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val evalStoredCompletionsDataSourceConfig =
             EvalStoredCompletionsDataSourceConfig.builder()
                 .schema(
@@ -38,24 +38,8 @@ internal class EvalStoredCompletionsDataSourceConfigTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val evalStoredCompletionsDataSourceConfig =
-            EvalStoredCompletionsDataSourceConfig.builder()
-                .schema(
-                    EvalStoredCompletionsDataSourceConfig.Schema.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .metadata(
-                    EvalStoredCompletionsDataSourceConfig.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .build()
 
         val roundtrippedEvalStoredCompletionsDataSourceConfig =
             jsonMapper.readValue(

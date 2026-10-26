@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.chatkit.threads
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ChatSessionWorkflowParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatSessionWorkflowParam =
             ChatSessionWorkflowParam.builder()
                 .id("id")
@@ -34,22 +34,8 @@ internal class ChatSessionWorkflowParamTest {
         assertThat(chatSessionWorkflowParam.tracing())
             .contains(ChatSessionWorkflowParam.Tracing.builder().enabled(true).build())
         assertThat(chatSessionWorkflowParam.version()).contains("version")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatSessionWorkflowParam =
-            ChatSessionWorkflowParam.builder()
-                .id("id")
-                .stateVariables(
-                    ChatSessionWorkflowParam.StateVariables.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .tracing(ChatSessionWorkflowParam.Tracing.builder().enabled(true).build())
-                .version("version")
-                .build()
 
         val roundtrippedChatSessionWorkflowParam =
             jsonMapper.readValue(

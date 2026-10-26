@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -12,11 +12,12 @@ import org.junit.jupiter.api.Test
 internal class CustomToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val customTool =
             CustomTool.builder()
                 .name("name")
                 .addAllowedCaller(CustomTool.AllowedCaller.DIRECT)
+                .async(true)
                 .deferLoading(true)
                 .description("description")
                 .formatText()
@@ -25,22 +26,12 @@ internal class CustomToolTest {
         assertThat(customTool.name()).isEqualTo("name")
         assertThat(customTool.allowedCallers().getOrNull())
             .containsExactly(CustomTool.AllowedCaller.DIRECT)
+        assertThat(customTool.async()).contains(true)
         assertThat(customTool.deferLoading()).contains(true)
         assertThat(customTool.description()).contains("description")
         assertThat(customTool.format()).contains(CustomToolInputFormat.ofText())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val customTool =
-            CustomTool.builder()
-                .name("name")
-                .addAllowedCaller(CustomTool.AllowedCaller.DIRECT)
-                .deferLoading(true)
-                .description("description")
-                .formatText()
-                .build()
 
         val roundtrippedCustomTool =
             jsonMapper.readValue(

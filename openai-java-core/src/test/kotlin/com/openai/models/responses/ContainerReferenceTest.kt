@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,16 +10,12 @@ import org.junit.jupiter.api.Test
 internal class ContainerReferenceTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val containerReference = ContainerReference.builder().containerId("cntr_123").build()
 
         assertThat(containerReference.containerId()).isEqualTo("cntr_123")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val containerReference = ContainerReference.builder().containerId("cntr_123").build()
 
         val roundtrippedContainerReference =
             jsonMapper.readValue(

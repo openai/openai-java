@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.graders.gradermodels
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class LabelModelGraderTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val labelModelGrader =
             LabelModelGrader.builder()
                 .addInput(
@@ -38,25 +38,8 @@ internal class LabelModelGraderTest {
         assertThat(labelModelGrader.model()).isEqualTo("model")
         assertThat(labelModelGrader.name()).isEqualTo("name")
         assertThat(labelModelGrader.passingLabels()).containsExactly("string")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val labelModelGrader =
-            LabelModelGrader.builder()
-                .addInput(
-                    LabelModelGrader.Input.builder()
-                        .content("string")
-                        .role(LabelModelGrader.Input.Role.USER)
-                        .type(LabelModelGrader.Input.Type.MESSAGE)
-                        .build()
-                )
-                .addLabel("string")
-                .model("model")
-                .name("name")
-                .addPassingLabel("string")
-                .build()
 
         val roundtrippedLabelModelGrader =
             jsonMapper.readValue(

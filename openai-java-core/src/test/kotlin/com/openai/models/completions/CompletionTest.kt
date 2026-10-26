@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.completions
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class CompletionTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val completion =
             Completion.builder()
                 .id("id")
@@ -48,6 +48,7 @@ internal class CompletionTest {
                                 .audioTokens(0L)
                                 .reasoningTokens(0L)
                                 .rejectedPredictionTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .promptTokensDetails(
@@ -55,6 +56,8 @@ internal class CompletionTest {
                                 .audioTokens(0L)
                                 .cacheWriteTokens(0L)
                                 .cachedTokens(0L)
+                                .imageTokens(0L)
+                                .textTokens(0L)
                                 .build()
                         )
                         .build()
@@ -97,6 +100,7 @@ internal class CompletionTest {
                             .audioTokens(0L)
                             .reasoningTokens(0L)
                             .rejectedPredictionTokens(0L)
+                            .textTokens(0L)
                             .build()
                     )
                     .promptTokensDetails(
@@ -104,63 +108,14 @@ internal class CompletionTest {
                             .audioTokens(0L)
                             .cacheWriteTokens(0L)
                             .cachedTokens(0L)
+                            .imageTokens(0L)
+                            .textTokens(0L)
                             .build()
                     )
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val completion =
-            Completion.builder()
-                .id("id")
-                .addChoice(
-                    CompletionChoice.builder()
-                        .finishReason(CompletionChoice.FinishReason.STOP)
-                        .index(0L)
-                        .logprobs(
-                            CompletionChoice.Logprobs.builder()
-                                .addTextOffset(0L)
-                                .addTokenLogprob(0.0)
-                                .addToken("string")
-                                .addTopLogprob(
-                                    CompletionChoice.Logprobs.TopLogprob.builder()
-                                        .putAdditionalProperty("foo", JsonValue.from(0))
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .text("text")
-                        .build()
-                )
-                .created(0L)
-                .model("model")
-                .systemFingerprint("system_fingerprint")
-                .usage(
-                    CompletionUsage.builder()
-                        .completionTokens(0L)
-                        .promptTokens(0L)
-                        .totalTokens(0L)
-                        .completionTokensDetails(
-                            CompletionUsage.CompletionTokensDetails.builder()
-                                .acceptedPredictionTokens(0L)
-                                .audioTokens(0L)
-                                .reasoningTokens(0L)
-                                .rejectedPredictionTokens(0L)
-                                .build()
-                        )
-                        .promptTokensDetails(
-                            CompletionUsage.PromptTokensDetails.builder()
-                                .audioTokens(0L)
-                                .cacheWriteTokens(0L)
-                                .cachedTokens(0L)
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedCompletion =
             jsonMapper.readValue(

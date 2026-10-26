@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.skills
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SkillListTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val skillList =
             SkillList.builder()
                 .addData(
@@ -42,27 +42,8 @@ internal class SkillListTest {
         assertThat(skillList.firstId()).contains("first_id")
         assertThat(skillList.hasMore()).isEqualTo(true)
         assertThat(skillList.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val skillList =
-            SkillList.builder()
-                .addData(
-                    Skill.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .defaultVersion("default_version")
-                        .description("description")
-                        .latestVersion("latest_version")
-                        .name("name")
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedSkillList =
             jsonMapper.readValue(

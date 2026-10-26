@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseMcpCallArgumentsDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseMcpCallArgumentsDeltaEvent =
             ResponseMcpCallArgumentsDeltaEvent.builder()
                 .delta("delta")
@@ -23,18 +23,8 @@ internal class ResponseMcpCallArgumentsDeltaEventTest {
         assertThat(responseMcpCallArgumentsDeltaEvent.itemId()).isEqualTo("item_id")
         assertThat(responseMcpCallArgumentsDeltaEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseMcpCallArgumentsDeltaEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseMcpCallArgumentsDeltaEvent =
-            ResponseMcpCallArgumentsDeltaEvent.builder()
-                .delta("delta")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseMcpCallArgumentsDeltaEvent =
             jsonMapper.readValue(

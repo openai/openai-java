@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class RealtimeTranslationSessionCloseEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeTranslationSessionCloseEvent =
             RealtimeTranslationSessionCloseEvent.builder().eventId("event_id").build()
 
         assertThat(realtimeTranslationSessionCloseEvent.eventId()).contains("event_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeTranslationSessionCloseEvent =
-            RealtimeTranslationSessionCloseEvent.builder().eventId("event_id").build()
 
         val roundtrippedRealtimeTranslationSessionCloseEvent =
             jsonMapper.readValue(

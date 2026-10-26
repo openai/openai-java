@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking
 
@@ -25,8 +25,8 @@ internal class ModerationServiceTest {
         val moderation =
             moderationService.create(
                 ModerationCreateParams.builder()
-                    .input("I want to kill them.")
-                    .model(ModerationModel.OMNI_MODERATION_LATEST)
+                    .input("...text to classify goes here...")
+                    .model(ModerationModel.OMNI_MODERATION_2024_09_26)
                     .build()
             )
 

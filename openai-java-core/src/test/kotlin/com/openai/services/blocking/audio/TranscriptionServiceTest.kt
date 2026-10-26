@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.audio
 
@@ -8,7 +8,6 @@ import com.openai.models.audio.AudioModel
 import com.openai.models.audio.AudioResponseFormat
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionInclude
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -45,42 +44,5 @@ internal class TranscriptionServiceTest {
             )
 
         transcription.validate()
-    }
-
-    @Disabled("Prism does not support SSE streaming mock responses")
-    @Test
-    fun createStreaming() {
-        val client =
-            OpenAIOkHttpClient.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .adminApiKey("My Admin API Key")
-                .build()
-        val transcriptionService = client.audio().transcriptions()
-
-        val transcriptionStreamResponse =
-            transcriptionService.createStreaming(
-                TranscriptionCreateParams.builder()
-                    .file("Example data".byteInputStream())
-                    .model(AudioModel.GPT_4O_TRANSCRIBE)
-                    .chunkingStrategyAuto()
-                    .addInclude(TranscriptionInclude.LOGPROBS)
-                    .addKeyword("string")
-                    .addKnownSpeakerName("string")
-                    .addKnownSpeakerReference("string")
-                    .language("language")
-                    .addLanguage("string")
-                    .prompt("prompt")
-                    .responseFormat(AudioResponseFormat.JSON)
-                    .temperature(0.0)
-                    .addTimestampGranularity(TranscriptionCreateParams.TimestampGranularity.WORD)
-                    .build()
-            )
-
-        transcriptionStreamResponse.use {
-            transcriptionStreamResponse.stream().forEach { transcription ->
-                transcription.validate()
-            }
-        }
     }
 }

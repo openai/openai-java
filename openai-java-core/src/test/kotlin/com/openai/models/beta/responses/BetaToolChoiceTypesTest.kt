@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class BetaToolChoiceTypesTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaToolChoiceTypes =
             BetaToolChoiceTypes.builder().type(BetaToolChoiceTypes.Type.FILE_SEARCH).build()
 
         assertThat(betaToolChoiceTypes.type()).isEqualTo(BetaToolChoiceTypes.Type.FILE_SEARCH)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaToolChoiceTypes =
-            BetaToolChoiceTypes.builder().type(BetaToolChoiceTypes.Type.FILE_SEARCH).build()
 
         val roundtrippedBetaToolChoiceTypes =
             jsonMapper.readValue(

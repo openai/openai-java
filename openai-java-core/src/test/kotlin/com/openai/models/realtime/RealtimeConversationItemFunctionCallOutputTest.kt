@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeConversationItemFunctionCallOutputTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeConversationItemFunctionCallOutput =
             RealtimeConversationItemFunctionCallOutput.builder()
                 .callId("call_id")
@@ -27,19 +27,8 @@ internal class RealtimeConversationItemFunctionCallOutputTest {
             .contains(RealtimeConversationItemFunctionCallOutput.Object.REALTIME_ITEM)
         assertThat(realtimeConversationItemFunctionCallOutput.status())
             .contains(RealtimeConversationItemFunctionCallOutput.Status.COMPLETED)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeConversationItemFunctionCallOutput =
-            RealtimeConversationItemFunctionCallOutput.builder()
-                .callId("call_id")
-                .output("output")
-                .id("id")
-                .object_(RealtimeConversationItemFunctionCallOutput.Object.REALTIME_ITEM)
-                .status(RealtimeConversationItemFunctionCallOutput.Status.COMPLETED)
-                .build()
 
         val roundtrippedRealtimeConversationItemFunctionCallOutput =
             jsonMapper.readValue(

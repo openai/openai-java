@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.finetuning
 
@@ -35,7 +35,8 @@ interface JobService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobService
 
     /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-    fun checkpoints(): CheckpointService
+    fun checkpoints(): CheckpointService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
      * Creates a fine-tuning job which begins the process of creating a new model from a given
@@ -44,7 +45,8 @@ interface JobService {
      * Response includes details of the enqueued job including job status and the name of the
      * fine-tuned models once complete.
      *
-     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/model-optimization)
+     * [Learn more about
+     * fine-tuning](https://developers.openai.com/api/docs/guides/model-optimization)
      */
     fun create(params: JobCreateParams): FineTuningJob = create(params, RequestOptions.none())
 
@@ -57,7 +59,8 @@ interface JobService {
     /**
      * Get info about a fine-tuning job.
      *
-     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/model-optimization)
+     * [Learn more about
+     * fine-tuning](https://developers.openai.com/api/docs/guides/model-optimization)
      */
     fun retrieve(fineTuningJobId: String): FineTuningJob =
         retrieve(fineTuningJobId, JobRetrieveParams.none())
@@ -242,7 +245,10 @@ interface JobService {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobService.WithRawResponse
 
         /** Manage fine-tuning jobs to tailor a model to your specific training data. */
-        fun checkpoints(): CheckpointService.WithRawResponse
+        fun checkpoints(): CheckpointService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
 
         /**
          * Returns a raw HTTP response for `post /fine_tuning/jobs`, but is otherwise the same as

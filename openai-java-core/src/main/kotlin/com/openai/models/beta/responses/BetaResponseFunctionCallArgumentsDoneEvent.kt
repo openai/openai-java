@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -23,7 +24,6 @@ class BetaResponseFunctionCallArgumentsDoneEvent
 private constructor(
     private val arguments: JsonField<String>,
     private val itemId: JsonField<String>,
-    private val name: JsonField<String>,
     private val outputIndex: JsonField<Long>,
     private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
@@ -35,7 +35,6 @@ private constructor(
     private constructor(
         @JsonProperty("arguments") @ExcludeMissing arguments: JsonField<String> = JsonMissing.of(),
         @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output_index")
         @ExcludeMissing
         outputIndex: JsonField<Long> = JsonMissing.of(),
@@ -44,7 +43,7 @@ private constructor(
         sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("agent") @ExcludeMissing agent: JsonField<Agent> = JsonMissing.of(),
-    ) : this(arguments, itemId, name, outputIndex, sequenceNumber, type, agent, mutableMapOf())
+    ) : this(arguments, itemId, outputIndex, sequenceNumber, type, agent, mutableMapOf())
 
     /**
      * The function-call arguments.
@@ -61,14 +60,6 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun itemId(): String = itemId.getRequired("item_id")
-
-    /**
-     * The name of the function that was called.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun name(): String = name.getRequired("name")
 
     /**
      * The index of the output item.
@@ -120,13 +111,6 @@ private constructor(
     @JsonProperty("item_id") @ExcludeMissing fun _itemId(): JsonField<String> = itemId
 
     /**
-     * Returns the raw JSON value of [name].
-     *
-     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
-
-    /**
      * Returns the raw JSON value of [outputIndex].
      *
      * Unlike [outputIndex], this method doesn't throw if the JSON field has an unexpected type.
@@ -154,6 +138,32 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "arguments" to this.arguments,
+            "item_id" to this.itemId,
+            "output_index" to this.outputIndex,
+            "sequence_number" to this.sequenceNumber,
+            "type" to this.type,
+            "agent" to this.agent,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -171,7 +181,6 @@ private constructor(
          * ```java
          * .arguments()
          * .itemId()
-         * .name()
          * .outputIndex()
          * .sequenceNumber()
          * ```
@@ -184,7 +193,6 @@ private constructor(
 
         private var arguments: JsonField<String>? = null
         private var itemId: JsonField<String>? = null
-        private var name: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
         private var sequenceNumber: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("response.function_call_arguments.done")
@@ -197,7 +205,6 @@ private constructor(
         ) = apply {
             arguments = betaResponseFunctionCallArgumentsDoneEvent.arguments
             itemId = betaResponseFunctionCallArgumentsDoneEvent.itemId
-            name = betaResponseFunctionCallArgumentsDoneEvent.name
             outputIndex = betaResponseFunctionCallArgumentsDoneEvent.outputIndex
             sequenceNumber = betaResponseFunctionCallArgumentsDoneEvent.sequenceNumber
             type = betaResponseFunctionCallArgumentsDoneEvent.type
@@ -228,17 +235,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
-
-        /** The name of the function that was called. */
-        fun name(name: String) = name(JsonField.of(name))
-
-        /**
-         * Sets [Builder.name] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.name] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun name(name: JsonField<String>) = apply { this.name = name }
 
         /** The index of the output item. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
@@ -322,7 +318,6 @@ private constructor(
          * ```java
          * .arguments()
          * .itemId()
-         * .name()
          * .outputIndex()
          * .sequenceNumber()
          * ```
@@ -333,7 +328,6 @@ private constructor(
             BetaResponseFunctionCallArgumentsDoneEvent(
                 checkRequired("arguments", arguments),
                 checkRequired("itemId", itemId),
-                checkRequired("name", name),
                 checkRequired("outputIndex", outputIndex),
                 checkRequired("sequenceNumber", sequenceNumber),
                 type,
@@ -359,7 +353,6 @@ private constructor(
 
         arguments()
         itemId()
-        name()
         outputIndex()
         sequenceNumber()
         _type().let {
@@ -388,7 +381,6 @@ private constructor(
     internal fun validity(): Int =
         (if (arguments.asKnown().isPresent) 1 else 0) +
             (if (itemId.asKnown().isPresent) 1 else 0) +
-            (if (name.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let {
@@ -431,6 +423,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "agent_name" to this.agentName)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -572,7 +582,6 @@ private constructor(
         return other is BetaResponseFunctionCallArgumentsDoneEvent &&
             arguments == other.arguments &&
             itemId == other.itemId &&
-            name == other.name &&
             outputIndex == other.outputIndex &&
             sequenceNumber == other.sequenceNumber &&
             type == other.type &&
@@ -584,7 +593,6 @@ private constructor(
         Objects.hash(
             arguments,
             itemId,
-            name,
             outputIndex,
             sequenceNumber,
             type,
@@ -596,5 +604,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "BetaResponseFunctionCallArgumentsDoneEvent{arguments=$arguments, itemId=$itemId, name=$name, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, agent=$agent, additionalProperties=$additionalProperties}"
+        "BetaResponseFunctionCallArgumentsDoneEvent{arguments=$arguments, itemId=$itemId, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, agent=$agent, additionalProperties=$additionalProperties}"
 }

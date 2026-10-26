@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeAudioConfigOutputTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeAudioConfigOutput =
             RealtimeAudioConfigOutput.builder()
                 .format(
@@ -39,22 +39,8 @@ internal class RealtimeAudioConfigOutputTest {
                     RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeAudioConfigOutput =
-            RealtimeAudioConfigOutput.builder()
-                .format(
-                    RealtimeAudioFormats.AudioPcm.builder()
-                        .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
-                        .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
-                        .build()
-                )
-                .speed(0.25)
-                .voice(RealtimeAudioConfigOutput.Voice.UnionMember1.ALLOY)
-                .build()
 
         val roundtrippedRealtimeAudioConfigOutput =
             jsonMapper.readValue(

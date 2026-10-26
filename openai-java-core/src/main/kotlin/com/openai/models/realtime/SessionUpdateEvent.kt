@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -21,6 +21,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -38,6 +39,14 @@ import kotlin.jvm.optionals.getOrNull
  * `session.update` are updated. To clear a field like `instructions`, pass an empty string. To
  * clear a field like `tools`, pass an empty array. To clear a field like `turn_detection`, pass
  * `null`.
+ *
+ * To turn off input audio noise reduction, send this Realtime event:
+ * ```json
+ * {"type":"session.update","session":{"type":"realtime","audio":{"input":{"noise_reduction":null}}}}
+ * ```
+ *
+ * For a transcription session, use `"type":"transcription"` inside `session`. Omitting
+ * `audio.input.noise_reduction` from an update leaves its current setting unchanged.
  */
 class SessionUpdateEvent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -105,6 +114,29 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "session" to this.session,
+            "type" to this.type,
+            "event_id" to this.eventId,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -501,7 +533,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Session: $json")
+                throw OpenAIInvalidDataException("Unknown Session")
             }
         }
 

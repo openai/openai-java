@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ProjectListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectListPageResponse =
             ProjectListPageResponse.builder()
                 .addData(
@@ -20,6 +20,7 @@ internal class ProjectListPageResponseTest {
                         .archivedAt(0L)
                         .externalKeyId("external_key_id")
                         .name("name")
+                        .residency(ProjectResidency.GLOBAL)
                         .status("status")
                         .build()
                 )
@@ -36,33 +37,15 @@ internal class ProjectListPageResponseTest {
                     .archivedAt(0L)
                     .externalKeyId("external_key_id")
                     .name("name")
+                    .residency(ProjectResidency.GLOBAL)
                     .status("status")
                     .build()
             )
         assertThat(projectListPageResponse.hasMore()).isEqualTo(true)
         assertThat(projectListPageResponse.firstId()).contains("first_id")
         assertThat(projectListPageResponse.lastId()).contains("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectListPageResponse =
-            ProjectListPageResponse.builder()
-                .addData(
-                    Project.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .archivedAt(0L)
-                        .externalKeyId("external_key_id")
-                        .name("name")
-                        .status("status")
-                        .build()
-                )
-                .hasMore(true)
-                .firstId("first_id")
-                .lastId("last_id")
-                .build()
 
         val roundtrippedProjectListPageResponse =
             jsonMapper.readValue(

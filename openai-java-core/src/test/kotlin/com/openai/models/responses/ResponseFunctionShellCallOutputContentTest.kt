@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseFunctionShellCallOutputContentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseFunctionShellCallOutputContent =
             ResponseFunctionShellCallOutputContent.builder()
                 .outcomeTimeout()
@@ -22,17 +22,8 @@ internal class ResponseFunctionShellCallOutputContentTest {
             .isEqualTo(ResponseFunctionShellCallOutputContent.Outcome.ofTimeout())
         assertThat(responseFunctionShellCallOutputContent.stderr()).isEqualTo("stderr")
         assertThat(responseFunctionShellCallOutputContent.stdout()).isEqualTo("stdout")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseFunctionShellCallOutputContent =
-            ResponseFunctionShellCallOutputContent.builder()
-                .outcomeTimeout()
-                .stderr("stderr")
-                .stdout("stdout")
-                .build()
 
         val roundtrippedResponseFunctionShellCallOutputContent =
             jsonMapper.readValue(

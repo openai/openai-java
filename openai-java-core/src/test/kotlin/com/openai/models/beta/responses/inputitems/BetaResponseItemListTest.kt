@@ -1,9 +1,10 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses.inputitems
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.beta.responses.BetaResponseInputMessageItem
 import com.openai.models.beta.responses.BetaResponseInputText
 import com.openai.models.beta.responses.BetaResponseItem
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseItemListTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseItemList =
             BetaResponseItemList.builder()
                 .addData(
@@ -23,7 +24,9 @@ internal class BetaResponseItemListTest {
                             BetaResponseInputText.builder()
                                 .text("text")
                                 .promptCacheBreakpoint(
-                                    BetaResponseInputText.PromptCacheBreakpoint.builder().build()
+                                    BetaResponseInputText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -50,7 +53,9 @@ internal class BetaResponseItemListTest {
                             BetaResponseInputText.builder()
                                 .text("text")
                                 .promptCacheBreakpoint(
-                                    BetaResponseInputText.PromptCacheBreakpoint.builder().build()
+                                    BetaResponseInputText.PromptCacheBreakpoint.builder()
+                                        .ttl(PromptCacheBreakpointTtl._30M)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -67,37 +72,8 @@ internal class BetaResponseItemListTest {
         assertThat(betaResponseItemList.firstId()).isEqualTo("first_id")
         assertThat(betaResponseItemList.hasMore()).isEqualTo(true)
         assertThat(betaResponseItemList.lastId()).isEqualTo("last_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseItemList =
-            BetaResponseItemList.builder()
-                .addData(
-                    BetaResponseInputMessageItem.builder()
-                        .id("id")
-                        .addContent(
-                            BetaResponseInputText.builder()
-                                .text("text")
-                                .promptCacheBreakpoint(
-                                    BetaResponseInputText.PromptCacheBreakpoint.builder().build()
-                                )
-                                .build()
-                        )
-                        .role(BetaResponseInputMessageItem.Role.USER)
-                        .agent(
-                            BetaResponseInputMessageItem.Agent.builder()
-                                .agentName("agent_name")
-                                .build()
-                        )
-                        .status(BetaResponseInputMessageItem.Status.IN_PROGRESS)
-                        .build()
-                )
-                .firstId("first_id")
-                .hasMore(true)
-                .lastId("last_id")
-                .build()
 
         val roundtrippedBetaResponseItemList =
             jsonMapper.readValue(

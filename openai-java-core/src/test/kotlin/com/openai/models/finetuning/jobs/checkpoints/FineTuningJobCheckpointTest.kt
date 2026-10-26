@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.jobs.checkpoints
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class FineTuningJobCheckpointTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fineTuningJobCheckpoint =
             FineTuningJobCheckpoint.builder()
                 .id("id")
@@ -49,30 +49,8 @@ internal class FineTuningJobCheckpointTest {
                     .build()
             )
         assertThat(fineTuningJobCheckpoint.stepNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fineTuningJobCheckpoint =
-            FineTuningJobCheckpoint.builder()
-                .id("id")
-                .createdAt(0L)
-                .fineTunedModelCheckpoint("fine_tuned_model_checkpoint")
-                .fineTuningJobId("fine_tuning_job_id")
-                .metrics(
-                    FineTuningJobCheckpoint.Metrics.builder()
-                        .fullValidLoss(0.0)
-                        .fullValidMeanTokenAccuracy(0.0)
-                        .step(0.0)
-                        .trainLoss(0.0)
-                        .trainMeanTokenAccuracy(0.0)
-                        .validLoss(0.0)
-                        .validMeanTokenAccuracy(0.0)
-                        .build()
-                )
-                .stepNumber(0L)
-                .build()
 
         val roundtrippedFineTuningJobCheckpoint =
             jsonMapper.readValue(

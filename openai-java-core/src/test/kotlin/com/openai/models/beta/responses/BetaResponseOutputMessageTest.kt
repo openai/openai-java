@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseOutputMessageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseOutputMessage =
             BetaResponseOutputMessage.builder()
                 .id("id")
@@ -81,44 +81,8 @@ internal class BetaResponseOutputMessageTest {
             .contains(BetaResponseOutputMessage.Agent.builder().agentName("agent_name").build())
         assertThat(betaResponseOutputMessage.phase())
             .contains(BetaResponseOutputMessage.Phase.COMMENTARY)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseOutputMessage =
-            BetaResponseOutputMessage.builder()
-                .id("id")
-                .addContent(
-                    BetaResponseOutputText.builder()
-                        .addAnnotation(
-                            BetaResponseOutputText.Annotation.FileCitation.builder()
-                                .fileId("file_id")
-                                .filename("filename")
-                                .index(0L)
-                                .build()
-                        )
-                        .text("text")
-                        .addLogprob(
-                            BetaResponseOutputText.Logprob.builder()
-                                .token("token")
-                                .addByte(0L)
-                                .logprob(0.0)
-                                .addTopLogprob(
-                                    BetaResponseOutputText.Logprob.TopLogprob.builder()
-                                        .token("token")
-                                        .addByte(0L)
-                                        .logprob(0.0)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .status(BetaResponseOutputMessage.Status.IN_PROGRESS)
-                .agent(BetaResponseOutputMessage.Agent.builder().agentName("agent_name").build())
-                .phase(BetaResponseOutputMessage.Phase.COMMENTARY)
-                .build()
 
         val roundtrippedBetaResponseOutputMessage =
             jsonMapper.readValue(

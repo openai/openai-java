@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class RealtimeResponseUsageOutputTokenDetailsTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeResponseUsageOutputTokenDetails =
             RealtimeResponseUsageOutputTokenDetails.builder().audioTokens(0L).textTokens(0L).build()
 
         assertThat(realtimeResponseUsageOutputTokenDetails.audioTokens()).contains(0L)
         assertThat(realtimeResponseUsageOutputTokenDetails.textTokens()).contains(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeResponseUsageOutputTokenDetails =
-            RealtimeResponseUsageOutputTokenDetails.builder().audioTokens(0L).textTokens(0L).build()
 
         val roundtrippedRealtimeResponseUsageOutputTokenDetails =
             jsonMapper.readValue(

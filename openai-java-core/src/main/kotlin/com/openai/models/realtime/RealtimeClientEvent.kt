@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -43,8 +43,8 @@ private constructor(
      * conversation and to add new items mid-stream, but has the current limitation that it cannot
      * populate assistant audio messages.
      *
-     * If successful, the server will respond with a `conversation.item.created` event, otherwise an
-     * `error` event will be sent.
+     * If successful, the server will emit a `conversation.item.added` event and, when the item is
+     * finalized, a `conversation.item.done` event. Otherwise, an `error` event will be sent.
      */
     fun conversationItemCreate(): Optional<ConversationItemCreateEvent> =
         Optional.ofNullable(conversationItemCreate)
@@ -110,7 +110,7 @@ private constructor(
      * **WebRTC/SIP Only:** Emit to cut off the current audio response. This will trigger the server
      * to stop generating audio and emit a `output_audio_buffer.cleared` event. This event should be
      * preceded by a `response.cancel` client event to stop the generation of the current response.
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     fun outputAudioBufferClear(): Optional<OutputAudioBufferClearEvent> =
         Optional.ofNullable(outputAudioBufferClear)
@@ -171,6 +171,14 @@ private constructor(
      * `session.update` are updated. To clear a field like `instructions`, pass an empty string. To
      * clear a field like `tools`, pass an empty array. To clear a field like `turn_detection`, pass
      * `null`.
+     *
+     * To turn off input audio noise reduction, send this Realtime event:
+     * ```json
+     * {"type":"session.update","session":{"type":"realtime","audio":{"input":{"noise_reduction":null}}}}
+     * ```
+     *
+     * For a transcription session, use `"type":"transcription"` inside `session`. Omitting
+     * `audio.input.noise_reduction` from an update leaves its current setting unchanged.
      */
     fun sessionUpdate(): Optional<SessionUpdateEvent> = Optional.ofNullable(sessionUpdate)
 
@@ -202,8 +210,8 @@ private constructor(
      * conversation and to add new items mid-stream, but has the current limitation that it cannot
      * populate assistant audio messages.
      *
-     * If successful, the server will respond with a `conversation.item.created` event, otherwise an
-     * `error` event will be sent.
+     * If successful, the server will emit a `conversation.item.added` event and, when the item is
+     * finalized, a `conversation.item.done` event. Otherwise, an `error` event will be sent.
      */
     fun asConversationItemCreate(): ConversationItemCreateEvent =
         conversationItemCreate.getOrThrow("conversationItemCreate")
@@ -269,7 +277,7 @@ private constructor(
      * **WebRTC/SIP Only:** Emit to cut off the current audio response. This will trigger the server
      * to stop generating audio and emit a `output_audio_buffer.cleared` event. This event should be
      * preceded by a `response.cancel` client event to stop the generation of the current response.
-     * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+     * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     fun asOutputAudioBufferClear(): OutputAudioBufferClearEvent =
         outputAudioBufferClear.getOrThrow("outputAudioBufferClear")
@@ -330,6 +338,14 @@ private constructor(
      * `session.update` are updated. To clear a field like `instructions`, pass an empty string. To
      * clear a field like `tools`, pass an empty array. To clear a field like `turn_detection`, pass
      * `null`.
+     *
+     * To turn off input audio noise reduction, send this Realtime event:
+     * ```json
+     * {"type":"session.update","session":{"type":"realtime","audio":{"input":{"noise_reduction":null}}}}
+     * ```
+     *
+     * For a transcription session, use `"type":"transcription"` inside `session`. Omitting
+     * `audio.input.noise_reduction` from an update leaves its current setting unchanged.
      */
     fun asSessionUpdate(): SessionUpdateEvent = sessionUpdate.getOrThrow("sessionUpdate")
 
@@ -598,8 +614,8 @@ private constructor(
          * conversation and to add new items mid-stream, but has the current limitation that it
          * cannot populate assistant audio messages.
          *
-         * If successful, the server will respond with a `conversation.item.created` event,
-         * otherwise an `error` event will be sent.
+         * If successful, the server will emit a `conversation.item.added` event and, when the item
+         * is finalized, a `conversation.item.done` event. Otherwise, an `error` event will be sent.
          */
         @JvmStatic
         fun ofConversationItemCreate(conversationItemCreate: ConversationItemCreateEvent) =
@@ -672,7 +688,7 @@ private constructor(
          * server to stop generating audio and emit a `output_audio_buffer.cleared` event. This
          * event should be preceded by a `response.cancel` client event to stop the generation of
          * the current response.
-         * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+         * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         @JvmStatic
         fun ofOutputAudioBufferClear(outputAudioBufferClear: OutputAudioBufferClearEvent) =
@@ -742,6 +758,14 @@ private constructor(
          * `session.update` are updated. To clear a field like `instructions`, pass an empty string.
          * To clear a field like `tools`, pass an empty array. To clear a field like
          * `turn_detection`, pass `null`.
+         *
+         * To turn off input audio noise reduction, send this Realtime event:
+         * ```json
+         * {"type":"session.update","session":{"type":"realtime","audio":{"input":{"noise_reduction":null}}}}
+         * ```
+         *
+         * For a transcription session, use `"type":"transcription"` inside `session`. Omitting
+         * `audio.input.noise_reduction` from an update leaves its current setting unchanged.
          */
         @JvmStatic
         fun ofSessionUpdate(sessionUpdate: SessionUpdateEvent) =
@@ -760,8 +784,8 @@ private constructor(
          * conversation and to add new items mid-stream, but has the current limitation that it
          * cannot populate assistant audio messages.
          *
-         * If successful, the server will respond with a `conversation.item.created` event,
-         * otherwise an `error` event will be sent.
+         * If successful, the server will emit a `conversation.item.added` event and, when the item
+         * is finalized, a `conversation.item.done` event. Otherwise, an `error` event will be sent.
          */
         fun visitConversationItemCreate(conversationItemCreate: ConversationItemCreateEvent): T
 
@@ -826,7 +850,7 @@ private constructor(
          * server to stop generating audio and emit a `output_audio_buffer.cleared` event. This
          * event should be preceded by a `response.cancel` client event to stop the generation of
          * the current response.
-         * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
+         * [Learn more](https://developers.openai.com/api/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         fun visitOutputAudioBufferClear(outputAudioBufferClear: OutputAudioBufferClearEvent): T
 
@@ -888,6 +912,14 @@ private constructor(
          * `session.update` are updated. To clear a field like `instructions`, pass an empty string.
          * To clear a field like `tools`, pass an empty array. To clear a field like
          * `turn_detection`, pass `null`.
+         *
+         * To turn off input audio noise reduction, send this Realtime event:
+         * ```json
+         * {"type":"session.update","session":{"type":"realtime","audio":{"input":{"noise_reduction":null}}}}
+         * ```
+         *
+         * For a transcription session, use `"type":"transcription"` inside `session`. Omitting
+         * `audio.input.noise_reduction` from an update leaves its current setting unchanged.
          */
         fun visitSessionUpdate(sessionUpdate: SessionUpdateEvent): T
 
@@ -902,7 +934,7 @@ private constructor(
          * @throws OpenAIInvalidDataException in the default implementation.
          */
         fun unknown(json: JsonValue?): T {
-            throw OpenAIInvalidDataException("Unknown RealtimeClientEvent: $json")
+            throw OpenAIInvalidDataException("Unknown RealtimeClientEvent")
         }
     }
 

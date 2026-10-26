@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RealtimeResponseUsageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val realtimeResponseUsage =
             RealtimeResponseUsage.builder()
                 .inputTokenDetails(
@@ -65,38 +65,8 @@ internal class RealtimeResponseUsageTest {
             )
         assertThat(realtimeResponseUsage.outputTokens()).contains(0L)
         assertThat(realtimeResponseUsage.totalTokens()).contains(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val realtimeResponseUsage =
-            RealtimeResponseUsage.builder()
-                .inputTokenDetails(
-                    RealtimeResponseUsageInputTokenDetails.builder()
-                        .audioTokens(0L)
-                        .cachedTokens(0L)
-                        .cachedTokensDetails(
-                            RealtimeResponseUsageInputTokenDetails.CachedTokensDetails.builder()
-                                .audioTokens(0L)
-                                .imageTokens(0L)
-                                .textTokens(0L)
-                                .build()
-                        )
-                        .imageTokens(0L)
-                        .textTokens(0L)
-                        .build()
-                )
-                .inputTokens(0L)
-                .outputTokenDetails(
-                    RealtimeResponseUsageOutputTokenDetails.builder()
-                        .audioTokens(0L)
-                        .textTokens(0L)
-                        .build()
-                )
-                .outputTokens(0L)
-                .totalTokens(0L)
-                .build()
 
         val roundtrippedRealtimeResponseUsage =
             jsonMapper.readValue(

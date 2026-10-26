@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.apikeys
 
@@ -10,17 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ApiKeyDeleteResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val apiKeyDeleteResponse = ApiKeyDeleteResponse.builder().id("id").deleted(true).build()
 
         assertThat(apiKeyDeleteResponse.id()).isEqualTo("id")
         assertThat(apiKeyDeleteResponse.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val apiKeyDeleteResponse = ApiKeyDeleteResponse.builder().id("id").deleted(true).build()
 
         val roundtrippedApiKeyDeleteResponse =
             jsonMapper.readValue(

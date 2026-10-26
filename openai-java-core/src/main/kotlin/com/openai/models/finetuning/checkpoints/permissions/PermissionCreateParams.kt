@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.checkpoints.permissions
 
@@ -13,6 +13,7 @@ import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -23,7 +24,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * **NOTE:** Calling this endpoint requires an [admin API key](../admin-api-keys).
+ * **NOTE:** Calling this endpoint requires an
+ * [admin API key](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys).
  *
  * This enables organization owners to share fine-tuned models with other projects in their
  * organization.
@@ -317,6 +319,24 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "project_ids" to this.projectIds)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -370,9 +390,8 @@ private constructor(
              */
             fun addProjectId(projectId: String) = apply {
                 projectIds =
-                    (projectIds ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("projectIds", it).add(projectId)
-                    }
+                    (projectIds?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                        .also { checkKnown("projectIds", it).add(projectId) }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionMessageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionMessage =
             ChatCompletionMessage.builder()
                 .content("content")
@@ -100,53 +100,8 @@ internal class ChatCompletionMessageTest {
                         .build()
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionMessage =
-            ChatCompletionMessage.builder()
-                .content("content")
-                .refusal("refusal")
-                .addAnnotation(
-                    ChatCompletionMessage.Annotation.builder()
-                        .urlCitation(
-                            ChatCompletionMessage.Annotation.UrlCitation.builder()
-                                .endIndex(0L)
-                                .startIndex(0L)
-                                .title("title")
-                                .url("https://example.com")
-                                .build()
-                        )
-                        .build()
-                )
-                .audio(
-                    ChatCompletionAudio.builder()
-                        .id("id")
-                        .data("data")
-                        .expiresAt(0L)
-                        .transcript("transcript")
-                        .build()
-                )
-                .functionCall(
-                    ChatCompletionMessage.FunctionCall.builder()
-                        .arguments("arguments")
-                        .name("name")
-                        .build()
-                )
-                .addToolCall(
-                    ChatCompletionMessageFunctionToolCall.builder()
-                        .id("id")
-                        .function(
-                            ChatCompletionMessageFunctionToolCall.Function.builder()
-                                .arguments("arguments")
-                                .name("name")
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
 
         val roundtrippedChatCompletionMessage =
             jsonMapper.readValue(

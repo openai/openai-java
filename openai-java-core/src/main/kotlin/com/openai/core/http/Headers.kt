@@ -1,5 +1,3 @@
-// File generated from our OpenAPI spec by Stainless.
-
 package com.openai.core.http
 
 import com.openai.core.JsonArray
@@ -23,7 +21,21 @@ private constructor(
 
     fun names(): Set<String> = map.keys
 
+    /**
+     * Returns all values associated with [name], or an empty list if the header is absent. Names
+     * returned by [names] always have at least one value.
+     */
     fun values(name: String): List<String> = map[name].orEmpty()
+
+    /**
+     * Returns an immutable map of header names to their values, with case-insensitive lookup. Value
+     * lists are immutable and preserve insertion order.
+     *
+     * ```java
+     * Map<String, List<String>> headers = request.headers().asMap();
+     * ```
+     */
+    fun asMap(): Map<String, List<String>> = map
 
     fun toBuilder(): Builder = Builder().putAll(map)
 
@@ -101,7 +113,17 @@ private constructor(
             )
     }
 
-    override fun hashCode(): Int = map.hashCode()
+    override fun hashCode(): Int =
+        map.entries.sumOf { (name, values) ->
+            // Match the case folding used by String.CASE_INSENSITIVE_ORDER without
+            // locale-dependent mappings or multi-character case expansions.
+            val nameHash =
+                name
+                    .codePoints()
+                    .map { Character.toLowerCase(Character.toUpperCase(it)) }
+                    .reduce(0) { hash, codePoint -> 31 * hash + codePoint }
+            nameHash xor values.hashCode()
+        }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

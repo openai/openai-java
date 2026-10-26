@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionAudioParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionAudioParam =
             ChatCompletionAudioParam.builder()
                 .format(ChatCompletionAudioParam.Format.WAV)
@@ -24,16 +24,8 @@ internal class ChatCompletionAudioParamTest {
                     ChatCompletionAudioParam.Voice.UnionMember1.ALLOY
                 )
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionAudioParam =
-            ChatCompletionAudioParam.builder()
-                .format(ChatCompletionAudioParam.Format.WAV)
-                .voice(ChatCompletionAudioParam.Voice.UnionMember1.ALLOY)
-                .build()
 
         val roundtrippedChatCompletionAudioParam =
             jsonMapper.readValue(

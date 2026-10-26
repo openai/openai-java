@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.embeddings
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class CreateEmbeddingResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val createEmbeddingResponse =
             CreateEmbeddingResponse.builder()
                 .addData(Embedding.builder().addEmbedding(0.0f).index(0L).build())
@@ -27,19 +27,8 @@ internal class CreateEmbeddingResponseTest {
             .isEqualTo(
                 CreateEmbeddingResponse.Usage.builder().promptTokens(0L).totalTokens(0L).build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val createEmbeddingResponse =
-            CreateEmbeddingResponse.builder()
-                .addData(Embedding.builder().addEmbedding(0.0f).index(0L).build())
-                .model("model")
-                .usage(
-                    CreateEmbeddingResponse.Usage.builder().promptTokens(0L).totalTokens(0L).build()
-                )
-                .build()
 
         val roundtrippedCreateEmbeddingResponse =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.blocking.beta.responses
 
@@ -20,6 +20,7 @@ import com.openai.models.beta.responses.inputtokens.InputTokenCountParams
 import com.openai.models.beta.responses.inputtokens.InputTokenCountResponse
 import java.util.function.Consumer
 
+/** Create and manage model responses. */
 class InputTokenServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     InputTokenService {
 

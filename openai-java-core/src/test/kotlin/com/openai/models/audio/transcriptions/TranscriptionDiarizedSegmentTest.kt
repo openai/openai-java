@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.audio.transcriptions
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class TranscriptionDiarizedSegmentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val transcriptionDiarizedSegment =
             TranscriptionDiarizedSegment.builder()
                 .id("id")
@@ -25,19 +25,8 @@ internal class TranscriptionDiarizedSegmentTest {
         assertThat(transcriptionDiarizedSegment.speaker()).isEqualTo("speaker")
         assertThat(transcriptionDiarizedSegment.start()).isEqualTo(0.0)
         assertThat(transcriptionDiarizedSegment.text()).isEqualTo("text")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val transcriptionDiarizedSegment =
-            TranscriptionDiarizedSegment.builder()
-                .id("id")
-                .end(0.0)
-                .speaker("speaker")
-                .start(0.0)
-                .text("text")
-                .build()
 
         val roundtrippedTranscriptionDiarizedSegment =
             jsonMapper.readValue(

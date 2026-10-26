@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.adminapikeys
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class AdminApiKeyListPageResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val adminApiKeyListPageResponse =
             AdminApiKeyListPageResponse.builder()
                 .addData(
@@ -62,37 +62,8 @@ internal class AdminApiKeyListPageResponseTest {
         assertThat(adminApiKeyListPageResponse.hasMore()).isEqualTo(false)
         assertThat(adminApiKeyListPageResponse.firstId()).contains("key_abc")
         assertThat(adminApiKeyListPageResponse.lastId()).contains("key_xyz")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val adminApiKeyListPageResponse =
-            AdminApiKeyListPageResponse.builder()
-                .addData(
-                    AdminApiKey.builder()
-                        .id("key_abc")
-                        .createdAt(1711471533L)
-                        .expiresAt(1714063533L)
-                        .owner(
-                            AdminApiKey.Owner.builder()
-                                .id("sa_456")
-                                .createdAt(1711471533L)
-                                .name("My Service Account")
-                                .object_("organization.user")
-                                .role("owner")
-                                .type("user")
-                                .build()
-                        )
-                        .redactedValue("sk-admin...def")
-                        .lastUsedAt(1711471534L)
-                        .name("Administration Key")
-                        .build()
-                )
-                .hasMore(false)
-                .firstId("key_abc")
-                .lastId("key_xyz")
-                .build()
 
         val roundtrippedAdminApiKeyListPageResponse =
             jsonMapper.readValue(

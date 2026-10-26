@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.chatkit.threads
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ChatKitAttachmentTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatkitAttachment =
             ChatKitAttachment.builder()
                 .id("id")
@@ -25,19 +25,8 @@ internal class ChatKitAttachmentTest {
         assertThat(chatkitAttachment.name()).isEqualTo("name")
         assertThat(chatkitAttachment.previewUrl()).contains("https://example.com")
         assertThat(chatkitAttachment.type()).isEqualTo(ChatKitAttachment.Type.IMAGE)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatkitAttachment =
-            ChatKitAttachment.builder()
-                .id("id")
-                .mimeType("mime_type")
-                .name("name")
-                .previewUrl("https://example.com")
-                .type(ChatKitAttachment.Type.IMAGE)
-                .build()
 
         val roundtrippedChatKitAttachment =
             jsonMapper.readValue(

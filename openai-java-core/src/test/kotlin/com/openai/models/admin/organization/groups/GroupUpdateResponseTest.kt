@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.groups
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class GroupUpdateResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val groupUpdateResponse =
             GroupUpdateResponse.builder()
                 .id("id")
@@ -23,18 +23,8 @@ internal class GroupUpdateResponseTest {
         assertThat(groupUpdateResponse.createdAt()).isEqualTo(0L)
         assertThat(groupUpdateResponse.isScimManaged()).isEqualTo(true)
         assertThat(groupUpdateResponse.name()).isEqualTo("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val groupUpdateResponse =
-            GroupUpdateResponse.builder()
-                .id("id")
-                .createdAt(0L)
-                .isScimManaged(true)
-                .name("name")
-                .build()
 
         val roundtrippedGroupUpdateResponse =
             jsonMapper.readValue(

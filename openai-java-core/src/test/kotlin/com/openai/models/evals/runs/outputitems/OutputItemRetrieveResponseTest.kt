@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.evals.runs.outputitems
 
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class OutputItemRetrieveResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val outputItemRetrieveResponse =
             OutputItemRetrieveResponse.builder()
                 .id("id")
@@ -130,69 +130,8 @@ internal class OutputItemRetrieveResponseTest {
                     .build()
             )
         assertThat(outputItemRetrieveResponse.status()).isEqualTo("status")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val outputItemRetrieveResponse =
-            OutputItemRetrieveResponse.builder()
-                .id("id")
-                .createdAt(0L)
-                .datasourceItem(
-                    OutputItemRetrieveResponse.DatasourceItem.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .datasourceItemId(0L)
-                .evalId("eval_id")
-                .addResult(
-                    OutputItemRetrieveResponse.Result.builder()
-                        .name("name")
-                        .passed(true)
-                        .score(0.0)
-                        .sample(
-                            OutputItemRetrieveResponse.Result.Sample.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .type("type")
-                        .build()
-                )
-                .runId("run_id")
-                .sample(
-                    OutputItemRetrieveResponse.Sample.builder()
-                        .error(EvalApiError.builder().code("code").message("message").build())
-                        .finishReason("finish_reason")
-                        .addInput(
-                            OutputItemRetrieveResponse.Sample.Input.builder()
-                                .content("content")
-                                .role("role")
-                                .build()
-                        )
-                        .maxCompletionTokens(0L)
-                        .model("model")
-                        .addOutput(
-                            OutputItemRetrieveResponse.Sample.Output.builder()
-                                .content("content")
-                                .role("role")
-                                .build()
-                        )
-                        .seed(0L)
-                        .temperature(0.0)
-                        .topP(0.0)
-                        .usage(
-                            OutputItemRetrieveResponse.Sample.Usage.builder()
-                                .cachedTokens(0L)
-                                .completionTokens(0L)
-                                .promptTokens(0L)
-                                .totalTokens(0L)
-                                .build()
-                        )
-                        .build()
-                )
-                .status("status")
-                .build()
 
         val roundtrippedOutputItemRetrieveResponse =
             jsonMapper.readValue(

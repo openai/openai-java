@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseComputerToolCallOutputItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseComputerToolCallOutputItem =
             ResponseComputerToolCallOutputItem.builder()
                 .id("id")
@@ -53,31 +53,8 @@ internal class ResponseComputerToolCallOutputItemTest {
                     .build()
             )
         assertThat(responseComputerToolCallOutputItem.createdBy()).contains("created_by")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseComputerToolCallOutputItem =
-            ResponseComputerToolCallOutputItem.builder()
-                .id("id")
-                .callId("call_id")
-                .output(
-                    ResponseComputerToolCallOutputScreenshot.builder()
-                        .fileId("file_id")
-                        .imageUrl("https://example.com")
-                        .build()
-                )
-                .status(ResponseComputerToolCallOutputItem.Status.COMPLETED)
-                .addAcknowledgedSafetyCheck(
-                    ResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()
-                        .id("id")
-                        .code("code")
-                        .message("message")
-                        .build()
-                )
-                .createdBy("created_by")
-                .build()
 
         val roundtrippedResponseComputerToolCallOutputItem =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.evals
 
@@ -11,12 +11,14 @@ import org.junit.jupiter.api.Test
 internal class EvalCustomDataSourceConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val evalCustomDataSourceConfig =
             EvalCustomDataSourceConfig.builder()
                 .schema(
                     EvalCustomDataSourceConfig.Schema.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .putAdditionalProperty("type", JsonValue.from("object"))
+                        .putAdditionalProperty("properties", JsonValue.from("bar"))
+                        .putAdditionalProperty("required", JsonValue.from(listOf("item")))
                         .build()
                 )
                 .build()
@@ -24,22 +26,13 @@ internal class EvalCustomDataSourceConfigTest {
         assertThat(evalCustomDataSourceConfig.schema())
             .isEqualTo(
                 EvalCustomDataSourceConfig.Schema.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                    .putAdditionalProperty("type", JsonValue.from("object"))
+                    .putAdditionalProperty("properties", JsonValue.from("bar"))
+                    .putAdditionalProperty("required", JsonValue.from(listOf("item")))
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val evalCustomDataSourceConfig =
-            EvalCustomDataSourceConfig.builder()
-                .schema(
-                    EvalCustomDataSourceConfig.Schema.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .build()
 
         val roundtrippedEvalCustomDataSourceConfig =
             jsonMapper.readValue(

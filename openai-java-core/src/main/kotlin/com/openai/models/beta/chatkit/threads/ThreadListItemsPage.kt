@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.chatkit.threads
 
@@ -42,7 +42,8 @@ private constructor(
 
     override fun items(): List<ChatKitThreadItemList.Data> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty() && lastId().isPresent
+    override fun hasNextPage(): Boolean =
+        hasMore().orElse(true) && items().isNotEmpty() && lastId().isPresent
 
     fun nextPageParams(): ThreadListItemsParams {
         val nextCursor =

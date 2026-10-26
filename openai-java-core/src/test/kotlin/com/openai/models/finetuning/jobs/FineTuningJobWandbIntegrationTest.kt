@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.jobs
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class FineTuningJobWandbIntegrationTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fineTuningJobWandbIntegration =
             FineTuningJobWandbIntegration.builder()
                 .project("my-wandb-project")
@@ -24,18 +24,8 @@ internal class FineTuningJobWandbIntegrationTest {
         assertThat(fineTuningJobWandbIntegration.entity()).contains("entity")
         assertThat(fineTuningJobWandbIntegration.name()).contains("name")
         assertThat(fineTuningJobWandbIntegration.tags().getOrNull()).containsExactly("custom-tag")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fineTuningJobWandbIntegration =
-            FineTuningJobWandbIntegration.builder()
-                .project("my-wandb-project")
-                .entity("entity")
-                .name("name")
-                .addTag("custom-tag")
-                .build()
 
         val roundtrippedFineTuningJobWandbIntegration =
             jsonMapper.readValue(

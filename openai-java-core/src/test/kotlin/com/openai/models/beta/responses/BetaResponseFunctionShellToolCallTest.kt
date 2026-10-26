@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseFunctionShellToolCallTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseFunctionShellToolCall =
             BetaResponseFunctionShellToolCall.builder()
                 .id("id")
@@ -58,32 +58,8 @@ internal class BetaResponseFunctionShellToolCallTest {
         assertThat(betaResponseFunctionShellToolCall.caller())
             .contains(BetaResponseFunctionShellToolCall.Caller.ofDirect())
         assertThat(betaResponseFunctionShellToolCall.createdBy()).contains("created_by")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseFunctionShellToolCall =
-            BetaResponseFunctionShellToolCall.builder()
-                .id("id")
-                .action(
-                    BetaResponseFunctionShellToolCall.Action.builder()
-                        .addCommand("string")
-                        .maxOutputLength(0L)
-                        .timeoutMs(0L)
-                        .build()
-                )
-                .callId("call_id")
-                .environment(BetaResponseLocalEnvironment.builder().build())
-                .status(BetaResponseFunctionShellToolCall.Status.IN_PROGRESS)
-                .agent(
-                    BetaResponseFunctionShellToolCall.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .callerDirect()
-                .createdBy("created_by")
-                .build()
 
         val roundtrippedBetaResponseFunctionShellToolCall =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -15,17 +15,39 @@ import org.junit.jupiter.api.Test
 internal class ResponseCompletedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseCompletedEvent =
             ResponseCompletedEvent.builder()
                 .response(
                     Response.builder()
                         .id("id")
+                        .accessPrograms(
+                            Response.AccessPrograms.builder()
+                                .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                                .build()
+                        )
                         .createdAt(0.0)
                         .error(
                             ResponseError.builder()
                                 .code(ResponseError.Code.SERVER_ERROR)
                                 .message("message")
+                                .misalignment(
+                                    ResponseError.Misalignment.builder()
+                                        .detailedExplanation("detailed_explanation")
+                                        .errorType(
+                                            ResponseError.Misalignment.ErrorType
+                                                .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                        )
+                                        .reviewTarget("review_target")
+                                        .steer(
+                                            ResponseError.Misalignment.Steer.builder()
+                                                .message("message")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .param("param")
+                                .type("type")
                                 .build()
                         )
                         .incompleteDetails(
@@ -39,7 +61,7 @@ internal class ResponseCompletedEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.GPT_5_1)
+                        .model(ChatModel.GPT_6_ASTRA)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -86,6 +108,7 @@ internal class ResponseCompletedEventTest {
                                 )
                                 .strict(true)
                                 .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                                .async(true)
                                 .deferLoading(true)
                                 .description("description")
                                 .outputSchema(
@@ -175,11 +198,21 @@ internal class ResponseCompletedEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheDiagnostics(
+                            Response.PromptCacheDiagnostics.CacheMiss.builder()
+                                .cacheMissedTokens(0L)
+                                .reason(
+                                    Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED
+                                )
+                                .comparisonReusableTokens(0L)
+                                .build()
+                        )
                         .promptCacheKey("prompt-cache-key-1234")
                         .promptCacheOptions(
                             Response.PromptCacheOptions.builder()
                                 .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                                 .ttl(Response.PromptCacheOptions.Ttl._30M)
+                                .comparisonResponseId("comparison_response_id")
                                 .build()
                         )
                         .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -231,11 +264,33 @@ internal class ResponseCompletedEventTest {
             .isEqualTo(
                 Response.builder()
                     .id("id")
+                    .accessPrograms(
+                        Response.AccessPrograms.builder()
+                            .cyber(Response.AccessPrograms.Cyber.STANDARD)
+                            .build()
+                    )
                     .createdAt(0.0)
                     .error(
                         ResponseError.builder()
                             .code(ResponseError.Code.SERVER_ERROR)
                             .message("message")
+                            .misalignment(
+                                ResponseError.Misalignment.builder()
+                                    .detailedExplanation("detailed_explanation")
+                                    .errorType(
+                                        ResponseError.Misalignment.ErrorType
+                                            .POTENTIALLY_UNINTENDED_DATA_TRANSFER
+                                    )
+                                    .reviewTarget("review_target")
+                                    .steer(
+                                        ResponseError.Misalignment.Steer.builder()
+                                            .message("message")
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .param("param")
+                            .type("type")
                             .build()
                     )
                     .incompleteDetails(
@@ -249,7 +304,7 @@ internal class ResponseCompletedEventTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_5_1)
+                    .model(ChatModel.GPT_6_ASTRA)
                     .addOutput(
                         ResponseOutputMessage.builder()
                             .id("id")
@@ -296,6 +351,7 @@ internal class ResponseCompletedEventTest {
                             )
                             .strict(true)
                             .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
+                            .async(true)
                             .deferLoading(true)
                             .description("description")
                             .outputSchema(
@@ -383,11 +439,19 @@ internal class ResponseCompletedEventTest {
                             .version("version")
                             .build()
                     )
+                    .promptCacheDiagnostics(
+                        Response.PromptCacheDiagnostics.CacheMiss.builder()
+                            .cacheMissedTokens(0L)
+                            .reason(Response.PromptCacheDiagnostics.CacheMiss.Reason.MODEL_CHANGED)
+                            .comparisonReusableTokens(0L)
+                            .build()
+                    )
                     .promptCacheKey("prompt-cache-key-1234")
                     .promptCacheOptions(
                         Response.PromptCacheOptions.builder()
                             .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
                             .ttl(Response.PromptCacheOptions.Ttl._30M)
+                            .comparisonResponseId("comparison_response_id")
                             .build()
                     )
                     .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
@@ -433,221 +497,8 @@ internal class ResponseCompletedEventTest {
                     .build()
             )
         assertThat(responseCompletedEvent.sequenceNumber()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseCompletedEvent =
-            ResponseCompletedEvent.builder()
-                .response(
-                    Response.builder()
-                        .id("id")
-                        .createdAt(0.0)
-                        .error(
-                            ResponseError.builder()
-                                .code(ResponseError.Code.SERVER_ERROR)
-                                .message("message")
-                                .build()
-                        )
-                        .incompleteDetails(
-                            Response.IncompleteDetails.builder()
-                                .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
-                                .build()
-                        )
-                        .instructions("string")
-                        .metadata(
-                            Response.Metadata.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .model(ChatModel.GPT_5_1)
-                        .addOutput(
-                            ResponseOutputMessage.builder()
-                                .id("id")
-                                .addContent(
-                                    ResponseOutputText.builder()
-                                        .addAnnotation(
-                                            ResponseOutputText.Annotation.FileCitation.builder()
-                                                .fileId("file_id")
-                                                .filename("filename")
-                                                .index(0L)
-                                                .build()
-                                        )
-                                        .text("text")
-                                        .addLogprob(
-                                            ResponseOutputText.Logprob.builder()
-                                                .token("token")
-                                                .addByte(0L)
-                                                .logprob(0.0)
-                                                .addTopLogprob(
-                                                    ResponseOutputText.Logprob.TopLogprob.builder()
-                                                        .token("token")
-                                                        .addByte(0L)
-                                                        .logprob(0.0)
-                                                        .build()
-                                                )
-                                                .build()
-                                        )
-                                        .build()
-                                )
-                                .status(ResponseOutputMessage.Status.IN_PROGRESS)
-                                .phase(ResponseOutputMessage.Phase.COMMENTARY)
-                                .build()
-                        )
-                        .parallelToolCalls(true)
-                        .temperature(1.0)
-                        .toolChoice(ToolChoiceOptions.NONE)
-                        .addTool(
-                            FunctionTool.builder()
-                                .name("name")
-                                .parameters(
-                                    FunctionTool.Parameters.builder()
-                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                        .build()
-                                )
-                                .strict(true)
-                                .addAllowedCaller(FunctionTool.AllowedCaller.DIRECT)
-                                .deferLoading(true)
-                                .description("description")
-                                .outputSchema(
-                                    FunctionTool.OutputSchema.builder()
-                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .topP(1.0)
-                        .background(true)
-                        .completedAt(0.0)
-                        .conversation(Response.Conversation.builder().id("id").build())
-                        .maxOutputTokens(0L)
-                        .maxToolCalls(0L)
-                        .moderation(
-                            Response.Moderation.builder()
-                                .input(
-                                    Response.Moderation.Input.ModerationResult.builder()
-                                        .categories(
-                                            Response.Moderation.Input.ModerationResult.Categories
-                                                .builder()
-                                                .putAdditionalProperty("foo", JsonValue.from(true))
-                                                .build()
-                                        )
-                                        .categoryAppliedInputTypes(
-                                            Response.Moderation.Input.ModerationResult
-                                                .CategoryAppliedInputTypes
-                                                .builder()
-                                                .putAdditionalProperty(
-                                                    "foo",
-                                                    JsonValue.from(listOf("text")),
-                                                )
-                                                .build()
-                                        )
-                                        .categoryScores(
-                                            Response.Moderation.Input.ModerationResult
-                                                .CategoryScores
-                                                .builder()
-                                                .putAdditionalProperty("foo", JsonValue.from(0))
-                                                .build()
-                                        )
-                                        .flagged(true)
-                                        .model("model")
-                                        .build()
-                                )
-                                .output(
-                                    Response.Moderation.Output.ModerationResult.builder()
-                                        .categories(
-                                            Response.Moderation.Output.ModerationResult.Categories
-                                                .builder()
-                                                .putAdditionalProperty("foo", JsonValue.from(true))
-                                                .build()
-                                        )
-                                        .categoryAppliedInputTypes(
-                                            Response.Moderation.Output.ModerationResult
-                                                .CategoryAppliedInputTypes
-                                                .builder()
-                                                .putAdditionalProperty(
-                                                    "foo",
-                                                    JsonValue.from(listOf("text")),
-                                                )
-                                                .build()
-                                        )
-                                        .categoryScores(
-                                            Response.Moderation.Output.ModerationResult
-                                                .CategoryScores
-                                                .builder()
-                                                .putAdditionalProperty("foo", JsonValue.from(0))
-                                                .build()
-                                        )
-                                        .flagged(true)
-                                        .model("model")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .previousResponseId("previous_response_id")
-                        .prompt(
-                            ResponsePrompt.builder()
-                                .id("id")
-                                .variables(
-                                    ResponsePrompt.Variables.builder()
-                                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                                        .build()
-                                )
-                                .version("version")
-                                .build()
-                        )
-                        .promptCacheKey("prompt-cache-key-1234")
-                        .promptCacheOptions(
-                            Response.PromptCacheOptions.builder()
-                                .mode(Response.PromptCacheOptions.Mode.IMPLICIT)
-                                .ttl(Response.PromptCacheOptions.Ttl._30M)
-                                .build()
-                        )
-                        .promptCacheRetention(Response.PromptCacheRetention.IN_MEMORY)
-                        .reasoning(
-                            Reasoning.builder()
-                                .context(Reasoning.Context.AUTO)
-                                .effort(ReasoningEffort.NONE)
-                                .generateSummary(Reasoning.GenerateSummary.AUTO)
-                                .mode(Reasoning.Mode.STANDARD)
-                                .summary(Reasoning.Summary.AUTO)
-                                .build()
-                        )
-                        .safetyIdentifier("safety-identifier-1234")
-                        .serviceTier(Response.ServiceTier.AUTO)
-                        .status(ResponseStatus.COMPLETED)
-                        .text(
-                            ResponseTextConfig.builder()
-                                .format(ResponseFormatText.builder().build())
-                                .verbosity(ResponseTextConfig.Verbosity.LOW)
-                                .build()
-                        )
-                        .topLogprobs(0L)
-                        .truncation(Response.Truncation.AUTO)
-                        .usage(
-                            ResponseUsage.builder()
-                                .inputTokens(0L)
-                                .inputTokensDetails(
-                                    ResponseUsage.InputTokensDetails.builder()
-                                        .cacheWriteTokens(0L)
-                                        .cachedTokens(0L)
-                                        .build()
-                                )
-                                .outputTokens(0L)
-                                .outputTokensDetails(
-                                    ResponseUsage.OutputTokensDetails.builder()
-                                        .reasoningTokens(0L)
-                                        .build()
-                                )
-                                .totalTokens(0L)
-                                .build()
-                        )
-                        .user("user-1234")
-                        .build()
-                )
-                .sequenceNumber(0L)
-                .build()
 
         val roundtrippedResponseCompletedEvent =
             jsonMapper.readValue(

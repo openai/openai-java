@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.groups.users
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class UserRetrieveResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val userRetrieveResponse =
             UserRetrieveResponse.builder()
                 .id("id")
@@ -27,20 +27,8 @@ internal class UserRetrieveResponseTest {
         assertThat(userRetrieveResponse.name()).isEqualTo("name")
         assertThat(userRetrieveResponse.picture()).contains("picture")
         assertThat(userRetrieveResponse.userType()).isEqualTo(UserRetrieveResponse.UserType.USER)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val userRetrieveResponse =
-            UserRetrieveResponse.builder()
-                .id("id")
-                .email("email")
-                .isServiceAccount(true)
-                .name("name")
-                .picture("picture")
-                .userType(UserRetrieveResponse.UserType.USER)
-                .build()
 
         val roundtrippedUserRetrieveResponse =
             jsonMapper.readValue(

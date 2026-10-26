@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models
 
@@ -11,16 +11,11 @@ import org.junit.jupiter.api.Test
 internal class FunctionParametersTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val functionParameters =
             FunctionParameters.builder().putAdditionalProperty("foo", JsonValue.from("bar")).build()
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val functionParameters =
-            FunctionParameters.builder().putAdditionalProperty("foo", JsonValue.from("bar")).build()
 
         val roundtrippedFunctionParameters =
             jsonMapper.readValue(

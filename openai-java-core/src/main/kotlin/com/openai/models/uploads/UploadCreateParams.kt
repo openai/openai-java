@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.uploads
 
@@ -12,6 +12,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -22,21 +23,22 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Creates an intermediate [Upload](https://platform.openai.com/docs/api-reference/uploads/object)
+ * Creates an intermediate [Upload](https://developers.openai.com/api/reference/resources/uploads)
  * object that you can add
- * [Parts](https://platform.openai.com/docs/api-reference/uploads/part-object) to. Currently, an
- * Upload can accept at most 8 GB in total and expires after an hour after you create it.
+ * [Parts](https://developers.openai.com/api/reference/resources/uploads/subresources/parts) to.
+ * Currently, an Upload can accept at most 8 GB in total and expires after an hour after you create
+ * it.
  *
  * Once you complete the Upload, we will create a
- * [File](https://platform.openai.com/docs/api-reference/files/object) object that contains all the
+ * [File](https://developers.openai.com/api/reference/resources/files) object that contains all the
  * parts you uploaded. This File is usable in the rest of our platform as a regular File object.
  *
  * For certain `purpose` values, the correct `mime_type` must be specified. Please refer to
  * documentation for the
- * [supported MIME types for your use case](https://platform.openai.com/docs/assistants/tools/file-search#supported-files).
+ * [supported MIME types for your use case](https://developers.openai.com/api/docs/guides/tools-file-search#supported-files).
  *
  * For guidance on the proper filename extensions for each purpose, please follow the documentation
- * on [creating a File](https://platform.openai.com/docs/api-reference/files/create).
+ * on [creating a File](https://developers.openai.com/api/reference/resources/files/methods/create).
  *
  * Returns the Upload object with status `pending`.
  */
@@ -78,7 +80,7 @@ private constructor(
      * The intended purpose of the uploaded file.
      *
      * See the
-     * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
+     * [documentation on File purposes](https://developers.openai.com/api/reference/resources/files/methods/create#%28resource%29%20files%20%3E%20%28method%29%20create%20%3E%20%28params%29%200%20%3E%20%28param%29%20purpose%20%3E%20%28schema%29).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -225,7 +227,7 @@ private constructor(
          * The intended purpose of the uploaded file.
          *
          * See the
-         * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
+         * [documentation on File purposes](https://developers.openai.com/api/reference/resources/files/methods/create#%28resource%29%20files%20%3E%20%28method%29%20create%20%3E%20%28params%29%200%20%3E%20%28param%29%20purpose%20%3E%20%28schema%29).
          */
         fun purpose(purpose: FilePurpose) = apply { body.purpose(purpose) }
 
@@ -460,7 +462,7 @@ private constructor(
          * The intended purpose of the uploaded file.
          *
          * See the
-         * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
+         * [documentation on File purposes](https://developers.openai.com/api/reference/resources/files/methods/create#%28resource%29%20files%20%3E%20%28method%29%20create%20%3E%20%28params%29%200%20%3E%20%28param%29%20purpose%20%3E%20%28schema%29).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -519,6 +521,31 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "bytes" to this.bytes,
+                "filename" to this.filename,
+                "mime_type" to this.mimeType,
+                "purpose" to this.purpose,
+                "expires_after" to this.expiresAfter,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =
@@ -607,7 +634,7 @@ private constructor(
              * The intended purpose of the uploaded file.
              *
              * See the
-             * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
+             * [documentation on File purposes](https://developers.openai.com/api/reference/resources/files/methods/create#%28resource%29%20files%20%3E%20%28method%29%20create%20%3E%20%28params%29%200%20%3E%20%28param%29%20purpose%20%3E%20%28schema%29).
              */
             fun purpose(purpose: FilePurpose) = purpose(JsonField.of(purpose))
 
@@ -805,6 +832,28 @@ private constructor(
             additionalProperties.put(key, value)
         }
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "anchor" to this.anchor,
+                "seconds" to this.seconds,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> =

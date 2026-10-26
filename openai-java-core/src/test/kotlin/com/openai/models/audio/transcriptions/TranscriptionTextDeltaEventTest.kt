@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.audio.transcriptions
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class TranscriptionTextDeltaEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val transcriptionTextDeltaEvent =
             TranscriptionTextDeltaEvent.builder()
                 .delta("delta")
@@ -35,23 +35,8 @@ internal class TranscriptionTextDeltaEventTest {
                     .build()
             )
         assertThat(transcriptionTextDeltaEvent.segmentId()).contains("segment_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val transcriptionTextDeltaEvent =
-            TranscriptionTextDeltaEvent.builder()
-                .delta("delta")
-                .addLogprob(
-                    TranscriptionTextDeltaEvent.Logprob.builder()
-                        .token("token")
-                        .addByte(0L)
-                        .logprob(0.0)
-                        .build()
-                )
-                .segmentId("segment_id")
-                .build()
 
         val roundtrippedTranscriptionTextDeltaEvent =
             jsonMapper.readValue(

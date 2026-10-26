@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.services.async
 
@@ -9,6 +9,10 @@ import com.openai.services.async.audio.TranscriptionServiceAsync
 import com.openai.services.async.audio.TranscriptionServiceAsyncImpl
 import com.openai.services.async.audio.TranslationServiceAsync
 import com.openai.services.async.audio.TranslationServiceAsyncImpl
+import com.openai.services.async.audio.VoiceConsentServiceAsync
+import com.openai.services.async.audio.VoiceConsentServiceAsyncImpl
+import com.openai.services.async.audio.VoiceServiceAsync
+import com.openai.services.async.audio.VoiceServiceAsyncImpl
 import java.util.function.Consumer
 
 class AudioServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -28,6 +32,12 @@ class AudioServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     private val speech: SpeechServiceAsync by lazy { SpeechServiceAsyncImpl(clientOptions) }
 
+    private val voices: VoiceServiceAsync by lazy { VoiceServiceAsyncImpl(clientOptions) }
+
+    private val voiceConsents: VoiceConsentServiceAsync by lazy {
+        VoiceConsentServiceAsyncImpl(clientOptions)
+    }
+
     override fun withRawResponse(): AudioServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AudioServiceAsync =
@@ -42,6 +52,12 @@ class AudioServiceAsyncImpl internal constructor(private val clientOptions: Clie
     /** Turn audio into text or text into audio. */
     override fun speech(): SpeechServiceAsync = speech
 
+    /** Turn audio into text or text into audio. */
+    override fun voices(): VoiceServiceAsync = voices
+
+    /** Turn audio into text or text into audio. */
+    override fun voiceConsents(): VoiceConsentServiceAsync = voiceConsents
+
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         AudioServiceAsync.WithRawResponse {
 
@@ -55,6 +71,14 @@ class AudioServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         private val speech: SpeechServiceAsync.WithRawResponse by lazy {
             SpeechServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val voices: VoiceServiceAsync.WithRawResponse by lazy {
+            VoiceServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val voiceConsents: VoiceConsentServiceAsync.WithRawResponse by lazy {
+            VoiceConsentServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun withOptions(
@@ -72,5 +96,11 @@ class AudioServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         /** Turn audio into text or text into audio. */
         override fun speech(): SpeechServiceAsync.WithRawResponse = speech
+
+        /** Turn audio into text or text into audio. */
+        override fun voices(): VoiceServiceAsync.WithRawResponse = voices
+
+        /** Turn audio into text or text into audio. */
+        override fun voiceConsents(): VoiceConsentServiceAsync.WithRawResponse = voiceConsents
     }
 }

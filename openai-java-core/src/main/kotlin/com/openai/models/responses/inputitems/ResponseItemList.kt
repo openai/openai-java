@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses.inputitems
 
@@ -12,6 +12,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.responses.ResponseApplyPatchToolCall
@@ -20,6 +21,7 @@ import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseCompactionItem
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
+import com.openai.models.responses.ResponseConfigurationUpdateItem
 import com.openai.models.responses.ResponseCustomToolCallItem
 import com.openai.models.responses.ResponseCustomToolCallOutputItem
 import com.openai.models.responses.ResponseFileSearchToolCall
@@ -139,6 +141,31 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "data" to this.data,
+            "first_id" to this.firstId,
+            "has_more" to this.hasMore,
+            "last_id" to this.lastId,
+            "object" to this.object_,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -261,6 +288,24 @@ private constructor(
         /** Alias for calling [addData] with `ResponseItem.ofAdditionalTools(additionalTools)`. */
         fun addData(additionalTools: ResponseItem.AdditionalTools) =
             addData(ResponseItem.ofAdditionalTools(additionalTools))
+
+        /**
+         * Alias for calling [addData] with
+         * `ResponseItem.ofConfigurationUpdate(configurationUpdate)`.
+         */
+        fun addData(configurationUpdate: ResponseConfigurationUpdateItem) =
+            addData(ResponseItem.ofConfigurationUpdate(configurationUpdate))
+
+        /**
+         * Alias for calling [addData] with the following:
+         * ```java
+         * ResponseConfigurationUpdateItem.builder()
+         *     .id(id)
+         *     .build()
+         * ```
+         */
+        fun addConfigurationUpdateData(id: String) =
+            addData(ResponseConfigurationUpdateItem.builder().id(id).build())
 
         /** Alias for calling [addData] with `ResponseItem.ofReasoning(reasoning)`. */
         fun addData(reasoning: ResponseReasoningItem) = addData(ResponseItem.ofReasoning(reasoning))

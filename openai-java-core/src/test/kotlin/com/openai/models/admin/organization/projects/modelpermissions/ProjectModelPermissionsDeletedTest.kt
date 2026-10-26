@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.modelpermissions
 
@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test
 internal class ProjectModelPermissionsDeletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectModelPermissionsDeleted =
             ProjectModelPermissionsDeleted.builder().deleted(true).build()
 
         assertThat(projectModelPermissionsDeleted.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectModelPermissionsDeleted =
-            ProjectModelPermissionsDeleted.builder().deleted(true).build()
 
         val roundtrippedProjectModelPermissionsDeleted =
             jsonMapper.readValue(

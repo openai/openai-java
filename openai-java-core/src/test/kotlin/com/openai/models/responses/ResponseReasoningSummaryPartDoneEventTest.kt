@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseReasoningSummaryPartDoneEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseReasoningSummaryPartDoneEvent =
             ResponseReasoningSummaryPartDoneEvent.builder()
                 .itemId("item_id")
@@ -29,20 +29,8 @@ internal class ResponseReasoningSummaryPartDoneEventTest {
         assertThat(responseReasoningSummaryPartDoneEvent.summaryIndex()).isEqualTo(0L)
         assertThat(responseReasoningSummaryPartDoneEvent.status())
             .contains(ResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseReasoningSummaryPartDoneEvent =
-            ResponseReasoningSummaryPartDoneEvent.builder()
-                .itemId("item_id")
-                .outputIndex(0L)
-                .part(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
-                .sequenceNumber(0L)
-                .summaryIndex(0L)
-                .status(ResponseReasoningSummaryPartDoneEvent.Status.INCOMPLETE)
-                .build()
 
         val roundtrippedResponseReasoningSummaryPartDoneEvent =
             jsonMapper.readValue(

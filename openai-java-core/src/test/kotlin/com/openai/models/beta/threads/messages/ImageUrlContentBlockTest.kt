@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.messages
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ImageUrlContentBlockTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val imageUrlContentBlock =
             ImageUrlContentBlock.builder()
                 .imageUrl(
@@ -25,20 +25,8 @@ internal class ImageUrlContentBlockTest {
             .isEqualTo(
                 ImageUrl.builder().url("https://example.com").detail(ImageUrl.Detail.AUTO).build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val imageUrlContentBlock =
-            ImageUrlContentBlock.builder()
-                .imageUrl(
-                    ImageUrl.builder()
-                        .url("https://example.com")
-                        .detail(ImageUrl.Detail.AUTO)
-                        .build()
-                )
-                .build()
 
         val roundtrippedImageUrlContentBlock =
             jsonMapper.readValue(

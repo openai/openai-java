@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.graders.gradermodels
 
@@ -10,20 +10,15 @@ import org.junit.jupiter.api.Test
 internal class PythonGraderTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val pythonGrader =
             PythonGrader.builder().name("name").source("source").imageTag("image_tag").build()
 
         assertThat(pythonGrader.name()).isEqualTo("name")
         assertThat(pythonGrader.source()).isEqualTo("source")
         assertThat(pythonGrader.imageTag()).contains("image_tag")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val pythonGrader =
-            PythonGrader.builder().name("name").source("source").imageTag("image_tag").build()
 
         val roundtrippedPythonGrader =
             jsonMapper.readValue(

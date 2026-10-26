@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.spendalerts
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class OrganizationSpendAlertTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val organizationSpendAlert =
             OrganizationSpendAlert.builder()
                 .id("id")
@@ -37,24 +37,8 @@ internal class OrganizationSpendAlertTest {
                     .build()
             )
         assertThat(organizationSpendAlert.thresholdAmount()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val organizationSpendAlert =
-            OrganizationSpendAlert.builder()
-                .id("id")
-                .currency(OrganizationSpendAlert.Currency.USD)
-                .interval(OrganizationSpendAlert.Interval.MONTH)
-                .notificationChannel(
-                    OrganizationSpendAlert.NotificationChannel.builder()
-                        .addRecipient("string")
-                        .subjectPrefix("subject_prefix")
-                        .build()
-                )
-                .thresholdAmount(0L)
-                .build()
 
         val roundtrippedOrganizationSpendAlert =
             jsonMapper.readValue(

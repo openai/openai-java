@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseFunctionCallArgumentsDoneEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseFunctionCallArgumentsDoneEvent =
             ResponseFunctionCallArgumentsDoneEvent.builder()
                 .arguments("arguments")
@@ -29,21 +29,8 @@ internal class ResponseFunctionCallArgumentsDoneEventTest {
         assertThat(responseFunctionCallArgumentsDoneEvent.name()).isEqualTo("name")
         assertThat(responseFunctionCallArgumentsDoneEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseFunctionCallArgumentsDoneEvent.responseId()).isEqualTo("response_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseFunctionCallArgumentsDoneEvent =
-            ResponseFunctionCallArgumentsDoneEvent.builder()
-                .arguments("arguments")
-                .callId("call_id")
-                .eventId("event_id")
-                .itemId("item_id")
-                .name("name")
-                .outputIndex(0L)
-                .responseId("response_id")
-                .build()
 
         val roundtrippedResponseFunctionCallArgumentsDoneEvent =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseFunctionToolCallItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseFunctionToolCallItem =
             BetaResponseFunctionToolCallItem.builder()
                 .arguments("arguments")
@@ -18,6 +18,7 @@ internal class BetaResponseFunctionToolCallItemTest {
                 .name("name")
                 .id("id")
                 .agent(BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build())
+                .async(true)
                 .callerDirect()
                 .namespace("namespace")
                 .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
@@ -30,29 +31,15 @@ internal class BetaResponseFunctionToolCallItemTest {
         assertThat(betaResponseFunctionToolCallItem.id()).contains("id")
         assertThat(betaResponseFunctionToolCallItem.agent())
             .contains(BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build())
+        assertThat(betaResponseFunctionToolCallItem.async()).contains(true)
         assertThat(betaResponseFunctionToolCallItem.caller())
             .contains(BetaResponseFunctionToolCall.Caller.ofDirect())
         assertThat(betaResponseFunctionToolCallItem.namespace()).contains("namespace")
         assertThat(betaResponseFunctionToolCallItem.status())
             .contains(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
         assertThat(betaResponseFunctionToolCallItem.createdBy()).contains("created_by")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseFunctionToolCallItem =
-            BetaResponseFunctionToolCallItem.builder()
-                .arguments("arguments")
-                .callId("call_id")
-                .name("name")
-                .id("id")
-                .agent(BetaResponseFunctionToolCall.Agent.builder().agentName("agent_name").build())
-                .callerDirect()
-                .namespace("namespace")
-                .status(BetaResponseFunctionToolCall.Status.IN_PROGRESS)
-                .createdBy("created_by")
-                .build()
 
         val roundtrippedBetaResponseFunctionToolCallItem =
             jsonMapper.readValue(

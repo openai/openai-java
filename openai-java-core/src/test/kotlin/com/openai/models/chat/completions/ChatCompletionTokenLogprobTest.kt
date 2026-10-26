@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionTokenLogprobTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionTokenLogprob =
             ChatCompletionTokenLogprob.builder()
                 .token("token")
@@ -37,24 +37,8 @@ internal class ChatCompletionTokenLogprobTest {
                     .logprob(0.0)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionTokenLogprob =
-            ChatCompletionTokenLogprob.builder()
-                .token("token")
-                .addByte(0L)
-                .logprob(0.0)
-                .addTopLogprob(
-                    ChatCompletionTokenLogprob.TopLogprob.builder()
-                        .token("token")
-                        .addByte(0L)
-                        .logprob(0.0)
-                        .build()
-                )
-                .build()
 
         val roundtrippedChatCompletionTokenLogprob =
             jsonMapper.readValue(

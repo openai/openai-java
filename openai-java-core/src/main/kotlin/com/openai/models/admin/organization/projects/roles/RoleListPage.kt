@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.roles
 
@@ -42,7 +42,8 @@ private constructor(
 
     override fun items(): List<Role> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty() && next().isPresent
+    override fun hasNextPage(): Boolean =
+        hasMore().orElse(true) && items().isNotEmpty() && next().isPresent
 
     fun nextPageParams(): RoleListParams {
         val nextCursor =

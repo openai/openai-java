@@ -1,6 +1,6 @@
 package com.openai.core.http
 
-import com.openai.core.closeWhenPhantomReachable
+import com.openai.core.registerPhantomCleanup
 import java.util.stream.Stream
 
 /**
@@ -11,11 +11,20 @@ import java.util.stream.Stream
 internal class PhantomReachableClosingStreamResponse<T>(
     private val streamResponse: StreamResponse<T>
 ) : StreamResponse<T> {
+    private val cleanup: AutoCloseable
+
     init {
-        closeWhenPhantomReachable(this, streamResponse)
+        cleanup = registerPhantomCleanup(this, streamResponse::close)
     }
 
-    override fun stream(): Stream<T> = streamResponse.stream()
+    override fun stream(): Stream<T> =
+        streamResponse
+            .stream()
+            // Retain this owner in the traversal pipeline, including iterators and
+            // spliterators obtained from it. The monitor keeps the owner live until
+            // each pending read has returned on Java 8 as well as newer runtimes.
+            .map { value -> synchronized(this) { value } }
+            .onClose(this::close)
 
-    override fun close() = streamResponse.close()
+    override fun close() = cleanup.close()
 }

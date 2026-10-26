@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseComputerToolCallOutputItemTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseComputerToolCallOutputItem =
             BetaResponseComputerToolCallOutputItem.builder()
                 .id("id")
@@ -64,36 +64,8 @@ internal class BetaResponseComputerToolCallOutputItemTest {
                     .build()
             )
         assertThat(betaResponseComputerToolCallOutputItem.createdBy()).contains("created_by")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseComputerToolCallOutputItem =
-            BetaResponseComputerToolCallOutputItem.builder()
-                .id("id")
-                .callId("call_id")
-                .output(
-                    BetaResponseComputerToolCallOutputScreenshot.builder()
-                        .fileId("file_id")
-                        .imageUrl("https://example.com")
-                        .build()
-                )
-                .status(BetaResponseComputerToolCallOutputItem.Status.COMPLETED)
-                .addAcknowledgedSafetyCheck(
-                    BetaResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()
-                        .id("id")
-                        .code("code")
-                        .message("message")
-                        .build()
-                )
-                .agent(
-                    BetaResponseComputerToolCallOutputItem.Agent.builder()
-                        .agentName("agent_name")
-                        .build()
-                )
-                .createdBy("created_by")
-                .build()
 
         val roundtrippedBetaResponseComputerToolCallOutputItem =
             jsonMapper.readValue(

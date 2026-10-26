@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.completions
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class CompletionUsageTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val completionUsage =
             CompletionUsage.builder()
                 .completionTokens(0L)
@@ -22,6 +22,7 @@ internal class CompletionUsageTest {
                         .audioTokens(0L)
                         .reasoningTokens(0L)
                         .rejectedPredictionTokens(0L)
+                        .textTokens(0L)
                         .build()
                 )
                 .promptTokensDetails(
@@ -29,6 +30,8 @@ internal class CompletionUsageTest {
                         .audioTokens(0L)
                         .cacheWriteTokens(0L)
                         .cachedTokens(0L)
+                        .imageTokens(0L)
+                        .textTokens(0L)
                         .build()
                 )
                 .build()
@@ -43,6 +46,7 @@ internal class CompletionUsageTest {
                     .audioTokens(0L)
                     .reasoningTokens(0L)
                     .rejectedPredictionTokens(0L)
+                    .textTokens(0L)
                     .build()
             )
         assertThat(completionUsage.promptTokensDetails())
@@ -51,34 +55,12 @@ internal class CompletionUsageTest {
                     .audioTokens(0L)
                     .cacheWriteTokens(0L)
                     .cachedTokens(0L)
+                    .imageTokens(0L)
+                    .textTokens(0L)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val completionUsage =
-            CompletionUsage.builder()
-                .completionTokens(0L)
-                .promptTokens(0L)
-                .totalTokens(0L)
-                .completionTokensDetails(
-                    CompletionUsage.CompletionTokensDetails.builder()
-                        .acceptedPredictionTokens(0L)
-                        .audioTokens(0L)
-                        .reasoningTokens(0L)
-                        .rejectedPredictionTokens(0L)
-                        .build()
-                )
-                .promptTokensDetails(
-                    CompletionUsage.PromptTokensDetails.builder()
-                        .audioTokens(0L)
-                        .cacheWriteTokens(0L)
-                        .cachedTokens(0L)
-                        .build()
-                )
-                .build()
 
         val roundtrippedCompletionUsage =
             jsonMapper.readValue(

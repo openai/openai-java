@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.evals.runs
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RunDeleteResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val runDeleteResponse =
             RunDeleteResponse.builder()
                 .deleted(true)
@@ -21,17 +21,8 @@ internal class RunDeleteResponseTest {
         assertThat(runDeleteResponse.deleted()).contains(true)
         assertThat(runDeleteResponse.object_()).contains("eval.run.deleted")
         assertThat(runDeleteResponse.runId()).contains("evalrun_677469f564d48190807532a852da3afb")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val runDeleteResponse =
-            RunDeleteResponse.builder()
-                .deleted(true)
-                .object_("eval.run.deleted")
-                .runId("evalrun_677469f564d48190807532a852da3afb")
-                .build()
 
         val roundtrippedRunDeleteResponse =
             jsonMapper.readValue(

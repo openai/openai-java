@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.webhooks
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class FineTuningJobFailedWebhookEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fineTuningJobFailedWebhookEvent =
             FineTuningJobFailedWebhookEvent.builder()
                 .id("id")
@@ -25,18 +25,8 @@ internal class FineTuningJobFailedWebhookEventTest {
             .isEqualTo(FineTuningJobFailedWebhookEvent.Data.builder().id("id").build())
         assertThat(fineTuningJobFailedWebhookEvent.object_())
             .contains(FineTuningJobFailedWebhookEvent.Object.EVENT)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fineTuningJobFailedWebhookEvent =
-            FineTuningJobFailedWebhookEvent.builder()
-                .id("id")
-                .createdAt(0L)
-                .data(FineTuningJobFailedWebhookEvent.Data.builder().id("id").build())
-                .object_(FineTuningJobFailedWebhookEvent.Object.EVENT)
-                .build()
 
         val roundtrippedFineTuningJobFailedWebhookEvent =
             jsonMapper.readValue(

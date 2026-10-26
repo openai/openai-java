@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.messages
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ImageFileDeltaBlockTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val imageFileDeltaBlock =
             ImageFileDeltaBlock.builder()
                 .index(0L)
@@ -30,21 +30,8 @@ internal class ImageFileDeltaBlockTest {
                     .fileId("file_id")
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val imageFileDeltaBlock =
-            ImageFileDeltaBlock.builder()
-                .index(0L)
-                .imageFile(
-                    ImageFileDelta.builder()
-                        .detail(ImageFileDelta.Detail.AUTO)
-                        .fileId("file_id")
-                        .build()
-                )
-                .build()
 
         val roundtrippedImageFileDeltaBlock =
             jsonMapper.readValue(

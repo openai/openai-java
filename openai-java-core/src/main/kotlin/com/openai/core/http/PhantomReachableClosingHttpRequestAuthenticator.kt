@@ -1,6 +1,6 @@
 package com.openai.core.http
 
-import com.openai.core.closeWhenPhantomReachable
+import com.openai.core.registerPhantomCleanup
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -12,8 +12,22 @@ import java.util.concurrent.CompletableFuture
 internal class PhantomReachableClosingHttpRequestAuthenticator(
     private val authenticator: HttpRequestAuthenticator
 ) : HttpRequestAuthenticator {
+    companion object {
+        @JvmSynthetic
+        internal fun wrap(authenticator: HttpRequestAuthenticator): HttpRequestAuthenticator {
+            val wrapper = PhantomReachableClosingHttpRequestAuthenticator(authenticator)
+            return if (authenticator is TimeoutAwareHttpRequestAuthenticator) {
+                object : TimeoutAwareHttpRequestAuthenticator by authenticator {
+                    override fun close() = wrapper.close()
+                }
+            } else wrapper
+        }
+    }
+
+    private val cleanup: AutoCloseable
+
     init {
-        closeWhenPhantomReachable(this, authenticator)
+        cleanup = registerPhantomCleanup(this, authenticator::close)
     }
 
     override fun authenticate(request: HttpRequest): HttpRequest =
@@ -22,5 +36,5 @@ internal class PhantomReachableClosingHttpRequestAuthenticator(
     override fun authenticateAsync(request: HttpRequest): CompletableFuture<HttpRequest> =
         authenticator.authenticateAsync(request)
 
-    override fun close() = authenticator.close()
+    override fun close() = cleanup.close()
 }

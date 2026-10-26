@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.threads.runs.steps
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class RunStepTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val runStep =
             RunStep.builder()
                 .id("id")
@@ -94,48 +94,8 @@ internal class RunStepTest {
                     .totalTokens(0L)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val runStep =
-            RunStep.builder()
-                .id("id")
-                .assistantId("assistant_id")
-                .cancelledAt(0L)
-                .completedAt(0L)
-                .createdAt(0L)
-                .expiredAt(0L)
-                .failedAt(0L)
-                .lastError(
-                    RunStep.LastError.builder()
-                        .code(RunStep.LastError.Code.SERVER_ERROR)
-                        .message("message")
-                        .build()
-                )
-                .metadata(
-                    RunStep.Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
-                        .build()
-                )
-                .runId("run_id")
-                .status(RunStep.Status.IN_PROGRESS)
-                .messageCreationStepDetails(
-                    MessageCreationStepDetails.MessageCreation.builder()
-                        .messageId("message_id")
-                        .build()
-                )
-                .threadId("thread_id")
-                .type(RunStep.Type.MESSAGE_CREATION)
-                .usage(
-                    RunStep.Usage.builder()
-                        .completionTokens(0L)
-                        .promptTokens(0L)
-                        .totalTokens(0L)
-                        .build()
-                )
-                .build()
 
         val roundtrippedRunStep =
             jsonMapper.readValue(jsonMapper.writeValueAsString(runStep), jacksonTypeRef<RunStep>())

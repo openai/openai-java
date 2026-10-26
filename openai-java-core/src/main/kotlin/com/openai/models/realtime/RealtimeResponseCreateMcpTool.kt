@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -23,6 +23,7 @@ import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -33,7 +34,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
- * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+ * [Learn more about MCP](https://developers.openai.com/api/docs/guides/tools-connectors-mcp).
  */
 class RealtimeResponseCreateMcpTool
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -150,7 +151,10 @@ private constructor(
     /**
      * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
      * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
-     * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+     * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
+     *
+     * This field is deprecated for models released after September 1, 2026. Use `server_url` to
+     * connect to a remote MCP server, or `tunnel_id` to connect through a Secure MCP Tunnel.
      *
      * Currently supported `connector_id` values are:
      * - Dropbox: `connector_dropbox`
@@ -165,6 +169,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
+    @Deprecated("deprecated")
     fun connectorId(): Optional<ConnectorId> = connectorId.getOptional("connector_id")
 
     /**
@@ -259,6 +264,7 @@ private constructor(
      *
      * Unlike [connectorId], this method doesn't throw if the JSON field has an unexpected type.
      */
+    @Deprecated("deprecated")
     @JsonProperty("connector_id")
     @ExcludeMissing
     fun _connectorId(): JsonField<ConnectorId> = connectorId
@@ -317,6 +323,38 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "server_label" to this.serverLabel,
+            "type" to this.type,
+            "allowed_callers" to this.allowedCallers,
+            "allowed_tools" to this.allowedTools,
+            "authorization" to this.authorization,
+            "connector_id" to this.connectorId,
+            "defer_loading" to this.deferLoading,
+            "headers" to this.headers,
+            "require_approval" to this.requireApproval,
+            "server_description" to this.serverDescription,
+            "server_url" to this.serverUrl,
+            "tunnel_id" to this.tunnelId,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -424,9 +462,8 @@ private constructor(
          */
         fun addAllowedCaller(allowedCaller: AllowedCaller) = apply {
             allowedCallers =
-                (allowedCallers ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("allowedCallers", it).add(allowedCaller)
-                }
+                (allowedCallers?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                    .also { checkKnown("allowedCallers", it).add(allowedCaller) }
         }
 
         /** List of allowed tool names or a filter object. */
@@ -476,7 +513,10 @@ private constructor(
         /**
          * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
          * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
-         * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+         * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
+         *
+         * This field is deprecated for models released after September 1, 2026. Use `server_url` to
+         * connect to a remote MCP server, or `tunnel_id` to connect through a Secure MCP Tunnel.
          *
          * Currently supported `connector_id` values are:
          * - Dropbox: `connector_dropbox`
@@ -488,6 +528,7 @@ private constructor(
          * - Outlook Email: `connector_outlookemail`
          * - SharePoint: `connector_sharepoint`
          */
+        @Deprecated("deprecated")
         fun connectorId(connectorId: ConnectorId) = connectorId(JsonField.of(connectorId))
 
         /**
@@ -497,6 +538,7 @@ private constructor(
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
+        @Deprecated("deprecated")
         fun connectorId(connectorId: JsonField<ConnectorId>) = apply {
             this.connectorId = connectorId
         }
@@ -1029,7 +1071,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown AllowedTools: $json")
+                throw OpenAIInvalidDataException("Unknown AllowedTools")
             }
         }
 
@@ -1141,6 +1183,30 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "read_only" to this.readOnly,
+                    "tool_names" to this.toolNames,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -1206,9 +1272,8 @@ private constructor(
                  */
                 fun addToolName(toolName: String) = apply {
                     toolNames =
-                        (toolNames ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("toolNames", it).add(toolName)
-                        }
+                        (toolNames?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf()))
+                            .also { checkKnown("toolNames", it).add(toolName) }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1312,7 +1377,10 @@ private constructor(
     /**
      * Identifier for service connectors, like those available in ChatGPT. One of `server_url`,
      * `connector_id`, or `tunnel_id` must be provided. Learn more about service connectors
-     * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+     * [here](https://developers.openai.com/api/docs/guides/tools-connectors-mcp#connectors).
+     *
+     * This field is deprecated for models released after September 1, 2026. Use `server_url` to
+     * connect to a remote MCP server, or `tunnel_id` to connect through a Secure MCP Tunnel.
      *
      * Currently supported `connector_id` values are:
      * - Dropbox: `connector_dropbox`
@@ -1324,6 +1392,7 @@ private constructor(
      * - Outlook Email: `connector_outlookemail`
      * - SharePoint: `connector_sharepoint`
      */
+    @Deprecated("deprecated")
     class ConnectorId @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
 
@@ -1507,6 +1576,23 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>
     ) {
 
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> = collectAllProperties(additionalProperties)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -1536,6 +1622,11 @@ private constructor(
 
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
+            }
+
+            /** Adds a string-valued property. */
+            fun putProperty(key: String, value: String) = apply {
+                putAdditionalProperty(key, JsonValue.from(value))
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1828,7 +1919,7 @@ private constructor(
              * @throws OpenAIInvalidDataException in the default implementation.
              */
             fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown RequireApproval: $json")
+                throw OpenAIInvalidDataException("Unknown RequireApproval")
             }
         }
 
@@ -1935,6 +2026,30 @@ private constructor(
                 additionalProperties.put(key, value)
             }
 
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "always" to this.always,
+                    "never" to this.never,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> =
@@ -2124,6 +2239,30 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "read_only" to this.readOnly,
+                        "tool_names" to this.toolNames,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -2189,9 +2328,9 @@ private constructor(
                      */
                     fun addToolName(toolName: String) = apply {
                         toolNames =
-                            (toolNames ?: JsonField.of(mutableListOf())).also {
-                                checkKnown("toolNames", it).add(toolName)
-                            }
+                            (toolNames?.takeUnless { it.isMissing() }
+                                    ?: JsonField.of(mutableListOf()))
+                                .also { checkKnown("toolNames", it).add(toolName) }
                     }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2354,6 +2493,30 @@ private constructor(
                     additionalProperties.put(key, value)
                 }
 
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "read_only" to this.readOnly,
+                        "tool_names" to this.toolNames,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> =
@@ -2419,9 +2582,9 @@ private constructor(
                      */
                     fun addToolName(toolName: String) = apply {
                         toolNames =
-                            (toolNames ?: JsonField.of(mutableListOf())).also {
-                                checkKnown("toolNames", it).add(toolName)
-                            }
+                            (toolNames?.takeUnless { it.isMissing() }
+                                    ?: JsonField.of(mutableListOf()))
+                                .also { checkKnown("toolNames", it).add(toolName) }
                     }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

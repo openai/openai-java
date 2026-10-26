@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseMcpCallCompletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val responseMcpCallCompleted =
             ResponseMcpCallCompleted.builder()
                 .eventId("event_id")
@@ -21,17 +21,8 @@ internal class ResponseMcpCallCompletedTest {
         assertThat(responseMcpCallCompleted.eventId()).isEqualTo("event_id")
         assertThat(responseMcpCallCompleted.itemId()).isEqualTo("item_id")
         assertThat(responseMcpCallCompleted.outputIndex()).isEqualTo(0L)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseMcpCallCompleted =
-            ResponseMcpCallCompleted.builder()
-                .eventId("event_id")
-                .itemId("item_id")
-                .outputIndex(0L)
-                .build()
 
         val roundtrippedResponseMcpCallCompleted =
             jsonMapper.readValue(

@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.serviceaccounts.apikeys
 
@@ -10,31 +10,23 @@ import org.junit.jupiter.api.Test
 internal class ApiKeyCreateResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val apiKeyCreateResponse =
             ApiKeyCreateResponse.builder()
                 .id("id")
                 .createdAt(0L)
                 .name("name")
                 .value("value")
+                .expiresAt(0L)
                 .build()
 
         assertThat(apiKeyCreateResponse.id()).isEqualTo("id")
         assertThat(apiKeyCreateResponse.createdAt()).isEqualTo(0L)
         assertThat(apiKeyCreateResponse.name()).isEqualTo("name")
         assertThat(apiKeyCreateResponse.value()).isEqualTo("value")
-    }
+        assertThat(apiKeyCreateResponse.expiresAt()).contains(0L)
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val apiKeyCreateResponse =
-            ApiKeyCreateResponse.builder()
-                .id("id")
-                .createdAt(0L)
-                .name("name")
-                .value("value")
-                .build()
 
         val roundtrippedApiKeyCreateResponse =
             jsonMapper.readValue(

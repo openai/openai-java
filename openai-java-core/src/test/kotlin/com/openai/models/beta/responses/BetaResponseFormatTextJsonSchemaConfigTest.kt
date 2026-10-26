@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaResponseFormatTextJsonSchemaConfigTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseFormatTextJsonSchemaConfig =
             BetaResponseFormatTextJsonSchemaConfig.builder()
                 .name("name")
@@ -33,22 +33,8 @@ internal class BetaResponseFormatTextJsonSchemaConfigTest {
             )
         assertThat(betaResponseFormatTextJsonSchemaConfig.description()).contains("description")
         assertThat(betaResponseFormatTextJsonSchemaConfig.strict()).contains(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseFormatTextJsonSchemaConfig =
-            BetaResponseFormatTextJsonSchemaConfig.builder()
-                .name("name")
-                .schema(
-                    BetaResponseFormatTextJsonSchemaConfig.Schema.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .description("description")
-                .strict(true)
-                .build()
 
         val roundtrippedBetaResponseFormatTextJsonSchemaConfig =
             jsonMapper.readValue(

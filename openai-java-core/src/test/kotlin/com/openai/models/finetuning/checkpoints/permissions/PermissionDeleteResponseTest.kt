@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.finetuning.checkpoints.permissions
 
@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class PermissionDeleteResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val permissionDeleteResponse =
             PermissionDeleteResponse.builder().id("id").deleted(true).build()
 
         assertThat(permissionDeleteResponse.id()).isEqualTo("id")
         assertThat(permissionDeleteResponse.deleted()).isEqualTo(true)
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val permissionDeleteResponse =
-            PermissionDeleteResponse.builder().id("id").deleted(true).build()
 
         val roundtrippedPermissionDeleteResponse =
             jsonMapper.readValue(

@@ -240,7 +240,8 @@ sealed class JsonField<out T : Any> {
      */
     class IsMissing {
 
-        override fun equals(other: Any?): Boolean = other is JsonMissing
+        override fun equals(other: Any?): Boolean =
+            other is JsonMissing || other is MultipartField<*> && other.value.isMissing()
 
         override fun hashCode(): Int = Objects.hash()
     }
@@ -665,7 +666,12 @@ private constructor(
 
         fun value(value: T?) = value(JsonField.ofNullable(value))
 
-        fun contentType(contentType: String) = apply { this.contentType = contentType }
+        fun contentType(contentType: String) = apply {
+            require('\r' !in contentType && '\n' !in contentType) {
+                "Multipart content type must not contain line breaks"
+            }
+            this.contentType = contentType
+        }
 
         fun filename(filename: String?) = apply { this.filename = filename }
 

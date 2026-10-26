@@ -1,16 +1,17 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class BetaResponseInputFileTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseInputFile =
             BetaResponseInputFile.builder()
                 .detail(BetaResponseInputFile.Detail.AUTO)
@@ -19,7 +20,9 @@ internal class BetaResponseInputFileTest {
                 .fileUrl("https://example.com")
                 .filename("filename")
                 .promptCacheBreakpoint(
-                    BetaResponseInputFile.PromptCacheBreakpoint.builder().build()
+                    BetaResponseInputFile.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
@@ -29,23 +32,13 @@ internal class BetaResponseInputFileTest {
         assertThat(betaResponseInputFile.fileUrl()).contains("https://example.com")
         assertThat(betaResponseInputFile.filename()).contains("filename")
         assertThat(betaResponseInputFile.promptCacheBreakpoint())
-            .contains(BetaResponseInputFile.PromptCacheBreakpoint.builder().build())
-    }
+            .contains(
+                BetaResponseInputFile.PromptCacheBreakpoint.builder()
+                    .ttl(PromptCacheBreakpointTtl._30M)
+                    .build()
+            )
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseInputFile =
-            BetaResponseInputFile.builder()
-                .detail(BetaResponseInputFile.Detail.AUTO)
-                .fileData("file_data")
-                .fileId("file_id")
-                .fileUrl("https://example.com")
-                .filename("filename")
-                .promptCacheBreakpoint(
-                    BetaResponseInputFile.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedBetaResponseInputFile =
             jsonMapper.readValue(

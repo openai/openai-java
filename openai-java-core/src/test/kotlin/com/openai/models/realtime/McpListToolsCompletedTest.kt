@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class McpListToolsCompletedTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val mcpListToolsCompleted =
             McpListToolsCompleted.builder().eventId("event_id").itemId("item_id").build()
 
         assertThat(mcpListToolsCompleted.eventId()).isEqualTo("event_id")
         assertThat(mcpListToolsCompleted.itemId()).isEqualTo("item_id")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val mcpListToolsCompleted =
-            McpListToolsCompleted.builder().eventId("event_id").itemId("item_id").build()
 
         val roundtrippedMcpListToolsCompleted =
             jsonMapper.readValue(

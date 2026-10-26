@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.containers.files
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class FileRetrieveResponseTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val fileRetrieveResponse =
             FileRetrieveResponse.builder()
                 .id("id")
@@ -27,20 +27,8 @@ internal class FileRetrieveResponseTest {
         assertThat(fileRetrieveResponse.createdAt()).isEqualTo(0L)
         assertThat(fileRetrieveResponse.path()).isEqualTo("path")
         assertThat(fileRetrieveResponse.source()).isEqualTo("source")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val fileRetrieveResponse =
-            FileRetrieveResponse.builder()
-                .id("id")
-                .bytes(0L)
-                .containerId("container_id")
-                .createdAt(0L)
-                .path("path")
-                .source("source")
-                .build()
 
         val roundtrippedFileRetrieveResponse =
             jsonMapper.readValue(

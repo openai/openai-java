@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.admin.organization.projects.hostedtoolpermissions
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ProjectHostedToolPermissionsTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val projectHostedToolPermissions =
             ProjectHostedToolPermissions.builder()
                 .codeInterpreter(
@@ -34,23 +34,8 @@ internal class ProjectHostedToolPermissionsTest {
             .isEqualTo(ProjectHostedToolPermissions.Mcp.builder().enabled(true).build())
         assertThat(projectHostedToolPermissions.webSearch())
             .isEqualTo(ProjectHostedToolPermissions.WebSearch.builder().enabled(true).build())
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val projectHostedToolPermissions =
-            ProjectHostedToolPermissions.builder()
-                .codeInterpreter(
-                    ProjectHostedToolPermissions.CodeInterpreter.builder().enabled(true).build()
-                )
-                .fileSearch(ProjectHostedToolPermissions.FileSearch.builder().enabled(true).build())
-                .imageGeneration(
-                    ProjectHostedToolPermissions.ImageGeneration.builder().enabled(true).build()
-                )
-                .mcp(ProjectHostedToolPermissions.Mcp.builder().enabled(true).build())
-                .webSearch(ProjectHostedToolPermissions.WebSearch.builder().enabled(true).build())
-                .build()
 
         val roundtrippedProjectHostedToolPermissions =
             jsonMapper.readValue(

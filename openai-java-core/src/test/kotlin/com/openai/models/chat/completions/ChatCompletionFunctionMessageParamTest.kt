@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.chat.completions
 
@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionFunctionMessageParamTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val chatCompletionFunctionMessageParam =
             ChatCompletionFunctionMessageParam.builder().content("content").name("name").build()
 
         assertThat(chatCompletionFunctionMessageParam.content()).contains("content")
         assertThat(chatCompletionFunctionMessageParam.name()).isEqualTo("name")
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val chatCompletionFunctionMessageParam =
-            ChatCompletionFunctionMessageParam.builder().content("content").name("name").build()
 
         val roundtrippedChatCompletionFunctionMessageParam =
             jsonMapper.readValue(

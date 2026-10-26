@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models
 
@@ -11,6 +11,7 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.collectAllProperties
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -18,9 +19,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * **gpt-5 and o-series models only**
- *
- * Configuration options for [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+ * Configuration options for
+ * [reasoning models](https://developers.openai.com/api/docs/guides/reasoning).
  */
 class Reasoning
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -64,7 +64,7 @@ private constructor(
      * `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort can result
      * in faster responses and fewer tokens used on reasoning in a response. Not all reasoning
      * models support every value. See the
-     * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
+     * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for model-specific
      * support.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -150,6 +150,31 @@ private constructor(
         additionalProperties.put(key, value)
     }
 
+    /**
+     * Returns an immutable snapshot of all present JSON properties, including declared and
+     * additional properties.
+     *
+     * Keys use their JSON names. Declared properties take precedence over additional properties
+     * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+     * values are preserved.
+     */
+    fun _allProperties(): Map<String, JsonValue> =
+        collectAllProperties(
+            additionalProperties,
+            "context" to this.context,
+            "effort" to this.effort,
+            "generate_summary" to this.generateSummary,
+            "mode" to this.mode,
+            "summary" to this.summary,
+        )
+
+    /**
+     * Returns the legacy additional-properties view.
+     *
+     * @deprecated Use [_allProperties] to access both declared and additional JSON properties. This
+     *   accessor retains its legacy additional-properties behavior.
+     */
+    @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> =
@@ -209,8 +234,8 @@ private constructor(
          * `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing reasoning effort
          * can result in faster responses and fewer tokens used on reasoning in a response. Not all
          * reasoning models support every value. See the
-         * [reasoning guide](https://platform.openai.com/docs/guides/reasoning) for model-specific
-         * support.
+         * [reasoning guide](https://developers.openai.com/api/docs/guides/reasoning) for
+         * model-specific support.
          */
         fun effort(effort: ReasoningEffort?) = effort(JsonField.ofNullable(effort))
 

@@ -1,39 +1,36 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.PromptCacheBreakpointTtl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class BetaResponseInputTextTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaResponseInputText =
             BetaResponseInputText.builder()
                 .text("text")
                 .promptCacheBreakpoint(
-                    BetaResponseInputText.PromptCacheBreakpoint.builder().build()
+                    BetaResponseInputText.PromptCacheBreakpoint.builder()
+                        .ttl(PromptCacheBreakpointTtl._30M)
+                        .build()
                 )
                 .build()
 
         assertThat(betaResponseInputText.text()).isEqualTo("text")
         assertThat(betaResponseInputText.promptCacheBreakpoint())
-            .contains(BetaResponseInputText.PromptCacheBreakpoint.builder().build())
-    }
+            .contains(
+                BetaResponseInputText.PromptCacheBreakpoint.builder()
+                    .ttl(PromptCacheBreakpointTtl._30M)
+                    .build()
+            )
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaResponseInputText =
-            BetaResponseInputText.builder()
-                .text("text")
-                .promptCacheBreakpoint(
-                    BetaResponseInputText.PromptCacheBreakpoint.builder().build()
-                )
-                .build()
 
         val roundtrippedBetaResponseInputText =
             jsonMapper.readValue(

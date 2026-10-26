@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.realtime
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RateLimitsUpdatedEventTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val rateLimitsUpdatedEvent =
             RateLimitsUpdatedEvent.builder()
                 .eventId("event_id")
@@ -34,23 +34,8 @@ internal class RateLimitsUpdatedEventTest {
                     .resetSeconds(0.0)
                     .build()
             )
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val rateLimitsUpdatedEvent =
-            RateLimitsUpdatedEvent.builder()
-                .eventId("event_id")
-                .addRateLimit(
-                    RateLimitsUpdatedEvent.RateLimit.builder()
-                        .limit(0L)
-                        .name(RateLimitsUpdatedEvent.RateLimit.Name.REQUESTS)
-                        .remaining(0L)
-                        .resetSeconds(0.0)
-                        .build()
-                )
-                .build()
 
         val roundtrippedRateLimitsUpdatedEvent =
             jsonMapper.readValue(

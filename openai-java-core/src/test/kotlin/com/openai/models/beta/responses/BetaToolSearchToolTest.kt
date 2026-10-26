@@ -1,4 +1,4 @@
-// File generated from our OpenAPI spec by Stainless.
+// File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
 
 package com.openai.models.beta.responses
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class BetaToolSearchToolTest {
 
     @Test
-    fun create() {
+    fun createAndRoundtrip() {
         val betaToolSearchTool =
             BetaToolSearchTool.builder()
                 .description("description")
@@ -22,17 +22,8 @@ internal class BetaToolSearchToolTest {
         assertThat(betaToolSearchTool.description()).contains("description")
         assertThat(betaToolSearchTool.execution()).contains(BetaToolSearchTool.Execution.SERVER)
         assertThat(betaToolSearchTool._parameters()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
-    }
 
-    @Test
-    fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val betaToolSearchTool =
-            BetaToolSearchTool.builder()
-                .description("description")
-                .execution(BetaToolSearchTool.Execution.SERVER)
-                .parameters(JsonValue.from(mapOf<String, Any>()))
-                .build()
 
         val roundtrippedBetaToolSearchTool =
             jsonMapper.readValue(
