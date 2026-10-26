@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.93.0](https://github.com/openai/openai-java/compare/v4.92.0...v4.93.0) (2026-10-26)
+
+
+### Features
+
+* **api:** add gpt-6.1-terra model identifier ([#1276](https://github.com/openai/openai-java/issues/1276)) ([763fb37](https://github.com/openai/openai-java/commit/763fb37cdd19f6e3a6252a271e41264919fc39cd))
+
 ## [4.92.0](https://github.com/openai/openai-java/compare/v4.91.0...v4.92.0) (2026-10-26)
 
 
