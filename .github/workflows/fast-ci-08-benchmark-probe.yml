@@ -1,0 +1,239 @@
+name: Fast CI 08 / benchmark probe
+'on':
+  workflow_call:
+    inputs:
+      variant:
+        required: true
+        type: string
+permissions: {}
+env:
+  MAVEN_CENTRAL_BASE_URL: https://repo.maven.apache.org/maven2/com/openai
+  MAVEN_ARTIFACTS: openai-java openai-java-core openai-java-client-okhttp openai-java-bedrock openai-java-vertex
+  MAVEN_VERSION: 4.91.0
+jobs:
+  publisher:
+    name: Publisher surrogate
+    runs-on: ubuntu-24.04
+    permissions: {}
+    timeout-minutes: 3
+    outputs:
+      deadline: ${{ steps.marker.outputs.deadline }}
+      attempt: ${{ steps.marker.outputs.attempt }}
+    steps:
+    - name: Record probe-ready instant
+      id: marker
+      run: |
+        set -euo pipefail
+        ready_ns="$(date +%s%N)"
+        printf 'BENCH ready_ns=%s\n' "$ready_ns"
+        printf 'deadline=%s\nattempt=%s\n' "$((ready_ns / 1000000000 + 150))" "$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
+    - name: Current sequential poll
+      if: inputs.variant == 'current'
+      run: |+
+        set -euo pipefail
+
+        bench_probe_start_ns="$(date +%s%N)"
+        printf 'BENCH probe_start_ns=%s\n' "$bench_probe_start_ns"
+        trap 'rc=$?; printf "BENCH probe_end_ns=%s status=%s\n" "$(date +%s%N)" "$rc"' EXIT
+
+        version="$MAVEN_VERSION"
+        for attempt in {1..31}; do
+          missing=()
+          for artifact in $MAVEN_ARTIFACTS; do
+            for suffix in .pom .jar -sources.jar -javadoc.jar; do
+              file="$artifact-$version$suffix"
+              url="$MAVEN_CENTRAL_BASE_URL/$artifact/$version/$file"
+              if ! curl --fail --silent --show-error --head --location \
+                --connect-timeout 10 --max-time 30 "$url" >/dev/null; then
+                missing+=("$file")
+              fi
+            done
+          done
+
+          if [[ "${#missing[@]}" -eq 0 ]]; then
+            echo "Maven Central serves every expected $version artifact"
+            exit 0
+          fi
+
+          echo "Attempt $attempt/31; waiting for: ${missing[*]}"
+          if [[ "$attempt" -lt 31 ]]; then
+            sleep 60
+          fi
+        done
+
+        echo "::error::Upload completed, but $version was not fully public after 30 minutes"
+        exit 1
+
+    - name: Concurrent inline poll
+      if: inputs.variant == 'inline'
+      env:
+        PUBLISH_DEADLINE: ${{ steps.marker.outputs.deadline }}
+        PUBLISH_ATTEMPT: ${{ steps.marker.outputs.attempt }}
+      run: |+
+        set -euo pipefail
+
+        bench_probe_start_ns="$(date +%s%N)"
+        printf 'BENCH probe_start_ns=%s\n' "$bench_probe_start_ns"
+        trap 'rc=$?; printf "BENCH probe_end_ns=%s status=%s\n" "$(date +%s%N)" "$rc"' EXIT
+
+        if [[ ! "$PUBLISH_DEADLINE" =~ ^[1-9][0-9]*$ ||
+              ! "$PUBLISH_ATTEMPT" =~ ^[1-9][0-9]*$ ||
+              ! "$GITHUB_RUN_ATTEMPT" =~ ^[1-9][0-9]*$ ]] ||
+           (( GITHUB_RUN_ATTEMPT < PUBLISH_ATTEMPT )); then
+          echo "::error::Invalid publication window"
+          exit 1
+        fi
+        deadline=$PUBLISH_DEADLINE
+        if (( GITHUB_RUN_ATTEMPT > PUBLISH_ATTEMPT )); then
+          # Rerunning only this job must not reuse the original attempt's expired window.
+          deadline=$(( $(date +%s) + 90 * 60 ))
+        fi
+
+        check_files() {
+          local remaining
+          remaining=$((deadline - $(date +%s)))
+          if (( remaining <= 0 )); then
+            echo "::error::Maven visibility deadline expired; rerun this job to recheck without republishing" >&2
+            return 1
+          fi
+          if ! printf '%s\0' "$@" |
+            timeout "$remaining" xargs -0 -n 1 -P 10 bash -c '
+              if ! curl --fail --silent --show-error --head --location \
+                --connect-timeout 10 --max-time 30 "$MAVEN_CENTRAL_BASE_URL/$1" >/dev/null; then
+                printf "%s\n" "$1"
+              fi
+            ' _; then
+            echo "::error::Maven visibility probe failed; rerun this job to recheck without republishing" >&2
+            return 1
+          fi
+        }
+
+        version="$MAVEN_VERSION"
+        files=()
+        for artifact in $MAVEN_ARTIFACTS; do
+          for suffix in .pom .jar -sources.jar -javadoc.jar; do
+            files+=("$artifact/$version/$artifact-$version$suffix")
+          done
+        done
+        if [[ "${#files[@]}" -ne 20 ]]; then
+          echo "::error::Expected exactly 20 Maven files, got ${#files[@]}"
+          exit 1
+        fi
+
+        pending=("${files[@]}")
+        for attempt in {1..31}; do
+          missing="$(check_files "${pending[@]}")"
+          if [[ -z "$missing" && "${#pending[@]}" -lt "${#files[@]}" ]]; then
+            # Recheck the whole release together before reporting success.
+            missing="$(check_files "${files[@]}")"
+          fi
+          if [[ -z "$missing" ]]; then
+            echo "Maven Central serves every expected $version artifact"
+            exit 0
+          fi
+
+          mapfile -t pending <<< "$missing"
+          echo "Attempt $attempt/31; waiting for: ${pending[*]}"
+          if [[ "$attempt" -lt 31 ]]; then
+            remaining=$((deadline - $(date +%s)))
+            if (( remaining > 0 )); then
+              sleep "$((remaining < 60 ? remaining : 60))"
+            fi
+          fi
+        done
+
+        echo "::error::Upload completed, but $version was not fully public after 31 checks; rerun this job to recheck without republishing"
+        exit 1
+
+    - name: Record publisher end
+      run: |
+        printf 'BENCH publisher_end_ns=%s\n' "$(date +%s%N)"
+  visibility:
+    name: Separate visibility worker
+    needs: publisher
+    if: inputs.variant == 'split' && needs.publisher.result == 'success'
+    runs-on: ubuntu-24.04
+    permissions: {}
+    timeout-minutes: 3
+    steps:
+    - name: Concurrent split poll
+      env:
+        PUBLISH_DEADLINE: ${{ needs.publisher.outputs.deadline }}
+        PUBLISH_ATTEMPT: ${{ needs.publisher.outputs.attempt }}
+      run: |+
+        set -euo pipefail
+
+        bench_probe_start_ns="$(date +%s%N)"
+        printf 'BENCH probe_start_ns=%s\n' "$bench_probe_start_ns"
+        trap 'rc=$?; printf "BENCH probe_end_ns=%s status=%s\n" "$(date +%s%N)" "$rc"' EXIT
+
+        if [[ ! "$PUBLISH_DEADLINE" =~ ^[1-9][0-9]*$ ||
+              ! "$PUBLISH_ATTEMPT" =~ ^[1-9][0-9]*$ ||
+              ! "$GITHUB_RUN_ATTEMPT" =~ ^[1-9][0-9]*$ ]] ||
+           (( GITHUB_RUN_ATTEMPT < PUBLISH_ATTEMPT )); then
+          echo "::error::Invalid publication window"
+          exit 1
+        fi
+        deadline=$PUBLISH_DEADLINE
+        if (( GITHUB_RUN_ATTEMPT > PUBLISH_ATTEMPT )); then
+          # Rerunning only this job must not reuse the original attempt's expired window.
+          deadline=$(( $(date +%s) + 90 * 60 ))
+        fi
+
+        check_files() {
+          local remaining
+          remaining=$((deadline - $(date +%s)))
+          if (( remaining <= 0 )); then
+            echo "::error::Maven visibility deadline expired; rerun this job to recheck without republishing" >&2
+            return 1
+          fi
+          if ! printf '%s\0' "$@" |
+            timeout "$remaining" xargs -0 -n 1 -P 10 bash -c '
+              if ! curl --fail --silent --show-error --head --location \
+                --connect-timeout 10 --max-time 30 "$MAVEN_CENTRAL_BASE_URL/$1" >/dev/null; then
+                printf "%s\n" "$1"
+              fi
+            ' _; then
+            echo "::error::Maven visibility probe failed; rerun this job to recheck without republishing" >&2
+            return 1
+          fi
+        }
+
+        version="$MAVEN_VERSION"
+        files=()
+        for artifact in $MAVEN_ARTIFACTS; do
+          for suffix in .pom .jar -sources.jar -javadoc.jar; do
+            files+=("$artifact/$version/$artifact-$version$suffix")
+          done
+        done
+        if [[ "${#files[@]}" -ne 20 ]]; then
+          echo "::error::Expected exactly 20 Maven files, got ${#files[@]}"
+          exit 1
+        fi
+
+        pending=("${files[@]}")
+        for attempt in {1..31}; do
+          missing="$(check_files "${pending[@]}")"
+          if [[ -z "$missing" && "${#pending[@]}" -lt "${#files[@]}" ]]; then
+            # Recheck the whole release together before reporting success.
+            missing="$(check_files "${files[@]}")"
+          fi
+          if [[ -z "$missing" ]]; then
+            echo "Maven Central serves every expected $version artifact"
+            exit 0
+          fi
+
+          mapfile -t pending <<< "$missing"
+          echo "Attempt $attempt/31; waiting for: ${pending[*]}"
+          if [[ "$attempt" -lt 31 ]]; then
+            remaining=$((deadline - $(date +%s)))
+            if (( remaining > 0 )); then
+              sleep "$((remaining < 60 ? remaining : 60))"
+            fi
+          fi
+        done
+
+        echo "::error::Upload completed, but $version was not fully public after 31 checks; rerun this job to recheck without republishing"
+        exit 1
+
+...

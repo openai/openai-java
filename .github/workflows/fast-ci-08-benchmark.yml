@@ -1,0 +1,75 @@
+name: Fast CI 08 / Maven visibility benchmark
+'on':
+  push:
+    branches:
+    - bench/fast-ci-08-maven-roi-20261026
+    paths:
+    - .github/workflows/fast-ci-08-benchmark.yml
+    - .github/workflows/fast-ci-08-benchmark-probe.yml
+permissions: {}
+concurrency:
+  group: fast-ci-08-maven-roi-benchmark
+  cancel-in-progress: false
+jobs:
+  t1_current:
+    name: Trial 1 / current
+    permissions: {}
+    uses: ./.github/workflows/fast-ci-08-benchmark-probe.yml
+    with:
+      variant: current
+  t1_inline:
+    name: Trial 1 / inline
+    needs: t1_current
+    permissions: {}
+    uses: ./.github/workflows/fast-ci-08-benchmark-probe.yml
+    with:
+      variant: inline
+  t1_split:
+    name: Trial 1 / split
+    needs: t1_inline
+    permissions: {}
+    uses: ./.github/workflows/fast-ci-08-benchmark-probe.yml
+    with:
+      variant: split
+  t2_inline:
+    name: Trial 2 / inline
+    needs: t1_split
+    permissions: {}
+    uses: ./.github/workflows/fast-ci-08-benchmark-probe.yml
+    with:
+      variant: inline
+  t2_split:
+    name: Trial 2 / split
+    needs: t2_inline
+    permissions: {}
+    uses: ./.github/workflows/fast-ci-08-benchmark-probe.yml
+    with:
+      variant: split
+  t2_current:
+    name: Trial 2 / current
+    needs: t2_split
+    permissions: {}
+    uses: ./.github/workflows/fast-ci-08-benchmark-probe.yml
+    with:
+      variant: current
+  t3_split:
+    name: Trial 3 / split
+    needs: t2_current
+    permissions: {}
+    uses: ./.github/workflows/fast-ci-08-benchmark-probe.yml
+    with:
+      variant: split
+  t3_current:
+    name: Trial 3 / current
+    needs: t3_split
+    permissions: {}
+    uses: ./.github/workflows/fast-ci-08-benchmark-probe.yml
+    with:
+      variant: current
+  t3_inline:
+    name: Trial 3 / inline
+    needs: t3_current
+    permissions: {}
+    uses: ./.github/workflows/fast-ci-08-benchmark-probe.yml
+    with:
+      variant: inline
