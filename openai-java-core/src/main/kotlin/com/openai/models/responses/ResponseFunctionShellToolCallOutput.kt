@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -231,7 +232,6 @@ private constructor(
          * ```java
          * .id()
          * .callId()
-         * .maxOutputLength()
          * .output()
          * .status()
          * ```
@@ -244,7 +244,7 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var callId: JsonField<String>? = null
-        private var maxOutputLength: JsonField<Long>? = null
+        private var maxOutputLength: JsonField<Long>? = JsonNull.of()
         private var output: JsonField<MutableList<Output>>? = null
         private var status: JsonField<Status>? = null
         private var type: JsonValue = JsonValue.from("shell_call_output")
@@ -443,7 +443,6 @@ private constructor(
          * ```java
          * .id()
          * .callId()
-         * .maxOutputLength()
          * .output()
          * .status()
          * ```

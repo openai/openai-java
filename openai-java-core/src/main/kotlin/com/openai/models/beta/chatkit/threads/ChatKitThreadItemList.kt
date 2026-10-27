@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -170,9 +171,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .data()
-         * .firstId()
          * .hasMore()
-         * .lastId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -182,9 +181,9 @@ private constructor(
     class Builder internal constructor() {
 
         private var data: JsonField<MutableList<Data>>? = null
-        private var firstId: JsonField<String>? = null
+        private var firstId: JsonField<String>? = JsonNull.of()
         private var hasMore: JsonField<Boolean>? = null
-        private var lastId: JsonField<String>? = null
+        private var lastId: JsonField<String>? = JsonNull.of()
         private var object_: JsonValue = JsonValue.from("list")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -330,9 +329,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .data()
-         * .firstId()
          * .hasMore()
-         * .lastId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -1051,7 +1048,6 @@ private constructor(
                  * .callId()
                  * .createdAt()
                  * .name()
-                 * .output()
                  * .status()
                  * .threadId()
                  * ```
@@ -1068,7 +1064,7 @@ private constructor(
                 private var createdAt: JsonField<Long>? = null
                 private var name: JsonField<String>? = null
                 private var object_: JsonValue = JsonValue.from("chatkit.thread_item")
-                private var output: JsonField<String>? = null
+                private var output: JsonField<String>? = JsonNull.of()
                 private var status: JsonField<Status>? = null
                 private var threadId: JsonField<String>? = null
                 private var type: JsonValue = JsonValue.from("chatkit.client_tool_call")
@@ -1253,7 +1249,6 @@ private constructor(
                  * .callId()
                  * .createdAt()
                  * .name()
-                 * .output()
                  * .status()
                  * .threadId()
                  * ```
@@ -1749,8 +1744,6 @@ private constructor(
                  * ```java
                  * .id()
                  * .createdAt()
-                 * .heading()
-                 * .summary()
                  * .taskType()
                  * .threadId()
                  * ```
@@ -1763,9 +1756,9 @@ private constructor(
 
                 private var id: JsonField<String>? = null
                 private var createdAt: JsonField<Long>? = null
-                private var heading: JsonField<String>? = null
+                private var heading: JsonField<String>? = JsonNull.of()
                 private var object_: JsonValue = JsonValue.from("chatkit.thread_item")
-                private var summary: JsonField<String>? = null
+                private var summary: JsonField<String>? = JsonNull.of()
                 private var taskType: JsonField<TaskType>? = null
                 private var threadId: JsonField<String>? = null
                 private var type: JsonValue = JsonValue.from("chatkit.task")
@@ -1921,8 +1914,6 @@ private constructor(
                  * ```java
                  * .id()
                  * .createdAt()
-                 * .heading()
-                 * .summary()
                  * .taskType()
                  * .threadId()
                  * ```
@@ -2694,8 +2685,6 @@ private constructor(
                      *
                      * The following fields are required:
                      * ```java
-                     * .heading()
-                     * .summary()
                      * .type()
                      * ```
                      */
@@ -2705,8 +2694,8 @@ private constructor(
                 /** A builder for [Task]. */
                 class Builder internal constructor() {
 
-                    private var heading: JsonField<String>? = null
-                    private var summary: JsonField<String>? = null
+                    private var heading: JsonField<String>? = JsonNull.of()
+                    private var summary: JsonField<String>? = JsonNull.of()
                     private var type: JsonField<Type>? = null
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -2794,8 +2783,6 @@ private constructor(
                      *
                      * The following fields are required:
                      * ```java
-                     * .heading()
-                     * .summary()
                      * .type()
                      * ```
                      *

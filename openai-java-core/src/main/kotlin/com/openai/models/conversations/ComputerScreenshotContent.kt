@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -171,8 +172,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .detail()
-         * .fileId()
-         * .imageUrl()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -182,8 +181,8 @@ private constructor(
     class Builder internal constructor() {
 
         private var detail: JsonField<Detail>? = null
-        private var fileId: JsonField<String>? = null
-        private var imageUrl: JsonField<String>? = null
+        private var fileId: JsonField<String>? = JsonNull.of()
+        private var imageUrl: JsonField<String>? = JsonNull.of()
         private var type: JsonValue = JsonValue.from("computer_screenshot")
         private var promptCacheBreakpoint: JsonField<PromptCacheBreakpoint> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -300,8 +299,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .detail()
-         * .fileId()
-         * .imageUrl()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.

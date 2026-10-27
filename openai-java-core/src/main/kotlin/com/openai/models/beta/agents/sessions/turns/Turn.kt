@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -292,14 +293,9 @@ private constructor(
          * ```java
          * .id()
          * .agentId()
-         * .completedAt()
          * .createdAt()
-         * .error()
          * .sessionId()
-         * .startedAt()
          * .status()
-         * .subagentId()
-         * .usage()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -310,15 +306,15 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var agentId: JsonField<String>? = null
-        private var completedAt: JsonField<Long>? = null
+        private var completedAt: JsonField<Long>? = JsonNull.of()
         private var createdAt: JsonField<Long>? = null
-        private var error: JsonField<SessionTurnError>? = null
+        private var error: JsonField<SessionTurnError>? = JsonNull.of()
         private var object_: JsonField<Object>? = JsonField.of(Object.AGENT_SESSION_TURN)
         private var sessionId: JsonField<String>? = null
-        private var startedAt: JsonField<Long>? = null
+        private var startedAt: JsonField<Long>? = JsonNull.of()
         private var status: JsonField<Status>? = null
-        private var subagentId: JsonField<String>? = null
-        private var usage: JsonField<TokenUsage>? = null
+        private var subagentId: JsonField<String>? = JsonNull.of()
+        private var usage: JsonField<TokenUsage>? = JsonNull.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -524,14 +520,9 @@ private constructor(
          * ```java
          * .id()
          * .agentId()
-         * .completedAt()
          * .createdAt()
-         * .error()
          * .sessionId()
-         * .startedAt()
          * .status()
-         * .subagentId()
-         * .usage()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.

@@ -18,6 +18,7 @@ import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -697,7 +698,6 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .name()
                  * .probability()
                  * ```
                  */
@@ -707,7 +707,7 @@ private constructor(
             /** A builder for [Predicate]. */
             class Builder internal constructor() {
 
-                private var name: JsonField<String>? = null
+                private var name: JsonField<String>? = JsonNull.of()
                 private var probability: JsonField<Double>? = null
                 private var type: JsonValue = JsonValue.from("predicate")
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -790,7 +790,6 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .name()
                  * .probability()
                  * ```
                  *
@@ -1026,7 +1025,6 @@ private constructor(
                  * ```java
                  * .choice()
                  * .confidence()
-                 * .name()
                  * .probabilities()
                  * ```
                  */
@@ -1038,7 +1036,7 @@ private constructor(
 
                 private var choice: JsonField<DecisionChoiceValue>? = null
                 private var confidence: JsonField<Double>? = null
-                private var name: JsonField<String>? = null
+                private var name: JsonField<String>? = JsonNull.of()
                 private var probabilities: JsonField<MutableList<Probability>>? = null
                 private var type: JsonValue = JsonValue.from("choice")
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1171,7 +1169,6 @@ private constructor(
                  * ```java
                  * .choice()
                  * .confidence()
-                 * .name()
                  * .probabilities()
                  * ```
                  *
@@ -1665,7 +1662,6 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .confidence()
-                 * .name()
                  * .probabilities()
                  * .score()
                  * ```
@@ -1677,7 +1673,7 @@ private constructor(
             class Builder internal constructor() {
 
                 private var confidence: JsonField<Double>? = null
-                private var name: JsonField<String>? = null
+                private var name: JsonField<String>? = JsonNull.of()
                 private var probabilities: JsonField<MutableList<Probability>>? = null
                 private var score: JsonField<Double>? = null
                 private var type: JsonValue = JsonValue.from("score")
@@ -1801,7 +1797,6 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .confidence()
-                 * .name()
                  * .probabilities()
                  * .score()
                  * ```
@@ -2252,21 +2247,14 @@ private constructor(
 
             companion object {
 
-                /**
-                 * Returns a mutable builder for constructing an instance of [Refusal].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .name()
-                 * ```
-                 */
+                /** Returns a mutable builder for constructing an instance of [Refusal]. */
                 @JvmStatic fun builder() = Builder()
             }
 
             /** A builder for [Refusal]. */
             class Builder internal constructor() {
 
-                private var name: JsonField<String>? = null
+                private var name: JsonField<String>? = JsonNull.of()
                 private var type: JsonValue = JsonValue.from("refusal")
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -2331,13 +2319,6 @@ private constructor(
                  * Returns an immutable instance of [Refusal].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .name()
-                 * ```
-                 *
-                 * @throws IllegalStateException if any required field is unset.
                  */
                 fun build(): Refusal =
                     Refusal(checkRequired("name", name), type, additionalProperties.toMutableMap())

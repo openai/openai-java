@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -148,9 +149,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .stateVariables()
          * .tracing()
-         * .version()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -160,9 +159,9 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var stateVariables: JsonField<StateVariables>? = null
+        private var stateVariables: JsonField<StateVariables>? = JsonNull.of()
         private var tracing: JsonField<Tracing>? = null
-        private var version: JsonField<String>? = null
+        private var version: JsonField<String>? = JsonNull.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -262,9 +261,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .stateVariables()
          * .tracing()
-         * .version()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.

@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -807,9 +808,6 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .generatedAt()
-                 * .issuer()
-                 * .model()
                  * .outcome()
                  * .validationState()
                  * ```
@@ -820,9 +818,9 @@ private constructor(
             /** A builder for [C2pa]. */
             class Builder internal constructor() {
 
-                private var generatedAt: JsonField<String>? = null
-                private var issuer: JsonField<String>? = null
-                private var model: JsonField<String>? = null
+                private var generatedAt: JsonField<String>? = JsonNull.of()
+                private var issuer: JsonField<String>? = JsonNull.of()
+                private var model: JsonField<String>? = JsonNull.of()
                 private var outcome: JsonField<Outcome>? = null
                 private var type: JsonValue = JsonValue.from("c2pa")
                 private var validationState: JsonField<ValidationState>? = null
@@ -969,9 +967,6 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .generatedAt()
-                 * .issuer()
-                 * .model()
                  * .outcome()
                  * .validationState()
                  * ```
@@ -1517,8 +1512,6 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .generatedAt()
-                 * .model()
                  * .outcome()
                  * ```
                  */
@@ -1528,8 +1521,8 @@ private constructor(
             /** A builder for [SynthID]. */
             class Builder internal constructor() {
 
-                private var generatedAt: JsonField<String>? = null
-                private var model: JsonField<String>? = null
+                private var generatedAt: JsonField<String>? = JsonNull.of()
+                private var model: JsonField<String>? = JsonNull.of()
                 private var outcome: JsonField<Outcome>? = null
                 private var type: JsonValue = JsonValue.from("synthid")
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1643,8 +1636,6 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .generatedAt()
-                 * .model()
                  * .outcome()
                  * ```
                  *

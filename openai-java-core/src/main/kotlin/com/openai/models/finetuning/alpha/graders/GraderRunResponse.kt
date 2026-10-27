@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -489,9 +490,7 @@ private constructor(
              * .errors()
              * .executionTime()
              * .name()
-             * .sampledModelName()
              * .scores()
-             * .tokenUsage()
              * .type()
              * ```
              */
@@ -504,9 +503,9 @@ private constructor(
             private var errors: JsonField<Errors>? = null
             private var executionTime: JsonField<Double>? = null
             private var name: JsonField<String>? = null
-            private var sampledModelName: JsonField<String>? = null
+            private var sampledModelName: JsonField<String>? = JsonNull.of()
             private var scores: JsonField<Scores>? = null
-            private var tokenUsage: JsonField<Long>? = null
+            private var tokenUsage: JsonField<Long>? = JsonNull.of()
             private var type: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -649,9 +648,7 @@ private constructor(
              * .errors()
              * .executionTime()
              * .name()
-             * .sampledModelName()
              * .scores()
-             * .tokenUsage()
              * .type()
              * ```
              *
@@ -1109,12 +1106,9 @@ private constructor(
                  * .modelGraderParseError()
                  * .modelGraderRefusalError()
                  * .modelGraderServerError()
-                 * .modelGraderServerErrorDetails()
                  * .otherError()
                  * .pythonGraderRuntimeError()
-                 * .pythonGraderRuntimeErrorDetails()
                  * .pythonGraderServerError()
-                 * .pythonGraderServerErrorType()
                  * .sampleParseError()
                  * .truncatedObservationError()
                  * .unresponsiveRewardError()
@@ -1131,12 +1125,12 @@ private constructor(
                 private var modelGraderParseError: JsonField<Boolean>? = null
                 private var modelGraderRefusalError: JsonField<Boolean>? = null
                 private var modelGraderServerError: JsonField<Boolean>? = null
-                private var modelGraderServerErrorDetails: JsonField<String>? = null
+                private var modelGraderServerErrorDetails: JsonField<String>? = JsonNull.of()
                 private var otherError: JsonField<Boolean>? = null
                 private var pythonGraderRuntimeError: JsonField<Boolean>? = null
-                private var pythonGraderRuntimeErrorDetails: JsonField<String>? = null
+                private var pythonGraderRuntimeErrorDetails: JsonField<String>? = JsonNull.of()
                 private var pythonGraderServerError: JsonField<Boolean>? = null
-                private var pythonGraderServerErrorType: JsonField<String>? = null
+                private var pythonGraderServerErrorType: JsonField<String>? = JsonNull.of()
                 private var sampleParseError: JsonField<Boolean>? = null
                 private var truncatedObservationError: JsonField<Boolean>? = null
                 private var unresponsiveRewardError: JsonField<Boolean>? = null
@@ -1418,12 +1412,9 @@ private constructor(
                  * .modelGraderParseError()
                  * .modelGraderRefusalError()
                  * .modelGraderServerError()
-                 * .modelGraderServerErrorDetails()
                  * .otherError()
                  * .pythonGraderRuntimeError()
-                 * .pythonGraderRuntimeErrorDetails()
                  * .pythonGraderServerError()
-                 * .pythonGraderServerErrorType()
                  * .sampleParseError()
                  * .truncatedObservationError()
                  * .unresponsiveRewardError()

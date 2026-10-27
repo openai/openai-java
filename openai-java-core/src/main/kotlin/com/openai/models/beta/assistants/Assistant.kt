@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -377,11 +378,7 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .description()
-         * .instructions()
-         * .metadata()
          * .model()
-         * .name()
          * .tools()
          * ```
          */
@@ -393,11 +390,11 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
-        private var description: JsonField<String>? = null
-        private var instructions: JsonField<String>? = null
-        private var metadata: JsonField<Metadata>? = null
+        private var description: JsonField<String>? = JsonNull.of()
+        private var instructions: JsonField<String>? = JsonNull.of()
+        private var metadata: JsonField<Metadata>? = JsonNull.of()
         private var model: JsonField<String>? = null
-        private var name: JsonField<String>? = null
+        private var name: JsonField<String>? = JsonNull.of()
         private var object_: JsonValue = JsonValue.from("assistant")
         private var tools: JsonField<MutableList<AssistantTool>>? = null
         private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
@@ -765,11 +762,7 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .description()
-         * .instructions()
-         * .metadata()
          * .model()
-         * .name()
          * .tools()
          * ```
          *

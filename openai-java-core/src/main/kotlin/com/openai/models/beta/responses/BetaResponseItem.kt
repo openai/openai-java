@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
@@ -3401,8 +3402,6 @@ private constructor(
                      * The following fields are required:
                      * ```java
                      * .detail()
-                     * .fileId()
-                     * .imageUrl()
                      * ```
                      */
                     @JvmStatic fun builder() = Builder()
@@ -3412,8 +3411,8 @@ private constructor(
                 class Builder internal constructor() {
 
                     private var detail: JsonField<Detail>? = null
-                    private var fileId: JsonField<String>? = null
-                    private var imageUrl: JsonField<String>? = null
+                    private var fileId: JsonField<String>? = JsonNull.of()
+                    private var imageUrl: JsonField<String>? = JsonNull.of()
                     private var type: JsonValue = JsonValue.from("computer_screenshot")
                     private var promptCacheBreakpoint: JsonField<PromptCacheBreakpoint> =
                         JsonMissing.of()
@@ -3538,8 +3537,6 @@ private constructor(
                      * The following fields are required:
                      * ```java
                      * .detail()
-                     * .fileId()
-                     * .imageUrl()
                      * ```
                      *
                      * @throws IllegalStateException if any required field is unset.
@@ -8522,7 +8519,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .id()
-             * .result()
              * .status()
              * ```
              */
@@ -8533,7 +8529,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var id: JsonField<String>? = null
-            private var result: JsonField<String>? = null
+            private var result: JsonField<String>? = JsonNull.of()
             private var status: JsonField<Status>? = null
             private var type: JsonValue = JsonValue.from("image_generation_call")
             private var action: JsonField<Action> = JsonMissing.of()
@@ -8781,7 +8777,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .id()
-             * .result()
              * .status()
              * ```
              *
@@ -9667,9 +9662,7 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .code()
                  * .message()
-                 * .param()
                  * .type()
                  * ```
                  */
@@ -9679,9 +9672,9 @@ private constructor(
             /** A builder for [Error]. */
             class Builder internal constructor() {
 
-                private var code: JsonField<String>? = null
+                private var code: JsonField<String>? = JsonNull.of()
                 private var message: JsonField<String>? = null
-                private var param: JsonField<String>? = null
+                private var param: JsonField<String>? = JsonNull.of()
                 private var type: JsonField<String>? = null
                 private var moderationDetails: JsonField<ModerationDetails> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -9794,9 +9787,7 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .code()
                  * .message()
-                 * .param()
                  * .type()
                  * ```
                  *

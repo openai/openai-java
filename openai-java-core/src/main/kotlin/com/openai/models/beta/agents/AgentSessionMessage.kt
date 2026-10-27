@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -202,9 +203,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .id()
          * .content()
-         * .phase()
          * .role()
          * .status()
          * .turnId()
@@ -216,9 +215,9 @@ private constructor(
     /** A builder for [AgentSessionMessage]. */
     class Builder internal constructor() {
 
-        private var id: JsonField<String>? = null
+        private var id: JsonField<String>? = JsonNull.of()
         private var content: JsonField<MutableList<AgentSessionMessageContent>>? = null
-        private var phase: JsonField<Phase>? = null
+        private var phase: JsonField<Phase>? = JsonNull.of()
         private var role: JsonField<Role>? = null
         private var status: JsonField<AgentOutputItemStatus>? = null
         private var turnId: JsonField<String>? = null
@@ -421,9 +420,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .id()
          * .content()
-         * .phase()
          * .role()
          * .status()
          * .turnId()

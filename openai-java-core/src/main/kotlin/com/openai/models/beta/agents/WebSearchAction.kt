@@ -18,6 +18,7 @@ import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -408,15 +409,7 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [Search].
-             *
-             * The following fields are required:
-             * ```java
-             * .queries()
-             * .query()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [Search]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -424,7 +417,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var queries: JsonField<MutableList<String>>? = null
-            private var query: JsonField<String>? = null
+            private var query: JsonField<String>? = JsonNull.of()
             private var type: JsonValue = JsonValue.from("search")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -517,18 +510,10 @@ private constructor(
              * Returns an immutable instance of [Search].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .queries()
-             * .query()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Search =
                 Search(
-                    checkRequired("queries", queries).map { it.toImmutable() },
+                    checkRequired("queries", queries ?: JsonNull.of()).map { it.toImmutable() },
                     checkRequired("query", query),
                     type,
                     additionalProperties.toMutableMap(),
@@ -678,14 +663,7 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [OpenPage].
-             *
-             * The following fields are required:
-             * ```java
-             * .url()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [OpenPage]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -693,7 +671,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var type: JsonValue = JsonValue.from("open_page")
-            private var url: JsonField<String>? = null
+            private var url: JsonField<String>? = JsonNull.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -755,13 +733,6 @@ private constructor(
              * Returns an immutable instance of [OpenPage].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .url()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): OpenPage =
                 OpenPage(type, checkRequired("url", url), additionalProperties.toMutableMap())
@@ -927,24 +898,16 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [FindInPage].
-             *
-             * The following fields are required:
-             * ```java
-             * .pattern()
-             * .url()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [FindInPage]. */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [FindInPage]. */
         class Builder internal constructor() {
 
-            private var pattern: JsonField<String>? = null
+            private var pattern: JsonField<String>? = JsonNull.of()
             private var type: JsonValue = JsonValue.from("find_in_page")
-            private var url: JsonField<String>? = null
+            private var url: JsonField<String>? = JsonNull.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1022,14 +985,6 @@ private constructor(
              * Returns an immutable instance of [FindInPage].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .pattern()
-             * .url()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): FindInPage =
                 FindInPage(

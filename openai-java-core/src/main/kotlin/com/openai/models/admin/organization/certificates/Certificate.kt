@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -190,7 +191,6 @@ private constructor(
          * .id()
          * .certificateDetails()
          * .createdAt()
-         * .name()
          * .object_()
          * ```
          */
@@ -203,7 +203,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var certificateDetails: JsonField<CertificateDetails>? = null
         private var createdAt: JsonField<Long>? = null
-        private var name: JsonField<String>? = null
+        private var name: JsonField<String>? = JsonNull.of()
         private var object_: JsonField<Object>? = null
         private var active: JsonField<Boolean> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -331,7 +331,6 @@ private constructor(
          * .id()
          * .certificateDetails()
          * .createdAt()
-         * .name()
          * .object_()
          * ```
          *
