@@ -79,6 +79,7 @@ internal class HttpResponseForTest {
         val reading = CountDownLatch(1)
         val releaseRead = CountDownLatch(1)
         val response = mock<HttpResponse>()
+        whenever(response.headers()).thenReturn(Headers.builder().build())
         whenever(response.body())
             .thenReturn(
                 object : InputStream() {
@@ -131,6 +132,7 @@ internal class HttpResponseForTest {
         val reading = CountDownLatch(1)
         val releaseRead = CountDownLatch(1)
         val response = mock<HttpResponse>()
+        whenever(response.headers()).thenReturn(Headers.builder().build())
         whenever(response.body())
             .thenReturn(
                 object : InputStream() {
