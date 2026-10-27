@@ -6,6 +6,7 @@ import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.errors.BadRequestException
+import com.openai.errors.OpenAIInvalidDataException
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.CompletableFuture
@@ -68,7 +69,7 @@ internal class WorkloadIdentityAuthTest {
     }
 
     @Test
-    fun getToken_success() {
+    fun getToken_acceptsAdditionalTokenExchangeResponseFields() {
         val subjectToken = "subject-token"
         val accessToken = "test-access-token"
         val oauthResponse =
@@ -77,7 +78,8 @@ internal class WorkloadIdentityAuthTest {
                 "access_token": "$accessToken",
                 "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
                 "token_type": "Bearer",
-                "expires_in": 3600
+                "expires_in": 3600,
+                "expires_at": 1900000000
             }
         """
                 .trimIndent()
@@ -116,6 +118,41 @@ internal class WorkloadIdentityAuthTest {
 
         assertThat(token).isEqualTo(accessToken)
         verify(httpClient, times(1)).execute(any<HttpRequest>())
+    }
+
+    @Test
+    fun getToken_rejectsBlankAccessTokenWithoutExposingResponseFields() {
+        val extensionValue = "fake-refresh-token"
+        val responseBody =
+            """
+            {
+                "access_token": "",
+                "issued_token_type": "access_token",
+                "token_type": "Bearer",
+                "refresh_token": "$extensionValue"
+            }
+            """
+        val jsonMapper = JsonMapper()
+        val provider = mock<SubjectTokenProvider>()
+        val response = mockResponse(200, responseBody)
+        whenever(provider.tokenType()).thenReturn(SubjectTokenType.JWT)
+        whenever(provider.getToken(httpClient, jsonMapper)).thenReturn("subject-token")
+        whenever(httpClient.execute(any<HttpRequest>())).thenReturn(response)
+        val auth =
+            WorkloadIdentityAuth(
+                config =
+                    WorkloadIdentity.builder()
+                        .identityProviderId("provider-id")
+                        .serviceAccountId("service-account-id")
+                        .provider(provider)
+                        .build(),
+                httpClient = httpClient,
+                jsonMapper = jsonMapper,
+            )
+
+        val thrown = assertThrows<OpenAIInvalidDataException> { auth.getToken() }
+
+        assertThat(thrown.message).contains("access_token").doesNotContain(extensionValue)
     }
 
     @Test

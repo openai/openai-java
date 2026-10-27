@@ -1,7 +1,9 @@
 package com.openai.auth
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 internal data class TokenExchangeResponse(
     @JsonProperty("access_token") val accessToken: String,
     @JsonProperty("issued_token_type") val issuedTokenType: String,
