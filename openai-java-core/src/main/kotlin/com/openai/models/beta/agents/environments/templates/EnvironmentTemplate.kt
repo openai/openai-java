@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -322,7 +323,6 @@ private constructor(
          * .capabilityDirectories()
          * .createdAt()
          * .files()
-         * .name()
          * .network()
          * .packages()
          * .plugins()
@@ -340,7 +340,7 @@ private constructor(
         private var capabilityDirectories: JsonField<MutableList<String>>? = null
         private var createdAt: JsonField<Long>? = null
         private var files: JsonField<MutableList<File>>? = null
-        private var name: JsonField<String>? = null
+        private var name: JsonField<String>? = JsonNull.of()
         private var network: JsonField<Network>? = null
         private var object_: JsonValue = JsonValue.from("agent.environment.template")
         private var packages: JsonField<Packages>? = null
@@ -608,7 +608,6 @@ private constructor(
          * .capabilityDirectories()
          * .createdAt()
          * .files()
-         * .name()
          * .network()
          * .packages()
          * .plugins()
@@ -2520,7 +2519,6 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .skillId()
-                 * .version()
                  * ```
                  */
                 @JvmStatic fun builder() = Builder()
@@ -2531,7 +2529,7 @@ private constructor(
 
                 private var skillId: JsonField<String>? = null
                 private var type: JsonValue = JsonValue.from("skill_reference")
-                private var version: JsonField<String>? = null
+                private var version: JsonField<String>? = JsonNull.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -2613,7 +2611,6 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .skillId()
-                 * .version()
                  * ```
                  *
                  * @throws IllegalStateException if any required field is unset.

@@ -1,0 +1,21 @@
+# File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
+# Preserve Kotlin constructor metadata used by Jackson for legacy-property models.
+-keep class com.openai.models.beta.responses.BetaResponseError { *; }
+-keep class com.openai.models.beta.responses.BetaResponseInputFile$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.beta.responses.BetaResponseInputFileContent$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.beta.responses.BetaResponseInputImage$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.beta.responses.BetaResponseInputImageContent$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.beta.responses.BetaResponseInputText$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.beta.responses.BetaResponseInputTextContent$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.beta.responses.BetaResponseItem$AgentMessage$Content$ComputerScreenshot$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.beta.responses.BetaResponseOutputItem$AgentMessage$Content$ComputerScreenshot$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.conversations.ComputerScreenshotContent$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.realtime.RealtimeResponseStatus$Error { *; }
+-keep class com.openai.models.responses.ResponseError { *; }
+-keep class com.openai.models.responses.ResponseInputFile$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.responses.ResponseInputFileContent$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.responses.ResponseInputImage$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.responses.ResponseInputImageContent$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.responses.ResponseInputText$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.responses.ResponseInputTextContent$PromptCacheBreakpoint { *; }
+-keep class com.openai.models.videos.VideoCreateError { *; }

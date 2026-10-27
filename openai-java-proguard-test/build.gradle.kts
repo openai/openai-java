@@ -68,6 +68,7 @@ val proguardJar by tasks.registering(proguard.gradle.ProGuardTask::class) {
 
     configuration("./test.pro")
     configuration("../openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro")
+    configuration("../openai-java-core/src/main/resources/META-INF/proguard/castiron-legacy-models.pro")
 }
 
 val testProGuard by tasks.registering(JavaExec::class) {
@@ -90,7 +91,7 @@ val r8Jar by tasks.registering(JavaExec::class) {
     // JavaExec already tracks its tool classpath and arguments. Declare the files read through
     // those arguments so unchanged transformations can be restored without skipping the smoke test.
     inputs.files(shadowJarFile).withPropertyName("programJar").withNormalizer(ClasspathNormalizer::class)
-    inputs.files("./test.pro", "../openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro")
+    inputs.files("./test.pro", "../openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro", "../openai-java-core/src/main/resources/META-INF/proguard/castiron-legacy-models.pro")
         .withPropertyName("proguardConfiguration").withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.dir(System.getProperty("java.home"))
         .withPropertyName("libraryJavaHome").withPathSensitivity(PathSensitivity.RELATIVE)
@@ -104,6 +105,7 @@ val r8Jar by tasks.registering(JavaExec::class) {
         "--lib", System.getProperty("java.home"),
         "--pg-conf", "./test.pro",
         "--pg-conf", "../openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro",
+        "--pg-conf", "../openai-java-core/src/main/resources/META-INF/proguard/castiron-legacy-models.pro",
         "--pg-map-output", r8MappingPath,
         shadowJarFile.get().asFile.absolutePath,
     )

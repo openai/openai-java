@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -199,7 +200,6 @@ private constructor(
          * ```java
          * .id()
          * .content()
-         * .phase()
          * .status()
          * .turnId()
          * ```
@@ -212,7 +212,7 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var content: JsonField<MutableList<OutputText>>? = null
-        private var phase: JsonField<Phase>? = null
+        private var phase: JsonField<Phase>? = JsonNull.of()
         private var role: JsonValue = JsonValue.from("assistant")
         private var status: JsonField<AgentOutputItemStatus>? = null
         private var turnId: JsonField<String>? = null
@@ -361,7 +361,6 @@ private constructor(
          * ```java
          * .id()
          * .content()
-         * .phase()
          * .status()
          * .turnId()
          * ```

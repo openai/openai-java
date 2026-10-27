@@ -18,6 +18,7 @@ import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -444,9 +445,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .expiresAt()
              * .mcpServerUrl()
-             * .refresh()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -455,9 +454,9 @@ private constructor(
         /** A builder for [McpOAuth]. */
         class Builder internal constructor() {
 
-            private var expiresAt: JsonField<String>? = null
+            private var expiresAt: JsonField<String>? = JsonNull.of()
             private var mcpServerUrl: JsonField<String>? = null
-            private var refresh: JsonField<Refresh>? = null
+            private var refresh: JsonField<Refresh>? = JsonNull.of()
             private var type: JsonValue = JsonValue.from("mcp_oauth")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -554,9 +553,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .expiresAt()
              * .mcpServerUrl()
-             * .refresh()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
@@ -783,8 +780,6 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .clientId()
-                 * .resource()
-                 * .scope()
                  * .tokenEndpoint()
                  * .tokenEndpointAuth()
                  * ```
@@ -796,8 +791,8 @@ private constructor(
             class Builder internal constructor() {
 
                 private var clientId: JsonField<String>? = null
-                private var resource: JsonField<String>? = null
-                private var scope: JsonField<String>? = null
+                private var resource: JsonField<String>? = JsonNull.of()
+                private var scope: JsonField<String>? = JsonNull.of()
                 private var tokenEndpoint: JsonField<String>? = null
                 private var tokenEndpointAuth: JsonField<McpOAuthTokenEndpointAuth>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -939,8 +934,6 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .clientId()
-                 * .resource()
-                 * .scope()
                  * .tokenEndpoint()
                  * .tokenEndpointAuth()
                  * ```

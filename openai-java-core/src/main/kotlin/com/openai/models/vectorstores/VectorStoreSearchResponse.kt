@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -169,7 +170,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .attributes()
          * .content()
          * .fileId()
          * .filename()
@@ -182,7 +182,7 @@ private constructor(
     /** A builder for [VectorStoreSearchResponse]. */
     class Builder internal constructor() {
 
-        private var attributes: JsonField<Attributes>? = null
+        private var attributes: JsonField<Attributes>? = JsonNull.of()
         private var content: JsonField<MutableList<Content>>? = null
         private var fileId: JsonField<String>? = null
         private var filename: JsonField<String>? = null
@@ -305,7 +305,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .attributes()
          * .content()
          * .fileId()
          * .filename()

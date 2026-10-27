@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -229,23 +230,15 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ChatCompletionMessage].
-         *
-         * The following fields are required:
-         * ```java
-         * .content()
-         * .refusal()
-         * ```
-         */
+        /** Returns a mutable builder for constructing an instance of [ChatCompletionMessage]. */
         @JvmStatic fun builder() = Builder()
     }
 
     /** A builder for [ChatCompletionMessage]. */
     class Builder internal constructor() {
 
-        private var content: JsonField<String>? = null
-        private var refusal: JsonField<String>? = null
+        private var content: JsonField<String>? = JsonNull.of()
+        private var refusal: JsonField<String>? = JsonNull.of()
         private var role: JsonValue = JsonValue.from("assistant")
         private var annotations: JsonField<MutableList<Annotation>>? = null
         private var audio: JsonField<ChatCompletionAudio> = JsonMissing.of()
@@ -437,14 +430,6 @@ private constructor(
          * Returns an immutable instance of [ChatCompletionMessage].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .content()
-         * .refusal()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ChatCompletionMessage =
             ChatCompletionMessage(

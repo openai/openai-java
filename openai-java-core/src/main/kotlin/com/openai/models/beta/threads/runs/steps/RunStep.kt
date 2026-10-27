@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -411,19 +412,12 @@ private constructor(
          * ```java
          * .id()
          * .assistantId()
-         * .cancelledAt()
-         * .completedAt()
          * .createdAt()
-         * .expiredAt()
-         * .failedAt()
-         * .lastError()
-         * .metadata()
          * .runId()
          * .status()
          * .stepDetails()
          * .threadId()
          * .type()
-         * .usage()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -434,20 +428,20 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var assistantId: JsonField<String>? = null
-        private var cancelledAt: JsonField<Long>? = null
-        private var completedAt: JsonField<Long>? = null
+        private var cancelledAt: JsonField<Long>? = JsonNull.of()
+        private var completedAt: JsonField<Long>? = JsonNull.of()
         private var createdAt: JsonField<Long>? = null
-        private var expiredAt: JsonField<Long>? = null
-        private var failedAt: JsonField<Long>? = null
-        private var lastError: JsonField<LastError>? = null
-        private var metadata: JsonField<Metadata>? = null
+        private var expiredAt: JsonField<Long>? = JsonNull.of()
+        private var failedAt: JsonField<Long>? = JsonNull.of()
+        private var lastError: JsonField<LastError>? = JsonNull.of()
+        private var metadata: JsonField<Metadata>? = JsonNull.of()
         private var object_: JsonValue = JsonValue.from("thread.run.step")
         private var runId: JsonField<String>? = null
         private var status: JsonField<Status>? = null
         private var stepDetails: JsonField<StepDetails>? = null
         private var threadId: JsonField<String>? = null
         private var type: JsonField<Type>? = null
-        private var usage: JsonField<Usage>? = null
+        private var usage: JsonField<Usage>? = JsonNull.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -796,19 +790,12 @@ private constructor(
          * ```java
          * .id()
          * .assistantId()
-         * .cancelledAt()
-         * .completedAt()
          * .createdAt()
-         * .expiredAt()
-         * .failedAt()
-         * .lastError()
-         * .metadata()
          * .runId()
          * .status()
          * .stepDetails()
          * .threadId()
          * .type()
-         * .usage()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.

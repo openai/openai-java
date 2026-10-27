@@ -18,6 +18,7 @@ import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -188,7 +189,6 @@ private constructor(
          * .id()
          * .createdAt()
          * .status()
-         * .title()
          * .user()
          * ```
          */
@@ -202,7 +202,7 @@ private constructor(
         private var createdAt: JsonField<Long>? = null
         private var object_: JsonValue = JsonValue.from("chatkit.thread")
         private var status: JsonField<Status>? = null
-        private var title: JsonField<String>? = null
+        private var title: JsonField<String>? = JsonNull.of()
         private var user: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -356,7 +356,6 @@ private constructor(
          * .id()
          * .createdAt()
          * .status()
-         * .title()
          * .user()
          * ```
          *
@@ -756,21 +755,14 @@ private constructor(
 
             companion object {
 
-                /**
-                 * Returns a mutable builder for constructing an instance of [Locked].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .reason()
-                 * ```
-                 */
+                /** Returns a mutable builder for constructing an instance of [Locked]. */
                 @JvmStatic fun builder() = Builder()
             }
 
             /** A builder for [Locked]. */
             class Builder internal constructor() {
 
-                private var reason: JsonField<String>? = null
+                private var reason: JsonField<String>? = JsonNull.of()
                 private var type: JsonValue = JsonValue.from("locked")
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -838,13 +830,6 @@ private constructor(
                  * Returns an immutable instance of [Locked].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .reason()
-                 * ```
-                 *
-                 * @throws IllegalStateException if any required field is unset.
                  */
                 fun build(): Locked =
                     Locked(
@@ -1001,21 +986,14 @@ private constructor(
 
             companion object {
 
-                /**
-                 * Returns a mutable builder for constructing an instance of [Closed].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .reason()
-                 * ```
-                 */
+                /** Returns a mutable builder for constructing an instance of [Closed]. */
                 @JvmStatic fun builder() = Builder()
             }
 
             /** A builder for [Closed]. */
             class Builder internal constructor() {
 
-                private var reason: JsonField<String>? = null
+                private var reason: JsonField<String>? = JsonNull.of()
                 private var type: JsonValue = JsonValue.from("closed")
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -1083,13 +1061,6 @@ private constructor(
                  * Returns an immutable instance of [Closed].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .reason()
-                 * ```
-                 *
-                 * @throws IllegalStateException if any required field is unset.
                  */
                 fun build(): Closed =
                     Closed(

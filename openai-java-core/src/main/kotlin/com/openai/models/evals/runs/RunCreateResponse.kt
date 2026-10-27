@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
@@ -397,7 +398,6 @@ private constructor(
          * .dataSource()
          * .error()
          * .evalId()
-         * .metadata()
          * .model()
          * .name()
          * .perModelUsage()
@@ -418,7 +418,7 @@ private constructor(
         private var dataSource: JsonField<DataSource>? = null
         private var error: JsonField<EvalApiError>? = null
         private var evalId: JsonField<String>? = null
-        private var metadata: JsonField<Metadata>? = null
+        private var metadata: JsonField<Metadata>? = JsonNull.of()
         private var model: JsonField<String>? = null
         private var name: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("eval.run")
@@ -886,7 +886,6 @@ private constructor(
          * .dataSource()
          * .error()
          * .evalId()
-         * .metadata()
          * .model()
          * .name()
          * .perModelUsage()

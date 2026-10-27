@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -183,10 +184,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .email()
-         * .isServiceAccount()
          * .name()
-         * .picture()
          * .userType()
          * ```
          */
@@ -197,10 +195,10 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var email: JsonField<String>? = null
-        private var isServiceAccount: JsonField<Boolean>? = null
+        private var email: JsonField<String>? = JsonNull.of()
+        private var isServiceAccount: JsonField<Boolean>? = JsonNull.of()
         private var name: JsonField<String>? = null
-        private var picture: JsonField<String>? = null
+        private var picture: JsonField<String>? = JsonNull.of()
         private var userType: JsonField<UserType>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -331,10 +329,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .email()
-         * .isServiceAccount()
          * .name()
-         * .picture()
          * .userType()
          * ```
          *

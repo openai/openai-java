@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -256,9 +257,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .closedAt()
-         * .instructions()
-         * .name()
          * .openedAt()
          * .parentAgentId()
          * .sessionId()
@@ -272,9 +270,9 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var closedAt: JsonField<Long>? = null
+        private var closedAt: JsonField<Long>? = JsonNull.of()
         private var instructions: JsonField<MutableList<AgentContent>>? = null
-        private var name: JsonField<String>? = null
+        private var name: JsonField<String>? = JsonNull.of()
         private var object_: JsonField<Object>? = JsonField.of(Object.AGENT_SESSION_SUBAGENT)
         private var openedAt: JsonField<Long>? = null
         private var parentAgentId: JsonField<String>? = null
@@ -500,9 +498,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .closedAt()
-         * .instructions()
-         * .name()
          * .openedAt()
          * .parentAgentId()
          * .sessionId()
@@ -515,7 +510,9 @@ private constructor(
             Subagent(
                 checkRequired("id", id),
                 checkRequired("closedAt", closedAt),
-                checkRequired("instructions", instructions).map { it.toImmutable() },
+                checkRequired("instructions", instructions ?: JsonNull.of()).map {
+                    it.toImmutable()
+                },
                 checkRequired("name", name),
                 checkRequired("object_", object_),
                 checkRequired("openedAt", openedAt),

@@ -980,17 +980,11 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .error()
-         * .incompleteDetails()
-         * .instructions()
-         * .metadata()
          * .model()
          * .output()
          * .parallelToolCalls()
-         * .temperature()
          * .toolChoice()
          * .tools()
-         * .topP()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -1002,18 +996,18 @@ private constructor(
         private var id: JsonField<String>? = null
         private var accessPrograms: JsonField<AccessPrograms>? = JsonNull.of()
         private var createdAt: JsonField<Double>? = null
-        private var error: JsonField<ResponseError>? = null
-        private var incompleteDetails: JsonField<IncompleteDetails>? = null
-        private var instructions: JsonField<Instructions>? = null
-        private var metadata: JsonField<Metadata>? = null
+        private var error: JsonField<ResponseError>? = JsonNull.of()
+        private var incompleteDetails: JsonField<IncompleteDetails>? = JsonNull.of()
+        private var instructions: JsonField<Instructions>? = JsonNull.of()
+        private var metadata: JsonField<Metadata>? = JsonNull.of()
         private var model: JsonField<ResponsesModel>? = null
         private var object_: JsonValue = JsonValue.from("response")
         private var output: JsonField<MutableList<ResponseOutputItem>>? = null
         private var parallelToolCalls: JsonField<Boolean>? = null
-        private var temperature: JsonField<Double>? = null
+        private var temperature: JsonField<Double>? = JsonNull.of()
         private var toolChoice: JsonField<ToolChoice>? = null
         private var tools: JsonField<MutableList<Tool>>? = null
-        private var topP: JsonField<Double>? = null
+        private var topP: JsonField<Double>? = JsonNull.of()
         private var background: JsonField<Boolean> = JsonMissing.of()
         private var completedAt: JsonField<Double> = JsonMissing.of()
         private var conversation: JsonField<Conversation> = JsonMissing.of()
@@ -2244,17 +2238,11 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .error()
-         * .incompleteDetails()
-         * .instructions()
-         * .metadata()
          * .model()
          * .output()
          * .parallelToolCalls()
-         * .temperature()
          * .toolChoice()
          * .tools()
-         * .topP()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.

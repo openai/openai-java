@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -163,7 +164,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .status()
          * .summary()
          * .turnId()
          * ```
@@ -175,7 +175,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var status: JsonField<AgentOutputItemStatus>? = null
+        private var status: JsonField<AgentOutputItemStatus>? = JsonNull.of()
         private var summary: JsonField<MutableList<SummaryText>>? = null
         private var turnId: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("reasoning")
@@ -295,7 +295,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .status()
          * .summary()
          * .turnId()
          * ```

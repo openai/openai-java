@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -197,7 +198,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .callId()
          * .execution()
          * .status()
          * .tools()
@@ -210,7 +210,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var callId: JsonField<String>? = null
+        private var callId: JsonField<String>? = JsonNull.of()
         private var execution: JsonField<Execution>? = null
         private var status: JsonField<Status>? = null
         private var tools: JsonField<MutableList<Tool>>? = null
@@ -468,7 +468,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .callId()
          * .execution()
          * .status()
          * .tools()

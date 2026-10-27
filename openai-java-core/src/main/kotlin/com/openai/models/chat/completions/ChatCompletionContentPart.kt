@@ -373,8 +373,9 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
-         * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the
-         * request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
+         * Marks the exact end of a reusable prompt prefix. When `ttl` is omitted, the breakpoint
+         * inherits the request's `prompt_cache_options.ttl`; the boundary is not rounded to a token
+         * block.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -489,9 +490,9 @@ private constructor(
             fun type(type: JsonValue) = apply { this.type = type }
 
             /**
-             * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from
-             * the request's `prompt_cache_options.ttl`; the boundary is not rounded to a token
-             * block.
+             * Marks the exact end of a reusable prompt prefix. When `ttl` is omitted, the
+             * breakpoint inherits the request's `prompt_cache_options.ttl`; the boundary is not
+             * rounded to a token block.
              */
             fun promptCacheBreakpoint(promptCacheBreakpoint: PromptCacheBreakpoint) =
                 promptCacheBreakpoint(JsonField.of(promptCacheBreakpoint))
@@ -858,8 +859,9 @@ private constructor(
         }
 
         /**
-         * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL from the
-         * request's `prompt_cache_options.ttl`; the boundary is not rounded to a token block.
+         * Marks the exact end of a reusable prompt prefix. When `ttl` is omitted, the breakpoint
+         * inherits the request's `prompt_cache_options.ttl`; the boundary is not rounded to a token
+         * block.
          */
         class PromptCacheBreakpoint
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)

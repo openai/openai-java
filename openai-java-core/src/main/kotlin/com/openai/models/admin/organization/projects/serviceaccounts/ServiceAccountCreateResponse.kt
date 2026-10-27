@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -166,7 +167,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .apiKey()
          * .createdAt()
          * .name()
          * .role()
@@ -179,7 +179,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var apiKey: JsonField<ApiKey>? = null
+        private var apiKey: JsonField<ApiKey>? = JsonNull.of()
         private var createdAt: JsonField<Long>? = null
         private var name: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("organization.project.service_account")
@@ -295,7 +295,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .apiKey()
          * .createdAt()
          * .name()
          * .role()

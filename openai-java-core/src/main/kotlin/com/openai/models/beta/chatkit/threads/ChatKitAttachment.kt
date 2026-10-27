@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -164,7 +165,6 @@ private constructor(
          * .id()
          * .mimeType()
          * .name()
-         * .previewUrl()
          * .type()
          * ```
          */
@@ -177,7 +177,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var mimeType: JsonField<String>? = null
         private var name: JsonField<String>? = null
-        private var previewUrl: JsonField<String>? = null
+        private var previewUrl: JsonField<String>? = JsonNull.of()
         private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -279,7 +279,6 @@ private constructor(
          * .id()
          * .mimeType()
          * .name()
-         * .previewUrl()
          * .type()
          * ```
          *
