@@ -11,6 +11,10 @@ SECURITY.md remains the authority for private disclosure and reportability
 instructions; this document is the authority for architecture, trust boundaries,
 attacker capabilities, security objectives, and severity calibration.
 
+SDK lint verifies generated-file contents and Git file modes against the
+checked-in compiler inventory. The checker runs with the existing lint job
+permissions; inventory and checker changes receive ordinary SDK code review.
+
 ## Overview
 
 This repository publishes Java/Kotlin client libraries rather than a hosted
