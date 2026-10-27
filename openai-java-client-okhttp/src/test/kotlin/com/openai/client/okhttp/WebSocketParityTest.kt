@@ -1,6 +1,9 @@
 package com.openai.client.okhttp
 
 import com.openai.core.ClientOptions
+import com.openai.core.http.HttpMethod
+import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpRequestAuthenticator
 import com.openai.core.http.ResponseConnection
 import com.openai.core.http.ResponseWebSocketOptions
 import com.openai.core.http.WebSocketOptions
@@ -62,13 +65,35 @@ class WebSocketParityTest {
                     val client =
                         ClientOptions.builder()
                             .httpClient(http)
-                            .apiKey("synthetic")
                             .baseUrl(
                                 server
-                                    .url("/v1/?tenant=base&model=base-model&keep=a%2Bb")
+                                    .url("/v1/?tenant=base&model=base-model&keep=a%2Bb%20%C3%A9")
                                     .toString()
                             )
                             .putQueryParam("tenant", "client")
+                            .httpRequestAuthenticator(
+                                object : HttpRequestAuthenticator {
+                                    override fun authenticate(request: HttpRequest): HttpRequest {
+                                        assertThat(request.method).isEqualTo(HttpMethod.GET)
+                                        assertThat(request.baseUrl)
+                                            .isEqualTo(server.url("/v1/").toString())
+                                        assertThat(request.pathSegments).containsExactly(mode)
+                                        assertThat(request.queryParams.values("tenant"))
+                                            .containsExactly("connection +/é")
+                                        assertThat(request.queryParams.values("keep"))
+                                            .containsExactly("a+b é")
+                                        assertThat(request.queryParams.values("model"))
+                                            .containsExactly(
+                                                if (mode == "realtime") "connection-model"
+                                                else "base-model"
+                                            )
+                                        return request
+                                            .toBuilder()
+                                            .replaceHeaders("Authorization", "signed-synthetic")
+                                            .build()
+                                    }
+                                }
+                            )
                             .build()
                     val connection =
                         if (mode == "realtime") {
@@ -76,14 +101,14 @@ class WebSocketParityTest {
                                 client,
                                 RealtimeWebSocketOptions.builder()
                                     .model("connection-model")
-                                    .putQueryParam("tenant", "connection")
+                                    .putQueryParam("tenant", "connection +/é")
                                     .build(),
                             )
                         } else {
                             ResponseConnection.connect(
                                 client,
                                 ResponseWebSocketOptions.builder()
-                                    .putQueryParam("tenant", "connection")
+                                    .putQueryParam("tenant", "connection +/é")
                                     .build(),
                             )
                         }
@@ -91,12 +116,14 @@ class WebSocketParityTest {
                         val request = server.takeRequest(5, TimeUnit.SECONDS)!!
                         val url = request.requestUrl!!
                         assertThat(url.encodedPath).isEqualTo("/v1/$mode")
-                        assertThat(url.queryParameterValues("tenant")).containsExactly("connection")
+                        assertThat(request.getHeader("Authorization")).isEqualTo("signed-synthetic")
+                        assertThat(url.queryParameterValues("tenant"))
+                            .containsExactly("connection +/é")
                         assertThat(url.queryParameterValues("model"))
                             .containsExactly(
                                 if (mode == "realtime") "connection-model" else "base-model"
                             )
-                        assertThat(url.queryParameterValues("keep")).containsExactly("a+b")
+                        assertThat(url.queryParameterValues("keep")).containsExactly("a+b é")
                     }
                     assertThat(peer.closed.await(5, TimeUnit.SECONDS)).isTrue()
                 }

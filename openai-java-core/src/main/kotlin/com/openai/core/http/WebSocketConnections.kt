@@ -41,7 +41,23 @@ internal object WebSocketConnections {
         WebSocketConnection<C, S>(
                 clientOptions,
                 requestOptions,
-                { request(binding, clientOptions, options) },
+                {
+                    val request = request(binding, clientOptions, options)
+                    // Generic bindings can include template values. Preserve their once-encoded
+                    // path for custom transports whose HttpRequest.url() uses form encoding.
+                    val separator = if (request.baseUrl.endsWith("/")) "" else "/"
+                    request
+                        .toBuilder()
+                        .baseUrl(
+                            request.baseUrl +
+                                separator +
+                                binding.pathSegments.joinToString("/") {
+                                    URLEncoder.encode(it, "UTF-8").replace("+", "%20")
+                                }
+                        )
+                        .pathSegments(emptyList())
+                        .build()
+                },
                 binding.eventType,
                 binding.validate,
                 options.maxMessageBytes,
@@ -64,36 +80,22 @@ internal object WebSocketConnections {
         ) {
             "WebSockets require unified Azure routing"
         }
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .baseUrl(requestBase)
-                .pathSegments(binding.pathSegments)
-                .apply {
-                    baseUrl.rawQuery
-                        ?.split('&')
-                        ?.filter { it.isNotEmpty() }
-                        ?.forEach {
-                            putQueryParam(
-                                URLDecoder.decode(it.substringBefore('='), "UTF-8"),
-                                URLDecoder.decode(it.substringAfter('=', ""), "UTF-8"),
-                            )
-                        }
-                }
-                .build()
-                .prepare(clientOptions, options, binding.security)
-        // Both custom transports and OkHttp must see the same once-encoded path.
-        val separator = if (requestBase.endsWith("/")) "" else "/"
-        return request
-            .toBuilder()
-            .baseUrl(
-                requestBase +
-                    separator +
-                    binding.pathSegments.joinToString("/") {
-                        URLEncoder.encode(it, "UTF-8").replace("+", "%20")
+        return HttpRequest.builder()
+            .method(HttpMethod.GET)
+            .baseUrl(requestBase)
+            .pathSegments(binding.pathSegments)
+            .apply {
+                baseUrl.rawQuery
+                    ?.split('&')
+                    ?.filter { it.isNotEmpty() }
+                    ?.forEach {
+                        putQueryParam(
+                            URLDecoder.decode(it.substringBefore('='), "UTF-8"),
+                            URLDecoder.decode(it.substringAfter('=', ""), "UTF-8"),
+                        )
                     }
-            )
-            .pathSegments(emptyList())
+            }
             .build()
+            .prepare(clientOptions, options, binding.security)
     }
 }
