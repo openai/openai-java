@@ -1,5 +1,10 @@
 # OpenAI Java SDK security model
 
+Generated files are updated through authoritative inputs or the compiler and
+regeneration; handwritten edits to them are forbidden. Code review enforces this
+ownership rule. The customization-budget reporter and publishers are retired
+and are not part of the active CI or security controls.
+
 This is the repository's single canonical detailed threat model. Use it for
 security review and Codex Security scans of the revision being reviewed.
 SECURITY.md remains the authority for private disclosure and reportability
@@ -106,13 +111,10 @@ not exposed to the attestation action.
   boundary where independently mutable data enters a parser/evaluator, where
   runtime/network data reaches a sensitive sink, or where PR-controlled code can
   reach protected CI or release credentials.
-- Candidate Git objects can still be lower-trust data when a separately
-  privileged workflow evaluates them. The workflow_run custom-code workflow
-  checks out trusted main, computes from current PR Git objects, and freshness
-  checks the exact head before publishing status; breaking that evaluator boundary
-  remains a security finding. (.github/workflows/castiron-custom-code-comment.yml:34-57;
-  .github/workflows/castiron-custom-code-comment.yml:74-98;
-  .github/workflows/castiron-custom-code-comment.yml:128-181)
+- Candidate Git objects remain lower-trust data when a separately privileged
+  evaluator handles them. Such an evaluator must independently constrain that
+  data before accessing protected CI or release authority.
+
 - Merged, reviewed repository source intentionally executes with trusted
   build/release authority. The security boundary is externally enforced branch
   governance, CODEOWNERS/rulesets, verified release selection, and protected
@@ -171,7 +173,6 @@ These are review hypotheses, not confirmed findings.
 | High | Untrusted webhook bytes are parsed or acted on without valid signature/freshness checks. | Embedding application exposes webhook ingress and relies on SDK verification. | Forged event acceptance. | Required headers, bounded timestamp tolerance, HMAC-SHA256, timing-safe compare, then parse; no replay deduplication. | Preserve verify-before-parse ordering and focused regression tests; embedding applications must deduplicate accepted webhook IDs when replay matters. | openai-java-core/src/main/kotlin/com/openai/services/WebhookVerification.kt:19-99; openai-java-core/src/main/kotlin/com/openai/services/blocking/WebhookServiceImpl.kt:33-41 |
 | Medium | Independently mutable API/SSE JSON crosses a parser boundary and causes unsafe interpretation, resource exhaustion, or sensitive exception/log output. | Attacker controls an API/network response or configured proxy; sink is reachable in caller deployment. | Client failure, data exposure, or downstream misuse. | Strict mapper defaults, typed parsing, stream iteration, and explicit DEBUG diagnostics. | Keep parsing robust and large-payload-compatible; avoid treating model output as executable authority without caller controls. | openai-java-core/src/main/kotlin/com/openai/core/ObjectMappers.kt:34-116; openai-java-core/src/main/kotlin/com/openai/core/handlers/SseHandler.kt:19-60; AGENTS.md:49-66 |
 | Medium | Credentials or customer payloads reach an unintended destination or uncontrolled log. | Lower-trust actor independently controls base URL/proxy/TLS/log sink, or diagnostics are enabled in an unsafe deployment. | Secret or customer-data disclosure. | Production URL default, caller-owned configuration, auth wrappers, and default sensitive-header redaction; DEBUG is explicit. | Preserve redaction and destination/TLS controls; document caller obligations. | openai-java-core/src/main/kotlin/com/openai/core/ClientOptions.kt:151-172; openai-java-core/src/main/kotlin/com/openai/core/ClientOptions.kt:601-665; openai-java-core/src/main/kotlin/com/openai/core/http/LoggingHttpClient.kt:24-48; openai-java-core/src/main/kotlin/com/openai/core/http/LoggingHttpClient.kt:91-142 |
-| Medium | A separately privileged evaluator consumes mutable PR Git objects, artifacts, or cache entries as trusted code/data. | Privileged workflow reads candidate state without binding/ref validation. | Privilege crossing beyond ordinary PR CI. | Custom-code workflow checks out main, uses current PR objects, and freshness-checks exact head; PR cache scope remains isolated. | Preserve trusted checkout and exact-head/digest binding. | .github/workflows/castiron-custom-code-comment.yml:34-57; .github/workflows/castiron-custom-code-comment.yml:128-181; .github/workflows/ci.yml:120-129 |
 | Low / not a boundary by itself | A PR changes a checked-in example, test, fixture, build script, or generated source and ordinary PR CI executes it. | The same PR author already controls the tracked executable checkout. | No new capability beyond the unprivileged PR job. | PR CI has read-only contents and no release credentials; cache scope is enforced outside PR code. | Investigate only if execution crosses an independent input or protected-authority boundary. | .github/workflows/ci.yml:8-20; .github/workflows/ci.yml:33-48; .github/workflows/ci.yml:92-107 |
 
 ## Severity calibration (critical, high, medium, low)
