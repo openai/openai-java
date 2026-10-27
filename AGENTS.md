@@ -7,6 +7,8 @@ generator owns the code you are changing, preserve existing generated behavior, 
 authoritative source when it is available. The `openai-java-example/` directory is not modified by
 the generator.
 
+<a id="custom-code-budget"></a>
+
 ## Generated-file ownership
 
 Never hand-edit generated SDK files, including generated tests, documentation,

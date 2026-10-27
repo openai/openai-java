@@ -24,6 +24,8 @@ management. The framework-neutral SDK requires Java 8, while development require
 Kotlin toolchain. See the [Java version support policy](docs/version-support-policy.md) for
 artifact-level runtime, framework, lifecycle, and release rules.
 
+<a id="custom-code-budget"></a>
+
 ## Generated-file ownership
 
 Do not edit generated SDK files by hand. Fix the API schema, generation
@@ -35,8 +37,10 @@ Handwritten edits to generated output are overwritten, not carried forward.
 Separately owned handwritten files are preserved. Resolve ownership conflicts
 explicitly before regeneration. Follow the ownership rules in `AGENTS.md`
 and review generated output and inventory changes together. Generated-file
-ownership currently relies on contributor guidance and code review, without a
-dedicated generated-file edit check or required gate. Fix violations in the
+ownership under the simplified workflow relies on contributor guidance and code
+review. This revision still contains the legacy strict generated-file checker,
+which rejects manifest mismatches when invoked; inspect live workflow settings
+and required statuses separately until canonical regeneration removes it. Fix violations in the
 generation inputs/compiler and regenerate; do not edit inventory hashes to
 accept a handwritten patch.
 
