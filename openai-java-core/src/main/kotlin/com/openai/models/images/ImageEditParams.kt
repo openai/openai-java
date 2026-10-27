@@ -45,11 +45,11 @@ private constructor(
     /**
      * The image(s) to edit. Must be a supported image file or an array of images.
      *
-     * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+     * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
      * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-     * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each
-     * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-     * images.
+     * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`), each image should be a `png`,
+     * `webp`, or `jpg` file less than 50MB. You can provide up to 16 images. `chatgpt-image-latest`
+     * follows the same input constraints as GPT image models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -82,9 +82,9 @@ private constructor(
 
     /**
      * Control how much effort the model will exert to match the style and features, especially
-     * facial features, of input images. Supports `high` and `low` on `gpt-image-1` and
-     * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
-     * parameter. Defaults to `low` on supported models.
+     * facial features, of input images. Supports `high` and `low` on `gpt-image-1.5`;
+     * `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this parameter. Defaults to
+     * `low` on supported models.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -103,10 +103,13 @@ private constructor(
     fun mask(): Optional<InputStream> = body.mask()
 
     /**
-     * The GPT image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
-     * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+     * The GPT image model to use for image editing (`gpt-image-1-mini`, `gpt-image-1.5`,
+     * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
      * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`,
      * or `chatgpt-image-latest`).
+     *
+     * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+     * `gpt-image-2.5-flare` instead.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -376,11 +379,11 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-         * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+         * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+         * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+         * `chatgpt-image-latest` follows the same input constraints as GPT image models.
          */
         fun image(image: Image) = apply { body.image(image) }
 
@@ -398,22 +401,22 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-         * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+         * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+         * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+         * `chatgpt-image-latest` follows the same input constraints as GPT image models.
          */
         fun image(inputStream: ByteArray) = apply { body.image(inputStream) }
 
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-         * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+         * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+         * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+         * `chatgpt-image-latest` follows the same input constraints as GPT image models.
          */
         fun image(path: Path) = apply { body.image(path) }
 
@@ -465,9 +468,9 @@ private constructor(
 
         /**
          * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. Supports `high` and `low` on `gpt-image-1` and
-         * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
-         * parameter. Defaults to `low` on supported models.
+         * facial features, of input images. Supports `high` and `low` on `gpt-image-1.5`;
+         * `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this parameter. Defaults
+         * to `low` on supported models.
          */
         fun inputFidelity(inputFidelity: InputFidelity?) = apply {
             body.inputFidelity(inputFidelity)
@@ -522,10 +525,13 @@ private constructor(
         fun mask(path: Path) = apply { body.mask(path) }
 
         /**
-         * The GPT image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
-         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * The GPT image model to use for image editing (`gpt-image-1-mini`, `gpt-image-1.5`,
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
          * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
          * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
+         *
+         * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+         * `gpt-image-2.5-flare` instead.
          */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
@@ -953,11 +959,11 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-         * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-         * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
+         * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
+         * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`), each image should be a
          * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+         * `chatgpt-image-latest` follows the same input constraints as GPT image models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -991,9 +997,9 @@ private constructor(
 
         /**
          * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. Supports `high` and `low` on `gpt-image-1` and
-         * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
-         * parameter. Defaults to `low` on supported models.
+         * facial features, of input images. Supports `high` and `low` on `gpt-image-1.5`;
+         * `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this parameter. Defaults
+         * to `low` on supported models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1013,10 +1019,13 @@ private constructor(
         fun mask(): Optional<InputStream> = mask.value.getOptional("mask")
 
         /**
-         * The GPT image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
-         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * The GPT image model to use for image editing (`gpt-image-1-mini`, `gpt-image-1.5`,
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
          * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
          * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
+         *
+         * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+         * `gpt-image-2.5-flare` instead.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1325,11 +1334,12 @@ private constructor(
             /**
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
-             * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
-             * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+             * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+             * `gpt-image-2.5-flare-2026-09-08`), each image should be a `png`, `webp`, or `jpg`
+             * file less than 50MB. You can provide up to 16 images. `chatgpt-image-latest` follows
+             * the same input constraints as GPT image models.
              */
             fun image(image: Image) =
                 image(
@@ -1354,22 +1364,24 @@ private constructor(
             /**
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
-             * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
-             * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+             * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+             * `gpt-image-2.5-flare-2026-09-08`), each image should be a `png`, `webp`, or `jpg`
+             * file less than 50MB. You can provide up to 16 images. `chatgpt-image-latest` follows
+             * the same input constraints as GPT image models.
              */
             fun image(inputStream: ByteArray) = image(inputStream.inputStream())
 
             /**
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
-             * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
-             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each image should be a
-             * `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16 images.
+             * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`, and
+             * `gpt-image-2.5-flare-2026-09-08`), each image should be a `png`, `webp`, or `jpg`
+             * file less than 50MB. You can provide up to 16 images. `chatgpt-image-latest` follows
+             * the same input constraints as GPT image models.
              */
             fun image(path: Path) =
                 image(
@@ -1429,8 +1441,8 @@ private constructor(
             /**
              * Control how much effort the model will exert to match the style and features,
              * especially facial features, of input images. Supports `high` and `low` on
-             * `gpt-image-1` and `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For
-             * `gpt-image-2`, omit this parameter. Defaults to `low` on supported models.
+             * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
+             * parameter. Defaults to `low` on supported models.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(MultipartField.of(inputFidelity))
@@ -1490,10 +1502,13 @@ private constructor(
                 )
 
             /**
-             * The GPT image model to use for image editing (`gpt-image-1`, `gpt-image-1-mini`,
-             * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * The GPT image model to use for image editing (`gpt-image-1-mini`, `gpt-image-1.5`,
+             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
              * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`).
+             *
+             * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+             * `gpt-image-2.5-flare` instead.
              */
             fun model(model: ImageModel?) = model(MultipartField.of(model))
 
@@ -1903,11 +1918,11 @@ private constructor(
     /**
      * The image(s) to edit. Must be a supported image file or an array of images.
      *
-     * For the GPT image models (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+     * For the GPT image models (`gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
      * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-     * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`), each
-     * image should be a `png`, `webp`, or `jpg` file less than 50MB. You can provide up to 16
-     * images.
+     * `gpt-image-2.5-flare`, and `gpt-image-2.5-flare-2026-09-08`), each image should be a `png`,
+     * `webp`, or `jpg` file less than 50MB. You can provide up to 16 images. `chatgpt-image-latest`
+     * follows the same input constraints as GPT image models.
      */
     @JsonSerialize(using = Image.Serializer::class)
     class Image
@@ -2235,9 +2250,9 @@ private constructor(
 
     /**
      * Control how much effort the model will exert to match the style and features, especially
-     * facial features, of input images. Supports `high` and `low` on `gpt-image-1` and
-     * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
-     * parameter. Defaults to `low` on supported models.
+     * facial features, of input images. Supports `high` and `low` on `gpt-image-1.5`;
+     * `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this parameter. Defaults to
+     * `low` on supported models.
      */
     class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {

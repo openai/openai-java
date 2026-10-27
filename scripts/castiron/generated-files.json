@@ -3135,7 +3135,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/BetaResponseToolSearchOutputItemParam.kt": {
       "mode": "100644",
-      "sha256": "0822588d200d851a59d552515eb41c9b9f4322e05fab8efdbd12b685de8aa6bd"
+      "sha256": "df3ee1c18ce1d4b167b5975ac06fb669ffb623ecd3abb53c86d4f2b76f037e2c"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/BetaResponseUsage.kt": {
       "mode": "100644",
@@ -3167,7 +3167,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/BetaTool.kt": {
       "mode": "100644",
-      "sha256": "f0f36fc732268453ab7161012a4df6e2762d6b32437f9bdcd95d10b9818388f0"
+      "sha256": "fda1da34d262128f66f2780060c9df3cecdcb2492ca7044b8675db650442216c"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/BetaToolChoiceAllowed.kt": {
       "mode": "100644",
@@ -4447,7 +4447,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageEditParams.kt": {
       "mode": "100644",
-      "sha256": "896887a1dd0e4fc7f80aef64f78e8233a3705d23536a70c42f250aaf43e8cec0"
+      "sha256": "33b661c3b9eb91f24332cf987410984e51eb7a8097dcda19c4b66694ac8cfc4a"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageEditPartialImageEvent.kt": {
       "mode": "100644",
@@ -4471,11 +4471,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageGenerateParams.kt": {
       "mode": "100644",
-      "sha256": "245bb2cc84d230cb8a1ed6349e24056cc3e653c551f412216cd04a9cccdf3b66"
+      "sha256": "26438be088c85c9d4dc08d3b02a58080da356d4062b0d59fd183169ecd5290d6"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageModel.kt": {
       "mode": "100644",
-      "sha256": "00c8995a3fbb53bdc69377eb0a163c0001fd9e6e55c6900040c91d64f436c93d"
+      "sha256": "9c65630c8a1b65dce0c5349c55da4583071e83eeb2d018d71bc692de1662832f"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImagesResponse.kt": {
       "mode": "100644",
@@ -5959,7 +5959,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseToolSearchOutputItemParam.kt": {
       "mode": "100644",
-      "sha256": "94ccaaab9bd040e27d0f7e5f2dea807ef69978e22c5766f52312464835a793b2"
+      "sha256": "a9ff24d74e339e0b3cbffaf6adf804cb480ba03fac498a5c2f33aaae18595e8b"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseUsage.kt": {
       "mode": "100644",
@@ -5995,7 +5995,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/responses/Tool.kt": {
       "mode": "100644",
-      "sha256": "3c7714a9a4a77001bf0663a183c6ae9031ffff0b90dff5c2a73a1a2e836e578c"
+      "sha256": "d1c88a2f08a369f48faab2fb4ec9d681f798968286da83ad46d2704106c8e643"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/responses/ToolChoiceAllowed.kt": {
       "mode": "100644",
