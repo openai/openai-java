@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -234,10 +235,6 @@ private constructor(
          * ```java
          * .id()
          * .command()
-         * .cwd()
-         * .durationMs()
-         * .exitCode()
-         * .output()
          * .status()
          * .turnId()
          * ```
@@ -250,10 +247,10 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var command: JsonField<String>? = null
-        private var cwd: JsonField<String>? = null
-        private var durationMs: JsonField<Long>? = null
-        private var exitCode: JsonField<Long>? = null
-        private var output: JsonField<String>? = null
+        private var cwd: JsonField<String>? = JsonNull.of()
+        private var durationMs: JsonField<Long>? = JsonNull.of()
+        private var exitCode: JsonField<Long>? = JsonNull.of()
+        private var output: JsonField<String>? = JsonNull.of()
         private var status: JsonField<AgentFunctionCallStatus>? = null
         private var turnId: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("command_execution")
@@ -430,10 +427,6 @@ private constructor(
          * ```java
          * .id()
          * .command()
-         * .cwd()
-         * .durationMs()
-         * .exitCode()
-         * .output()
          * .status()
          * .turnId()
          * ```

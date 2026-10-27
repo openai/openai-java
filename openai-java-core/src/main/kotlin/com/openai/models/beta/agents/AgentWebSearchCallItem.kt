@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -161,7 +162,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .action()
          * .status()
          * .turnId()
          * ```
@@ -173,7 +173,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var action: JsonField<WebSearchAction>? = null
+        private var action: JsonField<WebSearchAction>? = JsonNull.of()
         private var status: JsonField<AgentOutputItemStatus>? = null
         private var turnId: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("web_search_call")
@@ -307,7 +307,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .action()
          * .status()
          * .turnId()
          * ```

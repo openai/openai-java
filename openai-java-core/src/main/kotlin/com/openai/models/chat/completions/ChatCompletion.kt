@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -780,7 +781,6 @@ private constructor(
              * ```java
              * .finishReason()
              * .index()
-             * .logprobs()
              * .message()
              * ```
              */
@@ -792,7 +792,7 @@ private constructor(
 
             private var finishReason: JsonField<FinishReason>? = null
             private var index: JsonField<Long>? = null
-            private var logprobs: JsonField<Logprobs>? = null
+            private var logprobs: JsonField<Logprobs>? = JsonNull.of()
             private var message: JsonField<ChatCompletionMessage>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -895,7 +895,6 @@ private constructor(
              * ```java
              * .finishReason()
              * .index()
-             * .logprobs()
              * .message()
              * ```
              *
@@ -1215,15 +1214,7 @@ private constructor(
 
             companion object {
 
-                /**
-                 * Returns a mutable builder for constructing an instance of [Logprobs].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .content()
-                 * .refusal()
-                 * ```
-                 */
+                /** Returns a mutable builder for constructing an instance of [Logprobs]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -1329,19 +1320,11 @@ private constructor(
                  * Returns an immutable instance of [Logprobs].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .content()
-                 * .refusal()
-                 * ```
-                 *
-                 * @throws IllegalStateException if any required field is unset.
                  */
                 fun build(): Logprobs =
                     Logprobs(
-                        checkRequired("content", content).map { it.toImmutable() },
-                        checkRequired("refusal", refusal).map { it.toImmutable() },
+                        checkRequired("content", content ?: JsonNull.of()).map { it.toImmutable() },
+                        checkRequired("refusal", refusal ?: JsonNull.of()).map { it.toImmutable() },
                         additionalProperties.toMutableMap(),
                     )
             }

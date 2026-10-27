@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -265,7 +266,6 @@ private constructor(
          * .createdAt()
          * .errorType()
          * .model()
-         * .reason()
          * .requestId()
          * .requestPaused()
          * .responseId()
@@ -282,7 +282,7 @@ private constructor(
         private var errorType: JsonField<ErrorType>? = null
         private var model: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("safety.alert")
-        private var reason: JsonField<String>? = null
+        private var reason: JsonField<String>? = JsonNull.of()
         private var requestId: JsonField<String>? = null
         private var requestPaused: JsonField<Boolean>? = null
         private var responseId: JsonField<String>? = null
@@ -469,7 +469,6 @@ private constructor(
          * .createdAt()
          * .errorType()
          * .model()
-         * .reason()
          * .requestId()
          * .requestPaused()
          * .responseId()

@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -696,28 +697,13 @@ private constructor(
          * ```java
          * .id()
          * .assistantId()
-         * .cancelledAt()
-         * .completedAt()
          * .createdAt()
-         * .expiresAt()
-         * .failedAt()
-         * .incompleteDetails()
          * .instructions()
-         * .lastError()
-         * .maxCompletionTokens()
-         * .maxPromptTokens()
-         * .metadata()
          * .model()
          * .parallelToolCalls()
-         * .requiredAction()
-         * .responseFormat()
-         * .startedAt()
          * .status()
          * .threadId()
-         * .toolChoice()
          * .tools()
-         * .truncationStrategy()
-         * .usage()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -728,29 +714,29 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var assistantId: JsonField<String>? = null
-        private var cancelledAt: JsonField<Long>? = null
-        private var completedAt: JsonField<Long>? = null
+        private var cancelledAt: JsonField<Long>? = JsonNull.of()
+        private var completedAt: JsonField<Long>? = JsonNull.of()
         private var createdAt: JsonField<Long>? = null
-        private var expiresAt: JsonField<Long>? = null
-        private var failedAt: JsonField<Long>? = null
-        private var incompleteDetails: JsonField<IncompleteDetails>? = null
+        private var expiresAt: JsonField<Long>? = JsonNull.of()
+        private var failedAt: JsonField<Long>? = JsonNull.of()
+        private var incompleteDetails: JsonField<IncompleteDetails>? = JsonNull.of()
         private var instructions: JsonField<String>? = null
-        private var lastError: JsonField<LastError>? = null
-        private var maxCompletionTokens: JsonField<Long>? = null
-        private var maxPromptTokens: JsonField<Long>? = null
-        private var metadata: JsonField<Metadata>? = null
+        private var lastError: JsonField<LastError>? = JsonNull.of()
+        private var maxCompletionTokens: JsonField<Long>? = JsonNull.of()
+        private var maxPromptTokens: JsonField<Long>? = JsonNull.of()
+        private var metadata: JsonField<Metadata>? = JsonNull.of()
         private var model: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("thread.run")
         private var parallelToolCalls: JsonField<Boolean>? = null
-        private var requiredAction: JsonField<RequiredAction>? = null
-        private var responseFormat: JsonField<AssistantResponseFormatOption>? = null
-        private var startedAt: JsonField<Long>? = null
+        private var requiredAction: JsonField<RequiredAction>? = JsonNull.of()
+        private var responseFormat: JsonField<AssistantResponseFormatOption>? = JsonNull.of()
+        private var startedAt: JsonField<Long>? = JsonNull.of()
         private var status: JsonField<RunStatus>? = null
         private var threadId: JsonField<String>? = null
-        private var toolChoice: JsonField<AssistantToolChoiceOption>? = null
+        private var toolChoice: JsonField<AssistantToolChoiceOption>? = JsonNull.of()
         private var tools: JsonField<MutableList<AssistantTool>>? = null
-        private var truncationStrategy: JsonField<TruncationStrategy>? = null
-        private var usage: JsonField<Usage>? = null
+        private var truncationStrategy: JsonField<TruncationStrategy>? = JsonNull.of()
+        private var usage: JsonField<Usage>? = JsonNull.of()
         private var temperature: JsonField<Double> = JsonMissing.of()
         private var topP: JsonField<Double> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1429,28 +1415,13 @@ private constructor(
          * ```java
          * .id()
          * .assistantId()
-         * .cancelledAt()
-         * .completedAt()
          * .createdAt()
-         * .expiresAt()
-         * .failedAt()
-         * .incompleteDetails()
          * .instructions()
-         * .lastError()
-         * .maxCompletionTokens()
-         * .maxPromptTokens()
-         * .metadata()
          * .model()
          * .parallelToolCalls()
-         * .requiredAction()
-         * .responseFormat()
-         * .startedAt()
          * .status()
          * .threadId()
-         * .toolChoice()
          * .tools()
-         * .truncationStrategy()
-         * .usage()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.

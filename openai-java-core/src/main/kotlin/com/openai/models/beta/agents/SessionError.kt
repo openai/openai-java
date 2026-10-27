@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -140,9 +141,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .code()
          * .message()
-         * .param()
          * .type()
          * ```
          */
@@ -152,9 +151,9 @@ private constructor(
     /** A builder for [SessionError]. */
     class Builder internal constructor() {
 
-        private var code: JsonField<String>? = null
+        private var code: JsonField<String>? = JsonNull.of()
         private var message: JsonField<String>? = null
-        private var param: JsonField<String>? = null
+        private var param: JsonField<String>? = JsonNull.of()
         private var type: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -243,9 +242,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .code()
          * .message()
-         * .param()
          * .type()
          * ```
          *

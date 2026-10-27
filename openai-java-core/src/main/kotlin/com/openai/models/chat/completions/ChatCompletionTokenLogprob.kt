@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -151,7 +152,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .token()
-         * .bytes()
          * .logprob()
          * .topLogprobs()
          * ```
@@ -290,7 +290,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .token()
-         * .bytes()
          * .logprob()
          * .topLogprobs()
          * ```
@@ -300,7 +299,7 @@ private constructor(
         fun build(): ChatCompletionTokenLogprob =
             ChatCompletionTokenLogprob(
                 checkRequired("token", token),
-                checkRequired("bytes", bytes).map { it.toImmutable() },
+                checkRequired("bytes", bytes ?: JsonNull.of()).map { it.toImmutable() },
                 checkRequired("logprob", logprob),
                 checkRequired("topLogprobs", topLogprobs).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
@@ -457,7 +456,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .token()
-             * .bytes()
              * .logprob()
              * ```
              */
@@ -568,7 +566,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .token()
-             * .bytes()
              * .logprob()
              * ```
              *
@@ -577,7 +574,7 @@ private constructor(
             fun build(): TopLogprob =
                 TopLogprob(
                     checkRequired("token", token),
-                    checkRequired("bytes", bytes).map { it.toImmutable() },
+                    checkRequired("bytes", bytes ?: JsonNull.of()).map { it.toImmutable() },
                     checkRequired("logprob", logprob),
                     additionalProperties.toMutableMap(),
                 )

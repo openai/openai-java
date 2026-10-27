@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -327,17 +328,10 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .assignmentSources()
-         * .createdAt()
-         * .createdBy()
-         * .createdByUserObj()
-         * .description()
-         * .metadata()
          * .name()
          * .permissions()
          * .predefinedRole()
          * .resourceType()
-         * .updatedAt()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -348,16 +342,16 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var assignmentSources: JsonField<MutableList<AssignmentSource>>? = null
-        private var createdAt: JsonField<Long>? = null
-        private var createdBy: JsonField<String>? = null
-        private var createdByUserObj: JsonField<CreatedByUserObj>? = null
-        private var description: JsonField<String>? = null
-        private var metadata: JsonField<Metadata>? = null
+        private var createdAt: JsonField<Long>? = JsonNull.of()
+        private var createdBy: JsonField<String>? = JsonNull.of()
+        private var createdByUserObj: JsonField<CreatedByUserObj>? = JsonNull.of()
+        private var description: JsonField<String>? = JsonNull.of()
+        private var metadata: JsonField<Metadata>? = JsonNull.of()
         private var name: JsonField<String>? = null
         private var permissions: JsonField<MutableList<String>>? = null
         private var predefinedRole: JsonField<Boolean>? = null
         private var resourceType: JsonField<String>? = null
-        private var updatedAt: JsonField<Long>? = null
+        private var updatedAt: JsonField<Long>? = JsonNull.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -617,17 +611,10 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .assignmentSources()
-         * .createdAt()
-         * .createdBy()
-         * .createdByUserObj()
-         * .description()
-         * .metadata()
          * .name()
          * .permissions()
          * .predefinedRole()
          * .resourceType()
-         * .updatedAt()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -635,7 +622,9 @@ private constructor(
         fun build(): RoleListResponse =
             RoleListResponse(
                 checkRequired("id", id),
-                checkRequired("assignmentSources", assignmentSources).map { it.toImmutable() },
+                checkRequired("assignmentSources", assignmentSources ?: JsonNull.of()).map {
+                    it.toImmutable()
+                },
                 checkRequired("createdAt", createdAt),
                 checkRequired("createdBy", createdBy),
                 checkRequired("createdByUserObj", createdByUserObj),

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -180,7 +181,6 @@ private constructor(
          * .sessionId()
          * .turn()
          * .turnId()
-         * .usage()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -194,7 +194,7 @@ private constructor(
         private var turn: JsonField<Turn>? = null
         private var turnId: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("agent.session.turn.completed")
-        private var usage: JsonField<TokenUsage>? = null
+        private var usage: JsonField<TokenUsage>? = JsonNull.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -313,7 +313,6 @@ private constructor(
          * .sessionId()
          * .turn()
          * .turnId()
-         * .usage()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.

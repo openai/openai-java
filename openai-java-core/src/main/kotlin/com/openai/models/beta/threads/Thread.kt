@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -174,8 +175,6 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .metadata()
-         * .toolResources()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -186,9 +185,9 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
-        private var metadata: JsonField<Metadata>? = null
+        private var metadata: JsonField<Metadata>? = JsonNull.of()
         private var object_: JsonValue = JsonValue.from("thread")
-        private var toolResources: JsonField<ToolResources>? = null
+        private var toolResources: JsonField<ToolResources>? = JsonNull.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -311,8 +310,6 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .metadata()
-         * .toolResources()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.

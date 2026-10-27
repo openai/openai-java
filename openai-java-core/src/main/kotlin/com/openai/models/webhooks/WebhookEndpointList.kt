@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -160,9 +161,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .data()
-         * .firstId()
          * .hasMore()
-         * .lastId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -172,9 +171,9 @@ private constructor(
     class Builder internal constructor() {
 
         private var data: JsonField<MutableList<WebhookEndpoint>>? = null
-        private var firstId: JsonField<String>? = null
+        private var firstId: JsonField<String>? = JsonNull.of()
         private var hasMore: JsonField<Boolean>? = null
-        private var lastId: JsonField<String>? = null
+        private var lastId: JsonField<String>? = JsonNull.of()
         private var object_: JsonValue = JsonValue.from("list")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -294,9 +293,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .data()
-         * .firstId()
          * .hasMore()
-         * .lastId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.

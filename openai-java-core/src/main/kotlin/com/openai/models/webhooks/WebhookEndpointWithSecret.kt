@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -260,7 +261,6 @@ private constructor(
          * .eventTypes()
          * .name()
          * .signingSecret()
-         * .signingSecretHint()
          * .url()
          * ```
          */
@@ -276,7 +276,7 @@ private constructor(
         private var name: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("webhook_endpoint")
         private var signingSecret: JsonField<String>? = null
-        private var signingSecretHint: JsonField<String>? = null
+        private var signingSecretHint: JsonField<String>? = JsonNull.of()
         private var url: JsonField<String>? = null
         private var updatedAt: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -460,7 +460,6 @@ private constructor(
          * .eventTypes()
          * .name()
          * .signingSecret()
-         * .signingSecretHint()
          * .url()
          * ```
          *

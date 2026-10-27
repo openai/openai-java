@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -123,7 +124,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .email()
          * .name()
          * ```
          */
@@ -134,7 +134,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var email: JsonField<String>? = null
+        private var email: JsonField<String>? = JsonNull.of()
         private var name: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -209,7 +209,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .email()
          * .name()
          * ```
          *

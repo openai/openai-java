@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -112,7 +113,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .enabled()
-         * .maxConcurrentSubagents()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -122,7 +122,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var enabled: JsonField<Boolean>? = null
-        private var maxConcurrentSubagents: JsonField<Long>? = null
+        private var maxConcurrentSubagents: JsonField<Long>? = JsonNull.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -203,7 +203,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .enabled()
-         * .maxConcurrentSubagents()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.

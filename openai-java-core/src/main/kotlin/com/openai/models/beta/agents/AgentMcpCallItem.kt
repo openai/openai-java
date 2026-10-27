@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -222,9 +223,7 @@ private constructor(
          * ```java
          * .id()
          * .arguments()
-         * .error()
          * .name()
-         * .output()
          * .serverLabel()
          * .status()
          * .turnId()
@@ -238,9 +237,9 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var arguments: JsonValue? = null
-        private var error: JsonValue? = null
+        private var error: JsonValue? = JsonNull.of()
         private var name: JsonField<String>? = null
-        private var output: JsonValue? = null
+        private var output: JsonValue? = JsonNull.of()
         private var serverLabel: JsonField<String>? = null
         private var status: JsonField<AgentFunctionCallStatus>? = null
         private var turnId: JsonField<String>? = null
@@ -369,9 +368,7 @@ private constructor(
          * ```java
          * .id()
          * .arguments()
-         * .error()
          * .name()
-         * .output()
          * .serverLabel()
          * .status()
          * .turnId()

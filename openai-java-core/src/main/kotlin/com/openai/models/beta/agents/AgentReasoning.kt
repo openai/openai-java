@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -100,23 +101,15 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [AgentReasoning].
-         *
-         * The following fields are required:
-         * ```java
-         * .effort()
-         * .summary()
-         * ```
-         */
+        /** Returns a mutable builder for constructing an instance of [AgentReasoning]. */
         @JvmStatic fun builder() = Builder()
     }
 
     /** A builder for [AgentReasoning]. */
     class Builder internal constructor() {
 
-        private var effort: JsonField<Effort>? = null
-        private var summary: JsonField<Summary>? = null
+        private var effort: JsonField<Effort>? = JsonNull.of()
+        private var summary: JsonField<Summary>? = JsonNull.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -177,14 +170,6 @@ private constructor(
          * Returns an immutable instance of [AgentReasoning].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .effort()
-         * .summary()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): AgentReasoning =
             AgentReasoning(
