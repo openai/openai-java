@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.94.0](https://github.com/openai/openai-java/compare/v4.93.0...v4.94.0) (2026-10-27)
+
+
+### Features
+
+* **api:** add prompt cache breakpoint TTL options ([#1282](https://github.com/openai/openai-java/issues/1282)) ([a565f6e](https://github.com/openai/openai-java/commit/a565f6e12496d129699f3732d3ead2b9f1d0691e))
+* support native OkHttp clients and interceptors ([#1280](https://github.com/openai/openai-java/issues/1280)) ([014f4a2](https://github.com/openai/openai-java/commit/014f4a2dbb1f2b13655589fe83ba6ef5af4e18b5))
+
+
+### Build System
+
+* bump actions/create-github-app-token from 3.2.0 to 3.3.0 ([#1275](https://github.com/openai/openai-java/issues/1275)) ([fafdc0c](https://github.com/openai/openai-java/commit/fafdc0cc51c7bc0e0a087cbcfdf038040f398708))
+* bump gradle/actions/setup-gradle from 6.3.0 to 6.4.0 ([#1230](https://github.com/openai/openai-java/issues/1230)) ([35de6f5](https://github.com/openai/openai-java/commit/35de6f5fdd56fb3afe0b0765e5e34557237e722b))
+* bump software.amazon.awssdk:bom in /openai-java-bedrock ([#1228](https://github.com/openai/openai-java/issues/1228)) ([e145766](https://github.com/openai/openai-java/commit/e145766b6813754c1b6ba528f93676759212cc9a))
+
 ## [4.93.0](https://github.com/openai/openai-java/compare/v4.92.0...v4.93.0) (2026-10-26)
 
 
