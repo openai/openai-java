@@ -44,8 +44,8 @@ edit inventory hashes to accept a handwritten patch.
 Canonical regeneration retires the legacy strict checker, reporting workflows,
 and associated tools. The files present depend on the revision: while they
 remain in a checkout, preserve their security checks and satisfy required
-statuses. After removal, do not recreate them or introduce a replacement budget
-system.
+statuses. Do not start new budget changes. After removal, do not recreate the
+retired tools or introduce a replacement budget system.
 
 Repository rules and hosted workflow settings are configured separately from
 these files. Inspect the actual settings and check results before merging;
