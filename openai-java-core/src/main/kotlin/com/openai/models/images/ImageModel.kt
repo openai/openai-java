@@ -34,7 +34,11 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
 
         @JvmField val GPT_IMAGE_2_5_FLARE_2026_09_08 = of("gpt-image-2.5-flare-2026-09-08")
 
-        @JvmField val GPT_IMAGE_1 = of("gpt-image-1")
+        @Deprecated(
+            "GPT Image 1 was shut down on October 23, 2026. Use gpt-image-2.5-sunburst or gpt-image-2.5-flare instead."
+        )
+        @JvmField
+        val GPT_IMAGE_1 = of("gpt-image-1")
 
         @JvmField val GPT_IMAGE_1_MINI = of("gpt-image-1-mini")
 
@@ -60,6 +64,9 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
         GPT_IMAGE_2_5_SUNBURST_2026_09_08,
         GPT_IMAGE_2_5_FLARE,
         GPT_IMAGE_2_5_FLARE_2026_09_08,
+        @Deprecated(
+            "GPT Image 1 was shut down on October 23, 2026. Use gpt-image-2.5-sunburst or gpt-image-2.5-flare instead."
+        )
         GPT_IMAGE_1,
         GPT_IMAGE_1_MINI,
         CHATGPT_IMAGE_LATEST,
@@ -86,6 +93,9 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
         GPT_IMAGE_2_5_SUNBURST_2026_09_08,
         GPT_IMAGE_2_5_FLARE,
         GPT_IMAGE_2_5_FLARE_2026_09_08,
+        @Deprecated(
+            "GPT Image 1 was shut down on October 23, 2026. Use gpt-image-2.5-sunburst or gpt-image-2.5-flare instead."
+        )
         GPT_IMAGE_1,
         GPT_IMAGE_1_MINI,
         CHATGPT_IMAGE_LATEST,

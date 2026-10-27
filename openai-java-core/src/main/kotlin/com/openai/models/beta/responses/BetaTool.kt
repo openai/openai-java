@@ -5345,9 +5345,9 @@ private constructor(
 
         /**
          * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. Supports `high` and `low` on `gpt-image-1` and
-         * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
-         * parameter. Defaults to `low` on supported models.
+         * facial features, of input images. Supports `high` and `low` on `gpt-image-1.5`;
+         * `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this parameter. Defaults
+         * to `low` on supported models.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5365,10 +5365,13 @@ private constructor(
             inputImageMask.getOptional("input_image_mask")
 
         /**
-         * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
-         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * The image generation model to use. One of `gpt-image-1-mini`, `gpt-image-1.5`,
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
          * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-         * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`. Default: `gpt-image-1`.
+         * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`. Default: `gpt-image-2`.
+         *
+         * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+         * `gpt-image-2.5-flare` instead.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -5668,8 +5671,8 @@ private constructor(
             /**
              * Control how much effort the model will exert to match the style and features,
              * especially facial features, of input images. Supports `high` and `low` on
-             * `gpt-image-1` and `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For
-             * `gpt-image-2`, omit this parameter. Defaults to `low` on supported models.
+             * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
+             * parameter. Defaults to `low` on supported models.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(JsonField.ofNullable(inputFidelity))
@@ -5708,10 +5711,13 @@ private constructor(
             }
 
             /**
-             * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
-             * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * The image generation model to use. One of `gpt-image-1-mini`, `gpt-image-1.5`,
+             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`. Default: `gpt-image-1`.
+             * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`. Default: `gpt-image-2`.
+             *
+             * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+             * `gpt-image-2.5-flare` instead.
              */
             fun model(model: Model) = model(JsonField.of(model))
 
@@ -6254,9 +6260,9 @@ private constructor(
 
         /**
          * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. Supports `high` and `low` on `gpt-image-1` and
-         * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
-         * parameter. Defaults to `low` on supported models.
+         * facial features, of input images. Supports `high` and `low` on `gpt-image-1.5`;
+         * `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this parameter. Defaults
+         * to `low` on supported models.
          */
         class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
@@ -6626,10 +6632,13 @@ private constructor(
         }
 
         /**
-         * The image generation model to use. One of `gpt-image-1`, `gpt-image-1-mini`,
-         * `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+         * The image generation model to use. One of `gpt-image-1-mini`, `gpt-image-1.5`,
+         * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
          * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-         * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`. Default: `gpt-image-1`.
+         * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`. Default: `gpt-image-2`.
+         *
+         * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+         * `gpt-image-2.5-flare` instead.
          */
         class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -6645,7 +6654,11 @@ private constructor(
 
             companion object {
 
-                @JvmField val GPT_IMAGE_1 = of("gpt-image-1")
+                @Deprecated(
+                    "GPT Image 1 was shut down on October 23, 2026. Use gpt-image-2.5-sunburst or gpt-image-2.5-flare instead."
+                )
+                @JvmField
+                val GPT_IMAGE_1 = of("gpt-image-1")
 
                 @JvmField val GPT_IMAGE_1_MINI = of("gpt-image-1-mini")
 
@@ -6671,6 +6684,9 @@ private constructor(
 
             /** An enum containing [Model]'s known values. */
             enum class Known {
+                @Deprecated(
+                    "GPT Image 1 was shut down on October 23, 2026. Use gpt-image-2.5-sunburst or gpt-image-2.5-flare instead."
+                )
                 GPT_IMAGE_1,
                 GPT_IMAGE_1_MINI,
                 GPT_IMAGE_2,
@@ -6693,6 +6709,9 @@ private constructor(
              * - It was constructed with an arbitrary value using the [of] method.
              */
             enum class Value {
+                @Deprecated(
+                    "GPT Image 1 was shut down on October 23, 2026. Use gpt-image-2.5-sunburst or gpt-image-2.5-flare instead."
+                )
                 GPT_IMAGE_1,
                 GPT_IMAGE_1_MINI,
                 GPT_IMAGE_2,

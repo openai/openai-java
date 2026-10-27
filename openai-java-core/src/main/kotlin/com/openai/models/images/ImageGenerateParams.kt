@@ -58,9 +58,12 @@ private constructor(
 
     /**
      * The GPT image model to use for image generation. Specify a model explicitly. Supported models
-     * include `gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
-     * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
-     * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`.
+     * include `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`, `gpt-image-2-2026-04-21`,
+     * `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
+     * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`.
+     *
+     * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+     * `gpt-image-2.5-flare` instead.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -373,9 +376,12 @@ private constructor(
 
         /**
          * The GPT image model to use for image generation. Specify a model explicitly. Supported
-         * models include `gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * models include `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
          * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
          * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`.
+         *
+         * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+         * `gpt-image-2.5-flare` instead.
          */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
@@ -894,9 +900,12 @@ private constructor(
 
         /**
          * The GPT image model to use for image generation. Specify a model explicitly. Supported
-         * models include `gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+         * models include `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
          * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-sunburst-2026-09-08`,
          * `gpt-image-2.5-flare`, `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`.
+         *
+         * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+         * `gpt-image-2.5-flare` instead.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1286,10 +1295,13 @@ private constructor(
 
             /**
              * The GPT image model to use for image generation. Specify a model explicitly.
-             * Supported models include `gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`,
-             * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
+             * Supported models include `gpt-image-1-mini`, `gpt-image-1.5`, `gpt-image-2`,
+             * `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
              * `gpt-image-2.5-flare-2026-09-08`, and `chatgpt-image-latest`.
+             *
+             * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
+             * `gpt-image-2.5-flare` instead.
              */
             fun model(model: ImageModel?) = model(JsonField.ofNullable(model))
 
