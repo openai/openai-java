@@ -1,9 +1,13 @@
 package com.openai.client.okhttp
 
 import com.openai.core.ClientOptions
+import com.openai.core.http.ResponseConnection
+import com.openai.core.http.ResponseWebSocketOptions
 import com.openai.core.http.WebSocketOptions
 import com.openai.core.jsonMapper
 import com.openai.helpers.LiveSidebandConnection
+import com.openai.helpers.RealtimeConnection
+import com.openai.helpers.RealtimeWebSocketOptions
 import com.openai.models.beta.responses.BetaResponsesClientEvent
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
@@ -45,6 +49,58 @@ class WebSocketParityTest {
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             closed.countDown()
+        }
+    }
+
+    @Test
+    fun connectionQueryReplacesInheritedBaseUrlValues() {
+        for (mode in listOf("realtime", "responses")) {
+            MockWebServer().use { server ->
+                val peer = Peer()
+                server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+                OkHttpClient.builder().build().use { http ->
+                    val client =
+                        ClientOptions.builder()
+                            .httpClient(http)
+                            .apiKey("synthetic")
+                            .baseUrl(
+                                server
+                                    .url("/v1/?tenant=base&model=base-model&keep=a%2Bb")
+                                    .toString()
+                            )
+                            .putQueryParam("tenant", "client")
+                            .build()
+                    val connection =
+                        if (mode == "realtime") {
+                            RealtimeConnection.connect(
+                                client,
+                                RealtimeWebSocketOptions.builder()
+                                    .model("connection-model")
+                                    .putQueryParam("tenant", "connection")
+                                    .build(),
+                            )
+                        } else {
+                            ResponseConnection.connect(
+                                client,
+                                ResponseWebSocketOptions.builder()
+                                    .putQueryParam("tenant", "connection")
+                                    .build(),
+                            )
+                        }
+                    connection.use {
+                        val request = server.takeRequest(5, TimeUnit.SECONDS)!!
+                        val url = request.requestUrl!!
+                        assertThat(url.encodedPath).isEqualTo("/v1/$mode")
+                        assertThat(url.queryParameterValues("tenant")).containsExactly("connection")
+                        assertThat(url.queryParameterValues("model"))
+                            .containsExactly(
+                                if (mode == "realtime") "connection-model" else "base-model"
+                            )
+                        assertThat(url.queryParameterValues("keep")).containsExactly("a+b")
+                    }
+                    assertThat(peer.closed.await(5, TimeUnit.SECONDS)).isTrue()
+                }
+            }
         }
     }
 

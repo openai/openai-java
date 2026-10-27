@@ -6,16 +6,14 @@ import com.google.errorprone.annotations.MustBeClosed
 import com.openai.azure.AzureUrlCategory
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
-import com.openai.core.http.HttpMethod
-import com.openai.core.http.HttpRequest
 import com.openai.core.http.WebSocketClient
+import com.openai.core.http.WebSocketConnections
 import com.openai.core.http.WebSocketHandshakeException
 import com.openai.core.http.WebSocketReadFuture
 import com.openai.core.http.WebSocketWriteNotAttempted
 import com.openai.core.http.awaitWebSocketFuture
 import com.openai.core.http.dispatchWebSocketCallback
 import com.openai.core.http.utf8Size
-import com.openai.core.prepare
 import com.openai.errors.OpenAIIoException
 import com.openai.models.realtime.RealtimeClientEvent
 import com.openai.models.realtime.RealtimeServerEvent
@@ -153,30 +151,14 @@ private constructor(
                 "GA Realtime WebSockets require unified Azure routing"
             }
             val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.GET)
-                    .baseUrl(clientOptions.baseUrl())
-                    .pathSegments(
-                        com.openai.models.realtime.RealtimeWebSocketBinding.create().pathSegments
-                    )
-                    .build()
-                    .prepare(
-                        clientOptions,
-                        options,
-                        com.openai.models.realtime.RealtimeWebSocketBinding.create().security,
-                    )
+                WebSocketConnections.request(
+                    com.openai.models.realtime.RealtimeWebSocketBinding.create(),
+                    clientOptions,
+                    options,
+                )
             if (options.reconnect) {
-                val baseQueryKeys =
-                    java.net
-                        .URI(request.baseUrl)
-                        .rawQuery
-                        ?.split('&')
-                        ?.map { java.net.URLDecoder.decode(it.substringBefore('='), "UTF-8") }
-                        .orEmpty()
                 require(
-                    "intent" !in baseQueryKeys &&
-                        "call_id" !in baseQueryKeys &&
-                        request.queryParams.values("intent").isEmpty() &&
+                    request.queryParams.values("intent").isEmpty() &&
                         request.queryParams.values("call_id").isEmpty()
                 ) {
                     "Automatic Realtime recovery requires a model session"

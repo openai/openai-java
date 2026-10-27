@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.openai.azure.AzureUrlCategory
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
-import com.openai.core.prepare
 import com.openai.models.responses.Response
 import com.openai.models.responses.ResponsesClientEvent
 import com.openai.models.responses.ResponsesServerEvent
@@ -138,18 +137,11 @@ private constructor(
             }
             clientOptions.requireWebSocketTransport()
             val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.GET)
-                    .baseUrl(clientOptions.baseUrl())
-                    .pathSegments(
-                        com.openai.models.responses.ResponseWebSocketBinding.create().pathSegments
-                    )
-                    .build()
-                    .prepare(
-                        clientOptions,
-                        options,
-                        com.openai.models.responses.ResponseWebSocketBinding.create().security,
-                    )
+                WebSocketConnections.request(
+                    com.openai.models.responses.ResponseWebSocketBinding.create(),
+                    clientOptions,
+                    options,
+                )
             val opening =
                 clientOptions.connectWebSocket(
                     request,

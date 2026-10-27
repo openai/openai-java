@@ -2,6 +2,7 @@ package com.openai.core.http
 
 import com.openai.azure.AzureUrlCategory
 import com.openai.core.ClientOptions
+import com.openai.core.Params
 import com.openai.core.RequestOptions
 import com.openai.core.prepare
 import java.net.URI
@@ -50,10 +51,10 @@ internal object WebSocketConnections {
             )
             .open(blocking) { it }
 
-    private fun request(
+    fun request(
         binding: WebSocketBinding<*, *>,
         clientOptions: ClientOptions,
-        options: WebSocketOptions,
+        options: Params,
     ): HttpRequest {
         val baseUrl = URI(clientOptions.baseUrl())
         val requestBase = baseUrl.toASCIIString().substringBefore('#').substringBefore('?')

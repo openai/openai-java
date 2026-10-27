@@ -21,8 +21,8 @@ internal enum class AzureUrlCategory {
     companion object {
 
         fun categorizeBaseUrl(baseUrl: String, pathMode: AzureUrlPathMode): AzureUrlCategory {
-            val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
-            val host = URI.create(trimmedBaseUrl).host
+            val uri = URI.create(baseUrl.trim())
+            val host = uri.host
 
             return when (pathMode) {
                 AzureUrlPathMode.LEGACY -> AZURE_LEGACY
@@ -36,7 +36,7 @@ internal enum class AzureUrlCategory {
                             // ones.
                             host.endsWith(".azure-api.net", ignoreCase = true) ||
                             host.endsWith(".cognitiveservices.azure.com", ignoreCase = true) ->
-                            if (trimmedBaseUrl.endsWith("/openai/v1")) AZURE_UNIFIED
+                            if (uri.rawPath.trimEnd('/').endsWith("/openai/v1")) AZURE_UNIFIED
                             else AZURE_LEGACY
 
                         else -> NON_AZURE
