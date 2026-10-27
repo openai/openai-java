@@ -37,8 +37,7 @@ public final class RealtimeWebSocketExample {
                             .build()));
                 } else if (event.isResponseDone()) {
                     RealtimeResponse response = event.asResponseDone().response();
-                    if (!response
-                            .status()
+                    if (!response.status()
                             .filter(RealtimeResponse.Status.COMPLETED::equals)
                             .isPresent()) {
                         throw new IllegalStateException("Realtime response did not complete: " + response.status());
