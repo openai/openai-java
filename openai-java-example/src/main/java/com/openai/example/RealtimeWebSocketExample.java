@@ -5,6 +5,7 @@ import com.openai.core.ClientOptions;
 import com.openai.helpers.RealtimeConnection;
 import com.openai.helpers.RealtimeWebSocketOptions;
 import com.openai.models.realtime.RealtimeClientEvent;
+import com.openai.models.realtime.RealtimeResponse;
 import com.openai.models.realtime.RealtimeResponseCreateParams;
 import com.openai.models.realtime.RealtimeServerEvent;
 import com.openai.models.realtime.ResponseCreateEvent;
@@ -35,8 +36,14 @@ public final class RealtimeWebSocketExample {
                                     .build())
                             .build()));
                 } else if (event.isResponseDone()) {
-                    System.out.println("Realtime response: "
-                            + event.asResponseDone().response().status());
+                    RealtimeResponse response = event.asResponseDone().response();
+                    if (!response
+                            .status()
+                            .filter(RealtimeResponse.Status.COMPLETED::equals)
+                            .isPresent()) {
+                        throw new IllegalStateException("Realtime response did not complete: " + response.status());
+                    }
+                    System.out.println("Realtime response: " + response.status());
                     break;
                 }
             }
