@@ -15,7 +15,7 @@ public final class CompletionsExample {
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
         ChatCompletionCreateParams createParams = ChatCompletionCreateParams.builder()
-                .model(ChatModel.GPT_3_5_TURBO)
+                .model(ChatModel.GPT_5_6_TERRA)
                 .maxCompletionTokens(2048)
                 .addDeveloperMessage("You are a helpful assistant.")
                 .addUserMessage("Tell me a story about building the best SDK!")
