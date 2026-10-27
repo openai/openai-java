@@ -25,6 +25,8 @@ import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
+import com.openai.core.legacyAdditionalProperties
+import com.openai.core.serializableAdditionalProperties
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.PromptCacheBreakpointTtl
@@ -3304,9 +3306,9 @@ private constructor(
                 @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                 /**
-                 * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL
-                 * from the request's `prompt_cache_options.ttl`; the boundary is not rounded to a
-                 * token block.
+                 * Marks the exact end of a reusable prompt prefix. When `ttl` is omitted, the
+                 * breakpoint inherits the request's `prompt_cache_options.ttl`; the boundary is not
+                 * rounded to a token block.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -3488,9 +3490,9 @@ private constructor(
                     fun type(type: JsonValue) = apply { this.type = type }
 
                     /**
-                     * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its
-                     * TTL from the request's `prompt_cache_options.ttl`; the boundary is not
-                     * rounded to a token block.
+                     * Marks the exact end of a reusable prompt prefix. When `ttl` is omitted, the
+                     * breakpoint inherits the request's `prompt_cache_options.ttl`; the boundary is
+                     * not rounded to a token block.
                      */
                     fun promptCacheBreakpoint(promptCacheBreakpoint: PromptCacheBreakpoint) =
                         promptCacheBreakpoint(JsonField.of(promptCacheBreakpoint))
@@ -3765,15 +3767,16 @@ private constructor(
                 }
 
                 /**
-                 * Marks the exact end of a reusable prompt prefix. The breakpoint inherits its TTL
-                 * from the request's `prompt_cache_options.ttl`; the boundary is not rounded to a
-                 * token block.
+                 * Marks the exact end of a reusable prompt prefix. When `ttl` is omitted, the
+                 * breakpoint inherits the request's `prompt_cache_options.ttl`; the boundary is not
+                 * rounded to a token block.
                  */
                 class PromptCacheBreakpoint
                 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val mode: JsonValue,
                     private val ttl: JsonField<PromptCacheBreakpointTtl>,
+                    private val ttlFromAdditionalProperties: Boolean,
                     private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
 
@@ -3783,7 +3786,7 @@ private constructor(
                         @JsonProperty("ttl")
                         @ExcludeMissing
                         ttl: JsonField<PromptCacheBreakpointTtl> = JsonMissing.of(),
-                    ) : this(mode, ttl, mutableMapOf())
+                    ) : this(mode, ttl, true, mutableMapOf())
 
                     /**
                      * The breakpoint mode. Always `explicit`.
@@ -3846,10 +3849,13 @@ private constructor(
                     @Deprecated(
                         "Use _allProperties() to access both declared and additional JSON properties."
                     )
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        legacyAdditionalProperties(additionalProperties, mapOf("ttl" to ttl))
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> =
-                        Collections.unmodifiableMap(additionalProperties)
+                    private fun additionalPropertiesForSerialization(): Map<String, JsonValue> =
+                        serializableAdditionalProperties(additionalProperties, mapOf("ttl" to ttl))
 
                     fun toBuilder() = Builder().from(this)
 
@@ -3867,6 +3873,8 @@ private constructor(
 
                         private var mode: JsonValue = JsonValue.from("explicit")
                         private var ttl: JsonField<PromptCacheBreakpointTtl> = JsonMissing.of()
+
+                        private var ttlFromAdditionalProperties = false
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
@@ -3874,6 +3882,9 @@ private constructor(
                         internal fun from(promptCacheBreakpoint: PromptCacheBreakpoint) = apply {
                             mode = promptCacheBreakpoint.mode
                             ttl = promptCacheBreakpoint.ttl
+
+                            ttlFromAdditionalProperties =
+                                promptCacheBreakpoint.ttlFromAdditionalProperties
                             additionalProperties =
                                 promptCacheBreakpoint.additionalProperties.toMutableMap()
                         }
@@ -3905,23 +3916,45 @@ private constructor(
                          * [PromptCacheBreakpointTtl] value instead. This method is primarily for
                          * setting the field to an undocumented or not yet supported value.
                          */
-                        fun ttl(ttl: JsonField<PromptCacheBreakpointTtl>) = apply { this.ttl = ttl }
+                        fun ttl(ttl: JsonField<PromptCacheBreakpointTtl>) = apply {
+                            this.ttl = ttl
+                            ttlFromAdditionalProperties = false
+                        }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                             apply {
                                 this.additionalProperties.clear()
+
+                                if (ttlFromAdditionalProperties) ttl = JsonMissing.of()
                                 putAllAdditionalProperties(additionalProperties)
                             }
 
                         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                            additionalProperties.put(key, value)
+                            when (key) {
+                                "ttl" -> {
+                                    ttl =
+                                        value
+                                            .asString()
+                                            .map<JsonField<PromptCacheBreakpointTtl>> {
+                                                JsonField.of(PromptCacheBreakpointTtl.of(it))
+                                            }
+                                            .orElse(value)
+                                    ttlFromAdditionalProperties = true
+                                }
+                                else -> additionalProperties.put(key, value)
+                            }
                         }
 
                         fun putAllAdditionalProperties(
                             additionalProperties: Map<String, JsonValue>
-                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+                        ) = apply {
+                            additionalProperties.forEach { (key, value) ->
+                                putAdditionalProperty(key, value)
+                            }
+                        }
 
                         fun removeAdditionalProperty(key: String) = apply {
+                            if (key == "ttl" && ttlFromAdditionalProperties) ttl = JsonMissing.of()
                             additionalProperties.remove(key)
                         }
 
@@ -3935,7 +3968,12 @@ private constructor(
                          * Further updates to this [Builder] will not mutate the returned instance.
                          */
                         fun build(): PromptCacheBreakpoint =
-                            PromptCacheBreakpoint(mode, ttl, additionalProperties.toMutableMap())
+                            PromptCacheBreakpoint(
+                                mode,
+                                ttl,
+                                ttlFromAdditionalProperties,
+                                additionalProperties.toMutableMap(),
+                            )
                     }
 
                     private var validated: Boolean = false
