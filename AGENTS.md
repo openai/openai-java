@@ -21,9 +21,11 @@ Handwritten edits to generated files are overwritten; they are never replayed or
 merged into new output. Preserve separately owned handwritten files and resolve
 ownership collisions explicitly. Follow this AGENTS.md rule and review generated output and inventory changes
 together. The simplified workflow relies on contributor guidance and code review.
-This intermediate revision retains the legacy strict generated-file checker,
-which rejects manifest mismatches when invoked. Respect retained checks and any
-currently required statuses until canonical regeneration removes the tooling.
+Canonical regeneration retires the legacy strict generated-file checker and
+reporting tooling. While those files remain in a checkout, preserve their checks
+and satisfy required statuses. After removal, do not recreate the retired tooling.
+Repository rules and hosted workflow settings are separate: inspect their actual
+state rather than assuming file removal disables a required check.
 Fix violations in the inputs/compiler and regenerate; never update inventory
 hashes to accept a handwritten patch.
 

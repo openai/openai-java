@@ -38,17 +38,18 @@ Separately owned handwritten files are preserved. Resolve ownership conflicts
 explicitly before regeneration. Follow the ownership rules in `AGENTS.md`
 and review generated output and inventory changes together. Generated-file
 ownership under the simplified workflow relies on contributor guidance and code
-review. This revision still contains the legacy strict generated-file checker,
-which rejects manifest mismatches when invoked; inspect live workflow settings
-and required statuses separately until canonical regeneration removes it. Fix violations in the
-generation inputs/compiler and regenerate; do not edit inventory hashes to
-accept a handwritten patch.
+review. Fix violations in the generation inputs/compiler and regenerate; do not
+edit inventory hashes to accept a handwritten patch.
 
-This `next` guidance precedes canonical regeneration: the legacy reporting
-workflow definitions and tools still exist in this revision. Preserve their
-security checks until removal, and inspect actual workflow settings and results
-rather than assuming this document disables them. Do not start new budget
-changes or bypass required checks.
+Canonical regeneration retires the legacy strict checker, reporting workflows,
+and associated tools. The files present depend on the revision: while they
+remain in a checkout, preserve their security checks and satisfy required
+statuses. Do not start new budget changes. After removal, do not recreate the
+retired tools or introduce a replacement budget system.
+
+Repository rules and hosted workflow settings are configured separately from
+these files. Inspect the actual settings and check results before merging;
+this guidance neither disables workflows nor bypasses a required check.
 
 ## Security expectations
 
