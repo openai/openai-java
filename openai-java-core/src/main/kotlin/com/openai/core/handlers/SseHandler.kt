@@ -13,6 +13,7 @@ import com.openai.core.http.SseMessage
 import com.openai.core.http.StreamResponse
 import com.openai.core.http.map
 import com.openai.core.http.markBodyComplete
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.errors.SseException
 import com.openai.models.ErrorObject
 
@@ -135,5 +136,11 @@ internal inline fun <reified T> Handler<StreamResponse<SseMessage>>.mapJson(
 ): Handler<StreamResponse<T>> =
     object : Handler<StreamResponse<T>> {
         override fun handle(response: HttpResponse): StreamResponse<T> =
-            this@mapJson.handle(response).map { it.json<T>(includeEventAndData) }
+            this@mapJson.handle(response).map {
+                try {
+                    it.json<T>(includeEventAndData)
+                } catch (e: OpenAIInvalidDataException) {
+                    throw e.withHeaders(response.headers())
+                }
+            }
     }
