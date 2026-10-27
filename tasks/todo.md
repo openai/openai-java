@@ -1,5 +1,9 @@
 # Java generated/custom transition tasks
 
+> Historical transition checklist: budgets and reporter commands below are retired.
+> Follow [AGENTS.md](../AGENTS.md#generated-file-ownership) for current ownership
+> guidance. Generated output is replaced; handwritten edits are not replayed.
+
 ## Consolidated rollout checkpoint — October 20, 2026 (Pacific)
 
 This checkpoint supersedes the older allocation and pending-review notes below;
