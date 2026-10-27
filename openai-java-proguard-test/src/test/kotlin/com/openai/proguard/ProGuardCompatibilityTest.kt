@@ -313,6 +313,79 @@ internal class ProGuardCompatibilityTest {
     }
 
     @Test
+    fun promptCacheBreakpointTtlRoundtrips() {
+        val jsonMapper = jsonMapper()
+        val types =
+            listOf(
+                com.openai.models.responses.ResponseInputFileContent.PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.responses.ResponseInputImageContent.PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.responses.ResponseInputTextContent.PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.beta.responses.BetaResponseInputFileContent
+                        .PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.beta.responses.BetaResponseInputImageContent
+                        .PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.beta.responses.BetaResponseInputTextContent
+                        .PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.responses.ResponseInputFile.PromptCacheBreakpoint::class.java,
+                com.openai.models.responses.ResponseInputImage.PromptCacheBreakpoint::class.java,
+                com.openai.models.responses.ResponseInputText.PromptCacheBreakpoint::class.java,
+                com.openai.models.beta.responses.BetaResponseInputFile.PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.beta.responses.BetaResponseInputImage.PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.beta.responses.BetaResponseInputText.PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.beta.responses.BetaResponseItem.AgentMessage.Content
+                        .ComputerScreenshot
+                        .PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.beta.responses.BetaResponseOutputItem.AgentMessage.Content
+                        .ComputerScreenshot
+                        .PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.conversations.ComputerScreenshotContent
+                        .PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.chat.completions.ChatCompletionContentPart.File
+                        .PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.chat.completions.ChatCompletionContentPartImage
+                        .PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.chat.completions.ChatCompletionContentPartInputAudio
+                        .PromptCacheBreakpoint::class
+                    .java,
+                com.openai.models.chat.completions.ChatCompletionContentPartText
+                        .PromptCacheBreakpoint::class
+                    .java,
+            )
+        for (json in
+            listOf(
+                """{"mode":"explicit"}""",
+                """{"mode":"explicit","ttl":"30m"}""",
+                """{"mode":"explicit","ttl":"12h"}""",
+                """{"mode":"explicit","ttl":"future"}""",
+                """{"mode":"explicit","ttl":null}""",
+                """{"mode":"explicit","ttl":42}""",
+                """{"mode":"explicit","ttl":{"future":true}}""",
+            )) {
+            val expected = jsonMapper.readTree(json)
+            for (type in types) {
+                val breakpoint = jsonMapper.readValue(json, type)
+                assertThat(jsonMapper.readTree(jsonMapper.writeValueAsString(breakpoint)))
+                    .withFailMessage("Shrunk %s failed to round-trip %s", type.name, json)
+                    .isEqualTo(expected)
+            }
+        }
+    }
+
+    @Test
     fun chatCompletionModalityRoundtrip() {
         val jsonMapper = jsonMapper()
         val chatCompletionModality = ChatCompletionModality.TEXT

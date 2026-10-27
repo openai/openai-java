@@ -18,6 +18,7 @@ import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -864,9 +865,7 @@ private constructor(
              * The following fields are required:
              * ```java
              * .id()
-             * .output()
              * .status()
-             * .title()
              * .turnId()
              * ```
              */
@@ -877,9 +876,9 @@ private constructor(
         class Builder internal constructor() {
 
             private var id: JsonField<String>? = null
-            private var output: JsonField<Output>? = null
+            private var output: JsonField<Output>? = JsonNull.of()
             private var status: JsonField<AgentFunctionCallStatus>? = null
-            private var title: JsonField<String>? = null
+            private var title: JsonField<String>? = JsonNull.of()
             private var turnId: JsonField<String>? = null
             private var type: JsonValue = JsonValue.from("computer_use_call")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1005,9 +1004,7 @@ private constructor(
              * The following fields are required:
              * ```java
              * .id()
-             * .output()
              * .status()
-             * .title()
              * .turnId()
              * ```
              *
@@ -1825,10 +1822,8 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .credentialOrigin()
                  * .fields()
                  * .options()
-                 * .reason()
                  * ```
                  */
                 @JvmStatic fun builder() = Builder()
@@ -1837,10 +1832,10 @@ private constructor(
             /** A builder for [Request]. */
             class Builder internal constructor() {
 
-                private var credentialOrigin: JsonField<String>? = null
+                private var credentialOrigin: JsonField<String>? = JsonNull.of()
                 private var fields: JsonField<MutableList<Field>>? = null
                 private var options: JsonField<MutableList<Option>>? = null
-                private var reason: JsonField<String>? = null
+                private var reason: JsonField<String>? = JsonNull.of()
                 private var type: JsonValue = JsonValue.from("browser_authentication")
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -1986,10 +1981,8 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .credentialOrigin()
                  * .fields()
                  * .options()
-                 * .reason()
                  * ```
                  *
                  * @throws IllegalStateException if any required field is unset.

@@ -18,6 +18,7 @@ import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -244,7 +245,6 @@ private constructor(
          * .attachments()
          * .content()
          * .createdAt()
-         * .inferenceOptions()
          * .threadId()
          * ```
          */
@@ -258,7 +258,7 @@ private constructor(
         private var attachments: JsonField<MutableList<ChatKitAttachment>>? = null
         private var content: JsonField<MutableList<Content>>? = null
         private var createdAt: JsonField<Long>? = null
-        private var inferenceOptions: JsonField<InferenceOptions>? = null
+        private var inferenceOptions: JsonField<InferenceOptions>? = JsonNull.of()
         private var object_: JsonValue = JsonValue.from("chatkit.thread_item")
         private var threadId: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("chatkit.user_message")
@@ -469,7 +469,6 @@ private constructor(
          * .attachments()
          * .content()
          * .createdAt()
-         * .inferenceOptions()
          * .threadId()
          * ```
          *
@@ -1317,23 +1316,15 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [InferenceOptions].
-             *
-             * The following fields are required:
-             * ```java
-             * .model()
-             * .toolChoice()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [InferenceOptions]. */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [InferenceOptions]. */
         class Builder internal constructor() {
 
-            private var model: JsonField<String>? = null
-            private var toolChoice: JsonField<ToolChoice>? = null
+            private var model: JsonField<String>? = JsonNull.of()
+            private var toolChoice: JsonField<ToolChoice>? = JsonNull.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1401,14 +1392,6 @@ private constructor(
              * Returns an immutable instance of [InferenceOptions].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .model()
-             * .toolChoice()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): InferenceOptions =
                 InferenceOptions(

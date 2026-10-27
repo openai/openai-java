@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -171,7 +172,6 @@ private constructor(
          * .createdAt()
          * .entityIdentifier()
          * .notice()
-         * .reason()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -185,7 +185,7 @@ private constructor(
         private var entityIdentifier: JsonField<String>? = null
         private var notice: JsonField<Notice>? = null
         private var object_: JsonValue = JsonValue.from("safety.case")
-        private var reason: JsonField<String>? = null
+        private var reason: JsonField<String>? = JsonNull.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -300,7 +300,6 @@ private constructor(
          * .createdAt()
          * .entityIdentifier()
          * .notice()
-         * .reason()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.

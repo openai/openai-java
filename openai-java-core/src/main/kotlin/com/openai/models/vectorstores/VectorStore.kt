@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -298,8 +299,6 @@ private constructor(
          * .id()
          * .createdAt()
          * .fileCounts()
-         * .lastActiveAt()
-         * .metadata()
          * .name()
          * .status()
          * .usageBytes()
@@ -314,8 +313,8 @@ private constructor(
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
         private var fileCounts: JsonField<FileCounts>? = null
-        private var lastActiveAt: JsonField<Long>? = null
-        private var metadata: JsonField<Metadata>? = null
+        private var lastActiveAt: JsonField<Long>? = JsonNull.of()
+        private var metadata: JsonField<Metadata>? = JsonNull.of()
         private var name: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("vector_store")
         private var status: JsonField<Status>? = null
@@ -531,8 +530,6 @@ private constructor(
          * .id()
          * .createdAt()
          * .fileCounts()
-         * .lastActiveAt()
-         * .metadata()
          * .name()
          * .status()
          * .usageBytes()

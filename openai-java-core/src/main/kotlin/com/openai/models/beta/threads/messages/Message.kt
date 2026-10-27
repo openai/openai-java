@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
@@ -387,16 +388,9 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .assistantId()
-         * .attachments()
-         * .completedAt()
          * .content()
          * .createdAt()
-         * .incompleteAt()
-         * .incompleteDetails()
-         * .metadata()
          * .role()
-         * .runId()
          * .status()
          * .threadId()
          * ```
@@ -408,17 +402,17 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var assistantId: JsonField<String>? = null
+        private var assistantId: JsonField<String>? = JsonNull.of()
         private var attachments: JsonField<MutableList<Attachment>>? = null
-        private var completedAt: JsonField<Long>? = null
+        private var completedAt: JsonField<Long>? = JsonNull.of()
         private var content: JsonField<MutableList<MessageContent>>? = null
         private var createdAt: JsonField<Long>? = null
-        private var incompleteAt: JsonField<Long>? = null
-        private var incompleteDetails: JsonField<IncompleteDetails>? = null
-        private var metadata: JsonField<Metadata>? = null
+        private var incompleteAt: JsonField<Long>? = JsonNull.of()
+        private var incompleteDetails: JsonField<IncompleteDetails>? = JsonNull.of()
+        private var metadata: JsonField<Metadata>? = JsonNull.of()
         private var object_: JsonValue = JsonValue.from("thread.message")
         private var role: JsonField<Role>? = null
-        private var runId: JsonField<String>? = null
+        private var runId: JsonField<String>? = JsonNull.of()
         private var status: JsonField<Status>? = null
         private var threadId: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -780,16 +774,9 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .assistantId()
-         * .attachments()
-         * .completedAt()
          * .content()
          * .createdAt()
-         * .incompleteAt()
-         * .incompleteDetails()
-         * .metadata()
          * .role()
-         * .runId()
          * .status()
          * .threadId()
          * ```
@@ -800,7 +787,7 @@ private constructor(
             Message(
                 checkRequired("id", id),
                 checkRequired("assistantId", assistantId),
-                checkRequired("attachments", attachments).map { it.toImmutable() },
+                checkRequired("attachments", attachments ?: JsonNull.of()).map { it.toImmutable() },
                 checkRequired("completedAt", completedAt),
                 checkRequired("content", content).map { it.toImmutable() },
                 checkRequired("createdAt", createdAt),

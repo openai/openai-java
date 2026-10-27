@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -338,11 +339,9 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .instructions()
          * .metadata()
          * .model()
          * .multiAgent()
-         * .name()
          * .reasoning()
          * .serviceTier()
          * .text()
@@ -358,11 +357,11 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
-        private var instructions: JsonField<String>? = null
+        private var instructions: JsonField<String>? = JsonNull.of()
         private var metadata: JsonField<Metadata>? = null
         private var model: JsonField<String>? = null
         private var multiAgent: JsonField<MultiAgentConfig>? = null
-        private var name: JsonField<String>? = null
+        private var name: JsonField<String>? = JsonNull.of()
         private var object_: JsonValue = JsonValue.from("agent")
         private var reasoning: JsonField<AgentReasoning>? = null
         private var serviceTier: JsonField<ServiceTier>? = null
@@ -649,11 +648,9 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .instructions()
          * .metadata()
          * .model()
          * .multiAgent()
-         * .name()
          * .reasoning()
          * .serviceTier()
          * .text()

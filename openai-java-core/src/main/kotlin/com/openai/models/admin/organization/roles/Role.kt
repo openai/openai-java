@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -218,7 +219,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .description()
          * .name()
          * .permissions()
          * .predefinedRole()
@@ -232,7 +232,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var description: JsonField<String>? = null
+        private var description: JsonField<String>? = JsonNull.of()
         private var name: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("role")
         private var permissions: JsonField<MutableList<String>>? = null
@@ -384,7 +384,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .description()
          * .name()
          * .permissions()
          * .predefinedRole()

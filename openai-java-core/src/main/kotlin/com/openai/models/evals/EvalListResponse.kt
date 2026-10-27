@@ -18,6 +18,7 @@ import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
@@ -242,7 +243,6 @@ private constructor(
          * .id()
          * .createdAt()
          * .dataSourceConfig()
-         * .metadata()
          * .name()
          * .testingCriteria()
          * ```
@@ -256,7 +256,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
         private var dataSourceConfig: JsonField<DataSourceConfig>? = null
-        private var metadata: JsonField<Metadata>? = null
+        private var metadata: JsonField<Metadata>? = JsonNull.of()
         private var name: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("eval")
         private var testingCriteria: JsonField<MutableList<TestingCriterion>>? = null
@@ -504,7 +504,6 @@ private constructor(
          * .id()
          * .createdAt()
          * .dataSourceConfig()
-         * .metadata()
          * .name()
          * .testingCriteria()
          * ```

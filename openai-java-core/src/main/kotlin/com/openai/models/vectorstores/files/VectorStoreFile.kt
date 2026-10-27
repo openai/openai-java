@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -271,7 +272,6 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .lastError()
          * .status()
          * .usageBytes()
          * .vectorStoreId()
@@ -285,7 +285,7 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
-        private var lastError: JsonField<LastError>? = null
+        private var lastError: JsonField<LastError>? = JsonNull.of()
         private var object_: JsonValue = JsonValue.from("vector_store.file")
         private var status: JsonField<Status>? = null
         private var usageBytes: JsonField<Long>? = null
@@ -492,7 +492,6 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .lastError()
          * .status()
          * .usageBytes()
          * .vectorStoreId()

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -226,7 +227,6 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .expiresAt()
          * .owner()
          * .redactedValue()
          * ```
@@ -239,7 +239,7 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
-        private var expiresAt: JsonField<Long>? = null
+        private var expiresAt: JsonField<Long>? = JsonNull.of()
         private var object_: JsonValue = JsonValue.from("organization.admin_api_key")
         private var owner: JsonField<Owner>? = null
         private var redactedValue: JsonField<String>? = null
@@ -404,7 +404,6 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .expiresAt()
          * .owner()
          * .redactedValue()
          * ```

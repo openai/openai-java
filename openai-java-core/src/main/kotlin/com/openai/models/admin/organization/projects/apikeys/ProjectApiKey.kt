@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -252,7 +253,6 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .lastUsedAt()
          * .name()
          * .owner()
          * .ownerProjectAccess()
@@ -267,7 +267,7 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
-        private var lastUsedAt: JsonField<Long>? = null
+        private var lastUsedAt: JsonField<Long>? = JsonNull.of()
         private var name: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("organization.project.api_key")
         private var owner: JsonField<Owner>? = null
@@ -448,7 +448,6 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .lastUsedAt()
          * .name()
          * .owner()
          * .ownerProjectAccess()

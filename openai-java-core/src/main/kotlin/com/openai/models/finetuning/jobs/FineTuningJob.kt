@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
@@ -502,18 +503,13 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .error()
-         * .fineTunedModel()
-         * .finishedAt()
          * .hyperparameters()
          * .model()
          * .organizationId()
          * .resultFiles()
          * .seed()
          * .status()
-         * .trainedTokens()
          * .trainingFile()
-         * .validationFile()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -524,9 +520,9 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
-        private var error: JsonField<Error>? = null
-        private var fineTunedModel: JsonField<String>? = null
-        private var finishedAt: JsonField<Long>? = null
+        private var error: JsonField<Error>? = JsonNull.of()
+        private var fineTunedModel: JsonField<String>? = JsonNull.of()
+        private var finishedAt: JsonField<Long>? = JsonNull.of()
         private var hyperparameters: JsonField<Hyperparameters>? = null
         private var model: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("fine_tuning.job")
@@ -534,9 +530,9 @@ private constructor(
         private var resultFiles: JsonField<MutableList<String>>? = null
         private var seed: JsonField<Long>? = null
         private var status: JsonField<Status>? = null
-        private var trainedTokens: JsonField<Long>? = null
+        private var trainedTokens: JsonField<Long>? = JsonNull.of()
         private var trainingFile: JsonField<String>? = null
-        private var validationFile: JsonField<String>? = null
+        private var validationFile: JsonField<String>? = JsonNull.of()
         private var estimatedFinish: JsonField<Long> = JsonMissing.of()
         private var integrations: JsonField<MutableList<FineTuningJobWandbIntegrationObject>>? =
             null
@@ -963,18 +959,13 @@ private constructor(
          * ```java
          * .id()
          * .createdAt()
-         * .error()
-         * .fineTunedModel()
-         * .finishedAt()
          * .hyperparameters()
          * .model()
          * .organizationId()
          * .resultFiles()
          * .seed()
          * .status()
-         * .trainedTokens()
          * .trainingFile()
-         * .validationFile()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -1190,7 +1181,6 @@ private constructor(
              * ```java
              * .code()
              * .message()
-             * .param()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -1201,7 +1191,7 @@ private constructor(
 
             private var code: JsonField<String>? = null
             private var message: JsonField<String>? = null
-            private var param: JsonField<String>? = null
+            private var param: JsonField<String>? = JsonNull.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1282,7 +1272,6 @@ private constructor(
              * ```java
              * .code()
              * .message()
-             * .param()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.

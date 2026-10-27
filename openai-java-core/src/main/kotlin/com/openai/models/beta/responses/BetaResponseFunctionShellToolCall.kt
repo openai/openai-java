@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -260,7 +261,6 @@ private constructor(
          * .id()
          * .action()
          * .callId()
-         * .environment()
          * .status()
          * ```
          */
@@ -273,7 +273,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var action: JsonField<Action>? = null
         private var callId: JsonField<String>? = null
-        private var environment: JsonField<Environment>? = null
+        private var environment: JsonField<Environment>? = JsonNull.of()
         private var status: JsonField<Status>? = null
         private var type: JsonValue = JsonValue.from("shell_call")
         private var agent: JsonField<Agent> = JsonMissing.of()
@@ -477,7 +477,6 @@ private constructor(
          * .id()
          * .action()
          * .callId()
-         * .environment()
          * .status()
          * ```
          *
@@ -668,8 +667,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .commands()
-             * .maxOutputLength()
-             * .timeoutMs()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -679,8 +676,8 @@ private constructor(
         class Builder internal constructor() {
 
             private var commands: JsonField<MutableList<String>>? = null
-            private var maxOutputLength: JsonField<Long>? = null
-            private var timeoutMs: JsonField<Long>? = null
+            private var maxOutputLength: JsonField<Long>? = JsonNull.of()
+            private var timeoutMs: JsonField<Long>? = JsonNull.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -791,8 +788,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .commands()
-             * .maxOutputLength()
-             * .timeoutMs()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -225,8 +226,6 @@ private constructor(
          * .id()
          * .agentId()
          * .content()
-         * .model()
-         * .reasoningEffort()
          * .status()
          * .turnId()
          * ```
@@ -240,8 +239,8 @@ private constructor(
         private var id: JsonField<String>? = null
         private var agentId: JsonField<String>? = null
         private var content: JsonField<MutableList<AgentContent>>? = null
-        private var model: JsonField<String>? = null
-        private var reasoningEffort: JsonField<String>? = null
+        private var model: JsonField<String>? = JsonNull.of()
+        private var reasoningEffort: JsonField<String>? = JsonNull.of()
         private var status: JsonField<AgentFunctionCallStatus>? = null
         private var turnId: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("create_subagent_call")
@@ -437,8 +436,6 @@ private constructor(
          * .id()
          * .agentId()
          * .content()
-         * .model()
-         * .reasoningEffort()
          * .status()
          * .turnId()
          * ```

@@ -10,6 +10,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
@@ -330,14 +331,9 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .completedAt()
          * .createdAt()
-         * .error()
-         * .expiresAt()
          * .model()
          * .progress()
-         * .prompt()
-         * .remixedFromVideoId()
          * .seconds()
          * .size()
          * .status()
@@ -350,15 +346,15 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var completedAt: JsonField<Long>? = null
+        private var completedAt: JsonField<Long>? = JsonNull.of()
         private var createdAt: JsonField<Long>? = null
-        private var error: JsonField<VideoCreateError>? = null
-        private var expiresAt: JsonField<Long>? = null
+        private var error: JsonField<VideoCreateError>? = JsonNull.of()
+        private var expiresAt: JsonField<Long>? = JsonNull.of()
         private var model: JsonField<VideoModel>? = null
         private var object_: JsonValue = JsonValue.from("video")
         private var progress: JsonField<Long>? = null
-        private var prompt: JsonField<String>? = null
-        private var remixedFromVideoId: JsonField<String>? = null
+        private var prompt: JsonField<String>? = JsonNull.of()
+        private var remixedFromVideoId: JsonField<String>? = JsonNull.of()
         private var seconds: JsonField<VideoSeconds>? = null
         private var size: JsonField<VideoSize>? = null
         private var status: JsonField<Status>? = null
@@ -614,14 +610,9 @@ private constructor(
          * The following fields are required:
          * ```java
          * .id()
-         * .completedAt()
          * .createdAt()
-         * .error()
-         * .expiresAt()
          * .model()
          * .progress()
-         * .prompt()
-         * .remixedFromVideoId()
          * .seconds()
          * .size()
          * .status()

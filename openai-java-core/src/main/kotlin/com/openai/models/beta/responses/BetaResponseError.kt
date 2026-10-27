@@ -265,11 +265,13 @@ private constructor(
         }
 
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            additionalProperties.put(key, value)
+            when (key) {
+                else -> additionalProperties.put(key, value)
+            }
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.putAll(additionalProperties)
+            additionalProperties.forEach { (key, value) -> putAdditionalProperty(key, value) }
         }
 
         fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }

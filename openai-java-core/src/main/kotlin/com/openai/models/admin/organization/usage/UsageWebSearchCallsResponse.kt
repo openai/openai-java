@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -144,7 +145,6 @@ private constructor(
          * ```java
          * .data()
          * .hasMore()
-         * .nextPage()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -155,7 +155,7 @@ private constructor(
 
         private var data: JsonField<MutableList<Data>>? = null
         private var hasMore: JsonField<Boolean>? = null
-        private var nextPage: JsonField<String>? = null
+        private var nextPage: JsonField<String>? = JsonNull.of()
         private var object_: JsonValue = JsonValue.from("page")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -257,7 +257,6 @@ private constructor(
          * ```java
          * .data()
          * .hasMore()
-         * .nextPage()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.

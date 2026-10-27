@@ -19,6 +19,7 @@ import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
@@ -1401,9 +1402,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .allowedTools()
              * .connectionOrigin()
-             * .credentialId()
              * .requestMetadata()
              * .required()
              * .serverLabel()
@@ -1418,7 +1417,7 @@ private constructor(
 
             private var allowedTools: JsonField<MutableList<String>>? = null
             private var connectionOrigin: JsonField<ConnectionOrigin>? = null
-            private var credentialId: JsonField<String>? = null
+            private var credentialId: JsonField<String>? = JsonNull.of()
             private var requestMetadata: JsonField<RequestMetadata>? = null
             private var required: JsonField<Boolean>? = null
             private var serverLabel: JsonField<String>? = null
@@ -1607,9 +1606,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .allowedTools()
              * .connectionOrigin()
-             * .credentialId()
              * .requestMetadata()
              * .required()
              * .serverLabel()
@@ -1620,7 +1617,9 @@ private constructor(
              */
             fun build(): Mcp =
                 Mcp(
-                    checkRequired("allowedTools", allowedTools).map { it.toImmutable() },
+                    checkRequired("allowedTools", allowedTools ?: JsonNull.of()).map {
+                        it.toImmutable()
+                    },
                     checkRequired("connectionOrigin", connectionOrigin),
                     checkRequired("credentialId", credentialId),
                     checkRequired("requestMetadata", requestMetadata),
@@ -2152,9 +2151,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .allowedDomains()
              * .contextSize()
-             * .location()
              * .mode()
              * ```
              */
@@ -2166,7 +2163,7 @@ private constructor(
 
             private var allowedDomains: JsonField<MutableList<String>>? = null
             private var contextSize: JsonField<ContextSize>? = null
-            private var location: JsonField<Location>? = null
+            private var location: JsonField<Location>? = JsonNull.of()
             private var mode: JsonField<Mode>? = null
             private var type: JsonValue = JsonValue.from("web_search")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -2293,9 +2290,7 @@ private constructor(
              *
              * The following fields are required:
              * ```java
-             * .allowedDomains()
              * .contextSize()
-             * .location()
              * .mode()
              * ```
              *
@@ -2303,7 +2298,9 @@ private constructor(
              */
             fun build(): WebSearch =
                 WebSearch(
-                    checkRequired("allowedDomains", allowedDomains).map { it.toImmutable() },
+                    checkRequired("allowedDomains", allowedDomains ?: JsonNull.of()).map {
+                        it.toImmutable()
+                    },
                     checkRequired("contextSize", contextSize),
                     checkRequired("location", location),
                     checkRequired("mode", mode),
@@ -2636,27 +2633,17 @@ private constructor(
 
             companion object {
 
-                /**
-                 * Returns a mutable builder for constructing an instance of [Location].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .city()
-                 * .country()
-                 * .region()
-                 * .timezone()
-                 * ```
-                 */
+                /** Returns a mutable builder for constructing an instance of [Location]. */
                 @JvmStatic fun builder() = Builder()
             }
 
             /** A builder for [Location]. */
             class Builder internal constructor() {
 
-                private var city: JsonField<String>? = null
-                private var country: JsonField<String>? = null
-                private var region: JsonField<String>? = null
-                private var timezone: JsonField<String>? = null
+                private var city: JsonField<String>? = JsonNull.of()
+                private var country: JsonField<String>? = JsonNull.of()
+                private var region: JsonField<String>? = JsonNull.of()
+                private var timezone: JsonField<String>? = JsonNull.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -2754,16 +2741,6 @@ private constructor(
                  * Returns an immutable instance of [Location].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .city()
-                 * .country()
-                 * .region()
-                 * .timezone()
-                 * ```
-                 *
-                 * @throws IllegalStateException if any required field is unset.
                  */
                 fun build(): Location =
                     Location(

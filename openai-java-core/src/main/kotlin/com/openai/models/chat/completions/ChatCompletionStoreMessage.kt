@@ -18,6 +18,7 @@ import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
@@ -290,8 +291,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .content()
-         * .refusal()
          * .id()
          * ```
          */
@@ -301,8 +300,8 @@ private constructor(
     /** A builder for [ChatCompletionStoreMessage]. */
     class Builder internal constructor() {
 
-        private var content: JsonField<String>? = null
-        private var refusal: JsonField<String>? = null
+        private var content: JsonField<String>? = JsonNull.of()
+        private var refusal: JsonField<String>? = JsonNull.of()
         private var role: JsonValue = JsonValue.from("assistant")
         private var annotations: JsonField<MutableList<ChatCompletionMessage.Annotation>>? = null
         private var audio: JsonField<ChatCompletionAudio> = JsonMissing.of()
@@ -565,8 +564,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .content()
-         * .refusal()
          * .id()
          * ```
          *
