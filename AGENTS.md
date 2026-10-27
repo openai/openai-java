@@ -7,15 +7,25 @@ generator owns the code you are changing, preserve existing generated behavior, 
 authoritative source when it is available. The `openai-java-example/` directory is not modified by
 the generator.
 
-## Custom-code budget
+<a id="custom-code-budget"></a>
 
-Follow [the custom-code guidance](scripts/castiron/CUSTOM_CODE.md). Budget changes
-belong in a separate PR containing only `.castiron-ratchet.json`, with an explicit justification
-in the PR description. Increases require a **human approving review** before merging.
-Agents may investigate and draft proposals, but must not approve budget increases
-(including through a human's credentials) or bypass the gate. Do not weaken
-counting, broaden exclusions, or alter generation metadata to make a change pass.
-The checker and effective budget come from main, not the PR. Keep default CODEOWNERS.
+## Generated-file ownership
+
+Never hand-edit generated SDK files, including generated tests, documentation,
+workflows, or the generated-file inventory. Change the authoritative API schema,
+configuration, or compiler, then regenerate. Put SDK-specific behavior in
+separately owned handwritten helpers and extension points.
+
+Regeneration replaces generator-owned files and deletes retired generated paths.
+Handwritten edits to generated files are overwritten; they are never replayed or
+merged into new output. Preserve separately owned handwritten files and resolve
+ownership collisions explicitly. Follow this AGENTS.md rule and review generated output and inventory changes
+together. The simplified workflow relies on contributor guidance and code review.
+This intermediate revision retains the legacy strict generated-file checker,
+which rejects manifest mismatches when invoked. Respect retained checks and any
+currently required statuses until canonical regeneration removes the tooling.
+Fix violations in the inputs/compiler and regenerate; never update inventory
+hashes to accept a handwritten patch.
 
 ## Security requirements
 
