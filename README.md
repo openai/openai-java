@@ -1587,6 +1587,106 @@ The [`ClientOptions`](openai-java-core/src/main/kotlin/com/openai/core/ClientOpt
 
 ## Network options
 
+### OkHttp application interceptors
+
+```java
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .fromEnv()
+    .addInterceptor(chain -> chain.proceed(chain.request().newBuilder()
+        .header("X-Application", "my-java-app")
+        .build()))
+    .build();
+```
+
+`addInterceptor(okhttp3.Interceptor)` is available on `OpenAIOkHttpClient.builder()`,
+`OpenAIOkHttpClientAsync.builder()`, and the SDK's lower-level `OkHttpClient.builder()`.
+OkHttp is exposed as a transitive API dependency; no additional dependency is needed to implement
+an interceptor. See the [sync and async Java example](openai-java-example/src/main/java/com/openai/example/InterceptorsExample.java).
+
+These are OkHttp application interceptors: requests pass through them in registration order,
+and responses return through them in reverse order. They run again for each SDK retry, but do
+not run separately for redirects within an attempt. Interceptor instances may be called
+concurrently. Adding an interceptor to a builder does not change clients already built from it.
+Interceptors cannot be combined with X.509 workload identity.
+
+### Full OkHttp configuration
+
+```java
+Dispatcher dispatcher = new Dispatcher();
+dispatcher.setMaxRequests(100);
+dispatcher.setMaxRequestsPerHost(20);
+
+okhttp3.OkHttpClient transport = new okhttp3.OkHttpClient.Builder()
+    .dispatcher(dispatcher)
+    .connectTimeout(Duration.ofSeconds(15))
+    .readTimeout(Duration.ofMinutes(2))
+    .addInterceptor(existingOkHttpInterceptor)
+    .build();
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .fromEnv()
+    .okHttpClient(transport)
+    .build();
+try {
+    client.models().list();
+} finally {
+    client.close();
+    // Release these only after every user of the shared transport has finished.
+    transport.dispatcher().executorService().shutdown();
+    transport.connectionPool().evictAll();
+    if (transport.cache() != null) transport.cache().close();
+}
+```
+
+`okHttpClient(okhttp3.OkHttpClient)` is available on both `OpenAIOkHttpClient.builder()` and
+`OpenAIOkHttpClientAsync.builder()`. Configure DNS, dispatchers, connection pools, proxies,
+authenticators, TLS, caching, event listeners, and application or network interceptors with
+OkHttp's own Java API. See the [complete Java example](openai-java-example/src/main/java/com/openai/example/OkHttpConfigurationExample.java).
+
+The SDK derives a client that shares the supplied dispatcher's executor, pool, and cache.
+Closing an SDK client closes its WebSockets but leaves these caller-owned resources available
+for other clients. It does not cancel shared HTTP calls. Close response streams and wait for
+outstanding requests before releasing shared resources. Existing SDK-created transports retain
+their current shutdown behavior.
+
+Native timeouts become SDK defaults. Supplying a stock `new okhttp3.OkHttpClient()` changes
+read and write timeouts from ten minutes to ten seconds, the connect timeout from one minute
+to ten seconds, and the overall per-attempt deadline from ten minutes to no deadline.
+To retain SDK timeouts while borrowing a client:
+
+```java
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .fromEnv()
+    .okHttpClient(transport)
+    .timeout(com.openai.core.Timeout.builder().build())
+    .build();
+```
+
+An explicit SDK builder `timeout(...)` replaces the native timeout defaults regardless of setter
+order. Request-level timeout fields override the resulting defaults. SDK `addInterceptor(...)`
+calls append application interceptors after those on the supplied client.
+
+Configure other transport options on the supplied native client. Combining it with SDK proxy,
+TLS, connection-pool, dispatcher, or redirect setters fails at `build()` rather than silently
+ignoring either configuration. X.509 workload identity requires its isolated transport and
+cannot use a supplied native client.
+
+For HTTP requests, SDK `maxRetries` controls retries, so native connection retries are disabled.
+After caller network interceptors run, the SDK removes both `Authorization` and `api-key` when
+the request's origin differs from the original call's origin, including application-interceptor
+URL rewrites. The borrowed proxy authenticator receives only proxy challenges; a `407` from
+an HTTPS origin inside a proxy tunnel cannot request proxy credentials. Proxy credentials stay
+bound to the selected proxy across redirects, including preemptive headers and authenticator replies. The SDK removes
+`Proxy-Authorization` before direct requests or requests inside TLS tunnels. Other native settings
+and dispatcher limits are retained. Custom interceptors, authenticators, and logging hooks are
+trusted application code and can access credentials and request bodies.
+
+SDK WebSockets use a separate dispatcher and disable redirects and compression. A native client
+with any caller network interceptor, or an `authenticator` or `proxyAuthenticator` other than
+`okhttp3.Authenticator.NONE`, is accepted at SDK `build()` but rejected when connecting a
+WebSocket, before a network connection starts. Application interceptors are supported.
+Supplying a native client does not change these WebSocket restrictions.
+
 ### Telemetry headers
 
 Disable SDK-generated telemetry for a client:
@@ -1896,9 +1996,11 @@ This structure allows replacing the SDK's default HTTP client without pulling in
 
 To use a customized `OkHttpClient`:
 
-1. Replace your [`openai-java` dependency](#installation) with `openai-java-core`
-2. Copy `openai-java-client-okhttp`'s [`OkHttpClient`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OkHttpClient.kt) class into your code and customize it
-3. Construct [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt) or [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), similarly to [`OpenAIOkHttpClient`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt) or [`OpenAIOkHttpClientAsync`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClientAsync.kt), using your customized client
+Keep the `openai-java` dependency and pass your configured `okhttp3.OkHttpClient` to
+`OpenAIOkHttpClient.builder().okHttpClient(transport)` or
+`OpenAIOkHttpClientAsync.builder().okHttpClient(transport)`. See [full OkHttp configuration](#full-okhttp-configuration)
+for ownership, timeout precedence, and WebSocket restrictions. Use
+[`addInterceptor(...)`](#okhttp-application-interceptors) when you only need application interceptors.
 
 ### Completely custom HTTP client
 

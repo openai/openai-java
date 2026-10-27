@@ -283,6 +283,56 @@ internal class X509WorkloadIdentityIntegrationTest {
     }
 
     @Test
+    fun certificateAuthenticationCannotBeCombinedWithInterceptors() {
+        val identity = X509TestIdentity.create("interceptor configuration identity")
+        val configuration = configuration(identity, emptyList())
+        assertThatThrownBy {
+                OpenAIOkHttpClient.builder()
+                    .addInterceptor { chain -> chain.proceed(chain.request()) }
+                    .x509WorkloadIdentity(configuration)
+                    .build()
+            }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessageContaining("custom transport settings")
+        assertThatThrownBy {
+                OpenAIOkHttpClientAsync.builder()
+                    .x509WorkloadIdentity(configuration)
+                    .addInterceptor { chain -> chain.proceed(chain.request()) }
+                    .build()
+            }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessageContaining("custom transport settings")
+    }
+
+    @Test
+    fun certificateAuthenticationCannotBeCombinedWithNativeClients() {
+        val identity = X509TestIdentity.create("native client configuration identity")
+        val configuration = configuration(identity, emptyList())
+        val native = okhttp3.OkHttpClient()
+        try {
+            assertThatThrownBy {
+                    OpenAIOkHttpClient.builder()
+                        .okHttpClient(native)
+                        .x509WorkloadIdentity(configuration)
+                        .build()
+                }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessageContaining("custom transport settings")
+            assertThatThrownBy {
+                    OpenAIOkHttpClientAsync.builder()
+                        .x509WorkloadIdentity(configuration)
+                        .okHttpClient(native)
+                        .build()
+                }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessageContaining("custom transport settings")
+        } finally {
+            native.dispatcher.executorService.shutdown()
+            native.connectionPool.evictAll()
+        }
+    }
+
+    @Test
     fun configurationRequiresIdsAndTransportAndRejectsNegativeRefreshBuffers() {
         assertThatThrownBy { X509WorkloadIdentity.builder().build() }
             .isInstanceOf(IllegalStateException::class.java)
