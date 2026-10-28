@@ -1103,8 +1103,6 @@ private constructor(
                     fun text(): String = text.getRequired("text")
 
                     /**
-                     * The type of the input item. Always `input_text`.
-                     *
                      * Expected to always return the following:
                      * ```java
                      * JsonValue.from("input_text")
@@ -1343,7 +1341,7 @@ private constructor(
                     ) : this(imageUrl, type, detail, mutableMapOf())
 
                     /**
-                     * An inline image encoded as a data URL.
+                     * A base64-encoded image data URL or a publicly accessible HTTP(S) image URL.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   or is unexpectedly missing or null (e.g. if the server responded with an
@@ -1352,8 +1350,6 @@ private constructor(
                     fun imageUrl(): String = imageUrl.getRequired("image_url")
 
                     /**
-                     * The type of the input item. Always `input_image`.
-                     *
                      * Expected to always return the following:
                      * ```java
                      * JsonValue.from("input_image")
@@ -1461,7 +1457,10 @@ private constructor(
                             additionalProperties = inputImage.additionalProperties.toMutableMap()
                         }
 
-                        /** An inline image encoded as a data URL. */
+                        /**
+                         * A base64-encoded image data URL or a publicly accessible HTTP(S) image
+                         * URL.
+                         */
                         fun imageUrl(imageUrl: String) = imageUrl(JsonField.of(imageUrl))
 
                         /**
