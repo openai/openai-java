@@ -1745,17 +1745,41 @@ private constructor(
 
         companion object {
 
-            @JvmField val GPT_5 = of("gpt-5")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5 = of("gpt-5")
 
-            @JvmField val GPT_5_MINI = of("gpt-5-mini")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_MINI = of("gpt-5-mini")
 
-            @JvmField val GPT_5_NANO = of("gpt-5-nano")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_NANO = of("gpt-5-nano")
 
-            @JvmField val GPT_5_2025_08_07 = of("gpt-5-2025-08-07")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_2025_08_07 = of("gpt-5-2025-08-07")
 
-            @JvmField val GPT_5_MINI_2025_08_07 = of("gpt-5-mini-2025-08-07")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_MINI_2025_08_07 = of("gpt-5-mini-2025-08-07")
 
-            @JvmField val GPT_5_NANO_2025_08_07 = of("gpt-5-nano-2025-08-07")
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_NANO_2025_08_07 = of("gpt-5-nano-2025-08-07")
 
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -1850,11 +1874,29 @@ private constructor(
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_NANO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_MINI_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_NANO_2025_08_07,
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -1916,11 +1958,29 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_MINI,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_NANO,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_MINI_2025_08_07,
+            @Deprecated(
+                "Announced shutdown date: 2026-12-11. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_NANO_2025_08_07,
             @Deprecated(
                 "Announced shutdown date: 2027-01-14. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."

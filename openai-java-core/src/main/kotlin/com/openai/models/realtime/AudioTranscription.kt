@@ -607,20 +607,39 @@ private constructor(
 
         companion object {
 
-            @JvmField val WHISPER_1 = of("whisper-1")
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val WHISPER_1 = of("whisper-1")
 
             @JvmField val GPT_TRANSCRIBE = of("gpt-transcribe")
 
             @JvmField val GPT_LIVE_TRANSCRIBE = of("gpt-live-transcribe")
 
-            @JvmField val GPT_4O_MINI_TRANSCRIBE = of("gpt-4o-mini-transcribe")
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_MINI_TRANSCRIBE = of("gpt-4o-mini-transcribe")
 
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             @JvmField
             val GPT_4O_MINI_TRANSCRIBE_2025_12_15 = of("gpt-4o-mini-transcribe-2025-12-15")
 
-            @JvmField val GPT_4O_TRANSCRIBE = of("gpt-4o-transcribe")
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_TRANSCRIBE = of("gpt-4o-transcribe")
 
-            @JvmField val GPT_4O_TRANSCRIBE_DIARIZE = of("gpt-4o-transcribe-diarize")
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_4O_TRANSCRIBE_DIARIZE = of("gpt-4o-transcribe-diarize")
 
             @JvmField val GPT_REALTIME_WHISPER = of("gpt-realtime-whisper")
 
@@ -629,12 +648,27 @@ private constructor(
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             WHISPER_1,
             GPT_TRANSCRIBE,
             GPT_LIVE_TRANSCRIBE,
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_TRANSCRIBE,
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_TRANSCRIBE_2025_12_15,
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_TRANSCRIBE,
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_TRANSCRIBE_DIARIZE,
             GPT_REALTIME_WHISPER,
         }
@@ -649,12 +683,27 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             WHISPER_1,
             GPT_TRANSCRIBE,
             GPT_LIVE_TRANSCRIBE,
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_TRANSCRIBE,
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_MINI_TRANSCRIBE_2025_12_15,
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_TRANSCRIBE,
+            @Deprecated(
+                "Announced shutdown date: 2027-02-26. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_4O_TRANSCRIBE_DIARIZE,
             GPT_REALTIME_WHISPER,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */

@@ -37,6 +37,14 @@ import kotlin.jvm.optionals.getOrNull
  * Generates audio from the input text.
  *
  * Returns the audio file content, or a stream of audio events.
+ *
+ * The `tts-1`, `tts-1-hd`, `gpt-4o-mini-tts`, `gpt-4o-mini-tts-2025-03-20`, and
+ * `gpt-4o-mini-tts-2025-12-15` models are deprecated and scheduled to shut down on January 6, 2027.
+ * These examples use the existing Speech API; for new integrations, migrate to
+ * `gpt-realtime-2.1-mini` through the
+ * [Realtime API](https://developers.openai.com/api/docs/guides/realtime). See the
+ * [deprecation schedule](https://developers.openai.com/api/docs/deprecations) for migration
+ * details.
  */
 class SpeechCreateParams
 private constructor(

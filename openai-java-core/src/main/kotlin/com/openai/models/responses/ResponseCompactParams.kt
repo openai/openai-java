@@ -1304,7 +1304,11 @@ private constructor(
 
             @JvmField val GPT_5_4_MINI_2026_03_17 = of("gpt-5.4-mini-2026-03-17")
 
-            @JvmField val GPT_5_4_NANO_2026_03_17 = of("gpt-5.4-nano-2026-03-17")
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_4_NANO_2026_03_17 = of("gpt-5.4-nano-2026-03-17")
 
             @Deprecated(
                 "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -1332,7 +1336,11 @@ private constructor(
             @JvmField
             val GPT_5_1 = of("gpt-5.1")
 
-            @JvmField val GPT_5_1_2025_11_13 = of("gpt-5.1-2025-11-13")
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_5_1_2025_11_13 = of("gpt-5.1-2025-11-13")
 
             @Deprecated(
                 "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -1852,6 +1860,9 @@ private constructor(
             )
             GPT_5_4_NANO,
             GPT_5_4_MINI_2026_03_17,
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_4_NANO_2026_03_17,
             @Deprecated(
                 "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -1869,6 +1880,9 @@ private constructor(
                 "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             GPT_5_1,
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_2025_11_13,
             @Deprecated(
                 "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -2226,6 +2240,9 @@ private constructor(
             )
             GPT_5_4_NANO,
             GPT_5_4_MINI_2026_03_17,
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_4_NANO_2026_03_17,
             @Deprecated(
                 "Announced shutdown date: 2026-08-10. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
@@ -2243,6 +2260,9 @@ private constructor(
                 "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
             )
             GPT_5_1,
+            @Deprecated(
+                "Announced shutdown date: 2027-04-01. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_5_1_2025_11_13,
             @Deprecated(
                 "Announced shutdown date: 2026-07-23. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
