@@ -673,10 +673,13 @@ private constructor(
 
             return other is Content &&
                 inputText == other.inputText &&
-                quotedText == other.quotedText
+                quotedText == other.quotedText &&
+                (inputText != null || quotedText != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(inputText, quotedText)
+        override fun hashCode(): Int =
+            if (inputText == null && quotedText == null) Objects.hash(_json)
+            else Objects.hash(inputText, quotedText)
 
         override fun toString(): String =
             when {

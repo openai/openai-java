@@ -3033,10 +3033,13 @@ private constructor(
 
             return other is Input &&
                 string == other.string &&
-                responseInputItems == other.responseInputItems
+                responseInputItems == other.responseInputItems &&
+                (string != null || responseInputItems != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(string, responseInputItems)
+        override fun hashCode(): Int =
+            if (string == null && responseInputItems == null) Objects.hash(_json)
+            else Objects.hash(string, responseInputItems)
 
         override fun toString(): String =
             when {

@@ -664,11 +664,25 @@ private constructor(
                 textSimilarity == other.textSimilarity &&
                 python == other.python &&
                 scoreModel == other.scoreModel &&
-                multi == other.multi
+                multi == other.multi &&
+                (stringCheck != null ||
+                    textSimilarity != null ||
+                    python != null ||
+                    scoreModel != null ||
+                    multi != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(stringCheck, textSimilarity, python, scoreModel, multi)
+            if (
+                stringCheck == null &&
+                    textSimilarity == null &&
+                    python == null &&
+                    scoreModel == null &&
+                    multi == null
+            )
+                Objects.hash(_json)
+            else Objects.hash(stringCheck, textSimilarity, python, scoreModel, multi)
 
         override fun toString(): String =
             when {

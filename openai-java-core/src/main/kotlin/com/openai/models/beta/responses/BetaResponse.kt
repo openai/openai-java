@@ -3316,10 +3316,13 @@ private constructor(
 
             return other is Instructions &&
                 string == other.string &&
-                inputItemList == other.inputItemList
+                inputItemList == other.inputItemList &&
+                (string != null || inputItemList != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(string, inputItemList)
+        override fun hashCode(): Int =
+            if (string == null && inputItemList == null) Objects.hash(_json)
+            else Objects.hash(string, inputItemList)
 
         override fun toString(): String =
             when {
@@ -5552,21 +5555,44 @@ private constructor(
                 betaSpecificProgrammaticToolCallingParam ==
                     other.betaSpecificProgrammaticToolCallingParam &&
                 betaToolChoiceApplyPatch == other.betaToolChoiceApplyPatch &&
-                betaToolChoiceShell == other.betaToolChoiceShell
+                betaToolChoiceShell == other.betaToolChoiceShell &&
+                (betaToolChoiceOptions != null ||
+                    betaToolChoiceAllowed != null ||
+                    betaToolChoiceTypes != null ||
+                    betaToolChoiceFunction != null ||
+                    betaToolChoiceMcp != null ||
+                    betaToolChoiceCustom != null ||
+                    betaSpecificProgrammaticToolCallingParam != null ||
+                    betaToolChoiceApplyPatch != null ||
+                    betaToolChoiceShell != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(
-                betaToolChoiceOptions,
-                betaToolChoiceAllowed,
-                betaToolChoiceTypes,
-                betaToolChoiceFunction,
-                betaToolChoiceMcp,
-                betaToolChoiceCustom,
-                betaSpecificProgrammaticToolCallingParam,
-                betaToolChoiceApplyPatch,
-                betaToolChoiceShell,
+            if (
+                betaToolChoiceOptions == null &&
+                    betaToolChoiceAllowed == null &&
+                    betaToolChoiceTypes == null &&
+                    betaToolChoiceFunction == null &&
+                    betaToolChoiceMcp == null &&
+                    betaToolChoiceCustom == null &&
+                    betaSpecificProgrammaticToolCallingParam == null &&
+                    betaToolChoiceApplyPatch == null &&
+                    betaToolChoiceShell == null
             )
+                Objects.hash(_json)
+            else
+                Objects.hash(
+                    betaToolChoiceOptions,
+                    betaToolChoiceAllowed,
+                    betaToolChoiceTypes,
+                    betaToolChoiceFunction,
+                    betaToolChoiceMcp,
+                    betaToolChoiceCustom,
+                    betaSpecificProgrammaticToolCallingParam,
+                    betaToolChoiceApplyPatch,
+                    betaToolChoiceShell,
+                )
 
         override fun toString(): String =
             when {
@@ -6352,10 +6378,13 @@ private constructor(
 
                 return other is Input &&
                     moderationResult == other.moderationResult &&
-                    error == other.error
+                    error == other.error &&
+                    (moderationResult != null || error != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(moderationResult, error)
+            override fun hashCode(): Int =
+                if (moderationResult == null && error == null) Objects.hash(_json)
+                else Objects.hash(moderationResult, error)
 
             override fun toString(): String =
                 when {
@@ -7752,10 +7781,13 @@ private constructor(
 
                 return other is Output &&
                     moderationResult == other.moderationResult &&
-                    error == other.error
+                    error == other.error &&
+                    (moderationResult != null || error != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(moderationResult, error)
+            override fun hashCode(): Int =
+                if (moderationResult == null && error == null) Objects.hash(_json)
+                else Objects.hash(moderationResult, error)
 
             override fun toString(): String =
                 when {
@@ -9234,11 +9266,23 @@ private constructor(
                 cacheMiss == other.cacheMiss &&
                 cacheHit == other.cacheHit &&
                 comparisonResponseNotFound == other.comparisonResponseNotFound &&
-                unavailable == other.unavailable
+                unavailable == other.unavailable &&
+                (cacheMiss != null ||
+                    cacheHit != null ||
+                    comparisonResponseNotFound != null ||
+                    unavailable != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(cacheMiss, cacheHit, comparisonResponseNotFound, unavailable)
+            if (
+                cacheMiss == null &&
+                    cacheHit == null &&
+                    comparisonResponseNotFound == null &&
+                    unavailable == null
+            )
+                Objects.hash(_json)
+            else Objects.hash(cacheMiss, cacheHit, comparisonResponseNotFound, unavailable)
 
         override fun toString(): String =
             when {

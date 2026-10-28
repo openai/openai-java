@@ -671,10 +671,15 @@ private constructor(
                     return true
                 }
 
-                return other is Output && logs == other.logs && image == other.image
+                return other is Output &&
+                    logs == other.logs &&
+                    image == other.image &&
+                    (logs != null || image != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(logs, image)
+            override fun hashCode(): Int =
+                if (logs == null && image == null) Objects.hash(_json)
+                else Objects.hash(logs, image)
 
             override fun toString(): String =
                 when {

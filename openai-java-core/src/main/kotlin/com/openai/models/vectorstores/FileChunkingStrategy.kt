@@ -148,10 +148,12 @@ private constructor(
 
         return other is FileChunkingStrategy &&
             static_ == other.static_ &&
-            this.other == other.other
+            this.other == other.other &&
+            (static_ != null || this.other != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(static_, other)
+    override fun hashCode(): Int =
+        if (static_ == null && other == null) Objects.hash(_json) else Objects.hash(static_, other)
 
     override fun toString(): String =
         when {

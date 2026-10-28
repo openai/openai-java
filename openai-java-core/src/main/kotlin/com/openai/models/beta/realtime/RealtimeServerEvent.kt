@@ -1110,46 +1110,120 @@ private constructor(
             transcriptionSessionUpdated == other.transcriptionSessionUpdated &&
             outputAudioBufferStarted == other.outputAudioBufferStarted &&
             outputAudioBufferStopped == other.outputAudioBufferStopped &&
-            outputAudioBufferCleared == other.outputAudioBufferCleared
+            outputAudioBufferCleared == other.outputAudioBufferCleared &&
+            (conversationCreated != null ||
+                conversationItemCreated != null ||
+                conversationItemDeleted != null ||
+                conversationItemInputAudioTranscriptionCompleted != null ||
+                conversationItemInputAudioTranscriptionDelta != null ||
+                conversationItemInputAudioTranscriptionFailed != null ||
+                conversationItemRetrieved != null ||
+                conversationItemTruncated != null ||
+                error != null ||
+                inputAudioBufferCleared != null ||
+                inputAudioBufferCommitted != null ||
+                inputAudioBufferSpeechStarted != null ||
+                inputAudioBufferSpeechStopped != null ||
+                rateLimitsUpdated != null ||
+                responseAudioDelta != null ||
+                responseAudioDone != null ||
+                responseAudioTranscriptDelta != null ||
+                responseAudioTranscriptDone != null ||
+                responseContentPartAdded != null ||
+                responseContentPartDone != null ||
+                responseCreated != null ||
+                responseDone != null ||
+                responseFunctionCallArgumentsDelta != null ||
+                responseFunctionCallArgumentsDone != null ||
+                responseOutputItemAdded != null ||
+                responseOutputItemDone != null ||
+                responseTextDelta != null ||
+                responseTextDone != null ||
+                sessionCreated != null ||
+                sessionUpdated != null ||
+                transcriptionSessionUpdated != null ||
+                outputAudioBufferStarted != null ||
+                outputAudioBufferStopped != null ||
+                outputAudioBufferCleared != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            conversationCreated,
-            conversationItemCreated,
-            conversationItemDeleted,
-            conversationItemInputAudioTranscriptionCompleted,
-            conversationItemInputAudioTranscriptionDelta,
-            conversationItemInputAudioTranscriptionFailed,
-            conversationItemRetrieved,
-            conversationItemTruncated,
-            error,
-            inputAudioBufferCleared,
-            inputAudioBufferCommitted,
-            inputAudioBufferSpeechStarted,
-            inputAudioBufferSpeechStopped,
-            rateLimitsUpdated,
-            responseAudioDelta,
-            responseAudioDone,
-            responseAudioTranscriptDelta,
-            responseAudioTranscriptDone,
-            responseContentPartAdded,
-            responseContentPartDone,
-            responseCreated,
-            responseDone,
-            responseFunctionCallArgumentsDelta,
-            responseFunctionCallArgumentsDone,
-            responseOutputItemAdded,
-            responseOutputItemDone,
-            responseTextDelta,
-            responseTextDone,
-            sessionCreated,
-            sessionUpdated,
-            transcriptionSessionUpdated,
-            outputAudioBufferStarted,
-            outputAudioBufferStopped,
-            outputAudioBufferCleared,
-        )
+        if (
+            conversationCreated != null ||
+                conversationItemCreated != null ||
+                conversationItemDeleted != null ||
+                conversationItemInputAudioTranscriptionCompleted != null ||
+                conversationItemInputAudioTranscriptionDelta != null ||
+                conversationItemInputAudioTranscriptionFailed != null ||
+                conversationItemRetrieved != null ||
+                conversationItemTruncated != null ||
+                error != null ||
+                inputAudioBufferCleared != null ||
+                inputAudioBufferCommitted != null ||
+                inputAudioBufferSpeechStarted != null ||
+                inputAudioBufferSpeechStopped != null ||
+                rateLimitsUpdated != null ||
+                responseAudioDelta != null ||
+                responseAudioDone != null ||
+                responseAudioTranscriptDelta != null ||
+                responseAudioTranscriptDone != null ||
+                responseContentPartAdded != null ||
+                responseContentPartDone != null ||
+                responseCreated != null ||
+                responseDone != null ||
+                responseFunctionCallArgumentsDelta != null ||
+                responseFunctionCallArgumentsDone != null ||
+                responseOutputItemAdded != null ||
+                responseOutputItemDone != null ||
+                responseTextDelta != null ||
+                responseTextDone != null ||
+                sessionCreated != null ||
+                sessionUpdated != null ||
+                transcriptionSessionUpdated != null ||
+                outputAudioBufferStarted != null ||
+                outputAudioBufferStopped != null ||
+                outputAudioBufferCleared != null
+        ) {
+            Objects.hash(
+                conversationCreated,
+                conversationItemCreated,
+                conversationItemDeleted,
+                conversationItemInputAudioTranscriptionCompleted,
+                conversationItemInputAudioTranscriptionDelta,
+                conversationItemInputAudioTranscriptionFailed,
+                conversationItemRetrieved,
+                conversationItemTruncated,
+                error,
+                inputAudioBufferCleared,
+                inputAudioBufferCommitted,
+                inputAudioBufferSpeechStarted,
+                inputAudioBufferSpeechStopped,
+                rateLimitsUpdated,
+                responseAudioDelta,
+                responseAudioDone,
+                responseAudioTranscriptDelta,
+                responseAudioTranscriptDone,
+                responseContentPartAdded,
+                responseContentPartDone,
+                responseCreated,
+                responseDone,
+                responseFunctionCallArgumentsDelta,
+                responseFunctionCallArgumentsDone,
+                responseOutputItemAdded,
+                responseOutputItemDone,
+                responseTextDelta,
+                responseTextDone,
+                sessionCreated,
+                sessionUpdated,
+                transcriptionSessionUpdated,
+                outputAudioBufferStarted,
+                outputAudioBufferStopped,
+                outputAudioBufferCleared,
+            )
+        } else {
+            Objects.hash(_json)
+        }
 
     override fun toString(): String =
         when {

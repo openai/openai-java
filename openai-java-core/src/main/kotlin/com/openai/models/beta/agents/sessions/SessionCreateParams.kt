@@ -1887,10 +1887,13 @@ private constructor(
 
             return other is Input &&
                 string == other.string &&
-                agentSessionInputMessageParams == other.agentSessionInputMessageParams
+                agentSessionInputMessageParams == other.agentSessionInputMessageParams &&
+                (string != null || agentSessionInputMessageParams != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(string, agentSessionInputMessageParams)
+        override fun hashCode(): Int =
+            if (string == null && agentSessionInputMessageParams == null) Objects.hash(_json)
+            else Objects.hash(string, agentSessionInputMessageParams)
 
         override fun toString(): String =
             when {

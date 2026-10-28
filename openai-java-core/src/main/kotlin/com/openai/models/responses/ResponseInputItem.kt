@@ -830,45 +830,116 @@ private constructor(
             compactionTrigger == other.compactionTrigger &&
             itemReference == other.itemReference &&
             program == other.program &&
-            programOutput == other.programOutput
+            programOutput == other.programOutput &&
+            (easyInputMessage != null ||
+                message != null ||
+                responseOutputMessage != null ||
+                fileSearchCall != null ||
+                computerCall != null ||
+                computerCallOutput != null ||
+                webSearchCall != null ||
+                functionCall != null ||
+                functionCallOutput != null ||
+                toolSearchCall != null ||
+                toolSearchOutput != null ||
+                additionalTools != null ||
+                configurationUpdate != null ||
+                reasoning != null ||
+                compaction != null ||
+                imageGenerationCall != null ||
+                codeInterpreterCall != null ||
+                localShellCall != null ||
+                localShellCallOutput != null ||
+                shellCall != null ||
+                shellCallOutput != null ||
+                applyPatchCall != null ||
+                applyPatchCallOutput != null ||
+                mcpListTools != null ||
+                mcpApprovalRequest != null ||
+                mcpApprovalResponse != null ||
+                mcpCall != null ||
+                customToolCallOutput != null ||
+                customToolCall != null ||
+                compactionTrigger != null ||
+                itemReference != null ||
+                program != null ||
+                programOutput != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            easyInputMessage,
-            message,
-            responseOutputMessage,
-            fileSearchCall,
-            computerCall,
-            computerCallOutput,
-            webSearchCall,
-            functionCall,
-            functionCallOutput,
-            toolSearchCall,
-            toolSearchOutput,
-            additionalTools,
-            configurationUpdate,
-            reasoning,
-            compaction,
-            imageGenerationCall,
-            codeInterpreterCall,
-            localShellCall,
-            localShellCallOutput,
-            shellCall,
-            shellCallOutput,
-            applyPatchCall,
-            applyPatchCallOutput,
-            mcpListTools,
-            mcpApprovalRequest,
-            mcpApprovalResponse,
-            mcpCall,
-            customToolCallOutput,
-            customToolCall,
-            compactionTrigger,
-            itemReference,
-            program,
-            programOutput,
+        if (
+            easyInputMessage == null &&
+                message == null &&
+                responseOutputMessage == null &&
+                fileSearchCall == null &&
+                computerCall == null &&
+                computerCallOutput == null &&
+                webSearchCall == null &&
+                functionCall == null &&
+                functionCallOutput == null &&
+                toolSearchCall == null &&
+                toolSearchOutput == null &&
+                additionalTools == null &&
+                configurationUpdate == null &&
+                reasoning == null &&
+                compaction == null &&
+                imageGenerationCall == null &&
+                codeInterpreterCall == null &&
+                localShellCall == null &&
+                localShellCallOutput == null &&
+                shellCall == null &&
+                shellCallOutput == null &&
+                applyPatchCall == null &&
+                applyPatchCallOutput == null &&
+                mcpListTools == null &&
+                mcpApprovalRequest == null &&
+                mcpApprovalResponse == null &&
+                mcpCall == null &&
+                customToolCallOutput == null &&
+                customToolCall == null &&
+                compactionTrigger == null &&
+                itemReference == null &&
+                program == null &&
+                programOutput == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                easyInputMessage,
+                message,
+                responseOutputMessage,
+                fileSearchCall,
+                computerCall,
+                computerCallOutput,
+                webSearchCall,
+                functionCall,
+                functionCallOutput,
+                toolSearchCall,
+                toolSearchOutput,
+                additionalTools,
+                configurationUpdate,
+                reasoning,
+                compaction,
+                imageGenerationCall,
+                codeInterpreterCall,
+                localShellCall,
+                localShellCallOutput,
+                shellCall,
+                shellCallOutput,
+                applyPatchCall,
+                applyPatchCallOutput,
+                mcpListTools,
+                mcpApprovalRequest,
+                mcpApprovalResponse,
+                mcpCall,
+                customToolCallOutput,
+                customToolCall,
+                compactionTrigger,
+                itemReference,
+                program,
+                programOutput,
+            )
 
     override fun toString(): String =
         when {
@@ -3820,10 +3891,17 @@ private constructor(
 
                 return other is Output &&
                     string == other.string &&
-                    responseFunctionCallOutputItemList == other.responseFunctionCallOutputItemList
+                    responseFunctionCallOutputItemList ==
+                        other.responseFunctionCallOutputItemList &&
+                    (string != null ||
+                        responseFunctionCallOutputItemList != null ||
+                        _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(string, responseFunctionCallOutputItemList)
+            override fun hashCode(): Int =
+                if (string == null && responseFunctionCallOutputItemList == null)
+                    Objects.hash(_json)
+                else Objects.hash(string, responseFunctionCallOutputItemList)
 
             override fun toString(): String =
                 when {
@@ -4065,10 +4143,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {
@@ -10480,10 +10563,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {
@@ -10942,10 +11030,13 @@ private constructor(
 
                 return other is Environment &&
                     local == other.local &&
-                    containerReference == other.containerReference
+                    containerReference == other.containerReference &&
+                    (local != null || containerReference != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(local, containerReference)
+            override fun hashCode(): Int =
+                if (local == null && containerReference == null) Objects.hash(_json)
+                else Objects.hash(local, containerReference)
 
             override fun toString(): String =
                 when {
@@ -11808,10 +11899,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {
@@ -12875,10 +12971,17 @@ private constructor(
                 return other is Operation &&
                     createFile == other.createFile &&
                     deleteFile == other.deleteFile &&
-                    updateFile == other.updateFile
+                    updateFile == other.updateFile &&
+                    (createFile != null ||
+                        deleteFile != null ||
+                        updateFile != null ||
+                        _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(createFile, deleteFile, updateFile)
+            override fun hashCode(): Int =
+                if (createFile == null && deleteFile == null && updateFile == null)
+                    Objects.hash(_json)
+                else Objects.hash(createFile, deleteFile, updateFile)
 
             override fun toString(): String =
                 when {
@@ -14066,10 +14169,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {
@@ -15082,10 +15190,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {

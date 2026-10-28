@@ -162,10 +162,13 @@ private constructor(
 
         return other is AnnotationDelta &&
             fileCitation == other.fileCitation &&
-            filePath == other.filePath
+            filePath == other.filePath &&
+            (fileCitation != null || filePath != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(fileCitation, filePath)
+    override fun hashCode(): Int =
+        if (fileCitation == null && filePath == null) Objects.hash(_json)
+        else Objects.hash(fileCitation, filePath)
 
     override fun toString(): String =
         when {

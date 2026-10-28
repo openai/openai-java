@@ -157,10 +157,16 @@ private constructor(
         return other is ToolCall &&
             codeInterpreter == other.codeInterpreter &&
             fileSearch == other.fileSearch &&
-            function == other.function
+            function == other.function &&
+            (codeInterpreter != null ||
+                fileSearch != null ||
+                function != null ||
+                _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(codeInterpreter, fileSearch, function)
+    override fun hashCode(): Int =
+        if (codeInterpreter == null && fileSearch == null && function == null) Objects.hash(_json)
+        else Objects.hash(codeInterpreter, fileSearch, function)
 
     override fun toString(): String =
         when {

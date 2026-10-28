@@ -264,17 +264,32 @@ private constructor(
             threadMessageInProgress == other.threadMessageInProgress &&
             threadMessageDelta == other.threadMessageDelta &&
             threadMessageCompleted == other.threadMessageCompleted &&
-            threadMessageIncomplete == other.threadMessageIncomplete
+            threadMessageIncomplete == other.threadMessageIncomplete &&
+            (threadMessageCreated != null ||
+                threadMessageInProgress != null ||
+                threadMessageDelta != null ||
+                threadMessageCompleted != null ||
+                threadMessageIncomplete != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            threadMessageCreated,
-            threadMessageInProgress,
-            threadMessageDelta,
-            threadMessageCompleted,
-            threadMessageIncomplete,
+        if (
+            threadMessageCreated == null &&
+                threadMessageInProgress == null &&
+                threadMessageDelta == null &&
+                threadMessageCompleted == null &&
+                threadMessageIncomplete == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                threadMessageCreated,
+                threadMessageInProgress,
+                threadMessageDelta,
+                threadMessageCompleted,
+                threadMessageIncomplete,
+            )
 
     override fun toString(): String =
         when {

@@ -550,17 +550,32 @@ private constructor(
                 textSimilarityGrader == other.textSimilarityGrader &&
                 pythonGrader == other.pythonGrader &&
                 scoreModelGrader == other.scoreModelGrader &&
-                labelModelGrader == other.labelModelGrader
+                labelModelGrader == other.labelModelGrader &&
+                (stringCheckGrader != null ||
+                    textSimilarityGrader != null ||
+                    pythonGrader != null ||
+                    scoreModelGrader != null ||
+                    labelModelGrader != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(
-                stringCheckGrader,
-                textSimilarityGrader,
-                pythonGrader,
-                scoreModelGrader,
-                labelModelGrader,
+            if (
+                stringCheckGrader == null &&
+                    textSimilarityGrader == null &&
+                    pythonGrader == null &&
+                    scoreModelGrader == null &&
+                    labelModelGrader == null
             )
+                Objects.hash(_json)
+            else
+                Objects.hash(
+                    stringCheckGrader,
+                    textSimilarityGrader,
+                    pythonGrader,
+                    scoreModelGrader,
+                    labelModelGrader,
+                )
 
         override fun toString(): String =
             when {

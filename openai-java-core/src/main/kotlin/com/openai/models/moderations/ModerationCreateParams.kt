@@ -727,10 +727,17 @@ private constructor(
             return other is Input &&
                 string == other.string &&
                 strings == other.strings &&
-                moderationMultiModalArray == other.moderationMultiModalArray
+                moderationMultiModalArray == other.moderationMultiModalArray &&
+                (string != null ||
+                    strings != null ||
+                    moderationMultiModalArray != null ||
+                    _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(string, strings, moderationMultiModalArray)
+        override fun hashCode(): Int =
+            if (string == null && strings == null && moderationMultiModalArray == null)
+                Objects.hash(_json)
+            else Objects.hash(string, strings, moderationMultiModalArray)
 
         override fun toString(): String =
             when {

@@ -632,10 +632,13 @@ private constructor(
 
             return other is Video &&
                 inputStream == other.inputStream &&
-                referenceInputParam == other.referenceInputParam
+                referenceInputParam == other.referenceInputParam &&
+                (inputStream != null || referenceInputParam != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(inputStream, referenceInputParam)
+        override fun hashCode(): Int =
+            if (inputStream == null && referenceInputParam == null) Objects.hash(_json)
+            else Objects.hash(inputStream, referenceInputParam)
 
         override fun toString(): String =
             when {

@@ -3064,10 +3064,13 @@ private constructor(
 
             return other is Input &&
                 string == other.string &&
-                betaResponseInputItems == other.betaResponseInputItems
+                betaResponseInputItems == other.betaResponseInputItems &&
+                (string != null || betaResponseInputItems != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(string, betaResponseInputItems)
+        override fun hashCode(): Int =
+            if (string == null && betaResponseInputItems == null) Objects.hash(_json)
+            else Objects.hash(string, betaResponseInputItems)
 
         override fun toString(): String =
             when {

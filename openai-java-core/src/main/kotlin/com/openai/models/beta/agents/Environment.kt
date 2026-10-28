@@ -178,10 +178,13 @@ private constructor(
         return other is Environment &&
             none == other.none &&
             openaiHosted == other.openaiHosted &&
-            selfHosted == other.selfHosted
+            selfHosted == other.selfHosted &&
+            (none != null || openaiHosted != null || selfHosted != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(none, openaiHosted, selfHosted)
+    override fun hashCode(): Int =
+        if (none == null && openaiHosted == null && selfHosted == null) Objects.hash(_json)
+        else Objects.hash(none, openaiHosted, selfHosted)
 
     override fun toString(): String =
         when {

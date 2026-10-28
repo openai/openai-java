@@ -389,10 +389,15 @@ private constructor(
                 return true
             }
 
-            return other is Filter && comparison == other.comparison && jsonValue == other.jsonValue
+            return other is Filter &&
+                comparison == other.comparison &&
+                jsonValue == other.jsonValue &&
+                (comparison != null || jsonValue != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(comparison, jsonValue)
+        override fun hashCode(): Int =
+            if (comparison == null && jsonValue == null) Objects.hash(_json)
+            else Objects.hash(comparison, jsonValue)
 
         override fun toString(): String =
             when {

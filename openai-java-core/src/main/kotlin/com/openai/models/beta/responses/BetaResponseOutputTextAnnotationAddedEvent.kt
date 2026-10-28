@@ -688,11 +688,23 @@ private constructor(
                 fileCitation == other.fileCitation &&
                 urlCitation == other.urlCitation &&
                 containerFileCitation == other.containerFileCitation &&
-                filePath == other.filePath
+                filePath == other.filePath &&
+                (fileCitation != null ||
+                    urlCitation != null ||
+                    containerFileCitation != null ||
+                    filePath != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(fileCitation, urlCitation, containerFileCitation, filePath)
+            if (
+                fileCitation == null &&
+                    urlCitation == null &&
+                    containerFileCitation == null &&
+                    filePath == null
+            )
+                Objects.hash(_json)
+            else Objects.hash(fileCitation, urlCitation, containerFileCitation, filePath)
 
         override fun toString(): String =
             when {

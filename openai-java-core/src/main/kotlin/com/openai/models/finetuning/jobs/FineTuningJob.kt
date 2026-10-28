@@ -1767,10 +1767,15 @@ private constructor(
                     return true
                 }
 
-                return other is BatchSize && auto == other.auto && integer == other.integer
+                return other is BatchSize &&
+                    auto == other.auto &&
+                    integer == other.integer &&
+                    (auto != null || integer != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(auto, integer)
+            override fun hashCode(): Int =
+                if (auto == null && integer == null) Objects.hash(_json)
+                else Objects.hash(auto, integer)
 
             override fun toString(): String =
                 when {
@@ -1992,10 +1997,13 @@ private constructor(
 
                 return other is LearningRateMultiplier &&
                     auto == other.auto &&
-                    number == other.number
+                    number == other.number &&
+                    (auto != null || number != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(auto, number)
+            override fun hashCode(): Int =
+                if (auto == null && number == null) Objects.hash(_json)
+                else Objects.hash(auto, number)
 
             override fun toString(): String =
                 when {
@@ -2217,10 +2225,15 @@ private constructor(
                     return true
                 }
 
-                return other is NEpochs && auto == other.auto && integer == other.integer
+                return other is NEpochs &&
+                    auto == other.auto &&
+                    integer == other.integer &&
+                    (auto != null || integer != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(auto, integer)
+            override fun hashCode(): Int =
+                if (auto == null && integer == null) Objects.hash(_json)
+                else Objects.hash(auto, integer)
 
             override fun toString(): String =
                 when {

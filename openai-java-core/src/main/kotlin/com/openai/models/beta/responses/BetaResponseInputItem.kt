@@ -872,48 +872,125 @@ private constructor(
             compactionTrigger == other.compactionTrigger &&
             itemReference == other.itemReference &&
             program == other.program &&
-            programOutput == other.programOutput
+            programOutput == other.programOutput &&
+            (betaEasyInputMessage != null ||
+                message != null ||
+                betaResponseOutputMessage != null ||
+                fileSearchCall != null ||
+                computerCall != null ||
+                computerCallOutput != null ||
+                webSearchCall != null ||
+                functionCall != null ||
+                functionCallOutput != null ||
+                agentMessage != null ||
+                multiAgentCall != null ||
+                multiAgentCallOutput != null ||
+                toolSearchCall != null ||
+                toolSearchOutput != null ||
+                additionalTools != null ||
+                configurationUpdate != null ||
+                reasoning != null ||
+                compaction != null ||
+                imageGenerationCall != null ||
+                codeInterpreterCall != null ||
+                localShellCall != null ||
+                localShellCallOutput != null ||
+                shellCall != null ||
+                shellCallOutput != null ||
+                applyPatchCall != null ||
+                applyPatchCallOutput != null ||
+                mcpListTools != null ||
+                mcpApprovalRequest != null ||
+                mcpApprovalResponse != null ||
+                mcpCall != null ||
+                customToolCallOutput != null ||
+                customToolCall != null ||
+                compactionTrigger != null ||
+                itemReference != null ||
+                program != null ||
+                programOutput != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            betaEasyInputMessage,
-            message,
-            betaResponseOutputMessage,
-            fileSearchCall,
-            computerCall,
-            computerCallOutput,
-            webSearchCall,
-            functionCall,
-            functionCallOutput,
-            agentMessage,
-            multiAgentCall,
-            multiAgentCallOutput,
-            toolSearchCall,
-            toolSearchOutput,
-            additionalTools,
-            configurationUpdate,
-            reasoning,
-            compaction,
-            imageGenerationCall,
-            codeInterpreterCall,
-            localShellCall,
-            localShellCallOutput,
-            shellCall,
-            shellCallOutput,
-            applyPatchCall,
-            applyPatchCallOutput,
-            mcpListTools,
-            mcpApprovalRequest,
-            mcpApprovalResponse,
-            mcpCall,
-            customToolCallOutput,
-            customToolCall,
-            compactionTrigger,
-            itemReference,
-            program,
-            programOutput,
+        if (
+            betaEasyInputMessage == null &&
+                message == null &&
+                betaResponseOutputMessage == null &&
+                fileSearchCall == null &&
+                computerCall == null &&
+                computerCallOutput == null &&
+                webSearchCall == null &&
+                functionCall == null &&
+                functionCallOutput == null &&
+                agentMessage == null &&
+                multiAgentCall == null &&
+                multiAgentCallOutput == null &&
+                toolSearchCall == null &&
+                toolSearchOutput == null &&
+                additionalTools == null &&
+                configurationUpdate == null &&
+                reasoning == null &&
+                compaction == null &&
+                imageGenerationCall == null &&
+                codeInterpreterCall == null &&
+                localShellCall == null &&
+                localShellCallOutput == null &&
+                shellCall == null &&
+                shellCallOutput == null &&
+                applyPatchCall == null &&
+                applyPatchCallOutput == null &&
+                mcpListTools == null &&
+                mcpApprovalRequest == null &&
+                mcpApprovalResponse == null &&
+                mcpCall == null &&
+                customToolCallOutput == null &&
+                customToolCall == null &&
+                compactionTrigger == null &&
+                itemReference == null &&
+                program == null &&
+                programOutput == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                betaEasyInputMessage,
+                message,
+                betaResponseOutputMessage,
+                fileSearchCall,
+                computerCall,
+                computerCallOutput,
+                webSearchCall,
+                functionCall,
+                functionCallOutput,
+                agentMessage,
+                multiAgentCall,
+                multiAgentCallOutput,
+                toolSearchCall,
+                toolSearchOutput,
+                additionalTools,
+                configurationUpdate,
+                reasoning,
+                compaction,
+                imageGenerationCall,
+                codeInterpreterCall,
+                localShellCall,
+                localShellCallOutput,
+                shellCall,
+                shellCallOutput,
+                applyPatchCall,
+                applyPatchCallOutput,
+                mcpListTools,
+                mcpApprovalRequest,
+                mcpApprovalResponse,
+                mcpCall,
+                customToolCallOutput,
+                customToolCall,
+                compactionTrigger,
+                itemReference,
+                program,
+                programOutput,
+            )
 
     override fun toString(): String =
         when {
@@ -4445,11 +4522,16 @@ private constructor(
                 return other is Output &&
                     string == other.string &&
                     betaResponseFunctionCallOutputItemList ==
-                        other.betaResponseFunctionCallOutputItemList
+                        other.betaResponseFunctionCallOutputItemList &&
+                    (string != null ||
+                        betaResponseFunctionCallOutputItemList != null ||
+                        _json == other._json)
             }
 
             override fun hashCode(): Int =
-                Objects.hash(string, betaResponseFunctionCallOutputItemList)
+                if (string == null && betaResponseFunctionCallOutputItemList == null)
+                    Objects.hash(_json)
+                else Objects.hash(string, betaResponseFunctionCallOutputItemList)
 
             override fun toString(): String =
                 when {
@@ -4891,10 +4973,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {
@@ -5986,10 +6073,17 @@ private constructor(
                 return other is Content &&
                     inputText == other.inputText &&
                     inputImage == other.inputImage &&
-                    encrypted == other.encrypted
+                    encrypted == other.encrypted &&
+                    (inputText != null ||
+                        inputImage != null ||
+                        encrypted != null ||
+                        _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(inputText, inputImage, encrypted)
+            override fun hashCode(): Int =
+                if (inputText == null && inputImage == null && encrypted == null)
+                    Objects.hash(_json)
+                else Objects.hash(inputText, inputImage, encrypted)
 
             override fun toString(): String =
                 when {
@@ -8323,11 +8417,19 @@ private constructor(
                     return other is Annotation &&
                         fileCitation == other.fileCitation &&
                         urlCitation == other.urlCitation &&
-                        containerFileCitation == other.containerFileCitation
+                        containerFileCitation == other.containerFileCitation &&
+                        (fileCitation != null ||
+                            urlCitation != null ||
+                            containerFileCitation != null ||
+                            _json == other._json)
                 }
 
                 override fun hashCode(): Int =
-                    Objects.hash(fileCitation, urlCitation, containerFileCitation)
+                    if (
+                        fileCitation == null && urlCitation == null && containerFileCitation == null
+                    )
+                        Objects.hash(_json)
+                    else Objects.hash(fileCitation, urlCitation, containerFileCitation)
 
                 override fun toString(): String =
                     when {
@@ -17184,10 +17286,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {
@@ -17646,10 +17753,13 @@ private constructor(
 
                 return other is Environment &&
                     local == other.local &&
-                    containerReference == other.containerReference
+                    containerReference == other.containerReference &&
+                    (local != null || containerReference != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(local, containerReference)
+            override fun hashCode(): Int =
+                if (local == null && containerReference == null) Objects.hash(_json)
+                else Objects.hash(local, containerReference)
 
             override fun toString(): String =
                 when {
@@ -18755,10 +18865,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {
@@ -19862,10 +19977,17 @@ private constructor(
                 return other is Operation &&
                     createFile == other.createFile &&
                     deleteFile == other.deleteFile &&
-                    updateFile == other.updateFile
+                    updateFile == other.updateFile &&
+                    (createFile != null ||
+                        deleteFile != null ||
+                        updateFile != null ||
+                        _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(createFile, deleteFile, updateFile)
+            override fun hashCode(): Int =
+                if (createFile == null && deleteFile == null && updateFile == null)
+                    Objects.hash(_json)
+                else Objects.hash(createFile, deleteFile, updateFile)
 
             override fun toString(): String =
                 when {
@@ -21253,10 +21375,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {
@@ -22508,10 +22635,15 @@ private constructor(
                     return true
                 }
 
-                return other is Caller && direct == other.direct && program == other.program
+                return other is Caller &&
+                    direct == other.direct &&
+                    program == other.program &&
+                    (direct != null || program != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(direct, program)
+            override fun hashCode(): Int =
+                if (direct == null && program == null) Objects.hash(_json)
+                else Objects.hash(direct, program)
 
             override fun toString(): String =
                 when {

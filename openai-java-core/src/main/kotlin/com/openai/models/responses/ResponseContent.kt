@@ -229,11 +229,28 @@ private constructor(
             inputFile == other.inputFile &&
             outputText == other.outputText &&
             outputRefusal == other.outputRefusal &&
-            reasoningText == other.reasoningText
+            reasoningText == other.reasoningText &&
+            (inputText != null ||
+                inputImage != null ||
+                inputFile != null ||
+                outputText != null ||
+                outputRefusal != null ||
+                reasoningText != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(inputText, inputImage, inputFile, outputText, outputRefusal, reasoningText)
+        if (
+            inputText == null &&
+                inputImage == null &&
+                inputFile == null &&
+                outputText == null &&
+                outputRefusal == null &&
+                reasoningText == null
+        )
+            Objects.hash(_json)
+        else
+            Objects.hash(inputText, inputImage, inputFile, outputText, outputRefusal, reasoningText)
 
     override fun toString(): String =
         when {

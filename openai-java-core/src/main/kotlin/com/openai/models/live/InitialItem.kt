@@ -175,10 +175,13 @@ private constructor(
         return other is InitialItem &&
             developer == other.developer &&
             user == other.user &&
-            assistant == other.assistant
+            assistant == other.assistant &&
+            (developer != null || user != null || assistant != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(developer, user, assistant)
+    override fun hashCode(): Int =
+        if (developer == null && user == null && assistant == null) Objects.hash(_json)
+        else Objects.hash(developer, user, assistant)
 
     override fun toString(): String =
         when {
@@ -2822,10 +2825,15 @@ private constructor(
                     return true
                 }
 
-                return other is Content && text == other.text && outputText == other.outputText
+                return other is Content &&
+                    text == other.text &&
+                    outputText == other.outputText &&
+                    (text != null || outputText != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(text, outputText)
+            override fun hashCode(): Int =
+                if (text == null && outputText == null) Objects.hash(_json)
+                else Objects.hash(text, outputText)
 
             override fun toString(): String =
                 when {

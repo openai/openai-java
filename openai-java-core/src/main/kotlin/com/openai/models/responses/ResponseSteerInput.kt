@@ -161,10 +161,14 @@ private constructor(
             return true
         }
 
-        return other is ResponseSteerInput && text == other.text && itemList == other.itemList
+        return other is ResponseSteerInput &&
+            text == other.text &&
+            itemList == other.itemList &&
+            (text != null || itemList != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(text, itemList)
+    override fun hashCode(): Int =
+        if (text == null && itemList == null) Objects.hash(_json) else Objects.hash(text, itemList)
 
     override fun toString(): String =
         when {
@@ -385,10 +389,13 @@ private constructor(
 
             return other is ResponseSteerInputItem &&
                 message == other.message &&
-                functionCallOutput == other.functionCallOutput
+                functionCallOutput == other.functionCallOutput &&
+                (message != null || functionCallOutput != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(message, functionCallOutput)
+        override fun hashCode(): Int =
+            if (message == null && functionCallOutput == null) Objects.hash(_json)
+            else Objects.hash(message, functionCallOutput)
 
         override fun toString(): String =
             when {
@@ -956,10 +963,15 @@ private constructor(
 
                     return other is Content &&
                         responseSteerInputContents == other.responseSteerInputContents &&
-                        string == other.string
+                        string == other.string &&
+                        (responseSteerInputContents != null ||
+                            string != null ||
+                            _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(responseSteerInputContents, string)
+                override fun hashCode(): Int =
+                    if (responseSteerInputContents == null && string == null) Objects.hash(_json)
+                    else Objects.hash(responseSteerInputContents, string)
 
                 override fun toString(): String =
                     when {
@@ -1734,11 +1746,16 @@ private constructor(
                     return other is Output &&
                         string == other.string &&
                         responseFunctionCallOutputItemList ==
-                            other.responseFunctionCallOutputItemList
+                            other.responseFunctionCallOutputItemList &&
+                        (string != null ||
+                            responseFunctionCallOutputItemList != null ||
+                            _json == other._json)
                 }
 
                 override fun hashCode(): Int =
-                    Objects.hash(string, responseFunctionCallOutputItemList)
+                    if (string == null && responseFunctionCallOutputItemList == null)
+                        Objects.hash(_json)
+                    else Objects.hash(string, responseFunctionCallOutputItemList)
 
                 override fun toString(): String =
                     when {
@@ -1986,10 +2003,15 @@ private constructor(
                         return true
                     }
 
-                    return other is Caller && direct == other.direct && program == other.program
+                    return other is Caller &&
+                        direct == other.direct &&
+                        program == other.program &&
+                        (direct != null || program != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(direct, program)
+                override fun hashCode(): Int =
+                    if (direct == null && program == null) Objects.hash(_json)
+                    else Objects.hash(direct, program)
 
                 override fun toString(): String =
                     when {

@@ -180,10 +180,13 @@ private constructor(
 
         return other is RealtimeAudioInputTurnDetection &&
             serverVad == other.serverVad &&
-            semanticVad == other.semanticVad
+            semanticVad == other.semanticVad &&
+            (serverVad != null || semanticVad != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(serverVad, semanticVad)
+    override fun hashCode(): Int =
+        if (serverVad == null && semanticVad == null) Objects.hash(_json)
+        else Objects.hash(serverVad, semanticVad)
 
     override fun toString(): String =
         when {

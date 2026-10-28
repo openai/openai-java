@@ -754,42 +754,107 @@ private constructor(
             mcpApprovalResponse == other.mcpApprovalResponse &&
             mcpCall == other.mcpCall &&
             customToolCall == other.customToolCall &&
-            customToolCallOutput == other.customToolCallOutput
+            customToolCallOutput == other.customToolCallOutput &&
+            (responseInputMessageItem != null ||
+                responseOutputMessage != null ||
+                fileSearchCall != null ||
+                computerCall != null ||
+                computerCallOutput != null ||
+                webSearchCall != null ||
+                functionCall != null ||
+                functionCallOutput != null ||
+                toolSearchCall != null ||
+                toolSearchOutput != null ||
+                additionalTools != null ||
+                configurationUpdate != null ||
+                reasoning != null ||
+                program != null ||
+                programOutput != null ||
+                compaction != null ||
+                imageGenerationCall != null ||
+                codeInterpreterCall != null ||
+                localShellCall != null ||
+                localShellCallOutput != null ||
+                shellCall != null ||
+                shellCallOutput != null ||
+                applyPatchCall != null ||
+                applyPatchCallOutput != null ||
+                mcpListTools != null ||
+                mcpApprovalRequest != null ||
+                mcpApprovalResponse != null ||
+                mcpCall != null ||
+                customToolCall != null ||
+                customToolCallOutput != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            responseInputMessageItem,
-            responseOutputMessage,
-            fileSearchCall,
-            computerCall,
-            computerCallOutput,
-            webSearchCall,
-            functionCall,
-            functionCallOutput,
-            toolSearchCall,
-            toolSearchOutput,
-            additionalTools,
-            configurationUpdate,
-            reasoning,
-            program,
-            programOutput,
-            compaction,
-            imageGenerationCall,
-            codeInterpreterCall,
-            localShellCall,
-            localShellCallOutput,
-            shellCall,
-            shellCallOutput,
-            applyPatchCall,
-            applyPatchCallOutput,
-            mcpListTools,
-            mcpApprovalRequest,
-            mcpApprovalResponse,
-            mcpCall,
-            customToolCall,
-            customToolCallOutput,
+        if (
+            responseInputMessageItem == null &&
+                responseOutputMessage == null &&
+                fileSearchCall == null &&
+                computerCall == null &&
+                computerCallOutput == null &&
+                webSearchCall == null &&
+                functionCall == null &&
+                functionCallOutput == null &&
+                toolSearchCall == null &&
+                toolSearchOutput == null &&
+                additionalTools == null &&
+                configurationUpdate == null &&
+                reasoning == null &&
+                program == null &&
+                programOutput == null &&
+                compaction == null &&
+                imageGenerationCall == null &&
+                codeInterpreterCall == null &&
+                localShellCall == null &&
+                localShellCallOutput == null &&
+                shellCall == null &&
+                shellCallOutput == null &&
+                applyPatchCall == null &&
+                applyPatchCallOutput == null &&
+                mcpListTools == null &&
+                mcpApprovalRequest == null &&
+                mcpApprovalResponse == null &&
+                mcpCall == null &&
+                customToolCall == null &&
+                customToolCallOutput == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                responseInputMessageItem,
+                responseOutputMessage,
+                fileSearchCall,
+                computerCall,
+                computerCallOutput,
+                webSearchCall,
+                functionCall,
+                functionCallOutput,
+                toolSearchCall,
+                toolSearchOutput,
+                additionalTools,
+                configurationUpdate,
+                reasoning,
+                program,
+                programOutput,
+                compaction,
+                imageGenerationCall,
+                codeInterpreterCall,
+                localShellCall,
+                localShellCallOutput,
+                shellCall,
+                shellCallOutput,
+                applyPatchCall,
+                applyPatchCallOutput,
+                mcpListTools,
+                mcpApprovalRequest,
+                mcpApprovalResponse,
+                mcpCall,
+                customToolCall,
+                customToolCallOutput,
+            )
 
     override fun toString(): String =
         when {

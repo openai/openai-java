@@ -1238,10 +1238,16 @@ private constructor(
                     return other is Voice &&
                         string == other.string &&
                         builtIn == other.builtIn &&
-                        custom == other.custom
+                        custom == other.custom &&
+                        (string != null ||
+                            builtIn != null ||
+                            custom != null ||
+                            _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(string, builtIn, custom)
+                override fun hashCode(): Int =
+                    if (string == null && builtIn == null && custom == null) Objects.hash(_json)
+                    else Objects.hash(string, builtIn, custom)
 
                 override fun toString(): String =
                     when {
@@ -1529,10 +1535,13 @@ private constructor(
             return other is Delegation &&
                 client == other.client &&
                 responses == other.responses &&
-                decisions == other.decisions
+                decisions == other.decisions &&
+                (client != null || responses != null || decisions != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(client, responses, decisions)
+        override fun hashCode(): Int =
+            if (client == null && responses == null && decisions == null) Objects.hash(_json)
+            else Objects.hash(client, responses, decisions)
 
         override fun toString(): String =
             when {

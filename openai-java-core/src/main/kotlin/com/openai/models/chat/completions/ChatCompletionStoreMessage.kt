@@ -785,11 +785,16 @@ private constructor(
 
             return other is ContentPart &&
                 chatCompletionContentPartText == other.chatCompletionContentPartText &&
-                chatCompletionContentPartImage == other.chatCompletionContentPartImage
+                chatCompletionContentPartImage == other.chatCompletionContentPartImage &&
+                (chatCompletionContentPartText != null ||
+                    chatCompletionContentPartImage != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(chatCompletionContentPartText, chatCompletionContentPartImage)
+            if (chatCompletionContentPartText == null && chatCompletionContentPartImage == null)
+                Objects.hash(_json)
+            else Objects.hash(chatCompletionContentPartText, chatCompletionContentPartImage)
 
         override fun toString(): String =
             when {

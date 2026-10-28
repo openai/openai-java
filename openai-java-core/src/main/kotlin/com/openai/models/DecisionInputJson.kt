@@ -361,10 +361,15 @@ private constructor(
                 return true
             }
 
-            return other is Data && unionMember0 == other.unionMember0 && maps == other.maps
+            return other is Data &&
+                unionMember0 == other.unionMember0 &&
+                maps == other.maps &&
+                (unionMember0 != null || maps != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(unionMember0, maps)
+        override fun hashCode(): Int =
+            if (unionMember0 == null && maps == null) Objects.hash(_json)
+            else Objects.hash(unionMember0, maps)
 
         override fun toString(): String =
             when {

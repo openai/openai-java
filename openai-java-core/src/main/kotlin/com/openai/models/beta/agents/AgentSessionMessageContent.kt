@@ -170,10 +170,13 @@ private constructor(
         return other is AgentSessionMessageContent &&
             inputText == other.inputText &&
             inputImage == other.inputImage &&
-            outputText == other.outputText
+            outputText == other.outputText &&
+            (inputText != null || inputImage != null || outputText != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(inputText, inputImage, outputText)
+    override fun hashCode(): Int =
+        if (inputText == null && inputImage == null && outputText == null) Objects.hash(_json)
+        else Objects.hash(inputText, inputImage, outputText)
 
     override fun toString(): String =
         when {

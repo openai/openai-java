@@ -220,11 +220,23 @@ private constructor(
             auto == other.auto &&
             allowedToolChoice == other.allowedToolChoice &&
             namedToolChoice == other.namedToolChoice &&
-            namedToolChoiceCustom == other.namedToolChoiceCustom
+            namedToolChoiceCustom == other.namedToolChoiceCustom &&
+            (auto != null ||
+                allowedToolChoice != null ||
+                namedToolChoice != null ||
+                namedToolChoiceCustom != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(auto, allowedToolChoice, namedToolChoice, namedToolChoiceCustom)
+        if (
+            auto == null &&
+                allowedToolChoice == null &&
+                namedToolChoice == null &&
+                namedToolChoiceCustom == null
+        )
+            Objects.hash(_json)
+        else Objects.hash(auto, allowedToolChoice, namedToolChoice, namedToolChoiceCustom)
 
     override fun toString(): String =
         when {

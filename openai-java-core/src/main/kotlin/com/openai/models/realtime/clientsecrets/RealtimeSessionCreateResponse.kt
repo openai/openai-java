@@ -1898,10 +1898,13 @@ private constructor(
 
                     return other is TurnDetection &&
                         serverVad == other.serverVad &&
-                        semanticVad == other.semanticVad
+                        semanticVad == other.semanticVad &&
+                        (serverVad != null || semanticVad != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(serverVad, semanticVad)
+                override fun hashCode(): Int =
+                    if (serverVad == null && semanticVad == null) Objects.hash(_json)
+                    else Objects.hash(serverVad, semanticVad)
 
                 override fun toString(): String =
                     when {
@@ -3896,10 +3899,14 @@ private constructor(
                 return true
             }
 
-            return other is MaxOutputTokens && integer == other.integer && inf == other.inf
+            return other is MaxOutputTokens &&
+                integer == other.integer &&
+                inf == other.inf &&
+                (integer != null || inf != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(integer, inf)
+        override fun hashCode(): Int =
+            if (integer == null && inf == null) Objects.hash(_json) else Objects.hash(integer, inf)
 
         override fun toString(): String =
             when {
@@ -4595,10 +4602,13 @@ private constructor(
             return other is ToolChoice &&
                 options == other.options &&
                 function == other.function &&
-                mcp == other.mcp
+                mcp == other.mcp &&
+                (options != null || function != null || mcp != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(options, function, mcp)
+        override fun hashCode(): Int =
+            if (options == null && function == null && mcp == null) Objects.hash(_json)
+            else Objects.hash(options, function, mcp)
 
         override fun toString(): String =
             when {
@@ -4861,10 +4871,15 @@ private constructor(
                 return true
             }
 
-            return other is Tool && realtimeFunction == other.realtimeFunction && mcp == other.mcp
+            return other is Tool &&
+                realtimeFunction == other.realtimeFunction &&
+                mcp == other.mcp &&
+                (realtimeFunction != null || mcp != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(realtimeFunction, mcp)
+        override fun hashCode(): Int =
+            if (realtimeFunction == null && mcp == null) Objects.hash(_json)
+            else Objects.hash(realtimeFunction, mcp)
 
         override fun toString(): String =
             when {
@@ -6010,10 +6025,13 @@ private constructor(
 
                     return other is AllowedTools &&
                         mcp == other.mcp &&
-                        mcpToolFilter == other.mcpToolFilter
+                        mcpToolFilter == other.mcpToolFilter &&
+                        (mcp != null || mcpToolFilter != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(mcp, mcpToolFilter)
+                override fun hashCode(): Int =
+                    if (mcp == null && mcpToolFilter == null) Objects.hash(_json)
+                    else Objects.hash(mcp, mcpToolFilter)
 
                 override fun toString(): String =
                     when {
@@ -6871,11 +6889,16 @@ private constructor(
 
                     return other is RequireApproval &&
                         mcpToolApprovalFilter == other.mcpToolApprovalFilter &&
-                        mcpToolApprovalSetting == other.mcpToolApprovalSetting
+                        mcpToolApprovalSetting == other.mcpToolApprovalSetting &&
+                        (mcpToolApprovalFilter != null ||
+                            mcpToolApprovalSetting != null ||
+                            _json == other._json)
                 }
 
                 override fun hashCode(): Int =
-                    Objects.hash(mcpToolApprovalFilter, mcpToolApprovalSetting)
+                    if (mcpToolApprovalFilter == null && mcpToolApprovalSetting == null)
+                        Objects.hash(_json)
+                    else Objects.hash(mcpToolApprovalFilter, mcpToolApprovalSetting)
 
                 override fun toString(): String =
                     when {
@@ -8113,10 +8136,15 @@ private constructor(
                 return true
             }
 
-            return other is Tracing && auto == other.auto && configuration == other.configuration
+            return other is Tracing &&
+                auto == other.auto &&
+                configuration == other.configuration &&
+                (auto != null || configuration != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(auto, configuration)
+        override fun hashCode(): Int =
+            if (auto == null && configuration == null) Objects.hash(_json)
+            else Objects.hash(auto, configuration)
 
         override fun toString(): String =
             when {

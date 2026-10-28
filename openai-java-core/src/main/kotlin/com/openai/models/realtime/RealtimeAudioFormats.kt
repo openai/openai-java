@@ -170,10 +170,13 @@ private constructor(
         return other is RealtimeAudioFormats &&
             audioPcm == other.audioPcm &&
             audioPcmu == other.audioPcmu &&
-            audioPcma == other.audioPcma
+            audioPcma == other.audioPcma &&
+            (audioPcm != null || audioPcmu != null || audioPcma != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(audioPcm, audioPcmu, audioPcma)
+    override fun hashCode(): Int =
+        if (audioPcm == null && audioPcmu == null && audioPcma == null) Objects.hash(_json)
+        else Objects.hash(audioPcm, audioPcmu, audioPcma)
 
     override fun toString(): String =
         when {

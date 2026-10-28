@@ -755,11 +755,16 @@ private constructor(
                 return other is Content &&
                     string == other.string &&
                     decisionItemCreatedEventItemContentItems ==
-                        other.decisionItemCreatedEventItemContentItems
+                        other.decisionItemCreatedEventItemContentItems &&
+                    (string != null ||
+                        decisionItemCreatedEventItemContentItems != null ||
+                        _json == other._json)
             }
 
             override fun hashCode(): Int =
-                Objects.hash(string, decisionItemCreatedEventItemContentItems)
+                if (string == null && decisionItemCreatedEventItemContentItems == null)
+                    Objects.hash(_json)
+                else Objects.hash(string, decisionItemCreatedEventItemContentItems)
 
             override fun toString(): String =
                 when {
@@ -996,10 +1001,13 @@ private constructor(
 
                     return other is DecisionItemCreatedEventItemContentItem &&
                         inputText == other.inputText &&
-                        inputImage == other.inputImage
+                        inputImage == other.inputImage &&
+                        (inputText != null || inputImage != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(inputText, inputImage)
+                override fun hashCode(): Int =
+                    if (inputText == null && inputImage == null) Objects.hash(_json)
+                    else Objects.hash(inputText, inputImage)
 
                 override fun toString(): String =
                     when {

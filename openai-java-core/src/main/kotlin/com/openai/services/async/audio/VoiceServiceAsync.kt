@@ -7,7 +7,6 @@ import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.audio.voices.Voice
 import com.openai.models.audio.voices.VoiceCreateParams
-import com.openai.models.audio.voices.VoiceCreateParams.Body
 import com.openai.models.audio.voices.VoiceDeleteParams
 import com.openai.models.audio.voices.VoiceDeleted
 import java.util.concurrent.CompletableFuture
@@ -50,13 +49,14 @@ interface VoiceServiceAsync {
 
     /** @see create */
     fun create(
-        body: Body,
+        body: VoiceCreateParams.Body,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Voice> =
         create(VoiceCreateParams.builder().body(body).build(), requestOptions)
 
     /** @see create */
-    fun create(body: Body): CompletableFuture<Voice> = create(body, RequestOptions.none())
+    fun create(body: VoiceCreateParams.Body): CompletableFuture<Voice> =
+        create(body, RequestOptions.none())
 
     /**
      * Deletes a voice created from a text prompt or an audio sample.
@@ -126,13 +126,13 @@ interface VoiceServiceAsync {
 
         /** @see create */
         fun create(
-            body: Body,
+            body: VoiceCreateParams.Body,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Voice>> =
             create(VoiceCreateParams.builder().body(body).build(), requestOptions)
 
         /** @see create */
-        fun create(body: Body): CompletableFuture<HttpResponseFor<Voice>> =
+        fun create(body: VoiceCreateParams.Body): CompletableFuture<HttpResponseFor<Voice>> =
             create(body, RequestOptions.none())
 
         /**

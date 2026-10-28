@@ -166,10 +166,16 @@ private constructor(
         return other is BetaMcpToolCallError &&
             mcpProtocol == other.mcpProtocol &&
             mcpToolExecution == other.mcpToolExecution &&
-            http == other.http
+            http == other.http &&
+            (mcpProtocol != null ||
+                mcpToolExecution != null ||
+                http != null ||
+                _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(mcpProtocol, mcpToolExecution, http)
+    override fun hashCode(): Int =
+        if (mcpProtocol == null && mcpToolExecution == null && http == null) Objects.hash(_json)
+        else Objects.hash(mcpProtocol, mcpToolExecution, http)
 
     override fun toString(): String =
         when {

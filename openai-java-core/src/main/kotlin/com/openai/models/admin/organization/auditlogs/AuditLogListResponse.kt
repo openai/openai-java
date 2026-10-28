@@ -9781,10 +9781,18 @@ private constructor(
                         aws == other.aws &&
                         azure == other.azure &&
                         gcp == other.gcp &&
-                        oci == other.oci
+                        oci == other.oci &&
+                        (aws != null ||
+                            azure != null ||
+                            gcp != null ||
+                            oci != null ||
+                            _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(aws, azure, gcp, oci)
+                override fun hashCode(): Int =
+                    if (aws == null && azure == null && gcp == null && oci == null)
+                        Objects.hash(_json)
+                    else Objects.hash(aws, azure, gcp, oci)
 
                 override fun toString(): String =
                     when {

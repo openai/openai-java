@@ -924,18 +924,35 @@ private constructor(
                     outputText == other.outputText &&
                     inputImage == other.inputImage &&
                     responseInputAudio == other.responseInputAudio &&
-                    graderInputs == other.graderInputs
+                    graderInputs == other.graderInputs &&
+                    (textInput != null ||
+                        responseInputText != null ||
+                        outputText != null ||
+                        inputImage != null ||
+                        responseInputAudio != null ||
+                        graderInputs != null ||
+                        _json == other._json)
             }
 
             override fun hashCode(): Int =
-                Objects.hash(
-                    textInput,
-                    responseInputText,
-                    outputText,
-                    inputImage,
-                    responseInputAudio,
-                    graderInputs,
+                if (
+                    textInput == null &&
+                        responseInputText == null &&
+                        outputText == null &&
+                        inputImage == null &&
+                        responseInputAudio == null &&
+                        graderInputs == null
                 )
+                    Objects.hash(_json)
+                else
+                    Objects.hash(
+                        textInput,
+                        responseInputText,
+                        outputText,
+                        inputImage,
+                        responseInputAudio,
+                        graderInputs,
+                    )
 
             override fun toString(): String =
                 when {

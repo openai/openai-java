@@ -143,10 +143,12 @@ private constructor(
 
         return other is ModerationMultiModalInput &&
             imageUrl == other.imageUrl &&
-            text == other.text
+            text == other.text &&
+            (imageUrl != null || text != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(imageUrl, text)
+    override fun hashCode(): Int =
+        if (imageUrl == null && text == null) Objects.hash(_json) else Objects.hash(imageUrl, text)
 
     override fun toString(): String =
         when {

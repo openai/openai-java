@@ -2495,11 +2495,23 @@ private constructor(
                 string == other.string &&
                 arrayOfStrings == other.arrayOfStrings &&
                 arrayOfTokens == other.arrayOfTokens &&
-                arrayOfTokenArrays == other.arrayOfTokenArrays
+                arrayOfTokenArrays == other.arrayOfTokenArrays &&
+                (string != null ||
+                    arrayOfStrings != null ||
+                    arrayOfTokens != null ||
+                    arrayOfTokenArrays != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(string, arrayOfStrings, arrayOfTokens, arrayOfTokenArrays)
+            if (
+                string == null &&
+                    arrayOfStrings == null &&
+                    arrayOfTokens == null &&
+                    arrayOfTokenArrays == null
+            )
+                Objects.hash(_json)
+            else Objects.hash(string, arrayOfStrings, arrayOfTokens, arrayOfTokenArrays)
 
         override fun toString(): String =
             when {
@@ -2871,10 +2883,15 @@ private constructor(
                 return true
             }
 
-            return other is Stop && string == other.string && strings == other.strings
+            return other is Stop &&
+                string == other.string &&
+                strings == other.strings &&
+                (string != null || strings != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(string, strings)
+        override fun hashCode(): Int =
+            if (string == null && strings == null) Objects.hash(_json)
+            else Objects.hash(string, strings)
 
         override fun toString(): String =
             when {

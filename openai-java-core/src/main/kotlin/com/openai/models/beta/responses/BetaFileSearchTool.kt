@@ -531,10 +531,13 @@ private constructor(
 
             return other is Filters &&
                 comparisonFilter == other.comparisonFilter &&
-                compoundFilter == other.compoundFilter
+                compoundFilter == other.compoundFilter &&
+                (comparisonFilter != null || compoundFilter != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(comparisonFilter, compoundFilter)
+        override fun hashCode(): Int =
+            if (comparisonFilter == null && compoundFilter == null) Objects.hash(_json)
+            else Objects.hash(comparisonFilter, compoundFilter)
 
         override fun toString(): String =
             when {
@@ -1281,11 +1284,23 @@ private constructor(
                         string == other.string &&
                         number == other.number &&
                         bool == other.bool &&
-                        comparisonFilterValueItems == other.comparisonFilterValueItems
+                        comparisonFilterValueItems == other.comparisonFilterValueItems &&
+                        (string != null ||
+                            number != null ||
+                            bool != null ||
+                            comparisonFilterValueItems != null ||
+                            _json == other._json)
                 }
 
                 override fun hashCode(): Int =
-                    Objects.hash(string, number, bool, comparisonFilterValueItems)
+                    if (
+                        string == null &&
+                            number == null &&
+                            bool == null &&
+                            comparisonFilterValueItems == null
+                    )
+                        Objects.hash(_json)
+                    else Objects.hash(string, number, bool, comparisonFilterValueItems)
 
                 override fun toString(): String =
                     when {
@@ -1524,10 +1539,13 @@ private constructor(
 
                         return other is ComparisonFilterValueItem &&
                             string == other.string &&
-                            number == other.number
+                            number == other.number &&
+                            (string != null || number != null || _json == other._json)
                     }
 
-                    override fun hashCode(): Int = Objects.hash(string, number)
+                    override fun hashCode(): Int =
+                        if (string == null && number == null) Objects.hash(_json)
+                        else Objects.hash(string, number)
 
                     override fun toString(): String =
                         when {
@@ -2034,10 +2052,13 @@ private constructor(
 
                     return other is Filter &&
                         comparison == other.comparison &&
-                        jsonValue == other.jsonValue
+                        jsonValue == other.jsonValue &&
+                        (comparison != null || jsonValue != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(comparison, jsonValue)
+                override fun hashCode(): Int =
+                    if (comparison == null && jsonValue == null) Objects.hash(_json)
+                    else Objects.hash(comparison, jsonValue)
 
                 override fun toString(): String =
                     when {
@@ -2806,11 +2827,23 @@ private constructor(
                                 string == other.string &&
                                 number == other.number &&
                                 bool == other.bool &&
-                                comparisonFilterValueItems == other.comparisonFilterValueItems
+                                comparisonFilterValueItems == other.comparisonFilterValueItems &&
+                                (string != null ||
+                                    number != null ||
+                                    bool != null ||
+                                    comparisonFilterValueItems != null ||
+                                    _json == other._json)
                         }
 
                         override fun hashCode(): Int =
-                            Objects.hash(string, number, bool, comparisonFilterValueItems)
+                            if (
+                                string == null &&
+                                    number == null &&
+                                    bool == null &&
+                                    comparisonFilterValueItems == null
+                            )
+                                Objects.hash(_json)
+                            else Objects.hash(string, number, bool, comparisonFilterValueItems)
 
                         override fun toString(): String =
                             when {
@@ -3060,10 +3093,13 @@ private constructor(
 
                                 return other is ComparisonFilterValueItem &&
                                     string == other.string &&
-                                    number == other.number
+                                    number == other.number &&
+                                    (string != null || number != null || _json == other._json)
                             }
 
-                            override fun hashCode(): Int = Objects.hash(string, number)
+                            override fun hashCode(): Int =
+                                if (string == null && number == null) Objects.hash(_json)
+                                else Objects.hash(string, number)
 
                             override fun toString(): String =
                                 when {

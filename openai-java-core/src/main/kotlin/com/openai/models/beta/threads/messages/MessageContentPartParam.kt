@@ -169,10 +169,13 @@ private constructor(
         return other is MessageContentPartParam &&
             imageFile == other.imageFile &&
             imageUrl == other.imageUrl &&
-            text == other.text
+            text == other.text &&
+            (imageFile != null || imageUrl != null || text != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(imageFile, imageUrl, text)
+    override fun hashCode(): Int =
+        if (imageFile == null && imageUrl == null && text == null) Objects.hash(_json)
+        else Objects.hash(imageFile, imageUrl, text)
 
     override fun toString(): String =
         when {

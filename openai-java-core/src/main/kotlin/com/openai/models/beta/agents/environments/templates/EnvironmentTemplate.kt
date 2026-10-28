@@ -824,10 +824,14 @@ private constructor(
                 return true
             }
 
-            return other is File && id == other.id && inline == other.inline
+            return other is File &&
+                id == other.id &&
+                inline == other.inline &&
+                (id != null || inline != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(id, inline)
+        override fun hashCode(): Int =
+            if (id == null && inline == null) Objects.hash(_json) else Objects.hash(id, inline)
 
         override fun toString(): String =
             when {
@@ -2324,10 +2328,15 @@ private constructor(
                 return true
             }
 
-            return other is Skill && reference == other.reference && inline == other.inline
+            return other is Skill &&
+                reference == other.reference &&
+                inline == other.inline &&
+                (reference != null || inline != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(reference, inline)
+        override fun hashCode(): Int =
+            if (reference == null && inline == null) Objects.hash(_json)
+            else Objects.hash(reference, inline)
 
         override fun toString(): String =
             when {

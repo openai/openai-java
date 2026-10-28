@@ -236,16 +236,29 @@ private constructor(
                 other.agentSessionInputComputerUseApprovalRequestResult &&
             agentSessionInputMessage == other.agentSessionInputMessage &&
             agentSessionInputCancel == other.agentSessionInputCancel &&
-            agentSessionInputToolResult == other.agentSessionInputToolResult
+            agentSessionInputToolResult == other.agentSessionInputToolResult &&
+            (agentSessionInputComputerUseApprovalRequestResult != null ||
+                agentSessionInputMessage != null ||
+                agentSessionInputCancel != null ||
+                agentSessionInputToolResult != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            agentSessionInputComputerUseApprovalRequestResult,
-            agentSessionInputMessage,
-            agentSessionInputCancel,
-            agentSessionInputToolResult,
+        if (
+            agentSessionInputComputerUseApprovalRequestResult == null &&
+                agentSessionInputMessage == null &&
+                agentSessionInputCancel == null &&
+                agentSessionInputToolResult == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                agentSessionInputComputerUseApprovalRequestResult,
+                agentSessionInputMessage,
+                agentSessionInputCancel,
+                agentSessionInputToolResult,
+            )
 
     override fun toString(): String =
         when {
@@ -909,15 +922,26 @@ private constructor(
                         other.agentBrowserAuthenticationSubmitParam &&
                     agentBrowserAuthenticationCancelParam ==
                         other.agentBrowserAuthenticationCancelParam &&
-                    browserOriginAccess == other.browserOriginAccess
+                    browserOriginAccess == other.browserOriginAccess &&
+                    (agentBrowserAuthenticationSubmitParam != null ||
+                        agentBrowserAuthenticationCancelParam != null ||
+                        browserOriginAccess != null ||
+                        _json == other._json)
             }
 
             override fun hashCode(): Int =
-                Objects.hash(
-                    agentBrowserAuthenticationSubmitParam,
-                    agentBrowserAuthenticationCancelParam,
-                    browserOriginAccess,
+                if (
+                    agentBrowserAuthenticationSubmitParam == null &&
+                        agentBrowserAuthenticationCancelParam == null &&
+                        browserOriginAccess == null
                 )
+                    Objects.hash(_json)
+                else
+                    Objects.hash(
+                        agentBrowserAuthenticationSubmitParam,
+                        agentBrowserAuthenticationCancelParam,
+                        browserOriginAccess,
+                    )
 
             override fun toString(): String =
                 when {

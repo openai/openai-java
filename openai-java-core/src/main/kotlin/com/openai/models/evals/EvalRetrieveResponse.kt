@@ -747,10 +747,16 @@ private constructor(
             return other is DataSourceConfig &&
                 custom == other.custom &&
                 logs == other.logs &&
-                storedCompletions == other.storedCompletions
+                storedCompletions == other.storedCompletions &&
+                (custom != null ||
+                    logs != null ||
+                    storedCompletions != null ||
+                    _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(custom, logs, storedCompletions)
+        override fun hashCode(): Int =
+            if (custom == null && logs == null && storedCompletions == null) Objects.hash(_json)
+            else Objects.hash(custom, logs, storedCompletions)
 
         override fun toString(): String =
             when {
@@ -1823,17 +1829,32 @@ private constructor(
                 stringCheckGrader == other.stringCheckGrader &&
                 evalGraderTextSimilarity == other.evalGraderTextSimilarity &&
                 evalGraderPython == other.evalGraderPython &&
-                evalGraderScoreModel == other.evalGraderScoreModel
+                evalGraderScoreModel == other.evalGraderScoreModel &&
+                (labelModelGrader != null ||
+                    stringCheckGrader != null ||
+                    evalGraderTextSimilarity != null ||
+                    evalGraderPython != null ||
+                    evalGraderScoreModel != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(
-                labelModelGrader,
-                stringCheckGrader,
-                evalGraderTextSimilarity,
-                evalGraderPython,
-                evalGraderScoreModel,
+            if (
+                labelModelGrader == null &&
+                    stringCheckGrader == null &&
+                    evalGraderTextSimilarity == null &&
+                    evalGraderPython == null &&
+                    evalGraderScoreModel == null
             )
+                Objects.hash(_json)
+            else
+                Objects.hash(
+                    labelModelGrader,
+                    stringCheckGrader,
+                    evalGraderTextSimilarity,
+                    evalGraderPython,
+                    evalGraderScoreModel,
+                )
 
         override fun toString(): String =
             when {

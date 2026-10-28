@@ -154,10 +154,13 @@ private constructor(
         return other is ResponsesModel &&
             string == other.string &&
             chat == other.chat &&
-            only == other.only
+            only == other.only &&
+            (string != null || chat != null || only != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(string, chat, only)
+    override fun hashCode(): Int =
+        if (string == null && chat == null && only == null) Objects.hash(_json)
+        else Objects.hash(string, chat, only)
 
     override fun toString(): String =
         when {
