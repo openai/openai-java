@@ -42,6 +42,19 @@ internal object WebSocketConnections {
                 clientOptions,
                 requestOptions,
                 {
+                    val requestBase =
+                        URI(clientOptions.baseUrl())
+                            .toASCIIString()
+                            .substringBefore('#')
+                            .substringBefore('?')
+                    require(
+                        AzureUrlCategory.categorizeBaseUrl(
+                            requestBase,
+                            clientOptions.azureUrlPathMode,
+                        ) != AzureUrlCategory.AZURE_LEGACY
+                    ) {
+                        "WebSockets require unified Azure routing"
+                    }
                     val request = request(binding, clientOptions, options)
                     // Generic bindings can include template values. Preserve their once-encoded
                     // path for custom transports whose HttpRequest.url() uses form encoding.
@@ -74,12 +87,6 @@ internal object WebSocketConnections {
     ): HttpRequest {
         val baseUrl = URI(clientOptions.baseUrl())
         val requestBase = baseUrl.toASCIIString().substringBefore('#').substringBefore('?')
-        require(
-            AzureUrlCategory.categorizeBaseUrl(requestBase, clientOptions.azureUrlPathMode) !=
-                AzureUrlCategory.AZURE_LEGACY
-        ) {
-            "WebSockets require unified Azure routing"
-        }
         return HttpRequest.builder()
             .method(HttpMethod.GET)
             .baseUrl(requestBase)
