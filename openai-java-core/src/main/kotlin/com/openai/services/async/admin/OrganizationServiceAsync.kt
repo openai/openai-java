@@ -7,6 +7,7 @@ import com.openai.services.async.admin.organization.AdminApiKeyServiceAsync
 import com.openai.services.async.admin.organization.AuditLogServiceAsync
 import com.openai.services.async.admin.organization.CertificateServiceAsync
 import com.openai.services.async.admin.organization.DataRetentionServiceAsync
+import com.openai.services.async.admin.organization.ExternalKeyServiceAsync
 import com.openai.services.async.admin.organization.ExternalStorageServiceAsync
 import com.openai.services.async.admin.organization.GroupServiceAsync
 import com.openai.services.async.admin.organization.InviteServiceAsync
@@ -70,6 +71,9 @@ interface OrganizationServiceAsync {
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     fun projects(): ProjectServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
+    fun externalKeys(): ExternalKeyServiceAsync =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
@@ -149,6 +153,11 @@ interface OrganizationServiceAsync {
             )
 
         fun projects(): ProjectServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
+        fun externalKeys(): ExternalKeyServiceAsync.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
             )
