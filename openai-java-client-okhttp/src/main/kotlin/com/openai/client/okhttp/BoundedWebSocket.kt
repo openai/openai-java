@@ -6,6 +6,7 @@ import com.openai.core.http.WebSocketHandshakeException
 import com.openai.core.http.WebSocketWriteNotAttempted
 import java.io.IOException
 import java.net.ProtocolException
+import java.net.Proxy
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
@@ -102,6 +103,17 @@ internal object BoundedWebSocket {
                                     .request()
                                     .newBuilder()
                                     .removeHeader("Sec-WebSocket-Extensions")
+                                    .apply {
+                                        val proxy = client.proxy
+                                        // These routes cannot use a proxy-only origin header.
+                                        // Leave dynamic plaintext routing to the native client.
+                                        if (
+                                            chain.request().url.isHttps ||
+                                                (proxy != null && proxy.type() != Proxy.Type.HTTP)
+                                        ) {
+                                            removeHeader("Proxy-Authorization")
+                                        }
+                                    }
                                     .build()
                             )
                         if (

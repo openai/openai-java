@@ -1687,6 +1687,11 @@ with any caller network interceptor, or an `authenticator` or `proxyAuthenticato
 WebSocket, before a network connection starts. Application interceptors are supported.
 Supplying a native client does not change these WebSocket restrictions.
 
+TLS WebSockets and explicitly configured direct or SOCKS routes omit `Proxy-Authorization` from the
+origin request. Plaintext WebSockets through an explicit or automatically selected HTTP proxy retain
+preemptive proxy credentials. For automatic plaintext proxy selection, the SDK does not remove
+`Proxy-Authorization`.
+
 ### Telemetry headers
 
 Disable SDK-generated telemetry for a client:
