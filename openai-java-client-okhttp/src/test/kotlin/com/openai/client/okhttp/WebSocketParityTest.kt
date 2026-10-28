@@ -1,9 +1,16 @@
 package com.openai.client.okhttp
 
 import com.openai.core.ClientOptions
+import com.openai.core.http.HttpMethod
+import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpRequestAuthenticator
+import com.openai.core.http.ResponseConnection
+import com.openai.core.http.ResponseWebSocketOptions
 import com.openai.core.http.WebSocketOptions
 import com.openai.core.jsonMapper
 import com.openai.helpers.LiveSidebandConnection
+import com.openai.helpers.RealtimeConnection
+import com.openai.helpers.RealtimeWebSocketOptions
 import com.openai.models.beta.responses.BetaResponsesClientEvent
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
@@ -45,6 +52,82 @@ class WebSocketParityTest {
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             closed.countDown()
+        }
+    }
+
+    @Test
+    fun connectionQueryReplacesInheritedBaseUrlValues() {
+        for (mode in listOf("realtime", "responses")) {
+            MockWebServer().use { server ->
+                val peer = Peer()
+                server.enqueue(MockResponse().withWebSocketUpgrade(peer))
+                OkHttpClient.builder().build().use { http ->
+                    val client =
+                        ClientOptions.builder()
+                            .httpClient(http)
+                            .baseUrl(
+                                server
+                                    .url("/v1/?tenant=base&model=base-model&keep=a%2Bb%20%C3%A9")
+                                    .toString()
+                            )
+                            .putQueryParam("tenant", "client")
+                            .httpRequestAuthenticator(
+                                object : HttpRequestAuthenticator {
+                                    override fun authenticate(request: HttpRequest): HttpRequest {
+                                        assertThat(request.method).isEqualTo(HttpMethod.GET)
+                                        assertThat(request.baseUrl)
+                                            .isEqualTo(server.url("/v1/").toString())
+                                        assertThat(request.pathSegments).containsExactly(mode)
+                                        assertThat(request.queryParams.values("tenant"))
+                                            .containsExactly("connection +/é")
+                                        assertThat(request.queryParams.values("keep"))
+                                            .containsExactly("a+b é")
+                                        assertThat(request.queryParams.values("model"))
+                                            .containsExactly(
+                                                if (mode == "realtime") "connection-model"
+                                                else "base-model"
+                                            )
+                                        return request
+                                            .toBuilder()
+                                            .replaceHeaders("Authorization", "signed-synthetic")
+                                            .build()
+                                    }
+                                }
+                            )
+                            .build()
+                    val connection =
+                        if (mode == "realtime") {
+                            RealtimeConnection.connect(
+                                client,
+                                RealtimeWebSocketOptions.builder()
+                                    .model("connection-model")
+                                    .putQueryParam("tenant", "connection +/é")
+                                    .build(),
+                            )
+                        } else {
+                            ResponseConnection.connect(
+                                client,
+                                ResponseWebSocketOptions.builder()
+                                    .putQueryParam("tenant", "connection +/é")
+                                    .build(),
+                            )
+                        }
+                    connection.use {
+                        val request = server.takeRequest(5, TimeUnit.SECONDS)!!
+                        val url = request.requestUrl!!
+                        assertThat(url.encodedPath).isEqualTo("/v1/$mode")
+                        assertThat(request.getHeader("Authorization")).isEqualTo("signed-synthetic")
+                        assertThat(url.queryParameterValues("tenant"))
+                            .containsExactly("connection +/é")
+                        assertThat(url.queryParameterValues("model"))
+                            .containsExactly(
+                                if (mode == "realtime") "connection-model" else "base-model"
+                            )
+                        assertThat(url.queryParameterValues("keep")).containsExactly("a+b é")
+                    }
+                    assertThat(peer.closed.await(5, TimeUnit.SECONDS)).isTrue()
+                }
+            }
         }
     }
 

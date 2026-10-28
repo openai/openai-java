@@ -2,6 +2,7 @@ package com.openai.core.http
 
 import com.openai.azure.AzureUrlCategory
 import com.openai.core.ClientOptions
+import com.openai.core.Params
 import com.openai.core.RequestOptions
 import com.openai.core.prepare
 import java.net.URI
@@ -40,7 +41,36 @@ internal object WebSocketConnections {
         WebSocketConnection<C, S>(
                 clientOptions,
                 requestOptions,
-                { request(binding, clientOptions, options) },
+                {
+                    val requestBase =
+                        URI(clientOptions.baseUrl())
+                            .toASCIIString()
+                            .substringBefore('#')
+                            .substringBefore('?')
+                    require(
+                        AzureUrlCategory.categorizeBaseUrl(
+                            requestBase,
+                            clientOptions.azureUrlPathMode,
+                        ) != AzureUrlCategory.AZURE_LEGACY
+                    ) {
+                        "WebSockets require unified Azure routing"
+                    }
+                    val request = request(binding, clientOptions, options)
+                    // Generic bindings can include template values. Preserve their once-encoded
+                    // path for custom transports whose HttpRequest.url() uses form encoding.
+                    val separator = if (request.baseUrl.endsWith("/")) "" else "/"
+                    request
+                        .toBuilder()
+                        .baseUrl(
+                            request.baseUrl +
+                                separator +
+                                binding.pathSegments.joinToString("/") {
+                                    URLEncoder.encode(it, "UTF-8").replace("+", "%20")
+                                }
+                        )
+                        .pathSegments(emptyList())
+                        .build()
+                },
                 binding.eventType,
                 binding.validate,
                 options.maxMessageBytes,
@@ -50,49 +80,29 @@ internal object WebSocketConnections {
             )
             .open(blocking) { it }
 
-    private fun request(
+    fun request(
         binding: WebSocketBinding<*, *>,
         clientOptions: ClientOptions,
-        options: WebSocketOptions,
+        options: Params,
     ): HttpRequest {
         val baseUrl = URI(clientOptions.baseUrl())
         val requestBase = baseUrl.toASCIIString().substringBefore('#').substringBefore('?')
-        require(
-            AzureUrlCategory.categorizeBaseUrl(requestBase, clientOptions.azureUrlPathMode) !=
-                AzureUrlCategory.AZURE_LEGACY
-        ) {
-            "WebSockets require unified Azure routing"
-        }
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .baseUrl(requestBase)
-                .pathSegments(binding.pathSegments)
-                .apply {
-                    baseUrl.rawQuery
-                        ?.split('&')
-                        ?.filter { it.isNotEmpty() }
-                        ?.forEach {
-                            putQueryParam(
-                                URLDecoder.decode(it.substringBefore('='), "UTF-8"),
-                                URLDecoder.decode(it.substringAfter('=', ""), "UTF-8"),
-                            )
-                        }
-                }
-                .build()
-                .prepare(clientOptions, options, binding.security)
-        // Both custom transports and OkHttp must see the same once-encoded path.
-        val separator = if (requestBase.endsWith("/")) "" else "/"
-        return request
-            .toBuilder()
-            .baseUrl(
-                requestBase +
-                    separator +
-                    binding.pathSegments.joinToString("/") {
-                        URLEncoder.encode(it, "UTF-8").replace("+", "%20")
+        return HttpRequest.builder()
+            .method(HttpMethod.GET)
+            .baseUrl(requestBase)
+            .pathSegments(binding.pathSegments)
+            .apply {
+                baseUrl.rawQuery
+                    ?.split('&')
+                    ?.filter { it.isNotEmpty() }
+                    ?.forEach {
+                        putQueryParam(
+                            URLDecoder.decode(it.substringBefore('='), "UTF-8"),
+                            URLDecoder.decode(it.substringAfter('=', ""), "UTF-8"),
+                        )
                     }
-            )
-            .pathSegments(emptyList())
+            }
             .build()
+            .prepare(clientOptions, options, binding.security)
     }
 }

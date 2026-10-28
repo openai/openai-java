@@ -3,16 +3,22 @@ package com.openai.client.okhttp
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.openai.azure.AzureUrlPathMode
 import com.openai.client.OpenAIClient
+import com.openai.core.ClientOptions
+import com.openai.core.http.AsyncResponseConnection
 import com.openai.core.http.AsyncStreamResponse
+import com.openai.core.http.ResponseConnection
 import com.openai.core.jsonMapper
 import com.openai.credential.BearerTokenCredential
 import com.openai.errors.InvalidResourceIdException
+import com.openai.helpers.RealtimeConnection
 import com.openai.models.ChatModel
 import com.openai.models.ResponsesModel
 import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionCreateParams
 import com.openai.models.embeddings.EmbeddingCreateParams
 import com.openai.models.responses.ResponseCreateParams
+import java.net.InetAddress
+import java.net.Proxy
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
@@ -23,12 +29,172 @@ import java.util.function.Supplier
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
 
 internal class AzureRequestPreparationCompatibilityTest {
+    @TestFactory
+    fun webSocketsPreserveQueryRoutedAzureGatewaysAndRejectLegacy() =
+        listOf("responses", "realtime", "beta").flatMap { endpoint ->
+            listOf(false, true).flatMap { async ->
+                listOf(
+                        Triple(AzureUrlPathMode.AUTO, "?route=/openai/v1", true),
+                        Triple(AzureUrlPathMode.AUTO, "", false),
+                        Triple(AzureUrlPathMode.LEGACY, "?route=/openai/v1", false),
+                    )
+                    .map { (mode, query, accepted) ->
+                        dynamicTest("$endpoint async=$async mode=$mode query=$query") {
+                            MockWebServer().use { server ->
+                                server.enqueue(
+                                    MockResponse()
+                                        .withWebSocketUpgrade(
+                                            object : okhttp3.WebSocketListener() {
+                                                override fun onClosing(
+                                                    socket: okhttp3.WebSocket,
+                                                    code: Int,
+                                                    reason: String,
+                                                ) {
+                                                    socket.close(code, reason)
+                                                }
+                                            }
+                                        )
+                                )
+                                val native =
+                                    okhttp3.OkHttpClient.Builder()
+                                        .dns(
+                                            object : okhttp3.Dns {
+                                                override fun lookup(hostname: String) =
+                                                    listOf(InetAddress.getLoopbackAddress())
+                                            }
+                                        )
+                                        .proxy(Proxy.NO_PROXY)
+                                        .build()
+                                val options =
+                                    ClientOptions.builder()
+                                        .apiKey("fixture-sdk-auth")
+                                        .baseUrl(
+                                            "http://fixture.azure-api.net:${server.port}/gateway$query"
+                                        )
+                                        .azureUrlPathMode(mode)
+                                        .httpClient(OkHttpClient(native))
+                                        .build()
+                                try {
+                                    val connect = {
+                                        when (endpoint) {
+                                            "realtime" ->
+                                                if (async)
+                                                    RealtimeConnection.connectAsync(options)
+                                                        .get(5, TimeUnit.SECONDS)
+                                                else RealtimeConnection.connect(options)
+                                            "beta" ->
+                                                if (async)
+                                                    com.openai.client
+                                                        .OpenAIClientAsyncImpl(options)
+                                                        .beta()
+                                                        .responses()
+                                                        .connectWebSocket()
+                                                        .get(5, TimeUnit.SECONDS)
+                                                else
+                                                    com.openai.client
+                                                        .OpenAIClientImpl(options)
+                                                        .beta()
+                                                        .responses()
+                                                        .connectWebSocket()
+                                            else ->
+                                                if (async)
+                                                    AsyncResponseConnection.connect(options)
+                                                        .get(5, TimeUnit.SECONDS)
+                                                else ResponseConnection.connect(options)
+                                        }
+                                    }
+                                    if (accepted && endpoint != "beta") {
+                                        connect().use {
+                                            val request = server.takeRequest(5, TimeUnit.SECONDS)!!
+                                            assertThat(request.method).isEqualTo("GET")
+                                            assertThat(request.requestUrl!!.encodedPath)
+                                                .isEqualTo("/gateway/$endpoint")
+                                            assertThat(request.requestUrl!!.queryParameterNames)
+                                                .containsExactly("route")
+                                            assertThat(
+                                                    request.requestUrl!!.queryParameterValues(
+                                                        "route"
+                                                    )
+                                                )
+                                                .containsExactly("/openai/v1")
+                                        }
+                                    } else {
+                                        assertThatThrownBy { connect().close() }
+                                            .hasMessageContaining("unified Azure routing")
+                                        assertThat(server.requestCount).isZero()
+                                    }
+                                } finally {
+                                    options.close()
+                                    native.dispatcher.executorService.shutdown()
+                                    native.connectionPool.evictAll()
+                                }
+                            }
+                        }
+                    }
+            }
+        }
+
+    @TestFactory
+    fun autoPreservesUnifiedRoutingForQueryRoutedAzureGateways() =
+        listOf(false, true).map { async ->
+            dynamicTest("query-routed gateway async=$async") {
+                MockWebServer().use { server ->
+                    server.enqueue(
+                        MockResponse().setHeader("Content-Type", "application/json").setBody("{}")
+                    )
+                    val transport =
+                        okhttp3.OkHttpClient.Builder()
+                            .dns(
+                                object : okhttp3.Dns {
+                                    override fun lookup(hostname: String) =
+                                        listOf(InetAddress.getLoopbackAddress())
+                                }
+                            )
+                            .proxy(Proxy.NO_PROXY)
+                            .build()
+                    val client =
+                        OpenAIOkHttpClient.builder()
+                            .apiKey("fixture-sdk-auth")
+                            .baseUrl(
+                                "http://fixture.azure-api.net:${server.port}/gateway?route=/openai/v1"
+                            )
+                            .okHttpClient(transport)
+                            .maxRetries(0)
+                            .build()
+                    try {
+                        val params =
+                            ResponseCreateParams.builder()
+                                .model("deployment-fixture")
+                                .input("Hello")
+                                .build()
+                        if (async) {
+                            client.async().responses().create(params).get(5, TimeUnit.SECONDS)
+                        } else {
+                            client.responses().create(params)
+                        }
+                        val request = server.takeRequest(5, TimeUnit.SECONDS)!!
+                        assertThat(request.method).isEqualTo("POST")
+                        assertThat(request.requestUrl!!.encodedPath).isEqualTo("/gateway/responses")
+                        assertThat(request.requestUrl!!.queryParameterNames)
+                            .containsExactly("route")
+                        assertThat(request.requestUrl!!.queryParameter("route"))
+                            .isEqualTo("/openai/v1")
+                    } finally {
+                        client.close()
+                        transport.dispatcher.executorService.shutdown()
+                        transport.connectionPool.evictAll()
+                    }
+                }
+            }
+        }
+
     @TestFactory
     fun responsesModelVariantsPreserveWireNames() =
         listOf(false, true).flatMap { async ->
