@@ -7,6 +7,7 @@ import com.openai.services.blocking.admin.organization.AdminApiKeyService
 import com.openai.services.blocking.admin.organization.AuditLogService
 import com.openai.services.blocking.admin.organization.CertificateService
 import com.openai.services.blocking.admin.organization.DataRetentionService
+import com.openai.services.blocking.admin.organization.ExternalKeyService
 import com.openai.services.blocking.admin.organization.ExternalStorageService
 import com.openai.services.blocking.admin.organization.GroupService
 import com.openai.services.blocking.admin.organization.InviteService
@@ -70,6 +71,9 @@ interface OrganizationService {
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     fun projects(): ProjectService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
+    fun externalKeys(): ExternalKeyService =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
@@ -148,6 +152,11 @@ interface OrganizationService {
             )
 
         fun projects(): ProjectService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
+        fun externalKeys(): ExternalKeyService.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
             )

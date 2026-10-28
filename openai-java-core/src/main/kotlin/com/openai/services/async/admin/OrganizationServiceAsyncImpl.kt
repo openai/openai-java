@@ -11,6 +11,8 @@ import com.openai.services.async.admin.organization.CertificateServiceAsync
 import com.openai.services.async.admin.organization.CertificateServiceAsyncImpl
 import com.openai.services.async.admin.organization.DataRetentionServiceAsync
 import com.openai.services.async.admin.organization.DataRetentionServiceAsyncImpl
+import com.openai.services.async.admin.organization.ExternalKeyServiceAsync
+import com.openai.services.async.admin.organization.ExternalKeyServiceAsyncImpl
 import com.openai.services.async.admin.organization.ExternalStorageServiceAsync
 import com.openai.services.async.admin.organization.ExternalStorageServiceAsyncImpl
 import com.openai.services.async.admin.organization.GroupServiceAsync
@@ -76,6 +78,10 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
 
     private val projects: ProjectServiceAsync by lazy { ProjectServiceAsyncImpl(clientOptions) }
 
+    private val externalKeys: ExternalKeyServiceAsync by lazy {
+        ExternalKeyServiceAsyncImpl(clientOptions)
+    }
+
     override fun withRawResponse(): OrganizationServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationServiceAsync =
@@ -107,6 +113,8 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
     override fun certificates(): CertificateServiceAsync = certificates
 
     override fun projects(): ProjectServiceAsync = projects
+
+    override fun externalKeys(): ExternalKeyServiceAsync = externalKeys
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         OrganizationServiceAsync.WithRawResponse {
@@ -163,6 +171,10 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
             ProjectServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val externalKeys: ExternalKeyServiceAsync.WithRawResponse by lazy {
+            ExternalKeyServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): OrganizationServiceAsync.WithRawResponse =
@@ -197,5 +209,7 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
         override fun certificates(): CertificateServiceAsync.WithRawResponse = certificates
 
         override fun projects(): ProjectServiceAsync.WithRawResponse = projects
+
+        override fun externalKeys(): ExternalKeyServiceAsync.WithRawResponse = externalKeys
     }
 }

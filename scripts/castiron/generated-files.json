@@ -273,6 +273,46 @@
       "mode": "100644",
       "sha256": "2d1f98f0921bb54ccc5ec9c514e94e1c99f5bdcb1028d357d98618f9fdd0c961"
     },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKey.kt": {
+      "mode": "100644",
+      "sha256": "c778ce5d46e5b7ef4a476cc386a5438b900167e2c8e454070d12b42512ca9c29"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyCreateParams.kt": {
+      "mode": "100644",
+      "sha256": "2cb9b4211fd3a558796f44041514eac9a8eb0799b3b05b5422acb75cf7cd2bcb"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyDeleteParams.kt": {
+      "mode": "100644",
+      "sha256": "8eb22ab3667f709850b1f60da10a5875430c199ea8d81b9ecd60dcfaa5d25818"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyListPage.kt": {
+      "mode": "100644",
+      "sha256": "c18e42b0ff41f3494c70c064d70c448286205b5ff42b8ac3bf61300ff1fe96f8"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyListPageAsync.kt": {
+      "mode": "100644",
+      "sha256": "6c263a53df2cdc7ebfce2576d4ce2c16b81b13afb19377151a5cfb7eb30beedd"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyListPageResponse.kt": {
+      "mode": "100644",
+      "sha256": "daaec42526a0aa931dd4c70beb910909fd3ecf4fd63cb84739672f7c0b3f0dc2"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyListParams.kt": {
+      "mode": "100644",
+      "sha256": "bfd217afc7aade676b6fe870c2d71c869281d83f0f65fd0c1979cc6571b9310b"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyRetrieveParams.kt": {
+      "mode": "100644",
+      "sha256": "c477b2d5864a84e37c03fda2cac53d625e6980576d392c4b95b35f9d63fc9e18"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyValidateParams.kt": {
+      "mode": "100644",
+      "sha256": "2506277aeddb73322d3372aa0a662ee954099efdbe2edc1e87e64da53e25066c"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyValidateResponse.kt": {
+      "mode": "100644",
+      "sha256": "feab81bbd6028497257e85cde72b61df9b0430c6ed6f1a42f06908d325b86021"
+    },
     "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/externalstorage/AwsExternalStorageProvider.kt": {
       "mode": "100644",
       "sha256": "06fdc5916c7d799313d61f65f66a2c9607ff8422671957d901b5e0ef477c2354"
@@ -6867,11 +6907,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/OrganizationServiceAsync.kt": {
       "mode": "100644",
-      "sha256": "7527d4ea70f42b1c4900c48daf009548fbd75c0c9f593a76a4ba917864bc41f8"
+      "sha256": "00c05610df1a68f74d0e0c14aaf6fe362f144de77cc568af365972988d70c404"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/OrganizationServiceAsyncImpl.kt": {
       "mode": "100644",
-      "sha256": "c90da08e63ad97b0637bdd96aadcc0873b9750cfdea74386898f4e8f41f98cab"
+      "sha256": "6c8797a53866d210d762552fbcc9eecc3837f5d22136e403ec7a0e295885a998"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/AdminApiKeyServiceAsync.kt": {
       "mode": "100644",
@@ -6904,6 +6944,14 @@
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/DataRetentionServiceAsyncImpl.kt": {
       "mode": "100644",
       "sha256": "b78385808b1ec2a435f710d6ad08e7dad51de2fef8565a612e9b0579688b1e27"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/ExternalKeyServiceAsync.kt": {
+      "mode": "100644",
+      "sha256": "dd8ec29ec2cb15f0537a5a46dc718e7ac6cc1aa9df6f35f079e965f6701ebedb"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/ExternalKeyServiceAsyncImpl.kt": {
+      "mode": "100644",
+      "sha256": "f0366ebf06d66d6fe1245370bbcc403ac6ef6b735ddd8d64a32258d6012fb2e5"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/ExternalStorageServiceAsync.kt": {
       "mode": "100644",
@@ -7867,11 +7915,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/OrganizationService.kt": {
       "mode": "100644",
-      "sha256": "18ba4337cb12cba151c83d02312c92864e72425ba2a13b32baa417f3017c5a50"
+      "sha256": "22e3c0415ace659bb5a370878113dc26f73aea8983cfca97cf8a7e1f35b2df62"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/OrganizationServiceImpl.kt": {
       "mode": "100644",
-      "sha256": "0877280d1e5c9f1fc4da4a6d4aae5b268d4885cf02da44863e05705078c5760b"
+      "sha256": "4540521f82af7bbc2c9e41800fb7687248ae7c932b3517b14b83934938093530"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/AdminApiKeyService.kt": {
       "mode": "100644",
@@ -7904,6 +7952,14 @@
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/DataRetentionServiceImpl.kt": {
       "mode": "100644",
       "sha256": "38c2a01f5f6f4965dd18a78d280c41da6dc457060b8058311e98585a1a69d077"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/ExternalKeyService.kt": {
+      "mode": "100644",
+      "sha256": "d9f248a90d25a5625220f32a6cdf08cc68096c7c0f9fcddacb9c501da1f7b5fa"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/ExternalKeyServiceImpl.kt": {
+      "mode": "100644",
+      "sha256": "cb302c7a2aaa86eba93f569f03f06afe4d797ae24ab332bceb39e846af265365"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/ExternalStorageService.kt": {
       "mode": "100644",
@@ -8848,6 +8904,38 @@
     "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/dataretention/OrganizationDataRetentionTest.kt": {
       "mode": "100644",
       "sha256": "42fcab9577f4443157d44e14fb5c6ed22d428ac57caa2619782a181efaf847df"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyCreateParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "f432d69ed80a0bb3b7f1e8d9cd4af1a4e3e04c09aa46b98511a1d92584fbd32d"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyDeleteParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "838e07db1610e9f2dfe1a9ce9ba644ce90d831a518132fd9a3b8ab219f1c6c15"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyListPageResponseTest.kt": {
+      "mode": "100644",
+      "sha256": "87dbcb65cc3cae4c5e2e929b7da2d6a51121ff5028266873a67d030f43a62539"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyListParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "c79ab5899fb4893976d8bee59c985ad35b9c5fdab3e19ea9752baaedb4603a7c"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyRetrieveParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "287e18f90b6a7463bff28eed77b6a21084be5fc3ff43f17101f3ef3d0d849983"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyTest.kt": {
+      "mode": "100644",
+      "sha256": "12dee21bbc524d44460e062b65549e4a55813cc399e92b1eb62ea8e1f658ca74"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyValidateParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "ccab01023b43fa5eae9fcd06c2f1a61d91f0559628ca3bb6271dae59e5e2e297"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyValidateResponseTest.kt": {
+      "mode": "100644",
+      "sha256": "b551e83db90e26e1b505873e5ad27f6dfecf9ea238f28cf0fa26311b92becb86"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/externalstorage/AwsExternalStorageProviderTest.kt": {
       "mode": "100644",
@@ -14633,6 +14721,14 @@
       "mode": "100644",
       "sha256": "c1f6acd8c96c91bf209ea64c528b7e55ea6c5257886dedb05e9d9620567088a5"
     },
+    "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/ExternalKeyServiceAsyncPaginationContractTest.kt": {
+      "mode": "100644",
+      "sha256": "f5d64bc6e268f9cabb394bf4aba39f08898d7cf2767173b5d211083a3ec5f23f"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/ExternalKeyServiceAsyncTest.kt": {
+      "mode": "100644",
+      "sha256": "771d71d1a04655433c6e4eb2303c905f43d2b90d58f969db14ac5de5fcbf65cf"
+    },
     "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/ExternalStorageServiceAsyncPaginationContractTest.kt": {
       "mode": "100644",
       "sha256": "9642b324b6e67cf8c23bc00c3fd9014268b5a289e856d1cfc86e9c8765e0065c"
@@ -15364,6 +15460,14 @@
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/DataRetentionServiceTest.kt": {
       "mode": "100644",
       "sha256": "e6ee002cf1714f7361a134b9a9cf562125f478bd3126f3cee762e525b2a61efb"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/ExternalKeyServicePaginationContractTest.kt": {
+      "mode": "100644",
+      "sha256": "430228f14351de871f02d3481563201ef0edf1d2f993c26217f1dbc8250a27da"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/ExternalKeyServiceTest.kt": {
+      "mode": "100644",
+      "sha256": "f974a66dd28c0dcda051c50445b97641fe0514bb6f84d3e5f725b7c61c7c5689"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/ExternalStorageServicePaginationContractTest.kt": {
       "mode": "100644",
