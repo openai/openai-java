@@ -73,6 +73,12 @@ class StructuredResponse<T : Any>(
     /** @see Response.tools */
     fun tools(): List<Tool> = rawResponse.tools()
 
+    /** @see Response.toolUsage */
+    fun toolUsage(): Optional<Response.ToolUsage> = rawResponse.toolUsage()
+
+    /** @see Response._toolUsage */
+    fun _toolUsage(): JsonField<Response.ToolUsage> = rawResponse._toolUsage()
+
     /** @see Response.topP */
     fun topP(): Optional<Double> = rawResponse.topP()
 

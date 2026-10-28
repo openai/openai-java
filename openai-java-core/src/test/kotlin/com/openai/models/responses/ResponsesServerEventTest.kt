@@ -1247,6 +1247,41 @@ internal class ResponsesServerEventTest {
                                 .verbosity(ResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            Response.ToolUsage.builder()
+                                .imageGen(
+                                    Response.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            Response.ToolUsage.ImageGen.InputTokensDetails.builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    Response.ToolUsage.WebSearch.builder().numRequests(0L).build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(Response.Truncation.AUTO)
                         .usage(
@@ -1569,6 +1604,44 @@ internal class ResponsesServerEventTest {
                                 ResponseTextConfig.builder()
                                     .format(ResponseFormatText.builder().build())
                                     .verbosity(ResponseTextConfig.Verbosity.LOW)
+                                    .build()
+                            )
+                            .toolUsage(
+                                Response.ToolUsage.builder()
+                                    .imageGen(
+                                        Response.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                Response.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        Response.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topLogprobs(0L)
@@ -2130,6 +2203,41 @@ internal class ResponsesServerEventTest {
                                 .verbosity(ResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            Response.ToolUsage.builder()
+                                .imageGen(
+                                    Response.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            Response.ToolUsage.ImageGen.InputTokensDetails.builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    Response.ToolUsage.WebSearch.builder().numRequests(0L).build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(Response.Truncation.AUTO)
                         .usage(
@@ -2452,6 +2560,44 @@ internal class ResponsesServerEventTest {
                                 ResponseTextConfig.builder()
                                     .format(ResponseFormatText.builder().build())
                                     .verbosity(ResponseTextConfig.Verbosity.LOW)
+                                    .build()
+                            )
+                            .toolUsage(
+                                Response.ToolUsage.builder()
+                                    .imageGen(
+                                        Response.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                Response.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        Response.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topLogprobs(0L)
@@ -3744,6 +3890,41 @@ internal class ResponsesServerEventTest {
                                 .verbosity(ResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            Response.ToolUsage.builder()
+                                .imageGen(
+                                    Response.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            Response.ToolUsage.ImageGen.InputTokensDetails.builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    Response.ToolUsage.WebSearch.builder().numRequests(0L).build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(Response.Truncation.AUTO)
                         .usage(
@@ -4068,6 +4249,44 @@ internal class ResponsesServerEventTest {
                                     .verbosity(ResponseTextConfig.Verbosity.LOW)
                                     .build()
                             )
+                            .toolUsage(
+                                Response.ToolUsage.builder()
+                                    .imageGen(
+                                        Response.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                Response.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        Response.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .topLogprobs(0L)
                             .truncation(Response.Truncation.AUTO)
                             .usage(
@@ -4322,6 +4541,41 @@ internal class ResponsesServerEventTest {
                             ResponseTextConfig.builder()
                                 .format(ResponseFormatText.builder().build())
                                 .verbosity(ResponseTextConfig.Verbosity.LOW)
+                                .build()
+                        )
+                        .toolUsage(
+                            Response.ToolUsage.builder()
+                                .imageGen(
+                                    Response.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            Response.ToolUsage.ImageGen.InputTokensDetails.builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    Response.ToolUsage.WebSearch.builder().numRequests(0L).build()
+                                )
                                 .build()
                         )
                         .topLogprobs(0L)
@@ -4648,6 +4902,44 @@ internal class ResponsesServerEventTest {
                                     .verbosity(ResponseTextConfig.Verbosity.LOW)
                                     .build()
                             )
+                            .toolUsage(
+                                Response.ToolUsage.builder()
+                                    .imageGen(
+                                        Response.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                Response.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        Response.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .topLogprobs(0L)
                             .truncation(Response.Truncation.AUTO)
                             .usage(
@@ -4902,6 +5194,41 @@ internal class ResponsesServerEventTest {
                             ResponseTextConfig.builder()
                                 .format(ResponseFormatText.builder().build())
                                 .verbosity(ResponseTextConfig.Verbosity.LOW)
+                                .build()
+                        )
+                        .toolUsage(
+                            Response.ToolUsage.builder()
+                                .imageGen(
+                                    Response.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            Response.ToolUsage.ImageGen.InputTokensDetails.builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    Response.ToolUsage.WebSearch.builder().numRequests(0L).build()
+                                )
                                 .build()
                         )
                         .topLogprobs(0L)
@@ -5226,6 +5553,44 @@ internal class ResponsesServerEventTest {
                                 ResponseTextConfig.builder()
                                     .format(ResponseFormatText.builder().build())
                                     .verbosity(ResponseTextConfig.Verbosity.LOW)
+                                    .build()
+                            )
+                            .toolUsage(
+                                Response.ToolUsage.builder()
+                                    .imageGen(
+                                        Response.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                Response.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        Response.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topLogprobs(0L)
@@ -8491,6 +8856,41 @@ internal class ResponsesServerEventTest {
                                 .verbosity(ResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            Response.ToolUsage.builder()
+                                .imageGen(
+                                    Response.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            Response.ToolUsage.ImageGen.InputTokensDetails.builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    Response.ToolUsage.WebSearch.builder().numRequests(0L).build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(Response.Truncation.AUTO)
                         .usage(
@@ -8813,6 +9213,44 @@ internal class ResponsesServerEventTest {
                                 ResponseTextConfig.builder()
                                     .format(ResponseFormatText.builder().build())
                                     .verbosity(ResponseTextConfig.Verbosity.LOW)
+                                    .build()
+                            )
+                            .toolUsage(
+                                Response.ToolUsage.builder()
+                                    .imageGen(
+                                        Response.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                Response.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                Response.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                Response.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        Response.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topLogprobs(0L)

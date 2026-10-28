@@ -71,6 +71,8 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("temperature", OPTIONAL),
                 DelegationReadTestCase("toolChoice", TOOL_CHOICE),
                 DelegationReadTestCase("tools", LIST),
+                DelegationReadTestCase("toolUsage", OPTIONAL),
+                DelegationReadTestCase("_toolUsage", JSON_FIELD),
                 DelegationReadTestCase("topP", OPTIONAL),
                 DelegationReadTestCase("maxToolCalls", OPTIONAL),
                 DelegationReadTestCase("topLogprobs", OPTIONAL),

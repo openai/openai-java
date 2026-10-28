@@ -2643,7 +2643,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/BetaResponse.kt": {
       "mode": "100644",
-      "sha256": "1f70516beef09dcf62bde089fac0b088e0864eb19d325117db6fc58f43f0a894"
+      "sha256": "ab956d3e3127758b568e11784555ef732bb05ce057699de27985309c14292a74"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/responses/BetaResponseApplyPatchToolCall.kt": {
       "mode": "100644",
@@ -5459,7 +5459,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/responses/Response.kt": {
       "mode": "100644",
-      "sha256": "730b1f390a9501db4be7f2a2ca2a0a8dd32804e1d28a1d330c92588fd7b8d0e6"
+      "sha256": "d8f75a6aed275d8f731c79101fc75814c437d464b4a09af96e297835ee3c9156"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseApplyPatchToolCall.kt": {
       "mode": "100644",
@@ -10891,7 +10891,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseCompletedEventTest.kt": {
       "mode": "100644",
-      "sha256": "9b0aa8d41ff394516ee59a0498b0fbd06e9f3b95295f7dcdf3569f99d80653f9"
+      "sha256": "1e6e327ef6456603e8d45a3280dc0d96aabc65c2cebe42d1fbd7bf81e2655dcc"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseComputerToolCallOutputItemTest.kt": {
       "mode": "100644",
@@ -10935,7 +10935,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseCreatedEventTest.kt": {
       "mode": "100644",
-      "sha256": "a3d173512fcc0c9bde8230977849bd50e364a221717c35b55c72fb5edb9a2f56"
+      "sha256": "9b5d79d980c5393da2a20ae46fecf6a29e4b07fd542ccaa5e0214dd34520ceb5"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseCustomToolCallInputDeltaEventTest.kt": {
       "mode": "100644",
@@ -10971,7 +10971,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseFailedEventTest.kt": {
       "mode": "100644",
-      "sha256": "9ab1ffea646e3773caee9845d0d6711524d1353d02a49d341b8ce8c8a8f2d2ba"
+      "sha256": "2725ffc4f0bb108941fdac9d68c7ee7c52bf16831b62a22b8845121bfad9f398"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseFileSearchCallCompletedEventTest.kt": {
       "mode": "100644",
@@ -11055,11 +11055,11 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseInProgressEventTest.kt": {
       "mode": "100644",
-      "sha256": "9ed0cf9d236dc83a3f0ef8d9d8ec4550fa521a4470319939869564cdae665fa2"
+      "sha256": "d1edc17c36093d9f57d0da05addcd26dd4389cc15936618723e85453d74aa8b0"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseIncompleteEventTest.kt": {
       "mode": "100644",
-      "sha256": "71f6f76e416ed3325f7c1f840d4863d950ffc524fb0e3e64e5f64a6fe03c3037"
+      "sha256": "5f9b0ad5f11968fd32658c02336a2e649e7b0c0cdd816e561b765db3de59239c"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseInjectCreatedEventTest.kt": {
       "mode": "100644",
@@ -11191,7 +11191,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseQueuedEventTest.kt": {
       "mode": "100644",
-      "sha256": "e7cc6d744b01dca722c39cf8779c689278422411f7445d7cc481937f0017155c"
+      "sha256": "daabfb8bbbf0639cd49c85fa7bab6a68c166d9d05c7deb99df07643319282dbb"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseReasoningItemTest.kt": {
       "mode": "100644",
@@ -11279,11 +11279,11 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseStreamEventTest.kt": {
       "mode": "100644",
-      "sha256": "5760a6d27b01dd0b19702ce495665265388e8ca20d0a59080bd0d2c1ee0772c8"
+      "sha256": "b300d720886b2072c07aa1b1aea980d8794645ee8f7da775fba112476463d09f"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseTest.kt": {
       "mode": "100644",
-      "sha256": "298235d003177afed4919fabef41999670a02d42376f37443ec2dbdbf3448808"
+      "sha256": "bc6895fcea43bd63613f2151bde5845ce345d8e493e130cdf76582ec9e39d08e"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponseTextConfigTest.kt": {
       "mode": "100644",
@@ -11331,7 +11331,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaResponsesServerEventTest.kt": {
       "mode": "100644",
-      "sha256": "0cabdcefda689427fa5eddba70ba57e010ffe703250a7ee770b02516d1972c54"
+      "sha256": "a1d63d2c101b7e406587bac67208912713dc0e68c20392289a3cba2e2bb654ab"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/responses/BetaSkillReferenceTest.kt": {
       "mode": "100644",
@@ -13475,7 +13475,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseCompletedEventTest.kt": {
       "mode": "100644",
-      "sha256": "b5665728aa64b2e99de5fde0fc99f484386aa364b7ab5c7c902412fcae398022"
+      "sha256": "76660bdd870b62fee1004727cc0d43ce027ff9432d38ecd47819947288ca96f5"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseComputerToolCallOutputItemTest.kt": {
       "mode": "100644",
@@ -13523,7 +13523,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseCreatedEventTest.kt": {
       "mode": "100644",
-      "sha256": "d6f047fa77121850be10b124f9599251b7330b5721490adbfe8da8b45ce87706"
+      "sha256": "8774b74fbd6c322b7d3faa67ca6d66a45cb9c59d484573ec86a78fa561f0ae76"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseCustomToolCallInputDeltaEventTest.kt": {
       "mode": "100644",
@@ -13563,7 +13563,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseFailedEventTest.kt": {
       "mode": "100644",
-      "sha256": "e28aaa002e5bb60aa847303ecb8dd30feedd72175046e07c176e0d11d089a1e9"
+      "sha256": "9bab89476eecea76fcbfce5d89f74153a16a3630160fb2c0c62924a7280bfe98"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseFileSearchCallCompletedEventTest.kt": {
       "mode": "100644",
@@ -13647,11 +13647,11 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseInProgressEventTest.kt": {
       "mode": "100644",
-      "sha256": "2ad7dd7710f8d043fec881e54956f147fbd9d3df8cec6e60f78a00242436e2ec"
+      "sha256": "8df09483aa8ccf6c2c1ca2b0bbb930511fefc515c46c5843361832dab202c186"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseIncompleteEventTest.kt": {
       "mode": "100644",
-      "sha256": "c1701d6d4f7bbd961687350c5eb8bcdebdb92495d94dd883e82214e7e2cf4aae"
+      "sha256": "b4f4c48830b7b12cd51194ee0006187dbad8c2ea620be0fa65d673dc83c332a5"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseInputAudioTest.kt": {
       "mode": "100644",
@@ -13771,7 +13771,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseQueuedEventTest.kt": {
       "mode": "100644",
-      "sha256": "04bab4791e0c4b90409ba24fc64e9de3a43e470acfa30c958dbe03c4f030158c"
+      "sha256": "ce4c21bb57ab89650d04652f3df6f79fbc2f8776b3a37c667845dce7d6f9a3d3"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseReasoningItemTest.kt": {
       "mode": "100644",
@@ -13863,11 +13863,11 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseStreamEventTest.kt": {
       "mode": "100644",
-      "sha256": "a4553b1c2bb49ee815a463d22e29391c244ab1f00ba14109d63f0533f47845c1"
+      "sha256": "db5f655a2b609da11c91e9b3458142c682bf2bce91022e50384cd4a23920a9a8"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseTest.kt": {
       "mode": "100644",
-      "sha256": "b12b3a7d2c0b8a46f5660c3f0cba3cb93d77a8cfbdd524144bb5416cbe9031b7"
+      "sha256": "fb7fec3574eb5a775042214582bcd333544f11954d5d410af8469624f79addf9"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponseTextConfigTest.kt": {
       "mode": "100644",
@@ -13915,7 +13915,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/ResponsesServerEventTest.kt": {
       "mode": "100644",
-      "sha256": "0f574c5d718d7ca2fd8ffe719010c7d1475055bac37345b55cbbb84060904eb0"
+      "sha256": "32b6deeb4e10889b1ba7ebea97983cf92789e869c073dd8de8af580d37f5a8fd"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/responses/SkillReferenceTest.kt": {
       "mode": "100644",

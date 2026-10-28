@@ -1386,6 +1386,44 @@ internal class BetaResponsesServerEventTest {
                                 .verbosity(BetaResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            BetaResponse.ToolUsage.builder()
+                                .imageGen(
+                                    BetaResponse.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.InputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    BetaResponse.ToolUsage.WebSearch.builder()
+                                        .numRequests(0L)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(BetaResponse.Truncation.AUTO)
                         .usage(
@@ -1718,6 +1756,44 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponseTextConfig.builder()
                                     .formatText()
                                     .verbosity(BetaResponseTextConfig.Verbosity.LOW)
+                                    .build()
+                            )
+                            .toolUsage(
+                                BetaResponse.ToolUsage.builder()
+                                    .imageGen(
+                                        BetaResponse.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        BetaResponse.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topLogprobs(0L)
@@ -2314,6 +2390,44 @@ internal class BetaResponsesServerEventTest {
                                 .verbosity(BetaResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            BetaResponse.ToolUsage.builder()
+                                .imageGen(
+                                    BetaResponse.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.InputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    BetaResponse.ToolUsage.WebSearch.builder()
+                                        .numRequests(0L)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(BetaResponse.Truncation.AUTO)
                         .usage(
@@ -2645,6 +2759,44 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponseTextConfig.builder()
                                     .formatText()
                                     .verbosity(BetaResponseTextConfig.Verbosity.LOW)
+                                    .build()
+                            )
+                            .toolUsage(
+                                BetaResponse.ToolUsage.builder()
+                                    .imageGen(
+                                        BetaResponse.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        BetaResponse.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topLogprobs(0L)
@@ -4071,6 +4223,44 @@ internal class BetaResponsesServerEventTest {
                                 .verbosity(BetaResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            BetaResponse.ToolUsage.builder()
+                                .imageGen(
+                                    BetaResponse.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.InputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    BetaResponse.ToolUsage.WebSearch.builder()
+                                        .numRequests(0L)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(BetaResponse.Truncation.AUTO)
                         .usage(
@@ -4405,6 +4595,44 @@ internal class BetaResponsesServerEventTest {
                                     .verbosity(BetaResponseTextConfig.Verbosity.LOW)
                                     .build()
                             )
+                            .toolUsage(
+                                BetaResponse.ToolUsage.builder()
+                                    .imageGen(
+                                        BetaResponse.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        BetaResponse.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .topLogprobs(0L)
                             .truncation(BetaResponse.Truncation.AUTO)
                             .usage(
@@ -4671,6 +4899,44 @@ internal class BetaResponsesServerEventTest {
                             BetaResponseTextConfig.builder()
                                 .formatText()
                                 .verbosity(BetaResponseTextConfig.Verbosity.LOW)
+                                .build()
+                        )
+                        .toolUsage(
+                            BetaResponse.ToolUsage.builder()
+                                .imageGen(
+                                    BetaResponse.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.InputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    BetaResponse.ToolUsage.WebSearch.builder()
+                                        .numRequests(0L)
+                                        .build()
+                                )
                                 .build()
                         )
                         .topLogprobs(0L)
@@ -5006,6 +5272,44 @@ internal class BetaResponsesServerEventTest {
                                     .verbosity(BetaResponseTextConfig.Verbosity.LOW)
                                     .build()
                             )
+                            .toolUsage(
+                                BetaResponse.ToolUsage.builder()
+                                    .imageGen(
+                                        BetaResponse.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        BetaResponse.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
+                                    .build()
+                            )
                             .topLogprobs(0L)
                             .truncation(BetaResponse.Truncation.AUTO)
                             .usage(
@@ -5270,6 +5574,44 @@ internal class BetaResponsesServerEventTest {
                             BetaResponseTextConfig.builder()
                                 .formatText()
                                 .verbosity(BetaResponseTextConfig.Verbosity.LOW)
+                                .build()
+                        )
+                        .toolUsage(
+                            BetaResponse.ToolUsage.builder()
+                                .imageGen(
+                                    BetaResponse.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.InputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    BetaResponse.ToolUsage.WebSearch.builder()
+                                        .numRequests(0L)
+                                        .build()
+                                )
                                 .build()
                         )
                         .topLogprobs(0L)
@@ -5604,6 +5946,44 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponseTextConfig.builder()
                                     .formatText()
                                     .verbosity(BetaResponseTextConfig.Verbosity.LOW)
+                                    .build()
+                            )
+                            .toolUsage(
+                                BetaResponse.ToolUsage.builder()
+                                    .imageGen(
+                                        BetaResponse.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        BetaResponse.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topLogprobs(0L)
@@ -9233,6 +9613,44 @@ internal class BetaResponsesServerEventTest {
                                 .verbosity(BetaResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
+                        .toolUsage(
+                            BetaResponse.ToolUsage.builder()
+                                .imageGen(
+                                    BetaResponse.ToolUsage.ImageGen.builder()
+                                        .inputTokens(0L)
+                                        .inputTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.InputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokens(0L)
+                                        .totalTokens(0L)
+                                        .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.CachedTokensDetails
+                                                .builder()
+                                                .cachedImageTokens(0L)
+                                                .cachedTextTokens(0L)
+                                                .build()
+                                        )
+                                        .outputTokensDetails(
+                                            BetaResponse.ToolUsage.ImageGen.OutputTokensDetails
+                                                .builder()
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .webSearch(
+                                    BetaResponse.ToolUsage.WebSearch.builder()
+                                        .numRequests(0L)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .topLogprobs(0L)
                         .truncation(BetaResponse.Truncation.AUTO)
                         .usage(
@@ -9564,6 +9982,44 @@ internal class BetaResponsesServerEventTest {
                                 BetaResponseTextConfig.builder()
                                     .formatText()
                                     .verbosity(BetaResponseTextConfig.Verbosity.LOW)
+                                    .build()
+                            )
+                            .toolUsage(
+                                BetaResponse.ToolUsage.builder()
+                                    .imageGen(
+                                        BetaResponse.ToolUsage.ImageGen.builder()
+                                            .inputTokens(0L)
+                                            .inputTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.InputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokens(0L)
+                                            .totalTokens(0L)
+                                            .cachedTokens(0L)
+                                            .cachedTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.CachedTokensDetails
+                                                    .builder()
+                                                    .cachedImageTokens(0L)
+                                                    .cachedTextTokens(0L)
+                                                    .build()
+                                            )
+                                            .outputTokensDetails(
+                                                BetaResponse.ToolUsage.ImageGen.OutputTokensDetails
+                                                    .builder()
+                                                    .imageTokens(0L)
+                                                    .textTokens(0L)
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .webSearch(
+                                        BetaResponse.ToolUsage.WebSearch.builder()
+                                            .numRequests(0L)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .topLogprobs(0L)
