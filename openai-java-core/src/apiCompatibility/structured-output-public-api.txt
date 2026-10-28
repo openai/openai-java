@@ -272,6 +272,7 @@ com.openai.models.responses.StructuredResponse#_status ()Lcom/openai/core/JsonFi
 com.openai.models.responses.StructuredResponse#_temperature ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_text ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_toolChoice ()Lcom/openai/core/JsonField;
+com.openai.models.responses.StructuredResponse#_toolUsage ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_tools ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_topLogprobs ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_topP ()Lcom/openai/core/JsonField;
@@ -310,6 +311,7 @@ com.openai.models.responses.StructuredResponse#status ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#temperature ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#text ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#toolChoice ()Lcom/openai/models/responses/Response$ToolChoice;
+com.openai.models.responses.StructuredResponse#toolUsage ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#tools ()Ljava/util/List;
 com.openai.models.responses.StructuredResponse#topLogprobs ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#topP ()Ljava/util/Optional;
