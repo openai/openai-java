@@ -33,6 +33,7 @@ public final class LiveWebSocketExample {
                                     .build())
                             .build())
                     .build()));
+            boolean closeSent = false;
             while (true) {
                 ServerEvent event = connection.receiveAsync().get(20, TimeUnit.SECONDS);
                 if (event.isErrorEvent()) {
@@ -49,7 +50,12 @@ public final class LiveWebSocketExample {
                     }
                     connection.send(ClientEvent.ofSessionClose(
                             SessionCloseEvent.builder().build()));
+                    closeSent = true;
                 } else if (event.isSessionClosed()) {
+                    if (!closeSent) {
+                        throw new IllegalStateException(
+                                "Live closed before the example sent its audio and close request.");
+                    }
                     System.out.println("Live session closed.");
                     break;
                 }
