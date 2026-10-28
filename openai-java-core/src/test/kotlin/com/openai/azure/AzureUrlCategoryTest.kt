@@ -6,7 +6,13 @@ import org.junit.jupiter.api.Test
 internal class AzureUrlCategoryTest {
     @Test
     fun autoUsesThePathBeforeQueryAndFragment() {
-        for (host in listOf("region.openai.azure.com", "region.services.ai.azure.com")) {
+        for (host in
+            listOf(
+                "region.openai.azure.com",
+                "region.services.ai.azure.com",
+                "region.azure-api.net",
+                "region.cognitiveservices.azure.com",
+            )) {
             for (suffix in listOf("?tenant=base", "/?api-version=fixture", "/#region")) {
                 val url = "https://$host/openai/v1$suffix"
                 assertThat(AzureUrlCategory.categorizeBaseUrl(url, AzureUrlPathMode.AUTO))
@@ -14,15 +20,22 @@ internal class AzureUrlCategoryTest {
                 assertThat(AzureUrlCategory.categorizeBaseUrl(url, AzureUrlPathMode.LEGACY))
                     .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
             }
-            for (suffix in listOf("?next=/openai/v1", "#/openai/v1", "/openai%2fv1")) {
+            for (suffix in listOf("?next=/openai/v1", "#/openai/v1")) {
                 assertThat(
                         AzureUrlCategory.categorizeBaseUrl(
                             "https://$host/openai$suffix",
                             AzureUrlPathMode.AUTO,
                         )
                     )
-                    .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
+                    .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
             }
+            assertThat(
+                    AzureUrlCategory.categorizeBaseUrl(
+                        "https://$host/openai/openai%2fv1",
+                        AzureUrlPathMode.AUTO,
+                    )
+                )
+                .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
         }
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(

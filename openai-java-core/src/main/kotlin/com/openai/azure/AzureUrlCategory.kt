@@ -36,7 +36,12 @@ internal enum class AzureUrlCategory {
                             // ones.
                             host.endsWith(".azure-api.net", ignoreCase = true) ||
                             host.endsWith(".cognitiveservices.azure.com", ignoreCase = true) ->
-                            if (uri.rawPath.trimEnd('/').endsWith("/openai/v1")) AZURE_UNIFIED
+                            // Keep URLs already routed as unified, including query-routed gateways.
+                            if (
+                                baseUrl.trim().trimEnd('/').endsWith("/openai/v1") ||
+                                    uri.rawPath.trimEnd('/').endsWith("/openai/v1")
+                            )
+                                AZURE_UNIFIED
                             else AZURE_LEGACY
 
                         else -> NON_AZURE
