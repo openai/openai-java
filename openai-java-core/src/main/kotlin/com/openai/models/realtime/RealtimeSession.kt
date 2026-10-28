@@ -2011,11 +2011,19 @@ private constructor(
 
         companion object {
 
-            @JvmField val GPT_REALTIME = of("gpt-realtime")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_REALTIME = of("gpt-realtime")
 
             @JvmField val GPT_REALTIME_1_5 = of("gpt-realtime-1.5")
 
-            @JvmField val GPT_REALTIME_2025_08_28 = of("gpt-realtime-2025-08-28")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_REALTIME_2025_08_28 = of("gpt-realtime-2025-08-28")
 
             @JvmField val GPT_4O_REALTIME_PREVIEW = of("gpt-4o-realtime-preview")
 
@@ -2034,27 +2042,49 @@ private constructor(
             val GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 =
                 of("gpt-4o-mini-realtime-preview-2024-12-17")
 
-            @JvmField val GPT_REALTIME_MINI = of("gpt-realtime-mini")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_REALTIME_MINI = of("gpt-realtime-mini")
 
             @JvmField val GPT_REALTIME_MINI_2025_10_06 = of("gpt-realtime-mini-2025-10-06")
 
-            @JvmField val GPT_REALTIME_MINI_2025_12_15 = of("gpt-realtime-mini-2025-12-15")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_REALTIME_MINI_2025_12_15 = of("gpt-realtime-mini-2025-12-15")
 
             @JvmField val GPT_AUDIO_1_5 = of("gpt-audio-1.5")
 
-            @JvmField val GPT_AUDIO_MINI = of("gpt-audio-mini")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_AUDIO_MINI = of("gpt-audio-mini")
 
             @JvmField val GPT_AUDIO_MINI_2025_10_06 = of("gpt-audio-mini-2025-10-06")
 
-            @JvmField val GPT_AUDIO_MINI_2025_12_15 = of("gpt-audio-mini-2025-12-15")
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
+            @JvmField
+            val GPT_AUDIO_MINI_2025_12_15 = of("gpt-audio-mini-2025-12-15")
 
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME,
             GPT_REALTIME_1_5,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
@@ -2062,12 +2092,24 @@ private constructor(
             GPT_4O_REALTIME_PREVIEW_2025_06_03,
             GPT_4O_MINI_REALTIME_PREVIEW,
             GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME_MINI,
             GPT_REALTIME_MINI_2025_10_06,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME_MINI_2025_12_15,
             GPT_AUDIO_1_5,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_AUDIO_MINI,
             GPT_AUDIO_MINI_2025_10_06,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_AUDIO_MINI_2025_12_15,
         }
 
@@ -2081,8 +2123,14 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME,
             GPT_REALTIME_1_5,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
@@ -2090,12 +2138,24 @@ private constructor(
             GPT_4O_REALTIME_PREVIEW_2025_06_03,
             GPT_4O_MINI_REALTIME_PREVIEW,
             GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME_MINI,
             GPT_REALTIME_MINI_2025_10_06,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_REALTIME_MINI_2025_12_15,
             GPT_AUDIO_1_5,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_AUDIO_MINI,
             GPT_AUDIO_MINI_2025_10_06,
+            @Deprecated(
+                "Announced shutdown date: 2027-01-20. See https://developers.openai.com/api/docs/deprecations for details and recommended replacements."
+            )
             GPT_AUDIO_MINI_2025_12_15,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
             _UNKNOWN,
