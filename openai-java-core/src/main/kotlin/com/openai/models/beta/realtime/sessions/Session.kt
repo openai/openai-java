@@ -1671,10 +1671,18 @@ private constructor(
                 return true
             }
 
-            return other is MaxResponseOutputTokens && integer == other.integer && inf == other.inf
+            return other is MaxResponseOutputTokens &&
+                integer == other.integer &&
+                inf == other.inf &&
+                (integer != null || inf != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(integer, inf)
+        override fun hashCode(): Int =
+            if (integer != null || inf != null) {
+                Objects.hash(integer, inf)
+            } else {
+                Objects.hash(_json)
+            }
 
         override fun toString(): String =
             when {
@@ -2641,10 +2649,18 @@ private constructor(
                 return true
             }
 
-            return other is Tracing && auto == other.auto && configuration == other.configuration
+            return other is Tracing &&
+                auto == other.auto &&
+                configuration == other.configuration &&
+                (auto != null || configuration != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(auto, configuration)
+        override fun hashCode(): Int =
+            if (auto != null || configuration != null) {
+                Objects.hash(auto, configuration)
+            } else {
+                Objects.hash(_json)
+            }
 
         override fun toString(): String =
             when {

@@ -423,10 +423,13 @@ private constructor(
 
             return other is Session &&
                 realtime == other.realtime &&
-                transcription == other.transcription
+                transcription == other.transcription &&
+                (realtime != null || transcription != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(realtime, transcription)
+        override fun hashCode(): Int =
+            if (realtime == null && transcription == null) Objects.hash(_json)
+            else Objects.hash(realtime, transcription)
 
         override fun toString(): String =
             when {

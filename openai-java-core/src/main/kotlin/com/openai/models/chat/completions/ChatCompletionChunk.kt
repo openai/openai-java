@@ -3631,10 +3631,13 @@ private constructor(
 
                 return other is Input &&
                     moderationResults == other.moderationResults &&
-                    error == other.error
+                    error == other.error &&
+                    (moderationResults != null || error != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(moderationResults, error)
+            override fun hashCode(): Int =
+                if (moderationResults == null && error == null) Objects.hash(_json)
+                else Objects.hash(moderationResults, error)
 
             override fun toString(): String =
                 when {
@@ -5347,10 +5350,13 @@ private constructor(
 
                 return other is Output &&
                     moderationResults == other.moderationResults &&
-                    error == other.error
+                    error == other.error &&
+                    (moderationResults != null || error != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(moderationResults, error)
+            override fun hashCode(): Int =
+                if (moderationResults == null && error == null) Objects.hash(_json)
+                else Objects.hash(moderationResults, error)
 
             override fun toString(): String =
                 when {

@@ -487,10 +487,15 @@ private constructor(
                 return true
             }
 
-            return other is Tool && function == other.function && custom == other.custom
+            return other is Tool &&
+                function == other.function &&
+                custom == other.custom &&
+                (function != null || custom != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(function, custom)
+        override fun hashCode(): Int =
+            if (function == null && custom == null) Objects.hash(_json)
+            else Objects.hash(function, custom)
 
         override fun toString(): String =
             when {

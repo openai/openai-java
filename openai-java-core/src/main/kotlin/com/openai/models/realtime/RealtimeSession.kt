@@ -1768,10 +1768,14 @@ private constructor(
                 return true
             }
 
-            return other is MaxResponseOutputTokens && integer == other.integer && inf == other.inf
+            return other is MaxResponseOutputTokens &&
+                integer == other.integer &&
+                inf == other.inf &&
+                (integer != null || inf != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(integer, inf)
+        override fun hashCode(): Int =
+            if (integer == null && inf == null) Objects.hash(_json) else Objects.hash(integer, inf)
 
         override fun toString(): String =
             when {
@@ -2696,10 +2700,15 @@ private constructor(
                 return true
             }
 
-            return other is Tracing && auto == other.auto && configuration == other.configuration
+            return other is Tracing &&
+                auto == other.auto &&
+                configuration == other.configuration &&
+                (auto != null || configuration != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(auto, configuration)
+        override fun hashCode(): Int =
+            if (auto == null && configuration == null) Objects.hash(_json)
+            else Objects.hash(auto, configuration)
 
         override fun toString(): String =
             when {
@@ -3213,10 +3222,13 @@ private constructor(
 
             return other is TurnDetection &&
                 serverVad == other.serverVad &&
-                semanticVad == other.semanticVad
+                semanticVad == other.semanticVad &&
+                (serverVad != null || semanticVad != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(serverVad, semanticVad)
+        override fun hashCode(): Int =
+            if (serverVad == null && semanticVad == null) Objects.hash(_json)
+            else Objects.hash(serverVad, semanticVad)
 
         override fun toString(): String =
             when {

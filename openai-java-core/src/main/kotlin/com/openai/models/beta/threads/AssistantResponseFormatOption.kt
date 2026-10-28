@@ -234,11 +234,29 @@ private constructor(
             auto == other.auto &&
             responseFormatText == other.responseFormatText &&
             responseFormatJsonObject == other.responseFormatJsonObject &&
-            responseFormatJsonSchema == other.responseFormatJsonSchema
+            responseFormatJsonSchema == other.responseFormatJsonSchema &&
+            (auto != null ||
+                responseFormatText != null ||
+                responseFormatJsonObject != null ||
+                responseFormatJsonSchema != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(auto, responseFormatText, responseFormatJsonObject, responseFormatJsonSchema)
+        if (
+            auto == null &&
+                responseFormatText == null &&
+                responseFormatJsonObject == null &&
+                responseFormatJsonSchema == null
+        )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                auto,
+                responseFormatText,
+                responseFormatJsonObject,
+                responseFormatJsonSchema,
+            )
 
     override fun toString(): String =
         when {

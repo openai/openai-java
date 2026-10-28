@@ -184,10 +184,16 @@ private constructor(
         return other is CredentialAuth &&
             mcpO == other.mcpO &&
             staticBearer == other.staticBearer &&
-            environmentVariable == other.environmentVariable
+            environmentVariable == other.environmentVariable &&
+            (mcpO != null ||
+                staticBearer != null ||
+                environmentVariable != null ||
+                _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(mcpO, staticBearer, environmentVariable)
+    override fun hashCode(): Int =
+        if (mcpO == null && staticBearer == null && environmentVariable == null) Objects.hash(_json)
+        else Objects.hash(mcpO, staticBearer, environmentVariable)
 
     override fun toString(): String =
         when {

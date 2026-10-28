@@ -336,21 +336,44 @@ private constructor(
             mcpApprovalResponse == other.mcpApprovalResponse &&
             mcpListTools == other.mcpListTools &&
             mcpCall == other.mcpCall &&
-            mcpApprovalRequest == other.mcpApprovalRequest
+            mcpApprovalRequest == other.mcpApprovalRequest &&
+            (realtimeConversationItemSystemMessage != null ||
+                realtimeConversationItemUserMessage != null ||
+                realtimeConversationItemAssistantMessage != null ||
+                functionCall != null ||
+                functionCallOutput != null ||
+                mcpApprovalResponse != null ||
+                mcpListTools != null ||
+                mcpCall != null ||
+                mcpApprovalRequest != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            realtimeConversationItemSystemMessage,
-            realtimeConversationItemUserMessage,
-            realtimeConversationItemAssistantMessage,
-            functionCall,
-            functionCallOutput,
-            mcpApprovalResponse,
-            mcpListTools,
-            mcpCall,
-            mcpApprovalRequest,
+        if (
+            realtimeConversationItemSystemMessage == null &&
+                realtimeConversationItemUserMessage == null &&
+                realtimeConversationItemAssistantMessage == null &&
+                functionCall == null &&
+                functionCallOutput == null &&
+                mcpApprovalResponse == null &&
+                mcpListTools == null &&
+                mcpCall == null &&
+                mcpApprovalRequest == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                realtimeConversationItemSystemMessage,
+                realtimeConversationItemUserMessage,
+                realtimeConversationItemAssistantMessage,
+                functionCall,
+                functionCallOutput,
+                mcpApprovalResponse,
+                mcpListTools,
+                mcpCall,
+                mcpApprovalRequest,
+            )
 
     override fun toString(): String =
         when {

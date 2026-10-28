@@ -174,10 +174,13 @@ private constructor(
         return other is DecisionInputPart &&
             inputText == other.inputText &&
             inputImage == other.inputImage &&
-            inputJson == other.inputJson
+            inputJson == other.inputJson &&
+            (inputText != null || inputImage != null || inputJson != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(inputText, inputImage, inputJson)
+    override fun hashCode(): Int =
+        if (inputText == null && inputImage == null && inputJson == null) Objects.hash(_json)
+        else Objects.hash(inputText, inputImage, inputJson)
 
     override fun toString(): String =
         when {

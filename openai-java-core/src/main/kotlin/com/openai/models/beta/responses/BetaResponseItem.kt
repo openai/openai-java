@@ -818,45 +818,116 @@ private constructor(
             mcpApprovalResponse == other.mcpApprovalResponse &&
             mcpCall == other.mcpCall &&
             customToolCall == other.customToolCall &&
-            customToolCallOutput == other.customToolCallOutput
+            customToolCallOutput == other.customToolCallOutput &&
+            (betaResponseInputMessageItem != null ||
+                betaResponseOutputMessage != null ||
+                fileSearchCall != null ||
+                computerCall != null ||
+                computerCallOutput != null ||
+                webSearchCall != null ||
+                functionCall != null ||
+                functionCallOutput != null ||
+                agentMessage != null ||
+                multiAgentCall != null ||
+                multiAgentCallOutput != null ||
+                toolSearchCall != null ||
+                toolSearchOutput != null ||
+                additionalTools != null ||
+                configurationUpdate != null ||
+                reasoning != null ||
+                program != null ||
+                programOutput != null ||
+                compaction != null ||
+                imageGenerationCall != null ||
+                codeInterpreterCall != null ||
+                localShellCall != null ||
+                localShellCallOutput != null ||
+                shellCall != null ||
+                shellCallOutput != null ||
+                applyPatchCall != null ||
+                applyPatchCallOutput != null ||
+                mcpListTools != null ||
+                mcpApprovalRequest != null ||
+                mcpApprovalResponse != null ||
+                mcpCall != null ||
+                customToolCall != null ||
+                customToolCallOutput != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            betaResponseInputMessageItem,
-            betaResponseOutputMessage,
-            fileSearchCall,
-            computerCall,
-            computerCallOutput,
-            webSearchCall,
-            functionCall,
-            functionCallOutput,
-            agentMessage,
-            multiAgentCall,
-            multiAgentCallOutput,
-            toolSearchCall,
-            toolSearchOutput,
-            additionalTools,
-            configurationUpdate,
-            reasoning,
-            program,
-            programOutput,
-            compaction,
-            imageGenerationCall,
-            codeInterpreterCall,
-            localShellCall,
-            localShellCallOutput,
-            shellCall,
-            shellCallOutput,
-            applyPatchCall,
-            applyPatchCallOutput,
-            mcpListTools,
-            mcpApprovalRequest,
-            mcpApprovalResponse,
-            mcpCall,
-            customToolCall,
-            customToolCallOutput,
+        if (
+            betaResponseInputMessageItem == null &&
+                betaResponseOutputMessage == null &&
+                fileSearchCall == null &&
+                computerCall == null &&
+                computerCallOutput == null &&
+                webSearchCall == null &&
+                functionCall == null &&
+                functionCallOutput == null &&
+                agentMessage == null &&
+                multiAgentCall == null &&
+                multiAgentCallOutput == null &&
+                toolSearchCall == null &&
+                toolSearchOutput == null &&
+                additionalTools == null &&
+                configurationUpdate == null &&
+                reasoning == null &&
+                program == null &&
+                programOutput == null &&
+                compaction == null &&
+                imageGenerationCall == null &&
+                codeInterpreterCall == null &&
+                localShellCall == null &&
+                localShellCallOutput == null &&
+                shellCall == null &&
+                shellCallOutput == null &&
+                applyPatchCall == null &&
+                applyPatchCallOutput == null &&
+                mcpListTools == null &&
+                mcpApprovalRequest == null &&
+                mcpApprovalResponse == null &&
+                mcpCall == null &&
+                customToolCall == null &&
+                customToolCallOutput == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                betaResponseInputMessageItem,
+                betaResponseOutputMessage,
+                fileSearchCall,
+                computerCall,
+                computerCallOutput,
+                webSearchCall,
+                functionCall,
+                functionCallOutput,
+                agentMessage,
+                multiAgentCall,
+                multiAgentCallOutput,
+                toolSearchCall,
+                toolSearchOutput,
+                additionalTools,
+                configurationUpdate,
+                reasoning,
+                program,
+                programOutput,
+                compaction,
+                imageGenerationCall,
+                codeInterpreterCall,
+                localShellCall,
+                localShellCallOutput,
+                shellCall,
+                shellCallOutput,
+                applyPatchCall,
+                applyPatchCallOutput,
+                mcpListTools,
+                mcpApprovalRequest,
+                mcpApprovalResponse,
+                mcpCall,
+                customToolCall,
+                customToolCallOutput,
+            )
 
     override fun toString(): String =
         when {
@@ -2290,22 +2361,47 @@ private constructor(
                     inputImage == other.inputImage &&
                     computerScreenshot == other.computerScreenshot &&
                     inputFile == other.inputFile &&
-                    encrypted == other.encrypted
+                    encrypted == other.encrypted &&
+                    (inputText != null ||
+                        outputText != null ||
+                        text != null ||
+                        summaryText != null ||
+                        reasoningText != null ||
+                        refusal != null ||
+                        inputImage != null ||
+                        computerScreenshot != null ||
+                        inputFile != null ||
+                        encrypted != null ||
+                        _json == other._json)
             }
 
             override fun hashCode(): Int =
-                Objects.hash(
-                    inputText,
-                    outputText,
-                    text,
-                    summaryText,
-                    reasoningText,
-                    refusal,
-                    inputImage,
-                    computerScreenshot,
-                    inputFile,
-                    encrypted,
+                if (
+                    inputText == null &&
+                        outputText == null &&
+                        text == null &&
+                        summaryText == null &&
+                        reasoningText == null &&
+                        refusal == null &&
+                        inputImage == null &&
+                        computerScreenshot == null &&
+                        inputFile == null &&
+                        encrypted == null
                 )
+                    Objects.hash(_json)
+                else
+                    Objects.hash(
+                        inputText,
+                        outputText,
+                        text,
+                        summaryText,
+                        reasoningText,
+                        refusal,
+                        inputImage,
+                        computerScreenshot,
+                        inputFile,
+                        encrypted,
+                    )
 
             override fun toString(): String =
                 when {

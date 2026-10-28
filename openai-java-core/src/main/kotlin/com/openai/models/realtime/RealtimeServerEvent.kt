@@ -1554,58 +1554,155 @@ private constructor(
             responseMcpCallArgumentsDone == other.responseMcpCallArgumentsDone &&
             responseMcpCallInProgress == other.responseMcpCallInProgress &&
             responseMcpCallCompleted == other.responseMcpCallCompleted &&
-            responseMcpCallFailed == other.responseMcpCallFailed
+            responseMcpCallFailed == other.responseMcpCallFailed &&
+            (conversationCreated != null ||
+                conversationItemCreated != null ||
+                conversationItemDeleted != null ||
+                conversationItemInputAudioTranscriptionCompleted != null ||
+                conversationItemInputAudioTranscriptionDelta != null ||
+                conversationItemInputAudioTranscriptionFailed != null ||
+                conversationItemRetrieved != null ||
+                conversationItemTruncated != null ||
+                error != null ||
+                inputAudioBufferCleared != null ||
+                inputAudioBufferCommitted != null ||
+                inputAudioBufferDtmfEventReceived != null ||
+                inputAudioBufferSpeechStarted != null ||
+                inputAudioBufferSpeechStopped != null ||
+                rateLimitsUpdated != null ||
+                responseOutputAudioDelta != null ||
+                responseOutputAudioDone != null ||
+                responseOutputAudioTranscriptDelta != null ||
+                responseOutputAudioTranscriptDone != null ||
+                responseContentPartAdded != null ||
+                responseContentPartDone != null ||
+                responseCreated != null ||
+                responseDone != null ||
+                responseFunctionCallArgumentsDelta != null ||
+                responseFunctionCallArgumentsDone != null ||
+                responseOutputItemAdded != null ||
+                responseOutputItemDone != null ||
+                responseOutputTextDelta != null ||
+                responseOutputTextDone != null ||
+                sessionCreated != null ||
+                sessionUpdated != null ||
+                outputAudioBufferStarted != null ||
+                outputAudioBufferStopped != null ||
+                outputAudioBufferCleared != null ||
+                conversationItemAdded != null ||
+                conversationItemDone != null ||
+                inputAudioBufferTimeoutTriggered != null ||
+                conversationItemInputAudioTranscriptionSegment != null ||
+                mcpListToolsInProgress != null ||
+                mcpListToolsCompleted != null ||
+                mcpListToolsFailed != null ||
+                responseMcpCallArgumentsDelta != null ||
+                responseMcpCallArgumentsDone != null ||
+                responseMcpCallInProgress != null ||
+                responseMcpCallCompleted != null ||
+                responseMcpCallFailed != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            conversationCreated,
-            conversationItemCreated,
-            conversationItemDeleted,
-            conversationItemInputAudioTranscriptionCompleted,
-            conversationItemInputAudioTranscriptionDelta,
-            conversationItemInputAudioTranscriptionFailed,
-            conversationItemRetrieved,
-            conversationItemTruncated,
-            error,
-            inputAudioBufferCleared,
-            inputAudioBufferCommitted,
-            inputAudioBufferDtmfEventReceived,
-            inputAudioBufferSpeechStarted,
-            inputAudioBufferSpeechStopped,
-            rateLimitsUpdated,
-            responseOutputAudioDelta,
-            responseOutputAudioDone,
-            responseOutputAudioTranscriptDelta,
-            responseOutputAudioTranscriptDone,
-            responseContentPartAdded,
-            responseContentPartDone,
-            responseCreated,
-            responseDone,
-            responseFunctionCallArgumentsDelta,
-            responseFunctionCallArgumentsDone,
-            responseOutputItemAdded,
-            responseOutputItemDone,
-            responseOutputTextDelta,
-            responseOutputTextDone,
-            sessionCreated,
-            sessionUpdated,
-            outputAudioBufferStarted,
-            outputAudioBufferStopped,
-            outputAudioBufferCleared,
-            conversationItemAdded,
-            conversationItemDone,
-            inputAudioBufferTimeoutTriggered,
-            conversationItemInputAudioTranscriptionSegment,
-            mcpListToolsInProgress,
-            mcpListToolsCompleted,
-            mcpListToolsFailed,
-            responseMcpCallArgumentsDelta,
-            responseMcpCallArgumentsDone,
-            responseMcpCallInProgress,
-            responseMcpCallCompleted,
-            responseMcpCallFailed,
+        if (
+            conversationCreated == null &&
+                conversationItemCreated == null &&
+                conversationItemDeleted == null &&
+                conversationItemInputAudioTranscriptionCompleted == null &&
+                conversationItemInputAudioTranscriptionDelta == null &&
+                conversationItemInputAudioTranscriptionFailed == null &&
+                conversationItemRetrieved == null &&
+                conversationItemTruncated == null &&
+                error == null &&
+                inputAudioBufferCleared == null &&
+                inputAudioBufferCommitted == null &&
+                inputAudioBufferDtmfEventReceived == null &&
+                inputAudioBufferSpeechStarted == null &&
+                inputAudioBufferSpeechStopped == null &&
+                rateLimitsUpdated == null &&
+                responseOutputAudioDelta == null &&
+                responseOutputAudioDone == null &&
+                responseOutputAudioTranscriptDelta == null &&
+                responseOutputAudioTranscriptDone == null &&
+                responseContentPartAdded == null &&
+                responseContentPartDone == null &&
+                responseCreated == null &&
+                responseDone == null &&
+                responseFunctionCallArgumentsDelta == null &&
+                responseFunctionCallArgumentsDone == null &&
+                responseOutputItemAdded == null &&
+                responseOutputItemDone == null &&
+                responseOutputTextDelta == null &&
+                responseOutputTextDone == null &&
+                sessionCreated == null &&
+                sessionUpdated == null &&
+                outputAudioBufferStarted == null &&
+                outputAudioBufferStopped == null &&
+                outputAudioBufferCleared == null &&
+                conversationItemAdded == null &&
+                conversationItemDone == null &&
+                inputAudioBufferTimeoutTriggered == null &&
+                conversationItemInputAudioTranscriptionSegment == null &&
+                mcpListToolsInProgress == null &&
+                mcpListToolsCompleted == null &&
+                mcpListToolsFailed == null &&
+                responseMcpCallArgumentsDelta == null &&
+                responseMcpCallArgumentsDone == null &&
+                responseMcpCallInProgress == null &&
+                responseMcpCallCompleted == null &&
+                responseMcpCallFailed == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                conversationCreated,
+                conversationItemCreated,
+                conversationItemDeleted,
+                conversationItemInputAudioTranscriptionCompleted,
+                conversationItemInputAudioTranscriptionDelta,
+                conversationItemInputAudioTranscriptionFailed,
+                conversationItemRetrieved,
+                conversationItemTruncated,
+                error,
+                inputAudioBufferCleared,
+                inputAudioBufferCommitted,
+                inputAudioBufferDtmfEventReceived,
+                inputAudioBufferSpeechStarted,
+                inputAudioBufferSpeechStopped,
+                rateLimitsUpdated,
+                responseOutputAudioDelta,
+                responseOutputAudioDone,
+                responseOutputAudioTranscriptDelta,
+                responseOutputAudioTranscriptDone,
+                responseContentPartAdded,
+                responseContentPartDone,
+                responseCreated,
+                responseDone,
+                responseFunctionCallArgumentsDelta,
+                responseFunctionCallArgumentsDone,
+                responseOutputItemAdded,
+                responseOutputItemDone,
+                responseOutputTextDelta,
+                responseOutputTextDone,
+                sessionCreated,
+                sessionUpdated,
+                outputAudioBufferStarted,
+                outputAudioBufferStopped,
+                outputAudioBufferCleared,
+                conversationItemAdded,
+                conversationItemDone,
+                inputAudioBufferTimeoutTriggered,
+                conversationItemInputAudioTranscriptionSegment,
+                mcpListToolsInProgress,
+                mcpListToolsCompleted,
+                mcpListToolsFailed,
+                responseMcpCallArgumentsDelta,
+                responseMcpCallArgumentsDone,
+                responseMcpCallInProgress,
+                responseMcpCallCompleted,
+                responseMcpCallFailed,
+            )
 
     override fun toString(): String =
         when {

@@ -153,10 +153,13 @@ private constructor(
 
         return other is ImageGenStreamEvent &&
             generationPartialImage == other.generationPartialImage &&
-            generationCompleted == other.generationCompleted
+            generationCompleted == other.generationCompleted &&
+            (generationPartialImage != null || generationCompleted != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(generationPartialImage, generationCompleted)
+    override fun hashCode(): Int =
+        if (generationPartialImage == null && generationCompleted == null) Objects.hash(_json)
+        else Objects.hash(generationPartialImage, generationCompleted)
 
     override fun toString(): String =
         when {

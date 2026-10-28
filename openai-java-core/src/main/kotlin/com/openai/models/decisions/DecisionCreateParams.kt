@@ -1177,10 +1177,13 @@ private constructor(
 
             return other is Input &&
                 string == other.string &&
-                decisionInputItems == other.decisionInputItems
+                decisionInputItems == other.decisionInputItems &&
+                (string != null || decisionInputItems != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(string, decisionInputItems)
+        override fun hashCode(): Int =
+            if (string == null && decisionInputItems == null) Objects.hash(_json)
+            else Objects.hash(string, decisionInputItems)
 
         override fun toString(): String =
             when {
@@ -1413,10 +1416,13 @@ private constructor(
             return other is Question &&
                 predicate == other.predicate &&
                 choice == other.choice &&
-                score == other.score
+                score == other.score &&
+                (predicate != null || choice != null || score != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(predicate, choice, score)
+        override fun hashCode(): Int =
+            if (predicate == null && choice == null && score == null) Objects.hash(_json)
+            else Objects.hash(predicate, choice, score)
 
         override fun toString(): String =
             when {
@@ -1913,10 +1919,15 @@ private constructor(
 
                     return other is Instructions &&
                         string == other.string &&
-                        decisionQuestionInputParts == other.decisionQuestionInputParts
+                        decisionQuestionInputParts == other.decisionQuestionInputParts &&
+                        (string != null ||
+                            decisionQuestionInputParts != null ||
+                            _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(string, decisionQuestionInputParts)
+                override fun hashCode(): Int =
+                    if (string == null && decisionQuestionInputParts == null) Objects.hash(_json)
+                    else Objects.hash(string, decisionQuestionInputParts)
 
                 override fun toString(): String =
                     when {
@@ -2501,10 +2512,15 @@ private constructor(
 
                     return other is Instructions &&
                         string == other.string &&
-                        decisionQuestionInputParts == other.decisionQuestionInputParts
+                        decisionQuestionInputParts == other.decisionQuestionInputParts &&
+                        (string != null ||
+                            decisionQuestionInputParts != null ||
+                            _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(string, decisionQuestionInputParts)
+                override fun hashCode(): Int =
+                    if (string == null && decisionQuestionInputParts == null) Objects.hash(_json)
+                    else Objects.hash(string, decisionQuestionInputParts)
 
                 override fun toString(): String =
                     when {
@@ -3085,10 +3101,15 @@ private constructor(
 
                     return other is Instructions &&
                         string == other.string &&
-                        decisionQuestionInputParts == other.decisionQuestionInputParts
+                        decisionQuestionInputParts == other.decisionQuestionInputParts &&
+                        (string != null ||
+                            decisionQuestionInputParts != null ||
+                            _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(string, decisionQuestionInputParts)
+                override fun hashCode(): Int =
+                    if (string == null && decisionQuestionInputParts == null) Objects.hash(_json)
+                    else Objects.hash(string, decisionQuestionInputParts)
 
                 override fun toString(): String =
                     when {

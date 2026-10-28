@@ -1816,11 +1816,26 @@ private constructor(
             return other is ToolChoice &&
                 liveToolChoiceEnum == other.liveToolChoiceEnum &&
                 liveFunctionToolChoiceParam == other.liveFunctionToolChoiceParam &&
-                liveMcpToolChoiceParam == other.liveMcpToolChoiceParam
+                liveMcpToolChoiceParam == other.liveMcpToolChoiceParam &&
+                (liveToolChoiceEnum != null ||
+                    liveFunctionToolChoiceParam != null ||
+                    liveMcpToolChoiceParam != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(liveToolChoiceEnum, liveFunctionToolChoiceParam, liveMcpToolChoiceParam)
+            if (
+                liveToolChoiceEnum == null &&
+                    liveFunctionToolChoiceParam == null &&
+                    liveMcpToolChoiceParam == null
+            )
+                Objects.hash(_json)
+            else
+                Objects.hash(
+                    liveToolChoiceEnum,
+                    liveFunctionToolChoiceParam,
+                    liveMcpToolChoiceParam,
+                )
 
         override fun toString(): String =
             when {
@@ -2732,10 +2747,15 @@ private constructor(
                 return true
             }
 
-            return other is Tool && function == other.function && webSearch == other.webSearch
+            return other is Tool &&
+                function == other.function &&
+                webSearch == other.webSearch &&
+                (function != null || webSearch != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(function, webSearch)
+        override fun hashCode(): Int =
+            if (function == null && webSearch == null) Objects.hash(_json)
+            else Objects.hash(function, webSearch)
 
         override fun toString(): String =
             when {

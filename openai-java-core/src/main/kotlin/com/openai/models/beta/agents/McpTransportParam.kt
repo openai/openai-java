@@ -153,10 +153,14 @@ private constructor(
             return true
         }
 
-        return other is McpTransportParam && http == other.http && stdio == other.stdio
+        return other is McpTransportParam &&
+            http == other.http &&
+            stdio == other.stdio &&
+            (http != null || stdio != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(http, stdio)
+    override fun hashCode(): Int =
+        if (http == null && stdio == null) Objects.hash(_json) else Objects.hash(http, stdio)
 
     override fun toString(): String =
         when {

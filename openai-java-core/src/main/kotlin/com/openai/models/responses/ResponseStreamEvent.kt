@@ -1443,71 +1443,194 @@ private constructor(
             outputTextAnnotationAdded == other.outputTextAnnotationAdded &&
             queued == other.queued &&
             customToolCallInputDelta == other.customToolCallInputDelta &&
-            customToolCallInputDone == other.customToolCallInputDone
+            customToolCallInputDone == other.customToolCallInputDone &&
+            (audioDelta != null ||
+                audioDone != null ||
+                audioTranscriptDelta != null ||
+                audioTranscriptDone != null ||
+                codeInterpreterCallCodeDelta != null ||
+                codeInterpreterCallCodeDone != null ||
+                codeInterpreterCallCompleted != null ||
+                codeInterpreterCallInProgress != null ||
+                codeInterpreterCallInterpreting != null ||
+                compactionCompacting != null ||
+                completed != null ||
+                contentPartAdded != null ||
+                contentPartDone != null ||
+                created != null ||
+                error != null ||
+                fileSearchCallCompleted != null ||
+                fileSearchCallInProgress != null ||
+                fileSearchCallSearching != null ||
+                functionCallArgumentsDelta != null ||
+                functionCallArgumentsDone != null ||
+                shellCallCommandAdded != null ||
+                shellCallCommandDelta != null ||
+                shellCallCommandDone != null ||
+                shellCallOutputContentDelta != null ||
+                shellCallOutputContentDone != null ||
+                inProgress != null ||
+                failed != null ||
+                incomplete != null ||
+                outputItemAdded != null ||
+                outputItemDone != null ||
+                reasoningSummaryPartAdded != null ||
+                reasoningSummaryPartDone != null ||
+                reasoningSummaryTextDelta != null ||
+                reasoningSummaryTextDone != null ||
+                reasoningTextDelta != null ||
+                reasoningTextDone != null ||
+                refusalDelta != null ||
+                refusalDone != null ||
+                outputTextDelta != null ||
+                outputTextDone != null ||
+                webSearchCallCompleted != null ||
+                webSearchCallInProgress != null ||
+                webSearchCallSearching != null ||
+                imageGenerationCallCompleted != null ||
+                imageGenerationCallGenerating != null ||
+                imageGenerationCallInProgress != null ||
+                imageGenerationCallPartialImage != null ||
+                mcpCallArgumentsDelta != null ||
+                mcpCallArgumentsDone != null ||
+                mcpCallCompleted != null ||
+                mcpCallFailed != null ||
+                mcpCallInProgress != null ||
+                mcpListToolsCompleted != null ||
+                mcpListToolsFailed != null ||
+                mcpListToolsInProgress != null ||
+                outputTextAnnotationAdded != null ||
+                queued != null ||
+                customToolCallInputDelta != null ||
+                customToolCallInputDone != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            audioDelta,
-            audioDone,
-            audioTranscriptDelta,
-            audioTranscriptDone,
-            codeInterpreterCallCodeDelta,
-            codeInterpreterCallCodeDone,
-            codeInterpreterCallCompleted,
-            codeInterpreterCallInProgress,
-            codeInterpreterCallInterpreting,
-            compactionCompacting,
-            completed,
-            contentPartAdded,
-            contentPartDone,
-            created,
-            error,
-            fileSearchCallCompleted,
-            fileSearchCallInProgress,
-            fileSearchCallSearching,
-            functionCallArgumentsDelta,
-            functionCallArgumentsDone,
-            shellCallCommandAdded,
-            shellCallCommandDelta,
-            shellCallCommandDone,
-            shellCallOutputContentDelta,
-            shellCallOutputContentDone,
-            inProgress,
-            failed,
-            incomplete,
-            outputItemAdded,
-            outputItemDone,
-            reasoningSummaryPartAdded,
-            reasoningSummaryPartDone,
-            reasoningSummaryTextDelta,
-            reasoningSummaryTextDone,
-            reasoningTextDelta,
-            reasoningTextDone,
-            refusalDelta,
-            refusalDone,
-            outputTextDelta,
-            outputTextDone,
-            webSearchCallCompleted,
-            webSearchCallInProgress,
-            webSearchCallSearching,
-            imageGenerationCallCompleted,
-            imageGenerationCallGenerating,
-            imageGenerationCallInProgress,
-            imageGenerationCallPartialImage,
-            mcpCallArgumentsDelta,
-            mcpCallArgumentsDone,
-            mcpCallCompleted,
-            mcpCallFailed,
-            mcpCallInProgress,
-            mcpListToolsCompleted,
-            mcpListToolsFailed,
-            mcpListToolsInProgress,
-            outputTextAnnotationAdded,
-            queued,
-            customToolCallInputDelta,
-            customToolCallInputDone,
+        if (
+            audioDelta == null &&
+                audioDone == null &&
+                audioTranscriptDelta == null &&
+                audioTranscriptDone == null &&
+                codeInterpreterCallCodeDelta == null &&
+                codeInterpreterCallCodeDone == null &&
+                codeInterpreterCallCompleted == null &&
+                codeInterpreterCallInProgress == null &&
+                codeInterpreterCallInterpreting == null &&
+                compactionCompacting == null &&
+                completed == null &&
+                contentPartAdded == null &&
+                contentPartDone == null &&
+                created == null &&
+                error == null &&
+                fileSearchCallCompleted == null &&
+                fileSearchCallInProgress == null &&
+                fileSearchCallSearching == null &&
+                functionCallArgumentsDelta == null &&
+                functionCallArgumentsDone == null &&
+                shellCallCommandAdded == null &&
+                shellCallCommandDelta == null &&
+                shellCallCommandDone == null &&
+                shellCallOutputContentDelta == null &&
+                shellCallOutputContentDone == null &&
+                inProgress == null &&
+                failed == null &&
+                incomplete == null &&
+                outputItemAdded == null &&
+                outputItemDone == null &&
+                reasoningSummaryPartAdded == null &&
+                reasoningSummaryPartDone == null &&
+                reasoningSummaryTextDelta == null &&
+                reasoningSummaryTextDone == null &&
+                reasoningTextDelta == null &&
+                reasoningTextDone == null &&
+                refusalDelta == null &&
+                refusalDone == null &&
+                outputTextDelta == null &&
+                outputTextDone == null &&
+                webSearchCallCompleted == null &&
+                webSearchCallInProgress == null &&
+                webSearchCallSearching == null &&
+                imageGenerationCallCompleted == null &&
+                imageGenerationCallGenerating == null &&
+                imageGenerationCallInProgress == null &&
+                imageGenerationCallPartialImage == null &&
+                mcpCallArgumentsDelta == null &&
+                mcpCallArgumentsDone == null &&
+                mcpCallCompleted == null &&
+                mcpCallFailed == null &&
+                mcpCallInProgress == null &&
+                mcpListToolsCompleted == null &&
+                mcpListToolsFailed == null &&
+                mcpListToolsInProgress == null &&
+                outputTextAnnotationAdded == null &&
+                queued == null &&
+                customToolCallInputDelta == null &&
+                customToolCallInputDone == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                audioDelta,
+                audioDone,
+                audioTranscriptDelta,
+                audioTranscriptDone,
+                codeInterpreterCallCodeDelta,
+                codeInterpreterCallCodeDone,
+                codeInterpreterCallCompleted,
+                codeInterpreterCallInProgress,
+                codeInterpreterCallInterpreting,
+                compactionCompacting,
+                completed,
+                contentPartAdded,
+                contentPartDone,
+                created,
+                error,
+                fileSearchCallCompleted,
+                fileSearchCallInProgress,
+                fileSearchCallSearching,
+                functionCallArgumentsDelta,
+                functionCallArgumentsDone,
+                shellCallCommandAdded,
+                shellCallCommandDelta,
+                shellCallCommandDone,
+                shellCallOutputContentDelta,
+                shellCallOutputContentDone,
+                inProgress,
+                failed,
+                incomplete,
+                outputItemAdded,
+                outputItemDone,
+                reasoningSummaryPartAdded,
+                reasoningSummaryPartDone,
+                reasoningSummaryTextDelta,
+                reasoningSummaryTextDone,
+                reasoningTextDelta,
+                reasoningTextDone,
+                refusalDelta,
+                refusalDone,
+                outputTextDelta,
+                outputTextDone,
+                webSearchCallCompleted,
+                webSearchCallInProgress,
+                webSearchCallSearching,
+                imageGenerationCallCompleted,
+                imageGenerationCallGenerating,
+                imageGenerationCallInProgress,
+                imageGenerationCallPartialImage,
+                mcpCallArgumentsDelta,
+                mcpCallArgumentsDone,
+                mcpCallCompleted,
+                mcpCallFailed,
+                mcpCallInProgress,
+                mcpListToolsCompleted,
+                mcpListToolsFailed,
+                mcpListToolsInProgress,
+                outputTextAnnotationAdded,
+                queued,
+                customToolCallInputDelta,
+                customToolCallInputDone,
+            )
 
     override fun toString(): String =
         when {

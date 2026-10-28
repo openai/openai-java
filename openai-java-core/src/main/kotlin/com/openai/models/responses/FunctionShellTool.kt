@@ -595,10 +595,17 @@ private constructor(
             return other is Environment &&
                 containerAuto == other.containerAuto &&
                 local == other.local &&
-                containerReference == other.containerReference
+                containerReference == other.containerReference &&
+                (containerAuto != null ||
+                    local != null ||
+                    containerReference != null ||
+                    _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(containerAuto, local, containerReference)
+        override fun hashCode(): Int =
+            if (containerAuto == null && local == null && containerReference == null)
+                Objects.hash(_json)
+            else Objects.hash(containerAuto, local, containerReference)
 
         override fun toString(): String =
             when {

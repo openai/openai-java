@@ -190,10 +190,18 @@ private constructor(
             user == other.user &&
             developer == other.developer &&
             system == other.system &&
-            assistant == other.assistant
+            assistant == other.assistant &&
+            (user != null ||
+                developer != null ||
+                system != null ||
+                assistant != null ||
+                _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(user, developer, system, assistant)
+    override fun hashCode(): Int =
+        if (user == null && developer == null && system == null && assistant == null)
+            Objects.hash(_json)
+        else Objects.hash(user, developer, system, assistant)
 
     override fun toString(): String =
         when {
@@ -678,10 +686,15 @@ private constructor(
                     return true
                 }
 
-                return other is Content && string == other.string && parts == other.parts
+                return other is Content &&
+                    string == other.string &&
+                    parts == other.parts &&
+                    (string != null || parts != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(string, parts)
+            override fun hashCode(): Int =
+                if (string == null && parts == null) Objects.hash(_json)
+                else Objects.hash(string, parts)
 
             override fun toString(): String =
                 when {
@@ -1294,10 +1307,15 @@ private constructor(
                     return true
                 }
 
-                return other is Content && string == other.string && parts == other.parts
+                return other is Content &&
+                    string == other.string &&
+                    parts == other.parts &&
+                    (string != null || parts != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(string, parts)
+            override fun hashCode(): Int =
+                if (string == null && parts == null) Objects.hash(_json)
+                else Objects.hash(string, parts)
 
             override fun toString(): String =
                 when {
@@ -1910,10 +1928,15 @@ private constructor(
                     return true
                 }
 
-                return other is Content && string == other.string && parts == other.parts
+                return other is Content &&
+                    string == other.string &&
+                    parts == other.parts &&
+                    (string != null || parts != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(string, parts)
+            override fun hashCode(): Int =
+                if (string == null && parts == null) Objects.hash(_json)
+                else Objects.hash(string, parts)
 
             override fun toString(): String =
                 when {
@@ -2565,10 +2588,15 @@ private constructor(
                     return true
                 }
 
-                return other is Content && string == other.string && parts == other.parts
+                return other is Content &&
+                    string == other.string &&
+                    parts == other.parts &&
+                    (string != null || parts != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(string, parts)
+            override fun hashCode(): Int =
+                if (string == null && parts == null) Objects.hash(_json)
+                else Objects.hash(string, parts)
 
             override fun toString(): String =
                 when {
@@ -2785,10 +2813,13 @@ private constructor(
 
                     return other is UnnamedSchemaWithArrayParent0 &&
                         outputText == other.outputText &&
-                        refusal == other.refusal
+                        refusal == other.refusal &&
+                        (outputText != null || refusal != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(outputText, refusal)
+                override fun hashCode(): Int =
+                    if (outputText == null && refusal == null) Objects.hash(_json)
+                    else Objects.hash(outputText, refusal)
 
                 override fun toString(): String =
                     when {

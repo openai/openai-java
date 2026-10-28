@@ -145,10 +145,13 @@ private constructor(
 
         return other is ImageEditStreamEvent &&
             partialImage == other.partialImage &&
-            completed == other.completed
+            completed == other.completed &&
+            (partialImage != null || completed != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(partialImage, completed)
+    override fun hashCode(): Int =
+        if (partialImage == null && completed == null) Objects.hash(_json)
+        else Objects.hash(partialImage, completed)
 
     override fun toString(): String =
         when {

@@ -573,10 +573,16 @@ private constructor(
             return other is Part &&
                 outputText == other.outputText &&
                 refusal == other.refusal &&
-                reasoningText == other.reasoningText
+                reasoningText == other.reasoningText &&
+                (outputText != null ||
+                    refusal != null ||
+                    reasoningText != null ||
+                    _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(outputText, refusal, reasoningText)
+        override fun hashCode(): Int =
+            if (outputText == null && refusal == null && reasoningText == null) Objects.hash(_json)
+            else Objects.hash(outputText, refusal, reasoningText)
 
         override fun toString(): String =
             when {

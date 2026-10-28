@@ -208,17 +208,32 @@ private constructor(
             functionCall == other.functionCall &&
             functionCallOutput == other.functionCallOutput &&
             customToolCall == other.customToolCall &&
-            customToolCallOutput == other.customToolCallOutput
+            customToolCallOutput == other.customToolCallOutput &&
+            (decisionInputMessage != null ||
+                functionCall != null ||
+                functionCallOutput != null ||
+                customToolCall != null ||
+                customToolCallOutput != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            decisionInputMessage,
-            functionCall,
-            functionCallOutput,
-            customToolCall,
-            customToolCallOutput,
+        if (
+            decisionInputMessage == null &&
+                functionCall == null &&
+                functionCallOutput == null &&
+                customToolCall == null &&
+                customToolCallOutput == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                decisionInputMessage,
+                functionCall,
+                functionCallOutput,
+                customToolCall,
+                customToolCallOutput,
+            )
 
     override fun toString(): String =
         when {
@@ -1356,10 +1371,15 @@ private constructor(
 
                 return other is Output &&
                     string == other.string &&
-                    unnamedSchemaWithArrayParent1s == other.unnamedSchemaWithArrayParent1s
+                    unnamedSchemaWithArrayParent1s == other.unnamedSchemaWithArrayParent1s &&
+                    (string != null ||
+                        unnamedSchemaWithArrayParent1s != null ||
+                        _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(string, unnamedSchemaWithArrayParent1s)
+            override fun hashCode(): Int =
+                if (string == null && unnamedSchemaWithArrayParent1s == null) Objects.hash(_json)
+                else Objects.hash(string, unnamedSchemaWithArrayParent1s)
 
             override fun toString(): String =
                 when {
@@ -1599,10 +1619,13 @@ private constructor(
 
                     return other is UnnamedSchemaWithArrayParent1 &&
                         inputText == other.inputText &&
-                        inputImage == other.inputImage
+                        inputImage == other.inputImage &&
+                        (inputText != null || inputImage != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(inputText, inputImage)
+                override fun hashCode(): Int =
+                    if (inputText == null && inputImage == null) Objects.hash(_json)
+                    else Objects.hash(inputText, inputImage)
 
                 override fun toString(): String =
                     when {
@@ -2887,10 +2910,15 @@ private constructor(
 
                 return other is Output &&
                     string == other.string &&
-                    unnamedSchemaWithArrayParent2s == other.unnamedSchemaWithArrayParent2s
+                    unnamedSchemaWithArrayParent2s == other.unnamedSchemaWithArrayParent2s &&
+                    (string != null ||
+                        unnamedSchemaWithArrayParent2s != null ||
+                        _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(string, unnamedSchemaWithArrayParent2s)
+            override fun hashCode(): Int =
+                if (string == null && unnamedSchemaWithArrayParent2s == null) Objects.hash(_json)
+                else Objects.hash(string, unnamedSchemaWithArrayParent2s)
 
             override fun toString(): String =
                 when {
@@ -3130,10 +3158,13 @@ private constructor(
 
                     return other is UnnamedSchemaWithArrayParent2 &&
                         inputText == other.inputText &&
-                        inputImage == other.inputImage
+                        inputImage == other.inputImage &&
+                        (inputText != null || inputImage != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(inputText, inputImage)
+                override fun hashCode(): Int =
+                    if (inputText == null && inputImage == null) Objects.hash(_json)
+                    else Objects.hash(inputText, inputImage)
 
                 override fun toString(): String =
                     when {

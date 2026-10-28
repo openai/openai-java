@@ -876,39 +876,98 @@ private constructor(
             transportDtmfSend == other.transportDtmfSend &&
             transportRinging == other.transportRinging &&
             transportAnswered == other.transportAnswered &&
-            transportFailed == other.transportFailed
+            transportFailed == other.transportFailed &&
+            (sessionStarted != null ||
+                sessionUpdated != null ||
+                sessionInputAudioMuted != null ||
+                sessionInputAudioUnmuted != null ||
+                sessionOutputAudioFixturePlaying != null ||
+                sessionOutputAudioFixturePlayed != null ||
+                sessionInstructionsAppended != null ||
+                sessionThinkingAppended != null ||
+                sessionCommentaryAppended != null ||
+                sessionInputTranscriptDelta != null ||
+                sessionOutputTranscriptDelta != null ||
+                sessionDelegationCreated != null ||
+                decisionEvent != null ||
+                decisionItemCreated != null ||
+                decisionItemDeleted != null ||
+                responseEvent != null ||
+                sessionUsageUpdated != null ||
+                sessionClosed != null ||
+                errorEvent != null ||
+                infoEvent != null ||
+                sessionInputAudioAppend != null ||
+                sessionOutputAudioDelta != null ||
+                transportDtmfReceived != null ||
+                transportDtmfSend != null ||
+                transportRinging != null ||
+                transportAnswered != null ||
+                transportFailed != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            sessionStarted,
-            sessionUpdated,
-            sessionInputAudioMuted,
-            sessionInputAudioUnmuted,
-            sessionOutputAudioFixturePlaying,
-            sessionOutputAudioFixturePlayed,
-            sessionInstructionsAppended,
-            sessionThinkingAppended,
-            sessionCommentaryAppended,
-            sessionInputTranscriptDelta,
-            sessionOutputTranscriptDelta,
-            sessionDelegationCreated,
-            decisionEvent,
-            decisionItemCreated,
-            decisionItemDeleted,
-            responseEvent,
-            sessionUsageUpdated,
-            sessionClosed,
-            errorEvent,
-            infoEvent,
-            sessionInputAudioAppend,
-            sessionOutputAudioDelta,
-            transportDtmfReceived,
-            transportDtmfSend,
-            transportRinging,
-            transportAnswered,
-            transportFailed,
+        if (
+            sessionStarted == null &&
+                sessionUpdated == null &&
+                sessionInputAudioMuted == null &&
+                sessionInputAudioUnmuted == null &&
+                sessionOutputAudioFixturePlaying == null &&
+                sessionOutputAudioFixturePlayed == null &&
+                sessionInstructionsAppended == null &&
+                sessionThinkingAppended == null &&
+                sessionCommentaryAppended == null &&
+                sessionInputTranscriptDelta == null &&
+                sessionOutputTranscriptDelta == null &&
+                sessionDelegationCreated == null &&
+                decisionEvent == null &&
+                decisionItemCreated == null &&
+                decisionItemDeleted == null &&
+                responseEvent == null &&
+                sessionUsageUpdated == null &&
+                sessionClosed == null &&
+                errorEvent == null &&
+                infoEvent == null &&
+                sessionInputAudioAppend == null &&
+                sessionOutputAudioDelta == null &&
+                transportDtmfReceived == null &&
+                transportDtmfSend == null &&
+                transportRinging == null &&
+                transportAnswered == null &&
+                transportFailed == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                sessionStarted,
+                sessionUpdated,
+                sessionInputAudioMuted,
+                sessionInputAudioUnmuted,
+                sessionOutputAudioFixturePlaying,
+                sessionOutputAudioFixturePlayed,
+                sessionInstructionsAppended,
+                sessionThinkingAppended,
+                sessionCommentaryAppended,
+                sessionInputTranscriptDelta,
+                sessionOutputTranscriptDelta,
+                sessionDelegationCreated,
+                decisionEvent,
+                decisionItemCreated,
+                decisionItemDeleted,
+                responseEvent,
+                sessionUsageUpdated,
+                sessionClosed,
+                errorEvent,
+                infoEvent,
+                sessionInputAudioAppend,
+                sessionOutputAudioDelta,
+                transportDtmfReceived,
+                transportDtmfSend,
+                transportRinging,
+                transportAnswered,
+                transportFailed,
+            )
 
     override fun toString(): String =
         when {

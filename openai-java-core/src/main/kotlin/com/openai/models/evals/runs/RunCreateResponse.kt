@@ -1133,10 +1133,13 @@ private constructor(
             return other is DataSource &&
                 jsonl == other.jsonl &&
                 completions == other.completions &&
-                responses == other.responses
+                responses == other.responses &&
+                (jsonl != null || completions != null || responses != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(jsonl, completions, responses)
+        override fun hashCode(): Int =
+            if (jsonl == null && completions == null && responses == null) Objects.hash(_json)
+            else Objects.hash(jsonl, completions, responses)
 
         override fun toString(): String =
             when {
@@ -1802,10 +1805,17 @@ private constructor(
                     return other is Source &&
                         fileContent == other.fileContent &&
                         fileId == other.fileId &&
-                        responses == other.responses
+                        responses == other.responses &&
+                        (fileContent != null ||
+                            fileId != null ||
+                            responses != null ||
+                            _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(fileContent, fileId, responses)
+                override fun hashCode(): Int =
+                    if (fileContent == null && fileId == null && responses == null)
+                        Objects.hash(_json)
+                    else Objects.hash(fileContent, fileId, responses)
 
                 override fun toString(): String =
                     when {
@@ -3847,10 +3857,13 @@ private constructor(
 
                     return other is InputMessages &&
                         template == other.template &&
-                        itemReference == other.itemReference
+                        itemReference == other.itemReference &&
+                        (template != null || itemReference != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(template, itemReference)
+                override fun hashCode(): Int =
+                    if (template == null && itemReference == null) Objects.hash(_json)
+                    else Objects.hash(template, itemReference)
 
                 override fun toString(): String =
                     when {
@@ -4344,10 +4357,13 @@ private constructor(
 
                             return other is InnerTemplate &&
                                 chatMessage == other.chatMessage &&
-                                evalItem == other.evalItem
+                                evalItem == other.evalItem &&
+                                (chatMessage != null || evalItem != null || _json == other._json)
                         }
 
-                        override fun hashCode(): Int = Objects.hash(chatMessage, evalItem)
+                        override fun hashCode(): Int =
+                            if (chatMessage == null && evalItem == null) Objects.hash(_json)
+                            else Objects.hash(chatMessage, evalItem)
 
                         override fun toString(): String =
                             when {
@@ -5283,18 +5299,35 @@ private constructor(
                                         outputText == other.outputText &&
                                         inputImage == other.inputImage &&
                                         responseInputAudio == other.responseInputAudio &&
-                                        graderInputs == other.graderInputs
+                                        graderInputs == other.graderInputs &&
+                                        (textInput != null ||
+                                            responseInputText != null ||
+                                            outputText != null ||
+                                            inputImage != null ||
+                                            responseInputAudio != null ||
+                                            graderInputs != null ||
+                                            _json == other._json)
                                 }
 
                                 override fun hashCode(): Int =
-                                    Objects.hash(
-                                        textInput,
-                                        responseInputText,
-                                        outputText,
-                                        inputImage,
-                                        responseInputAudio,
-                                        graderInputs,
+                                    if (
+                                        textInput == null &&
+                                            responseInputText == null &&
+                                            outputText == null &&
+                                            inputImage == null &&
+                                            responseInputAudio == null &&
+                                            graderInputs == null
                                     )
+                                        Objects.hash(_json)
+                                    else
+                                        Objects.hash(
+                                            textInput,
+                                            responseInputText,
+                                            outputText,
+                                            inputImage,
+                                            responseInputAudio,
+                                            graderInputs,
+                                        )
 
                                 override fun toString(): String =
                                     when {

@@ -1007,10 +1007,15 @@ private constructor(
                     return true
                 }
 
-                return other is Outcome && timeout == other.timeout && exit == other.exit
+                return other is Outcome &&
+                    timeout == other.timeout &&
+                    exit == other.exit &&
+                    (timeout != null || exit != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(timeout, exit)
+            override fun hashCode(): Int =
+                if (timeout == null && exit == null) Objects.hash(_json)
+                else Objects.hash(timeout, exit)
 
             override fun toString(): String =
                 when {
@@ -1821,10 +1826,15 @@ private constructor(
                 return true
             }
 
-            return other is Caller && direct == other.direct && program == other.program
+            return other is Caller &&
+                direct == other.direct &&
+                program == other.program &&
+                (direct != null || program != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(direct, program)
+        override fun hashCode(): Int =
+            if (direct == null && program == null) Objects.hash(_json)
+            else Objects.hash(direct, program)
 
         override fun toString(): String =
             when {

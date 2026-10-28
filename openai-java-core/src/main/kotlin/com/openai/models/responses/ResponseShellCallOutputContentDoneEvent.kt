@@ -865,10 +865,15 @@ private constructor(
                     return true
                 }
 
-                return other is Outcome && timeout == other.timeout && exit == other.exit
+                return other is Outcome &&
+                    timeout == other.timeout &&
+                    exit == other.exit &&
+                    (timeout != null || exit != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(timeout, exit)
+            override fun hashCode(): Int =
+                if (timeout == null && exit == null) Objects.hash(_json)
+                else Objects.hash(timeout, exit)
 
             override fun toString(): String =
                 when {

@@ -1797,10 +1797,15 @@ private constructor(
                 return true
             }
 
-            return other is ChunkingStrategy && auto == other.auto && vadConfig == other.vadConfig
+            return other is ChunkingStrategy &&
+                auto == other.auto &&
+                vadConfig == other.vadConfig &&
+                (auto != null || vadConfig != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(auto, vadConfig)
+        override fun hashCode(): Int =
+            if (auto == null && vadConfig == null) Objects.hash(_json)
+            else Objects.hash(auto, vadConfig)
 
         override fun toString(): String =
             when {

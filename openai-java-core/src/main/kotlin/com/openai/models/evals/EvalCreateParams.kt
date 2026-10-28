@@ -1048,10 +1048,16 @@ private constructor(
             return other is DataSourceConfig &&
                 custom == other.custom &&
                 logs == other.logs &&
-                storedCompletions == other.storedCompletions
+                storedCompletions == other.storedCompletions &&
+                (custom != null ||
+                    logs != null ||
+                    storedCompletions != null ||
+                    _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(custom, logs, storedCompletions)
+        override fun hashCode(): Int =
+            if (custom == null && logs == null && storedCompletions == null) Objects.hash(_json)
+            else Objects.hash(custom, logs, storedCompletions)
 
         override fun toString(): String =
             when {
@@ -2530,11 +2536,25 @@ private constructor(
                 stringCheck == other.stringCheck &&
                 textSimilarity == other.textSimilarity &&
                 python == other.python &&
-                scoreModel == other.scoreModel
+                scoreModel == other.scoreModel &&
+                (labelModel != null ||
+                    stringCheck != null ||
+                    textSimilarity != null ||
+                    python != null ||
+                    scoreModel != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(labelModel, stringCheck, textSimilarity, python, scoreModel)
+            if (
+                labelModel == null &&
+                    stringCheck == null &&
+                    textSimilarity == null &&
+                    python == null &&
+                    scoreModel == null
+            )
+                Objects.hash(_json)
+            else Objects.hash(labelModel, stringCheck, textSimilarity, python, scoreModel)
 
         override fun toString(): String =
             when {
@@ -3266,10 +3286,13 @@ private constructor(
 
                     return other is Input &&
                         simpleInputMessage == other.simpleInputMessage &&
-                        evalItem == other.evalItem
+                        evalItem == other.evalItem &&
+                        (simpleInputMessage != null || evalItem != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(simpleInputMessage, evalItem)
+                override fun hashCode(): Int =
+                    if (simpleInputMessage == null && evalItem == null) Objects.hash(_json)
+                    else Objects.hash(simpleInputMessage, evalItem)
 
                 override fun toString(): String =
                     when {
@@ -4168,18 +4191,35 @@ private constructor(
                                 outputText == other.outputText &&
                                 inputImage == other.inputImage &&
                                 responseInputAudio == other.responseInputAudio &&
-                                graderInputs == other.graderInputs
+                                graderInputs == other.graderInputs &&
+                                (textInput != null ||
+                                    responseInputText != null ||
+                                    outputText != null ||
+                                    inputImage != null ||
+                                    responseInputAudio != null ||
+                                    graderInputs != null ||
+                                    _json == other._json)
                         }
 
                         override fun hashCode(): Int =
-                            Objects.hash(
-                                textInput,
-                                responseInputText,
-                                outputText,
-                                inputImage,
-                                responseInputAudio,
-                                graderInputs,
+                            if (
+                                textInput == null &&
+                                    responseInputText == null &&
+                                    outputText == null &&
+                                    inputImage == null &&
+                                    responseInputAudio == null &&
+                                    graderInputs == null
                             )
+                                Objects.hash(_json)
+                            else
+                                Objects.hash(
+                                    textInput,
+                                    responseInputText,
+                                    outputText,
+                                    inputImage,
+                                    responseInputAudio,
+                                    graderInputs,
+                                )
 
                         override fun toString(): String =
                             when {

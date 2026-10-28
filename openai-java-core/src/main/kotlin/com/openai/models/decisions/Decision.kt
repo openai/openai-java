@@ -482,10 +482,18 @@ private constructor(
                 predicate == other.predicate &&
                 choice == other.choice &&
                 score == other.score &&
-                refusal == other.refusal
+                refusal == other.refusal &&
+                (predicate != null ||
+                    choice != null ||
+                    score != null ||
+                    refusal != null ||
+                    _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(predicate, choice, score, refusal)
+        override fun hashCode(): Int =
+            if (predicate == null && choice == null && score == null && refusal == null)
+                Objects.hash(_json)
+            else Objects.hash(predicate, choice, score, refusal)
 
         override fun toString(): String =
             when {

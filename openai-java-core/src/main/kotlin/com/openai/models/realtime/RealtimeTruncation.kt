@@ -182,10 +182,13 @@ private constructor(
 
         return other is RealtimeTruncation &&
             strategy == other.strategy &&
-            retentionRatio == other.retentionRatio
+            retentionRatio == other.retentionRatio &&
+            (strategy != null || retentionRatio != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(strategy, retentionRatio)
+    override fun hashCode(): Int =
+        if (strategy == null && retentionRatio == null) Objects.hash(_json)
+        else Objects.hash(strategy, retentionRatio)
 
     override fun toString(): String =
         when {

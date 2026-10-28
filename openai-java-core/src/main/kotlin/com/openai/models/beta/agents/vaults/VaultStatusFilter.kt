@@ -143,10 +143,13 @@ private constructor(
 
         return other is VaultStatusFilter &&
             vaultStatus == other.vaultStatus &&
-            vaultStatuses == other.vaultStatuses
+            vaultStatuses == other.vaultStatuses &&
+            (vaultStatus != null || vaultStatuses != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(vaultStatus, vaultStatuses)
+    override fun hashCode(): Int =
+        if (vaultStatus == null && vaultStatuses == null) Objects.hash(_json)
+        else Objects.hash(vaultStatus, vaultStatuses)
 
     override fun toString(): String =
         when {

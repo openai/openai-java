@@ -511,10 +511,15 @@ private constructor(
                 return true
             }
 
-            return other is Usage && tokens == other.tokens && duration == other.duration
+            return other is Usage &&
+                tokens == other.tokens &&
+                duration == other.duration &&
+                (tokens != null || duration != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(tokens, duration)
+        override fun hashCode(): Int =
+            if (tokens == null && duration == null) Objects.hash(_json)
+            else Objects.hash(tokens, duration)
 
         override fun toString(): String =
             when {

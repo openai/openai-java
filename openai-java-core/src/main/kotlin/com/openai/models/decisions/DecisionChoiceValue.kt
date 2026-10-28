@@ -133,10 +133,14 @@ private constructor(
             return true
         }
 
-        return other is DecisionChoiceValue && string == other.string && bool == other.bool
+        return other is DecisionChoiceValue &&
+            string == other.string &&
+            bool == other.bool &&
+            (string != null || bool != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(string, bool)
+    override fun hashCode(): Int =
+        if (string == null && bool == null) Objects.hash(_json) else Objects.hash(string, bool)
 
     override fun toString(): String =
         when {

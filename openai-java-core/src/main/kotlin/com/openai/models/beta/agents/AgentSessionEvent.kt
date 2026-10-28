@@ -818,45 +818,116 @@ private constructor(
             turnReasoningSummaryPartAdded == other.turnReasoningSummaryPartAdded &&
             turnReasoningSummaryPartDone == other.turnReasoningSummaryPartDone &&
             turnReasoningSummaryTextDelta == other.turnReasoningSummaryTextDelta &&
-            turnReasoningSummaryTextDone == other.turnReasoningSummaryTextDone
+            turnReasoningSummaryTextDone == other.turnReasoningSummaryTextDone &&
+            (error != null ||
+                environmentReady != null ||
+                environmentSuspended != null ||
+                environmentExpired != null ||
+                environmentReset != null ||
+                outputCommandExecutionOutputDelta != null ||
+                created != null ||
+                turnCreated != null ||
+                turnInProgress != null ||
+                turnCompleted != null ||
+                turnFailed != null ||
+                turnCancelled != null ||
+                turnItemAdded != null ||
+                idle != null ||
+                inProgress != null ||
+                requiresAction != null ||
+                failed != null ||
+                environmentPending != null ||
+                environmentConnected != null ||
+                environmentDisconnected != null ||
+                environmentFailed != null ||
+                subagentCreated != null ||
+                subagentActive != null ||
+                subagentClosed != null ||
+                turnItemDone != null ||
+                turnContentPartAdded != null ||
+                turnContentPartDone != null ||
+                turnOutputTextDelta != null ||
+                turnOutputTextDone != null ||
+                turnReasoningSummaryPartAdded != null ||
+                turnReasoningSummaryPartDone != null ||
+                turnReasoningSummaryTextDelta != null ||
+                turnReasoningSummaryTextDone != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            error,
-            environmentReady,
-            environmentSuspended,
-            environmentExpired,
-            environmentReset,
-            outputCommandExecutionOutputDelta,
-            created,
-            turnCreated,
-            turnInProgress,
-            turnCompleted,
-            turnFailed,
-            turnCancelled,
-            turnItemAdded,
-            idle,
-            inProgress,
-            requiresAction,
-            failed,
-            environmentPending,
-            environmentConnected,
-            environmentDisconnected,
-            environmentFailed,
-            subagentCreated,
-            subagentActive,
-            subagentClosed,
-            turnItemDone,
-            turnContentPartAdded,
-            turnContentPartDone,
-            turnOutputTextDelta,
-            turnOutputTextDone,
-            turnReasoningSummaryPartAdded,
-            turnReasoningSummaryPartDone,
-            turnReasoningSummaryTextDelta,
-            turnReasoningSummaryTextDone,
+        if (
+            error == null &&
+                environmentReady == null &&
+                environmentSuspended == null &&
+                environmentExpired == null &&
+                environmentReset == null &&
+                outputCommandExecutionOutputDelta == null &&
+                created == null &&
+                turnCreated == null &&
+                turnInProgress == null &&
+                turnCompleted == null &&
+                turnFailed == null &&
+                turnCancelled == null &&
+                turnItemAdded == null &&
+                idle == null &&
+                inProgress == null &&
+                requiresAction == null &&
+                failed == null &&
+                environmentPending == null &&
+                environmentConnected == null &&
+                environmentDisconnected == null &&
+                environmentFailed == null &&
+                subagentCreated == null &&
+                subagentActive == null &&
+                subagentClosed == null &&
+                turnItemDone == null &&
+                turnContentPartAdded == null &&
+                turnContentPartDone == null &&
+                turnOutputTextDelta == null &&
+                turnOutputTextDone == null &&
+                turnReasoningSummaryPartAdded == null &&
+                turnReasoningSummaryPartDone == null &&
+                turnReasoningSummaryTextDelta == null &&
+                turnReasoningSummaryTextDone == null
         )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                error,
+                environmentReady,
+                environmentSuspended,
+                environmentExpired,
+                environmentReset,
+                outputCommandExecutionOutputDelta,
+                created,
+                turnCreated,
+                turnInProgress,
+                turnCompleted,
+                turnFailed,
+                turnCancelled,
+                turnItemAdded,
+                idle,
+                inProgress,
+                requiresAction,
+                failed,
+                environmentPending,
+                environmentConnected,
+                environmentDisconnected,
+                environmentFailed,
+                subagentCreated,
+                subagentActive,
+                subagentClosed,
+                turnItemDone,
+                turnContentPartAdded,
+                turnContentPartDone,
+                turnOutputTextDelta,
+                turnOutputTextDone,
+                turnReasoningSummaryPartAdded,
+                turnReasoningSummaryPartDone,
+                turnReasoningSummaryTextDelta,
+                turnReasoningSummaryTextDone,
+            )
 
     override fun toString(): String =
         when {

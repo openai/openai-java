@@ -141,10 +141,13 @@ private constructor(
 
         return other is AgentFunctionCallOutputParam &&
             string == other.string &&
-            inputContentParams == other.inputContentParams
+            inputContentParams == other.inputContentParams &&
+            (string != null || inputContentParams != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(string, inputContentParams)
+    override fun hashCode(): Int =
+        if (string == null && inputContentParams == null) Objects.hash(_json)
+        else Objects.hash(string, inputContentParams)
 
     override fun toString(): String =
         when {

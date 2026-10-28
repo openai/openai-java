@@ -1135,23 +1135,50 @@ private constructor(
                         other.organizationUsageCodeInterpreterSessions &&
                     organizationUsageFileSearches == other.organizationUsageFileSearches &&
                     organizationUsageWebSearches == other.organizationUsageWebSearches &&
-                    organizationCosts == other.organizationCosts
+                    organizationCosts == other.organizationCosts &&
+                    (organizationUsageCompletions != null ||
+                        organizationUsageEmbeddings != null ||
+                        organizationUsageModerations != null ||
+                        organizationUsageImages != null ||
+                        organizationUsageAudioSpeeches != null ||
+                        organizationUsageAudioTranscriptions != null ||
+                        organizationUsageVectorStores != null ||
+                        organizationUsageCodeInterpreterSessions != null ||
+                        organizationUsageFileSearches != null ||
+                        organizationUsageWebSearches != null ||
+                        organizationCosts != null ||
+                        _json == other._json)
             }
 
             override fun hashCode(): Int =
-                Objects.hash(
-                    organizationUsageCompletions,
-                    organizationUsageEmbeddings,
-                    organizationUsageModerations,
-                    organizationUsageImages,
-                    organizationUsageAudioSpeeches,
-                    organizationUsageAudioTranscriptions,
-                    organizationUsageVectorStores,
-                    organizationUsageCodeInterpreterSessions,
-                    organizationUsageFileSearches,
-                    organizationUsageWebSearches,
-                    organizationCosts,
+                if (
+                    organizationUsageCompletions == null &&
+                        organizationUsageEmbeddings == null &&
+                        organizationUsageModerations == null &&
+                        organizationUsageImages == null &&
+                        organizationUsageAudioSpeeches == null &&
+                        organizationUsageAudioTranscriptions == null &&
+                        organizationUsageVectorStores == null &&
+                        organizationUsageCodeInterpreterSessions == null &&
+                        organizationUsageFileSearches == null &&
+                        organizationUsageWebSearches == null &&
+                        organizationCosts == null
                 )
+                    Objects.hash(_json)
+                else
+                    Objects.hash(
+                        organizationUsageCompletions,
+                        organizationUsageEmbeddings,
+                        organizationUsageModerations,
+                        organizationUsageImages,
+                        organizationUsageAudioSpeeches,
+                        organizationUsageAudioTranscriptions,
+                        organizationUsageVectorStores,
+                        organizationUsageCodeInterpreterSessions,
+                        organizationUsageFileSearches,
+                        organizationUsageWebSearches,
+                        organizationCosts,
+                    )
 
             override fun toString(): String =
                 when {

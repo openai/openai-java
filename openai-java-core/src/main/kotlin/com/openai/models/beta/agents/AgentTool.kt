@@ -241,11 +241,35 @@ private constructor(
             mcp == other.mcp &&
             webSearch == other.webSearch &&
             computerUse == other.computerUse &&
-            automations == other.automations
+            automations == other.automations &&
+            (function != null ||
+                programmaticToolCalling != null ||
+                mcp != null ||
+                webSearch != null ||
+                computerUse != null ||
+                automations != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(function, programmaticToolCalling, mcp, webSearch, computerUse, automations)
+        if (
+            function == null &&
+                programmaticToolCalling == null &&
+                mcp == null &&
+                webSearch == null &&
+                computerUse == null &&
+                automations == null
+        )
+            Objects.hash(_json)
+        else
+            Objects.hash(
+                function,
+                programmaticToolCalling,
+                mcp,
+                webSearch,
+                computerUse,
+                automations,
+            )
 
     override fun toString(): String =
         when {

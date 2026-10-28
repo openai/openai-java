@@ -153,10 +153,12 @@ private constructor(
 
         return other is HostedEnvironmentFileParam &&
             fileId == other.fileId &&
-            inline == other.inline
+            inline == other.inline &&
+            (fileId != null || inline != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(fileId, inline)
+    override fun hashCode(): Int =
+        if (fileId == null && inline == null) Objects.hash(_json) else Objects.hash(fileId, inline)
 
     override fun toString(): String =
         when {

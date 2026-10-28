@@ -145,10 +145,13 @@ private constructor(
 
         return other is ChatCompletionMessageToolCall &&
             function == other.function &&
-            custom == other.custom
+            custom == other.custom &&
+            (function != null || custom != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(function, custom)
+    override fun hashCode(): Int =
+        if (function == null && custom == null) Objects.hash(_json)
+        else Objects.hash(function, custom)
 
     override fun toString(): String =
         when {

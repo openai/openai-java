@@ -2034,10 +2034,13 @@ private constructor(
 
             return other is Image &&
                 inputStream == other.inputStream &&
-                inputStreams == other.inputStreams
+                inputStreams == other.inputStreams &&
+                (inputStream != null || inputStreams != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(inputStream, inputStreams)
+        override fun hashCode(): Int =
+            if (inputStream == null && inputStreams == null) Objects.hash(_json)
+            else Objects.hash(inputStream, inputStreams)
 
         override fun toString(): String =
             when {

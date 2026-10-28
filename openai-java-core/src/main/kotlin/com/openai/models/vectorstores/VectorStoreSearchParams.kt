@@ -914,10 +914,15 @@ private constructor(
                 return true
             }
 
-            return other is Query && string == other.string && strings == other.strings
+            return other is Query &&
+                string == other.string &&
+                strings == other.strings &&
+                (string != null || strings != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(string, strings)
+        override fun hashCode(): Int =
+            if (string == null && strings == null) Objects.hash(_json)
+            else Objects.hash(string, strings)
 
         override fun toString(): String =
             when {
@@ -1138,10 +1143,13 @@ private constructor(
 
             return other is Filters &&
                 comparisonFilter == other.comparisonFilter &&
-                compoundFilter == other.compoundFilter
+                compoundFilter == other.compoundFilter &&
+                (comparisonFilter != null || compoundFilter != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(comparisonFilter, compoundFilter)
+        override fun hashCode(): Int =
+            if (comparisonFilter == null && compoundFilter == null) Objects.hash(_json)
+            else Objects.hash(comparisonFilter, compoundFilter)
 
         override fun toString(): String =
             when {

@@ -472,11 +472,23 @@ private constructor(
             return other is Session &&
                 realtimeSessionCreateRequest == other.realtimeSessionCreateRequest &&
                 realtimeTranscriptionSessionCreateRequest ==
-                    other.realtimeTranscriptionSessionCreateRequest
+                    other.realtimeTranscriptionSessionCreateRequest &&
+                (realtimeSessionCreateRequest != null ||
+                    realtimeTranscriptionSessionCreateRequest != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(realtimeSessionCreateRequest, realtimeTranscriptionSessionCreateRequest)
+            if (
+                realtimeSessionCreateRequest == null &&
+                    realtimeTranscriptionSessionCreateRequest == null
+            )
+                Objects.hash(_json)
+            else
+                Objects.hash(
+                    realtimeSessionCreateRequest,
+                    realtimeTranscriptionSessionCreateRequest,
+                )
 
         override fun toString(): String =
             when {

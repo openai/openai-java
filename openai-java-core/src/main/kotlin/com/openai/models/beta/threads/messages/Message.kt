@@ -1231,11 +1231,16 @@ private constructor(
 
                 return other is Tool &&
                     codeInterpreter == other.codeInterpreter &&
-                    assistantToolsFileSearchTypeOnly == other.assistantToolsFileSearchTypeOnly
+                    assistantToolsFileSearchTypeOnly == other.assistantToolsFileSearchTypeOnly &&
+                    (codeInterpreter != null ||
+                        assistantToolsFileSearchTypeOnly != null ||
+                        _json == other._json)
             }
 
             override fun hashCode(): Int =
-                Objects.hash(codeInterpreter, assistantToolsFileSearchTypeOnly)
+                if (codeInterpreter == null && assistantToolsFileSearchTypeOnly == null)
+                    Objects.hash(_json)
+                else Objects.hash(codeInterpreter, assistantToolsFileSearchTypeOnly)
 
             override fun toString(): String =
                 when {

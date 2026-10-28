@@ -219,11 +219,17 @@ private constructor(
         return other is RealtimeTranslationClientEvent &&
             sessionUpdate == other.sessionUpdate &&
             sessionInputAudioBufferAppend == other.sessionInputAudioBufferAppend &&
-            sessionClose == other.sessionClose
+            sessionClose == other.sessionClose &&
+            (sessionUpdate != null ||
+                sessionInputAudioBufferAppend != null ||
+                sessionClose != null ||
+                _json == other._json)
     }
 
     override fun hashCode(): Int =
-        Objects.hash(sessionUpdate, sessionInputAudioBufferAppend, sessionClose)
+        if (sessionUpdate == null && sessionInputAudioBufferAppend == null && sessionClose == null)
+            Objects.hash(_json)
+        else Objects.hash(sessionUpdate, sessionInputAudioBufferAppend, sessionClose)
 
     override fun toString(): String =
         when {

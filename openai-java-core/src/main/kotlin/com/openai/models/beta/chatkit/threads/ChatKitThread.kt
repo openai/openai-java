@@ -574,10 +574,13 @@ private constructor(
             return other is Status &&
                 active == other.active &&
                 locked == other.locked &&
-                closed == other.closed
+                closed == other.closed &&
+                (active != null || locked != null || closed != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(active, locked, closed)
+        override fun hashCode(): Int =
+            if (active == null && locked == null && closed == null) Objects.hash(_json)
+            else Objects.hash(active, locked, closed)
 
         override fun toString(): String =
             when {

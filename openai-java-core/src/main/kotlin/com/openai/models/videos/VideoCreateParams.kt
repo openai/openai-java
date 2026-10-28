@@ -881,10 +881,13 @@ private constructor(
 
             return other is InputReference &&
                 stream == other.stream &&
-                imageInputReferenceParam == other.imageInputReferenceParam
+                imageInputReferenceParam == other.imageInputReferenceParam &&
+                (stream != null || imageInputReferenceParam != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(stream, imageInputReferenceParam)
+        override fun hashCode(): Int =
+            if (stream == null && imageInputReferenceParam == null) Objects.hash(_json)
+            else Objects.hash(stream, imageInputReferenceParam)
 
         override fun toString(): String =
             when {

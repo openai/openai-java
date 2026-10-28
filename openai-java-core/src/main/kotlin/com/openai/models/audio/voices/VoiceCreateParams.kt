@@ -371,10 +371,15 @@ private constructor(
                 return true
             }
 
-            return other is Body && audioSample == other.audioSample && prompt == other.prompt
+            return other is Body &&
+                audioSample == other.audioSample &&
+                prompt == other.prompt &&
+                (audioSample != null || prompt != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(audioSample, prompt)
+        override fun hashCode(): Int =
+            if (audioSample == null && prompt == null) Objects.hash(_json)
+            else Objects.hash(audioSample, prompt)
 
         override fun toString(): String =
             when {

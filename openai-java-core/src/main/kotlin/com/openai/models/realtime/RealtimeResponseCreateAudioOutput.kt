@@ -556,10 +556,13 @@ private constructor(
                 return other is Voice &&
                     string == other.string &&
                     unionMember1 == other.unionMember1 &&
-                    id == other.id
+                    id == other.id &&
+                    (string != null || unionMember1 != null || id != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(string, unionMember1, id)
+            override fun hashCode(): Int =
+                if (string == null && unionMember1 == null && id == null) Objects.hash(_json)
+                else Objects.hash(string, unionMember1, id)
 
             override fun toString(): String =
                 when {

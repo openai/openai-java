@@ -1016,28 +1016,65 @@ private constructor(
                 namespace == other.namespace &&
                 search == other.search &&
                 betaWebSearchPreview == other.betaWebSearchPreview &&
-                applyPatch == other.applyPatch
+                applyPatch == other.applyPatch &&
+                (function != null ||
+                    fileSearch != null ||
+                    computer != null ||
+                    computerUsePreview != null ||
+                    betaWebSearch != null ||
+                    mcp != null ||
+                    codeInterpreter != null ||
+                    programmaticToolCalling != null ||
+                    imageGeneration != null ||
+                    localShell != null ||
+                    shell != null ||
+                    custom != null ||
+                    namespace != null ||
+                    search != null ||
+                    betaWebSearchPreview != null ||
+                    applyPatch != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(
-                function,
-                fileSearch,
-                computer,
-                computerUsePreview,
-                betaWebSearch,
-                mcp,
-                codeInterpreter,
-                programmaticToolCalling,
-                imageGeneration,
-                localShell,
-                shell,
-                custom,
-                namespace,
-                search,
-                betaWebSearchPreview,
-                applyPatch,
+            if (
+                function == null &&
+                    fileSearch == null &&
+                    computer == null &&
+                    computerUsePreview == null &&
+                    betaWebSearch == null &&
+                    mcp == null &&
+                    codeInterpreter == null &&
+                    programmaticToolCalling == null &&
+                    imageGeneration == null &&
+                    localShell == null &&
+                    shell == null &&
+                    custom == null &&
+                    namespace == null &&
+                    search == null &&
+                    betaWebSearchPreview == null &&
+                    applyPatch == null
             )
+                Objects.hash(_json)
+            else
+                Objects.hash(
+                    function,
+                    fileSearch,
+                    computer,
+                    computerUsePreview,
+                    betaWebSearch,
+                    mcp,
+                    codeInterpreter,
+                    programmaticToolCalling,
+                    imageGeneration,
+                    localShell,
+                    shell,
+                    custom,
+                    namespace,
+                    search,
+                    betaWebSearchPreview,
+                    applyPatch,
+                )
 
         override fun toString(): String =
             when {
@@ -2437,10 +2474,13 @@ private constructor(
 
                     return other is AllowedTools &&
                         mcp == other.mcp &&
-                        mcpToolFilter == other.mcpToolFilter
+                        mcpToolFilter == other.mcpToolFilter &&
+                        (mcp != null || mcpToolFilter != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(mcp, mcpToolFilter)
+                override fun hashCode(): Int =
+                    if (mcp == null && mcpToolFilter == null) Objects.hash(_json)
+                    else Objects.hash(mcp, mcpToolFilter)
 
                 override fun toString(): String =
                     when {
@@ -3298,11 +3338,16 @@ private constructor(
 
                     return other is RequireApproval &&
                         mcpToolApprovalFilter == other.mcpToolApprovalFilter &&
-                        mcpToolApprovalSetting == other.mcpToolApprovalSetting
+                        mcpToolApprovalSetting == other.mcpToolApprovalSetting &&
+                        (mcpToolApprovalFilter != null ||
+                            mcpToolApprovalSetting != null ||
+                            _json == other._json)
                 }
 
                 override fun hashCode(): Int =
-                    Objects.hash(mcpToolApprovalFilter, mcpToolApprovalSetting)
+                    if (mcpToolApprovalFilter == null && mcpToolApprovalSetting == null)
+                        Objects.hash(_json)
+                    else Objects.hash(mcpToolApprovalFilter, mcpToolApprovalSetting)
 
                 override fun toString(): String =
                     when {
@@ -4846,10 +4891,13 @@ private constructor(
 
                     return other is Container &&
                         string == other.string &&
-                        codeInterpreterToolAuto == other.codeInterpreterToolAuto
+                        codeInterpreterToolAuto == other.codeInterpreterToolAuto &&
+                        (string != null || codeInterpreterToolAuto != null || _json == other._json)
                 }
 
-                override fun hashCode(): Int = Objects.hash(string, codeInterpreterToolAuto)
+                override fun hashCode(): Int =
+                    if (string == null && codeInterpreterToolAuto == null) Objects.hash(_json)
+                    else Objects.hash(string, codeInterpreterToolAuto)
 
                 override fun toString(): String =
                     when {
@@ -5612,10 +5660,13 @@ private constructor(
 
                             return other is NetworkPolicy &&
                                 disabled == other.disabled &&
-                                allowlist == other.allowlist
+                                allowlist == other.allowlist &&
+                                (disabled != null || allowlist != null || _json == other._json)
                         }
 
-                        override fun hashCode(): Int = Objects.hash(disabled, allowlist)
+                        override fun hashCode(): Int =
+                            if (disabled == null && allowlist == null) Objects.hash(_json)
+                            else Objects.hash(disabled, allowlist)
 
                         override fun toString(): String =
                             when {

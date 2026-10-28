@@ -1837,11 +1837,21 @@ private constructor(
             return other is RequiredAction &&
                 computerUseApprovalRequest == other.computerUseApprovalRequest &&
                 functionCall == other.functionCall &&
-                environmentConnection == other.environmentConnection
+                environmentConnection == other.environmentConnection &&
+                (computerUseApprovalRequest != null ||
+                    functionCall != null ||
+                    environmentConnection != null ||
+                    _json == other._json)
         }
 
         override fun hashCode(): Int =
-            Objects.hash(computerUseApprovalRequest, functionCall, environmentConnection)
+            if (
+                computerUseApprovalRequest == null &&
+                    functionCall == null &&
+                    environmentConnection == null
+            )
+                Objects.hash(_json)
+            else Objects.hash(computerUseApprovalRequest, functionCall, environmentConnection)
 
         override fun toString(): String =
             when {
@@ -2416,11 +2426,16 @@ private constructor(
 
                     return other is Request &&
                         browserAuthentication == other.browserAuthentication &&
-                        browserOriginAccess == other.browserOriginAccess
+                        browserOriginAccess == other.browserOriginAccess &&
+                        (browserAuthentication != null ||
+                            browserOriginAccess != null ||
+                            _json == other._json)
                 }
 
                 override fun hashCode(): Int =
-                    Objects.hash(browserAuthentication, browserOriginAccess)
+                    if (browserAuthentication == null && browserOriginAccess == null)
+                        Objects.hash(_json)
+                    else Objects.hash(browserAuthentication, browserOriginAccess)
 
                 override fun toString(): String =
                     when {

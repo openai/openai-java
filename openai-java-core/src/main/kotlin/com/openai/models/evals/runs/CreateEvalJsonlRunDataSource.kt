@@ -384,10 +384,15 @@ private constructor(
                 return true
             }
 
-            return other is Source && fileContent == other.fileContent && fileId == other.fileId
+            return other is Source &&
+                fileContent == other.fileContent &&
+                fileId == other.fileId &&
+                (fileContent != null || fileId != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(fileContent, fileId)
+        override fun hashCode(): Int =
+            if (fileContent == null && fileId == null) Objects.hash(_json)
+            else Objects.hash(fileContent, fileId)
 
         override fun toString(): String =
             when {

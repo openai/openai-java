@@ -232,10 +232,13 @@ private constructor(
 
         return other is ResponsesClientEvent &&
             responseCreate == other.responseCreate &&
-            responseSteer == other.responseSteer
+            responseSteer == other.responseSteer &&
+            (responseCreate != null || responseSteer != null || _json == other._json)
     }
 
-    override fun hashCode(): Int = Objects.hash(responseCreate, responseSteer)
+    override fun hashCode(): Int =
+        if (responseCreate == null && responseSteer == null) Objects.hash(_json)
+        else Objects.hash(responseCreate, responseSteer)
 
     override fun toString(): String =
         when {
@@ -3405,10 +3408,13 @@ private constructor(
 
                 return other is Conversation &&
                     id == other.id &&
-                    responseConversationParam == other.responseConversationParam
+                    responseConversationParam == other.responseConversationParam &&
+                    (id != null || responseConversationParam != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(id, responseConversationParam)
+            override fun hashCode(): Int =
+                if (id == null && responseConversationParam == null) Objects.hash(_json)
+                else Objects.hash(id, responseConversationParam)
 
             override fun toString(): String =
                 when {
@@ -3648,10 +3654,15 @@ private constructor(
                     return true
                 }
 
-                return other is Input && text == other.text && response == other.response
+                return other is Input &&
+                    text == other.text &&
+                    response == other.response &&
+                    (text != null || response != null || _json == other._json)
             }
 
-            override fun hashCode(): Int = Objects.hash(text, response)
+            override fun hashCode(): Int =
+                if (text == null && response == null) Objects.hash(_json)
+                else Objects.hash(text, response)
 
             override fun toString(): String =
                 when {
@@ -6545,21 +6556,44 @@ private constructor(
                     specificProgrammaticToolCallingParam ==
                         other.specificProgrammaticToolCallingParam &&
                     applyPatch == other.applyPatch &&
-                    shell == other.shell
+                    shell == other.shell &&
+                    (options != null ||
+                        allowed != null ||
+                        types != null ||
+                        function != null ||
+                        mcp != null ||
+                        custom != null ||
+                        specificProgrammaticToolCallingParam != null ||
+                        applyPatch != null ||
+                        shell != null ||
+                        _json == other._json)
             }
 
             override fun hashCode(): Int =
-                Objects.hash(
-                    options,
-                    allowed,
-                    types,
-                    function,
-                    mcp,
-                    custom,
-                    specificProgrammaticToolCallingParam,
-                    applyPatch,
-                    shell,
+                if (
+                    options == null &&
+                        allowed == null &&
+                        types == null &&
+                        function == null &&
+                        mcp == null &&
+                        custom == null &&
+                        specificProgrammaticToolCallingParam == null &&
+                        applyPatch == null &&
+                        shell == null
                 )
+                    Objects.hash(_json)
+                else
+                    Objects.hash(
+                        options,
+                        allowed,
+                        types,
+                        function,
+                        mcp,
+                        custom,
+                        specificProgrammaticToolCallingParam,
+                        applyPatch,
+                        shell,
+                    )
 
             override fun toString(): String =
                 when {

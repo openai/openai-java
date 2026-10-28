@@ -1207,10 +1207,14 @@ private constructor(
                 return true
             }
 
-            return other is MaxOutputTokens && integer == other.integer && inf == other.inf
+            return other is MaxOutputTokens &&
+                integer == other.integer &&
+                inf == other.inf &&
+                (integer != null || inf != null || _json == other._json)
         }
 
-        override fun hashCode(): Int = Objects.hash(integer, inf)
+        override fun hashCode(): Int =
+            if (integer == null && inf == null) Objects.hash(_json) else Objects.hash(integer, inf)
 
         override fun toString(): String =
             when {
