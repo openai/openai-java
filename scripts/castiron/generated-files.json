@@ -2035,7 +2035,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/agents/sessions/SessionListParams.kt": {
       "mode": "100644",
-      "sha256": "59dd40f07931d29b66fafb9b871153cdaba4ea1280534a9fcf4e3b61da86d9fd"
+      "sha256": "4c3ff3165ddb61651bb7d322ebe7e5790b6750319988d1610b7260e90c56ddd6"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/beta/agents/sessions/SessionRetrieveParams.kt": {
       "mode": "100644",
@@ -10343,7 +10343,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/agents/sessions/SessionListParamsTest.kt": {
       "mode": "100644",
-      "sha256": "7f740bb51eedae0a83740b649e6c79fe98cbc8accdec3729ffaeb161396c2fd2"
+      "sha256": "cb95478f5ec88b20a35609950847fd59e56e87d0dfd3321dced35662373711bc"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/beta/agents/sessions/SessionRetrieveParamsTest.kt": {
       "mode": "100644",
