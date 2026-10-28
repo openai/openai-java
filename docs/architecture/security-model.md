@@ -3,12 +3,12 @@
 Generated files are updated through authoritative inputs or the compiler and
 regeneration; handwritten edits to them are forbidden. Code review enforces this
 ownership rule. Canonical regeneration retires the legacy budget/reporting
-workflows and publisher; they are not part of the simplified workflow's trust
-model. Do not recreate them or introduce a replacement budget system.
-Repository rules and hosted workflow settings are separate: inspect their
-actual state and required checks rather than assuming source-file removal
-changes those settings. If reviewing an older revision that still contains the
-retired tooling, review its implementation and security boundaries at that revision.
+workflows and publisher. Determine whether the publisher boundary below applies
+by checking the files in the revision being reviewed; do not infer retirement
+from this documentation change. After canonical removal, do not recreate the
+tooling or introduce a replacement budget system.
+Repository rules and hosted workflow settings are separate: inspect their actual
+state and required checks rather than assuming source-file removal changes them.
 
 This is the repository's single canonical detailed threat model. Use it for
 security review and Codex Security scans of the revision being reviewed.
@@ -120,6 +120,26 @@ not exposed to the attestation action.
   build/release authority. The security boundary is externally enforced branch
   governance, CODEOWNERS/rulesets, verified release selection, and protected
   environments—not an imagined sandbox around checked-in source.
+
+### Legacy publisher boundary — only while present
+
+If `.github/workflows/castiron-custom-code-comment.yml` and its
+`scripts/castiron` publisher exist in the reviewed revision, they remain an
+active privileged boundary. The `workflow_run` job evaluates candidate Git
+objects using a trusted checkout and publishes statuses with `statuses: write`.
+A PR author controls those candidate objects but must not gain execution with
+that publishing authority or forge an authoritative result. Preserve trusted-code
+selection, event/repository/revision binding, artifact validation, exact-head
+freshness checks, and least-privilege permissions. Review their implementation
+in that revision, including the protocol in `scripts/castiron/CUSTOM_CODE.md`.
+
+The review hypothesis is that mutable PR Git objects or artifacts could be
+accepted as trusted code or as an unbound status result. Such a bypass crosses a
+privilege boundary beyond ordinary PR CI and remains reportable while this
+publisher exists. Once canonical regeneration deletes the workflow and publisher,
+this component and hypothesis no longer apply; the runtime, ordinary CI, cache,
+and release boundaries elsewhere in this model still apply. Hosted rules must
+still be verified separately.
 
 ### Gradle cache accepted risk and assumptions
 
