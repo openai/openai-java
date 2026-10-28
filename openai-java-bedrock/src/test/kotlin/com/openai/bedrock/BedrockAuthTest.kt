@@ -48,16 +48,15 @@ internal class BedrockAuthTest {
                 )
                 .resolve(getenv = { null }, regionProvider = { null })
 
-        val signed =
-            configuration.authenticator.authenticate(
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .baseUrl("https://bedrock-mantle.us-east-1.api.aws/openai/v1")
-                    .addPathSegment("responses")
-                    .putHeader("Content-Type", requestFixture["contentType"].asText())
-                    .body(StringBody(requestFixture["body"].asText()))
-                    .build()
-            )
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.POST)
+                .baseUrl("https://bedrock-mantle.us-east-1.api.aws/openai/v1")
+                .addPathSegment("responses")
+                .putHeader("Content-Type", requestFixture["contentType"].asText())
+                .body(StringBody(requestFixture["body"].asText()))
+                .build()
+        val signed = configuration.authenticator.authenticate(request)
 
         assertThat(signed.headers.values("X-Amz-Date")).containsExactly(expected["date"].asText())
         assertThat(signed.headers.values("X-Amz-Content-Sha256"))
@@ -66,6 +65,17 @@ internal class BedrockAuthTest {
             .containsExactly(credentials["sessionToken"].asText())
         assertThat(signed.headers.values("Authorization"))
             .containsExactly(expected["authorization"].asText())
+        assertThat(signed.headers.values("Proxy-Authorization")).isEmpty()
+
+        val proxyHeaders = listOf("Basic Zml4dHVyZTpmaXh0dXJl", "Basic c2Vjb25kOmZpeHR1cmU=")
+        val signedWithProxy =
+            configuration.authenticator.authenticate(
+                request.toBuilder().putHeaders("pRoXy-AuThOrIzAtIoN", proxyHeaders).build()
+            )
+        assertThat(signedWithProxy.headers.values("Authorization"))
+            .containsExactly(expected["authorization"].asText())
+        assertThat(signedWithProxy.headers.values("Proxy-Authorization"))
+            .containsExactlyElementsOf(proxyHeaders)
     }
 
     @Test

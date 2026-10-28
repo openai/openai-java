@@ -453,7 +453,14 @@ private class SigV4Authenticator(
                     .putProperty(HttpSigner.SIGNING_CLOCK, clock)
             }
 
-        return preparedRequest.toBuilder().headers(signed.request().headers()).build()
+        return preparedRequest
+            .toBuilder()
+            .headers(signed.request().headers())
+            .putHeaders(
+                "Proxy-Authorization",
+                preparedRequest.headers.values("Proxy-Authorization"),
+            )
+            .build()
     }
 
     override fun close() {
@@ -521,7 +528,10 @@ private fun HttpRequest.toAwsRequest(uri: URI): SdkHttpRequest {
     val builder =
         SdkHttpRequest.builder().uri(uri).method(SdkHttpMethod.fromValue(method.name)).apply {
             this@toAwsRequest.headers.names().forEach { name ->
-                if (!name.equals("connection", ignoreCase = true)) {
+                if (
+                    !name.equals("connection", ignoreCase = true) &&
+                        !name.equals("proxy-authorization", ignoreCase = true)
+                ) {
                     this@toAwsRequest.headers.values(name).forEach { value ->
                         appendHeader(name, value)
                     }
