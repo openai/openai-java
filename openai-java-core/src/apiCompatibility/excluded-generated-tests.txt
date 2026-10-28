@@ -29,3 +29,16 @@ openai-java-core/src/test/kotlin/com/openai/services/ResponseStreamEventValidati
 # Scoped to the beta credential update API documented here:
 # https://developers.openai.com/api/reference/java/resources/beta/subresources/agents/subresources/vaults
 openai-java-core/src/test/kotlin/com/openai/models/beta/agents/vaults/credentials/CredentialAuthRotateParamTest.kt
+
+# Next-major Live migration: item objects become typed unions and delegation questions
+# use shared DecisionQuestion. Matching curated fixtures preserve every other expression.
+# These exceptions are scoped to next; current model/transport tests remain enabled.
+openai-java-core/src/test/kotlin/com/openai/models/live/ClientEventTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/live/DecisionItemCreateEventTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/live/DecisionItemCreatedEventTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/live/LiveDecisionsOmittedListTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/live/ServerEventTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/live/forks/ForkClientEventTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/live/forks/ForkServerEventTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/live/sideband/SidebandClientEventTest.kt
+openai-java-core/src/test/kotlin/com/openai/models/live/sideband/SidebandServerEventTest.kt
