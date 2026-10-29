@@ -778,6 +778,7 @@ private constructor(
         private val serviceTier: JsonField<ServiceTier>,
         private val text: JsonField<AgentText>,
         private val tools: JsonField<List<AgentTool>>,
+        private val compaction: JsonField<Compaction>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -802,6 +803,9 @@ private constructor(
             @JsonProperty("tools")
             @ExcludeMissing
             tools: JsonField<List<AgentTool>> = JsonMissing.of(),
+            @JsonProperty("compaction")
+            @ExcludeMissing
+            compaction: JsonField<Compaction> = JsonMissing.of(),
         ) : this(
             id,
             instructions,
@@ -812,6 +816,7 @@ private constructor(
             serviceTier,
             text,
             tools,
+            compaction,
             mutableMapOf(),
         )
 
@@ -889,6 +894,14 @@ private constructor(
         fun tools(): List<AgentTool> = tools.getRequired("tools")
 
         /**
+         * The effective context compaction settings.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun compaction(): Optional<Compaction> = compaction.getOptional("compaction")
+
+        /**
          * Returns the raw JSON value of [id].
          *
          * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -960,6 +973,15 @@ private constructor(
          */
         @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<AgentTool>> = tools
 
+        /**
+         * Returns the raw JSON value of [compaction].
+         *
+         * Unlike [compaction], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("compaction")
+        @ExcludeMissing
+        fun _compaction(): JsonField<Compaction> = compaction
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -985,6 +1007,7 @@ private constructor(
                 "service_tier" to this.serviceTier,
                 "text" to this.text,
                 "tools" to this.tools,
+                "compaction" to this.compaction,
             )
 
         /**
@@ -1032,6 +1055,7 @@ private constructor(
             private var serviceTier: JsonField<ServiceTier>? = null
             private var text: JsonField<AgentText>? = null
             private var tools: JsonField<MutableList<AgentTool>>? = null
+            private var compaction: JsonField<Compaction> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1045,6 +1069,7 @@ private constructor(
                 serviceTier = agent.serviceTier
                 text = agent.text
                 tools = agent.tools.map { it.toMutableList() }
+                compaction = agent.compaction
                 additionalProperties = agent.additionalProperties.toMutableMap()
             }
 
@@ -1236,6 +1261,20 @@ private constructor(
             /** Alias for calling [addTool] with `AgentTool.ofAutomations()`. */
             fun addToolAutomations() = addTool(AgentTool.ofAutomations())
 
+            /** The effective context compaction settings. */
+            fun compaction(compaction: Compaction) = compaction(JsonField.of(compaction))
+
+            /**
+             * Sets [Builder.compaction] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.compaction] with a well-typed [Compaction] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun compaction(compaction: JsonField<Compaction>) = apply {
+                this.compaction = compaction
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -1284,6 +1323,7 @@ private constructor(
                     checkRequired("serviceTier", serviceTier),
                     checkRequired("text", text),
                     checkRequired("tools", tools).map { it.toImmutable() },
+                    compaction,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -1313,6 +1353,7 @@ private constructor(
             serviceTier().validate()
             text().validate()
             tools().forEach { it.validate() }
+            compaction().ifPresent { it.validate() }
             validated = true
         }
 
@@ -1340,7 +1381,8 @@ private constructor(
                 (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
                 (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
                 (text.asKnown().getOrNull()?.validity() ?: 0) +
-                (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+                (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (compaction.asKnown().getOrNull()?.validity() ?: 0)
 
         /** The effective service-tier policy for model requests. Defaults to `auto`. */
         class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
@@ -1508,6 +1550,197 @@ private constructor(
             override fun toString() = value.toString()
         }
 
+        /** The effective context compaction settings. */
+        class Compaction
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val async: JsonField<Boolean>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("async") @ExcludeMissing async: JsonField<Boolean> = JsonMissing.of()
+            ) : this(async, mutableMapOf())
+
+            /**
+             * Whether context is compacted in the background. Defaults to true.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun async(): Boolean = async.getRequired("async")
+
+            /**
+             * Returns the raw JSON value of [async].
+             *
+             * Unlike [async], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("async") @ExcludeMissing fun _async(): JsonField<Boolean> = async
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(additionalProperties, "async" to this.async)
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Compaction].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .async()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Compaction]. */
+            class Builder internal constructor() {
+
+                private var async: JsonField<Boolean>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(compaction: Compaction) = apply {
+                    async = compaction.async
+                    additionalProperties = compaction.additionalProperties.toMutableMap()
+                }
+
+                /** Whether context is compacted in the background. Defaults to true. */
+                fun async(async: Boolean) = async(JsonField.of(async))
+
+                /**
+                 * Sets [Builder.async] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.async] with a well-typed [Boolean] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun async(async: JsonField<Boolean>) = apply { this.async = async }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Compaction].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .async()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Compaction =
+                    Compaction(checkRequired("async", async), additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Compaction = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                async()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = (if (async.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Compaction &&
+                    async == other.async &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(async, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Compaction{async=$async, additionalProperties=$additionalProperties}"
+        }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1523,6 +1756,7 @@ private constructor(
                 serviceTier == other.serviceTier &&
                 text == other.text &&
                 tools == other.tools &&
+                compaction == other.compaction &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -1537,6 +1771,7 @@ private constructor(
                 serviceTier,
                 text,
                 tools,
+                compaction,
                 additionalProperties,
             )
         }
@@ -1544,7 +1779,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Agent{id=$id, instructions=$instructions, model=$model, multiAgent=$multiAgent, name=$name, reasoning=$reasoning, serviceTier=$serviceTier, text=$text, tools=$tools, additionalProperties=$additionalProperties}"
+            "Agent{id=$id, instructions=$instructions, model=$model, multiAgent=$multiAgent, name=$name, reasoning=$reasoning, serviceTier=$serviceTier, text=$text, tools=$tools, compaction=$compaction, additionalProperties=$additionalProperties}"
     }
 
     /** Custom string key-value pairs attached to the session. */

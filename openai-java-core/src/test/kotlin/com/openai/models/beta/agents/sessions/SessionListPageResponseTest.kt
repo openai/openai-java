@@ -60,6 +60,9 @@ internal class SessionListPageResponseTest {
                                         )
                                         .build()
                                 )
+                                .compaction(
+                                    AgentSession.Agent.Compaction.builder().async(true).build()
+                                )
                                 .build()
                         )
                         .createdAt(0L)
@@ -176,6 +179,7 @@ internal class SessionListPageResponseTest {
                                     )
                                     .build()
                             )
+                            .compaction(AgentSession.Agent.Compaction.builder().async(true).build())
                             .build()
                     )
                     .createdAt(0L)
