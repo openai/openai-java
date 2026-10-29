@@ -123,6 +123,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioMute()).isEmpty
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionCommentaryAppend()).isEmpty
@@ -246,6 +247,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioMute()).contains(sessionInputAudioMute)
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionCommentaryAppend()).isEmpty
@@ -286,6 +288,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioMute()).isEmpty
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).contains(sessionInputAudioUnmute)
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionCommentaryAppend()).isEmpty
@@ -327,6 +330,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay())
             .contains(sessionOutputAudioFixturePlay)
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionCommentaryAppend()).isEmpty
@@ -359,6 +363,49 @@ internal class SidebandClientEventTest {
     }
 
     @Test
+    fun ofTransportDtmfSend() {
+        val transportDtmfSend =
+            SidebandClientEvent.TransportDtmfSend.builder().event("#").eventId("event_id").build()
+
+        val sidebandClientEvent = SidebandClientEvent.ofTransportDtmfSend(transportDtmfSend)
+
+        assertThat(sidebandClientEvent.sessionUpdate()).isEmpty
+        assertThat(sidebandClientEvent.sessionInputAudioMute()).isEmpty
+        assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
+        assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).contains(transportDtmfSend)
+        assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
+        assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
+        assertThat(sidebandClientEvent.sessionCommentaryAppend()).isEmpty
+        assertThat(sidebandClientEvent.decisionCreate()).isEmpty
+        assertThat(sidebandClientEvent.decisionItemCreate()).isEmpty
+        assertThat(sidebandClientEvent.decisionItemDelete()).isEmpty
+        assertThat(sidebandClientEvent.responseItemCreate()).isEmpty
+        assertThat(sidebandClientEvent.responseCreate()).isEmpty
+        assertThat(sidebandClientEvent.sessionClose()).isEmpty
+    }
+
+    @Test
+    fun ofTransportDtmfSendRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val sidebandClientEvent =
+            SidebandClientEvent.ofTransportDtmfSend(
+                SidebandClientEvent.TransportDtmfSend.builder()
+                    .event("#")
+                    .eventId("event_id")
+                    .build()
+            )
+
+        val roundtrippedSidebandClientEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(sidebandClientEvent),
+                jacksonTypeRef<SidebandClientEvent>(),
+            )
+
+        assertThat(roundtrippedSidebandClientEvent).isEqualTo(sidebandClientEvent)
+    }
+
+    @Test
     fun ofSessionInstructionsAppend() {
         val sessionInstructionsAppend =
             InstructionsAppendEvent.builder()
@@ -374,6 +421,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioMute()).isEmpty
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend())
             .contains(sessionInstructionsAppend)
         assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
@@ -422,6 +470,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioMute()).isEmpty
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionThinkingAppend()).contains(sessionThinkingAppend)
         assertThat(sidebandClientEvent.sessionCommentaryAppend()).isEmpty
@@ -470,6 +519,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioMute()).isEmpty
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionCommentaryAppend()).contains(sessionCommentaryAppend)
@@ -514,6 +564,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioMute()).isEmpty
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionCommentaryAppend()).isEmpty
@@ -562,6 +613,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioMute()).isEmpty
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionCommentaryAppend()).isEmpty
@@ -613,6 +665,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioMute()).isEmpty
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionCommentaryAppend()).isEmpty
@@ -665,6 +718,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioMute()).isEmpty
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionCommentaryAppend()).isEmpty
@@ -713,6 +767,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioMute()).isEmpty
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionCommentaryAppend()).isEmpty
@@ -751,6 +806,7 @@ internal class SidebandClientEventTest {
         assertThat(sidebandClientEvent.sessionInputAudioMute()).isEmpty
         assertThat(sidebandClientEvent.sessionInputAudioUnmute()).isEmpty
         assertThat(sidebandClientEvent.sessionOutputAudioFixturePlay()).isEmpty
+        assertThat(sidebandClientEvent.transportDtmfSend()).isEmpty
         assertThat(sidebandClientEvent.sessionInstructionsAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionThinkingAppend()).isEmpty
         assertThat(sidebandClientEvent.sessionCommentaryAppend()).isEmpty

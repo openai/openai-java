@@ -2,6 +2,10 @@
 
 package com.openai.models.live.sideband
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.JsonNode
@@ -11,7 +15,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
+import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.checkRequired
+import com.openai.core.collectAllProperties
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.live.CommentaryAppendEvent
@@ -27,6 +36,7 @@ import com.openai.models.live.ResponseItemCreateEvent
 import com.openai.models.live.SessionCloseEvent
 import com.openai.models.live.SessionUpdateEvent
 import com.openai.models.live.ThinkingAppendEvent
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -43,6 +53,7 @@ private constructor(
     private val sessionInputAudioMute: InputAudioMuteEvent? = null,
     private val sessionInputAudioUnmute: InputAudioUnmuteEvent? = null,
     private val sessionOutputAudioFixturePlay: OutputAudioFixturePlayEvent? = null,
+    private val transportDtmfSend: TransportDtmfSend? = null,
     private val sessionInstructionsAppend: InstructionsAppendEvent? = null,
     private val sessionThinkingAppend: ThinkingAppendEvent? = null,
     private val sessionCommentaryAppend: CommentaryAppendEvent? = null,
@@ -87,6 +98,14 @@ private constructor(
      */
     fun sessionOutputAudioFixturePlay(): Optional<OutputAudioFixturePlayEvent> =
         Optional.ofNullable(sessionOutputAudioFixturePlay)
+
+    /**
+     * Send one DTMF keypress to the SIP trunk through a Live sideband connection. This command is
+     * supported only for SIP calls. A successful send emits `transport.dtmf.sent` on sideband. If
+     * you provide `event_id`, the success notification includes it as `client_event_id`; a failure
+     * includes it as `error.client_event_id`. Send separate events for multiple keypresses.
+     */
+    fun transportDtmfSend(): Optional<TransportDtmfSend> = Optional.ofNullable(transportDtmfSend)
 
     /**
      * Append developer instructions to the Live conversation while it is running, optionally
@@ -159,6 +178,8 @@ private constructor(
 
     fun isSessionOutputAudioFixturePlay(): Boolean = sessionOutputAudioFixturePlay != null
 
+    fun isTransportDtmfSend(): Boolean = transportDtmfSend != null
+
     fun isSessionInstructionsAppend(): Boolean = sessionInstructionsAppend != null
 
     fun isSessionThinkingAppend(): Boolean = sessionThinkingAppend != null
@@ -209,6 +230,14 @@ private constructor(
      */
     fun asSessionOutputAudioFixturePlay(): OutputAudioFixturePlayEvent =
         sessionOutputAudioFixturePlay.getOrThrow("sessionOutputAudioFixturePlay")
+
+    /**
+     * Send one DTMF keypress to the SIP trunk through a Live sideband connection. This command is
+     * supported only for SIP calls. A successful send emits `transport.dtmf.sent` on sideband. If
+     * you provide `event_id`, the success notification includes it as `client_event_id`; a failure
+     * includes it as `error.client_event_id`. Send separate events for multiple keypresses.
+     */
+    fun asTransportDtmfSend(): TransportDtmfSend = transportDtmfSend.getOrThrow("transportDtmfSend")
 
     /**
      * Append developer instructions to the Live conversation while it is running, optionally
@@ -313,6 +342,7 @@ private constructor(
                 visitor.visitSessionInputAudioUnmute(sessionInputAudioUnmute)
             sessionOutputAudioFixturePlay != null ->
                 visitor.visitSessionOutputAudioFixturePlay(sessionOutputAudioFixturePlay)
+            transportDtmfSend != null -> visitor.visitTransportDtmfSend(transportDtmfSend)
             sessionInstructionsAppend != null ->
                 visitor.visitSessionInstructionsAppend(sessionInstructionsAppend)
             sessionThinkingAppend != null ->
@@ -365,6 +395,10 @@ private constructor(
                     sessionOutputAudioFixturePlay: OutputAudioFixturePlayEvent
                 ) {
                     sessionOutputAudioFixturePlay.validate()
+                }
+
+                override fun visitTransportDtmfSend(transportDtmfSend: TransportDtmfSend) {
+                    transportDtmfSend.validate()
                 }
 
                 override fun visitSessionInstructionsAppend(
@@ -445,6 +479,9 @@ private constructor(
                     sessionOutputAudioFixturePlay: OutputAudioFixturePlayEvent
                 ) = sessionOutputAudioFixturePlay.validity()
 
+                override fun visitTransportDtmfSend(transportDtmfSend: TransportDtmfSend) =
+                    transportDtmfSend.validity()
+
                 override fun visitSessionInstructionsAppend(
                     sessionInstructionsAppend: InstructionsAppendEvent
                 ) = sessionInstructionsAppend.validity()
@@ -489,6 +526,7 @@ private constructor(
             sessionInputAudioMute == other.sessionInputAudioMute &&
             sessionInputAudioUnmute == other.sessionInputAudioUnmute &&
             sessionOutputAudioFixturePlay == other.sessionOutputAudioFixturePlay &&
+            transportDtmfSend == other.transportDtmfSend &&
             sessionInstructionsAppend == other.sessionInstructionsAppend &&
             sessionThinkingAppend == other.sessionThinkingAppend &&
             sessionCommentaryAppend == other.sessionCommentaryAppend &&
@@ -502,6 +540,7 @@ private constructor(
                 sessionInputAudioMute != null ||
                 sessionInputAudioUnmute != null ||
                 sessionOutputAudioFixturePlay != null ||
+                transportDtmfSend != null ||
                 sessionInstructionsAppend != null ||
                 sessionThinkingAppend != null ||
                 sessionCommentaryAppend != null ||
@@ -520,6 +559,7 @@ private constructor(
                 sessionInputAudioMute == null &&
                 sessionInputAudioUnmute == null &&
                 sessionOutputAudioFixturePlay == null &&
+                transportDtmfSend == null &&
                 sessionInstructionsAppend == null &&
                 sessionThinkingAppend == null &&
                 sessionCommentaryAppend == null &&
@@ -537,6 +577,7 @@ private constructor(
                 sessionInputAudioMute,
                 sessionInputAudioUnmute,
                 sessionOutputAudioFixturePlay,
+                transportDtmfSend,
                 sessionInstructionsAppend,
                 sessionThinkingAppend,
                 sessionCommentaryAppend,
@@ -557,6 +598,7 @@ private constructor(
                 "SidebandClientEvent{sessionInputAudioUnmute=$sessionInputAudioUnmute}"
             sessionOutputAudioFixturePlay != null ->
                 "SidebandClientEvent{sessionOutputAudioFixturePlay=$sessionOutputAudioFixturePlay}"
+            transportDtmfSend != null -> "SidebandClientEvent{transportDtmfSend=$transportDtmfSend}"
             sessionInstructionsAppend != null ->
                 "SidebandClientEvent{sessionInstructionsAppend=$sessionInstructionsAppend}"
             sessionThinkingAppend != null ->
@@ -616,6 +658,17 @@ private constructor(
         fun ofSessionOutputAudioFixturePlay(
             sessionOutputAudioFixturePlay: OutputAudioFixturePlayEvent
         ) = SidebandClientEvent(sessionOutputAudioFixturePlay = sessionOutputAudioFixturePlay)
+
+        /**
+         * Send one DTMF keypress to the SIP trunk through a Live sideband connection. This command
+         * is supported only for SIP calls. A successful send emits `transport.dtmf.sent` on
+         * sideband. If you provide `event_id`, the success notification includes it as
+         * `client_event_id`; a failure includes it as `error.client_event_id`. Send separate events
+         * for multiple keypresses.
+         */
+        @JvmStatic
+        fun ofTransportDtmfSend(transportDtmfSend: TransportDtmfSend) =
+            SidebandClientEvent(transportDtmfSend = transportDtmfSend)
 
         /**
          * Append developer instructions to the Live conversation while it is running, optionally
@@ -735,6 +788,16 @@ private constructor(
         ): T = unknown(JsonValue.from(sessionOutputAudioFixturePlay))
 
         /**
+         * Send one DTMF keypress to the SIP trunk through a Live sideband connection. This command
+         * is supported only for SIP calls. A successful send emits `transport.dtmf.sent` on
+         * sideband. If you provide `event_id`, the success notification includes it as
+         * `client_event_id`; a failure includes it as `error.client_event_id`. Send separate events
+         * for multiple keypresses.
+         */
+        fun visitTransportDtmfSend(transportDtmfSend: TransportDtmfSend): T =
+            unknown(JsonValue.from(transportDtmfSend))
+
+        /**
          * Append developer instructions to the Live conversation while it is running, optionally
          * associating them with an existing client delegation. Rejected while an audio fixture is
          * active. These instructions remain in conversation history through compaction and are
@@ -847,6 +910,11 @@ private constructor(
                             SidebandClientEvent(sessionOutputAudioFixturePlay = it, _json = json)
                         } ?: SidebandClientEvent(_json = json)
                 }
+                "transport.dtmf.send" -> {
+                    return tryDeserialize(node, jacksonTypeRef<TransportDtmfSend>())?.let {
+                        SidebandClientEvent(transportDtmfSend = it, _json = json)
+                    } ?: SidebandClientEvent(_json = json)
+                }
                 "session.instructions.append" -> {
                     return tryDeserialize(node, jacksonTypeRef<InstructionsAppendEvent>())?.let {
                         SidebandClientEvent(sessionInstructionsAppend = it, _json = json)
@@ -913,6 +981,7 @@ private constructor(
                     generator.writeObject(value.sessionInputAudioUnmute)
                 value.sessionOutputAudioFixturePlay != null ->
                     generator.writeObject(value.sessionOutputAudioFixturePlay)
+                value.transportDtmfSend != null -> generator.writeObject(value.transportDtmfSend)
                 value.sessionInstructionsAppend != null ->
                     generator.writeObject(value.sessionInstructionsAppend)
                 value.sessionThinkingAppend != null ->
@@ -929,5 +998,285 @@ private constructor(
                 else -> throw IllegalStateException("Invalid SidebandClientEvent")
             }
         }
+    }
+
+    /**
+     * Send one DTMF keypress to the SIP trunk through a Live sideband connection. This command is
+     * supported only for SIP calls. A successful send emits `transport.dtmf.sent` on sideband. If
+     * you provide `event_id`, the success notification includes it as `client_event_id`; a failure
+     * includes it as `error.client_event_id`. Send separate events for multiple keypresses.
+     */
+    class TransportDtmfSend
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val event: JsonField<String>,
+        private val type: JsonValue,
+        private val eventId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("event") @ExcludeMissing event: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
+        ) : this(event, type, eventId, mutableMapOf())
+
+        /**
+         * The DTMF key to send: one of `0`–`9`, `A`–`D`, `*`, or `#`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun event(): String = event.getRequired("event")
+
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("transport.dtmf.send")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * Optional client identifier for correlating this command with a server event's
+         * client_event_id or error.client_event_id.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun eventId(): Optional<String> = eventId.getOptional("event_id")
+
+        /**
+         * Returns the raw JSON value of [event].
+         *
+         * Unlike [event], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<String> = event
+
+        /**
+         * Returns the raw JSON value of [eventId].
+         *
+         * Unlike [eventId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("event_id") @ExcludeMissing fun _eventId(): JsonField<String> = eventId
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(
+                additionalProperties,
+                "event" to this.event,
+                "type" to this.type,
+                "event_id" to this.eventId,
+            )
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [TransportDtmfSend].
+             *
+             * The following fields are required:
+             * ```java
+             * .event()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [TransportDtmfSend]. */
+        class Builder internal constructor() {
+
+            private var event: JsonField<String>? = null
+            private var type: JsonValue = JsonValue.from("transport.dtmf.send")
+            private var eventId: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(transportDtmfSend: TransportDtmfSend) = apply {
+                event = transportDtmfSend.event
+                type = transportDtmfSend.type
+                eventId = transportDtmfSend.eventId
+                additionalProperties = transportDtmfSend.additionalProperties.toMutableMap()
+            }
+
+            /** The DTMF key to send: one of `0`–`9`, `A`–`D`, `*`, or `#`. */
+            fun event(event: String) = event(JsonField.of(event))
+
+            /**
+             * Sets [Builder.event] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.event] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun event(event: JsonField<String>) = apply { this.event = event }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("transport.dtmf.send")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /**
+             * Optional client identifier for correlating this command with a server event's
+             * client_event_id or error.client_event_id.
+             */
+            fun eventId(eventId: String?) = eventId(JsonField.ofNullable(eventId))
+
+            /** Alias for calling [Builder.eventId] with `eventId.orElse(null)`. */
+            fun eventId(eventId: Optional<String>) = eventId(eventId.getOrNull())
+
+            /**
+             * Sets [Builder.eventId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.eventId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun eventId(eventId: JsonField<String>) = apply { this.eventId = eventId }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [TransportDtmfSend].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .event()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): TransportDtmfSend =
+                TransportDtmfSend(
+                    checkRequired("event", event),
+                    type,
+                    eventId,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): TransportDtmfSend = apply {
+            if (validated) {
+                return@apply
+            }
+
+            event()
+            _type().let {
+                if (it != JsonValue.from("transport.dtmf.send")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            eventId()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (event.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("transport.dtmf.send")) 1 else 0 } +
+                (if (eventId.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is TransportDtmfSend &&
+                event == other.event &&
+                type == other.type &&
+                eventId == other.eventId &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(event, type, eventId, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "TransportDtmfSend{event=$event, type=$type, eventId=$eventId, additionalProperties=$additionalProperties}"
     }
 }
