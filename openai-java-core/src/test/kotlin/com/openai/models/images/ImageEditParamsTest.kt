@@ -16,6 +16,7 @@ internal class ImageEditParamsTest {
             .prompt("A cute baby sea otter wearing a beret")
             .background(ImageEditParams.Background.TRANSPARENT)
             .inputFidelity(ImageEditParams.InputFidelity.HIGH)
+            .markup("Example data".byteInputStream())
             .mask("Example data".byteInputStream())
             .model(ImageModel.GPT_IMAGE_1_5)
             .n(1L)
@@ -38,6 +39,7 @@ internal class ImageEditParamsTest {
                 .prompt("A cute baby sea otter wearing a beret")
                 .background(ImageEditParams.Background.TRANSPARENT)
                 .inputFidelity(ImageEditParams.InputFidelity.HIGH)
+                .markup("Example data".byteInputStream())
                 .mask("Example data".byteInputStream())
                 .model(ImageModel.GPT_IMAGE_1_5)
                 .n(1L)
@@ -75,6 +77,7 @@ internal class ImageEditParamsTest {
                         "prompt" to MultipartField.of("A cute baby sea otter wearing a beret"),
                         "background" to MultipartField.of(ImageEditParams.Background.TRANSPARENT),
                         "input_fidelity" to MultipartField.of(ImageEditParams.InputFidelity.HIGH),
+                        "markup" to MultipartField.of("Example data".byteInputStream()),
                         "mask" to MultipartField.of("Example data".byteInputStream()),
                         "model" to MultipartField.of(ImageModel.GPT_IMAGE_1_5),
                         "n" to MultipartField.of(1L),

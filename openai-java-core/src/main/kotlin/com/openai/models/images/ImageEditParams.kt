@@ -92,6 +92,16 @@ private constructor(
     fun inputFidelity(): Optional<InputFidelity> = body.inputFidelity()
 
     /**
+     * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
+     * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5 and 2.6.
+     * Cannot be combined with mask.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun markup(): Optional<InputStream> = body.markup()
+
+    /**
      * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate where
      * `image` should be edited. If there are multiple images provided, the mask will be applied on
      * the first image. Must be a valid PNG file, less than 4MB, and have the same dimensions as
@@ -242,6 +252,13 @@ private constructor(
     fun _inputFidelity(): MultipartField<InputFidelity> = body._inputFidelity()
 
     /**
+     * Returns the raw multipart value of [markup].
+     *
+     * Unlike [markup], this method doesn't throw if the multipart field has an unexpected type.
+     */
+    fun _markup(): MultipartField<InputStream> = body._markup()
+
+    /**
      * Returns the raw multipart value of [mask].
      *
      * Unlike [mask], this method doesn't throw if the multipart field has an unexpected type.
@@ -371,7 +388,7 @@ private constructor(
          * - [prompt]
          * - [background]
          * - [inputFidelity]
-         * - [mask]
+         * - [markup]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -490,6 +507,36 @@ private constructor(
         fun inputFidelity(inputFidelity: MultipartField<InputFidelity>) = apply {
             body.inputFidelity(inputFidelity)
         }
+
+        /**
+         * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
+         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5 and
+         * 2.6. Cannot be combined with mask.
+         */
+        fun markup(markup: InputStream) = apply { body.markup(markup) }
+
+        /**
+         * Sets [Builder.markup] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.markup] with a well-typed [InputStream] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun markup(markup: MultipartField<InputStream>) = apply { body.markup(markup) }
+
+        /**
+         * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
+         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5 and
+         * 2.6. Cannot be combined with mask.
+         */
+        fun markup(markup: ByteArray) = apply { body.markup(markup) }
+
+        /**
+         * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
+         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5 and
+         * 2.6. Cannot be combined with mask.
+         */
+        fun markup(path: Path) = apply { body.markup(path) }
 
         /**
          * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
@@ -918,6 +965,7 @@ private constructor(
                 "prompt" to _prompt(),
                 "background" to _background(),
                 "input_fidelity" to _inputFidelity(),
+                "markup" to _markup(),
                 "mask" to _mask(),
                 "model" to _model(),
                 "n" to _n(),
@@ -942,6 +990,7 @@ private constructor(
         private val prompt: MultipartField<String>,
         private val background: MultipartField<Background>,
         private val inputFidelity: MultipartField<InputFidelity>,
+        private val markup: MultipartField<InputStream>,
         private val mask: MultipartField<InputStream>,
         private val model: MultipartField<ImageModel>,
         private val n: MultipartField<Long>,
@@ -1006,6 +1055,16 @@ private constructor(
          */
         fun inputFidelity(): Optional<InputFidelity> =
             inputFidelity.value.getOptional("input_fidelity")
+
+        /**
+         * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
+         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5 and
+         * 2.6. Cannot be combined with mask.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun markup(): Optional<InputStream> = markup.value.getOptional("markup")
 
         /**
          * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
@@ -1169,6 +1228,13 @@ private constructor(
         fun _inputFidelity(): MultipartField<InputFidelity> = inputFidelity
 
         /**
+         * Returns the raw multipart value of [markup].
+         *
+         * Unlike [markup], this method doesn't throw if the multipart field has an unexpected type.
+         */
+        @JsonProperty("markup") @ExcludeMissing fun _markup(): MultipartField<InputStream> = markup
+
+        /**
          * Returns the raw multipart value of [mask].
          *
          * Unlike [mask], this method doesn't throw if the multipart field has an unexpected type.
@@ -1298,6 +1364,7 @@ private constructor(
             private var prompt: MultipartField<String>? = null
             private var background: MultipartField<Background> = MultipartField.of(null)
             private var inputFidelity: MultipartField<InputFidelity> = MultipartField.of(null)
+            private var markup: MultipartField<InputStream> = MultipartField.of(null)
             private var mask: MultipartField<InputStream> = MultipartField.of(null)
             private var model: MultipartField<ImageModel> = MultipartField.of(null)
             private var n: MultipartField<Long> = MultipartField.of(null)
@@ -1317,6 +1384,7 @@ private constructor(
                 prompt = body.prompt
                 background = body.background
                 inputFidelity = body.inputFidelity
+                markup = body.markup
                 mask = body.mask
                 model = body.model
                 n = body.n
@@ -1461,6 +1529,42 @@ private constructor(
             fun inputFidelity(inputFidelity: MultipartField<InputFidelity>) = apply {
                 this.inputFidelity = inputFidelity
             }
+
+            /**
+             * A transparent PNG overlaid on the first image to guide the edit. Must match that
+             * image's dimensions after orientation and contain transparent pixels. Supports GPT
+             * Image 2.5 and 2.6. Cannot be combined with mask.
+             */
+            fun markup(markup: InputStream) = markup(MultipartField.of(markup))
+
+            /**
+             * Sets [Builder.markup] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.markup] with a well-typed [InputStream] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun markup(markup: MultipartField<InputStream>) = apply { this.markup = markup }
+
+            /**
+             * A transparent PNG overlaid on the first image to guide the edit. Must match that
+             * image's dimensions after orientation and contain transparent pixels. Supports GPT
+             * Image 2.5 and 2.6. Cannot be combined with mask.
+             */
+            fun markup(markup: ByteArray) = markup(markup.inputStream())
+
+            /**
+             * A transparent PNG overlaid on the first image to guide the edit. Must match that
+             * image's dimensions after orientation and contain transparent pixels. Supports GPT
+             * Image 2.5 and 2.6. Cannot be combined with mask.
+             */
+            fun markup(path: Path) =
+                markup(
+                    MultipartField.builder<InputStream>()
+                        .value(path.inputStream())
+                        .filename(path.name)
+                        .build()
+                )
 
             /**
              * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
@@ -1807,6 +1911,7 @@ private constructor(
                     checkRequired("prompt", prompt),
                     background,
                     inputFidelity,
+                    markup,
                     mask,
                     model,
                     n,
@@ -1842,6 +1947,7 @@ private constructor(
             prompt()
             background().ifPresent { it.validate() }
             inputFidelity().ifPresent { it.validate() }
+            markup()
             mask()
             model().ifPresent { it.validate() }
             n()
@@ -1874,6 +1980,7 @@ private constructor(
                 prompt == other.prompt &&
                 background == other.background &&
                 inputFidelity == other.inputFidelity &&
+                markup == other.markup &&
                 mask == other.mask &&
                 model == other.model &&
                 n == other.n &&
@@ -1894,6 +2001,7 @@ private constructor(
                 prompt,
                 background,
                 inputFidelity,
+                markup,
                 mask,
                 model,
                 n,
@@ -1912,7 +2020,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{image=$image, prompt=$prompt, background=$background, inputFidelity=$inputFidelity, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, size=$size, user=$user, additionalProperties=$additionalProperties}"
+            "Body{image=$image, prompt=$prompt, background=$background, inputFidelity=$inputFidelity, markup=$markup, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, size=$size, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**
