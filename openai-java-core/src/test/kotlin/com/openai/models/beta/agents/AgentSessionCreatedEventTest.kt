@@ -55,6 +55,9 @@ internal class AgentSessionCreatedEventTest {
                                         )
                                         .build()
                                 )
+                                .compaction(
+                                    AgentSession.Agent.Compaction.builder().async(true).build()
+                                )
                                 .build()
                         )
                         .createdAt(0L)
@@ -169,6 +172,7 @@ internal class AgentSessionCreatedEventTest {
                                     )
                                     .build()
                             )
+                            .compaction(AgentSession.Agent.Compaction.builder().async(true).build())
                             .build()
                     )
                     .createdAt(0L)

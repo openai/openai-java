@@ -20,6 +20,7 @@ internal class SessionCreateParamsTest {
             .environmentNone()
             .agent(
                 SessionCreateParams.Agent.builder()
+                    .compaction(SessionCreateParams.Agent.Compaction.builder().async(true).build())
                     .instructions("instructions")
                     .model("model")
                     .multiAgent(
@@ -74,6 +75,9 @@ internal class SessionCreateParamsTest {
                 .environmentNone()
                 .agent(
                     SessionCreateParams.Agent.builder()
+                        .compaction(
+                            SessionCreateParams.Agent.Compaction.builder().async(true).build()
+                        )
                         .instructions("instructions")
                         .model("model")
                         .multiAgent(
@@ -126,6 +130,7 @@ internal class SessionCreateParamsTest {
         assertThat(body.agent())
             .contains(
                 SessionCreateParams.Agent.builder()
+                    .compaction(SessionCreateParams.Agent.Compaction.builder().async(true).build())
                     .instructions("instructions")
                     .model("model")
                     .multiAgent(

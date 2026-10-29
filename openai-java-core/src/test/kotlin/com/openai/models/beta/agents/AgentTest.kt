@@ -48,6 +48,7 @@ internal class AgentTest {
                         .build()
                 )
                 .updatedAt(0L)
+                .compaction(Agent.Compaction.builder().async(true).build())
                 .build()
 
         assertThat(agent.id()).isEqualTo("id")
@@ -89,6 +90,7 @@ internal class AgentTest {
                 )
             )
         assertThat(agent.updatedAt()).isEqualTo(0L)
+        assertThat(agent.compaction()).contains(Agent.Compaction.builder().async(true).build())
 
         val jsonMapper = jsonMapper()
 

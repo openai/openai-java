@@ -31,6 +31,7 @@ internal class AgentServiceTest {
             agentService.create(
                 AgentCreateParams.builder()
                     .model("model")
+                    .compaction(AgentCreateParams.Compaction.builder().async(true).build())
                     .instructions("instructions")
                     .metadata(
                         AgentCreateParams.Metadata.builder()
@@ -104,6 +105,7 @@ internal class AgentServiceTest {
             agentService.update(
                 AgentUpdateParams.builder()
                     .agentId("agent_id")
+                    .compaction(AgentUpdateParams.Compaction.builder().async(true).build())
                     .instructions("instructions")
                     .metadata(
                         AgentUpdateParams.Metadata.builder()
