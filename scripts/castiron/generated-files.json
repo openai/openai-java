@@ -4487,7 +4487,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageEditParams.kt": {
       "mode": "100644",
-      "sha256": "a9e4b29fe53c8df58ef286d4b395973a7e20747a0becf6a97a704f2ae45f3f20"
+      "sha256": "caa2bb980b02706a8963048d0a3a7100da5950cd6d8cff1ad3bdf8c3705f7b06"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/images/ImageEditPartialImageEvent.kt": {
       "mode": "100644",
@@ -12527,7 +12527,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/images/ImageEditParamsTest.kt": {
       "mode": "100644",
-      "sha256": "52fc9f3e797210d398cc76c1cbe1e4caa59e6c7f5f9e7b39b0a7ce3a19107317"
+      "sha256": "96f5163da9f66557a030e1cc20ac8fab45ad58687a09a55a7a2a1e72f5b8f2c3"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/images/ImageEditPartialImageEventTest.kt": {
       "mode": "100644",
@@ -14631,11 +14631,11 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/services/async/ImageServiceAsyncStreamingServerContractTest.kt": {
       "mode": "100644",
-      "sha256": "d5f4de00265815a7162d68566a06903d8d064a36f37166e427eab1abbac61d4b"
+      "sha256": "238df5c19d81796e3ee1aefefeccea642f1663ef340e573bbe612e4675410b8f"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/async/ImageServiceAsyncTest.kt": {
       "mode": "100644",
-      "sha256": "b1234e1d94b6565d1626306e7438e0fe846dbe1113e166e2706c2eaa3c742824"
+      "sha256": "4edb54b523e952d9c3936839472cdf396b54a7c7fd99bb3beac35bcd713ff8c3"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/async/LiveServiceAsyncTest.kt": {
       "mode": "100644",
@@ -15371,11 +15371,11 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/ImageServiceStreamingServerContractTest.kt": {
       "mode": "100644",
-      "sha256": "f9d398a0aa48d59387de7d75b5b339246103bfe17814187eb4aed17cdafb0ece"
+      "sha256": "2e36fb4aae28b7b5c5764fc720cbe1808eedf51265d275f83f3ef090b93a7228"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/ImageServiceTest.kt": {
       "mode": "100644",
-      "sha256": "397da1a8b02cb8d4a79f890e58873f0b2fc7da1442b81aa97a56d574fa9749e4"
+      "sha256": "72ef6396a7894a93deb166350839db0d6b66047f61cd698966dc33409f8f0c2b"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/LiveServiceTest.kt": {
       "mode": "100644",
