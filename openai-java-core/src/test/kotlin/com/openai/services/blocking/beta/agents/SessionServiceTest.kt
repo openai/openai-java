@@ -36,6 +36,11 @@ internal class SessionServiceTest {
                             .compaction(
                                 SessionCreateParams.Agent.Compaction.builder().async(true).build()
                             )
+                            .experimental(
+                                SessionCreateParams.Agent.Experimental.builder()
+                                    .timeAwareness(true)
+                                    .build()
+                            )
                             .instructions("instructions")
                             .model("model")
                             .multiAgent(

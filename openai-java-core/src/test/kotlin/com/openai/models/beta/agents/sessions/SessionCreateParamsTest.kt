@@ -21,6 +21,9 @@ internal class SessionCreateParamsTest {
             .agent(
                 SessionCreateParams.Agent.builder()
                     .compaction(SessionCreateParams.Agent.Compaction.builder().async(true).build())
+                    .experimental(
+                        SessionCreateParams.Agent.Experimental.builder().timeAwareness(true).build()
+                    )
                     .instructions("instructions")
                     .model("model")
                     .multiAgent(
@@ -78,6 +81,11 @@ internal class SessionCreateParamsTest {
                         .compaction(
                             SessionCreateParams.Agent.Compaction.builder().async(true).build()
                         )
+                        .experimental(
+                            SessionCreateParams.Agent.Experimental.builder()
+                                .timeAwareness(true)
+                                .build()
+                        )
                         .instructions("instructions")
                         .model("model")
                         .multiAgent(
@@ -131,6 +139,9 @@ internal class SessionCreateParamsTest {
             .contains(
                 SessionCreateParams.Agent.builder()
                     .compaction(SessionCreateParams.Agent.Compaction.builder().async(true).build())
+                    .experimental(
+                        SessionCreateParams.Agent.Experimental.builder().timeAwareness(true).build()
+                    )
                     .instructions("instructions")
                     .model("model")
                     .multiAgent(

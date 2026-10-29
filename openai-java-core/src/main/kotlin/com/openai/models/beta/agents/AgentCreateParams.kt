@@ -52,6 +52,14 @@ private constructor(
     fun compaction(): Optional<Compaction> = body.compaction()
 
     /**
+     * Experimental agent settings. All experimental features default to disabled.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun experimental(): Optional<Experimental> = body.experimental()
+
+    /**
      * Additional instructions appended to the agent's default base instructions. Omit or set to
      * null to add no custom instructions.
      *
@@ -132,6 +140,13 @@ private constructor(
      * Unlike [compaction], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _compaction(): JsonField<Compaction> = body._compaction()
+
+    /**
+     * Returns the raw JSON value of [experimental].
+     *
+     * Unlike [experimental], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _experimental(): JsonField<Experimental> = body._experimental()
 
     /**
      * Returns the raw JSON value of [instructions].
@@ -233,9 +248,9 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [model]
          * - [compaction]
+         * - [experimental]
          * - [instructions]
          * - [metadata]
-         * - [multiAgent]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -265,6 +280,20 @@ private constructor(
          * supported value.
          */
         fun compaction(compaction: JsonField<Compaction>) = apply { body.compaction(compaction) }
+
+        /** Experimental agent settings. All experimental features default to disabled. */
+        fun experimental(experimental: Experimental) = apply { body.experimental(experimental) }
+
+        /**
+         * Sets [Builder.experimental] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.experimental] with a well-typed [Experimental] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun experimental(experimental: JsonField<Experimental>) = apply {
+            body.experimental(experimental)
+        }
 
         /**
          * Additional instructions appended to the agent's default base instructions. Omit or set to
@@ -595,6 +624,7 @@ private constructor(
     private constructor(
         private val model: JsonField<String>,
         private val compaction: JsonField<Compaction>,
+        private val experimental: JsonField<Experimental>,
         private val instructions: JsonField<String>,
         private val metadata: JsonField<Metadata>,
         private val multiAgent: JsonField<MultiAgentConfigParam>,
@@ -612,6 +642,9 @@ private constructor(
             @JsonProperty("compaction")
             @ExcludeMissing
             compaction: JsonField<Compaction> = JsonMissing.of(),
+            @JsonProperty("experimental")
+            @ExcludeMissing
+            experimental: JsonField<Experimental> = JsonMissing.of(),
             @JsonProperty("instructions")
             @ExcludeMissing
             instructions: JsonField<String> = JsonMissing.of(),
@@ -637,6 +670,7 @@ private constructor(
         ) : this(
             model,
             compaction,
+            experimental,
             instructions,
             metadata,
             multiAgent,
@@ -663,6 +697,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun compaction(): Optional<Compaction> = compaction.getOptional("compaction")
+
+        /**
+         * Experimental agent settings. All experimental features default to disabled.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun experimental(): Optional<Experimental> = experimental.getOptional("experimental")
 
         /**
          * Additional instructions appended to the agent's default base instructions. Omit or set to
@@ -749,6 +791,16 @@ private constructor(
         fun _compaction(): JsonField<Compaction> = compaction
 
         /**
+         * Returns the raw JSON value of [experimental].
+         *
+         * Unlike [experimental], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("experimental")
+        @ExcludeMissing
+        fun _experimental(): JsonField<Experimental> = experimental
+
+        /**
          * Returns the raw JSON value of [instructions].
          *
          * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected
@@ -833,6 +885,7 @@ private constructor(
                 additionalProperties,
                 "model" to this.model,
                 "compaction" to this.compaction,
+                "experimental" to this.experimental,
                 "instructions" to this.instructions,
                 "metadata" to this.metadata,
                 "multi_agent" to this.multiAgent,
@@ -875,6 +928,7 @@ private constructor(
 
             private var model: JsonField<String>? = null
             private var compaction: JsonField<Compaction> = JsonMissing.of()
+            private var experimental: JsonField<Experimental> = JsonMissing.of()
             private var instructions: JsonField<String> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
             private var multiAgent: JsonField<MultiAgentConfigParam> = JsonMissing.of()
@@ -889,6 +943,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 model = body.model
                 compaction = body.compaction
+                experimental = body.experimental
                 instructions = body.instructions
                 metadata = body.metadata
                 multiAgent = body.multiAgent
@@ -927,6 +982,20 @@ private constructor(
              */
             fun compaction(compaction: JsonField<Compaction>) = apply {
                 this.compaction = compaction
+            }
+
+            /** Experimental agent settings. All experimental features default to disabled. */
+            fun experimental(experimental: Experimental) = experimental(JsonField.of(experimental))
+
+            /**
+             * Sets [Builder.experimental] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.experimental] with a well-typed [Experimental] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun experimental(experimental: JsonField<Experimental>) = apply {
+                this.experimental = experimental
             }
 
             /**
@@ -1162,6 +1231,7 @@ private constructor(
                 Body(
                     checkRequired("model", model),
                     compaction,
+                    experimental,
                     instructions,
                     metadata,
                     multiAgent,
@@ -1192,6 +1262,7 @@ private constructor(
 
             model()
             compaction().ifPresent { it.validate() }
+            experimental().ifPresent { it.validate() }
             instructions()
             metadata().ifPresent { it.validate() }
             multiAgent().ifPresent { it.validate() }
@@ -1221,6 +1292,7 @@ private constructor(
         internal fun validity(): Int =
             (if (model.asKnown().isPresent) 1 else 0) +
                 (compaction.asKnown().getOrNull()?.validity() ?: 0) +
+                (experimental.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (instructions.asKnown().isPresent) 1 else 0) +
                 (metadata.asKnown().getOrNull()?.validity() ?: 0) +
                 (multiAgent.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1238,6 +1310,7 @@ private constructor(
             return other is Body &&
                 model == other.model &&
                 compaction == other.compaction &&
+                experimental == other.experimental &&
                 instructions == other.instructions &&
                 metadata == other.metadata &&
                 multiAgent == other.multiAgent &&
@@ -1253,6 +1326,7 @@ private constructor(
             Objects.hash(
                 model,
                 compaction,
+                experimental,
                 instructions,
                 metadata,
                 multiAgent,
@@ -1268,7 +1342,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{model=$model, compaction=$compaction, instructions=$instructions, metadata=$metadata, multiAgent=$multiAgent, name=$name, reasoning=$reasoning, serviceTier=$serviceTier, text=$text, tools=$tools, additionalProperties=$additionalProperties}"
+            "Body{model=$model, compaction=$compaction, experimental=$experimental, instructions=$instructions, metadata=$metadata, multiAgent=$multiAgent, name=$name, reasoning=$reasoning, serviceTier=$serviceTier, text=$text, tools=$tools, additionalProperties=$additionalProperties}"
     }
 
     /** Context compaction settings. Omission or null enables background compaction. */
@@ -1452,6 +1526,184 @@ private constructor(
 
         override fun toString() =
             "Compaction{async=$async, additionalProperties=$additionalProperties}"
+    }
+
+    /** Experimental agent settings. All experimental features default to disabled. */
+    class Experimental
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val timeAwareness: JsonField<Boolean>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("time_awareness")
+            @ExcludeMissing
+            timeAwareness: JsonField<Boolean> = JsonMissing.of()
+        ) : this(timeAwareness, mutableMapOf())
+
+        /**
+         * Whether to give the model periodic current-time reminders. Defaults to false.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun timeAwareness(): Optional<Boolean> = timeAwareness.getOptional("time_awareness")
+
+        /**
+         * Returns the raw JSON value of [timeAwareness].
+         *
+         * Unlike [timeAwareness], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("time_awareness")
+        @ExcludeMissing
+        fun _timeAwareness(): JsonField<Boolean> = timeAwareness
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        /**
+         * Returns an immutable snapshot of all present JSON properties, including declared and
+         * additional properties.
+         *
+         * Keys use their JSON names. Declared properties take precedence over additional properties
+         * with the same name. Missing properties are omitted, while explicit nulls and unrecognized
+         * values are preserved.
+         */
+        fun _allProperties(): Map<String, JsonValue> =
+            collectAllProperties(additionalProperties, "time_awareness" to this.timeAwareness)
+
+        /**
+         * Returns the legacy additional-properties view.
+         *
+         * @deprecated Use [_allProperties] to access both declared and additional JSON properties.
+         *   This accessor retains its legacy additional-properties behavior.
+         */
+        @Deprecated("Use _allProperties() to access both declared and additional JSON properties.")
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Experimental]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Experimental]. */
+        class Builder internal constructor() {
+
+            private var timeAwareness: JsonField<Boolean> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(experimental: Experimental) = apply {
+                timeAwareness = experimental.timeAwareness
+                additionalProperties = experimental.additionalProperties.toMutableMap()
+            }
+
+            /** Whether to give the model periodic current-time reminders. Defaults to false. */
+            fun timeAwareness(timeAwareness: Boolean) = timeAwareness(JsonField.of(timeAwareness))
+
+            /**
+             * Sets [Builder.timeAwareness] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.timeAwareness] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun timeAwareness(timeAwareness: JsonField<Boolean>) = apply {
+                this.timeAwareness = timeAwareness
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Experimental].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Experimental =
+                Experimental(timeAwareness, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Experimental = apply {
+            if (validated) {
+                return@apply
+            }
+
+            timeAwareness()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int = (if (timeAwareness.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Experimental &&
+                timeAwareness == other.timeAwareness &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(timeAwareness, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Experimental{timeAwareness=$timeAwareness, additionalProperties=$additionalProperties}"
     }
 
     /**
