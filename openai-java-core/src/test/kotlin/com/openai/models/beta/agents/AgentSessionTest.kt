@@ -53,6 +53,9 @@ internal class AgentSessionTest {
                                 .build()
                         )
                         .compaction(AgentSession.Agent.Compaction.builder().async(true).build())
+                        .experimental(
+                            AgentSession.Agent.Experimental.builder().timeAwareness(true).build()
+                        )
                         .build()
                 )
                 .createdAt(0L)
@@ -151,6 +154,9 @@ internal class AgentSessionTest {
                             .build()
                     )
                     .compaction(AgentSession.Agent.Compaction.builder().async(true).build())
+                    .experimental(
+                        AgentSession.Agent.Experimental.builder().timeAwareness(true).build()
+                    )
                     .build()
             )
         assertThat(agentSession.createdAt()).isEqualTo(0L)

@@ -32,6 +32,9 @@ internal class AgentServiceTest {
                 AgentCreateParams.builder()
                     .model("model")
                     .compaction(AgentCreateParams.Compaction.builder().async(true).build())
+                    .experimental(
+                        AgentCreateParams.Experimental.builder().timeAwareness(true).build()
+                    )
                     .instructions("instructions")
                     .metadata(
                         AgentCreateParams.Metadata.builder()
@@ -106,6 +109,9 @@ internal class AgentServiceTest {
                 AgentUpdateParams.builder()
                     .agentId("agent_id")
                     .compaction(AgentUpdateParams.Compaction.builder().async(true).build())
+                    .experimental(
+                        AgentUpdateParams.Experimental.builder().timeAwareness(true).build()
+                    )
                     .instructions("instructions")
                     .metadata(
                         AgentUpdateParams.Metadata.builder()
