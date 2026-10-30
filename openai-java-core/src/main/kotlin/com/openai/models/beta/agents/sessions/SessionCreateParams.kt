@@ -99,6 +99,14 @@ private constructor(
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
+     * Action review mode. Omit to use none.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun review(): Optional<Review> = body.review()
+
+    /**
      * Optional spending limit in USD cents. Omission or null creates an unlimited session.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -148,6 +156,13 @@ private constructor(
      * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _metadata(): JsonField<Metadata> = body._metadata()
+
+    /**
+     * Returns the raw JSON value of [review].
+     *
+     * Unlike [review], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _review(): JsonField<Review> = body._review()
 
     /**
      * Returns the raw JSON value of [spendControl].
@@ -325,6 +340,17 @@ private constructor(
          * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
+
+        /** Action review mode. Omit to use none. */
+        fun review(review: Review) = apply { body.review(review) }
+
+        /**
+         * Sets [Builder.review] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.review] with a well-typed [Review] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun review(review: JsonField<Review>) = apply { body.review(review) }
 
         /** Optional spending limit in USD cents. Omission or null creates an unlimited session. */
         fun spendControl(spendControl: SpendControl?) = apply { body.spendControl(spendControl) }
@@ -518,6 +544,7 @@ private constructor(
         private val agentId: JsonField<String>,
         private val input: JsonField<Input>,
         private val metadata: JsonField<Metadata>,
+        private val review: JsonField<Review>,
         private val spendControl: JsonField<SpendControl>,
         private val vaultIds: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -534,6 +561,7 @@ private constructor(
             @JsonProperty("metadata")
             @ExcludeMissing
             metadata: JsonField<Metadata> = JsonMissing.of(),
+            @JsonProperty("review") @ExcludeMissing review: JsonField<Review> = JsonMissing.of(),
             @JsonProperty("spend_control")
             @ExcludeMissing
             spendControl: JsonField<SpendControl> = JsonMissing.of(),
@@ -546,6 +574,7 @@ private constructor(
             agentId,
             input,
             metadata,
+            review,
             spendControl,
             vaultIds,
             mutableMapOf(),
@@ -595,6 +624,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Action review mode. Omit to use none.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun review(): Optional<Review> = review.getOptional("review")
 
         /**
          * Optional spending limit in USD cents. Omission or null creates an unlimited session.
@@ -650,6 +687,13 @@ private constructor(
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
         /**
+         * Returns the raw JSON value of [review].
+         *
+         * Unlike [review], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("review") @ExcludeMissing fun _review(): JsonField<Review> = review
+
+        /**
          * Returns the raw JSON value of [spendControl].
          *
          * Unlike [spendControl], this method doesn't throw if the JSON field has an unexpected
@@ -689,6 +733,7 @@ private constructor(
                 "agent_id" to this.agentId,
                 "input" to this.input,
                 "metadata" to this.metadata,
+                "review" to this.review,
                 "spend_control" to this.spendControl,
                 "vault_ids" to this.vaultIds,
             )
@@ -728,6 +773,7 @@ private constructor(
             private var agentId: JsonField<String> = JsonMissing.of()
             private var input: JsonField<Input> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
+            private var review: JsonField<Review> = JsonMissing.of()
             private var spendControl: JsonField<SpendControl> = JsonMissing.of()
             private var vaultIds: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -739,6 +785,7 @@ private constructor(
                 agentId = body.agentId
                 input = body.input
                 metadata = body.metadata
+                review = body.review
                 spendControl = body.spendControl
                 vaultIds = body.vaultIds.map { it.toMutableList() }
                 additionalProperties = body.additionalProperties.toMutableMap()
@@ -864,6 +911,18 @@ private constructor(
              */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
+            /** Action review mode. Omit to use none. */
+            fun review(review: Review) = review(JsonField.of(review))
+
+            /**
+             * Sets [Builder.review] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.review] with a well-typed [Review] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun review(review: JsonField<Review>) = apply { this.review = review }
+
             /**
              * Optional spending limit in USD cents. Omission or null creates an unlimited session.
              */
@@ -951,6 +1010,7 @@ private constructor(
                     agentId,
                     input,
                     metadata,
+                    review,
                     spendControl,
                     (vaultIds ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
@@ -978,6 +1038,7 @@ private constructor(
             agentId()
             input().ifPresent { it.validate() }
             metadata().ifPresent { it.validate() }
+            review().ifPresent { it.validate() }
             spendControl().ifPresent { it.validate() }
             vaultIds()
             validated = true
@@ -1004,6 +1065,7 @@ private constructor(
                 (if (agentId.asKnown().isPresent) 1 else 0) +
                 (input.asKnown().getOrNull()?.validity() ?: 0) +
                 (metadata.asKnown().getOrNull()?.validity() ?: 0) +
+                (review.asKnown().getOrNull()?.validity() ?: 0) +
                 (spendControl.asKnown().getOrNull()?.validity() ?: 0) +
                 (vaultIds.asKnown().getOrNull()?.size ?: 0)
 
@@ -1018,6 +1080,7 @@ private constructor(
                 agentId == other.agentId &&
                 input == other.input &&
                 metadata == other.metadata &&
+                review == other.review &&
                 spendControl == other.spendControl &&
                 vaultIds == other.vaultIds &&
                 additionalProperties == other.additionalProperties
@@ -1030,6 +1093,7 @@ private constructor(
                 agentId,
                 input,
                 metadata,
+                review,
                 spendControl,
                 vaultIds,
                 additionalProperties,
@@ -1039,7 +1103,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{environment=$environment, agent=$agent, agentId=$agentId, input=$input, metadata=$metadata, spendControl=$spendControl, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
+            "Body{environment=$environment, agent=$agent, agentId=$agentId, input=$input, metadata=$metadata, review=$review, spendControl=$spendControl, vaultIds=$vaultIds, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -2602,6 +2666,147 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
+    }
+
+    /** Action review mode. Omit to use none. */
+    class Review @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            /** Keep the existing execution behavior without automatic action review. */
+            @JvmField val NONE = of("none")
+
+            /** Review eligible actions automatically. Deny manual approval fallbacks. */
+            @JvmField val AUTO_REVIEW = of("auto_review")
+
+            @JvmStatic fun of(value: String) = Review(JsonField.of(value))
+        }
+
+        /** An enum containing [Review]'s known values. */
+        enum class Known {
+            /** Keep the existing execution behavior without automatic action review. */
+            NONE,
+            /** Review eligible actions automatically. Deny manual approval fallbacks. */
+            AUTO_REVIEW,
+        }
+
+        /**
+         * An enum containing [Review]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Review] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            /** Keep the existing execution behavior without automatic action review. */
+            NONE,
+            /** Review eligible actions automatically. Deny manual approval fallbacks. */
+            AUTO_REVIEW,
+            /** An enum member indicating that [Review] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                NONE -> Value.NONE
+                AUTO_REVIEW -> Value.AUTO_REVIEW
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                NONE -> Known.NONE
+                AUTO_REVIEW -> Known.AUTO_REVIEW
+                else -> throw OpenAIInvalidDataException("Unknown Review: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Review = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Review && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     /** Optional spending limit in USD cents. Omission or null creates an unlimited session. */

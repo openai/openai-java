@@ -117,6 +117,7 @@ internal class AgentSessionTest {
                         .build()
                 )
                 .addVaultId("string")
+                .review(AgentSession.Review.NONE)
                 .spendControl(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
                 .build()
 
@@ -223,6 +224,7 @@ internal class AgentSessionTest {
                     .build()
             )
         assertThat(agentSession.vaultIds()).containsExactly("string")
+        assertThat(agentSession.review()).contains(AgentSession.Review.NONE)
         assertThat(agentSession.spendControl())
             .contains(AgentSession.SpendControl.builder().consumed(0L).limit(1L).build())
 
