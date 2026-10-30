@@ -58,6 +58,9 @@ interface OrganizationServiceAsync {
     fun dataRetention(): DataRetentionServiceAsync =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
+    fun externalKeys(): ExternalKeyServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
     fun externalStorage(): ExternalStorageServiceAsync =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
@@ -71,9 +74,6 @@ interface OrganizationServiceAsync {
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     fun projects(): ProjectServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
-
-    fun externalKeys(): ExternalKeyServiceAsync =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
@@ -132,6 +132,11 @@ interface OrganizationServiceAsync {
                 "Subservice is not supported by this implementation"
             )
 
+        fun externalKeys(): ExternalKeyServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
         fun externalStorage(): ExternalStorageServiceAsync.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
@@ -153,11 +158,6 @@ interface OrganizationServiceAsync {
             )
 
         fun projects(): ProjectServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
-
-        fun externalKeys(): ExternalKeyServiceAsync.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
             )

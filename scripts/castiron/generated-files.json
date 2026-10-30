@@ -4565,13 +4565,17 @@
       "mode": "100644",
       "sha256": "5b07a9cd5f7579a160ec9174a5eee17444ea593f6fc4949ba903d84f5a74a8d5"
     },
+    "openai-java-core/src/main/kotlin/com/openai/models/live/DecisionInputItemValidation.kt": {
+      "mode": "100644",
+      "sha256": "117a87ceaaa94d75053d3b345b36f311f306bb11030904da61d2f12e7b2c5c14"
+    },
     "openai-java-core/src/main/kotlin/com/openai/models/live/DecisionItemCreateEvent.kt": {
       "mode": "100644",
-      "sha256": "8dc4d8e5e54e48e1ff6da534a5f309e352e76a0f6085df76273c5cd4b692c5a4"
+      "sha256": "16204c7f0d68b9be676b2042aab9df5d3054d7660ccc8c478c8abcf0f141cbb4"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/DecisionItemCreatedEvent.kt": {
       "mode": "100644",
-      "sha256": "0c69fe9c2b1a3d5e718566346efb3aae82219053faf7bdd5f76d3a04fd27cc96"
+      "sha256": "6ff8f0c2a93ee83511d0b855dc65a9a356b249c84532706e74505582a9adf868"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/live/DecisionItemDeleteEvent.kt": {
       "mode": "100644",
@@ -4899,7 +4903,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/models/realtime/ConversationItem.kt": {
       "mode": "100644",
-      "sha256": "d81d2c7a67ef5da5001f36309bd95f555214f400538a3659ca27702f45f7408b"
+      "sha256": "6e59779cabb7364a5bc90ec08ce84fd4ef5978067354b08833dea19ae588d8e8"
     },
     "openai-java-core/src/main/kotlin/com/openai/models/realtime/ConversationItemAdded.kt": {
       "mode": "100644",
@@ -6907,11 +6911,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/OrganizationServiceAsync.kt": {
       "mode": "100644",
-      "sha256": "00c05610df1a68f74d0e0c14aaf6fe362f144de77cc568af365972988d70c404"
+      "sha256": "f4f67f1e67cfcf95125bd60607657351368e814ed877b0805f49b09ac6d92317"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/OrganizationServiceAsyncImpl.kt": {
       "mode": "100644",
-      "sha256": "6c8797a53866d210d762552fbcc9eecc3837f5d22136e403ec7a0e295885a998"
+      "sha256": "d406d93c6818c4f82023202c0970f87aea038edc543ab6184ad2b1897b4a1251"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/AdminApiKeyServiceAsync.kt": {
       "mode": "100644",
@@ -7915,11 +7919,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/OrganizationService.kt": {
       "mode": "100644",
-      "sha256": "22e3c0415ace659bb5a370878113dc26f73aea8983cfca97cf8a7e1f35b2df62"
+      "sha256": "43f29b3288f34dfb6996df8258d1be51ba9692fd74aa41bc80b567b62f2afce3"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/OrganizationServiceImpl.kt": {
       "mode": "100644",
-      "sha256": "4540521f82af7bbc2c9e41800fb7687248ae7c932b3517b14b83934938093530"
+      "sha256": "8380ebcb143814e2162f7455acf02deb2367866b25b0592b26360e94f47a61aa"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/AdminApiKeyService.kt": {
       "mode": "100644",
@@ -8907,7 +8911,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyCreateParamsTest.kt": {
       "mode": "100644",
-      "sha256": "f432d69ed80a0bb3b7f1e8d9cd4af1a4e3e04c09aa46b98511a1d92584fbd32d"
+      "sha256": "a174afac5567da231904e7efa2290c2974d026a37b0533a3b97459b4461f99ba"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/externalkeys/ExternalKeyDeleteParamsTest.kt": {
       "mode": "100644",
@@ -14727,7 +14731,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/ExternalKeyServiceAsyncTest.kt": {
       "mode": "100644",
-      "sha256": "771d71d1a04655433c6e4eb2303c905f43d2b90d58f969db14ac5de5fcbf65cf"
+      "sha256": "fdfe90ada604ad575854bd46ed7a6872e2a0fdee228ef3c9f92f5a642d8230ce"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/ExternalStorageServiceAsyncPaginationContractTest.kt": {
       "mode": "100644",
@@ -15467,7 +15471,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/ExternalKeyServiceTest.kt": {
       "mode": "100644",
-      "sha256": "f974a66dd28c0dcda051c50445b97641fe0514bb6f84d3e5f725b7c61c7c5689"
+      "sha256": "7e9adb3b2260d9cca1367ba936e95fc598b358d9c3d0c7c12b2bd68705396d03"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/ExternalStorageServicePaginationContractTest.kt": {
       "mode": "100644",

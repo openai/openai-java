@@ -299,23 +299,20 @@ private constructor(
         ) : this(content, role, id, type, mutableMapOf())
 
         /**
-         * The text input to the model.
+         * The required content of a message item. Tool call and output items omit content.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Use `_content().isMissing()` to check for content before reading it.
+         *
+         * @throws OpenAIInvalidDataException if content is missing, null, or has an unexpected
+         *   type. Tool call and output items normally omit content.
          */
         fun content(): Content = content.getRequired("content")
 
         /**
-         * The message role. Always `user`.
+         * The role on a message item, defaulting to user. Tool call and output items omit role.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("user")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * Returns the raw role. Use `_role().isMissing()` to check its presence; tool call and
+         * output items omit this field.
          */
         @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
 
@@ -328,6 +325,9 @@ private constructor(
         fun id(): Optional<String> = id.getOptional("id")
 
         /**
+         * The item type. An omitted type denotes a message. Tool call and output items have their
+         * corresponding tool type.
+         *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -421,7 +421,7 @@ private constructor(
                 additionalProperties = item.additionalProperties.toMutableMap()
             }
 
-            /** The text input to the model. */
+            /** The required content of a message item. Tool call and output items omit content. */
             fun content(content: Content) = content(JsonField.of(content))
 
             /**
@@ -479,6 +479,10 @@ private constructor(
              */
             fun id(id: JsonField<String>) = apply { this.id = id }
 
+            /**
+             * The item type. An omitted type denotes a message. Tool call and output items have
+             * their corresponding tool type.
+             */
             fun type(type: Type) = type(JsonField.of(type))
 
             /**
@@ -547,14 +551,21 @@ private constructor(
                 return@apply
             }
 
-            content().validate()
-            _role().let {
-                if (it != JsonValue.from("user")) {
-                    throw OpenAIInvalidDataException("'role' is invalid, received $it")
+            if (_type().isNull()) {
+                // The released Item validated null like an omitted type. Preserve its
+                // field checks without changing the wire value or newer item variants.
+                content().validate()
+                _role().let {
+                    if (it != JsonValue.from("user")) {
+                        throw OpenAIInvalidDataException("'role' is invalid, received $it")
+                    }
                 }
+                id()
+                type().ifPresent { it.validate() }
+            } else {
+                val properties = _allProperties()
+                com.openai.models.live.DecisionInputItemValidation.validate(properties)
             }
-            id()
-            type().ifPresent { it.validate() }
             validated = true
         }
 
@@ -579,7 +590,7 @@ private constructor(
                 (if (id.asKnown().isPresent) 1 else 0) +
                 (type.asKnown().getOrNull()?.validity() ?: 0)
 
-        /** The text input to the model. */
+        /** The required content of a message item. Tool call and output items omit content. */
         @JsonDeserialize(using = Content.Deserializer::class)
         @JsonSerialize(using = Content.Serializer::class)
         class Content
@@ -1790,6 +1801,10 @@ private constructor(
             }
         }
 
+        /**
+         * The item type. An omitted type denotes a message. Tool call and output items have their
+         * corresponding tool type.
+         */
         class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
