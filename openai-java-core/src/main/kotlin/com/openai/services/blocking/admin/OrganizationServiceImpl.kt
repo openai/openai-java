@@ -58,6 +58,8 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
         DataRetentionServiceImpl(clientOptions)
     }
 
+    private val externalKeys: ExternalKeyService by lazy { ExternalKeyServiceImpl(clientOptions) }
+
     private val externalStorage: ExternalStorageService by lazy {
         ExternalStorageServiceImpl(clientOptions)
     }
@@ -69,8 +71,6 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
     private val certificates: CertificateService by lazy { CertificateServiceImpl(clientOptions) }
 
     private val projects: ProjectService by lazy { ProjectServiceImpl(clientOptions) }
-
-    private val externalKeys: ExternalKeyService by lazy { ExternalKeyServiceImpl(clientOptions) }
 
     override fun withRawResponse(): OrganizationService.WithRawResponse = withRawResponse
 
@@ -94,6 +94,8 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
 
     override fun dataRetention(): DataRetentionService = dataRetention
 
+    override fun externalKeys(): ExternalKeyService = externalKeys
+
     override fun externalStorage(): ExternalStorageService = externalStorage
 
     override fun spendLimit(): SpendLimitService = spendLimit
@@ -103,8 +105,6 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
     override fun certificates(): CertificateService = certificates
 
     override fun projects(): ProjectService = projects
-
-    override fun externalKeys(): ExternalKeyService = externalKeys
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         OrganizationService.WithRawResponse {
@@ -141,6 +141,10 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
             DataRetentionServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val externalKeys: ExternalKeyService.WithRawResponse by lazy {
+            ExternalKeyServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val externalStorage: ExternalStorageService.WithRawResponse by lazy {
             ExternalStorageServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -159,10 +163,6 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
 
         private val projects: ProjectService.WithRawResponse by lazy {
             ProjectServiceImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val externalKeys: ExternalKeyService.WithRawResponse by lazy {
-            ExternalKeyServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun withOptions(
@@ -189,6 +189,8 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
 
         override fun dataRetention(): DataRetentionService.WithRawResponse = dataRetention
 
+        override fun externalKeys(): ExternalKeyService.WithRawResponse = externalKeys
+
         override fun externalStorage(): ExternalStorageService.WithRawResponse = externalStorage
 
         override fun spendLimit(): SpendLimitService.WithRawResponse = spendLimit
@@ -198,7 +200,5 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
         override fun certificates(): CertificateService.WithRawResponse = certificates
 
         override fun projects(): ProjectService.WithRawResponse = projects
-
-        override fun externalKeys(): ExternalKeyService.WithRawResponse = externalKeys
     }
 }

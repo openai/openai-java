@@ -28,7 +28,7 @@ internal class ExternalKeyServiceAsyncTest {
                         .externalId("external_id")
                         .kmsArn("kms_arn")
                         .name("name")
-                        .roleArn("arn:aws:iam::732166991022:role/0*bWz\"J5bo7")
+                        .roleArn("arn:aws:iam::123456789012:role/example-role")
                         .purpose(ExternalKeyCreateParams.Body.Aws.Purpose.EKM)
                         .build()
                 )
