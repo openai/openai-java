@@ -1447,6 +1447,7 @@ internal class BetaResponseItemTest {
                         .effort(BetaResponseConfigurationUpdateItem.Reasoning.Effort.NONE)
                         .build()
                 )
+                .text(BetaResponseConfigurationUpdateItem.Text.builder().formatText().build())
                 .build()
 
         val betaResponseItem = BetaResponseItem.ofConfigurationUpdate(configurationUpdate)
@@ -1503,6 +1504,7 @@ internal class BetaResponseItemTest {
                             .effort(BetaResponseConfigurationUpdateItem.Reasoning.Effort.NONE)
                             .build()
                     )
+                    .text(BetaResponseConfigurationUpdateItem.Text.builder().formatText().build())
                     .build()
             )
 

@@ -139,8 +139,8 @@ private constructor(
     fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
 
     /**
-     * An update to the conversation's response configuration. The configuration remains in effect
-     * for subsequent responses until it is replaced by another configuration update.
+     * An update to the conversation's response configuration. Supply reasoning, text, or both. Each
+     * setting stays in effect until a later update replaces it.
      */
     fun configurationUpdate(): Optional<ResponseConfigurationUpdateItemParam> =
         Optional.ofNullable(configurationUpdate)
@@ -346,8 +346,8 @@ private constructor(
     fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
 
     /**
-     * An update to the conversation's response configuration. The configuration remains in effect
-     * for subsequent responses until it is replaced by another configuration update.
+     * An update to the conversation's response configuration. Supply reasoning, text, or both. Each
+     * setting stays in effect until a later update replaces it.
      */
     fun asConfigurationUpdate(): ResponseConfigurationUpdateItemParam =
         configurationUpdate.getOrThrow("configurationUpdate")
@@ -1074,8 +1074,8 @@ private constructor(
             ResponseInputItem(additionalTools = additionalTools)
 
         /**
-         * An update to the conversation's response configuration. The configuration remains in
-         * effect for subsequent responses until it is replaced by another configuration update.
+         * An update to the conversation's response configuration. Supply reasoning, text, or both.
+         * Each setting stays in effect until a later update replaces it.
          */
         @JvmStatic
         fun ofConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItemParam) =
@@ -1254,8 +1254,8 @@ private constructor(
         fun visitAdditionalTools(additionalTools: AdditionalTools): T
 
         /**
-         * An update to the conversation's response configuration. The configuration remains in
-         * effect for subsequent responses until it is replaced by another configuration update.
+         * An update to the conversation's response configuration. Supply reasoning, text, or both.
+         * Each setting stays in effect until a later update replaces it.
          */
         fun visitConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItemParam): T
 

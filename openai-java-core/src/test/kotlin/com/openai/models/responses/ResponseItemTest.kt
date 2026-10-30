@@ -8,6 +8,7 @@ import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.PromptCacheBreakpointTtl
 import com.openai.models.ReasoningEffort
+import com.openai.models.ResponseFormatText
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -1034,6 +1035,11 @@ internal class ResponseItemTest {
                         .effort(ReasoningEffort.NONE)
                         .build()
                 )
+                .text(
+                    ResponseConfigurationUpdateItem.Text.builder()
+                        .format(ResponseFormatText.builder().build())
+                        .build()
+                )
                 .build()
 
         val responseItem = ResponseItem.ofConfigurationUpdate(configurationUpdate)
@@ -1080,6 +1086,11 @@ internal class ResponseItemTest {
                     .reasoning(
                         ResponseConfigurationUpdateItem.Reasoning.builder()
                             .effort(ReasoningEffort.NONE)
+                            .build()
+                    )
+                    .text(
+                        ResponseConfigurationUpdateItem.Text.builder()
+                            .format(ResponseFormatText.builder().build())
                             .build()
                     )
                     .build()
