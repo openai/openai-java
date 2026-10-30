@@ -128,6 +128,7 @@ internal class AgentSessionRequiresActionEventTest {
                                 .build()
                         )
                         .addVaultId("string")
+                        .review(AgentSession.Review.NONE)
                         .spendControl(
                             AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                         )
@@ -246,6 +247,7 @@ internal class AgentSessionRequiresActionEventTest {
                             .build()
                     )
                     .addVaultId("string")
+                    .review(AgentSession.Review.NONE)
                     .spendControl(
                         AgentSession.SpendControl.builder().consumed(0L).limit(1L).build()
                     )

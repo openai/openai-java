@@ -12,20 +12,22 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.collectAllProperties
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.beta.agents.AgentToolParam
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Updates session metadata, model, reasoning effort, or service tier. Model settings apply to
- * subsequent turns. Omitted fields are unchanged. See
+ * Updates session tools, metadata, model, reasoning effort, or service tier. Model settings apply
+ * to subsequent turns. Omitted fields are unchanged. See
  * [managing sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
  */
 class SessionUpdateParams
@@ -39,7 +41,7 @@ private constructor(
     fun sessionId(): Optional<String> = Optional.ofNullable(sessionId)
 
     /**
-     * Model settings for subsequent turns. Omitted fields stay unchanged.
+     * Agent settings to update on this session. Omitted fields stay unchanged.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -54,6 +56,15 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = body.metadata()
+
+    /**
+     * Default action review for new root turns. Existing turns and their subagents keep their
+     * review mode.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun review(): Optional<Review> = body.review()
 
     /**
      * Omit to retain the limit; null or a null limit removes it without resetting spend.
@@ -76,6 +87,13 @@ private constructor(
      * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _metadata(): JsonField<Metadata> = body._metadata()
+
+    /**
+     * Returns the raw JSON value of [review].
+     *
+     * Unlike [review], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _review(): JsonField<Review> = body._review()
 
     /**
      * Returns the raw JSON value of [spendControl].
@@ -130,11 +148,12 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [agent]
          * - [metadata]
+         * - [review]
          * - [spendControl]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** Model settings for subsequent turns. Omitted fields stay unchanged. */
+        /** Agent settings to update on this session. Omitted fields stay unchanged. */
         fun agent(agent: Agent) = apply { body.agent(agent) }
 
         /**
@@ -162,6 +181,20 @@ private constructor(
          * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
+
+        /**
+         * Default action review for new root turns. Existing turns and their subagents keep their
+         * review mode.
+         */
+        fun review(review: Review) = apply { body.review(review) }
+
+        /**
+         * Sets [Builder.review] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.review] with a well-typed [Review] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun review(review: JsonField<Review>) = apply { body.review(review) }
 
         /** Omit to retain the limit; null or a null limit removes it without resetting spend. */
         fun spendControl(spendControl: SpendControl?) = apply { body.spendControl(spendControl) }
@@ -330,6 +363,7 @@ private constructor(
     private constructor(
         private val agent: JsonField<Agent>,
         private val metadata: JsonField<Metadata>,
+        private val review: JsonField<Review>,
         private val spendControl: JsonField<SpendControl>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -340,13 +374,14 @@ private constructor(
             @JsonProperty("metadata")
             @ExcludeMissing
             metadata: JsonField<Metadata> = JsonMissing.of(),
+            @JsonProperty("review") @ExcludeMissing review: JsonField<Review> = JsonMissing.of(),
             @JsonProperty("spend_control")
             @ExcludeMissing
             spendControl: JsonField<SpendControl> = JsonMissing.of(),
-        ) : this(agent, metadata, spendControl, mutableMapOf())
+        ) : this(agent, metadata, review, spendControl, mutableMapOf())
 
         /**
-         * Model settings for subsequent turns. Omitted fields stay unchanged.
+         * Agent settings to update on this session. Omitted fields stay unchanged.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -361,6 +396,15 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Default action review for new root turns. Existing turns and their subagents keep their
+         * review mode.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun review(): Optional<Review> = review.getOptional("review")
 
         /**
          * Omit to retain the limit; null or a null limit removes it without resetting spend.
@@ -383,6 +427,13 @@ private constructor(
          * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
+        /**
+         * Returns the raw JSON value of [review].
+         *
+         * Unlike [review], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("review") @ExcludeMissing fun _review(): JsonField<Review> = review
 
         /**
          * Returns the raw JSON value of [spendControl].
@@ -412,6 +463,7 @@ private constructor(
                 additionalProperties,
                 "agent" to this.agent,
                 "metadata" to this.metadata,
+                "review" to this.review,
                 "spend_control" to this.spendControl,
             )
 
@@ -440,6 +492,7 @@ private constructor(
 
             private var agent: JsonField<Agent> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
+            private var review: JsonField<Review> = JsonMissing.of()
             private var spendControl: JsonField<SpendControl> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -447,11 +500,12 @@ private constructor(
             internal fun from(body: Body) = apply {
                 agent = body.agent
                 metadata = body.metadata
+                review = body.review
                 spendControl = body.spendControl
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** Model settings for subsequent turns. Omitted fields stay unchanged. */
+            /** Agent settings to update on this session. Omitted fields stay unchanged. */
             fun agent(agent: Agent) = agent(JsonField.of(agent))
 
             /**
@@ -480,6 +534,21 @@ private constructor(
              * supported value.
              */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+
+            /**
+             * Default action review for new root turns. Existing turns and their subagents keep
+             * their review mode.
+             */
+            fun review(review: Review) = review(JsonField.of(review))
+
+            /**
+             * Sets [Builder.review] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.review] with a well-typed [Review] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun review(review: JsonField<Review>) = apply { this.review = review }
 
             /**
              * Omit to retain the limit; null or a null limit removes it without resetting spend.
@@ -527,7 +596,7 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): Body =
-                Body(agent, metadata, spendControl, additionalProperties.toMutableMap())
+                Body(agent, metadata, review, spendControl, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -548,6 +617,7 @@ private constructor(
 
             agent().ifPresent { it.validate() }
             metadata().ifPresent { it.validate() }
+            review().ifPresent { it.validate() }
             spendControl().ifPresent { it.validate() }
             validated = true
         }
@@ -570,6 +640,7 @@ private constructor(
         internal fun validity(): Int =
             (agent.asKnown().getOrNull()?.validity() ?: 0) +
                 (metadata.asKnown().getOrNull()?.validity() ?: 0) +
+                (review.asKnown().getOrNull()?.validity() ?: 0) +
                 (spendControl.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
@@ -580,27 +651,29 @@ private constructor(
             return other is Body &&
                 agent == other.agent &&
                 metadata == other.metadata &&
+                review == other.review &&
                 spendControl == other.spendControl &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(agent, metadata, spendControl, additionalProperties)
+            Objects.hash(agent, metadata, review, spendControl, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{agent=$agent, metadata=$metadata, spendControl=$spendControl, additionalProperties=$additionalProperties}"
+            "Body{agent=$agent, metadata=$metadata, review=$review, spendControl=$spendControl, additionalProperties=$additionalProperties}"
     }
 
-    /** Model settings for subsequent turns. Omitted fields stay unchanged. */
+    /** Agent settings to update on this session. Omitted fields stay unchanged. */
     class Agent
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val model: JsonField<String>,
         private val reasoning: JsonField<Reasoning>,
         private val serviceTier: JsonField<ServiceTier>,
+        private val tools: JsonField<List<AgentToolParam>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -613,7 +686,10 @@ private constructor(
             @JsonProperty("service_tier")
             @ExcludeMissing
             serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
-        ) : this(model, reasoning, serviceTier, mutableMapOf())
+            @JsonProperty("tools")
+            @ExcludeMissing
+            tools: JsonField<List<AgentToolParam>> = JsonMissing.of(),
+        ) : this(model, reasoning, serviceTier, tools, mutableMapOf())
 
         /**
          * The model for subsequent turns. Omit to keep the current model.
@@ -640,6 +716,16 @@ private constructor(
         fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
 
         /**
+         * Replaces the session tools. Functions and MCP servers change on the next model call.
+         * Built-in tools change by the next turn. Omit to keep the current tools, or pass null or
+         * an empty array to clear them.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun tools(): Optional<List<AgentToolParam>> = tools.getOptional("tools")
+
+        /**
          * Returns the raw JSON value of [model].
          *
          * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
@@ -664,6 +750,13 @@ private constructor(
         @ExcludeMissing
         fun _serviceTier(): JsonField<ServiceTier> = serviceTier
 
+        /**
+         * Returns the raw JSON value of [tools].
+         *
+         * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<AgentToolParam>> = tools
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -683,6 +776,7 @@ private constructor(
                 "model" to this.model,
                 "reasoning" to this.reasoning,
                 "service_tier" to this.serviceTier,
+                "tools" to this.tools,
             )
 
         /**
@@ -711,6 +805,7 @@ private constructor(
             private var model: JsonField<String> = JsonMissing.of()
             private var reasoning: JsonField<Reasoning> = JsonMissing.of()
             private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
+            private var tools: JsonField<MutableList<AgentToolParam>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -718,6 +813,7 @@ private constructor(
                 model = agent.model
                 reasoning = agent.reasoning
                 serviceTier = agent.serviceTier
+                tools = agent.tools.map { it.toMutableList() }
                 additionalProperties = agent.additionalProperties.toMutableMap()
             }
 
@@ -764,6 +860,67 @@ private constructor(
                 this.serviceTier = serviceTier
             }
 
+            /**
+             * Replaces the session tools. Functions and MCP servers change on the next model call.
+             * Built-in tools change by the next turn. Omit to keep the current tools, or pass null
+             * or an empty array to clear them.
+             */
+            fun tools(tools: List<AgentToolParam>?) = tools(JsonField.ofNullable(tools))
+
+            /** Alias for calling [Builder.tools] with `tools.orElse(null)`. */
+            fun tools(tools: Optional<List<AgentToolParam>>) = tools(tools.getOrNull())
+
+            /**
+             * Sets [Builder.tools] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.tools] with a well-typed `List<AgentToolParam>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun tools(tools: JsonField<List<AgentToolParam>>) = apply {
+                this.tools = tools.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [AgentToolParam] to [tools].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addTool(tool: AgentToolParam) = apply {
+                tools =
+                    (tools?.takeUnless { it.isMissing() } ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("tools", it).add(tool)
+                    }
+            }
+
+            /** Alias for calling [addTool] with `AgentToolParam.ofFunction(function)`. */
+            fun addTool(function: AgentToolParam.Function) =
+                addTool(AgentToolParam.ofFunction(function))
+
+            /** Alias for calling [addTool] with `AgentToolParam.ofToolSearch()`. */
+            fun addToolToolSearch() = addTool(AgentToolParam.ofToolSearch())
+
+            /**
+             * Alias for calling [addTool] with
+             * `AgentToolParam.ofProgrammaticToolCalling(programmaticToolCalling)`.
+             */
+            fun addTool(programmaticToolCalling: AgentToolParam.ProgrammaticToolCalling) =
+                addTool(AgentToolParam.ofProgrammaticToolCalling(programmaticToolCalling))
+
+            /** Alias for calling [addTool] with `AgentToolParam.ofMcp(mcp)`. */
+            fun addTool(mcp: AgentToolParam.Mcp) = addTool(AgentToolParam.ofMcp(mcp))
+
+            /** Alias for calling [addTool] with `AgentToolParam.ofWebSearch(webSearch)`. */
+            fun addTool(webSearch: AgentToolParam.WebSearch) =
+                addTool(AgentToolParam.ofWebSearch(webSearch))
+
+            /** Alias for calling [addTool] with `AgentToolParam.ofComputerUse(computerUse)`. */
+            fun addTool(computerUse: AgentToolParam.ComputerUse) =
+                addTool(AgentToolParam.ofComputerUse(computerUse))
+
+            /** Alias for calling [addTool] with `AgentToolParam.ofAutomations()`. */
+            fun addToolAutomations() = addTool(AgentToolParam.ofAutomations())
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -789,7 +946,13 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): Agent =
-                Agent(model, reasoning, serviceTier, additionalProperties.toMutableMap())
+                Agent(
+                    model,
+                    reasoning,
+                    serviceTier,
+                    (tools ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -811,6 +974,7 @@ private constructor(
             model()
             reasoning().ifPresent { it.validate() }
             serviceTier().ifPresent { it.validate() }
+            tools().ifPresent { it.forEach { it.validate() } }
             validated = true
         }
 
@@ -832,7 +996,8 @@ private constructor(
         internal fun validity(): Int =
             (if (model.asKnown().isPresent) 1 else 0) +
                 (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
-                (serviceTier.asKnown().getOrNull()?.validity() ?: 0)
+                (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
+                (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
         /** Reasoning settings to update. Omit to keep the current effort. */
         class Reasoning
@@ -1378,17 +1543,18 @@ private constructor(
                 model == other.model &&
                 reasoning == other.reasoning &&
                 serviceTier == other.serviceTier &&
+                tools == other.tools &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(model, reasoning, serviceTier, additionalProperties)
+            Objects.hash(model, reasoning, serviceTier, tools, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Agent{model=$model, reasoning=$reasoning, serviceTier=$serviceTier, additionalProperties=$additionalProperties}"
+            "Agent{model=$model, reasoning=$reasoning, serviceTier=$serviceTier, tools=$tools, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1523,6 +1689,150 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Default action review for new root turns. Existing turns and their subagents keep their
+     * review mode.
+     */
+    class Review @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            /** Keep the existing execution behavior without automatic action review. */
+            @JvmField val NONE = of("none")
+
+            /** Review eligible actions automatically. Deny manual approval fallbacks. */
+            @JvmField val AUTO_REVIEW = of("auto_review")
+
+            @JvmStatic fun of(value: String) = Review(JsonField.of(value))
+        }
+
+        /** An enum containing [Review]'s known values. */
+        enum class Known {
+            /** Keep the existing execution behavior without automatic action review. */
+            NONE,
+            /** Review eligible actions automatically. Deny manual approval fallbacks. */
+            AUTO_REVIEW,
+        }
+
+        /**
+         * An enum containing [Review]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Review] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            /** Keep the existing execution behavior without automatic action review. */
+            NONE,
+            /** Review eligible actions automatically. Deny manual approval fallbacks. */
+            AUTO_REVIEW,
+            /** An enum member indicating that [Review] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                NONE -> Value.NONE
+                AUTO_REVIEW -> Value.AUTO_REVIEW
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                NONE -> Known.NONE
+                AUTO_REVIEW -> Known.AUTO_REVIEW
+                else -> throw OpenAIInvalidDataException("Unknown Review: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        /**
+         * Validates that the types of all values in this object match their expected types
+         * recursively.
+         *
+         * This method is _not_ forwards compatible with new types from the API for existing fields.
+         *
+         * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+         *   expected type.
+         */
+        fun validate(): Review = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Review && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     /** Omit to retain the limit; null or a null limit removes it without resetting spend. */
