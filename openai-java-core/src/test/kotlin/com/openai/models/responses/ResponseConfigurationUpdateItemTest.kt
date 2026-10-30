@@ -5,6 +5,7 @@ package com.openai.models.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import com.openai.models.ReasoningEffort
+import com.openai.models.ResponseFormatText
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -20,6 +21,11 @@ internal class ResponseConfigurationUpdateItemTest {
                         .effort(ReasoningEffort.NONE)
                         .build()
                 )
+                .text(
+                    ResponseConfigurationUpdateItem.Text.builder()
+                        .format(ResponseFormatText.builder().build())
+                        .build()
+                )
                 .build()
 
         assertThat(responseConfigurationUpdateItem.id()).isEqualTo("cnfu_123")
@@ -27,6 +33,12 @@ internal class ResponseConfigurationUpdateItemTest {
             .contains(
                 ResponseConfigurationUpdateItem.Reasoning.builder()
                     .effort(ReasoningEffort.NONE)
+                    .build()
+            )
+        assertThat(responseConfigurationUpdateItem.text())
+            .contains(
+                ResponseConfigurationUpdateItem.Text.builder()
+                    .format(ResponseFormatText.builder().build())
                     .build()
             )
 

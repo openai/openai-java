@@ -1544,6 +1544,7 @@ internal class BetaResponseInputItemTest {
                         .effort(BetaResponseConfigurationUpdateItemParam.Reasoning.Effort.NONE)
                         .build()
                 )
+                .text(BetaResponseConfigurationUpdateItemParam.Text.builder().formatText().build())
                 .build()
 
         val betaResponseInputItem = BetaResponseInputItem.ofConfigurationUpdate(configurationUpdate)
@@ -1602,6 +1603,9 @@ internal class BetaResponseInputItemTest {
                         BetaResponseConfigurationUpdateItemParam.Reasoning.builder()
                             .effort(BetaResponseConfigurationUpdateItemParam.Reasoning.Effort.NONE)
                             .build()
+                    )
+                    .text(
+                        BetaResponseConfigurationUpdateItemParam.Text.builder().formatText().build()
                     )
                     .build()
             )

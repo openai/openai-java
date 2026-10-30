@@ -120,8 +120,8 @@ private constructor(
     fun additionalTools(): Optional<AdditionalTools> = Optional.ofNullable(additionalTools)
 
     /**
-     * A configuration update that applies to subsequent responses until it is replaced by another
-     * configuration update.
+     * A configuration update for subsequent responses. Each setting stays in effect until a later
+     * update replaces that setting.
      */
     fun configurationUpdate(): Optional<ResponseConfigurationUpdateItem> =
         Optional.ofNullable(configurationUpdate)
@@ -302,8 +302,8 @@ private constructor(
     fun asAdditionalTools(): AdditionalTools = additionalTools.getOrThrow("additionalTools")
 
     /**
-     * A configuration update that applies to subsequent responses until it is replaced by another
-     * configuration update.
+     * A configuration update for subsequent responses. Each setting stays in effect until a later
+     * update replaces that setting.
      */
     fun asConfigurationUpdate(): ResponseConfigurationUpdateItem =
         configurationUpdate.getOrThrow("configurationUpdate")
@@ -965,8 +965,8 @@ private constructor(
             ResponseItem(additionalTools = additionalTools)
 
         /**
-         * A configuration update that applies to subsequent responses until it is replaced by
-         * another configuration update.
+         * A configuration update for subsequent responses. Each setting stays in effect until a
+         * later update replaces that setting.
          */
         @JvmStatic
         fun ofConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItem) =
@@ -1111,8 +1111,8 @@ private constructor(
         fun visitAdditionalTools(additionalTools: AdditionalTools): T
 
         /**
-         * A configuration update that applies to subsequent responses until it is replaced by
-         * another configuration update.
+         * A configuration update for subsequent responses. Each setting stays in effect until a
+         * later update replaces that setting.
          */
         fun visitConfigurationUpdate(configurationUpdate: ResponseConfigurationUpdateItem): T
 

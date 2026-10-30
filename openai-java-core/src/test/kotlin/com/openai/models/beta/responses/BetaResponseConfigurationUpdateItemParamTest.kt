@@ -24,6 +24,7 @@ internal class BetaResponseConfigurationUpdateItemParamTest {
                         .effort(BetaResponseConfigurationUpdateItemParam.Reasoning.Effort.NONE)
                         .build()
                 )
+                .text(BetaResponseConfigurationUpdateItemParam.Text.builder().formatText().build())
                 .build()
 
         assertThat(betaResponseConfigurationUpdateItemParam.id()).contains("cnfu_123")
@@ -39,6 +40,8 @@ internal class BetaResponseConfigurationUpdateItemParamTest {
                     .effort(BetaResponseConfigurationUpdateItemParam.Reasoning.Effort.NONE)
                     .build()
             )
+        assertThat(betaResponseConfigurationUpdateItemParam.text())
+            .contains(BetaResponseConfigurationUpdateItemParam.Text.builder().formatText().build())
 
         val jsonMapper = jsonMapper()
 
