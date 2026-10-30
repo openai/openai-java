@@ -215,15 +215,23 @@ private constructor(
         if (result.isCancelled) return result
         val effectiveOptions = options.applyDefaults(RequestOptions.from(this))
         val timed = TimedAuthentication.start(httpRequestAuthenticator, effectiveOptions)
+        val workloadAuth =
+            if (
+                httpRequestAuthenticator == null &&
+                    credential is WorkloadIdentityCredential &&
+                    !isSecurityHeaderRemoved("Authorization") &&
+                    request.headers.values("Authorization").isEmpty()
+            ) {
+                credential.getAuth()
+            } else null
         val authenticated =
             try {
                 when {
                     timed != null -> timed.authenticateAsync(request)
                     httpRequestAuthenticator != null ->
                         httpRequestAuthenticator.authenticateAsync(request)
-                    credential is WorkloadIdentityCredential &&
-                        !isSecurityHeaderRemoved("Authorization") ->
-                        credential.getAuth().getTokenAsync().thenApply {
+                    workloadAuth != null ->
+                        workloadAuth.getTokenAsync().thenApply {
                             request
                                 .toBuilder()
                                 .replaceHeaders("Authorization", "Bearer $it")
@@ -263,17 +271,13 @@ private constructor(
                     pending.whenComplete { connection, error ->
                         if (error != null) {
                             if (
-                                httpRequestAuthenticator == null &&
-                                    credential is WorkloadIdentityCredential &&
-                                    !isSecurityHeaderRemoved("Authorization") &&
+                                workloadAuth != null &&
                                     error is com.openai.core.http.WebSocketHandshakeException &&
                                     error.statusCode == 401
                             ) {
-                                credential
-                                    .getAuth()
-                                    .invalidateToken(
-                                        prepared.headers.values("Authorization").singleOrNull()
-                                    )
+                                workloadAuth.invalidateToken(
+                                    prepared.headers.values("Authorization").singleOrNull()
+                                )
                             }
                             result.completeExceptionally(error)
                         } else if (!result.complete(connection)) connection.close()
