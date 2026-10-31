@@ -52,6 +52,17 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the complete development workflow.
 > [!TIP]
 > See the [`openai-java-example`](openai-java-example/src/main/java/com/openai/example) directory for complete and runnable examples!
 
+For Realtime Translation, see the [client-secret example](openai-java-example/src/main/java/com/openai/example/RealtimeTranslationExample.java).
+It issues a short-lived secret, opens a fresh token-only connection, streams a raw PCM16 mono 24 kHz
+file and drains the translated output. Set `OPENAI_API_KEY` for server-side issuance, then run:
+
+```sh
+./gradlew :openai-java-example:run -Pexample=RealtimeTranslation --args="/path/to/input.pcm fr"
+```
+
+The example stops input after two minutes and bounds its network waits. It supports the OpenAI API;
+Azure and Bedrock Translation are not supported. Do not log or persist either credential.
+
 The primary API for interacting with OpenAI models is the [Responses API](https://platform.openai.com/docs/api-reference/responses). You can generate text from the model with the code below.
 
 ```java
