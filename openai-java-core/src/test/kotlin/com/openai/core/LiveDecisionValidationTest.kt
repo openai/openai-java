@@ -95,6 +95,28 @@ internal class LiveDecisionValidationTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = ["live", "sideband", "fork"])
+    fun strictReceiveRejectsExplicitNullStoredIds(family: String) {
+        for (input in
+            listOf(
+                """{"id":null,"type":"message","role":"user","content":"fixture"}""",
+                """{"id":null,"type":"function_call","call_id":"fake-call","name":"fixture","arguments":"{}"}""",
+            )) {
+            val transport = DecisionTransport()
+            val options =
+                ClientOptions.builder()
+                    .httpClient(transport)
+                    .apiKey("fake-live-key")
+                    .responseValidation(true)
+                    .build()
+            withConnection(family, options) { receive ->
+                transport.deliver(input)
+                assertThrows<OpenAIInvalidDataException> { receive() }
+            }
+        }
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = ["developer", "system"])
     fun textContentListValidatesButSingletonObjectDoesNot(role: String) {
         val mapper = jsonMapper()

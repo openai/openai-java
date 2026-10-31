@@ -416,6 +416,7 @@ private constructor(
         private val background: JsonField<Boolean>,
         private val contextManagement: JsonField<List<ContextManagement>>,
         private val conversation: JsonField<Conversation>,
+        private val generate: JsonField<Boolean>,
         private val include: JsonField<List<ResponseIncludable>>,
         private val input: JsonField<Input>,
         private val instructions: JsonField<String>,
@@ -463,6 +464,9 @@ private constructor(
             @JsonProperty("conversation")
             @ExcludeMissing
             conversation: JsonField<Conversation> = JsonMissing.of(),
+            @JsonProperty("generate")
+            @ExcludeMissing
+            generate: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("include")
             @ExcludeMissing
             include: JsonField<List<ResponseIncludable>> = JsonMissing.of(),
@@ -544,6 +548,7 @@ private constructor(
             background,
             contextManagement,
             conversation,
+            generate,
             include,
             input,
             instructions,
@@ -625,6 +630,16 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun conversation(): Optional<Conversation> = conversation.getOptional("conversation")
+
+        /**
+         * Whether to generate output for this response. Defaults to true when omitted. Set to false
+         * to prepare request state without model output; the response ID can be used as
+         * previous_response_id on a later turn.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun generate(): Optional<Boolean> = generate.getOptional("generate")
 
         /**
          * Specify additional output data to include in the model response. Currently supported
@@ -1039,6 +1054,13 @@ private constructor(
         fun _conversation(): JsonField<Conversation> = conversation
 
         /**
+         * Returns the raw JSON value of [generate].
+         *
+         * Unlike [generate], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("generate") @ExcludeMissing fun _generate(): JsonField<Boolean> = generate
+
+        /**
          * Returns the raw JSON value of [include].
          *
          * Unlike [include], this method doesn't throw if the JSON field has an unexpected type.
@@ -1313,6 +1335,7 @@ private constructor(
                 "background" to this.background,
                 "context_management" to this.contextManagement,
                 "conversation" to this.conversation,
+                "generate" to this.generate,
                 "include" to this.include,
                 "input" to this.input,
                 "instructions" to this.instructions,
@@ -1372,6 +1395,7 @@ private constructor(
             private var background: JsonField<Boolean> = JsonMissing.of()
             private var contextManagement: JsonField<MutableList<ContextManagement>>? = null
             private var conversation: JsonField<Conversation> = JsonMissing.of()
+            private var generate: JsonField<Boolean> = JsonMissing.of()
             private var include: JsonField<MutableList<ResponseIncludable>>? = null
             private var input: JsonField<Input> = JsonMissing.of()
             private var instructions: JsonField<String> = JsonMissing.of()
@@ -1410,6 +1434,7 @@ private constructor(
                 background = responseCreate.background
                 contextManagement = responseCreate.contextManagement.map { it.toMutableList() }
                 conversation = responseCreate.conversation
+                generate = responseCreate.generate
                 include = responseCreate.include.map { it.toMutableList() }
                 input = responseCreate.input
                 instructions = responseCreate.instructions
@@ -1562,6 +1587,22 @@ private constructor(
              */
             fun conversation(responseConversationParam: ResponseConversationParam) =
                 conversation(Conversation.ofResponseConversationParam(responseConversationParam))
+
+            /**
+             * Whether to generate output for this response. Defaults to true when omitted. Set to
+             * false to prepare request state without model output; the response ID can be used as
+             * previous_response_id on a later turn.
+             */
+            fun generate(generate: Boolean) = generate(JsonField.of(generate))
+
+            /**
+             * Sets [Builder.generate] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.generate] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun generate(generate: JsonField<Boolean>) = apply { this.generate = generate }
 
             /**
              * Specify additional output data to include in the model response. Currently supported
@@ -2515,6 +2556,7 @@ private constructor(
                     background,
                     (contextManagement ?: JsonMissing.of()).map { it.toImmutable() },
                     conversation,
+                    generate,
                     (include ?: JsonMissing.of()).map { it.toImmutable() },
                     input,
                     instructions,
@@ -2573,6 +2615,7 @@ private constructor(
             background()
             contextManagement().ifPresent { it.forEach { it.validate() } }
             conversation().ifPresent { it.validate() }
+            generate()
             include().ifPresent { it.forEach { it.validate() } }
             input().ifPresent { it.validate() }
             instructions()
@@ -2626,6 +2669,7 @@ private constructor(
                 (if (background.asKnown().isPresent) 1 else 0) +
                 (contextManagement.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (conversation.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (generate.asKnown().isPresent) 1 else 0) +
                 (include.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (input.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (instructions.asKnown().isPresent) 1 else 0) +
@@ -6969,6 +7013,7 @@ private constructor(
                 background == other.background &&
                 contextManagement == other.contextManagement &&
                 conversation == other.conversation &&
+                generate == other.generate &&
                 include == other.include &&
                 input == other.input &&
                 instructions == other.instructions &&
@@ -7008,6 +7053,7 @@ private constructor(
                 background,
                 contextManagement,
                 conversation,
+                generate,
                 include,
                 input,
                 instructions,
@@ -7044,6 +7090,6 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ResponseCreate{type=$type, accessPrograms=$accessPrograms, background=$background, contextManagement=$contextManagement, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, stream=$stream, streamId=$streamId, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "ResponseCreate{type=$type, accessPrograms=$accessPrograms, background=$background, contextManagement=$contextManagement, conversation=$conversation, generate=$generate, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, stream=$stream, streamId=$streamId, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
     }
 }
