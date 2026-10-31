@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.96.0](https://github.com/openai/openai-java/compare/v4.95.0...v4.96.0) (2026-10-31)
+
+
+### Features
+
+* **api:** support Responses WebSocket warmup ([#1311](https://github.com/openai/openai-java/issues/1311)) ([4fd2777](https://github.com/openai/openai-java/commit/4fd2777f326bf6ad32b70785a244cd0d81004f14))
+
+
+### Documentation
+
+* add a Realtime Translation client-secret example ([#1312](https://github.com/openai/openai-java/issues/1312)) ([1e579dc](https://github.com/openai/openai-java/commit/1e579dc3785d426f75dbf9047cac09e8081d45b4))
+
 ## [4.95.0](https://github.com/openai/openai-java/compare/v4.94.0...v4.95.0) (2026-10-31)
 
 
