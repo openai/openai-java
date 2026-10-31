@@ -19,7 +19,19 @@ import java.util.Base64;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-/** Translate a caller-provided raw PCM16, mono, 24 kHz file using an issued client secret. */
+/**
+ * Translate a caller-provided raw PCM16, mono, 24 kHz file using an issued client secret.
+ *
+ * <p>Set OPENAI_API_KEY for server-side secret issuance, then run:
+ * <pre>
+ * ./gradlew :openai-java-example:run -Pexample=RealtimeTranslation --args="/path/to/input.pcm fr"
+ * </pre>
+ *
+ * <p>The example issues a short-lived secret, opens a fresh token-only connection, streams input
+ * while receiving output, and finishes by draining through session.closed. It stops input after two
+ * minutes and bounds network waits. It supports the OpenAI API; Azure and Bedrock Translation are
+ * not supported. Do not log or persist either credential.
+ */
 public final class RealtimeTranslationExample {
     private RealtimeTranslationExample() {}
 
