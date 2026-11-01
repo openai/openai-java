@@ -124,8 +124,8 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
     }
 
     /**
-     * The most recently observed response, including incremental output text, refusal and function
-     * call arguments. Empty until a response-bearing event arrives. Fields the server omitted
+     * The most recently observed response, including incremental output text, refusal, function and
+     * MCP call arguments. Empty until a response-bearing event arrives. Fields the server omitted
      * remain omitted. A snapshot is not a completed response: only [response] requires a terminal
      * event. Failed and incomplete terminal events replace the snapshot with their full response.
      * Other item kinds are retained when output-item events arrive and in the raw stream.
@@ -148,6 +148,12 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
                 if (call != null && arguments != null) {
                     return@map ResponseOutputItem.ofFunctionCall(
                         call.toBuilder().arguments(arguments.toString()).build()
+                    )
+                }
+                val mcp = item.mcpCall().orElse(null)
+                if (mcp != null && arguments != null) {
+                    return@map ResponseOutputItem.ofMcpCall(
+                        mcp.toBuilder().arguments(arguments.toString()).build()
                     )
                 }
                 val custom = item.customToolCall().orElse(null)
@@ -289,6 +295,12 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
             }
             event.responseFunctionCallArgumentsDone().ifPresent {
                 accumulate(ResponseStreamEvent.ofFunctionCallArgumentsDone(it))
+            }
+            event.responseMcpCallArgumentsDelta().ifPresent {
+                accumulate(ResponseStreamEvent.ofMcpCallArgumentsDelta(it))
+            }
+            event.responseMcpCallArgumentsDone().ifPresent {
+                accumulate(ResponseStreamEvent.ofMcpCallArgumentsDone(it))
             }
             event.responseCustomToolCallInputDelta().ifPresent {
                 accumulate(ResponseStreamEvent.ofCustomToolCallInputDelta(it))
@@ -690,11 +702,31 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
 
                 override fun visitMcpCallArgumentsDelta(
                     mcpCallArgumentsDelta: ResponseMcpCallArgumentsDeltaEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    append(
+                        mcpCallArgumentsDelta.outputIndex(),
+                        mcpCallArgumentsDelta._itemId(),
+                        mcpCallArgumentsDelta.delta(),
+                    ) { item ->
+                        item.mcpCall().orElse(null)?._arguments()?.asKnown()?.orElse(null)
+                    }
+                }
 
                 override fun visitMcpCallArgumentsDone(
                     mcpCallArgumentsDone: ResponseMcpCallArgumentsDoneEvent
-                ) {}
+                ) {
+                    if (!snapshotsEnabled) return
+                    updateItem(
+                        mcpCallArgumentsDone.outputIndex(),
+                        mcpCallArgumentsDone._itemId(),
+                    ) { item ->
+                        val call = item?.mcpCall()?.orElse(null) ?: return@updateItem null
+                        ResponseOutputItem.ofMcpCall(
+                            call.toBuilder().arguments(mcpCallArgumentsDone.arguments()).build()
+                        )
+                    }
+                }
 
                 override fun visitMcpCallCompleted(
                     mcpCallCompleted: ResponseMcpCallCompletedEvent
@@ -819,6 +851,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
             item?.message()?.orElse(null)?._id()
                 ?: item?.functionCall()?.orElse(null)?._id()
                 ?: item?.customToolCall()?.orElse(null)?._id()
+                ?: item?.mcpCall()?.orElse(null)?._id()
         return actual?.asKnown()?.orElse(null) == expected
     }
 
