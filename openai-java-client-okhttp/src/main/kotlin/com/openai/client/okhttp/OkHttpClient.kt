@@ -113,9 +113,8 @@ private constructor(
         try {
             return request.body.use {
                 try {
-                    newCall(request, requestOptions).execute().toHttpResponse().also {
-                        response = it
-                    }
+                    val call = newCall(request, requestOptions)
+                    call.execute().toHttpResponse(call).also { response = it }
                 } catch (e: IOException) {
                     throw OpenAIIoException("Request failed", e)
                 }
@@ -138,7 +137,7 @@ private constructor(
             call.enqueue(
                 object : Callback {
                     override fun onResponse(call: Call, response: Response) {
-                        val httpResponse = response.toHttpResponse()
+                        val httpResponse = response.toHttpResponse(call)
                         if (!future.complete(httpResponse)) {
                             httpResponse.close()
                         }
@@ -584,17 +583,72 @@ private fun RequestBody.toHttpRequestBody(): HttpRequestBody {
     }
 }
 
-private fun Response.toHttpResponse(): HttpResponse {
+private fun Response.toHttpResponse(call: Call? = null): HttpResponse {
     val headers = headers.toHeaders()
+    val input by lazy { ResponseBodyInputStream(body!!, call) }
 
     return object : HttpResponse {
         override fun statusCode(): Int = code
 
         override fun headers(): Headers = headers
 
-        override fun body(): InputStream = body!!.byteStream()
+        override fun body(): InputStream = input
 
-        override fun close() = body!!.close()
+        override fun close() = input.close()
+    }
+}
+
+/** Serializes body cleanup with reads while allowing close to cancel a blocked read first. */
+private class ResponseBodyInputStream(
+    private val body: okhttp3.ResponseBody,
+    private val call: Call?,
+) : InputStream() {
+    private val input = body.byteStream()
+    private val operationLock = Any()
+    private val stateLock = Any()
+    private var closed = false
+    private var active = false
+
+    private inline fun <T> withBody(block: () -> T): T =
+        synchronized(operationLock) {
+            synchronized(stateLock) {
+                if (closed) throw IOException("Stream is closed")
+                active = true
+            }
+            try {
+                block()
+            } finally {
+                synchronized(stateLock) { active = false }
+            }
+        }
+
+    override fun read(): Int = withBody { input.read() }
+
+    override fun read(bytes: ByteArray, offset: Int, length: Int): Int = withBody {
+        input.read(bytes, offset, length)
+    }
+
+    override fun skip(count: Long): Long = withBody { input.skip(count) }
+
+    override fun available(): Int = withBody { input.available() }
+
+    override fun mark(readLimit: Int) = withBody { input.mark(readLimit) }
+
+    override fun reset() = withBody { input.reset() }
+
+    override fun markSupported(): Boolean = input.markSupported()
+
+    override fun close() {
+        val cancel =
+            synchronized(stateLock) {
+                if (closed) return
+                closed = true
+                active
+            }
+        // Cancellation must precede waiting for the operation lock. Body.close() can itself
+        // read to discard remaining bytes, so it must wait until the existing read unwinds.
+        if (cancel) call?.cancel()
+        synchronized(operationLock) { body.close() }
     }
 }
 
