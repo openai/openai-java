@@ -129,7 +129,7 @@ internal class ResponseBodyCloseTest {
                             }
                             assertFalse(reader.isAlive)
                             assertFalse(closer.isAlive)
-                            assertInstanceOf(IOException::class.java, readerError.get())
+                            assertTrue(readerError.get() is IOException)
                             assertNull(closerError.get())
                             assertEquals(1, closes.get())
                             assertThrows(IOException::class.java) { input.read() }
