@@ -119,6 +119,8 @@ object CoreCompilationShards {
             "com/openai/core/Properties.kt",
             "com/openai/core/RequestOptions.kt",
             "com/openai/core/http/AsyncResponseConnection.kt",
+            "com/openai/core/http/ResponseCollectionLimitException.kt",
+            "com/openai/core/http/ResponseCollector.kt",
             "com/openai/core/http/ResponseConnection.kt",
             "com/openai/core/http/ResponseWebSocketOptions.kt",
             "com/openai/core/http/ResponseWebSocketException.kt",
