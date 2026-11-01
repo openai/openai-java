@@ -138,3 +138,19 @@ otherwise send saved full context on a fresh chain without a parent ID. Retain
 tool results to avoid executing tools twice. Recovery and 60-minute rollover are
 application-owned: the SDK never automatically replays an interrupted command,
 whose delivery may be uncertain.
+
+### Finalized-item reconstruction
+
+For explicit compatibility with WebSocket sessions whose terminal response omits `output` or sends
+it as `null`, use `ResponseAccumulator.createWithSnapshots()` and call `reconstructedResponse()`
+after feeding it an actual terminal event. This accessor uses only `response.output_item.done`
+records, sorted by output index. It accepts sparse indices and returns an empty output list if no
+items were finalized. It never promotes partial deltas or EOF into a completed response.
+
+The existing `response()` and `snapshot()` methods retain the server's terminal response exactly.
+Any non-null terminal output, including `[]`, also wins in `reconstructedResponse()`. Failed and
+incomplete terminal status, errors, usage and other metadata remain authoritative. A preceding
+WebSocket protocol error prevents reconstruction. Before any terminal response arrives, a new
+`response.created` event clears that error and resets the finalized-item collection. After a
+terminal response, later events cannot reset the accumulator. Use a new accumulator for each
+response or lane. This accessor reads no events from the socket and never executes tool calls.
