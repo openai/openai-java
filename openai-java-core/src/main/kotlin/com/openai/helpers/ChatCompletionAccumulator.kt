@@ -56,6 +56,12 @@ class ChatCompletionAccumulator private constructor() {
      */
     private val messageRefusals = mutableMapOf<Long, StringBuilder>()
 
+    // Deprecated function calls have no tool index, so their fragments belong to the choice.
+    private val functionCallBuilders =
+        mutableMapOf<Long, ChatCompletionMessage.FunctionCall.Builder>()
+    private val functionCallNames = mutableMapOf<Long, StringBuilder>()
+    private val functionCallArgs = mutableMapOf<Long, StringBuilder>()
+
     private val messageAudio = mutableMapOf<Long, AudioState>()
 
     private class AudioState {
@@ -261,6 +267,8 @@ class ChatCompletionAccumulator private constructor() {
             chatCompletion = chatCompletionBuilder.choices(buildChoices()).build()
             // Release mutable storage only after the whole chunk and final build succeed.
             toolCallFunctionArgs.clear()
+            functionCallNames.clear()
+            functionCallArgs.clear()
             messageContents.clear()
             messageRefusals.clear()
             messageAudio.clear()
@@ -321,7 +329,19 @@ class ChatCompletionAccumulator private constructor() {
         // The `role` defaults to "assistant", so if no other `role` is set on the delta, there is
         // no need to set it explicitly to anything else.
         delta.role().ifPresent { messageBuilder.role(JsonValue.from(it.asString())) }
-        delta.functionCall().ifPresent { messageBuilder.functionCall(convertFunctionCall(it)) }
+        delta.functionCall().ifPresent { functionCall ->
+            val builder =
+                functionCallBuilders.getOrPut(index) {
+                    convertFunctionCall(functionCall).toBuilder()
+                }
+            functionCall.name().ifPresent {
+                functionCallNames.getOrPut(index) { StringBuilder() }.append(it)
+            }
+            functionCall.arguments().ifPresent {
+                functionCallArgs.getOrPut(index) { StringBuilder() }.append(it)
+            }
+            builder.putAllAdditionalProperties(functionCall._additionalProperties())
+        }
 
         delta.toolCalls().ifPresent {
             it.map { deltaToolCall ->
@@ -392,7 +412,14 @@ class ChatCompletionAccumulator private constructor() {
             .content(messageContents[index]?.toString())
             .refusal(messageRefusals[index]?.toString())
             .toolCalls(buildToolCalls(index))
-            .apply { messageAudio[index]?.let { audio(it.build()) } }
+            .apply {
+                functionCallBuilders[index]?.let { builder ->
+                    functionCallNames[index]?.let { builder.name(it.toString()) }
+                    functionCallArgs[index]?.let { builder.arguments(it.toString()) }
+                    functionCall(builder.build())
+                }
+                messageAudio[index]?.let { audio(it.build()) }
+            }
             .build()
 
     private fun buildToolCalls(index: Long): List<ChatCompletionMessageToolCall> =
