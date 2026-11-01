@@ -298,7 +298,7 @@ private constructor(
                 if (waiter == null) channel.queue.add(Item(event, bytes, registered != null))
                 else {
                     waiter!!.claimed = true
-                    if (registered != null) channel.collector?.add(event, bytes)
+                    registered?.collector?.add(event, bytes)
                 }
             }
             waiter?.let { target ->
@@ -595,12 +595,15 @@ private constructor(
             // Claim cached state atomically with epoch/channel validity and helper ownership.
             cached = collector?.takeResult()
         }
-        if (collector != null)
+        if (collector != null) {
+            val collectingChannel = checkNotNull(channel)
             result.whenComplete { _, _ ->
                 synchronized(lock) {
-                    if (channel!!.finalConsumer === result) channel.finalConsumer = null
+                    if (collectingChannel.finalConsumer === result)
+                        collectingChannel.finalConsumer = null
                 }
             }
+        }
         fun completeCollected(): Boolean {
             // A consumed event belongs to this helper even if close/reconnect replaced its channel.
             val collected = synchronized(lock) { collector?.takeResult() } ?: return false
