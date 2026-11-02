@@ -6,10 +6,10 @@ import com.openai.core.RequestOptions
 import com.openai.core.jsonMapper
 import com.openai.models.responses.ResponsesServerEvent
 import java.io.IOException
-import java.util.ArrayDeque
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executor
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -176,7 +176,7 @@ class ResponseOverflowIsolationTest {
                 assertThat(cause(slow.receive())).isInstanceOf(IOException::class.java)
                 assertThat(delta(healthy.receive().get(3, TimeUnit.SECONDS)))
                     .isEqualTo("h".repeat(200))
-                fixture.executor.flush()
+                fixture.executor.runNext()
                 assertThat(delta(result.get(3, TimeUnit.SECONDS))).isEqualTo("c".repeat(1000))
                 assertThat(completions).isEqualTo(1)
                 val next = claimed.receive()
@@ -214,7 +214,7 @@ class ResponseOverflowIsolationTest {
                 assertThat(delta(healthy.receive().get(3, TimeUnit.SECONDS))).isEqualTo("survives")
                 val first = cause(victim.receive())
                 assertThat(assigned.isDone).isFalse()
-                fixture.executor.flush()
+                fixture.executor.runNext()
                 assertThat(delta(assigned.get(3, TimeUnit.SECONDS))).isEqualTo("assigned")
                 assertThat(cause(victim.receive())).isSameAs(first)
                 // Exact event capacity remains available after the claimed callback completes.
@@ -294,15 +294,30 @@ class ResponseOverflowIsolationTest {
             )
 
     private class DeferredExecutor : Executor {
-        var defer = false
-        private val pending = ArrayDeque<Runnable>()
+        @Volatile var defer = false
+        private val pending = LinkedBlockingQueue<Runnable>()
 
         override fun execute(command: Runnable) {
-            if (defer) pending.add(command) else command.run()
+            synchronized(pending) {
+                if (defer) {
+                    pending.add(command)
+                    return
+                }
+            }
+            command.run()
+        }
+
+        fun runNext() {
+            checkNotNull(pending.poll(3, TimeUnit.SECONDS)) { "Expected a deferred callback" }.run()
         }
 
         fun flush() {
-            while (pending.isNotEmpty()) pending.removeFirst().run()
+            val callbacks =
+                synchronized(pending) {
+                    defer = false
+                    generateSequence { pending.poll() }.toList()
+                }
+            callbacks.forEach { it.run() }
         }
     }
 
