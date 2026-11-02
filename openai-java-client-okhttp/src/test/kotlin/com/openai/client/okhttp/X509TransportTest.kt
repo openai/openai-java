@@ -53,10 +53,26 @@ internal class X509TransportTest {
 
     @Test
     fun productionTransportPinsOneAliasAcrossBothExactAuthorities() {
+        verifyPinnedAliasAcrossAuthorities(false)
+    }
+
+    @Test
+    fun productionTransportUsesPinnedAliasDespiteUnrelatedIssuerHints() {
+        verifyPinnedAliasAcrossAuthorities(true)
+    }
+
+    private fun verifyPinnedAliasAcrossAuthorities(unrelatedIssuerHints: Boolean) {
         val pinned = X509TestIdentity.create("pinned identity")
         val alternate = X509TestIdentity.create("alternate identity")
-        X509TestPeer(AUTH_HOST, pinned.root.certificate).use { authPeer ->
-            X509TestPeer(API_HOST, pinned.root.certificate).use { apiPeer ->
+        val advertisedRoots = if (unrelatedIssuerHints) listOf(alternate.root.certificate) else null
+        fun peer(authority: String) =
+            X509TestPeer(
+                authority,
+                pinned.root.certificate,
+                advertisedClientRoots = advertisedRoots,
+            )
+        peer(AUTH_HOST).use { authPeer ->
+            peer(API_HOST).use { apiPeer ->
                 authPeer.enqueue(
                     MockResponse()
                         .setHeader("Content-Type", "application/json")
@@ -89,7 +105,8 @@ internal class X509TransportTest {
                         }
                     assertThat(token.expiresIn).isEqualTo(Duration.ofDays(1))
                     recordingKeyManager.requireClientAliasSelection("issuer exchange")
-                    // Closing one path must not drain the other path's pool or dispatcher.
+                    // Closing one path must not drain the other path's pool or
+                    // dispatcher.
                     bound.exchangeClient.close()
                     bound.apiClient.execute(X509LiveRequests.api(token.value)).use { response ->
                         assertThat(response.statusCode()).isEqualTo(200)
@@ -327,6 +344,72 @@ internal class X509TransportTest {
             }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("certificateAlias does not identify a private key")
+    }
+
+    @Test
+    fun explicitAliasSelectionPreservesKeyTypesForSocketsAndEngines() {
+        val pinned = X509TestIdentity.create("pinned selection identity")
+        val alternate = X509TestIdentity.create("alternate selection identity")
+        val manager =
+            fixedAliasKeyManager(
+                keyManager(mapOf(PINNED_ALIAS to pinned, ALTERNATE_ALIAS to alternate)),
+                PINNED_ALIAS,
+            )
+        val keyType = pinned.leaf.keyPair.private.algorithm
+        val incompatibleKeyType = if (keyType == "RSA") "EC" else "RSA"
+        val hints =
+            listOf<Array<out Principal>?>(
+                null,
+                emptyArray(),
+                arrayOf(pinned.root.certificate.subjectX500Principal),
+                arrayOf(alternate.root.certificate.subjectX500Principal),
+            )
+        for (issuers in hints) {
+            assertThat(manager.getClientAliases(keyType, issuers)).containsExactly(PINNED_ALIAS)
+            assertThat(manager.chooseClientAlias(arrayOf(keyType), issuers, null))
+                .isEqualTo(PINNED_ALIAS)
+            assertThat(manager.chooseEngineClientAlias(arrayOf(keyType), issuers, null))
+                .isEqualTo(PINNED_ALIAS)
+            for (types in
+                listOf<Array<out String>?>(
+                    null,
+                    emptyArray(),
+                    arrayOf("unsupported"),
+                    arrayOf(incompatibleKeyType),
+                )) {
+                assertThat(manager.chooseClientAlias(types, issuers, null)).isNull()
+                assertThat(manager.chooseEngineClientAlias(types, issuers, null)).isNull()
+            }
+            assertThat(manager.getClientAliases("unsupported", issuers)).isNull()
+            assertThat(manager.getClientAliases(incompatibleKeyType, issuers)).isNull()
+            val alternatives = arrayOf(incompatibleKeyType, keyType)
+            assertThat(manager.chooseClientAlias(alternatives, issuers, null))
+                .isEqualTo(PINNED_ALIAS)
+            assertThat(manager.chooseEngineClientAlias(alternatives, issuers, null))
+                .isEqualTo(PINNED_ALIAS)
+        }
+        val absent =
+            fixedAliasKeyManager(keyManager(mapOf(ALTERNATE_ALIAS to alternate)), PINNED_ALIAS)
+        assertThat(absent.getClientAliases(keyType, null)).isNull()
+        assertThat(absent.chooseClientAlias(arrayOf(keyType), null, null)).isNull()
+        assertThat(absent.chooseEngineClientAlias(arrayOf(keyType), null, null)).isNull()
+    }
+
+    @Test
+    fun unrelatedIssuerHintsDoNotChangeActualClientTrust() {
+        val pinned = X509TestIdentity.create("untrusted pinned identity")
+        val alternate = X509TestIdentity.create("trusted alternate identity")
+        X509TestPeer(AUTH_HOST, alternate.root.certificate).use { peer ->
+            peer.enqueue(MockResponse().setBody(TOKEN_RESPONSE))
+            val transport = transport(pinned, listOf(peer.serverRootCertificate))
+            transport.bindForTest(Timeout.default(), peer.proxy, peer.proxy).use { bound ->
+                assertThatThrownBy { bound.exchangeClient.execute(request(AUTH_URL)).close() }
+                    .isInstanceOf(OpenAIIoException::class.java)
+            }
+            // Only CONNECT reached the peer; TLS rejected the client before HTTP or token exchange.
+            assertThat(peer.server.requestCount).isEqualTo(1)
+            assertThat(peer.rejectedClientCertificates).containsExactly(pinned.leaf.certificate)
+        }
     }
 
     private fun transport(
