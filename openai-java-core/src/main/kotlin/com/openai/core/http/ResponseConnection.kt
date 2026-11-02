@@ -68,9 +68,6 @@ class ResponseConnection private constructor(private val connection: AsyncRespon
 
     fun finalResponse() = await(connection.finalResponse())
 
-    /** Clears collected state for this receiver; drain its previous turn before resetting. */
-    fun resetResponseCollection() = connection.resetResponseCollection()
-
     fun reconnect() {
         await(connection.reconnect())
     }
@@ -88,9 +85,6 @@ class ResponseConnection private constructor(private val connection: AsyncRespon
         fun send(event: ResponsesClientEvent) = lane.send(event)
 
         fun finalResponse() = await(lane.finalResponse())
-
-        /** Clears collected state for this lane; drain its previous turn before resetting. */
-        fun resetResponseCollection() = lane.resetResponseCollection()
 
         override fun close() = lane.close()
     }

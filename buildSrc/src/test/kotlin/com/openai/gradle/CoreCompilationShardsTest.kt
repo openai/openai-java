@@ -120,24 +120,6 @@ class CoreCompilationShardsTest {
     }
 
     @Test
-    fun `managed Responses collectors compile with their model dependencies`() {
-        listOf(
-                "com/openai/core/http/ResponseCollectionLimitException.kt",
-                "com/openai/core/http/ResponseCollector.kt",
-            )
-            .forEach { source ->
-                assertEquals(
-                    CoreCompilationShard.CLIENT_BASE,
-                    CoreCompilationShards.shardFor(source),
-                    source,
-                )
-            }
-        val responseOwner =
-            assertNotNull(CoreCompilationShards.shardFor("com/openai/models/responses/Response.kt"))
-        assertTrue(responseOwner in CoreCompilationShard.CLIENT_BASE.transitiveDependencies())
-    }
-
-    @Test
     fun `service shards depend only on their model domains`() {
         assertEquals(
             listOf(CoreCompilationShard.MODELS_COMMON),

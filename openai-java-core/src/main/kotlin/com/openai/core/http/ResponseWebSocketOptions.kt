@@ -10,7 +10,6 @@ private constructor(
     @get:JvmName("maxQueuedEvents") val maxQueuedEvents: Int,
     @get:JvmName("maxLanes") val maxLanes: Int,
     @get:JvmName("maxPendingSends") val maxPendingSends: Int,
-    @get:JvmName("maxResponseBytes") val maxResponseBytes: Long?,
     private val headers: Headers,
     private val queryParams: QueryParams,
 ) : Params {
@@ -30,7 +29,6 @@ private constructor(
         private var maxQueuedEvents = Int.MAX_VALUE
         private var maxLanes = 64
         private var maxPendingSends = 1
-        private var maxResponseBytes: Long? = null
         private val headers = Headers.builder()
         private val queryParams = QueryParams.builder()
 
@@ -64,17 +62,6 @@ private constructor(
             maxPendingSends = value
         }
 
-        /**
-         * Enables automatic final-response collection with this positive per-response budget.
-         * Counts original UTF-8 wire bytes for consumed created, output-item-done and terminal
-         * events. Deltas remain raw events and are not retained by the collector. Overflow fails
-         * only collection on that lane; raw reads and other lanes remain usable. Unset by default.
-         */
-        fun maxResponseBytes(value: Long) = apply {
-            require(value > 0)
-            maxResponseBytes = value
-        }
-
         fun putHeader(name: String, value: String) = apply { headers.put(name, value) }
 
         fun putQueryParam(name: String, value: String) = apply { queryParams.put(name, value) }
@@ -86,7 +73,6 @@ private constructor(
                 maxQueuedEvents,
                 maxLanes,
                 maxPendingSends,
-                maxResponseBytes,
                 headers.build(),
                 queryParams.build(),
             )

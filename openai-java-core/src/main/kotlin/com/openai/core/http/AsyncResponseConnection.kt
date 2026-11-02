@@ -43,11 +43,7 @@ private constructor(
     private val channels = mutableMapOf<String?, Channel>(null to Channel())
     private val reservedStreamIds = mutableSetOf<String>()
 
-    private class Item(
-        val event: ResponsesServerEvent,
-        val bytes: Long,
-        val collectionEligible: Boolean,
-    )
+    private class Item(val event: ResponsesServerEvent, val bytes: Long)
 
     private class OpenAttempt(val generation: Long, val options: ResponseWebSocketOptions)
 
@@ -80,18 +76,6 @@ private constructor(
     private inner class Channel {
         val queue = ArrayDeque<Item>()
         var waiter: ReadFuture? = null
-        var collector = options.maxResponseBytes?.let { ResponseCollector(it) }
-        var finalConsumer: CompletableFuture<Response>? = null
-    }
-
-    // Caller holds lock. CompletableFuture user continuations can precede our cleanup callback.
-    private fun activeFinalConsumer(channel: Channel): CompletableFuture<Response>? {
-        val owner = channel.finalConsumer
-        if (owner?.isDone == true) {
-            channel.finalConsumer = null
-            return null
-        }
-        return owner
     }
 
     companion object {
@@ -289,17 +273,13 @@ private constructor(
                     throw IOException("WebSocket event buffer is full")
                 queuedBytes += bytes
                 queuedEvents += 1
-                val registered = channels[streamId]
-                val channel = registered ?: channels.getValue(null)
+                val channel = channels[streamId] ?: channels.getValue(null)
                 waiter =
                     channel.waiter?.takeUnless {
                         it.claimed || it.cancellationReserved || it.isDone
                     }
-                if (waiter == null) channel.queue.add(Item(event, bytes, registered != null))
-                else {
-                    waiter!!.claimed = true
-                    registered?.collector?.add(event, bytes)
-                }
+                if (waiter == null) channel.queue.add(Item(event, bytes))
+                else waiter!!.claimed = true
             }
             waiter?.let { target ->
                 dispatch {
@@ -364,17 +344,11 @@ private constructor(
     private fun receive(
         id: String?,
         expected: Channel? = null,
-        finalConsumer: CompletableFuture<Response>? = null,
     ): CompletableFuture<ResponsesServerEvent> {
         synchronized(lock) {
             val channel = channels[id] ?: return failed(IllegalStateException("Lane is closed"))
             if (expected != null && channel !== expected)
                 return failed(IllegalStateException("Lane is closed"))
-            val owner = activeFinalConsumer(channel)
-            if (owner != null && owner !== finalConsumer)
-                return failed(
-                    IllegalStateException("A response helper is already active on this lane")
-                )
             if (channel.waiter?.let { it.isDone || it.cancellationReserved } == true)
                 channel.waiter = null
             check(channel.waiter == null) { "A receive is already pending on this lane" }
@@ -382,7 +356,6 @@ private constructor(
                 val item = channel.queue.removeFirst()
                 queuedBytes -= item.bytes
                 queuedEvents -= 1
-                if (item.collectionEligible) channel.collector?.add(item.event, item.bytes)
                 return CompletableFuture.completedFuture(item.event)
             }
             failure?.let {
@@ -468,26 +441,6 @@ private constructor(
     }
 
     /**
-     * Discards this receiver's collected final, error and byte budget without consuming raw events.
-     * Drain the previous turn before resetting. A running final-response helper must first finish
-     * or be canceled. Requires [ResponseWebSocketOptions.Builder.maxResponseBytes].
-     */
-    fun resetResponseCollection() = resetResponseCollection(null)
-
-    private fun resetResponseCollection(id: String?, expected: Channel? = null) {
-        synchronized(lock) {
-            check(!closed) { "WebSocket is closed" }
-            val channel = channels[id] ?: throw IllegalStateException("Lane is closed")
-            check(expected == null || channel === expected) { "Lane is closed" }
-            check(activeFinalConsumer(channel) == null) {
-                "A response helper is already active on this lane"
-            }
-            check(channel.collector != null) { "Managed response collection is not enabled" }
-            channel.collector = ResponseCollector(checkNotNull(options.maxResponseBytes))
-        }
-    }
-
-    /**
      * Registers an independent stream with an ASCII ID matching `[A-Za-z0-9_.-]{1,256}`. Its ID
      * remains reserved until reconnect, even after closing the lane or receiving a terminal event.
      * Closing a lane never closes the shared connection.
@@ -513,9 +466,6 @@ private constructor(
 
         fun send(event: ResponsesClientEvent) = send(event, id, channel)
 
-        /** Clears only this lane's collection; drain its previous turn before resetting. */
-        fun resetResponseCollection() = resetResponseCollection(id, channel)
-
         /**
          * Consumes this lane through a terminal event and returns its complete response snapshot.
          */
@@ -529,8 +479,6 @@ private constructor(
                     queuedEvents -= channel.queue.size
                     queuedBytes -= channel.queue.sumOf { it.bytes }
                     channel.queue.clear()
-                    channel.collector = null
-                    channel.finalConsumer = null
                     channel.waiter
                         .also { channel.waiter = null }
                         ?.takeUnless { it.claimed || it.cancellationReserved }
@@ -578,39 +526,6 @@ private constructor(
                     }
                 }
             }
-        val channel: Channel?
-        val collector: ResponseCollector?
-        val cached: ResponseCollector.Result?
-        synchronized(lock) {
-            if (generation != epoch) return failed(CancellationException("Connection replaced"))
-            channel = channels[id]?.takeIf { expected == null || it === expected }
-            collector = channel?.collector
-            if (collector != null) {
-                if (activeFinalConsumer(channel!!) != null)
-                    return failed(
-                        IllegalStateException("A response helper is already active on this lane")
-                    )
-                channel.finalConsumer = result
-            }
-            // Claim cached state atomically with epoch/channel validity and helper ownership.
-            cached = collector?.takeResult()
-        }
-        if (collector != null) {
-            val collectingChannel = checkNotNull(channel)
-            result.whenComplete { _, _ ->
-                synchronized(lock) {
-                    if (collectingChannel.finalConsumer === result)
-                        collectingChannel.finalConsumer = null
-                }
-            }
-        }
-        fun completeCollected(): Boolean {
-            // A consumed event belongs to this helper even if close/reconnect replaced its channel.
-            val collected = synchronized(lock) { collector?.takeResult() } ?: return false
-            if (collected.error != null) result.completeExceptionally(collected.error)
-            else result.complete(collected.response)
-            return true
-        }
         fun next() {
             val stop: InterruptedException?
             val read =
@@ -618,8 +533,7 @@ private constructor(
                     if (cancellationReserved || result.isDone) return
                     // Finish the owned event, but observe interruption before claiming another.
                     stop = interrupted
-                    (if (stop == null && generation == epoch) receive(id, expected, result)
-                        else null)
+                    (if (stop == null && generation == epoch) receive(id, expected) else null)
                         .also { pending = it }
                 }
             if (read == null) {
@@ -631,10 +545,6 @@ private constructor(
                     try {
                         if (error != null) result.completeExceptionally(error)
                         else if (!result.isDone) {
-                            if (collector != null) {
-                                if (!completeCollected()) next()
-                                return@dispatch
-                            }
                             val type =
                                 when {
                                     event.isResponseCompleted() -> "response.completed"
@@ -676,17 +586,7 @@ private constructor(
                 }
             }
         }
-        if (cached != null) {
-            if (cached.error != null) result.completeExceptionally(cached.error)
-            else result.complete(cached.response)
-            return result
-        }
-        try {
-            next()
-        } catch (error: Exception) {
-            if (collector == null) throw error
-            result.completeExceptionally(error)
-        }
+        next()
         return result
     }
 
@@ -713,11 +613,6 @@ private constructor(
                 reservedStreamIds.clear()
                 reservedStreamIds.addAll(channels.keys.filterNotNull())
                 this.options = options
-                channels.values.forEach {
-                    it.collector =
-                        options.maxResponseBytes?.let { budget -> ResponseCollector(budget) }
-                    it.finalConsumer = null
-                }
                 detached to reserveOpen()
             }
         detached?.let { finish(it) }
@@ -744,11 +639,7 @@ private constructor(
 
     // Caller holds lock.
     private fun clearQueues() {
-        channels.values.forEach {
-            it.queue.clear()
-            it.collector = null
-            it.finalConsumer = null
-        }
+        channels.values.forEach { it.queue.clear() }
         queuedBytes = 0
         queuedEvents = 0
     }
