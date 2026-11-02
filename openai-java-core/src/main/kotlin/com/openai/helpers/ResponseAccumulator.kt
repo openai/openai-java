@@ -1,6 +1,7 @@
 package com.openai.helpers
 
 import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.errors.OpenAIInvalidDataException
@@ -94,6 +95,8 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
 
     private class PendingItem(val item: ResponseOutputItem) {
         var input: StringBuilder? = null
+        // A scalar event can identify a function/custom item whose modeled id was omitted.
+        var observedArgumentId: String? = null
         val content =
             item
                 .message()
@@ -816,8 +819,9 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         val output = output ?: return
         if (outputIndex < 0 || outputIndex >= output.size.toLong()) return
         val data = output[outputIndex.toInt()]
-        if (!matchesId(data.item, expectedId)) return
+        if (!matchesId(data, expectedId)) return
         val text = initial(data.item) ?: return
+        data.observedArgumentId = expectedId.asKnown().orElse(null)
         val buffer = data.input ?: StringBuilder(text).also { data.input = it }
         buffer.append(delta)
         materialized = null
@@ -833,7 +837,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         val output = output ?: return null
         if (outputIndex < 0 || outputIndex >= output.size.toLong()) return null
         val item = output[outputIndex.toInt()]
-        if (!matchesId(item.item, expectedId)) return null
+        if (!matchesId(item, expectedId)) return null
         val parts = item.content ?: return null
         if (contentIndex < 0 || contentIndex >= parts.size.toLong()) return null
         val part = parts[contentIndex.toInt()]
@@ -845,13 +849,17 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         return part
     }
 
-    private fun matchesId(item: ResponseOutputItem?, expectedId: JsonField<String>): Boolean {
+    private fun matchesId(pending: PendingItem?, expectedId: JsonField<String>): Boolean {
         val expected = expectedId.asKnown().orElse(null) ?: return false
+        val item = pending?.item ?: return false
         val actual =
-            item?.message()?.orElse(null)?._id()
-                ?: item?.functionCall()?.orElse(null)?._id()
-                ?: item?.customToolCall()?.orElse(null)?._id()
-                ?: item?.mcpCall()?.orElse(null)?._id()
+            item.message().orElse(null)?._id()
+                ?: item.functionCall().orElse(null)?._id()
+                ?: item.customToolCall().orElse(null)?._id()
+                ?: item.mcpCall().orElse(null)?._id()
+        if (actual is JsonMissing && (item.isFunctionCall() || item.isCustomToolCall())) {
+            return pending.observedArgumentId == null || pending.observedArgumentId == expected
+        }
         return actual?.asKnown()?.orElse(null) == expected
     }
 
@@ -865,12 +873,17 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         val output = output ?: return
         if (index < 0 || index > output.size.toLong()) return
         val i = index.toInt()
-        val previous = output.getOrNull(i)?.item
+        val previous = output.getOrNull(i)
         // Full output-item events replace the index. Subsequent deltas/parts must name the
         // current item; never let a late event for an older occupant change its replacement.
         if (expectedId != null && !matchesId(previous, expectedId)) return
-        val item = update(previous) ?: return
-        if (i == output.size) output.add(PendingItem(item)) else output[i] = PendingItem(item)
+        val item = update(previous?.item) ?: return
+        val next = PendingItem(item)
+        if (expectedId != null) {
+            next.observedArgumentId =
+                previous?.observedArgumentId ?: expectedId.asKnown().orElse(null)
+        }
+        if (i == output.size) output.add(next) else output[i] = next
         materialized = null
     }
 
@@ -883,7 +896,7 @@ class ResponseAccumulator private constructor(private val snapshotsEnabled: Bool
         val output = output ?: return
         if (outputIndex < 0 || outputIndex >= output.size.toLong()) return
         val item = output[outputIndex.toInt()]
-        if (!matchesId(item.item, expectedId)) return
+        if (!matchesId(item, expectedId)) return
         val content = item.content ?: return
         if (contentIndex < 0 || contentIndex > content.size.toLong()) return
         val i = contentIndex.toInt()
