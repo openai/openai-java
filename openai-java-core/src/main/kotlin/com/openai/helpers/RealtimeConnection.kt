@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.azure.AzureUrlCategory
 import com.openai.core.ClientOptions
+import com.openai.core.JsonMissing
+import com.openai.core.JsonObject
+import com.openai.core.KnownValue
 import com.openai.core.RequestOptions
 import com.openai.core.http.WebSocketClient
 import com.openai.core.http.WebSocketConnections
@@ -429,7 +432,35 @@ private constructor(
      */
     fun sendResponseCreate(event: ResponseCreateEvent, inputs: List<ResponseInput>) = sendEncoded {
         val mapper = clientOptions.jsonMapper
-        val root = mapper.valueToTree<JsonNode>(event)
+        val withoutOldInput =
+            when (val response = event._response()) {
+                is KnownValue ->
+                    event
+                        .toBuilder()
+                        .response(
+                            response.value
+                                .toBuilder()
+                                .input(JsonMissing.of())
+                                .removeAdditionalProperty("input")
+                                .build()
+                        )
+                        .build()
+                is JsonObject ->
+                    event.toBuilder().response(JsonObject.of(response.values - "input")).build()
+                else -> event
+            }
+        val extraResponse = event._additionalProperties()["response"]
+        val toEncode =
+            if (extraResponse is JsonObject)
+                withoutOldInput
+                    .toBuilder()
+                    .putAdditionalProperty(
+                        "response",
+                        JsonObject.of(extraResponse.values - "input"),
+                    )
+                    .build()
+            else withoutOldInput
+        val root = mapper.valueToTree<JsonNode>(toEncode)
         require(root is ObjectNode) { "Realtime response event must encode an object" }
         val existing = root.get("response")
         val response =

@@ -9,6 +9,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.openai.core.ClientOptions
+import com.openai.core.JsonArray
+import com.openai.core.JsonObject
+import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpRequest
@@ -20,6 +23,7 @@ import com.openai.helpers.RealtimeConnection.ResponseInput
 import com.openai.models.realtime.ConversationItem
 import com.openai.models.realtime.RealtimeClientEvent
 import com.openai.models.realtime.RealtimeConversationItemFunctionCallOutput
+import com.openai.models.realtime.RealtimeResponseCreateParams
 import com.openai.models.realtime.ResponseCreateEvent
 import java.io.File
 import java.io.IOException
@@ -39,6 +43,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
 import org.junit.jupiter.api.io.TempDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 @Timeout(20)
 class RealtimeResponseInputTest {
@@ -143,6 +149,214 @@ class RealtimeResponseInputTest {
                 assertThat(input.path("output").asText()).isEqualTo("tool result λ")
                 assertThat(calls.get()).isEqualTo(1)
             }
+    }
+
+    @Test
+    fun unusedKnownInputIsNotSerializedAndTheOriginalEventIsRetained() {
+        val old = ordinary()
+        val event =
+            ResponseCreateEvent.builder()
+                .eventId("replace")
+                .response(
+                    RealtimeResponseCreateParams.builder()
+                        .instructions("retain")
+                        .input(listOf(old))
+                        .build()
+                )
+                .build()
+        val calls = AtomicInteger()
+        val peer = Peer()
+        val active = configuredMapper {
+            calls.incrementAndGet()
+            throw IOException("old ordinary input must not be evaluated")
+        }
+        RealtimeConnection.connect(options(peer, active)).use { connection ->
+            connection.sendResponseCreate(event, listOf(ResponseInput.ofReference("item_prior")))
+            assertThat(mapper.readTree(peer.messages.poll(5, TimeUnit.SECONDS)))
+                .isEqualTo(
+                    mapper.readTree(
+                        """{"type":"response.create","event_id":"replace","response":{"instructions":"retain","input":[{"type":"item_reference","id":"item_prior"}]}}"""
+                    )
+                )
+            assertThat(calls.get()).isZero()
+            assertThat(event.response().get().input().get()).containsExactly(old)
+            assertThat(
+                    mapper
+                        .readTree(mapper.writeValueAsString(event))
+                        .at("/response/input/0/output")
+                        .asText()
+                )
+                .isEqualTo("tool result λ")
+            assertThat(peer.messages).isEmpty()
+        }
+    }
+
+    @Test
+    fun onlyTheKnownInputExtraIsDiscardedWithoutEvaluatingItsSerializer() {
+        val oldInput = JsonArray.of(listOf(JsonValue.from("old")))
+        val original =
+            RealtimeResponseCreateParams.builder()
+                .instructions("retain")
+                .putAdditionalProperty("input", oldInput)
+                .putAdditionalProperty("future_text", JsonValue.from("still here"))
+                .build()
+        val event = ResponseCreateEvent.builder().eventId("extra").response(original).build()
+        val peer = Peer()
+        RealtimeConnection.connect(options(peer, failingMapper(JsonArray::class.java))).use {
+            connection ->
+            connection.sendResponseCreate(event, listOf(ResponseInput.ofReference("item_prior")))
+            assertThat(mapper.readTree(peer.messages.poll(5, TimeUnit.SECONDS)))
+                .isEqualTo(
+                    mapper.readTree(
+                        """{"type":"response.create","event_id":"extra","response":{"instructions":"retain","future_text":"still here","input":[{"type":"item_reference","id":"item_prior"}]}}"""
+                    )
+                )
+            assertThat(event._response().asKnown().get()).isSameAs(original)
+            assertThat(original._additionalProperties())
+                .containsEntry("input", oldInput)
+                .containsEntry("future_text", JsonValue.from("still here"))
+            assertThat(peer.messages).isEmpty()
+        }
+
+        // The same supported encoder must still fail for an effective, unrelated extra field.
+        val effective =
+            event
+                .toBuilder()
+                .response(
+                    original
+                        .toBuilder()
+                        .removeAdditionalProperty("input")
+                        .putAdditionalProperty("future_array", oldInput)
+                        .build()
+                )
+                .build()
+        val refused = Peer()
+        RealtimeConnection.connect(options(refused, failingMapper(JsonArray::class.java))).use {
+            connection ->
+            assertThatThrownBy {
+                    connection.sendResponseCreate(
+                        effective,
+                        listOf(ResponseInput.ofReference("item_prior")),
+                    )
+                }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessageContaining("deliberate active serializer failure")
+            assertThat(refused.messages).isEmpty()
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun rawObjectOnlyDiscardsInputAndStillUsesWholeObjectAndEffectiveSerializers(
+        responseViaEventExtras: Boolean
+    ) {
+        val oldInput = JsonArray.of(listOf(JsonValue.from("old")))
+        val raw =
+            JsonObject.of(
+                mapOf(
+                    "input" to oldInput,
+                    "instructions" to JsonValue.from("retain"),
+                    "future_text" to JsonValue.from("still here"),
+                )
+            )
+        val event =
+            ResponseCreateEvent.builder()
+                .eventId("raw")
+                .apply {
+                    if (responseViaEventExtras) putAdditionalProperty("response", raw)
+                    else response(raw)
+                }
+                .build()
+        val peer = Peer()
+        RealtimeConnection.connect(options(peer, failingMapper(JsonArray::class.java))).use {
+            connection ->
+            connection.sendResponseCreate(event, listOf(ResponseInput.ofReference("item_prior")))
+            assertThat(mapper.readTree(peer.messages.poll(5, TimeUnit.SECONDS)))
+                .isEqualTo(
+                    mapper.readTree(
+                        """{"type":"response.create","event_id":"raw","response":{"instructions":"retain","future_text":"still here","input":[{"type":"item_reference","id":"item_prior"}]}}"""
+                    )
+                )
+            assertThat(
+                    if (responseViaEventExtras) event._additionalProperties()["response"]
+                    else event._response().asUnknown().get()
+                )
+                .isSameAs(raw)
+            assertThat(raw.values).containsEntry("input", oldInput)
+            assertThat(peer.messages).isEmpty()
+        }
+        val effective = JsonObject.of(raw.values - "input" + ("future_array" to oldInput))
+        val withEffective =
+            event
+                .toBuilder()
+                .apply {
+                    if (responseViaEventExtras) putAdditionalProperty("response", effective)
+                    else response(effective)
+                }
+                .build()
+        for ((active, toSend) in
+            listOf(
+                failingMapper(JsonArray::class.java) to withEffective,
+                failingMapper(JsonObject::class.java) to event,
+            )) {
+            val refused = Peer()
+            RealtimeConnection.connect(options(refused, active)).use { connection ->
+                assertThatThrownBy {
+                        connection.sendResponseCreate(
+                            toSend,
+                            listOf(ResponseInput.ofReference("item_prior")),
+                        )
+                    }
+                    .isInstanceOf(IllegalArgumentException::class.java)
+                    .hasMessageContaining("deliberate active serializer failure")
+                assertThat(refused.messages).isEmpty()
+            }
+        }
+    }
+
+    private fun <T> failingMapper(type: Class<T>): JsonMapper =
+        mapper.copy().apply {
+            registerModule(
+                SimpleModule()
+                    .addSerializer(
+                        type,
+                        object : StdSerializer<T>(type) {
+                            override fun serialize(
+                                value: T,
+                                out: JsonGenerator,
+                                provider: SerializerProvider,
+                            ) {
+                                throw IOException("deliberate active serializer failure")
+                            }
+                        },
+                    )
+            )
+        }
+
+    @Test
+    fun effectiveInputAndWholeEventAndResponseSerializerFailuresAreNotRecovered() {
+        val event =
+            ResponseCreateEvent.builder()
+                .response(RealtimeResponseCreateParams.builder().instructions("retain").build())
+                .build()
+        val cases =
+            listOf(
+                failingMapper(RealtimeConversationItemFunctionCallOutput::class.java) to
+                    listOf(ResponseInput.ofItem(ordinary())),
+                failingMapper(ResponseCreateEvent::class.java) to
+                    listOf(ResponseInput.ofReference("prior")),
+                failingMapper(RealtimeResponseCreateParams::class.java) to
+                    listOf(ResponseInput.ofReference("prior")),
+            )
+        for ((active, inputs) in cases) {
+            val peer = Peer()
+            RealtimeConnection.connect(options(peer, active)).use { connection ->
+                assertThatThrownBy { connection.sendResponseCreate(event, inputs) }
+                    .isInstanceOf(IllegalArgumentException::class.java)
+                    .hasMessageContaining("deliberate active serializer failure")
+                assertThat(peer.messages).isEmpty()
+            }
+        }
     }
 
     @Test
