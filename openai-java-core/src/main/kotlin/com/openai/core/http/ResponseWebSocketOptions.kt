@@ -8,6 +8,7 @@ private constructor(
     @get:JvmName("maxMessageBytes") val maxMessageBytes: Int,
     @get:JvmName("maxQueuedBytes") val maxQueuedBytes: Long,
     @get:JvmName("maxQueuedEvents") val maxQueuedEvents: Int,
+    @get:JvmName("isolateLaneOverflow") val isolateLaneOverflow: Boolean,
     @get:JvmName("maxLanes") val maxLanes: Int,
     @get:JvmName("maxPendingSends") val maxPendingSends: Int,
     private val headers: Headers,
@@ -27,6 +28,7 @@ private constructor(
         private var maxMessageBytes = Int.MAX_VALUE
         private var maxQueuedBytes = Long.MAX_VALUE
         private var maxQueuedEvents = Int.MAX_VALUE
+        private var isolateLaneOverflow = false
         private var maxLanes = 64
         private var maxPendingSends = 1
         private val headers = Headers.builder()
@@ -46,6 +48,12 @@ private constructor(
             require(value > 0)
             maxQueuedEvents = value
         }
+
+        /**
+         * Fail only the selected lane when queue limits are exceeded, reclaiming the largest older
+         * backlog first. By default overflow fails the shared connection.
+         */
+        fun isolateLaneOverflow(value: Boolean) = apply { isolateLaneOverflow = value }
 
         /**
          * Maximum named lane IDs reserved on one socket, including closed lanes (default 64).
@@ -71,6 +79,7 @@ private constructor(
                 maxMessageBytes,
                 maxQueuedBytes,
                 maxQueuedEvents,
+                isolateLaneOverflow,
                 maxLanes,
                 maxPendingSends,
                 headers.build(),

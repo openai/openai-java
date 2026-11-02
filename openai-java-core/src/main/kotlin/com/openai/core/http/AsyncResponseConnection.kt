@@ -76,6 +76,8 @@ private constructor(
     private inner class Channel {
         val queue = ArrayDeque<Item>()
         var waiter: ReadFuture? = null
+        var queuedBytes = 0L
+        var failure: Throwable? = null
     }
 
     companion object {
@@ -264,37 +266,92 @@ private constructor(
             if (requestOptions.responseValidation ?: clientOptions.responseValidation)
                 event.validate()
             var waiter: ReadFuture? = null
+            var assigned: Item? = null
+            val failedWaiters = mutableListOf<Pair<ReadFuture, Throwable>>()
             synchronized(lock) {
                 if (generation != epoch || failure != null) return
-                if (
-                    queuedEvents >= options.maxQueuedEvents ||
-                        bytes > options.maxQueuedBytes - queuedBytes
-                )
-                    throw IOException("WebSocket event buffer is full")
-                queuedBytes += bytes
-                queuedEvents += 1
                 val channel = channels[streamId] ?: channels.getValue(null)
-                waiter =
-                    channel.waiter?.takeUnless {
-                        it.claimed || it.cancellationReserved || it.isDone
+                if (channel.failure != null) return
+                if (options.isolateLaneOverflow && bytes > options.maxQueuedBytes) {
+                    failChannel(channel)?.let { failedWaiters.add(it) }
+                } else {
+                    if (
+                        !options.isolateLaneOverflow &&
+                            (queuedEvents >= options.maxQueuedEvents ||
+                                bytes > options.maxQueuedBytes - queuedBytes)
+                    )
+                        throw IOException("WebSocket event buffer is full")
+                    queuedBytes += bytes
+                    queuedEvents += 1
+                    channel.queue.add(Item(event, bytes))
+                    channel.queuedBytes += bytes
+                    if (options.isolateLaneOverflow) {
+                        while (
+                            queuedEvents > options.maxQueuedEvents ||
+                                queuedBytes > options.maxQueuedBytes
+                        ) {
+                            val bytePressure = queuedBytes > options.maxQueuedBytes
+                            var largest = channel
+                            var largestSize = 0L
+                            for (candidate in channels.values) {
+                                var size =
+                                    if (bytePressure) candidate.queuedBytes
+                                    else candidate.queue.size.toLong()
+                                if (candidate === channel) size -= if (bytePressure) bytes else 1L
+                                if (size > largestSize) {
+                                    largest = candidate
+                                    largestSize = size
+                                }
+                            }
+                            failChannel(largest)?.let { failedWaiters.add(it) }
+                        }
                     }
-                if (waiter == null) channel.queue.add(Item(event, bytes))
-                else waiter!!.claimed = true
+                    if (channel.failure == null) {
+                        waiter =
+                            channel.waiter?.takeUnless {
+                                it.claimed || it.cancellationReserved || it.isDone
+                            }
+                        if (waiter != null) {
+                            assigned = channel.queue.removeFirst()
+                            channel.queuedBytes -= assigned!!.bytes
+                            waiter!!.claimed = true
+                        }
+                    }
+                }
+                Unit
+            }
+            failedWaiters.forEach { (target, error) ->
+                dispatch { target.completeExceptionally(error) }
             }
             waiter?.let { target ->
+                val item = checkNotNull(assigned)
                 dispatch {
                     synchronized(lock) {
                         if (generation == epoch) {
-                            queuedBytes -= bytes
+                            queuedBytes -= item.bytes
                             queuedEvents -= 1
                         }
                     }
-                    target.complete(event)
+                    target.complete(item.event)
                 }
             }
         } catch (error: Exception) {
             fail(generation, error)
         }
+    }
+
+    // Caller holds lock. Retain the failed channel so later frames cannot reach the default lane.
+    private fun failChannel(channel: Channel): Pair<ReadFuture, Throwable>? {
+        if (channel.failure != null) return null
+        val error = IOException("WebSocket lane event buffer is full")
+        channel.failure = error
+        queuedEvents -= channel.queue.size
+        queuedBytes -= channel.queuedBytes
+        channel.queue.clear()
+        channel.queuedBytes = 0
+        val waiter = channel.waiter?.takeUnless { it.claimed || it.cancellationReserved }
+        if (waiter != null) channel.waiter = null
+        return waiter?.let { it to error }
     }
 
     private fun fail(generation: Long, error: Throwable) {
@@ -346,15 +403,22 @@ private constructor(
         expected: Channel? = null,
     ): CompletableFuture<ResponsesServerEvent> {
         synchronized(lock) {
+            expected?.failure?.let {
+                return failed(it)
+            }
             val channel = channels[id] ?: return failed(IllegalStateException("Lane is closed"))
             if (expected != null && channel !== expected)
                 return failed(IllegalStateException("Lane is closed"))
+            channel.failure?.let {
+                return failed(it)
+            }
             if (channel.waiter?.let { it.isDone || it.cancellationReserved } == true)
                 channel.waiter = null
             check(channel.waiter == null) { "A receive is already pending on this lane" }
             if (!channel.queue.isEmpty()) {
                 val item = channel.queue.removeFirst()
                 queuedBytes -= item.bytes
+                channel.queuedBytes -= item.bytes
                 queuedEvents -= 1
                 return CompletableFuture.completedFuture(item.event)
             }
@@ -432,6 +496,7 @@ private constructor(
     }
 
     private fun checkLane(id: String?, expected: Channel?) {
+        expected?.failure?.let { throw it }
         check(
             id == null ||
                 (channels.containsKey(id) && (expected == null || channels[id] === expected))
@@ -475,10 +540,12 @@ private constructor(
             val waiter =
                 synchronized(lock) {
                     if (channels[id] !== channel) return
+                    if (channel.failure != null) return
                     channels.remove(id)
                     queuedEvents -= channel.queue.size
-                    queuedBytes -= channel.queue.sumOf { it.bytes }
+                    queuedBytes -= channel.queuedBytes
                     channel.queue.clear()
+                    channel.queuedBytes = 0
                     channel.waiter
                         .also { channel.waiter = null }
                         ?.takeUnless { it.claimed || it.cancellationReserved }
@@ -603,13 +670,18 @@ private constructor(
             synchronized(lock) {
                 check(!closed) { "WebSocket is closed" }
                 check(!connecting) { "A connection attempt is already in progress" }
-                require(channels.size - 1 <= options.maxLanes) {
+                require(
+                    channels.count { it.key != null && it.value.failure == null } <=
+                        options.maxLanes
+                ) {
                     "Existing lanes exceed the new maximum"
                 }
                 val detached =
                     if (failure == null) detach(CancellationException("Connection replaced"))
                     else null
                 clearQueues()
+                channels.entries.removeAll { it.key != null && it.value.failure != null }
+                if (channels.getValue(null).failure != null) channels[null] = Channel()
                 reservedStreamIds.clear()
                 reservedStreamIds.addAll(channels.keys.filterNotNull())
                 this.options = options
@@ -639,7 +711,10 @@ private constructor(
 
     // Caller holds lock.
     private fun clearQueues() {
-        channels.values.forEach { it.queue.clear() }
+        channels.values.forEach {
+            it.queue.clear()
+            it.queuedBytes = 0
+        }
         queuedBytes = 0
         queuedEvents = 0
     }
