@@ -2,6 +2,9 @@ package com.openai.helpers
 
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.azure.AzureUrlCategory
 import com.openai.core.ClientOptions
@@ -15,8 +18,10 @@ import com.openai.core.http.awaitWebSocketFuture
 import com.openai.core.http.dispatchWebSocketCallback
 import com.openai.core.http.utf8Size
 import com.openai.errors.OpenAIIoException
+import com.openai.models.realtime.ConversationItem
 import com.openai.models.realtime.RealtimeClientEvent
 import com.openai.models.realtime.RealtimeServerEvent
+import com.openai.models.realtime.ResponseCreateEvent
 import java.io.IOException
 import java.net.ProtocolException
 import java.time.Duration
@@ -400,7 +405,50 @@ private constructor(
      * write makes the connection unusable because the remote outcome is uncertain. Reconnect never
      * resends the command.
      */
-    fun send(event: RealtimeClientEvent) {
+    fun send(event: RealtimeClientEvent) = sendEncoded {
+        clientOptions.jsonMapper.writeValueAsString(event)
+    }
+
+    /** A request-only ordinary item or reference to an existing Realtime item. */
+    class ResponseInput private constructor(private val value: Any) {
+        companion object {
+            @JvmStatic fun ofItem(item: ConversationItem): ResponseInput = ResponseInput(item)
+
+            @JvmStatic
+            fun ofReference(itemId: String): ResponseInput =
+                ResponseInput(mapOf("type" to "item_reference", "id" to itemId))
+        }
+
+        @JvmSynthetic
+        internal fun toJson(mapper: ObjectMapper): JsonNode = mapper.valueToTree(value)
+    }
+
+    /**
+     * Send response.create with ordinary items and existing-item references. An empty list clears
+     * input. Uses the same admission and delivery rules as [send].
+     */
+    fun sendResponseCreate(event: ResponseCreateEvent, inputs: List<ResponseInput>) = sendEncoded {
+        val mapper = clientOptions.jsonMapper
+        val root = mapper.valueToTree<JsonNode>(event)
+        require(root is ObjectNode) { "Realtime response event must encode an object" }
+        val existing = root.get("response")
+        val response =
+            when (existing) {
+                null -> mapper.createObjectNode()
+                is ObjectNode -> existing
+                else ->
+                    throw IllegalArgumentException(
+                        "Realtime response parameters must encode an object"
+                    )
+            }
+        val input = mapper.createArrayNode()
+        inputs.forEach { input.add(it.toJson(mapper)) }
+        response.set<JsonNode>("input", input)
+        root.set<JsonNode>("response", response)
+        mapper.writeValueAsString(root)
+    }
+
+    private fun sendEncoded(encode: () -> String) {
         val (epoch, admittedDuringRecovery) =
             synchronized(lock) {
                 if (closed || failure != null || (socket == null && !recovering))
@@ -418,7 +466,7 @@ private constructor(
             }
         var notAttempted = false
         try {
-            val text = clientOptions.jsonMapper.writeValueAsString(event)
+            val text = encode()
             val size = utf8Size(text)
             require(size <= options.maxMessageBytes) { "Realtime command exceeds maxMessageBytes" }
             val active =

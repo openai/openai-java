@@ -2258,6 +2258,9 @@ We are keen for your feedback; please open an [issue](https://www.github.com/ope
 
 ## Reconnecting to Realtime
 
+For `response.create` inputs on a current connection, see the
+[Realtime item-reference guide](docs/realtime-websocket.md).
+
 Set `RealtimeWebSocketOptions.builder().reconnect(true).build()` to reconnect
 after a temporary connection failure. This option is off by default. It does not
 support transcription sessions or connections to an existing call. The SDK does
