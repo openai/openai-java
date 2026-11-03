@@ -1,5 +1,26 @@
 # Changelog
 
+## [4.97.0](https://github.com/openai/openai-java/compare/v4.96.0...v4.97.0) (2026-11-03)
+
+
+### Features
+
+* **api:** expand Live Responses delegation tool options ([#1326](https://github.com/openai/openai-java/issues/1326)) ([e420ce3](https://github.com/openai/openai-java/commit/e420ce3fa507adff3c31bd630755cf5ec5a4d96e))
+* **responses:** add opt-in WebSocket final response reconstruction ([#1317](https://github.com/openai/openai-java/issues/1317)) ([d528e0f](https://github.com/openai/openai-java/commit/d528e0f10e9e52d42245b6c606b11ae483636a3b))
+* **responses:** collect MCP argument progress ([#1318](https://github.com/openai/openai-java/issues/1318)) ([8e39391](https://github.com/openai/openai-java/commit/8e39391bf5075c026ec64772caa6c1a425a80767))
+
+
+### Bug Fixes
+
+* **auth:** honor explicit X.509 aliases despite issuer hints ([#1314](https://github.com/openai/openai-java/issues/1314)) ([e1f6fad](https://github.com/openai/openai-java/commit/e1f6fada09918da4aaff14cea222257e58b09d28))
+* **websocket:** stabilize translation tests and correct docs ([#1320](https://github.com/openai/openai-java/issues/1320)) ([c689bb7](https://github.com/openai/openai-java/commit/c689bb7237d60b5575fa136e311f36213034be9f))
+
+
+### Build System
+
+* bump actions/setup-java from 6.0.1 to 6.1.0 ([#1325](https://github.com/openai/openai-java/issues/1325)) ([1ffd660](https://github.com/openai/openai-java/commit/1ffd6609f61938b0210731857c5cb37e10ff9789))
+* bump com.fasterxml.jackson.core:jackson-databind in / ([#1324](https://github.com/openai/openai-java/issues/1324)) ([92db84f](https://github.com/openai/openai-java/commit/92db84f2337b66b4cbba36b6dcda0df179924e53))
+
 ## [4.96.0](https://github.com/openai/openai-java/compare/v4.95.0...v4.96.0) (2026-11-01)
 
 
