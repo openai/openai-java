@@ -1333,6 +1333,86 @@
       "mode": "100644",
       "sha256": "ea20fd2f7bc205074d5730fcf0d32b3898528f5f904c57702f7cc5d0e722d999"
     },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProvider.kt": {
+      "mode": "100644",
+      "sha256": "458de88b774762c746c67a5e61dd1334ef40c86e62606505db4588e0b44ce6cc"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderCreateParams.kt": {
+      "mode": "100644",
+      "sha256": "1b25730648ea63e7cbdecdcb53d8cdc51f6a83194ccb2829b7da5d7f01b06598"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderDeleteParams.kt": {
+      "mode": "100644",
+      "sha256": "11f9b858830bbe75f7d3fddd8e0a1b3d74415495c31f44d11596d9a2aa201be7"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderDeleted.kt": {
+      "mode": "100644",
+      "sha256": "fd42ae85d9767bb887731bc06a004f9f0052284d2b69d546317e871cfb32ca2d"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderListPage.kt": {
+      "mode": "100644",
+      "sha256": "843a145390e7aa925a997703121d925b0523984abd1ce5b5bc6028ab51bad1de"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderListPageAsync.kt": {
+      "mode": "100644",
+      "sha256": "79ba5884901bc73c76a74c7e9adc28c7df1699839322bfca2a2da9cb3bf08891"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderListPageResponse.kt": {
+      "mode": "100644",
+      "sha256": "167a69302173731d0664a031c9ddb986c04660a6edab566f91301a5dfff905af"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderListParams.kt": {
+      "mode": "100644",
+      "sha256": "05e8904c6af945e26d30ec5d5196123d44744e70d7f21c5a9b0e9db956654440"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderRetrieveParams.kt": {
+      "mode": "100644",
+      "sha256": "51884af588f88d79f6ab463296038a243aa9659a35b80ca75ca4156319491df8"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderUpdateParams.kt": {
+      "mode": "100644",
+      "sha256": "e1038fda8133079d30d1017e6cce04243228934a2c0848907e5022a54fb652e2"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRule.kt": {
+      "mode": "100644",
+      "sha256": "6cdbeab68d22bb3390560cdd76edb69e7213d1b2324ff0f9faab5d56631b3157"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleCreateParams.kt": {
+      "mode": "100644",
+      "sha256": "ef79276ad25aecbae5f79c7a6c77568381504f2e2b71f36ffb09427253fda11e"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleDeleteParams.kt": {
+      "mode": "100644",
+      "sha256": "6a36f0de5a839cd5a929812f2657593725a8826ffd6ca3a813395dfe05a9c129"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleDeleted.kt": {
+      "mode": "100644",
+      "sha256": "0723d3abf52b8f6b34f93bcd8a0e28a03e83d3c95965f10cfeebd33af8827c21"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleListPage.kt": {
+      "mode": "100644",
+      "sha256": "dfc2581819d622ce23dc9b2020cb77ec23dd7360a31b843ed9565d430a4d8c29"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleListPageAsync.kt": {
+      "mode": "100644",
+      "sha256": "bff46e2b735e806ba4bb4ab2bbe27d2d8f5dfbfbd3848816211e06ac08153f69"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleListPageResponse.kt": {
+      "mode": "100644",
+      "sha256": "6ee93a64353e2851bd84bfa4c2a71d32d6cab85e9a38e6bd6ce480006669988a"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleListParams.kt": {
+      "mode": "100644",
+      "sha256": "acd5cd8a371a3dd9dd5e66a0819678e52f866919875d9adf594e5de7623556e3"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleRetrieveParams.kt": {
+      "mode": "100644",
+      "sha256": "112279b9ea3ca637c945cbd16f5b2d2a5dd5325f880bd82111445e9ef26c3cea"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleUpdateParams.kt": {
+      "mode": "100644",
+      "sha256": "2474b836557247a7a5623544ec6621273f81ade5d88d7d6c32e5446ed4197358"
+    },
     "openai-java-core/src/main/kotlin/com/openai/models/audio/AudioModel.kt": {
       "mode": "100644",
       "sha256": "fd57a3f8290d1d6ff9e07eaf770440ef6b639f4b4a3e6305bda87cada2e923cd"
@@ -6911,11 +6991,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/OrganizationServiceAsync.kt": {
       "mode": "100644",
-      "sha256": "f4f67f1e67cfcf95125bd60607657351368e814ed877b0805f49b09ac6d92317"
+      "sha256": "2e6c588bbe42574ac93ee2d9ad9ce999c415937703d12686d436ac72fee808e9"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/OrganizationServiceAsyncImpl.kt": {
       "mode": "100644",
-      "sha256": "d406d93c6818c4f82023202c0970f87aea038edc543ab6184ad2b1897b4a1251"
+      "sha256": "89e74afe76fe426984a15c917929c902361e09e6ce878ff597ca4087d01d5a26"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/AdminApiKeyServiceAsync.kt": {
       "mode": "100644",
@@ -7028,6 +7108,14 @@
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/UserServiceAsyncImpl.kt": {
       "mode": "100644",
       "sha256": "5f9b88392640dfe257743b93f7e7eeb5c82d46941fcc38c7e0ab993d2b846a11"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/WorkloadIdentityProviderServiceAsync.kt": {
+      "mode": "100644",
+      "sha256": "d7ae9694998d0bb41eeac32337209f3257da170e51fac9b1391a473353d39fe5"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/WorkloadIdentityProviderServiceAsyncImpl.kt": {
+      "mode": "100644",
+      "sha256": "9177bdb71c0f52b90a42237abf32bbfce286a0c1a9a5db2dd0ff6512f059043a"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/groups/RoleServiceAsync.kt": {
       "mode": "100644",
@@ -7172,6 +7260,14 @@
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/users/RoleServiceAsyncImpl.kt": {
       "mode": "100644",
       "sha256": "e166a66b28cb1efb8bcbfa0345115e8ae22953788214413bde831246adbc4bb6"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/workloadidentityproviders/FederationRuleServiceAsync.kt": {
+      "mode": "100644",
+      "sha256": "3758a0bb16dcd29c3d59c6f43b8ce4f8845793901f0ca010ff0a7079a5502068"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/workloadidentityproviders/FederationRuleServiceAsyncImpl.kt": {
+      "mode": "100644",
+      "sha256": "685888265c4b4a0914cc1c0487c47a45312500b114e414d00ed4fa0c6ac1d074"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/audio/SpeechServiceAsync.kt": {
       "mode": "100644",
@@ -7919,11 +8015,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/OrganizationService.kt": {
       "mode": "100644",
-      "sha256": "43f29b3288f34dfb6996df8258d1be51ba9692fd74aa41bc80b567b62f2afce3"
+      "sha256": "989777541a38dec1b7dc2c2e4eb960e118674a2ac2dfb41c9b857b3021511786"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/OrganizationServiceImpl.kt": {
       "mode": "100644",
-      "sha256": "8380ebcb143814e2162f7455acf02deb2367866b25b0592b26360e94f47a61aa"
+      "sha256": "fb526eb1a726a2a915c9fa452c1f51d034c29a5bedef20724fcba13a56d11209"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/AdminApiKeyService.kt": {
       "mode": "100644",
@@ -8036,6 +8132,14 @@
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/UserServiceImpl.kt": {
       "mode": "100644",
       "sha256": "5d221162eac44c7ba687616c7a28bd8039993d5fea478a18c2dcc04f11c1c0cf"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/WorkloadIdentityProviderService.kt": {
+      "mode": "100644",
+      "sha256": "14f88427a9ee6f64ecbf6c05de7c3f5d7bab660be802dec3ab0b86effe2726f5"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/WorkloadIdentityProviderServiceImpl.kt": {
+      "mode": "100644",
+      "sha256": "4b097fe2ebb583d95c94fda15d549bfa1d8ccc275c44cc4737d1bfae674500b7"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/groups/RoleService.kt": {
       "mode": "100644",
@@ -8180,6 +8284,14 @@
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/users/RoleServiceImpl.kt": {
       "mode": "100644",
       "sha256": "cfe0a0787a860667acf415f43df6fafa25a3d15f60c7c2ebef08ba1c547ab4e9"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/workloadidentityproviders/FederationRuleService.kt": {
+      "mode": "100644",
+      "sha256": "ca73385007264bd2feaa41f1e1c4a50a2971068840dca3dc5b96ff71ea4d3a63"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/workloadidentityproviders/FederationRuleServiceImpl.kt": {
+      "mode": "100644",
+      "sha256": "b7627508ab7fd80a7ad267fecc1d10fe5595bac967a4fff2005409964214b6a7"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/audio/SpeechService.kt": {
       "mode": "100644",
@@ -9776,6 +9888,70 @@
     "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/users/roles/RoleRetrieveResponseTest.kt": {
       "mode": "100644",
       "sha256": "3a6b40796858e3245c80274d801424ea9b7fe3889070b251e194cdcb356b78b3"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderCreateParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "cdba2e646e08a53149b2359fc102fbd53b410b8b3bd4160b455f73d8d2774166"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderDeleteParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "ea33a36d1fd8f331c20c73754f408a57e9059cc5d276805d982a5c5198c73376"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderDeletedTest.kt": {
+      "mode": "100644",
+      "sha256": "7bcf02dfb484920e2f6c7aafd92773092dd672e27e6887d15c40a90d0cf28a09"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderListPageResponseTest.kt": {
+      "mode": "100644",
+      "sha256": "b1d1b683b6c006062232d6feefbb6c243f8d8ae923497bad8e67539c377ee7d1"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderListParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "c409560181c164a85e180dcd0ef193c98847578955da1c436e7fc02911ebef45"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderRetrieveParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "64c22ca96edf17983810deb672e97a10eb69ca9f5bb54a3e51bf9b819bfc4420"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderTest.kt": {
+      "mode": "100644",
+      "sha256": "5fdab36142c79f1701f4cf11c783747434fbde538329b3f8209515e3a83c9075"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/WorkloadIdentityProviderUpdateParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "de890217559d34e5a9f485a921c78baad46c6508f6ad5dcb7f9329f846116d38"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleCreateParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "a7b45db571f96ace4c2fa49ef8e6f97c6bb42195a02414fd7049d5e126aa4dd9"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleDeleteParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "5c908e6fc78096cc139a6b5df1ec92ad0eadcef43986ac4525f7517c638880e0"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleDeletedTest.kt": {
+      "mode": "100644",
+      "sha256": "8c69f3c9c9070b4e116ab0942e34df4d371cf628b2be58382616416315c63c92"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleListPageResponseTest.kt": {
+      "mode": "100644",
+      "sha256": "b1621b1543e5db173de2fdbee740523a2cc9af518cf26a41fd3c74d3d1f5603a"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleListParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "9f2a8eba698ed6c73a57556a4d1ee300c1d491673790c659f195e68c3016c527"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleRetrieveParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "4479a33a34faa34a74193fb17aee962c44de4afcddbe9d3f49bb150c38df76fd"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleTest.kt": {
+      "mode": "100644",
+      "sha256": "a03676613d65a7533e832f91339f9336481b35db280081bcfe324487560d4abf"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/workloadidentityproviders/federationrules/FederationRuleUpdateParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "0e663e0654851a9b143d84da7803994c2215bc0042a51e7118a2f0fcd05e9a95"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/audio/speech/SpeechCreateParamsTest.kt": {
       "mode": "100644",
@@ -14797,6 +14973,14 @@
       "mode": "100644",
       "sha256": "daaa14767f327da3709f935605ec94a81865ec5f3128b04afab38c33954e6944"
     },
+    "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/WorkloadIdentityProviderServiceAsyncPaginationContractTest.kt": {
+      "mode": "100644",
+      "sha256": "79984af781bdfbd09f8f08ce367210f62143d89a1be24d05776c2115562ce636"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/WorkloadIdentityProviderServiceAsyncTest.kt": {
+      "mode": "100644",
+      "sha256": "d44c3a52718cdd883f4209ba4507937db4bd018c9b91f21fbbf8b13f99f5fce2"
+    },
     "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/groups/RoleServiceAsyncPaginationContractTest.kt": {
       "mode": "100644",
       "sha256": "eeaf83dfcc1d16c4af9068d69d3863e6acc309539de6868639735aa10aa409df"
@@ -14920,6 +15104,14 @@
     "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/users/RoleServiceAsyncTest.kt": {
       "mode": "100644",
       "sha256": "9c8e76a2d58e573b3a0d46177aded80a492b8bc840dbfbda7a50adc4c8a51ffe"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/workloadidentityproviders/FederationRuleServiceAsyncPaginationContractTest.kt": {
+      "mode": "100644",
+      "sha256": "510b07ae6bced8a11376a1a2a96322644b2e2b3849a7e10bf502cf17007d2d92"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/workloadidentityproviders/FederationRuleServiceAsyncTest.kt": {
+      "mode": "100644",
+      "sha256": "7ae91adc0fe0dbd289df29f8acf34642a2c5b924af963fc3f637cd655af71904"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/async/audio/SpeechServiceAsyncTest.kt": {
       "mode": "100644",
@@ -15537,6 +15729,14 @@
       "mode": "100644",
       "sha256": "43e14f2803e1c80ae1d473c30c84c563c164092a1c4fa3ea1ad98dcecb465b11"
     },
+    "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/WorkloadIdentityProviderServicePaginationContractTest.kt": {
+      "mode": "100644",
+      "sha256": "786f8c6c7f3eaa77520c505a802f56106983a052b2e28487848ed8661ffd9612"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/WorkloadIdentityProviderServiceTest.kt": {
+      "mode": "100644",
+      "sha256": "2a829841a500d794b2fe743f4ee277be3ec3de907546ed0e18fe57e6ad52b8c4"
+    },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/groups/RoleServicePaginationContractTest.kt": {
       "mode": "100644",
       "sha256": "11ddc7be583ad2ca945385a791bab019e87807e2c47871ad67d71e00f6ae8fd3"
@@ -15660,6 +15860,14 @@
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/users/RoleServiceTest.kt": {
       "mode": "100644",
       "sha256": "c594d4c1ad1b83e1373142785f55843ae48b721931955e743b6a2d2b56a63e99"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/workloadidentityproviders/FederationRuleServicePaginationContractTest.kt": {
+      "mode": "100644",
+      "sha256": "900afd7f6a5feaf3e6867d2d3972da727342d54479a367b37613e302736572fb"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/workloadidentityproviders/FederationRuleServiceTest.kt": {
+      "mode": "100644",
+      "sha256": "ad12cb7149d9e8dcd5b337a81745f27c5fd9887014db505ce4c086236c16dd08"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/audio/SpeechServiceTest.kt": {
       "mode": "100644",
