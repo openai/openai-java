@@ -31,6 +31,8 @@ import com.openai.services.blocking.admin.organization.UsageService
 import com.openai.services.blocking.admin.organization.UsageServiceImpl
 import com.openai.services.blocking.admin.organization.UserService
 import com.openai.services.blocking.admin.organization.UserServiceImpl
+import com.openai.services.blocking.admin.organization.WorkloadIdentityProviderService
+import com.openai.services.blocking.admin.organization.WorkloadIdentityProviderServiceImpl
 import java.util.function.Consumer
 
 class OrganizationServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -72,6 +74,10 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
 
     private val projects: ProjectService by lazy { ProjectServiceImpl(clientOptions) }
 
+    private val workloadIdentityProviders: WorkloadIdentityProviderService by lazy {
+        WorkloadIdentityProviderServiceImpl(clientOptions)
+    }
+
     override fun withRawResponse(): OrganizationService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OrganizationService =
@@ -105,6 +111,9 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
     override fun certificates(): CertificateService = certificates
 
     override fun projects(): ProjectService = projects
+
+    override fun workloadIdentityProviders(): WorkloadIdentityProviderService =
+        workloadIdentityProviders
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         OrganizationService.WithRawResponse {
@@ -165,6 +174,11 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
             ProjectServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val workloadIdentityProviders:
+            WorkloadIdentityProviderService.WithRawResponse by lazy {
+            WorkloadIdentityProviderServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): OrganizationService.WithRawResponse =
@@ -200,5 +214,8 @@ class OrganizationServiceImpl internal constructor(private val clientOptions: Cl
         override fun certificates(): CertificateService.WithRawResponse = certificates
 
         override fun projects(): ProjectService.WithRawResponse = projects
+
+        override fun workloadIdentityProviders(): WorkloadIdentityProviderService.WithRawResponse =
+            workloadIdentityProviders
     }
 }

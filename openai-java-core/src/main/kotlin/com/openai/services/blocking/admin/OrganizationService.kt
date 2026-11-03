@@ -17,6 +17,7 @@ import com.openai.services.blocking.admin.organization.SpendAlertService
 import com.openai.services.blocking.admin.organization.SpendLimitService
 import com.openai.services.blocking.admin.organization.UsageService
 import com.openai.services.blocking.admin.organization.UserService
+import com.openai.services.blocking.admin.organization.WorkloadIdentityProviderService
 import java.util.function.Consumer
 
 interface OrganizationService {
@@ -74,6 +75,9 @@ interface OrganizationService {
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     fun projects(): ProjectService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
+    fun workloadIdentityProviders(): WorkloadIdentityProviderService =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
@@ -157,6 +161,11 @@ interface OrganizationService {
             )
 
         fun projects(): ProjectService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
+        fun workloadIdentityProviders(): WorkloadIdentityProviderService.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
             )
