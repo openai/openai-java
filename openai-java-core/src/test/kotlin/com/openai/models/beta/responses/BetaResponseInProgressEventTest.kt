@@ -286,6 +286,14 @@ internal class BetaResponseInProgressEventTest {
                                     BetaResponseUsage.InputTokensDetails.builder()
                                         .cacheWriteTokens(0L)
                                         .cachedTokens(0L)
+                                        .cacheWriteTokensDetails(
+                                            BetaResponseUsage.InputTokensDetails
+                                                .CacheWriteTokensDetails
+                                                .builder()
+                                                .ttl12hTokens(0L)
+                                                .ttl30mTokens(0L)
+                                                .build()
+                                        )
                                         .build()
                                 )
                                 .outputTokens(0L)
@@ -570,6 +578,13 @@ internal class BetaResponseInProgressEventTest {
                                 BetaResponseUsage.InputTokensDetails.builder()
                                     .cacheWriteTokens(0L)
                                     .cachedTokens(0L)
+                                    .cacheWriteTokensDetails(
+                                        BetaResponseUsage.InputTokensDetails.CacheWriteTokensDetails
+                                            .builder()
+                                            .ttl12hTokens(0L)
+                                            .ttl30mTokens(0L)
+                                            .build()
+                                    )
                                     .build()
                             )
                             .outputTokens(0L)

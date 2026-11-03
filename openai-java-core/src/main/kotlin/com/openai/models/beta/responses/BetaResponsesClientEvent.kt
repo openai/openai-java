@@ -852,8 +852,8 @@ private constructor(
          * content blocks with `prompt_cache_breakpoint`. Each request can write up to four
          * breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the
          * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
-         * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
-         * supported value. See the
+         * the implicit breakpoint. The `ttl` defaults to `30m`. Supported lifetimes depend on the
+         * API. See the
          * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
          * current details.
          *
@@ -2028,8 +2028,8 @@ private constructor(
              * breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write
              * up to four breakpoints. For cache matching, OpenAI considers up to the latest 80
              * breakpoints in the conversation, without a content-block lookback limit. Set `mode`
-             * to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which
-             * is currently the only supported value. See the
+             * to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`.
+             * Supported lifetimes depend on the API. See the
              * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching)
              * for current details.
              */
@@ -7169,8 +7169,8 @@ private constructor(
          * content blocks with `prompt_cache_breakpoint`. Each request can write up to four
          * breakpoints. For cache matching, OpenAI considers up to the latest 80 breakpoints in the
          * conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable
-         * the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only
-         * supported value. See the
+         * the implicit breakpoint. The `ttl` defaults to `30m`. Supported lifetimes depend on the
+         * API. See the
          * [prompt caching guide](https://developers.openai.com/api/docs/guides/prompt-caching) for
          * current details.
          */
@@ -7230,8 +7230,8 @@ private constructor(
 
             /**
              * The minimum lifetime applied to every implicit and explicit cache breakpoint written
-             * by the request. Defaults to `30m`, which is currently the only supported value. The
-             * backend may retain cache entries for longer.
+             * by the request. Supported values are `30m` (the default) and `12h`. The backend may
+             * retain cache entries for longer.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -7394,8 +7394,8 @@ private constructor(
 
                 /**
                  * The minimum lifetime applied to every implicit and explicit cache breakpoint
-                 * written by the request. Defaults to `30m`, which is currently the only supported
-                 * value. The backend may retain cache entries for longer.
+                 * written by the request. Supported values are `30m` (the default) and `12h`. The
+                 * backend may retain cache entries for longer.
                  */
                 fun ttl(ttl: Ttl) = ttl(JsonField.of(ttl))
 
@@ -7640,8 +7640,8 @@ private constructor(
 
             /**
              * The minimum lifetime applied to every implicit and explicit cache breakpoint written
-             * by the request. Defaults to `30m`, which is currently the only supported value. The
-             * backend may retain cache entries for longer.
+             * by the request. Supported values are `30m` (the default) and `12h`. The backend may
+             * retain cache entries for longer.
              */
             class Ttl @JsonCreator private constructor(private val value: JsonField<String>) :
                 Enum {
@@ -7660,12 +7660,15 @@ private constructor(
 
                     @JvmField val _30M = of("30m")
 
+                    @JvmField val _12H = of("12h")
+
                     @JvmStatic fun of(value: String) = Ttl(JsonField.of(value))
                 }
 
                 /** An enum containing [Ttl]'s known values. */
                 enum class Known {
-                    _30M
+                    _30M,
+                    _12H,
                 }
 
                 /**
@@ -7679,6 +7682,7 @@ private constructor(
                  */
                 enum class Value {
                     _30M,
+                    _12H,
                     /**
                      * An enum member indicating that [Ttl] was instantiated with an unknown value.
                      */
@@ -7695,6 +7699,7 @@ private constructor(
                 fun value(): Value =
                     when (this) {
                         _30M -> Value._30M
+                        _12H -> Value._12H
                         else -> Value._UNKNOWN
                     }
 
@@ -7710,6 +7715,7 @@ private constructor(
                 fun known(): Known =
                     when (this) {
                         _30M -> Known._30M
+                        _12H -> Known._12H
                         else -> throw OpenAIInvalidDataException("Unknown Ttl: $value")
                     }
 
