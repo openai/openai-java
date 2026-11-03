@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.98.0](https://github.com/openai/openai-java/compare/v4.97.0...v4.98.0) (2026-11-03)
+
+
+### Features
+
+* **api:** add workload identity providers and federation rules ([#1327](https://github.com/openai/openai-java/issues/1327)) ([d4effcc](https://github.com/openai/openai-java/commit/d4effccc1dcbb1c156846e18d95d722dc4100701))
+
 ## [4.97.0](https://github.com/openai/openai-java/compare/v4.96.0...v4.97.0) (2026-11-03)
 
 
