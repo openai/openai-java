@@ -2,26 +2,11 @@
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) before making changes.
 
-Most SDK sources are generated; `.castiron.stats.yml` records generation metadata. Check whether the
-generator owns the code you are changing, preserve existing generated behavior, and update the
-authoritative source when it is available. The `openai-java-example/` directory is not modified by
-the generator.
+`.castiron.stats.yml` records generation metadata.
 
 ## Generated-file ownership
 
-Never hand-edit generated SDK files, including generated tests, documentation,
-workflows, or the generated-file inventory. Change the authoritative API schema,
-configuration, or compiler, then regenerate. Put SDK-specific behavior in
-separately owned handwritten helpers and extension points.
-
-Regeneration replaces generator-owned files and deletes retired generated paths.
-Handwritten edits to generated files are overwritten; they are never replayed or
-merged into new output. Preserve separately owned handwritten files and resolve
-ownership collisions explicitly. Follow this AGENTS.md rule and review generated output and inventory changes
-together. Generated-file ownership currently relies on contributor guidance and
-code review; there is no dedicated generated-file edit check or required gate.
-Fix violations in the inputs/compiler and regenerate; never update inventory
-hashes to accept a handwritten patch.
+Follow [Generated-file ownership](CONTRIBUTING.md#generated-file-ownership) to identify the source of a fix before editing SDK files.
 
 ## Security requirements
 
