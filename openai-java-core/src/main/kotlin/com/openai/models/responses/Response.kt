@@ -8555,12 +8555,15 @@ private constructor(
 
                 @JvmField val _30M = of("30m")
 
+                @JvmField val _12H = of("12h")
+
                 @JvmStatic fun of(value: String) = Ttl(JsonField.of(value))
             }
 
             /** An enum containing [Ttl]'s known values. */
             enum class Known {
-                _30M
+                _30M,
+                _12H,
             }
 
             /**
@@ -8574,6 +8577,7 @@ private constructor(
              */
             enum class Value {
                 _30M,
+                _12H,
                 /** An enum member indicating that [Ttl] was instantiated with an unknown value. */
                 _UNKNOWN,
             }
@@ -8588,6 +8592,7 @@ private constructor(
             fun value(): Value =
                 when (this) {
                     _30M -> Value._30M
+                    _12H -> Value._12H
                     else -> Value._UNKNOWN
                 }
 
@@ -8603,6 +8608,7 @@ private constructor(
             fun known(): Known =
                 when (this) {
                     _30M -> Known._30M
+                    _12H -> Known._12H
                     else -> throw OpenAIInvalidDataException("Unknown Ttl: $value")
                 }
 
