@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.99.0](https://github.com/openai/openai-java/compare/v4.98.0...v4.99.0) (2026-11-04)
+
+
+### Features
+
+* **api:** add 12-hour Responses caching and cache-write usage ([#1330](https://github.com/openai/openai-java/issues/1330)) ([17a1b22](https://github.com/openai/openai-java/commit/17a1b228e306985e10a407240230954c216cde8c))
+* **api:** add GPT-6 Rosalind to the model catalog ([#1333](https://github.com/openai/openai-java/issues/1333)) ([f2bdf1a](https://github.com/openai/openai-java/commit/f2bdf1ad10f43416a25e4413f036e05b8829a11b))
+* **api:** add project service tier settings ([#1329](https://github.com/openai/openai-java/issues/1329)) ([5e3a107](https://github.com/openai/openai-java/commit/5e3a107a6ecd8633c9e508b75fb3d8b0f382c94f))
+
+
+### Documentation
+
+* clarify generated-file ownership ([#1331](https://github.com/openai/openai-java/issues/1331)) ([b5ee774](https://github.com/openai/openai-java/commit/b5ee774f110e4e3fbedeecd2bed356e24eb9b189))
+
 ## [4.98.0](https://github.com/openai/openai-java/compare/v4.97.0...v4.98.0) (2026-11-03)
 
 
