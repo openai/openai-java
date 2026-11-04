@@ -71,6 +71,11 @@ internal class CompactedResponseTest {
                         .totalTokens(0L)
                         .build()
                 )
+                .image(
+                    CompactedResponse.Image.builder()
+                        .contextCompression(CompactedResponse.Image.ContextCompression.ENABLED)
+                        .build()
+                )
                 .build()
 
         assertThat(compactedResponse.id()).isEqualTo("id")
@@ -132,6 +137,12 @@ internal class CompactedResponseTest {
                         ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                     )
                     .totalTokens(0L)
+                    .build()
+            )
+        assertThat(compactedResponse.image())
+            .contains(
+                CompactedResponse.Image.builder()
+                    .contextCompression(CompactedResponse.Image.ContextCompression.ENABLED)
                     .build()
             )
 

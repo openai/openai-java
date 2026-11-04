@@ -21,6 +21,7 @@ internal class RealtimeTranslationSessionTest {
                                 .noiseReduction(
                                     RealtimeTranslationSession.Audio.Input.NoiseReduction.builder()
                                         .type(NoiseReductionType.NEAR_FIELD)
+                                        .strength(0.0)
                                         .build()
                                 )
                                 .transcription(
@@ -50,6 +51,7 @@ internal class RealtimeTranslationSessionTest {
                             .noiseReduction(
                                 RealtimeTranslationSession.Audio.Input.NoiseReduction.builder()
                                     .type(NoiseReductionType.NEAR_FIELD)
+                                    .strength(0.0)
                                     .build()
                             )
                             .transcription(

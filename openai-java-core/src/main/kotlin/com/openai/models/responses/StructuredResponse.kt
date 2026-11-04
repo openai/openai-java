@@ -145,6 +145,9 @@ class StructuredResponse<T : Any>(
     /** @see Response.conversation */
     fun conversation(): Optional<Response.Conversation> = rawResponse.conversation()
 
+    /** @see Response.image */
+    fun image(): Optional<Response.Image> = rawResponse.image()
+
     /** @see Response._id */
     fun _id(): JsonField<String> = rawResponse._id()
 
@@ -250,6 +253,9 @@ class StructuredResponse<T : Any>(
 
     /** @see Response._conversation() */
     fun _conversation(): JsonField<Response.Conversation> = rawResponse._conversation()
+
+    /** @see Response._image */
+    fun _image(): JsonField<Response.Image> = rawResponse._image()
 
     /** @see Response._allProperties */
     fun _allProperties(): Map<String, JsonValue> = rawResponse._allProperties()

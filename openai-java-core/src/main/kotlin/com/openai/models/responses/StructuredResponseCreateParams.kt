@@ -172,6 +172,14 @@ class StructuredResponseCreateParams<T : Any>(
             paramsBuilder.conversation(responseConversationParam)
         }
 
+        /** @see ResponseCreateParams.Builder.image */
+        fun image(image: ResponseCreateParams.Image) = apply { paramsBuilder.image(image) }
+
+        /** @see ResponseCreateParams.Builder.image */
+        fun image(image: JsonField<ResponseCreateParams.Image>) = apply {
+            paramsBuilder.image(image)
+        }
+
         /** @see ResponseCreateParams.Builder.include */
         fun include(include: List<ResponseIncludable>?) = apply { paramsBuilder.include(include) }
 

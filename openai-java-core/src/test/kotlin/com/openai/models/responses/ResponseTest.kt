@@ -121,6 +121,11 @@ internal class ResponseTest {
                 .background(true)
                 .completedAt(0.0)
                 .conversation(Response.Conversation.builder().id("id").build())
+                .image(
+                    Response.Image.builder()
+                        .contextCompression(Response.Image.ContextCompression.ENABLED)
+                        .build()
+                )
                 .maxOutputTokens(0L)
                 .maxToolCalls(0L)
                 .moderation(
@@ -400,6 +405,12 @@ internal class ResponseTest {
         assertThat(response.completedAt()).contains(0.0)
         assertThat(response.conversation())
             .contains(Response.Conversation.builder().id("id").build())
+        assertThat(response.image())
+            .contains(
+                Response.Image.builder()
+                    .contextCompression(Response.Image.ContextCompression.ENABLED)
+                    .build()
+            )
         assertThat(response.maxOutputTokens()).contains(0L)
         assertThat(response.maxToolCalls()).contains(0L)
         assertThat(response.moderation())

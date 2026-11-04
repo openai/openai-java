@@ -249,6 +249,7 @@ com.openai.models.responses.StructuredResponse#_conversation ()Lcom/openai/core/
 com.openai.models.responses.StructuredResponse#_createdAt ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_error ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_id ()Lcom/openai/core/JsonField;
+com.openai.models.responses.StructuredResponse#_image ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_incompleteDetails ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_instructions ()Lcom/openai/core/JsonField;
 com.openai.models.responses.StructuredResponse#_maxOutputTokens ()Lcom/openai/core/JsonField;
@@ -286,6 +287,7 @@ com.openai.models.responses.StructuredResponse#conversation ()Ljava/util/Optiona
 com.openai.models.responses.StructuredResponse#createdAt ()D
 com.openai.models.responses.StructuredResponse#error ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#id ()Ljava/lang/String;
+com.openai.models.responses.StructuredResponse#image ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#incompleteDetails ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#instructions ()Ljava/util/Optional;
 com.openai.models.responses.StructuredResponse#isValid ()Z
@@ -371,6 +373,8 @@ com.openai.models.responses.StructuredResponseCreateParams$Builder#conversation 
 com.openai.models.responses.StructuredResponseCreateParams$Builder#conversation (Lcom/openai/models/responses/ResponseCreateParams$Conversation;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#conversation (Ljava/lang/String;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#conversation (Ljava/util/Optional;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
+com.openai.models.responses.StructuredResponseCreateParams$Builder#image (Lcom/openai/core/JsonField;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
+com.openai.models.responses.StructuredResponseCreateParams$Builder#image (Lcom/openai/models/responses/ResponseCreateParams$Image;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#include (Lcom/openai/core/JsonField;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#include (Ljava/util/List;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;
 com.openai.models.responses.StructuredResponseCreateParams$Builder#include (Ljava/util/Optional;)Lcom/openai/models/responses/StructuredResponseCreateParams$Builder;

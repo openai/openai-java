@@ -49,6 +49,11 @@ internal class ResponseServiceAsyncTest {
                             .build()
                     )
                     .conversation("string")
+                    .image(
+                        ResponseCreateParams.Image.builder()
+                            .contextCompression(ResponseCreateParams.Image.ContextCompression.AUTO)
+                            .build()
+                    )
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .input("string")
                     .instructions("instructions")
@@ -233,6 +238,11 @@ internal class ResponseServiceAsyncTest {
             responseServiceAsync.compact(
                 ResponseCompactParams.builder()
                     .model(ResponseCompactParams.Model.GPT_6_ASTRA)
+                    .image(
+                        ResponseCompactParams.Image.builder()
+                            .contextCompression(ResponseCompactParams.Image.ContextCompression.AUTO)
+                            .build()
+                    )
                     .input("string")
                     .instructions("instructions")
                     .previousResponseId("resp_123")

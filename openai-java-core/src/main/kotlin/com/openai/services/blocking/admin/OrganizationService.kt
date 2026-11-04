@@ -62,6 +62,9 @@ interface OrganizationService {
     fun externalKeys(): ExternalKeyService =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
+    fun workloadIdentityProviders(): WorkloadIdentityProviderService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
     fun externalStorage(): ExternalStorageService =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
@@ -75,9 +78,6 @@ interface OrganizationService {
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     fun projects(): ProjectService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
-
-    fun workloadIdentityProviders(): WorkloadIdentityProviderService =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
@@ -140,6 +140,11 @@ interface OrganizationService {
                 "Subservice is not supported by this implementation"
             )
 
+        fun workloadIdentityProviders(): WorkloadIdentityProviderService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
         fun externalStorage(): ExternalStorageService.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
@@ -161,11 +166,6 @@ interface OrganizationService {
             )
 
         fun projects(): ProjectService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
-
-        fun workloadIdentityProviders(): WorkloadIdentityProviderService.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
             )

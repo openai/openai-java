@@ -34,6 +34,13 @@ internal class BetaResponsesClientEventTest {
                 )
                 .conversation("string")
                 .generate(true)
+                .image(
+                    BetaResponsesClientEvent.ResponseCreate.Image.builder()
+                        .contextCompression(
+                            BetaResponsesClientEvent.ResponseCreate.Image.ContextCompression.AUTO
+                        )
+                        .build()
+                )
                 .addInclude(BetaResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                 .input("string")
                 .instructions("instructions")
@@ -196,6 +203,14 @@ internal class BetaResponsesClientEventTest {
                     )
                     .conversation("string")
                     .generate(true)
+                    .image(
+                        BetaResponsesClientEvent.ResponseCreate.Image.builder()
+                            .contextCompression(
+                                BetaResponsesClientEvent.ResponseCreate.Image.ContextCompression
+                                    .AUTO
+                            )
+                            .build()
+                    )
                     .addInclude(BetaResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .input("string")
                     .instructions("instructions")
