@@ -1203,6 +1203,15 @@ internal class ResponseOutputItemTest {
                 .quality(ResponseOutputItem.ImageGenerationCall.Quality.LOW)
                 .revisedPrompt("revised_prompt")
                 .size(ResponseOutputItem.ImageGenerationCall.Size._1024X1024)
+                .svgUsage(
+                    ResponseOutputItem.ImageGenerationCall.SvgUsage.builder()
+                        .inputTokens(0L)
+                        .model("model")
+                        .outputTokens(0L)
+                        .reasoningTokens(0L)
+                        .totalTokens(0L)
+                        .build()
+                )
                 .build()
 
         val responseOutputItem = ResponseOutputItem.ofImageGenerationCall(imageGenerationCall)
@@ -1272,6 +1281,15 @@ internal class ResponseOutputItemTest {
                     .quality(ResponseOutputItem.ImageGenerationCall.Quality.LOW)
                     .revisedPrompt("revised_prompt")
                     .size(ResponseOutputItem.ImageGenerationCall.Size._1024X1024)
+                    .svgUsage(
+                        ResponseOutputItem.ImageGenerationCall.SvgUsage.builder()
+                            .inputTokens(0L)
+                            .model("model")
+                            .outputTokens(0L)
+                            .reasoningTokens(0L)
+                            .totalTokens(0L)
+                            .build()
+                    )
                     .build()
             )
 

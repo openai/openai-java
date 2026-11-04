@@ -479,6 +479,15 @@ internal class ConversationItemTest {
                 .quality(ConversationItem.ImageGenerationCall.Quality.LOW)
                 .revisedPrompt("revised_prompt")
                 .size(ConversationItem.ImageGenerationCall.Size._1024X1024)
+                .svgUsage(
+                    ConversationItem.ImageGenerationCall.SvgUsage.builder()
+                        .inputTokens(0L)
+                        .model("model")
+                        .outputTokens(0L)
+                        .reasoningTokens(0L)
+                        .totalTokens(0L)
+                        .build()
+                )
                 .build()
 
         val conversationItem = ConversationItem.ofImageGenerationCall(imageGenerationCall)
@@ -548,6 +557,15 @@ internal class ConversationItemTest {
                     .quality(ConversationItem.ImageGenerationCall.Quality.LOW)
                     .revisedPrompt("revised_prompt")
                     .size(ConversationItem.ImageGenerationCall.Size._1024X1024)
+                    .svgUsage(
+                        ConversationItem.ImageGenerationCall.SvgUsage.builder()
+                            .inputTokens(0L)
+                            .model("model")
+                            .outputTokens(0L)
+                            .reasoningTokens(0L)
+                            .totalTokens(0L)
+                            .build()
+                    )
                     .build()
             )
 

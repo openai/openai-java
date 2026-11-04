@@ -34,6 +34,10 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
 
         @JvmField val GPT_IMAGE_2_5_FLARE_2026_09_08 = of("gpt-image-2.5-flare-2026-09-08")
 
+        @JvmField val GPT_IMAGE_2_6_SUNBURST = of("gpt-image-2.6-sunburst")
+
+        @JvmField val GPT_IMAGE_2_6_FLARE = of("gpt-image-2.6-flare")
+
         @Deprecated(
             "GPT Image 1 was shut down on October 23, 2026. Use gpt-image-2.5-sunburst or gpt-image-2.5-flare instead."
         )
@@ -64,6 +68,8 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
         GPT_IMAGE_2_5_SUNBURST_2026_09_08,
         GPT_IMAGE_2_5_FLARE,
         GPT_IMAGE_2_5_FLARE_2026_09_08,
+        GPT_IMAGE_2_6_SUNBURST,
+        GPT_IMAGE_2_6_FLARE,
         @Deprecated(
             "GPT Image 1 was shut down on October 23, 2026. Use gpt-image-2.5-sunburst or gpt-image-2.5-flare instead."
         )
@@ -93,6 +99,8 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
         GPT_IMAGE_2_5_SUNBURST_2026_09_08,
         GPT_IMAGE_2_5_FLARE,
         GPT_IMAGE_2_5_FLARE_2026_09_08,
+        GPT_IMAGE_2_6_SUNBURST,
+        GPT_IMAGE_2_6_FLARE,
         @Deprecated(
             "GPT Image 1 was shut down on October 23, 2026. Use gpt-image-2.5-sunburst or gpt-image-2.5-flare instead."
         )
@@ -123,6 +131,8 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
             GPT_IMAGE_2_5_SUNBURST_2026_09_08 -> Value.GPT_IMAGE_2_5_SUNBURST_2026_09_08
             GPT_IMAGE_2_5_FLARE -> Value.GPT_IMAGE_2_5_FLARE
             GPT_IMAGE_2_5_FLARE_2026_09_08 -> Value.GPT_IMAGE_2_5_FLARE_2026_09_08
+            GPT_IMAGE_2_6_SUNBURST -> Value.GPT_IMAGE_2_6_SUNBURST
+            GPT_IMAGE_2_6_FLARE -> Value.GPT_IMAGE_2_6_FLARE
             GPT_IMAGE_1 -> Value.GPT_IMAGE_1
             GPT_IMAGE_1_MINI -> Value.GPT_IMAGE_1_MINI
             CHATGPT_IMAGE_LATEST -> Value.CHATGPT_IMAGE_LATEST
@@ -148,6 +158,8 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
             GPT_IMAGE_2_5_SUNBURST_2026_09_08 -> Known.GPT_IMAGE_2_5_SUNBURST_2026_09_08
             GPT_IMAGE_2_5_FLARE -> Known.GPT_IMAGE_2_5_FLARE
             GPT_IMAGE_2_5_FLARE_2026_09_08 -> Known.GPT_IMAGE_2_5_FLARE_2026_09_08
+            GPT_IMAGE_2_6_SUNBURST -> Known.GPT_IMAGE_2_6_SUNBURST
+            GPT_IMAGE_2_6_FLARE -> Known.GPT_IMAGE_2_6_FLARE
             GPT_IMAGE_1 -> Known.GPT_IMAGE_1
             GPT_IMAGE_1_MINI -> Known.GPT_IMAGE_1_MINI
             CHATGPT_IMAGE_LATEST -> Known.CHATGPT_IMAGE_LATEST
