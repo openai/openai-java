@@ -116,7 +116,8 @@ jobs:
 
   build:
     name: CI / build
-    runs-on: ${{ vars.SDK_GHA_RUNNER || 'ubuntu-24.04' }}
+    # The SDK runner group grants access to these two repositories; forks use standard runners.
+    runs-on: ${{ (github.repository == 'openai/openai-java' || github.repository == 'openai/openai-java-internal') && 'sdk-linux-x64-16core' || 'ubuntu-24.04' }}
     timeout-minutes: 30
     outputs:
       gradle-cache-artifact-id: ${{ steps.gradle-cache-artifact.outputs.artifact-id }}
