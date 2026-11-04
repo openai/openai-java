@@ -43,6 +43,8 @@ import com.openai.services.async.admin.organization.projects.RoleServiceAsync
 import com.openai.services.async.admin.organization.projects.RoleServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.ServiceAccountServiceAsync
 import com.openai.services.async.admin.organization.projects.ServiceAccountServiceAsyncImpl
+import com.openai.services.async.admin.organization.projects.ServiceTierSettingServiceAsync
+import com.openai.services.async.admin.organization.projects.ServiceTierSettingServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.SpendAlertServiceAsync
 import com.openai.services.async.admin.organization.projects.SpendAlertServiceAsyncImpl
 import com.openai.services.async.admin.organization.projects.SpendLimitServiceAsync
@@ -100,6 +102,10 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
         CertificateServiceAsyncImpl(clientOptions)
     }
 
+    private val serviceTierSettings: ServiceTierSettingServiceAsync by lazy {
+        ServiceTierSettingServiceAsyncImpl(clientOptions)
+    }
+
     override fun withRawResponse(): ProjectServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ProjectServiceAsync =
@@ -128,6 +134,8 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun spendAlerts(): SpendAlertServiceAsync = spendAlerts
 
     override fun certificates(): CertificateServiceAsync = certificates
+
+    override fun serviceTierSettings(): ServiceTierSettingServiceAsync = serviceTierSettings
 
     override fun create(
         params: ProjectCreateParams,
@@ -219,6 +227,10 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
             CertificateServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val serviceTierSettings: ServiceTierSettingServiceAsync.WithRawResponse by lazy {
+            ServiceTierSettingServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ProjectServiceAsync.WithRawResponse =
@@ -251,6 +263,9 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
         override fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse = spendAlerts
 
         override fun certificates(): CertificateServiceAsync.WithRawResponse = certificates
+
+        override fun serviceTierSettings(): ServiceTierSettingServiceAsync.WithRawResponse =
+            serviceTierSettings
 
         private val createHandler: Handler<Project> = jsonHandler<Project>(clientOptions.jsonMapper)
 

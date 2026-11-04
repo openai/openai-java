@@ -909,6 +909,22 @@
       "mode": "100644",
       "sha256": "52b727edc6a9d20dcddd01e678a20e3a86fb4454fa436eadfd90d295fceb371b"
     },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/projects/servicetiersettings/ProjectOptionalServiceTier.kt": {
+      "mode": "100644",
+      "sha256": "1bc9ae0c2fe8f57153c02e14e5654ccec2abf2f987dddf7353e98436084b24ee"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/projects/servicetiersettings/ProjectServiceTierSettings.kt": {
+      "mode": "100644",
+      "sha256": "b234924a38e08571fd7dac511f720a5cf0ee61e56ebacc1ab30b9dc508ddf763"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/projects/servicetiersettings/ServiceTierSettingRetrieveParams.kt": {
+      "mode": "100644",
+      "sha256": "a02bfa93c75c5a2056086e0857296b5388a61fa665ef22d171f9bd5813262990"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/projects/servicetiersettings/ServiceTierSettingUpdateParams.kt": {
+      "mode": "100644",
+      "sha256": "3f2c1fb4f02897c321c59e57dd6c1071600f98e4ffe0b531250fb5d477621c5e"
+    },
     "openai-java-core/src/main/kotlin/com/openai/models/admin/organization/projects/spendalerts/ProjectSpendAlert.kt": {
       "mode": "100644",
       "sha256": "acfa4684d30a2129e04bb5def2b5c8210d945e147277d261ff9637336588b16c"
@@ -7063,11 +7079,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/ProjectServiceAsync.kt": {
       "mode": "100644",
-      "sha256": "23707f0fc6b99c8a1c3dfb6a2d2ccac59c411ec64d0ece17056c88848cbeb4af"
+      "sha256": "58dd610abc828a54e024fe59e8c649995141f9db1c0d5a8595e134637faa3a23"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/ProjectServiceAsyncImpl.kt": {
       "mode": "100644",
-      "sha256": "0408f3dd9bf997e2211c7cca71c9e4ea813d3ce49db4cd51d9766aefcfeb389d"
+      "sha256": "06a14947fbab05b0af24522c1496c798232601334e2c034c31f8ec752715b331"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/RoleServiceAsync.kt": {
       "mode": "100644",
@@ -7204,6 +7220,14 @@
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/projects/ServiceAccountServiceAsyncImpl.kt": {
       "mode": "100644",
       "sha256": "210b3916b360364eb03682d1ed6ab33baa049a0cd6293a35a07e9a981a1ad9b4"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/projects/ServiceTierSettingServiceAsync.kt": {
+      "mode": "100644",
+      "sha256": "402164eb8c2e38b786bd243bc88cf363dbe8302b6b8ab2fc61e71bf03a0d372c"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/projects/ServiceTierSettingServiceAsyncImpl.kt": {
+      "mode": "100644",
+      "sha256": "b01f72924ec717dafcd3a725aedce1b66a2229cf628437be540d895dd0427e8e"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/async/admin/organization/projects/SpendAlertServiceAsync.kt": {
       "mode": "100644",
@@ -8087,11 +8111,11 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/ProjectService.kt": {
       "mode": "100644",
-      "sha256": "af77bdec9ce9da7e757311cdd36e4de1fc8fbded404e71386c002f45bdaac2eb"
+      "sha256": "ba1e8ce17dec4351a4cbf9a19fe74ea07598f143de8b5ae98f0f775a9c787e41"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/ProjectServiceImpl.kt": {
       "mode": "100644",
-      "sha256": "afd8a2671ec2dc210c4598bbfb853259556ae08b3953cd4ab114670186263a33"
+      "sha256": "f03221f333cf43f3a707bef9197cb44ad442df2c5fbe3670835f3dd023323b86"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/RoleService.kt": {
       "mode": "100644",
@@ -8228,6 +8252,14 @@
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/projects/ServiceAccountServiceImpl.kt": {
       "mode": "100644",
       "sha256": "42a719c6bb9f6b4c7d0fb44e93c0911813a5e9e794d1b94e6ac66028086550b4"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/projects/ServiceTierSettingService.kt": {
+      "mode": "100644",
+      "sha256": "54551aa0f3d2b3fc6df6d21d7538f97d0d40daf51609c5edadd84d4d193d66fc"
+    },
+    "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/projects/ServiceTierSettingServiceImpl.kt": {
+      "mode": "100644",
+      "sha256": "4b9f3833bac8a53365cb7a43d180525ce10e577e67bac6d8e4495d8e20e1946d"
     },
     "openai-java-core/src/main/kotlin/com/openai/services/blocking/admin/organization/projects/SpendAlertService.kt": {
       "mode": "100644",
@@ -9524,6 +9556,18 @@
     "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/projects/serviceaccounts/apikeys/ApiKeyCreateResponseTest.kt": {
       "mode": "100644",
       "sha256": "7ab6b0e847b27b4117657f9e3c0125f8b42179459983dd53ae1293ee259303f7"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/projects/servicetiersettings/ProjectServiceTierSettingsTest.kt": {
+      "mode": "100644",
+      "sha256": "3518f0a29fc6fb647c099cfe337e8a2d665f644235810046b6a5092e74e8824a"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/projects/servicetiersettings/ServiceTierSettingRetrieveParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "fe0f6d841a3b9fbc7849351e37687f29ece5b796ae28082a6fb17f1cdf8d8b7a"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/projects/servicetiersettings/ServiceTierSettingUpdateParamsTest.kt": {
+      "mode": "100644",
+      "sha256": "91b68d925eee5289504ddf121e66b11786a81b784a0e81670be8936ef0b3fecd"
     },
     "openai-java-core/src/test/kotlin/com/openai/models/admin/organization/projects/spendalerts/ProjectSpendAlertDeletedTest.kt": {
       "mode": "100644",
@@ -15057,6 +15101,10 @@
       "mode": "100644",
       "sha256": "80922396d799445cde3d423ed1022b4eb33efa6919a1103d63e4b82a94f4b97c"
     },
+    "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/projects/ServiceTierSettingServiceAsyncTest.kt": {
+      "mode": "100644",
+      "sha256": "499b971efb059e55f8aac692136b73be27fc17c31c6d387aff27a04e884b5c35"
+    },
     "openai-java-core/src/test/kotlin/com/openai/services/async/admin/organization/projects/SpendAlertServiceAsyncPaginationContractTest.kt": {
       "mode": "100644",
       "sha256": "fa12006826952bd44acd61a019d4bc5ef5129b2ccaa68c019fc965ecb0f5a700"
@@ -15812,6 +15860,10 @@
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/projects/ServiceAccountServiceTest.kt": {
       "mode": "100644",
       "sha256": "5b11152fe2d7a636e69f55481453bba12b522aa8516d34fa81c5e24aa5b6eead"
+    },
+    "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/projects/ServiceTierSettingServiceTest.kt": {
+      "mode": "100644",
+      "sha256": "77a4959306169c0068cccf0e3eed03000d87cd599096d089584d19b8e67b7fd3"
     },
     "openai-java-core/src/test/kotlin/com/openai/services/blocking/admin/organization/projects/SpendAlertServicePaginationContractTest.kt": {
       "mode": "100644",
