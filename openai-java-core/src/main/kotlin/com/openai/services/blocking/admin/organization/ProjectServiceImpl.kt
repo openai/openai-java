@@ -43,6 +43,8 @@ import com.openai.services.blocking.admin.organization.projects.RoleService
 import com.openai.services.blocking.admin.organization.projects.RoleServiceImpl
 import com.openai.services.blocking.admin.organization.projects.ServiceAccountService
 import com.openai.services.blocking.admin.organization.projects.ServiceAccountServiceImpl
+import com.openai.services.blocking.admin.organization.projects.ServiceTierSettingService
+import com.openai.services.blocking.admin.organization.projects.ServiceTierSettingServiceImpl
 import com.openai.services.blocking.admin.organization.projects.SpendAlertService
 import com.openai.services.blocking.admin.organization.projects.SpendAlertServiceImpl
 import com.openai.services.blocking.admin.organization.projects.SpendLimitService
@@ -91,6 +93,10 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
 
     private val certificates: CertificateService by lazy { CertificateServiceImpl(clientOptions) }
 
+    private val serviceTierSettings: ServiceTierSettingService by lazy {
+        ServiceTierSettingServiceImpl(clientOptions)
+    }
+
     override fun withRawResponse(): ProjectService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ProjectService =
@@ -119,6 +125,8 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
     override fun spendAlerts(): SpendAlertService = spendAlerts
 
     override fun certificates(): CertificateService = certificates
+
+    override fun serviceTierSettings(): ServiceTierSettingService = serviceTierSettings
 
     override fun create(params: ProjectCreateParams, requestOptions: RequestOptions): Project =
         // post /organization/projects
@@ -194,6 +202,10 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
             CertificateServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val serviceTierSettings: ServiceTierSettingService.WithRawResponse by lazy {
+            ServiceTierSettingServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ProjectService.WithRawResponse =
@@ -225,6 +237,9 @@ class ProjectServiceImpl internal constructor(private val clientOptions: ClientO
         override fun spendAlerts(): SpendAlertService.WithRawResponse = spendAlerts
 
         override fun certificates(): CertificateService.WithRawResponse = certificates
+
+        override fun serviceTierSettings(): ServiceTierSettingService.WithRawResponse =
+            serviceTierSettings
 
         private val createHandler: Handler<Project> = jsonHandler<Project>(clientOptions.jsonMapper)
 
