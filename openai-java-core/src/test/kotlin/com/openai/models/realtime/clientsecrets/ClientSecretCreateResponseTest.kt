@@ -40,6 +40,7 @@ internal class ClientSecretCreateResponseTest {
                                         .noiseReduction(
                                             RealtimeSessionCreateResponse.Audio.Input.NoiseReduction
                                                 .builder()
+                                                .strength(0.0)
                                                 .type(NoiseReductionType.NEAR_FIELD)
                                                 .build()
                                         )
@@ -141,6 +142,7 @@ internal class ClientSecretCreateResponseTest {
                                         .noiseReduction(
                                             RealtimeSessionCreateResponse.Audio.Input.NoiseReduction
                                                 .builder()
+                                                .strength(0.0)
                                                 .type(NoiseReductionType.NEAR_FIELD)
                                                 .build()
                                         )

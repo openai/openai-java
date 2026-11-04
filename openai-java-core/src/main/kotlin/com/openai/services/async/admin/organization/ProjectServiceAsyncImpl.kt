@@ -78,6 +78,10 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
         ModelPermissionServiceAsyncImpl(clientOptions)
     }
 
+    private val serviceTierSettings: ServiceTierSettingServiceAsync by lazy {
+        ServiceTierSettingServiceAsyncImpl(clientOptions)
+    }
+
     private val hostedToolPermissions: HostedToolPermissionServiceAsync by lazy {
         HostedToolPermissionServiceAsyncImpl(clientOptions)
     }
@@ -102,10 +106,6 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
         CertificateServiceAsyncImpl(clientOptions)
     }
 
-    private val serviceTierSettings: ServiceTierSettingServiceAsync by lazy {
-        ServiceTierSettingServiceAsyncImpl(clientOptions)
-    }
-
     override fun withRawResponse(): ProjectServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ProjectServiceAsync =
@@ -121,6 +121,8 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
     override fun modelPermissions(): ModelPermissionServiceAsync = modelPermissions
 
+    override fun serviceTierSettings(): ServiceTierSettingServiceAsync = serviceTierSettings
+
     override fun hostedToolPermissions(): HostedToolPermissionServiceAsync = hostedToolPermissions
 
     override fun groups(): GroupServiceAsync = groups
@@ -134,8 +136,6 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun spendAlerts(): SpendAlertServiceAsync = spendAlerts
 
     override fun certificates(): CertificateServiceAsync = certificates
-
-    override fun serviceTierSettings(): ServiceTierSettingServiceAsync = serviceTierSettings
 
     override fun create(
         params: ProjectCreateParams,
@@ -198,6 +198,10 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
             ModelPermissionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val serviceTierSettings: ServiceTierSettingServiceAsync.WithRawResponse by lazy {
+            ServiceTierSettingServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val hostedToolPermissions:
             HostedToolPermissionServiceAsync.WithRawResponse by lazy {
             HostedToolPermissionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -227,10 +231,6 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
             CertificateServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val serviceTierSettings: ServiceTierSettingServiceAsync.WithRawResponse by lazy {
-            ServiceTierSettingServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ProjectServiceAsync.WithRawResponse =
@@ -249,6 +249,9 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
         override fun modelPermissions(): ModelPermissionServiceAsync.WithRawResponse =
             modelPermissions
 
+        override fun serviceTierSettings(): ServiceTierSettingServiceAsync.WithRawResponse =
+            serviceTierSettings
+
         override fun hostedToolPermissions(): HostedToolPermissionServiceAsync.WithRawResponse =
             hostedToolPermissions
 
@@ -263,9 +266,6 @@ class ProjectServiceAsyncImpl internal constructor(private val clientOptions: Cl
         override fun spendAlerts(): SpendAlertServiceAsync.WithRawResponse = spendAlerts
 
         override fun certificates(): CertificateServiceAsync.WithRawResponse = certificates
-
-        override fun serviceTierSettings(): ServiceTierSettingServiceAsync.WithRawResponse =
-            serviceTierSettings
 
         private val createHandler: Handler<Project> = jsonHandler<Project>(clientOptions.jsonMapper)
 

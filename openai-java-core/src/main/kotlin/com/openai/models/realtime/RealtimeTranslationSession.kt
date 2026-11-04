@@ -762,6 +762,7 @@ private constructor(
             @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val type: JsonField<NoiseReductionType>,
+                private val strength: JsonField<Double>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
@@ -769,8 +770,11 @@ private constructor(
                 private constructor(
                     @JsonProperty("type")
                     @ExcludeMissing
-                    type: JsonField<NoiseReductionType> = JsonMissing.of()
-                ) : this(type, mutableMapOf())
+                    type: JsonField<NoiseReductionType> = JsonMissing.of(),
+                    @JsonProperty("strength")
+                    @ExcludeMissing
+                    strength: JsonField<Double> = JsonMissing.of(),
+                ) : this(type, strength, mutableMapOf())
 
                 /**
                  * Type of noise reduction. `near_field` is for close-talking microphones such as
@@ -784,6 +788,16 @@ private constructor(
                 fun type(): NoiseReductionType = type.getRequired("type")
 
                 /**
+                 * Input noise suppression strength. Higher values apply more suppression. Defaults
+                 * to 1 when noise reduction is first enabled. Omitting strength from a session
+                 * update preserves the current strength.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun strength(): Optional<Double> = strength.getOptional("strength")
+
+                /**
                  * Returns the raw JSON value of [type].
                  *
                  * Unlike [type], this method doesn't throw if the JSON field has an unexpected
@@ -792,6 +806,16 @@ private constructor(
                 @JsonProperty("type")
                 @ExcludeMissing
                 fun _type(): JsonField<NoiseReductionType> = type
+
+                /**
+                 * Returns the raw JSON value of [strength].
+                 *
+                 * Unlike [strength], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("strength")
+                @ExcludeMissing
+                fun _strength(): JsonField<Double> = strength
 
                 @JsonAnySetter
                 private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -807,7 +831,11 @@ private constructor(
                  * nulls and unrecognized values are preserved.
                  */
                 fun _allProperties(): Map<String, JsonValue> =
-                    collectAllProperties(additionalProperties, "type" to this.type)
+                    collectAllProperties(
+                        additionalProperties,
+                        "type" to this.type,
+                        "strength" to this.strength,
+                    )
 
                 /**
                  * Returns the legacy additional-properties view.
@@ -842,11 +870,13 @@ private constructor(
                 class Builder internal constructor() {
 
                     private var type: JsonField<NoiseReductionType>? = null
+                    private var strength: JsonField<Double> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(noiseReduction: NoiseReduction) = apply {
                         type = noiseReduction.type
+                        strength = noiseReduction.strength
                         additionalProperties = noiseReduction.additionalProperties.toMutableMap()
                     }
 
@@ -865,6 +895,22 @@ private constructor(
                      * undocumented or not yet supported value.
                      */
                     fun type(type: JsonField<NoiseReductionType>) = apply { this.type = type }
+
+                    /**
+                     * Input noise suppression strength. Higher values apply more suppression.
+                     * Defaults to 1 when noise reduction is first enabled. Omitting strength from a
+                     * session update preserves the current strength.
+                     */
+                    fun strength(strength: Double) = strength(JsonField.of(strength))
+
+                    /**
+                     * Sets [Builder.strength] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.strength] with a well-typed [Double] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun strength(strength: JsonField<Double>) = apply { this.strength = strength }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -903,6 +949,7 @@ private constructor(
                     fun build(): NoiseReduction =
                         NoiseReduction(
                             checkRequired("type", type),
+                            strength,
                             additionalProperties.toMutableMap(),
                         )
                 }
@@ -925,6 +972,7 @@ private constructor(
                     }
 
                     type().validate()
+                    strength()
                     validated = true
                 }
 
@@ -943,7 +991,9 @@ private constructor(
                  * Used for best match union deserialization.
                  */
                 @JvmSynthetic
-                internal fun validity(): Int = (type.asKnown().getOrNull()?.validity() ?: 0)
+                internal fun validity(): Int =
+                    (type.asKnown().getOrNull()?.validity() ?: 0) +
+                        (if (strength.asKnown().isPresent) 1 else 0)
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -952,15 +1002,18 @@ private constructor(
 
                     return other is NoiseReduction &&
                         type == other.type &&
+                        strength == other.strength &&
                         additionalProperties == other.additionalProperties
                 }
 
-                private val hashCode: Int by lazy { Objects.hash(type, additionalProperties) }
+                private val hashCode: Int by lazy {
+                    Objects.hash(type, strength, additionalProperties)
+                }
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "NoiseReduction{type=$type, additionalProperties=$additionalProperties}"
+                    "NoiseReduction{type=$type, strength=$strength, additionalProperties=$additionalProperties}"
             }
 
             /**

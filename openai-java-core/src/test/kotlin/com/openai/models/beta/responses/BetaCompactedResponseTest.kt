@@ -78,6 +78,11 @@ internal class BetaCompactedResponseTest {
                         .totalTokens(0L)
                         .build()
                 )
+                .image(
+                    BetaCompactedResponse.Image.builder()
+                        .contextCompression(BetaCompactedResponse.Image.ContextCompression.ENABLED)
+                        .build()
+                )
                 .build()
 
         assertThat(betaCompactedResponse.id()).isEqualTo("id")
@@ -145,6 +150,12 @@ internal class BetaCompactedResponseTest {
                         BetaResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
                     )
                     .totalTokens(0L)
+                    .build()
+            )
+        assertThat(betaCompactedResponse.image())
+            .contains(
+                BetaCompactedResponse.Image.builder()
+                    .contextCompression(BetaCompactedResponse.Image.ContextCompression.ENABLED)
                     .build()
             )
 

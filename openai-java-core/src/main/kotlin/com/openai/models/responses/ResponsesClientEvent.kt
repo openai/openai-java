@@ -417,6 +417,7 @@ private constructor(
         private val contextManagement: JsonField<List<ContextManagement>>,
         private val conversation: JsonField<Conversation>,
         private val generate: JsonField<Boolean>,
+        private val image: JsonField<Image>,
         private val include: JsonField<List<ResponseIncludable>>,
         private val input: JsonField<Input>,
         private val instructions: JsonField<String>,
@@ -467,6 +468,7 @@ private constructor(
             @JsonProperty("generate")
             @ExcludeMissing
             generate: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("image") @ExcludeMissing image: JsonField<Image> = JsonMissing.of(),
             @JsonProperty("include")
             @ExcludeMissing
             include: JsonField<List<ResponseIncludable>> = JsonMissing.of(),
@@ -549,6 +551,7 @@ private constructor(
             contextManagement,
             conversation,
             generate,
+            image,
             include,
             input,
             instructions,
@@ -640,6 +643,14 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun generate(): Optional<Boolean> = generate.getOptional("generate")
+
+        /**
+         * Request level image options.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun image(): Optional<Image> = image.getOptional("image")
 
         /**
          * Specify additional output data to include in the model response. Currently supported
@@ -1061,6 +1072,13 @@ private constructor(
         @JsonProperty("generate") @ExcludeMissing fun _generate(): JsonField<Boolean> = generate
 
         /**
+         * Returns the raw JSON value of [image].
+         *
+         * Unlike [image], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("image") @ExcludeMissing fun _image(): JsonField<Image> = image
+
+        /**
          * Returns the raw JSON value of [include].
          *
          * Unlike [include], this method doesn't throw if the JSON field has an unexpected type.
@@ -1336,6 +1354,7 @@ private constructor(
                 "context_management" to this.contextManagement,
                 "conversation" to this.conversation,
                 "generate" to this.generate,
+                "image" to this.image,
                 "include" to this.include,
                 "input" to this.input,
                 "instructions" to this.instructions,
@@ -1396,6 +1415,7 @@ private constructor(
             private var contextManagement: JsonField<MutableList<ContextManagement>>? = null
             private var conversation: JsonField<Conversation> = JsonMissing.of()
             private var generate: JsonField<Boolean> = JsonMissing.of()
+            private var image: JsonField<Image> = JsonMissing.of()
             private var include: JsonField<MutableList<ResponseIncludable>>? = null
             private var input: JsonField<Input> = JsonMissing.of()
             private var instructions: JsonField<String> = JsonMissing.of()
@@ -1435,6 +1455,7 @@ private constructor(
                 contextManagement = responseCreate.contextManagement.map { it.toMutableList() }
                 conversation = responseCreate.conversation
                 generate = responseCreate.generate
+                image = responseCreate.image
                 include = responseCreate.include.map { it.toMutableList() }
                 input = responseCreate.input
                 instructions = responseCreate.instructions
@@ -1603,6 +1624,18 @@ private constructor(
              * supported value.
              */
             fun generate(generate: JsonField<Boolean>) = apply { this.generate = generate }
+
+            /** Request level image options. */
+            fun image(image: Image) = image(JsonField.of(image))
+
+            /**
+             * Sets [Builder.image] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.image] with a well-typed [Image] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun image(image: JsonField<Image>) = apply { this.image = image }
 
             /**
              * Specify additional output data to include in the model response. Currently supported
@@ -2557,6 +2590,7 @@ private constructor(
                     (contextManagement ?: JsonMissing.of()).map { it.toImmutable() },
                     conversation,
                     generate,
+                    image,
                     (include ?: JsonMissing.of()).map { it.toImmutable() },
                     input,
                     instructions,
@@ -2616,6 +2650,7 @@ private constructor(
             contextManagement().ifPresent { it.forEach { it.validate() } }
             conversation().ifPresent { it.validate() }
             generate()
+            image().ifPresent { it.validate() }
             include().ifPresent { it.forEach { it.validate() } }
             input().ifPresent { it.validate() }
             instructions()
@@ -2670,6 +2705,7 @@ private constructor(
                 (contextManagement.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (conversation.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (generate.asKnown().isPresent) 1 else 0) +
+                (image.asKnown().getOrNull()?.validity() ?: 0) +
                 (include.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (input.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (instructions.asKnown().isPresent) 1 else 0) +
@@ -3557,6 +3593,359 @@ private constructor(
                     }
                 }
             }
+        }
+
+        /** Request level image options. */
+        class Image
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val contextCompression: JsonField<ContextCompression>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("context_compression")
+                @ExcludeMissing
+                contextCompression: JsonField<ContextCompression> = JsonMissing.of()
+            ) : this(contextCompression, mutableMapOf())
+
+            /**
+             * Controls image context optimization. Defaults to `auto`, which uses the model,
+             * transport, and input to select a policy. Use `enabled` to require compression support
+             * or `disabled` to turn it off.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun contextCompression(): Optional<ContextCompression> =
+                contextCompression.getOptional("context_compression")
+
+            /**
+             * Returns the raw JSON value of [contextCompression].
+             *
+             * Unlike [contextCompression], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("context_compression")
+            @ExcludeMissing
+            fun _contextCompression(): JsonField<ContextCompression> = contextCompression
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            /**
+             * Returns an immutable snapshot of all present JSON properties, including declared and
+             * additional properties.
+             *
+             * Keys use their JSON names. Declared properties take precedence over additional
+             * properties with the same name. Missing properties are omitted, while explicit nulls
+             * and unrecognized values are preserved.
+             */
+            fun _allProperties(): Map<String, JsonValue> =
+                collectAllProperties(
+                    additionalProperties,
+                    "context_compression" to this.contextCompression,
+                )
+
+            /**
+             * Returns the legacy additional-properties view.
+             *
+             * @deprecated Use [_allProperties] to access both declared and additional JSON
+             *   properties. This accessor retains its legacy additional-properties behavior.
+             */
+            @Deprecated(
+                "Use _allProperties() to access both declared and additional JSON properties."
+            )
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Image]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Image]. */
+            class Builder internal constructor() {
+
+                private var contextCompression: JsonField<ContextCompression> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(image: Image) = apply {
+                    contextCompression = image.contextCompression
+                    additionalProperties = image.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * Controls image context optimization. Defaults to `auto`, which uses the model,
+                 * transport, and input to select a policy. Use `enabled` to require compression
+                 * support or `disabled` to turn it off.
+                 */
+                fun contextCompression(contextCompression: ContextCompression) =
+                    contextCompression(JsonField.of(contextCompression))
+
+                /**
+                 * Sets [Builder.contextCompression] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.contextCompression] with a well-typed
+                 * [ContextCompression] value instead. This method is primarily for setting the
+                 * field to an undocumented or not yet supported value.
+                 */
+                fun contextCompression(contextCompression: JsonField<ContextCompression>) = apply {
+                    this.contextCompression = contextCompression
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Image].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Image = Image(contextCompression, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            /**
+             * Validates that the types of all values in this object match their expected types
+             * recursively.
+             *
+             * This method is _not_ forwards compatible with new types from the API for existing
+             * fields.
+             *
+             * @throws OpenAIInvalidDataException if any value type in this object doesn't match its
+             *   expected type.
+             */
+            fun validate(): Image = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                contextCompression().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (contextCompression.asKnown().getOrNull()?.validity() ?: 0)
+
+            /**
+             * Controls image context optimization. Defaults to `auto`, which uses the model,
+             * transport, and input to select a policy. Use `enabled` to require compression support
+             * or `disabled` to turn it off.
+             */
+            class ContextCompression
+            @JsonCreator
+            private constructor(private val value: JsonField<String>) : Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val AUTO = of("auto")
+
+                    @JvmField val ENABLED = of("enabled")
+
+                    @JvmField val DISABLED = of("disabled")
+
+                    @JvmStatic fun of(value: String) = ContextCompression(JsonField.of(value))
+                }
+
+                /** An enum containing [ContextCompression]'s known values. */
+                enum class Known {
+                    AUTO,
+                    ENABLED,
+                    DISABLED,
+                }
+
+                /**
+                 * An enum containing [ContextCompression]'s known values, as well as an [_UNKNOWN]
+                 * member.
+                 *
+                 * An instance of [ContextCompression] can contain an unknown value in a couple of
+                 * cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    AUTO,
+                    ENABLED,
+                    DISABLED,
+                    /**
+                     * An enum member indicating that [ContextCompression] was instantiated with an
+                     * unknown value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        AUTO -> Value.AUTO
+                        ENABLED -> Value.ENABLED
+                        DISABLED -> Value.DISABLED
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        AUTO -> Known.AUTO
+                        ENABLED -> Known.ENABLED
+                        DISABLED -> Known.DISABLED
+                        else ->
+                            throw OpenAIInvalidDataException("Unknown ContextCompression: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): ContextCompression = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is ContextCompression && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Image &&
+                    contextCompression == other.contextCompression &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(contextCompression, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Image{contextCompression=$contextCompression, additionalProperties=$additionalProperties}"
         }
 
         /**
@@ -7020,6 +7409,7 @@ private constructor(
                 contextManagement == other.contextManagement &&
                 conversation == other.conversation &&
                 generate == other.generate &&
+                image == other.image &&
                 include == other.include &&
                 input == other.input &&
                 instructions == other.instructions &&
@@ -7060,6 +7450,7 @@ private constructor(
                 contextManagement,
                 conversation,
                 generate,
+                image,
                 include,
                 input,
                 instructions,
@@ -7096,6 +7487,6 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ResponseCreate{type=$type, accessPrograms=$accessPrograms, background=$background, contextManagement=$contextManagement, conversation=$conversation, generate=$generate, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, stream=$stream, streamId=$streamId, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "ResponseCreate{type=$type, accessPrograms=$accessPrograms, background=$background, contextManagement=$contextManagement, conversation=$conversation, generate=$generate, image=$image, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, moderation=$moderation, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheOptions=$promptCacheOptions, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, stream=$stream, streamId=$streamId, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
     }
 }

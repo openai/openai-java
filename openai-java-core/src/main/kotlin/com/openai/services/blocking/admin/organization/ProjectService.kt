@@ -57,6 +57,9 @@ interface ProjectService {
     fun modelPermissions(): ModelPermissionService =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
+    fun serviceTierSettings(): ServiceTierSettingService =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
     fun hostedToolPermissions(): HostedToolPermissionService =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
@@ -76,9 +79,6 @@ interface ProjectService {
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     fun certificates(): CertificateService =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
-
-    fun serviceTierSettings(): ServiceTierSettingService =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
@@ -232,6 +232,11 @@ interface ProjectService {
                 "Subservice is not supported by this implementation"
             )
 
+        fun serviceTierSettings(): ServiceTierSettingService.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
         fun hostedToolPermissions(): HostedToolPermissionService.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
@@ -263,11 +268,6 @@ interface ProjectService {
             )
 
         fun certificates(): CertificateService.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
-
-        fun serviceTierSettings(): ServiceTierSettingService.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
             )

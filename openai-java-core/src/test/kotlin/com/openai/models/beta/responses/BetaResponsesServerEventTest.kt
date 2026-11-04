@@ -1271,6 +1271,11 @@ internal class BetaResponsesServerEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(BetaResponse.Conversation.builder().id("id").build())
+                        .image(
+                            BetaResponse.Image.builder()
+                                .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -1645,6 +1650,13 @@ internal class BetaResponsesServerEventTest {
                             .background(true)
                             .completedAt(0.0)
                             .conversation(BetaResponse.Conversation.builder().id("id").build())
+                            .image(
+                                BetaResponse.Image.builder()
+                                    .contextCompression(
+                                        BetaResponse.Image.ContextCompression.ENABLED
+                                    )
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -2291,6 +2303,11 @@ internal class BetaResponsesServerEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(BetaResponse.Conversation.builder().id("id").build())
+                        .image(
+                            BetaResponse.Image.builder()
+                                .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -2664,6 +2681,13 @@ internal class BetaResponsesServerEventTest {
                             .background(true)
                             .completedAt(0.0)
                             .conversation(BetaResponse.Conversation.builder().id("id").build())
+                            .image(
+                                BetaResponse.Image.builder()
+                                    .contextCompression(
+                                        BetaResponse.Image.ContextCompression.ENABLED
+                                    )
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -4140,6 +4164,11 @@ internal class BetaResponsesServerEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(BetaResponse.Conversation.builder().id("id").build())
+                        .image(
+                            BetaResponse.Image.builder()
+                                .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -4514,6 +4543,13 @@ internal class BetaResponsesServerEventTest {
                             .background(true)
                             .completedAt(0.0)
                             .conversation(BetaResponse.Conversation.builder().id("id").build())
+                            .image(
+                                BetaResponse.Image.builder()
+                                    .contextCompression(
+                                        BetaResponse.Image.ContextCompression.ENABLED
+                                    )
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -4834,6 +4870,11 @@ internal class BetaResponsesServerEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(BetaResponse.Conversation.builder().id("id").build())
+                        .image(
+                            BetaResponse.Image.builder()
+                                .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -5207,6 +5248,13 @@ internal class BetaResponsesServerEventTest {
                             .background(true)
                             .completedAt(0.0)
                             .conversation(BetaResponse.Conversation.builder().id("id").build())
+                            .image(
+                                BetaResponse.Image.builder()
+                                    .contextCompression(
+                                        BetaResponse.Image.ContextCompression.ENABLED
+                                    )
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -5525,6 +5573,11 @@ internal class BetaResponsesServerEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(BetaResponse.Conversation.builder().id("id").build())
+                        .image(
+                            BetaResponse.Image.builder()
+                                .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -5899,6 +5952,13 @@ internal class BetaResponsesServerEventTest {
                             .background(true)
                             .completedAt(0.0)
                             .conversation(BetaResponse.Conversation.builder().id("id").build())
+                            .image(
+                                BetaResponse.Image.builder()
+                                    .contextCompression(
+                                        BetaResponse.Image.ContextCompression.ENABLED
+                                    )
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(
@@ -9578,6 +9638,11 @@ internal class BetaResponsesServerEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(BetaResponse.Conversation.builder().id("id").build())
+                        .image(
+                            BetaResponse.Image.builder()
+                                .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -9951,6 +10016,13 @@ internal class BetaResponsesServerEventTest {
                             .background(true)
                             .completedAt(0.0)
                             .conversation(BetaResponse.Conversation.builder().id("id").build())
+                            .image(
+                                BetaResponse.Image.builder()
+                                    .contextCompression(
+                                        BetaResponse.Image.ContextCompression.ENABLED
+                                    )
+                                    .build()
+                            )
                             .maxOutputTokens(0L)
                             .maxToolCalls(0L)
                             .moderation(

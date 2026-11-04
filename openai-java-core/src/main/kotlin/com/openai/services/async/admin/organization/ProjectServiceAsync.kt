@@ -57,6 +57,9 @@ interface ProjectServiceAsync {
     fun modelPermissions(): ModelPermissionServiceAsync =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
+    fun serviceTierSettings(): ServiceTierSettingServiceAsync =
+        throw UnsupportedOperationException("Subservice is not supported by this implementation")
+
     fun hostedToolPermissions(): HostedToolPermissionServiceAsync =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
@@ -76,9 +79,6 @@ interface ProjectServiceAsync {
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     fun certificates(): CertificateServiceAsync =
-        throw UnsupportedOperationException("Subservice is not supported by this implementation")
-
-    fun serviceTierSettings(): ServiceTierSettingServiceAsync =
         throw UnsupportedOperationException("Subservice is not supported by this implementation")
 
     /**
@@ -247,6 +247,11 @@ interface ProjectServiceAsync {
                 "Subservice is not supported by this implementation"
             )
 
+        fun serviceTierSettings(): ServiceTierSettingServiceAsync.WithRawResponse =
+            throw UnsupportedOperationException(
+                "Subservice is not supported by this implementation"
+            )
+
         fun hostedToolPermissions(): HostedToolPermissionServiceAsync.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
@@ -278,11 +283,6 @@ interface ProjectServiceAsync {
             )
 
         fun certificates(): CertificateServiceAsync.WithRawResponse =
-            throw UnsupportedOperationException(
-                "Subservice is not supported by this implementation"
-            )
-
-        fun serviceTierSettings(): ServiceTierSettingServiceAsync.WithRawResponse =
             throw UnsupportedOperationException(
                 "Subservice is not supported by this implementation"
             )

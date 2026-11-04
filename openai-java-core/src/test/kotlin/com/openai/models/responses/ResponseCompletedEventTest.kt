@@ -122,6 +122,11 @@ internal class ResponseCompletedEventTest {
                         .background(true)
                         .completedAt(0.0)
                         .conversation(Response.Conversation.builder().id("id").build())
+                        .image(
+                            Response.Image.builder()
+                                .contextCompression(Response.Image.ContextCompression.ENABLED)
+                                .build()
+                        )
                         .maxOutputTokens(0L)
                         .maxToolCalls(0L)
                         .moderation(
@@ -407,6 +412,11 @@ internal class ResponseCompletedEventTest {
                     .background(true)
                     .completedAt(0.0)
                     .conversation(Response.Conversation.builder().id("id").build())
+                    .image(
+                        Response.Image.builder()
+                            .contextCompression(Response.Image.ContextCompression.ENABLED)
+                            .build()
+                    )
                     .maxOutputTokens(0L)
                     .maxToolCalls(0L)
                     .moderation(

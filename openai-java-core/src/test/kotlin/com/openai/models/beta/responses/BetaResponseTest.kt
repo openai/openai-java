@@ -121,6 +121,11 @@ internal class BetaResponseTest {
                 .background(true)
                 .completedAt(0.0)
                 .conversation(BetaResponse.Conversation.builder().id("id").build())
+                .image(
+                    BetaResponse.Image.builder()
+                        .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                        .build()
+                )
                 .maxOutputTokens(0L)
                 .maxToolCalls(0L)
                 .moderation(
@@ -412,6 +417,12 @@ internal class BetaResponseTest {
         assertThat(betaResponse.completedAt()).contains(0.0)
         assertThat(betaResponse.conversation())
             .contains(BetaResponse.Conversation.builder().id("id").build())
+        assertThat(betaResponse.image())
+            .contains(
+                BetaResponse.Image.builder()
+                    .contextCompression(BetaResponse.Image.ContextCompression.ENABLED)
+                    .build()
+            )
         assertThat(betaResponse.maxOutputTokens()).contains(0L)
         assertThat(betaResponse.maxToolCalls()).contains(0L)
         assertThat(betaResponse.moderation())

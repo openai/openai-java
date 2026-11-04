@@ -66,6 +66,10 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
         ExternalKeyServiceAsyncImpl(clientOptions)
     }
 
+    private val workloadIdentityProviders: WorkloadIdentityProviderServiceAsync by lazy {
+        WorkloadIdentityProviderServiceAsyncImpl(clientOptions)
+    }
+
     private val externalStorage: ExternalStorageServiceAsync by lazy {
         ExternalStorageServiceAsyncImpl(clientOptions)
     }
@@ -83,10 +87,6 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
     }
 
     private val projects: ProjectServiceAsync by lazy { ProjectServiceAsyncImpl(clientOptions) }
-
-    private val workloadIdentityProviders: WorkloadIdentityProviderServiceAsync by lazy {
-        WorkloadIdentityProviderServiceAsyncImpl(clientOptions)
-    }
 
     override fun withRawResponse(): OrganizationServiceAsync.WithRawResponse = withRawResponse
 
@@ -112,6 +112,9 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
 
     override fun externalKeys(): ExternalKeyServiceAsync = externalKeys
 
+    override fun workloadIdentityProviders(): WorkloadIdentityProviderServiceAsync =
+        workloadIdentityProviders
+
     override fun externalStorage(): ExternalStorageServiceAsync = externalStorage
 
     override fun spendLimit(): SpendLimitServiceAsync = spendLimit
@@ -121,9 +124,6 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
     override fun certificates(): CertificateServiceAsync = certificates
 
     override fun projects(): ProjectServiceAsync = projects
-
-    override fun workloadIdentityProviders(): WorkloadIdentityProviderServiceAsync =
-        workloadIdentityProviders
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         OrganizationServiceAsync.WithRawResponse {
@@ -164,6 +164,11 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
             ExternalKeyServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val workloadIdentityProviders:
+            WorkloadIdentityProviderServiceAsync.WithRawResponse by lazy {
+            WorkloadIdentityProviderServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val externalStorage: ExternalStorageServiceAsync.WithRawResponse by lazy {
             ExternalStorageServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -182,11 +187,6 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
 
         private val projects: ProjectServiceAsync.WithRawResponse by lazy {
             ProjectServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val workloadIdentityProviders:
-            WorkloadIdentityProviderServiceAsync.WithRawResponse by lazy {
-            WorkloadIdentityProviderServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun withOptions(
@@ -215,6 +215,9 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
 
         override fun externalKeys(): ExternalKeyServiceAsync.WithRawResponse = externalKeys
 
+        override fun workloadIdentityProviders():
+            WorkloadIdentityProviderServiceAsync.WithRawResponse = workloadIdentityProviders
+
         override fun externalStorage(): ExternalStorageServiceAsync.WithRawResponse =
             externalStorage
 
@@ -225,8 +228,5 @@ class OrganizationServiceAsyncImpl internal constructor(private val clientOption
         override fun certificates(): CertificateServiceAsync.WithRawResponse = certificates
 
         override fun projects(): ProjectServiceAsync.WithRawResponse = projects
-
-        override fun workloadIdentityProviders():
-            WorkloadIdentityProviderServiceAsync.WithRawResponse = workloadIdentityProviders
     }
 }

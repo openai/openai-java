@@ -93,8 +93,8 @@ private constructor(
 
     /**
      * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
-     * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5 and 2.6.
-     * Cannot be combined with mask.
+     * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5. Cannot
+     * be combined with mask.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -510,8 +510,8 @@ private constructor(
 
         /**
          * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
-         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5 and
-         * 2.6. Cannot be combined with mask.
+         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5.
+         * Cannot be combined with mask.
          */
         fun markup(markup: InputStream) = apply { body.markup(markup) }
 
@@ -526,15 +526,15 @@ private constructor(
 
         /**
          * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
-         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5 and
-         * 2.6. Cannot be combined with mask.
+         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5.
+         * Cannot be combined with mask.
          */
         fun markup(markup: ByteArray) = apply { body.markup(markup) }
 
         /**
          * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
-         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5 and
-         * 2.6. Cannot be combined with mask.
+         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5.
+         * Cannot be combined with mask.
          */
         fun markup(path: Path) = apply { body.markup(path) }
 
@@ -1058,8 +1058,8 @@ private constructor(
 
         /**
          * A transparent PNG overlaid on the first image to guide the edit. Must match that image's
-         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5 and
-         * 2.6. Cannot be combined with mask.
+         * dimensions after orientation and contain transparent pixels. Supports GPT Image 2.5.
+         * Cannot be combined with mask.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1533,7 +1533,7 @@ private constructor(
             /**
              * A transparent PNG overlaid on the first image to guide the edit. Must match that
              * image's dimensions after orientation and contain transparent pixels. Supports GPT
-             * Image 2.5 and 2.6. Cannot be combined with mask.
+             * Image 2.5. Cannot be combined with mask.
              */
             fun markup(markup: InputStream) = markup(MultipartField.of(markup))
 
@@ -1549,14 +1549,14 @@ private constructor(
             /**
              * A transparent PNG overlaid on the first image to guide the edit. Must match that
              * image's dimensions after orientation and contain transparent pixels. Supports GPT
-             * Image 2.5 and 2.6. Cannot be combined with mask.
+             * Image 2.5. Cannot be combined with mask.
              */
             fun markup(markup: ByteArray) = markup(markup.inputStream())
 
             /**
              * A transparent PNG overlaid on the first image to guide the edit. Must match that
              * image's dimensions after orientation and contain transparent pixels. Supports GPT
-             * Image 2.5 and 2.6. Cannot be combined with mask.
+             * Image 2.5. Cannot be combined with mask.
              */
             fun markup(path: Path) =
                 markup(
