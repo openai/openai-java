@@ -28,6 +28,9 @@ internal class DataResidencyContractTest {
                 DataResidency.US to "https://us.api.openai.com/v1",
                 DataResidency.EU to "https://eu.api.openai.com/v1",
                 DataResidency.AE to "https://ae.api.openai.com/v1",
+                DataResidency.AU to "https://au.api.openai.com/v1",
+                DataResidency.IN to "https://in.api.openai.com/v1",
+                DataResidency.JP to "https://jp.api.openai.com/v1",
             )
         expected.forEach { (residency, url) ->
             assertThat(builder().dataResidency(residency).build().baseUrl()).isEqualTo(url)
