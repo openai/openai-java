@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.100.0](https://github.com/openai/openai-java/compare/v4.99.0...v4.100.0) (2026-11-05)
+
+
+### Features
+
+* **api:** add image complexity and GIF and SVG output controls ([#1339](https://github.com/openai/openai-java/issues/1339)) ([45b63e2](https://github.com/openai/openai-java/commit/45b63e2c37791184aa3eb8899743c7673a9dfa1c))
+* **api:** expand agent turn errors and image and audio options ([#1334](https://github.com/openai/openai-java/issues/1334)) ([c50def0](https://github.com/openai/openai-java/commit/c50def059c45f0a6da16f4414ab9a79993049a0e))
+
 ## [4.99.0](https://github.com/openai/openai-java/compare/v4.98.0...v4.99.0) (2026-11-04)
 
 
