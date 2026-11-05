@@ -302,7 +302,7 @@ class OpenAIOkHttpClient private constructor() {
         fun baseUrl(baseUrl: Optional<String>) = baseUrl(baseUrl.getOrNull())
 
         /**
-         * Selects an OpenAI endpoint for request-scoped data and compute residency.
+         * Selects an OpenAI API endpoint by region.
          *
          * @see ClientOptions.Builder.dataResidency
          */

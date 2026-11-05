@@ -19,7 +19,7 @@
     },
     "openai-java-core/src/main/kotlin/com/openai/core/DataResidency.kt": {
       "mode": "100644",
-      "sha256": "9e1ec6a2d72f1dc851d1418f06cbc7309770397bfb2d6d060e61784da40059b4"
+      "sha256": "5b0e278d1133a829eb679ee189329c8333b3cf9353ed7ec05ab2e0ae4375077b"
     },
     "openai-java-core/src/main/kotlin/com/openai/core/JsonProperties.kt": {
       "mode": "100644",
@@ -8859,7 +8859,7 @@
     },
     "openai-java-core/src/test/kotlin/com/openai/core/DataResidencyContractTest.kt": {
       "mode": "100644",
-      "sha256": "8714dfc3a3292c2f04f53bf6a0192d48537564c1369faba2faa1fa0da1a0da94"
+      "sha256": "6f6205d1518ca66db6a7e3271324adf8ada3a423639c0c1a041cf4f3b5299659"
     },
     "openai-java-core/src/test/kotlin/com/openai/core/http/MultipartEncodingTest.kt": {
       "mode": "100644",
