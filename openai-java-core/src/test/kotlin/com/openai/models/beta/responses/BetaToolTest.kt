@@ -499,6 +499,9 @@ internal class BetaToolTest {
             BetaTool.ImageGeneration.builder()
                 .action(BetaTool.ImageGeneration.Action.GENERATE)
                 .background(BetaTool.ImageGeneration.Background.TRANSPARENT)
+                .complexity(BetaTool.ImageGeneration.Complexity.LOW)
+                .frameCount(2L)
+                .frameDurationMs(20L)
                 .inputFidelity(BetaTool.ImageGeneration.InputFidelity.HIGH)
                 .inputImageMask(
                     BetaTool.ImageGeneration.InputImageMask.builder()
@@ -513,6 +516,19 @@ internal class BetaToolTest {
                 .partialImages(0L)
                 .quality(BetaTool.ImageGeneration.Quality.LOW)
                 .size(BetaTool.ImageGeneration.Size._1024X1024)
+                .svg(
+                    BetaTool.ImageGeneration.Svg.builder()
+                        .model("x")
+                        .reasoning(
+                            BetaTool.ImageGeneration.Svg.Reasoning.builder()
+                                .effort(
+                                    BetaTool.ImageGeneration.Svg.Reasoning.BetaReasoningEffortEnum
+                                        .NONE
+                                )
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
 
         val betaTool = BetaTool.ofImageGeneration(imageGeneration)
@@ -543,6 +559,9 @@ internal class BetaToolTest {
                 BetaTool.ImageGeneration.builder()
                     .action(BetaTool.ImageGeneration.Action.GENERATE)
                     .background(BetaTool.ImageGeneration.Background.TRANSPARENT)
+                    .complexity(BetaTool.ImageGeneration.Complexity.LOW)
+                    .frameCount(2L)
+                    .frameDurationMs(20L)
                     .inputFidelity(BetaTool.ImageGeneration.InputFidelity.HIGH)
                     .inputImageMask(
                         BetaTool.ImageGeneration.InputImageMask.builder()
@@ -557,6 +576,20 @@ internal class BetaToolTest {
                     .partialImages(0L)
                     .quality(BetaTool.ImageGeneration.Quality.LOW)
                     .size(BetaTool.ImageGeneration.Size._1024X1024)
+                    .svg(
+                        BetaTool.ImageGeneration.Svg.builder()
+                            .model("x")
+                            .reasoning(
+                                BetaTool.ImageGeneration.Svg.Reasoning.builder()
+                                    .effort(
+                                        BetaTool.ImageGeneration.Svg.Reasoning
+                                            .BetaReasoningEffortEnum
+                                            .NONE
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
                     .build()
             )
 

@@ -5971,6 +5971,9 @@ private constructor(
             private val type: JsonValue,
             private val action: JsonField<Action>,
             private val background: JsonField<Background>,
+            private val complexity: JsonField<Complexity>,
+            private val frameCount: JsonField<Long>,
+            private val frameDurationMs: JsonField<Long>,
             private val inputFidelity: JsonField<InputFidelity>,
             private val inputImageMask: JsonField<InputImageMask>,
             private val model: JsonField<Model>,
@@ -5980,6 +5983,7 @@ private constructor(
             private val partialImages: JsonField<Long>,
             private val quality: JsonField<Quality>,
             private val size: JsonField<Size>,
+            private val svg: JsonField<Svg>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -5992,6 +5996,15 @@ private constructor(
                 @JsonProperty("background")
                 @ExcludeMissing
                 background: JsonField<Background> = JsonMissing.of(),
+                @JsonProperty("complexity")
+                @ExcludeMissing
+                complexity: JsonField<Complexity> = JsonMissing.of(),
+                @JsonProperty("frame_count")
+                @ExcludeMissing
+                frameCount: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("frame_duration_ms")
+                @ExcludeMissing
+                frameDurationMs: JsonField<Long> = JsonMissing.of(),
                 @JsonProperty("input_fidelity")
                 @ExcludeMissing
                 inputFidelity: JsonField<InputFidelity> = JsonMissing.of(),
@@ -6015,10 +6028,14 @@ private constructor(
                 @ExcludeMissing
                 quality: JsonField<Quality> = JsonMissing.of(),
                 @JsonProperty("size") @ExcludeMissing size: JsonField<Size> = JsonMissing.of(),
+                @JsonProperty("svg") @ExcludeMissing svg: JsonField<Svg> = JsonMissing.of(),
             ) : this(
                 type,
                 action,
                 background,
+                complexity,
+                frameCount,
+                frameDurationMs,
                 inputFidelity,
                 inputImageMask,
                 model,
@@ -6028,6 +6045,7 @@ private constructor(
                 partialImages,
                 quality,
                 size,
+                svg,
                 mutableMapOf(),
             )
 
@@ -6069,6 +6087,34 @@ private constructor(
             fun background(): Optional<Background> = background.getOptional("background")
 
             /**
+             * Computation spent planning the image, independently of rendering quality. Overrides
+             * the outer response's `reasoning.effort` for image generation. When omitted, inherits
+             * a supported outer reasoning effort or uses the image model's configured default. For
+             * SVG output, controls the reference image, not the SVG author's reasoning.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun complexity(): Optional<Complexity> = complexity.getOptional("complexity")
+
+            /**
+             * Number of GIF frames. Requires `output_format` to be `gif`. Default: 9.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun frameCount(): Optional<Long> = frameCount.getOptional("frame_count")
+
+            /**
+             * Duration of each GIF frame in milliseconds, rounded to 10 ms. Requires
+             * `output_format` to be `gif`. Default: 200.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun frameDurationMs(): Optional<Long> = frameDurationMs.getOptional("frame_duration_ms")
+
+            /**
              * Control how much effort the model will exert to match the style and features,
              * especially facial features, of input images. Supports `high` and `low` on
              * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit this
@@ -6094,7 +6140,8 @@ private constructor(
              * The image generation model to use. One of `gpt-image-1-mini`, `gpt-image-1.5`,
              * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`. Default: `gpt-image-2`.
+             * `gpt-image-2.5-flare-2026-09-08`, `gpt-image-2.6-sunburst`, `gpt-image-2.6-flare`, or
+             * `chatgpt-image-latest`. Default: `gpt-image-2`.
              *
              * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
              * `gpt-image-2.5-flare` instead.
@@ -6122,8 +6169,11 @@ private constructor(
                 outputCompression.getOptional("output_compression")
 
             /**
-             * The output format of the generated image. One of `png`, `webp`, or `jpeg`. Default:
-             * `png`.
+             * The output format of the generated image. One of `png`, `webp`, `jpeg`, `gif`, or
+             * `svg`. Default: `png`. GIF and SVG output require a model that supports the selected
+             * format. GIF output does not support partial image streaming (`partial_images` greater
+             * than `0`), `input_image_mask`, or custom `output_compression`. Responses lifecycle
+             * events can still be streamed for GIF output.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -6166,6 +6216,16 @@ private constructor(
             fun size(): Optional<Size> = size.getOptional("size")
 
             /**
+             * SVG author model settings. Requires `output_format` to be `svg`. When SVG model
+             * selection is enabled, omitting this object uses the outer response model. Otherwise,
+             * the default SVG author is used and explicit model overrides are unavailable.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun svg(): Optional<Svg> = svg.getOptional("svg")
+
+            /**
              * Returns the raw JSON value of [action].
              *
              * Unlike [action], this method doesn't throw if the JSON field has an unexpected type.
@@ -6181,6 +6241,36 @@ private constructor(
             @JsonProperty("background")
             @ExcludeMissing
             fun _background(): JsonField<Background> = background
+
+            /**
+             * Returns the raw JSON value of [complexity].
+             *
+             * Unlike [complexity], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("complexity")
+            @ExcludeMissing
+            fun _complexity(): JsonField<Complexity> = complexity
+
+            /**
+             * Returns the raw JSON value of [frameCount].
+             *
+             * Unlike [frameCount], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("frame_count")
+            @ExcludeMissing
+            fun _frameCount(): JsonField<Long> = frameCount
+
+            /**
+             * Returns the raw JSON value of [frameDurationMs].
+             *
+             * Unlike [frameDurationMs], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("frame_duration_ms")
+            @ExcludeMissing
+            fun _frameDurationMs(): JsonField<Long> = frameDurationMs
 
             /**
              * Returns the raw JSON value of [inputFidelity].
@@ -6263,6 +6353,13 @@ private constructor(
              */
             @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<Size> = size
 
+            /**
+             * Returns the raw JSON value of [svg].
+             *
+             * Unlike [svg], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("svg") @ExcludeMissing fun _svg(): JsonField<Svg> = svg
+
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
                 additionalProperties.put(key, value)
@@ -6282,6 +6379,9 @@ private constructor(
                     "type" to this.type,
                     "action" to this.action,
                     "background" to this.background,
+                    "complexity" to this.complexity,
+                    "frame_count" to this.frameCount,
+                    "frame_duration_ms" to this.frameDurationMs,
                     "input_fidelity" to this.inputFidelity,
                     "input_image_mask" to this.inputImageMask,
                     "model" to this.model,
@@ -6291,6 +6391,7 @@ private constructor(
                     "partial_images" to this.partialImages,
                     "quality" to this.quality,
                     "size" to this.size,
+                    "svg" to this.svg,
                 )
 
             /**
@@ -6321,6 +6422,9 @@ private constructor(
                 private var type: JsonValue = JsonValue.from("image_generation")
                 private var action: JsonField<Action> = JsonMissing.of()
                 private var background: JsonField<Background> = JsonMissing.of()
+                private var complexity: JsonField<Complexity> = JsonMissing.of()
+                private var frameCount: JsonField<Long> = JsonMissing.of()
+                private var frameDurationMs: JsonField<Long> = JsonMissing.of()
                 private var inputFidelity: JsonField<InputFidelity> = JsonMissing.of()
                 private var inputImageMask: JsonField<InputImageMask> = JsonMissing.of()
                 private var model: JsonField<Model> = JsonMissing.of()
@@ -6330,6 +6434,7 @@ private constructor(
                 private var partialImages: JsonField<Long> = JsonMissing.of()
                 private var quality: JsonField<Quality> = JsonMissing.of()
                 private var size: JsonField<Size> = JsonMissing.of()
+                private var svg: JsonField<Svg> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -6337,6 +6442,9 @@ private constructor(
                     type = imageGeneration.type
                     action = imageGeneration.action
                     background = imageGeneration.background
+                    complexity = imageGeneration.complexity
+                    frameCount = imageGeneration.frameCount
+                    frameDurationMs = imageGeneration.frameDurationMs
                     inputFidelity = imageGeneration.inputFidelity
                     inputImageMask = imageGeneration.inputImageMask
                     model = imageGeneration.model
@@ -6346,6 +6454,7 @@ private constructor(
                     partialImages = imageGeneration.partialImages
                     quality = imageGeneration.quality
                     size = imageGeneration.size
+                    svg = imageGeneration.svg
                     additionalProperties = imageGeneration.additionalProperties.toMutableMap()
                 }
 
@@ -6400,6 +6509,56 @@ private constructor(
                 }
 
                 /**
+                 * Computation spent planning the image, independently of rendering quality.
+                 * Overrides the outer response's `reasoning.effort` for image generation. When
+                 * omitted, inherits a supported outer reasoning effort or uses the image model's
+                 * configured default. For SVG output, controls the reference image, not the SVG
+                 * author's reasoning.
+                 */
+                fun complexity(complexity: Complexity) = complexity(JsonField.of(complexity))
+
+                /**
+                 * Sets [Builder.complexity] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.complexity] with a well-typed [Complexity] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun complexity(complexity: JsonField<Complexity>) = apply {
+                    this.complexity = complexity
+                }
+
+                /** Number of GIF frames. Requires `output_format` to be `gif`. Default: 9. */
+                fun frameCount(frameCount: Long) = frameCount(JsonField.of(frameCount))
+
+                /**
+                 * Sets [Builder.frameCount] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.frameCount] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun frameCount(frameCount: JsonField<Long>) = apply { this.frameCount = frameCount }
+
+                /**
+                 * Duration of each GIF frame in milliseconds, rounded to 10 ms. Requires
+                 * `output_format` to be `gif`. Default: 200.
+                 */
+                fun frameDurationMs(frameDurationMs: Long) =
+                    frameDurationMs(JsonField.of(frameDurationMs))
+
+                /**
+                 * Sets [Builder.frameDurationMs] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.frameDurationMs] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun frameDurationMs(frameDurationMs: JsonField<Long>) = apply {
+                    this.frameDurationMs = frameDurationMs
+                }
+
+                /**
                  * Control how much effort the model will exert to match the style and features,
                  * especially facial features, of input images. Supports `high` and `low` on
                  * `gpt-image-1.5`; `gpt-image-1-mini` supports only `low`. For `gpt-image-2`, omit
@@ -6445,8 +6604,8 @@ private constructor(
                  * The image generation model to use. One of `gpt-image-1-mini`, `gpt-image-1.5`,
                  * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
                  * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-                 * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`. Default:
-                 * `gpt-image-2`.
+                 * `gpt-image-2.5-flare-2026-09-08`, `gpt-image-2.6-sunburst`,
+                 * `gpt-image-2.6-flare`, or `chatgpt-image-latest`. Default: `gpt-image-2`.
                  *
                  * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
                  * `gpt-image-2.5-flare` instead.
@@ -6501,8 +6660,12 @@ private constructor(
                 }
 
                 /**
-                 * The output format of the generated image. One of `png`, `webp`, or `jpeg`.
-                 * Default: `png`.
+                 * The output format of the generated image. One of `png`, `webp`, `jpeg`, `gif`, or
+                 * `svg`. Default: `png`. GIF and SVG output require a model that supports the
+                 * selected format. GIF output does not support partial image streaming
+                 * (`partial_images` greater than `0`), `input_image_mask`, or custom
+                 * `output_compression`. Responses lifecycle events can still be streamed for GIF
+                 * output.
                  */
                 fun outputFormat(outputFormat: OutputFormat) =
                     outputFormat(JsonField.of(outputFormat))
@@ -6583,6 +6746,23 @@ private constructor(
                  */
                 fun size(value: String) = size(Size.of(value))
 
+                /**
+                 * SVG author model settings. Requires `output_format` to be `svg`. When SVG model
+                 * selection is enabled, omitting this object uses the outer response model.
+                 * Otherwise, the default SVG author is used and explicit model overrides are
+                 * unavailable.
+                 */
+                fun svg(svg: Svg) = svg(JsonField.of(svg))
+
+                /**
+                 * Sets [Builder.svg] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.svg] with a well-typed [Svg] value instead. This
+                 * method is primarily for setting the field to an undocumented or not yet supported
+                 * value.
+                 */
+                fun svg(svg: JsonField<Svg>) = apply { this.svg = svg }
+
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
                     putAllAdditionalProperties(additionalProperties)
@@ -6615,6 +6795,9 @@ private constructor(
                         type,
                         action,
                         background,
+                        complexity,
+                        frameCount,
+                        frameDurationMs,
                         inputFidelity,
                         inputImageMask,
                         model,
@@ -6624,6 +6807,7 @@ private constructor(
                         partialImages,
                         quality,
                         size,
+                        svg,
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -6652,6 +6836,9 @@ private constructor(
                 }
                 action().ifPresent { it.validate() }
                 background().ifPresent { it.validate() }
+                complexity().ifPresent { it.validate() }
+                frameCount()
+                frameDurationMs()
                 inputFidelity().ifPresent { it.validate() }
                 inputImageMask().ifPresent { it.validate() }
                 model()
@@ -6661,6 +6848,7 @@ private constructor(
                 partialImages()
                 quality().ifPresent { it.validate() }
                 size()
+                svg().ifPresent { it.validate() }
                 validated = true
             }
 
@@ -6683,6 +6871,9 @@ private constructor(
                 type.let { if (it == JsonValue.from("image_generation")) 1 else 0 } +
                     (action.asKnown().getOrNull()?.validity() ?: 0) +
                     (background.asKnown().getOrNull()?.validity() ?: 0) +
+                    (complexity.asKnown().getOrNull()?.validity() ?: 0) +
+                    (if (frameCount.asKnown().isPresent) 1 else 0) +
+                    (if (frameDurationMs.asKnown().isPresent) 1 else 0) +
                     (inputFidelity.asKnown().getOrNull()?.validity() ?: 0) +
                     (inputImageMask.asKnown().getOrNull()?.validity() ?: 0) +
                     (if (model.asKnown().isPresent) 1 else 0) +
@@ -6691,7 +6882,8 @@ private constructor(
                     (outputFormat.asKnown().getOrNull()?.validity() ?: 0) +
                     (if (partialImages.asKnown().isPresent) 1 else 0) +
                     (quality.asKnown().getOrNull()?.validity() ?: 0) +
-                    (if (size.asKnown().isPresent) 1 else 0)
+                    (if (size.asKnown().isPresent) 1 else 0) +
+                    (svg.asKnown().getOrNull()?.validity() ?: 0)
 
             /** Whether to generate a new image or edit an existing image. Default: `auto`. */
             class Action @JsonCreator private constructor(private val value: JsonField<String>) :
@@ -6993,6 +7185,160 @@ private constructor(
                     }
 
                     return other is Background && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            /**
+             * Computation spent planning the image, independently of rendering quality. Overrides
+             * the outer response's `reasoning.effort` for image generation. When omitted, inherits
+             * a supported outer reasoning effort or uses the image model's configured default. For
+             * SVG output, controls the reference image, not the SVG author's reasoning.
+             */
+            class Complexity
+            @JsonCreator
+            private constructor(private val value: JsonField<String>) : Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val LOW = of("low")
+
+                    @JvmField val MEDIUM = of("medium")
+
+                    @JvmField val HIGH = of("high")
+
+                    @JvmStatic fun of(value: String) = Complexity(JsonField.of(value))
+                }
+
+                /** An enum containing [Complexity]'s known values. */
+                enum class Known {
+                    LOW,
+                    MEDIUM,
+                    HIGH,
+                }
+
+                /**
+                 * An enum containing [Complexity]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Complexity] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    LOW,
+                    MEDIUM,
+                    HIGH,
+                    /**
+                     * An enum member indicating that [Complexity] was instantiated with an unknown
+                     * value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        LOW -> Value.LOW
+                        MEDIUM -> Value.MEDIUM
+                        HIGH -> Value.HIGH
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        LOW -> Known.LOW
+                        MEDIUM -> Known.MEDIUM
+                        HIGH -> Known.HIGH
+                        else -> throw OpenAIInvalidDataException("Unknown Complexity: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Complexity = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Complexity && value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -7384,7 +7730,8 @@ private constructor(
              * The image generation model to use. One of `gpt-image-1-mini`, `gpt-image-1.5`,
              * `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-2.5-sunburst`,
              * `gpt-image-2.5-sunburst-2026-09-08`, `gpt-image-2.5-flare`,
-             * `gpt-image-2.5-flare-2026-09-08`, or `chatgpt-image-latest`. Default: `gpt-image-2`.
+             * `gpt-image-2.5-flare-2026-09-08`, `gpt-image-2.6-sunburst`, `gpt-image-2.6-flare`, or
+             * `chatgpt-image-latest`. Default: `gpt-image-2`.
              *
              * `gpt-image-1` was shut down on October 23, 2026. Use `gpt-image-2.5-sunburst` or
              * `gpt-image-2.5-flare` instead.
@@ -7426,6 +7773,10 @@ private constructor(
                     @JvmField
                     val GPT_IMAGE_2_5_FLARE_2026_09_08 = of("gpt-image-2.5-flare-2026-09-08")
 
+                    @JvmField val GPT_IMAGE_2_6_SUNBURST = of("gpt-image-2.6-sunburst")
+
+                    @JvmField val GPT_IMAGE_2_6_FLARE = of("gpt-image-2.6-flare")
+
                     @JvmField val GPT_IMAGE_1_5 = of("gpt-image-1.5")
 
                     @JvmField val CHATGPT_IMAGE_LATEST = of("chatgpt-image-latest")
@@ -7446,6 +7797,8 @@ private constructor(
                     GPT_IMAGE_2_5_SUNBURST_2026_09_08,
                     GPT_IMAGE_2_5_FLARE,
                     GPT_IMAGE_2_5_FLARE_2026_09_08,
+                    GPT_IMAGE_2_6_SUNBURST,
+                    GPT_IMAGE_2_6_FLARE,
                     GPT_IMAGE_1_5,
                     CHATGPT_IMAGE_LATEST,
                 }
@@ -7471,6 +7824,8 @@ private constructor(
                     GPT_IMAGE_2_5_SUNBURST_2026_09_08,
                     GPT_IMAGE_2_5_FLARE,
                     GPT_IMAGE_2_5_FLARE_2026_09_08,
+                    GPT_IMAGE_2_6_SUNBURST,
+                    GPT_IMAGE_2_6_FLARE,
                     GPT_IMAGE_1_5,
                     CHATGPT_IMAGE_LATEST,
                     /**
@@ -7497,6 +7852,8 @@ private constructor(
                         GPT_IMAGE_2_5_SUNBURST_2026_09_08 -> Value.GPT_IMAGE_2_5_SUNBURST_2026_09_08
                         GPT_IMAGE_2_5_FLARE -> Value.GPT_IMAGE_2_5_FLARE
                         GPT_IMAGE_2_5_FLARE_2026_09_08 -> Value.GPT_IMAGE_2_5_FLARE_2026_09_08
+                        GPT_IMAGE_2_6_SUNBURST -> Value.GPT_IMAGE_2_6_SUNBURST
+                        GPT_IMAGE_2_6_FLARE -> Value.GPT_IMAGE_2_6_FLARE
                         GPT_IMAGE_1_5 -> Value.GPT_IMAGE_1_5
                         CHATGPT_IMAGE_LATEST -> Value.CHATGPT_IMAGE_LATEST
                         else -> Value._UNKNOWN
@@ -7521,6 +7878,8 @@ private constructor(
                         GPT_IMAGE_2_5_SUNBURST_2026_09_08 -> Known.GPT_IMAGE_2_5_SUNBURST_2026_09_08
                         GPT_IMAGE_2_5_FLARE -> Known.GPT_IMAGE_2_5_FLARE
                         GPT_IMAGE_2_5_FLARE_2026_09_08 -> Known.GPT_IMAGE_2_5_FLARE_2026_09_08
+                        GPT_IMAGE_2_6_SUNBURST -> Known.GPT_IMAGE_2_6_SUNBURST
+                        GPT_IMAGE_2_6_FLARE -> Known.GPT_IMAGE_2_6_FLARE
                         GPT_IMAGE_1_5 -> Known.GPT_IMAGE_1_5
                         CHATGPT_IMAGE_LATEST -> Known.CHATGPT_IMAGE_LATEST
                         else -> throw OpenAIInvalidDataException("Unknown Model: $value")
@@ -7734,8 +8093,11 @@ private constructor(
             }
 
             /**
-             * The output format of the generated image. One of `png`, `webp`, or `jpeg`. Default:
-             * `png`.
+             * The output format of the generated image. One of `png`, `webp`, `jpeg`, `gif`, or
+             * `svg`. Default: `png`. GIF and SVG output require a model that supports the selected
+             * format. GIF output does not support partial image streaming (`partial_images` greater
+             * than `0`), `input_image_mask`, or custom `output_compression`. Responses lifecycle
+             * events can still be streamed for GIF output.
              */
             class OutputFormat
             @JsonCreator
@@ -7759,6 +8121,10 @@ private constructor(
 
                     @JvmField val JPEG = of("jpeg")
 
+                    @JvmField val GIF = of("gif")
+
+                    @JvmField val SVG = of("svg")
+
                     @JvmStatic fun of(value: String) = OutputFormat(JsonField.of(value))
                 }
 
@@ -7767,6 +8133,8 @@ private constructor(
                     PNG,
                     WEBP,
                     JPEG,
+                    GIF,
+                    SVG,
                 }
 
                 /**
@@ -7783,6 +8151,8 @@ private constructor(
                     PNG,
                     WEBP,
                     JPEG,
+                    GIF,
+                    SVG,
                     /**
                      * An enum member indicating that [OutputFormat] was instantiated with an
                      * unknown value.
@@ -7802,6 +8172,8 @@ private constructor(
                         PNG -> Value.PNG
                         WEBP -> Value.WEBP
                         JPEG -> Value.JPEG
+                        GIF -> Value.GIF
+                        SVG -> Value.SVG
                         else -> Value._UNKNOWN
                     }
 
@@ -7819,6 +8191,8 @@ private constructor(
                         PNG -> Known.PNG
                         WEBP -> Known.WEBP
                         JPEG -> Known.JPEG
+                        GIF -> Known.GIF
+                        SVG -> Known.SVG
                         else -> throw OpenAIInvalidDataException("Unknown OutputFormat: $value")
                     }
 
@@ -8220,6 +8594,621 @@ private constructor(
                 override fun toString() = value.toString()
             }
 
+            /**
+             * SVG author model settings. Requires `output_format` to be `svg`. When SVG model
+             * selection is enabled, omitting this object uses the outer response model. Otherwise,
+             * the default SVG author is used and explicit model overrides are unavailable.
+             */
+            class Svg
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val model: JsonField<String>,
+                private val reasoning: JsonField<Reasoning>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("model")
+                    @ExcludeMissing
+                    model: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("reasoning")
+                    @ExcludeMissing
+                    reasoning: JsonField<Reasoning> = JsonMissing.of(),
+                ) : this(model, reasoning, mutableMapOf())
+
+                /**
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun model(): Optional<String> = model.getOptional("model")
+
+                /**
+                 * Reasoning effort for SVG authoring. When omitted, uses the author model's default
+                 * in both Images and Responses.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun reasoning(): Optional<Reasoning> = reasoning.getOptional("reasoning")
+
+                /**
+                 * Returns the raw JSON value of [model].
+                 *
+                 * Unlike [model], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+                /**
+                 * Returns the raw JSON value of [reasoning].
+                 *
+                 * Unlike [reasoning], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("reasoning")
+                @ExcludeMissing
+                fun _reasoning(): JsonField<Reasoning> = reasoning
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                /**
+                 * Returns an immutable snapshot of all present JSON properties, including declared
+                 * and additional properties.
+                 *
+                 * Keys use their JSON names. Declared properties take precedence over additional
+                 * properties with the same name. Missing properties are omitted, while explicit
+                 * nulls and unrecognized values are preserved.
+                 */
+                fun _allProperties(): Map<String, JsonValue> =
+                    collectAllProperties(
+                        additionalProperties,
+                        "model" to this.model,
+                        "reasoning" to this.reasoning,
+                    )
+
+                /**
+                 * Returns the legacy additional-properties view.
+                 *
+                 * @deprecated Use [_allProperties] to access both declared and additional JSON
+                 *   properties. This accessor retains its legacy additional-properties behavior.
+                 */
+                @Deprecated(
+                    "Use _allProperties() to access both declared and additional JSON properties."
+                )
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /** Returns a mutable builder for constructing an instance of [Svg]. */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Svg]. */
+                class Builder internal constructor() {
+
+                    private var model: JsonField<String> = JsonMissing.of()
+                    private var reasoning: JsonField<Reasoning> = JsonMissing.of()
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(svg: Svg) = apply {
+                        model = svg.model
+                        reasoning = svg.reasoning
+                        additionalProperties = svg.additionalProperties.toMutableMap()
+                    }
+
+                    fun model(model: String) = model(JsonField.of(model))
+
+                    /**
+                     * Sets [Builder.model] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.model] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun model(model: JsonField<String>) = apply { this.model = model }
+
+                    /**
+                     * Reasoning effort for SVG authoring. When omitted, uses the author model's
+                     * default in both Images and Responses.
+                     */
+                    fun reasoning(reasoning: Reasoning?) =
+                        reasoning(JsonField.ofNullable(reasoning))
+
+                    /** Alias for calling [Builder.reasoning] with `reasoning.orElse(null)`. */
+                    fun reasoning(reasoning: Optional<Reasoning>) = reasoning(reasoning.getOrNull())
+
+                    /**
+                     * Sets [Builder.reasoning] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.reasoning] with a well-typed [Reasoning]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun reasoning(reasoning: JsonField<Reasoning>) = apply {
+                        this.reasoning = reasoning
+                    }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Svg].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
+                    fun build(): Svg = Svg(model, reasoning, additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                /**
+                 * Validates that the types of all values in this object match their expected types
+                 * recursively.
+                 *
+                 * This method is _not_ forwards compatible with new types from the API for existing
+                 * fields.
+                 *
+                 * @throws OpenAIInvalidDataException if any value type in this object doesn't match
+                 *   its expected type.
+                 */
+                fun validate(): Svg = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    model()
+                    reasoning().ifPresent { it.validate() }
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (model.asKnown().isPresent) 1 else 0) +
+                        (reasoning.asKnown().getOrNull()?.validity() ?: 0)
+
+                /**
+                 * Reasoning effort for SVG authoring. When omitted, uses the author model's default
+                 * in both Images and Responses.
+                 */
+                class Reasoning
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+                private constructor(
+                    private val effort: JsonField<BetaReasoningEffortEnum>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("effort")
+                        @ExcludeMissing
+                        effort: JsonField<BetaReasoningEffortEnum> = JsonMissing.of()
+                    ) : this(effort, mutableMapOf())
+
+                    /**
+                     * Controls how much effort the model should spend on reasoning for this
+                     * request.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun effort(): Optional<BetaReasoningEffortEnum> = effort.getOptional("effort")
+
+                    /**
+                     * Returns the raw JSON value of [effort].
+                     *
+                     * Unlike [effort], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("effort")
+                    @ExcludeMissing
+                    fun _effort(): JsonField<BetaReasoningEffortEnum> = effort
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    /**
+                     * Returns an immutable snapshot of all present JSON properties, including
+                     * declared and additional properties.
+                     *
+                     * Keys use their JSON names. Declared properties take precedence over
+                     * additional properties with the same name. Missing properties are omitted,
+                     * while explicit nulls and unrecognized values are preserved.
+                     */
+                    fun _allProperties(): Map<String, JsonValue> =
+                        collectAllProperties(additionalProperties, "effort" to this.effort)
+
+                    /**
+                     * Returns the legacy additional-properties view.
+                     *
+                     * @deprecated Use [_allProperties] to access both declared and additional JSON
+                     *   properties. This accessor retains its legacy additional-properties
+                     *   behavior.
+                     */
+                    @Deprecated(
+                        "Use _allProperties() to access both declared and additional JSON properties."
+                    )
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Reasoning].
+                         */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [Reasoning]. */
+                    class Builder internal constructor() {
+
+                        private var effort: JsonField<BetaReasoningEffortEnum> = JsonMissing.of()
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(reasoning: Reasoning) = apply {
+                            effort = reasoning.effort
+                            additionalProperties = reasoning.additionalProperties.toMutableMap()
+                        }
+
+                        /**
+                         * Controls how much effort the model should spend on reasoning for this
+                         * request.
+                         */
+                        fun effort(effort: BetaReasoningEffortEnum) = effort(JsonField.of(effort))
+
+                        /**
+                         * Sets [Builder.effort] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.effort] with a well-typed
+                         * [BetaReasoningEffortEnum] value instead. This method is primarily for
+                         * setting the field to an undocumented or not yet supported value.
+                         */
+                        fun effort(effort: JsonField<BetaReasoningEffortEnum>) = apply {
+                            this.effort = effort
+                        }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [Reasoning].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         */
+                        fun build(): Reasoning =
+                            Reasoning(effort, additionalProperties.toMutableMap())
+                    }
+
+                    private var validated: Boolean = false
+
+                    /**
+                     * Validates that the types of all values in this object match their expected
+                     * types recursively.
+                     *
+                     * This method is _not_ forwards compatible with new types from the API for
+                     * existing fields.
+                     *
+                     * @throws OpenAIInvalidDataException if any value type in this object doesn't
+                     *   match its expected type.
+                     */
+                    fun validate(): Reasoning = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        effort().ifPresent { it.validate() }
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = (effort.asKnown().getOrNull()?.validity() ?: 0)
+
+                    /**
+                     * Controls how much effort the model should spend on reasoning for this
+                     * request.
+                     */
+                    class BetaReasoningEffortEnum
+                    @JsonCreator
+                    private constructor(private val value: JsonField<String>) : Enum {
+
+                        /**
+                         * Returns this class instance's raw value.
+                         *
+                         * This is usually only useful if this instance was deserialized from data
+                         * that doesn't match any known member, and you want to know that value. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new members that the SDK is unaware of.
+                         */
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            @JvmField val NONE = of("none")
+
+                            @JvmField val MINIMAL = of("minimal")
+
+                            @JvmField val LOW = of("low")
+
+                            @JvmField val MEDIUM = of("medium")
+
+                            @JvmField val HIGH = of("high")
+
+                            @JvmField val XHIGH = of("xhigh")
+
+                            @JvmField val MAX = of("max")
+
+                            @JvmStatic
+                            fun of(value: String) = BetaReasoningEffortEnum(JsonField.of(value))
+                        }
+
+                        /** An enum containing [BetaReasoningEffortEnum]'s known values. */
+                        enum class Known {
+                            NONE,
+                            MINIMAL,
+                            LOW,
+                            MEDIUM,
+                            HIGH,
+                            XHIGH,
+                            MAX,
+                        }
+
+                        /**
+                         * An enum containing [BetaReasoningEffortEnum]'s known values, as well as
+                         * an [_UNKNOWN] member.
+                         *
+                         * An instance of [BetaReasoningEffortEnum] can contain an unknown value in
+                         * a couple of cases:
+                         * - It was deserialized from data that doesn't match any known member. For
+                         *   example, if the SDK is on an older version than the API, then the API
+                         *   may respond with new members that the SDK is unaware of.
+                         * - It was constructed with an arbitrary value using the [of] method.
+                         */
+                        enum class Value {
+                            NONE,
+                            MINIMAL,
+                            LOW,
+                            MEDIUM,
+                            HIGH,
+                            XHIGH,
+                            MAX,
+                            /**
+                             * An enum member indicating that [BetaReasoningEffortEnum] was
+                             * instantiated with an unknown value.
+                             */
+                            _UNKNOWN,
+                        }
+
+                        /**
+                         * Returns an enum member corresponding to this class instance's value, or
+                         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                         *
+                         * Use the [known] method instead if you're certain the value is always
+                         * known or if you want to throw for the unknown case.
+                         */
+                        fun value(): Value =
+                            when (this) {
+                                NONE -> Value.NONE
+                                MINIMAL -> Value.MINIMAL
+                                LOW -> Value.LOW
+                                MEDIUM -> Value.MEDIUM
+                                HIGH -> Value.HIGH
+                                XHIGH -> Value.XHIGH
+                                MAX -> Value.MAX
+                                else -> Value._UNKNOWN
+                            }
+
+                        /**
+                         * Returns an enum member corresponding to this class instance's value.
+                         *
+                         * Use the [value] method instead if you're uncertain the value is always
+                         * known and don't want to throw for the unknown case.
+                         *
+                         * @throws OpenAIInvalidDataException if this class instance's value is a
+                         *   not a known member.
+                         */
+                        fun known(): Known =
+                            when (this) {
+                                NONE -> Known.NONE
+                                MINIMAL -> Known.MINIMAL
+                                LOW -> Known.LOW
+                                MEDIUM -> Known.MEDIUM
+                                HIGH -> Known.HIGH
+                                XHIGH -> Known.XHIGH
+                                MAX -> Known.MAX
+                                else ->
+                                    throw OpenAIInvalidDataException(
+                                        "Unknown BetaReasoningEffortEnum: $value"
+                                    )
+                            }
+
+                        /**
+                         * Returns this class instance's primitive wire representation.
+                         *
+                         * This differs from the [toString] method because that method is primarily
+                         * for debugging and generally doesn't throw.
+                         *
+                         * @throws OpenAIInvalidDataException if this class instance's value does
+                         *   not have the expected primitive type.
+                         */
+                        fun asString(): String =
+                            _value().asString().orElseThrow {
+                                OpenAIInvalidDataException("Value is not a String")
+                            }
+
+                        private var validated: Boolean = false
+
+                        /**
+                         * Validates that the types of all values in this object match their
+                         * expected types recursively.
+                         *
+                         * This method is _not_ forwards compatible with new types from the API for
+                         * existing fields.
+                         *
+                         * @throws OpenAIInvalidDataException if any value type in this object
+                         *   doesn't match its expected type.
+                         */
+                        fun validate(): BetaReasoningEffortEnum = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            known()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is BetaReasoningEffortEnum && value == other.value
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is Reasoning &&
+                            effort == other.effort &&
+                            additionalProperties == other.additionalProperties
+                    }
+
+                    private val hashCode: Int by lazy { Objects.hash(effort, additionalProperties) }
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() =
+                        "Reasoning{effort=$effort, additionalProperties=$additionalProperties}"
+                }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Svg &&
+                        model == other.model &&
+                        reasoning == other.reasoning &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(model, reasoning, additionalProperties)
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Svg{model=$model, reasoning=$reasoning, additionalProperties=$additionalProperties}"
+            }
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -8229,6 +9218,9 @@ private constructor(
                     type == other.type &&
                     action == other.action &&
                     background == other.background &&
+                    complexity == other.complexity &&
+                    frameCount == other.frameCount &&
+                    frameDurationMs == other.frameDurationMs &&
                     inputFidelity == other.inputFidelity &&
                     inputImageMask == other.inputImageMask &&
                     model == other.model &&
@@ -8238,6 +9230,7 @@ private constructor(
                     partialImages == other.partialImages &&
                     quality == other.quality &&
                     size == other.size &&
+                    svg == other.svg &&
                     additionalProperties == other.additionalProperties
             }
 
@@ -8246,6 +9239,9 @@ private constructor(
                     type,
                     action,
                     background,
+                    complexity,
+                    frameCount,
+                    frameDurationMs,
                     inputFidelity,
                     inputImageMask,
                     model,
@@ -8255,6 +9251,7 @@ private constructor(
                     partialImages,
                     quality,
                     size,
+                    svg,
                     additionalProperties,
                 )
             }
@@ -8262,7 +9259,7 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "ImageGeneration{type=$type, action=$action, background=$background, inputFidelity=$inputFidelity, inputImageMask=$inputImageMask, model=$model, moderation=$moderation, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, size=$size, additionalProperties=$additionalProperties}"
+                "ImageGeneration{type=$type, action=$action, background=$background, complexity=$complexity, frameCount=$frameCount, frameDurationMs=$frameDurationMs, inputFidelity=$inputFidelity, inputImageMask=$inputImageMask, model=$model, moderation=$moderation, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, size=$size, svg=$svg, additionalProperties=$additionalProperties}"
         }
     }
 

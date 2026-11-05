@@ -1649,6 +1649,15 @@ internal class BetaResponseOutputItemTest {
                 .quality(BetaResponseOutputItem.ImageGenerationCall.Quality.LOW)
                 .revisedPrompt("revised_prompt")
                 .size(BetaResponseOutputItem.ImageGenerationCall.Size._1024X1024)
+                .svgUsage(
+                    BetaResponseOutputItem.ImageGenerationCall.SvgUsage.builder()
+                        .inputTokens(0L)
+                        .model("model")
+                        .outputTokens(0L)
+                        .reasoningTokens(0L)
+                        .totalTokens(0L)
+                        .build()
+                )
                 .build()
 
         val betaResponseOutputItem =
@@ -1727,6 +1736,15 @@ internal class BetaResponseOutputItemTest {
                     .quality(BetaResponseOutputItem.ImageGenerationCall.Quality.LOW)
                     .revisedPrompt("revised_prompt")
                     .size(BetaResponseOutputItem.ImageGenerationCall.Size._1024X1024)
+                    .svgUsage(
+                        BetaResponseOutputItem.ImageGenerationCall.SvgUsage.builder()
+                            .inputTokens(0L)
+                            .model("model")
+                            .outputTokens(0L)
+                            .reasoningTokens(0L)
+                            .totalTokens(0L)
+                            .build()
+                    )
                     .build()
             )
 
