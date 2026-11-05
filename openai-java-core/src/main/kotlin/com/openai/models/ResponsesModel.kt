@@ -309,6 +309,8 @@ private constructor(
 
             @JvmField val GPT_5_6_CYBER = of("gpt-5.6-cyber")
 
+            @JvmField val GPT_6_CYBER = of("gpt-6-cyber")
+
             @JvmField val GPT_ROSALIND_RESEARCH = of("gpt-rosalind-research")
 
             @JvmField val GPT_6_ROSALIND = of("gpt-6-rosalind")
@@ -337,6 +339,7 @@ private constructor(
             GPT_DAYBREAK_BLUE_LATEST,
             GPT_DAYBREAK_RED_LATEST,
             GPT_5_6_CYBER,
+            GPT_6_CYBER,
             GPT_ROSALIND_RESEARCH,
             GPT_6_ROSALIND,
         }
@@ -370,6 +373,7 @@ private constructor(
             GPT_DAYBREAK_BLUE_LATEST,
             GPT_DAYBREAK_RED_LATEST,
             GPT_5_6_CYBER,
+            GPT_6_CYBER,
             GPT_ROSALIND_RESEARCH,
             GPT_6_ROSALIND,
             /**
@@ -407,6 +411,7 @@ private constructor(
                 GPT_DAYBREAK_BLUE_LATEST -> Value.GPT_DAYBREAK_BLUE_LATEST
                 GPT_DAYBREAK_RED_LATEST -> Value.GPT_DAYBREAK_RED_LATEST
                 GPT_5_6_CYBER -> Value.GPT_5_6_CYBER
+                GPT_6_CYBER -> Value.GPT_6_CYBER
                 GPT_ROSALIND_RESEARCH -> Value.GPT_ROSALIND_RESEARCH
                 GPT_6_ROSALIND -> Value.GPT_6_ROSALIND
                 else -> Value._UNKNOWN
@@ -442,6 +447,7 @@ private constructor(
                 GPT_DAYBREAK_BLUE_LATEST -> Known.GPT_DAYBREAK_BLUE_LATEST
                 GPT_DAYBREAK_RED_LATEST -> Known.GPT_DAYBREAK_RED_LATEST
                 GPT_5_6_CYBER -> Known.GPT_5_6_CYBER
+                GPT_6_CYBER -> Known.GPT_6_CYBER
                 GPT_ROSALIND_RESEARCH -> Known.GPT_ROSALIND_RESEARCH
                 GPT_6_ROSALIND -> Known.GPT_6_ROSALIND
                 else -> throw OpenAIInvalidDataException("Unknown ResponsesOnlyModel: $value")
