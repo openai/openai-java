@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.101.0](https://github.com/openai/openai-java/compare/v4.100.0...v4.101.0) (2026-11-05)
+
+
+### Features
+
+* **api:** add a model option for Responses ([#1341](https://github.com/openai/openai-java/issues/1341)) ([fc3938e](https://github.com/openai/openai-java/commit/fc3938ea655ef40443dfa233dc5a2c5cc8b7f58a))
+* **api:** add Australia, India, and Japan residency options ([#1338](https://github.com/openai/openai-java/issues/1338)) ([8e6aee0](https://github.com/openai/openai-java/commit/8e6aee00b053e0a6da121029494a73a0b4844e41))
+
 ## [4.100.0](https://github.com/openai/openai-java/compare/v4.99.0...v4.100.0) (2026-11-05)
 
 
