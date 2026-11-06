@@ -1,57 +1,22 @@
 # Agent instructions
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) before making changes.
-
-`.castiron.stats.yml` records generation metadata.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) before changes. `.castiron.stats.yml` records generation metadata.
 
 ## Generated-file ownership
 
-Follow [Generated-file ownership](CONTRIBUTING.md#generated-file-ownership) to identify the source of a fix before editing SDK files.
+Follow [Generated-file ownership](CONTRIBUTING.md#generated-file-ownership) before editing SDK files.
 
 ## Security requirements
 
-- Never commit OpenAI API keys, bearer tokens, AWS/Bedrock credentials, Sonatype tokens, GPG private
-  keys or passphrases, or any other secrets. Read credentials from environment variables such as
-  `OPENAI_API_KEY`; use obviously fake values in examples, JUnit/WireMock fixtures, recordings, and
-  snapshots. Keep ordinary unit and pull-request tests offline and free of real credentials.
-  Purpose-built, explicitly opt-in live integration tests such as `BedrockRuntimeLiveTest` may use
-  dedicated, least-privilege credentials and synthetic inputs; never log credentials or customer
-  data.
-- Keep credentials, authorization or cookie headers, signed requests, and real customer data out of
-  default or uncontrolled logs, errors, traces, and test output. Preserve documented diagnostics,
-  including `OpenAIServiceException.body()`, API-error and validation messages, and explicitly
-  enabled `DEBUG` request/response body logging. Warn before enabling sensitive diagnostics, use
-  sanitized fixtures, and redact before forwarding data to untrusted sinks.
-- Review direct and transitive Maven dependencies, Gradle plugins and repositories, the Gradle
-  wrapper and distribution integrity, dependency locks, and build/install/download scripts before
-  changing them. Avoid untrusted artifacts, repositories, and executable installation hooks.
-- Pin third-party GitHub Actions to full immutable commit SHAs and review updates. Keep workflow and
-  publishing permissions minimal, disable persisted checkout credentials, never expose secrets to
-  untrusted pull requests, and keep GitHub App tokens, Sonatype credentials, and GPG signing material
-  within their protected release or publishing environments.
-- Require security-focused review for changes to API-key or Bedrock/AWS authentication; OkHttp
-  transport, base URLs, redirects, proxies, TLS, or header forwarding; file uploads and path
-  handling; Jackson serialization/deserialization or polymorphic types; and signing, release, or
-  publication logic. Add focused, boundary-appropriate regression coverage: JUnit/WireMock tests for
-  SDK behavior and workflow, Gradle, or shell checks for signing, release, and publication logic.
-- Report suspected vulnerabilities privately through [SECURITY.md](SECURITY.md). Do not open public
-  issues, discussions, or pull requests containing vulnerability details or secrets.
+Apply [Security expectations](CONTRIBUTING.md#security-expectations) for credentials, diagnostics, dependency/build integrity, action pins, publishing permissions, security review, and private disclosure. Additional requirements:
+
+- Ordinary unit/PR tests must be offline and credential-free. Explicitly opt-in live integration tests (e.g. `BedrockRuntimeLiveTest`) may use dedicated least-privilege credentials and synthetic inputs; never log credentials or customer data.
+- Keep cookie headers and sensitive data out of default/uncontrolled traces as well as logs, errors, and test output. Preserve documented `OpenAIServiceException.body()`, API-error/validation messages, and explicitly enabled `DEBUG` request/response body logging. Warn before enabling sensitive diagnostics; use sanitized fixtures and redact before forwarding to untrusted sinks.
+- Review download scripts and pinned Action updates; avoid untrusted artifacts, repositories, or executable installation hooks. Disable persisted checkout credentials; keep GitHub App tokens within protected release/publishing environments.
+- Security-focused review also covers base URLs, proxies, header forwarding, Jackson serialization/polymorphic types, and publication logic. Use boundary-appropriate regression coverage: JUnit/WireMock for SDK behavior; workflow, Gradle, or shell checks for signing/release/publication.
 
 ## Large-payload compatibility
 
-Treat large payloads as a normal API contract, not evidence of malformed or
-hostile input. Responses, Chat Completions, and other APIs can legitimately
-return large `application/json` bodies and streaming events. Do not introduce
-new arbitrary fixed limits on bodies, events, or lines as a security or efficiency fix.
-Prefer incremental processing, amortized-linear buffering, timely cleanup, and
-caller cancellation. Any new rejection limit needs an explicit, owner-approved
-API contract and a review of existing supported payloads and transports.
-Preserve longstanding dependency limits unless changing them is explicitly in scope;
-regression fixtures should exercise payloads supported by recent SDK releases.
+Large `application/json` bodies and streaming events are normal Responses, Chat Completions, and other API output. Do not add arbitrary fixed body/event/line limits as security or efficiency fixes. Any new rejection limit requires an explicit owner-approved API contract and review of supported payloads/transports. Preserve longstanding dependency limits unless changing them is explicitly in scope. Prefer incremental processing, amortized-linear buffering, timely cleanup, and caller cancellation.
 
-Protect this behavior with focused, deterministic public-entrypoint tests using
-large synthetic payloads generated in memory, not committed captures or live
-image generation. Their high memory use is intentional: do not shrink the
-payloads or raise client limits to make the tests pass. Keep coverage to the main
-JSON and streaming categories, and run large cases sequentially to keep peak
-memory reasonable. The fixture size is a regression probe, not a new API maximum.
+Use deterministic public-entrypoint tests with large synthetic in-memory payloads supported by recent SDK releases, not committed captures/live image generation. High memory use is intentional: do not shrink payloads or raise client limits to pass tests. Cover the main JSON/streaming categories; run large cases sequentially. Fixture sizes are regression probes, not new API maxima.
