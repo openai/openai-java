@@ -205,7 +205,7 @@ dependencies {
     // Gradle 9 requires an explicit launcher; JUnit's BOM aligns it with the test engine.
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(project(":openai-java-client-okhttp"))
-    testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.21.5"))
+    testImplementation(platform("com.fasterxml.jackson:jackson-bom:2.22.3"))
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.3")
